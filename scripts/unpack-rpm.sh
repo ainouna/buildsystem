@@ -27,7 +27,7 @@ if ! test -d $TARGETDIR; then
 fi
 
 # force overwriting for "reinstall"
-cp -a $ROOT/$RELOCATE/* $TARGETDIR/
+cp -af $ROOT/$RELOCATE/* $TARGETDIR/
 
 # clean up after myself
 rm -fr $ROOT

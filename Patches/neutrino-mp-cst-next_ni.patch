@@ -1,0 +1,300 @@
+--- neutrino-mp-cst-next_ni/acinclude.m4
++++ neutrino-mp-cst-next_ni/acinclude.m4
+@@ -507,6 +507,10 @@
+ 			BOXTYPE="duckbox"
+ 			BOXMODEL="$withval"
+ 			;;
++		hs7*)
++			BOXTYPE="duckbox"
++			BOXMODEL="$withval"
++			;;
+ 		cuberevo*)
+ 			BOXTYPE="duckbox"
+ 			BOXMODEL="$withval"
+@@ -535,7 +539,7 @@
+ 	[  --with-boxmodel         valid for coolstream: nevis, apollo
+                           valid for dreambox: dm500, dm500plus, dm600pvr, dm56x0, dm7000, dm7020, dm7025
+                           valid for ipbox: ip200, ip250, ip350, ip400
+-                          valid for duckbox: ufs910, ufs912, ufs913, ufs922, atevio7500, fortis_hdbox, octagon1008, hs7110, hs7810a, hs7119, hs7819, dp7000, cuberevo, cuberevo_mini, cuberevo_mini2, cuberevo_250hd, cuberevo_2000hd, cuberevo_3000hd, ipbox9900, ipbox99, ipbox55, arivalink200, tf7700, hl101
++                          valid for duckbox: ufs910, ufs912, ufs913, ufs922, atevio7500, fortis_hdbox, octagon1008, hs7110, hs7420, hs7810a, hs7119, hs7429, hs7819, cuberevo, cuberevo_mini, cuberevo_mini2, cuberevo_250hd, cuberevo_2000hd, cuberevo_3000hd, ipbox9900, ipbox99, ipbox55, arivalink200, tf7700, hl101
+                           valid for spark: spark, spark7162],
+ 	[case "${withval}" in
+ 		nevis|apollo)
+@@ -559,7 +563,7 @@
+ 				AC_MSG_ERROR([unknown model $withval for boxtype $BOXTYPE])
+ 			fi
+ 			;;
+-		ufs910|ufs912|ufs913|ufs922|atevio7500|fortis_hdbox|octagon1008|hs7110|hs7810a|hs7119|hs7819|dp7000|cuberevo|cuberevo_mini|cuberevo_mini2|cuberevo_250hd|cuberevo_2000hd|cuberevo_3000hd|ipbox9900|ipbox99|ipbox55|arivalink200|tf7700|hl101)
++		ufs910|ufs912|ufs913|ufs922|atevio7500|fortis_hdbox|octagon1008|hs7110|hs7420|hs7810a|hs7119|hs7429|hs7819|cuberevo|cuberevo_mini|cuberevo_mini2|cuberevo_250hd|cuberevo_2000hd|cuberevo_3000hd|ipbox9900|ipbox99|ipbox55|arivalink200|tf7700|hl101)
+ 			if test "$BOXTYPE" = "duckbox"; then
+ 				BOXMODEL="$withval"
+ 			else
+@@ -625,8 +629,10 @@
+ AM_CONDITIONAL(BOXMODEL_FORTIS_HDBOX,test "$BOXMODEL" = "fortis_hdbox")
+ AM_CONDITIONAL(BOXMODEL_OCTAGON1008,test "$BOXMODEL" = "octagon1008")
+ AM_CONDITIONAL(BOXMODEL_HS7110,test "$BOXMODEL" = "hs7110")
++AM_CONDITIONAL(BOXMODEL_HS7420,test "$BOXMODEL" = "hs7420")
+ AM_CONDITIONAL(BOXMODEL_HS7810A,test "$BOXMODEL" = "hs7810a")
+ AM_CONDITIONAL(BOXMODEL_HS7119,test "$BOXMODEL" = "hs7119")
++AM_CONDITIONAL(BOXMODEL_HS7429,test "$BOXMODEL" = "hs7429")
+ AM_CONDITIONAL(BOXMODEL_HS7819,test "$BOXMODEL" = "hs7819")
+ AM_CONDITIONAL(BOXMODEL_DP7000,test "$BOXMODEL" = "dp7000")
+ 
+@@ -700,10 +706,14 @@
+ 	AC_DEFINE(BOXMODEL_OCTAGON1008, 1, [octagon1008])
+ elif test "$BOXMODEL" = "hs7110"; then
+ 	AC_DEFINE(BOXMODEL_HS7110, 1, [hs7110])
++elif test "$BOXMODEL" = "hs7420"; then
++	AC_DEFINE(BOXMODEL_HS7420, 1, [hs7420])
+ elif test "$BOXMODEL" = "hs7810a"; then
+ 	AC_DEFINE(BOXMODEL_HS7810A, 1, [hs7810a])
+ elif test "$BOXMODEL" = "hs7119"; then
+ 	AC_DEFINE(BOXMODEL_HS7119, 1, [hs7119])
++elif test "$BOXMODEL" = "hs7429"; then
++	AC_DEFINE(BOXMODEL_HS7429, 1, [hs7429])
+ elif test "$BOXMODEL" = "hs7819"; then
+ 	AC_DEFINE(BOXMODEL_HS7819, 1, [hs7819])
+ elif test "$BOXMODEL" = "dp7000"; then
+--- neutrino-mp-cst-next_ni.org/src/driver/simple_display.cpp
++++ neutrino-mp-cst-next_ni/src/driver/simple_display.cpp
+@@ -35,6 +35,9 @@
+ //#include <math.h>
+ #include <sys/stat.h>
+ #if HAVE_SPARK_HARDWARE
++struct semaphore {
++	int dummy;
++};
+ #include <aotom_main.h>
+ #define DISPLAY_DEV "/dev/vfd"
+ #endif
+--- neutrino-mp-cst-next_ni.org/src/driver/vfd.cpp
++++ neutrino-mp-cst-next_ni/src/driver/vfd.cpp
+@@ -52,7 +52,7 @@
+ #include <stropts.h>
+ #define VFD_DEVICE "/dev/vfd"
+ 
+-#if defined (BOXMODEL_OCTAGON1008) || defined (BOXMODEL_TF7700)
++#if defined (BOXMODEL_OCTAGON1008) || defined (BOXMODEL_HS7420) || defined (BOXMODEL_HS7429) || defined (BOXMODEL_TF7700)
+ #define VFDLENGTH 8
+ #elif defined (BOXMODEL_FORTIS_HDBOX) || defined (BOXMODEL_ATEVIO7500)
+ #define VFDLENGTH 12
+@@ -444,41 +444,40 @@
+ #if defined (BOXMODEL_FORTIS_HDBOX) || defined (BOXMODEL_ATEVIO7500)
+ 	usleep(100000);
+ 	memset(&data, 0, sizeof(struct vfd_ioctl_data));
+-	data.start = 0;
++	data.data[0] = 0;
+ 	data.length = 5;
+ 	if (power) {
+-		data.data[0] = 0x01; // red led
++		data.start = 0x01; // red led
+ 	}
+ 	else
+ 	{
+-		data.data[0] = 0xf2; // cross plus blue led
+-	}
+-	data.start = 0;
++		data.start = 0xf2; // cross plus blue led
++	}
+ 	data.data[4] = 0; // off
+ 	data.length = 5;
+-	write_to_vfd(VFDPWRLED, &data);
++	write_to_vfd(VFDSETLED, &data);
+ 	usleep(100000);
+ 	memset(&data, 0, sizeof(struct vfd_ioctl_data));
+-	data.start = 0;
++	data.data[0] = 0;
+ 	data.length = 5;
+ 	if (power) {
+-		data.data[0] = 0xf2; // cross plus blue led
++		data.start = 0xf2; // cross plus blue led
+ 	}
+ 	else
+ 	{
+-		data.data[0] = 0x01; // red led
++		data.start = 0x01; // red led
+ 	}
+ 	data.start = 0;
+ 	data.data[4] = brightness*2;
+ 	data.length = 5;
+-	write_to_vfd(VFDPWRLED, &data);
+-#elif defined (BOXMODEL_HS7810A) || defined (BOXMODEL_HS7819)
++	write_to_vfd(VFDSETLED, &data);
++#elif defined (BOXMODEL_HS7420) || (BOXMODEL_HS7810A) || defined (BOXMODEL_HS7429) || defined (BOXMODEL_HS7819)
+ 	memset(&data, 0, sizeof(struct vfd_ioctl_data));
+ 	data.start = 0;
+ 	data.data[0] = 0x02; // logo
+ 	data.data[4] = (brightness & 0x07);
+ 	data.length = 5;
+-	write_to_vfd(VFDPWRLED, &data);
++	write_to_vfd(VFDSETLED, &data);
+ #elif !defined (BOXMODEL_UFS912) && !defined (BOXMODEL_UFS913) && !defined (BOXMODEL_OCTAGON1008)
+ // Power on/off
+ 	if (power) {
+@@ -801,7 +800,7 @@
+ 			char vol_chr[64] = "";
+ 			snprintf(vol_chr, sizeof(vol_chr)-1, "VOL: %d%%", (int)vol);
+ 			ShowText(vol_chr);
+-#elif defined (BOXMODEL_OCTAGON1008)
++#elif defined (BOXMODEL_OCTAGON1008) || defined (BOXMODEL_HS7420) || defined (BOXMODEL_HS7429)
+ 			char vol_chr[64] = "";
+ 			snprintf(vol_chr, sizeof(vol_chr)-1, "VOL=%3d", (int)vol);
+ 			ShowText(vol_chr);
+@@ -1087,7 +1086,11 @@
+ int CVFD::getBrightness()
+ {
+ 	//FIXME for old neutrino.conf
+-#if defined (BOXMODEL_OCTAGON1008) || defined (BOXMODEL_FORTIS_HDBOX) || defined (BOXMODEL_ATEVIO7500)
++#if defined (BOXMODEL_OCTAGON1008) \
++ || defined (BOXMODEL_FORTIS_HDBOX) \
++ || defined (BOXMODEL_ATEVIO7500) \
++ || defined (BOXMODEL_HS7420) \
++ || defined (BOXMODEL_HS7429)
+ 	if(g_settings.lcd_setting[SNeutrinoSettings::LCD_BRIGHTNESS] > 7)
+ 		g_settings.lcd_setting[SNeutrinoSettings::LCD_BRIGHTNESS] = 7;
+ #else
+@@ -1109,7 +1112,11 @@
+ int CVFD::getBrightnessStandby()
+ {
+ 	//FIXME for old neutrino.conf
+-#if defined (BOXMODEL_OCTAGON1008) || defined (BOXMODEL_FORTIS_HDBOX) || defined (BOXMODEL_ATEVIO7500)
++#if defined (BOXMODEL_OCTAGON1008) \
++ || defined (BOXMODEL_FORTIS_HDBOX) \
++ || defined (BOXMODEL_ATEVIO7500) \
++ || defined (BOXMODEL_HS7420) \
++ || defined (BOXMODEL_HS7429)
+ 	if(g_settings.lcd_setting[SNeutrinoSettings::LCD_STANDBY_BRIGHTNESS] > 7)
+ 		g_settings.lcd_setting[SNeutrinoSettings::LCD_STANDBY_BRIGHTNESS] = 7;
+ #else
+@@ -1130,7 +1137,11 @@
+ int CVFD::getBrightnessDeepStandby()
+ {
+ 	//FIXME for old neutrino.conf
+-#if defined (BOXMODEL_OCTAGON1008) || defined (BOXMODEL_FORTIS_HDBOX) || defined (BOXMODEL_ATEVIO7500)
++#if defined (BOXMODEL_OCTAGON1008) \
++ || defined (BOXMODEL_FORTIS_HDBOX) \
++ || defined (BOXMODEL_ATEVIO7500) \
++ || defined (BOXMODEL_HS7420) \
++ || defined (BOXMODEL_HS7429)
+ 	if(g_settings.lcd_setting[SNeutrinoSettings::LCD_DEEPSTANDBY_BRIGHTNESS] > 7)
+ 		g_settings.lcd_setting[SNeutrinoSettings::LCD_DEEPSTANDBY_BRIGHTNESS] = 7;
+ #else
+@@ -1203,7 +1214,7 @@
+ #else
+ #if defined (BOXMODEL_HS7810A) || defined (BOXMODEL_HS7119) || defined (BOXMODEL_HS7819) || defined (BOXMODEL_CUBEREVO_250HD) || defined (BOXMODEL_IPBOX55)
+ 	ShowText("    ");
+-#elif defined (BOXMODEL_OCTAGON1008) || defined (BOXMODEL_TF7700)
++#elif defined (BOXMODEL_OCTAGON1008) || defined (BOXMODEL_TF7700) || defined (BOXMODEL_HS7420) || defined (BOXMODEL_HS7429)
+ 	ShowText("        ");
+ #elif defined (BOXMODEL_FORTIS_HDBOX) || defined (BOXMODEL_ATEVIO7500)
+ 	ShowText("            ");
+@@ -1224,7 +1235,13 @@
+ 	if(ret < 0)
+ 		perror(show ? "IOC_FP_SET_ICON" : "IOC_FP_CLEAR_ICON");
+ #else
+-#if defined (BOXMODEL_ATEVIO7500) || defined (BOXMODEL_HS7110) || defined (BOXMODEL_HS7810A) || defined (BOXMODEL_HS7119) || defined (BOXMODEL_HS7819)
++#if defined (BOXMODEL_ATEVIO7500) \
++ || defined (BOXMODEL_HS7110) \
++ || defined (BOXMODEL_HS7420) \
++ || defined (BOXMODEL_HS7810A) \
++ || defined (BOXMODEL_HS7119) \
++ || defined (BOXMODEL_HS7429) \
++ || defined (BOXMODEL_HS7819)
+ 	return;
+ #endif
+ 	if (icon == 0)
+@@ -1250,7 +1267,13 @@
+ #ifdef HAVE_DUCKBOX_HARDWARE
+ void CVFD::ClearIcons()
+ {
+-#if defined (BOXMODEL_ATEVIO7500) || defined (BOXMODEL_HS7110) || defined (BOXMODEL_HS7810A) || defined (BOXMODEL_HS7119) || defined (BOXMODEL_HS7819)
++#if defined (BOXMODEL_ATEVIO7500) \
++ || defined (BOXMODEL_HS7110) \
++ || defined (BOXMODEL_HS7420) \
++ || defined (BOXMODEL_HS7810A) \
++ || defined (BOXMODEL_HS7119) \
++ || defined (BOXMODEL_HS7429) \
++ || defined (BOXMODEL_HS7819)
+ 	return;
+ #endif
+ 	for (int id = 0x10; id < FP_ICON_MAX; id++) {
+--- neutrino-mp-cst-next_ni/src/gui/vfd_setup.cpp
++++ neutrino-mp-cst-next_ni/src/gui/vfd_setup.cpp
+@@ -220,6 +220,19 @@
+ 
+ int CVfdSetup::showBrightnessSetup()
+ {
++#if defined(BOXMODEL_FORTIS_HDBOX) \
++ || defined(BOXMODEL_OCTAGON1008) \
++ || defined(BOXMODEL_ATEVIO7500) \
++ || defined(BOXMODEL_HS7110) \
++ || defined(BOXMODEL_HS7420) \
++ || defined(BOXMODEL_HS7810A) \
++ || defined(BOXMODEL_HS7119) \
++ || defined(BOXMODEL_HS7429) \
++ || defined(BOXMODEL_HS7819)
++#define MAXBRIGHT 7
++#else
++#define MAXBRIGHT 15
++#endif
+ 	CMenuOptionNumberChooser * nc;
+ 	CMenuForwarder * mf;
+ 
+@@ -239,18 +252,18 @@
+ 	brightnessstandby = CVFD::getInstance()->getBrightnessStandby();
+ 	brightnessdeepstandby = CVFD::getInstance()->getBrightnessDeepStandby();
+ 
+-	nc = new CMenuOptionNumberChooser(LOCALE_LCDCONTROLER_BRIGHTNESS, &brightness, true, 0, 15, this, CRCInput::RC_nokey, NULL, 0, 0, NONEXISTANT_LOCALE, true);
++	nc = new CMenuOptionNumberChooser(LOCALE_LCDCONTROLER_BRIGHTNESS, &brightness, true, 0, MAXBRIGHT, this, CRCInput::RC_nokey, NULL, 0, 0, NONEXISTANT_LOCALE, true);
+ 	nc->setHint("", LOCALE_MENU_HINT_VFD_BRIGHTNESS);
+ 	nc->setActivateObserver(this);
+ 	mn_widget->addItem(nc);
+ 
+-	nc = new CMenuOptionNumberChooser(LOCALE_LCDCONTROLER_BRIGHTNESSSTANDBY, &brightnessstandby, true, 0, 15, this, CRCInput::RC_nokey, NULL, 0, 0, NONEXISTANT_LOCALE, true);
++	nc = new CMenuOptionNumberChooser(LOCALE_LCDCONTROLER_BRIGHTNESSSTANDBY, &brightnessstandby, true, 0, MAXBRIGHT, this, CRCInput::RC_nokey, NULL, 0, 0, NONEXISTANT_LOCALE, true);
+ 	nc->setHint("", LOCALE_MENU_HINT_VFD_BRIGHTNESSSTANDBY);
+ 	nc->setActivateObserver(this);
+ 	mn_widget->addItem(nc);
+ 
+ 	if(cs_get_revision() > 7) {
+-		nc = new CMenuOptionNumberChooser(LOCALE_LCDCONTROLER_BRIGHTNESSDEEPSTANDBY, &brightnessdeepstandby, true, 0, 15, this, CRCInput::RC_nokey, NULL, 0, 0, NONEXISTANT_LOCALE, true);
++		nc = new CMenuOptionNumberChooser(LOCALE_LCDCONTROLER_BRIGHTNESSDEEPSTANDBY, &brightnessdeepstandby, true, 0, MAXBRIGHT, this, CRCInput::RC_nokey, NULL, 0, 0, NONEXISTANT_LOCALE, true);
+ 		nc->setHint("", LOCALE_MENU_HINT_VFD_BRIGHTNESSDEEPSTANDBY);
+ 		nc->setActivateObserver(this);
+ 		mn_widget->addItem(nc);
+--- neutrino-mp-cst-next_ni.org/src/gui/movieplayer.cpp
++++ neutrino-mp-cst-next_ni/src/gui/movieplayer.cpp
+@@ -461,8 +461,10 @@
+  && !defined(BOXMODEL_FORTIS_HDBOX) \
+  && !defined(BOXMODEL_OCTAGON1008) \
+  && !defined(BOXMODEL_HS7110) \
++ && !defined(BOXMODEL_HS7420) \
+  && !defined(BOXMODEL_HS7810A) \
+  && !defined(BOXMODEL_HS7119) \
++ && !defined(BOXMODEL_HS7429) \
+  && !defined(BOXMODEL_HS7819) \
+  && !defined(BOXMODEL_IPBOX9900) \
+  && !defined(BOXMODEL_IPBOX99) \
+@@ -483,8 +485,10 @@
+  && !defined(BOXMODEL_UFS922) \
+  && !defined(BOXMODEL_OCTAGON1008) \
+  && !defined(BOXMODEL_HS7110) \
++ && !defined(BOXMODEL_HS7420) \
+  && !defined(BOXMODEL_HS7810A) \
+  && !defined(BOXMODEL_HS7119) \
++ && !defined(BOXMODEL_HS7429) \
+  && !defined(BOXMODEL_HS7819) \
+  && !defined(BOXMODEL_IPBOX9900) \
+  && !defined(BOXMODEL_IPBOX99) \
+@@ -514,8 +518,10 @@
+  && !defined(BOXMODEL_FORTIS_HDBOX) \
+  && !defined(BOXMODEL_OCTAGON1008) \
+  && !defined(BOXMODEL_HS7110) \
++ && !defined(BOXMODEL_HS7420) \
+  && !defined(BOXMODEL_HS7810A) \
+  && !defined(BOXMODEL_HS7119) \
++ && !defined(BOXMODEL_HS7429) \
+  && !defined(BOXMODEL_HS7819) \
+  && !defined(BOXMODEL_CUBEREVO_MINI2) \
+  && !defined(BOXMODEL_IPBOX9900) \
+

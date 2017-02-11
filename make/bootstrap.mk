@@ -11,15 +11,6 @@ find-%:
 toolcheck: $(TOOLCHECK) preqs
 	@echo "All required tools seem to be installed."
 	@echo
-	@for i in audio_7100 audio_7105 audio_7111 video_7100 video_7105 video_7109 video_7111; do \
-		if [ ! -e $(SKEL_ROOT)/boot/$$i.elf ]; then \
-			echo -e "\n    ERROR: One or more .elf files are missing in $(SKEL_ROOT)/boot!"; \
-			echo "           $$i.elf is one of them"; \
-			echo; \
-			echo "    Correct this and retry."; \
-			echo; \
-		fi; \
-	done
 	@if test "$(subst /bin/,,$(shell readlink /bin/sh))" != bash; then \
 		echo "WARNING: /bin/sh is not linked to bash."; \
 		echo "         This configuration might work, but is not supported."; \
@@ -116,14 +107,18 @@ $(STL_ARCHIVE)/stlinux24-sh4-glibc-dev-$(GLIBC_VERSION).sh4.rpm \
 $(STL_ARCHIVE)/stlinux24-sh4-libgcc-$(LIBGCC_VERSION).sh4.rpm \
 $(STL_ARCHIVE)/stlinux24-sh4-libstdc++-$(LIBGCC_VERSION).sh4.rpm \
 $(STL_ARCHIVE)/stlinux24-sh4-libstdc++-dev-$(LIBGCC_VERSION).sh4.rpm
+	$(START_BUILD)
 	unpack-rpm.sh $(BUILD_TMP) $(STM_RELOCATE)/devkit/sh4 $(CROSS_DIR) \
 		$^
-	touch $(D)/$(notdir $@)
+	@touch $(D)/$(notdir $@)
+	@echo "--------------------------------------------------------------"
+	@echo -e "Build of $(TERM_GREEN)$@$(TERM_NORMAL) completed."; echo
 
 crosstool: directories driver-symlink \
 $(HOSTPREFIX)/bin/unpack-rpm.sh \
 crosstool-rpminstall
-	set -e; cd $(CROSS_BASE); rm -f sh4-linux/sys-root; ln -s ../target sh4-linux/sys-root; \
+	$(START_BUILD)
+	$(SET) -e; cd $(CROSS_BASE); rm -f sh4-linux/sys-root; ln -s ../target sh4-linux/sys-root; \
 	if [ -e $(CROSS_DIR)/target/usr/lib/libstdc++.la ]; then \
 		sed -i "s,^libdir=.*,libdir='$(CROSS_DIR)/target/usr/lib'," $(CROSS_DIR)/target/usr/lib/lib{std,sup}c++.la; \
 	fi
@@ -135,8 +130,8 @@ crosstool-rpminstall
 		cp -a $(CROSS_DIR)/target/usr/lib/libutil.so $(TARGETPREFIX)/usr/lib; \
 		cp -a $(CROSS_DIR)/target/usr/lib/libpthread.so $(TARGETPREFIX)/usr/lib; \
 		cp -a $(CROSS_DIR)/target/usr/lib/libresolv.so $(TARGETPREFIX)/usr/lib; \
-		ln -s $(CROSS_DIR)/target/usr/lib/libc.so $(TARGETPREFIX)/usr/lib/libc.so; \
-		ln -s $(CROSS_DIR)/target/usr/lib/libc_nonshared.a $(TARGETPREFIX)/usr/lib/libc_nonshared.a; \
+		ln -sf $(CROSS_DIR)/target/usr/lib/libc.so $(TARGETPREFIX)/usr/lib/libc.so; \
+		ln -sf $(CROSS_DIR)/target/usr/lib/libc_nonshared.a $(TARGETPREFIX)/usr/lib/libc_nonshared.a; \
 	fi
 	if test -e $(CROSS_DIR)/target/lib; then \
 		cp -a $(CROSS_DIR)/target/lib/*so* $(TARGETPREFIX)/lib; \
@@ -146,16 +141,21 @@ crosstool-rpminstall
 		cp -a $(CROSS_DIR)/target/etc/ld.so.conf $(TARGETPREFIX)/etc; \
 		cp -a $(CROSS_DIR)/target/etc/host.conf $(TARGETPREFIX)/etc; \
 	fi
-	touch $(D)/$(notdir $@)
+	@touch $(D)/$(notdir $@)
+	@echo "--------------------------------------------------------------"
+	@echo -e "Build of $(TERM_GREEN_BOLD)$@$(TERM_NORMAL) completed."; echo
 
 #
 # host_u_boot_tools
 #
 host_u_boot_tools: \
 $(STL_ARCHIVE)/stlinux24-host-u-boot-tools-1.3.1_stm24-9.i386.rpm
-	unpack-rpm.sh $(BUILD_TMP) $(STM_RELOCATE)/host/bin $(HOSTPREFIX)/bin \
+	$(START_BUILD)
+	$(SILENT)unpack-rpm.sh $(BUILD_TMP) $(STM_RELOCATE)/host/bin $(HOSTPREFIX)/bin \
 		$^
-	touch $(D)/$(notdir $@)
+	@touch $(D)/$(notdir $@)
+	@echo "--------------------------------------------------------------"
+	@echo -e "Build of $(TERM_GREEN_BOLD)$@$(TERM_NORMAL) completed."; echo
 
 #
 # crosstool-ng
@@ -166,6 +166,7 @@ $(ARCHIVE)/crosstool-ng-$(CROSSTOOL_NG_VERSION).tar.xz:
 	$(WGET) http://crosstool-ng.org/download/crosstool-ng/crosstool-ng-$(CROSSTOOL_NG_VERSION).tar.xz
 
 crosstool-ng: $(ARCHIVE)/crosstool-ng-$(CROSSTOOL_NG_VERSION).tar.xz
+	$(START_BUILD)
 	make $(BUILD_TMP)
 	if [ ! -e $(BASE_DIR)/cross ]; then \
 		mkdir -p $(BASE_DIR)/cross; \
@@ -185,16 +186,21 @@ crosstool-ng: $(ARCHIVE)/crosstool-ng-$(CROSSTOOL_NG_VERSION).tar.xz
 		MAKELEVEL=0 make; \
 		./ct-ng oldconfig; \
 		./ct-ng build
+	@echo "--------------------------------------------------------------"
+	@echo -e "Build of $(TERM_GREEN_BOLD)$@$(TERM_NORMAL) completed."; echo
 
 crossmenuconfig: $(ARCHIVE)/crosstool-ng-$(CROSSTOOL_NG_VERSION).tar.xz
+	$(START_BUILD)
 	make $(BUILD_TMP)
 	$(REMOVE)/crosstool-ng-$(CROSSTOOL_NG_VERSION)
 	$(UNTAR)/crosstool-ng-$(CROSSTOOL_NG_VERSION).tar.xz
-	set -e; unset CONFIG_SITE; cd $(BUILD_TMP)/crosstool-ng; \
+	$(SET) -e; unset CONFIG_SITE; cd $(BUILD_TMP)/crosstool-ng; \
 		cp -a $(PATCHES)/crosstool-ng-$(CROSSTOOL_NG_VERSION).config .config; \
 		test -f ./configure || ./bootstrap && \
 		./configure --enable-local; MAKELEVEL=0 make; chmod 0755 ct-ng; \
 		./ct-ng menuconfig
+	@echo "--------------------------------------------------------------"
+	@echo -e "Build of $(TERM_GREEN_BOLD)$@$(TERM_NORMAL) completed."; echo
 
 PREQS  = $(DRIVER_DIR)
 PREQS += $(APPS_DIR)
@@ -223,7 +229,7 @@ $(FLASH_DIR):
 	@echo '      Cloning $(GIT_NAME_FLASH)-flash git repo                '
 	@echo '=============================================================='
 	if [ ! -e $(FLASH_DIR)/.git ]; then \
-		git clone $(GITHUB)/$(GIT_NAME_FLASH)/flash-bs.git flash; \
+		git clone $(GITHUB)/$(GIT_NAME_FLASH)/flash.git flash; \
 	fi
 	@echo ''
 
@@ -231,6 +237,7 @@ $(FLASH_DIR):
 # directories
 #
 directories:
+	$(START_BUILD)
 	test -d $(D) || mkdir $(D)
 	test -d $(ARCHIVE) || mkdir $(ARCHIVE)
 	test -d $(STL_ARCHIVE) || mkdir $(STL_ARCHIVE)
@@ -244,7 +251,7 @@ directories:
 	install -d $(TARGETPREFIX)/{bin,boot,etc,lib,sbin,usr,var}
 	install -d $(TARGETPREFIX)/etc/{init.d,mdev,network,rc.d}
 	install -d $(TARGETPREFIX)/etc/rc.d/{rc0.d,rc6.d}
-	ln -s ../init.d $(TARGETPREFIX)/etc/rc.d/init.d
+	ln -sf ../init.d $(TARGETPREFIX)/etc/rc.d/init.d
 	install -d $(TARGETPREFIX)/lib/{lsb,firmware}
 	install -d $(TARGETPREFIX)/usr/{bin,lib,local,sbin,share}
 	install -d $(TARGETPREFIX)/usr/lib/pkgconfig
@@ -254,7 +261,9 @@ directories:
 	install -d $(TARGETPREFIX)/var/{etc,lib,run}
 	install -d $(TARGETPREFIX)/var/lib/{misc,nfs}
 	install -d $(TARGETPREFIX)/var/bin
-	touch $(D)/$(notdir $@)
+	@touch $(D)/$(notdir $@)
+	@echo "--------------------------------------------------------------"
+	@echo -e "Build of $(TERM_GREEN_BOLD)$@$(TERM_NORMAL) completed."; echo
 
 #
 # ccache
@@ -273,8 +282,9 @@ CCACHE_ENV = install -d $(CCACHE_BINDIR); \
 	$(CCACHE_LINKS)
 
 $(D)/ccache:
+	$(START_BUILD)
 	$(CCACHE_ENV)
-	touch $@
+	$(TOUCH)
 
 # hack to make sure they are always copied
 PHONY += ccache bootstrap
@@ -287,3 +297,5 @@ yaud-none: \
 	$(D)/linux-kernel \
 	$(D)/system-tools
 	@touch $(D)/$(notdir $@)
+	@echo "--------------------------------------------------------------"
+	@echo -e "Build of $(TERM_GREEN_BOLD)$@$(TERM_NORMAL) completed."; echo

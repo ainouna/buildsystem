@@ -33,10 +33,10 @@ GITHUB               ?= git://github.com
 else
 GITHUB               ?= https://github.com
 endif
-GIT_NAME             ?= Duckbox-Developers
-GIT_NAME_DRIVER      ?= Duckbox-Developers
-GIT_NAME_APPS        ?= Duckbox-Developers
-GIT_NAME_FLASH       ?= Duckbox-Developers
+GIT_NAME             ?= Audioniek
+GIT_NAME_DRIVER      ?= Audioniek
+GIT_NAME_APPS        ?= Audioniek
+GIT_NAME_FLASH       ?= Audioniek
 
 ifneq ($(GIT_STASH_PULL), stashpull)
 GIT_PULL              = git pull
@@ -98,63 +98,69 @@ PATH                 := $(HOSTPREFIX)/bin:$(CROSS_DIR)/bin:$(PATH):/sbin:/usr/sb
 
 TERM_BOLD            := $(shell tput smso 2>/dev/null)
 TERM_RESET           := $(shell tput rmso 2>/dev/null)
+TERM_GREEN_BOLD      := \033[01;32m
+TERM_RED             := \033[31m
+TERM_NORMAL          := \033[0m
 
 # Adjust according to the number CPU cores to use for parallel build.
 # Default: Number of processors in /proc/cpuinfo, if present, or 1.
 NR_CPU               := $(shell [ -f /proc/cpuinfo ] && grep -c '^processor\s*:' /proc/cpuinfo || echo 1)
 PARALLEL_MAKE        ?= -j $(NR_CPU)
 MAKEFLAGS            += $(PARALLEL_MAKE)
-MAKEFLAGS            += --no-print-directory
 ifndef VERBOSE
 VERBOSE               = 1
 endif
 ifeq ($(VERBOSE), 1)
+SILENT                = @
 MAKEFLAGS            += --silent
+MAKEFLAGS            += --no-print-directory
 CONFIGURE_SILENT      = -q
+SILENT_PATCH          = -s
 endif
 
 PKG_CONFIG            = $(HOSTPREFIX)/bin/$(TARGET)-pkg-config
 PKG_CONFIG_PATH       = $(TARGETPREFIX)/usr/lib/pkgconfig
 
 # helper-"functions":
-REWRITE_LIBTOOL       = sed -i "s,^libdir=.*,libdir='$(TARGETPREFIX)/usr/lib'," $(TARGETPREFIX)/usr/lib
-REWRITE_LIBTOOLDEP    = sed -i -e "s,\(^dependency_libs='\| \|-L\|^dependency_libs='\)/usr/lib,\ $(TARGETPREFIX)/usr/lib,g" $(TARGETPREFIX)/usr/lib
-REWRITE_PKGCONF       = sed -i "s,^prefix=.*,prefix='$(TARGETPREFIX)/usr',"
-REWRITE_LIBTOOL_OPT   = sed -i "s,^libdir=.*,libdir='$(TARGETPREFIX)/opt/pkg/lib'," $(TARGETPREFIX)/opt/pkg/lib
-REWRITE_PKGCONF_OPT   = sed -i "s,^prefix=.*,prefix='$(TARGETPREFIX)/opt/pkg',"
+REWRITE_LIBTOOL       = $(SILENT)sed -i "s,^libdir=.*,libdir='$(TARGETPREFIX)/usr/lib'," $(TARGETPREFIX)/usr/lib
+REWRITE_LIBTOOL_V     = sed -i "s,^libdir=.*,libdir='$(TARGETPREFIX)/usr/lib'," $(TARGETPREFIX)/usr/lib
+REWRITE_LIBTOOLDEP    = $(SILENT)sed -i -e "s,\(^dependency_libs='\| \|-L\|^dependency_libs='\)/usr/lib,\ $(TARGETPREFIX)/usr/lib,g" $(TARGETPREFIX)/usr/lib
+REWRITE_PKGCONF       = $(SILENT)sed -i "s,^prefix=.*,prefix='$(TARGETPREFIX)/usr',"
+REWRITE_PKGCONF_V     = sed -i "s,^prefix=.*,prefix='$(TARGETPREFIX)/usr',"
+REWRITE_LIBTOOL_OPT   = $(SILENT)sed -i "s,^libdir=.*,libdir='$(TARGETPREFIX)/opt/pkg/lib'," $(TARGETPREFIX)/opt/pkg/lib
+REWRITE_PKGCONF_OPT   = $(SILENT)sed -i "s,^prefix=.*,prefix='$(TARGETPREFIX)/opt/pkg',"
 
 export RM=$(shell which rm) -f
 
 # unpack tarballs, clean up
-UNTAR                 = tar -C $(BUILD_TMP) -xf $(ARCHIVE)
-REMOVE                = rm -rf $(BUILD_TMP)
+UNTAR                 = $(SILENT)tar -C $(BUILD_TMP) -xf $(ARCHIVE)
+SET                   = $(SILENT)set
+REMOVE                = $(SILENT)rm -rf $(BUILD_TMP)
 RM_PKGPREFIX          = rm -rf $(PKGPREFIX)
-PATCH                 = patch -p1 -i $(PATCHES)
-APATCH                = patch -p1 -i
-START_BUILD           = @echo "=============================================================="; echo; echo -e " $(TERM_BOLD) Start build of $(subst $(BASE_DIR)/.deps/,,$@). $(TERM_RESET)"
-TOUCH                 = @touch $@; echo -e " $(TERM_BOLD) Build of $(subst $(BASE_DIR)/.deps/,,$@) completed. $(TERM_RESET)"; echo
+PATCH                 = patch -p1 $(SILENT_PATCH) -i $(PATCHES)
+APATCH                = patch -p1 $(SILENT_PATCH) -i
+START_BUILD           = @echo "=============================================================="; echo; echo -e "Start build of $(TERM_GREEN_BOLD)$(subst $(BASE_DIR)/.deps/,,$@)$(TERM_NORMAL)."
+TOUCH                 = @touch $@; echo "--------------------------------------------------------------"; echo -e "Build of $(TERM_GREEN_BOLD)$(subst $(BASE_DIR)/.deps/,,$@)$(TERM_NORMAL) completed."; echo
 
 define post_patch
 	for i in $(1); do \
 		if [ -d $$i ] ; then \
 			for p in $$i/*; do \
 				if [ $${p:0:1} == "/" ]; then \
-					echo -e "==> \033[31mApplying Patch:\033[0m $$p"; $(APATCH) $$p; \
-				else \
-					echo -e "==> \033[31mApplying Patch:\033[0m $$p"; $(PATCH)/$$p; \
+					echo -e "==> $(TERM_RED)Applying Patch:$(TERM_NORMAL) $$p"; $(APATCH) $$p; \
 				fi; \
 			done; \
 		else \
 			if [ $${i:0:1} == "/" ]; then \
-				echo -e "==> \033[31mApplying Patch:\033[0m $$i"; $(APATCH) $$i; \
+				echo -e "==> $(TERM_RED)Applying Patch:$(TERM_NORMAL) $$i"; $(APATCH) $$i; \
 			else \
-				echo -e "==> \033[31mApplying Patch:\033[0m $$i"; $(PATCH)/$$i; \
+				echo -e "==> $(TERM_RED)Applying Patch:$(TERM_NORMAL) $$i"; $(PATCH)/$$i; \
 			fi; \
 		fi; \
 	done; \
-	echo -e "Patch of \033[01;32m$(subst $(BASE_DIR)/.deps/,,$@)\033[0m completed."; \
 	echo
 endef
+#	echo -e "Patching of $(TERM_GREEN_BOLD)$(subst $(BASE_DIR)/.deps/,,$@)$(TERM_NORMAL) completed.";
 
 #
 #
@@ -527,4 +533,3 @@ PLATFORM_CPPFLAGS := CPPFLAGS="$(PLATFORM_CPPFLAGS)"
 
 #V ?= 0
 #export V
-

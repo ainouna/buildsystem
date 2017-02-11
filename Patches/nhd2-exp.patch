@@ -1,0 +1,1124 @@
+--- nhd2-exp.org/acinclude.m4
++++ nhd2-exp/acinclude.m4
+@@ -217,9 +217,9 @@
+ AC_DEFUN([TUXBOX_BOXTYPE],[
+ 
+ AC_ARG_WITH(boxtype,
+-	[  --with-boxtype          valid values: generic,dgs,gigablue,dreambox,xtrend,fulan,kathrein,ipbox,topfield,fortis_hdbox,octagon,atevio,adb_box,whitebox,vip,homecast,vuplus,azbox,technomate,coolstream,hypercube,venton,xp1000,odin,ixuss,iqonios,e3hd,ebox5000,wetek,edision,hd,gi,xpeedc,formuler,miraclebox,spycat,xsarius,zgemma],
++	[  --with-boxtype          valid values: generic,dgs,gigablue,dreambox,xtrend,fulan,kathrein,ipbox,topfield,fortis_hdbox,octagon,atevio,hs7,adb_box,whitebox,vip,homecast,vuplus,azbox,technomate,coolstream,hypercube,venton,xp1000,odin,ixuss,iqonios,e3hd,ebox5000,wetek,edision,hd,gi,xpeedc,formuler,miraclebox,spycat,xsarius,zgemma],
+ 	[case "${withval}" in
+-		generic|dgs|gigablue|dreambox|xtrend|fulan|kathrein|ipbox|hl101|topfield|fortis_hdbox|octagon|atevio|adb_box|whitebox|vip|homecast|vuplus|azbox|technomate|coolstream|hypercube|venton|xp1000|odin|ixuss|iqonios|e3hd|ebox5000|wetek|edision|hd|gi|xpeedc|formuler|miraclebox|spycat|xsarius|zgemma)
++		generic|dgs|gigablue|dreambox|xtrend|fulan|kathrein|ipbox|hl101|topfield|fortis_hdbox|octagon|atevio|hs7|adb_box|whitebox|vip|homecast|vuplus|azbox|technomate|coolstream|hypercube|venton|xp1000|odin|ixuss|iqonios|e3hd|ebox5000|wetek|edision|hd|gi|xpeedc|formuler|miraclebox|spycat|xsarius|zgemma)
+ 			BOXTYPE="$withval"
+ 			;;
+ 		cu*)
+@@ -240,6 +240,10 @@
+ 			;;
+ 		spa*)
+ 			BOXTYPE="fulan"
++			BOXMODEL="$withval"
++			;;
++		tf*)
++			BOXTYPE="topfield"
+ 			BOXMODEL="$withval"
+ 			;;
+ 		uf*)
+@@ -260,6 +264,10 @@
+ 			;;
+ 		oct*)
+ 			BOXTYPE="octagon"
++			BOXMODEL="$withval"
++			;;
++		hs*)
++			BOXTYPE="fortis"
+ 			BOXMODEL="$withval"
+ 			;;
+ 		vu*)
+@@ -356,11 +364,13 @@
+ 				valid for dreambox: dm500, dm500plus, dm600pvr, dm56x0, dm7000, dm7020, dm7025, dm500hd, dm7020hd, dm8000, dm800, dm800se
+ 				valid for xtrend: et4x00,et5x00,et6x00,et7x00, et8000,et8500,et9x00, et10000
+ 				valid for fulan: spark, spark7162
++				valid for topfield: tf7700
+ 				valid for kathrein: ufs910, ufs922, ufs912, ufs913, ufc960
+ 				valid for ipbox: ipbox55, ipbox99, ipbox9900
+ 				valid for ipbox: hl101
+ 				valid for atevio: atevio700,atevio7000,atevio7500,atevio7600
+ 				valid for octagon: octagon1008
++				valid for fortis: hs7110,hs7420,hs7810a,hs7119,hs7429,hs7819
+ 				valid for vuplus: vusolo,vuduo,vuuno,vuultimo,vuduo2,vusolo2,vusolo4k,vusolose,vuzero
+ 				valid for azbox: azboxhd,azboxme,azboxminime
+ 				valid for technomate: tmtwin,tm2t,tmsingle,tmnano
+@@ -414,6 +424,13 @@
+ 				AC_MSG_ERROR([unknown model $withval for boxtype $BOXTYPE])
+ 			fi
+ 			;;
++		tf7700)
++			if test "$BOXTYPE" = "topfield"; then
++				BOXMODEL="$withval"
++			else
++				AC_MSG_ERROR([unknown model $withval for boxtype $BOXTYPE])
++			fi
++			;;
+ 		ufs910|ufs912|ufs913|ufs922|ufc960)
+ 			if test "$BOXTYPE" = "kathrein"; then
+ 				BOXMODEL="$withval"
+@@ -449,6 +466,13 @@
+ 				AC_MSG_ERROR([unknown model $withval for boxtype $BOXTYPE])
+ 			fi
+ 			;;
++		hs7110|hs7420|hs7810a|hs7119|hs7429|hs7819)
++			if test "$BOXTYPE" = "fortis"; then
++				BOXMODEL="$withval"
++			else
++				AC_MSG_ERROR([unknown model $withval for boxtype $BOXTYPE])
++			fi
++			;;
+		vusolo2|vuduo2|vusolo|vuduo|vuuno|vuultimo|vusolose|vusolo4k|vuzero)
+ 			if test "$BOXTYPE" = "vuplus"; then
+ 				BOXMODEL="$withval"
+@@ -614,7 +638,7 @@
+ 			AC_MSG_ERROR([unsupported value $withval for --with-boxmodel])
+ 			;;
+ 	esac],
+-	[if test "$BOXTYPE" = "dgs" -o "$BOXTYPE" = "gigablue" -o "$BOXTYPE" = "dreambox" -o "$BOXTYPE" = "xtrend" -o "$BOXTYPE" = "fulan" -o "$BOXTYPE" = "kathrein" -o "$BOXTYPE" = "ipbox" -o "$BOXTYPE" = "atevio" -o "$BOXTYPE" = "octagon" -o "$BOXTYPE" = "vuplus" -o "$BOXTYPE" = "technomate" -o "$BOXTYPE" = "venton" -o "$BOXTYPE" = "ixuss" -o "$BOXTYPE" = "iqonios" -o "$BOXTYPE" = "odin" -o "$BOXTYPE" = "edision" -o "$BOXTYPE" = "hd" -o "$BOXTYPE" = "gi" -o "$BOXTYPE" = "formuler" -o "$BOXTYPE" = "miraclebox" -o "$BOXTYPE" = "spycat" -o "$BOXTYPE" = "xsarius" -o "$BOXTYPE" = "zgemma" && test -z "$BOXMODEL"; then
++	[if test "$BOXTYPE" = "dgs" -o "$BOXTYPE" = "gigablue" -o "$BOXTYPE" = "dreambox" -o "$BOXTYPE" = "xtrend" -o "$BOXTYPE" = "fulan" -o "$BOXTYPE" = "kathrein" -o "$BOXTYPE" = "ipbox" -o "$BOXTYPE" = "atevio" -o "$BOXTYPE" = "octagon" -o "$BOXTYPE" = "hs7" -o "$BOXTYPE" = "vuplus" -o "$BOXTYPE" = "technomate" -o "$BOXTYPE" = "venton" -o "$BOXTYPE" = "ixuss" -o "$BOXTYPE" = "iqonios" -o "$BOXTYPE" = "odin" -o "$BOXTYPE" = "edision" -o "$BOXTYPE" = "hd" -o "$BOXTYPE" = "gi" -o "$BOXTYPE" = "formuler" -o "$BOXTYPE" = "miraclebox" -o "$BOXTYPE" = "spycat" -o "$BOXTYPE" = "xsarius" -o "$BOXTYPE" = "zgemma" && test -z "$BOXMODEL"; then
+ 		AC_MSG_ERROR([this boxtype $BOXTYPE needs --with-boxmodel])
+ 	fi])
+ 
+@@ -630,7 +654,7 @@
+ AM_CONDITIONAL(BOXTYPE_KATHREIN, test "$BOXTYPE" = "kathrein")
+ AM_CONDITIONAL(BOXTYPE_IPBOX, test "$BOXTYPE" = "ipbox")
+ AM_CONDITIONAL(BOXTYPE_HL101, test "$BOXTYPE" = "hl101")
+-AM_CONDITIONAL(BOXTYPE_TOPFIELD, test "$BOXTYPE" = "toptfield")
++AM_CONDITIONAL(BOXTYPE_TOPFIELD, test "$BOXTYPE" = "topfield")
+ AM_CONDITIONAL(BOXTYPE_FORTIS_HDBOX, test "$BOXTYPE" = "fortis_hdbox")
+ AM_CONDITIONAL(BOXTYPE_OCTAGON, test "$BOXTYPE" = "octagon")
+ AM_CONDITIONAL(BOXTYPE_ATEVIO, test "$BOXTYPE" = "atevio")
+@@ -702,6 +726,8 @@
+ AM_CONDITIONAL(BOXMODEL_SPARK,test "$BOXMODEL" = "spark")
+ AM_CONDITIONAL(BOXMODEL_SPARK7162,test "$BOXMODEL" = "spark7162")
+ 
++AM_CONDITIONAL(BOXMODEL_TF7700, test "$BOXMODEL" = "tf7700")
++
+ AM_CONDITIONAL(BOXMODEL_UFS910, test "$BOXMODEL" = "ufs910")
+ AM_CONDITIONAL(BOXMODEL_UFS912, test "$BOXMODEL" = "ufs912")
+ AM_CONDITIONAL(BOXMODEL_UFS913, test "$BOXMODEL" = "ufs913")
+@@ -720,6 +746,13 @@
+ AM_CONDITIONAL(BOXMODEL_ATEVIO7600, test "$BOXMODEL" = "atevio7600")
+ 
+ AM_CONDITIONAL(BOXMODEL_OCTAGON_1008, test "$BOXMODEL" = "octagon1008")
++
++AM_CONDITIONAL(BOXMODEL_HS7110, test "$BOXMODEL" = "hs7110")
++AM_CONDITIONAL(BOXMODEL_HS7420, test "$BOXMODEL" = "hs7420")
++AM_CONDITIONAL(BOXMODEL_HS7810A, test "$BOXMODEL" = "hs7810a")
++AM_CONDITIONAL(BOXMODEL_HS7119, test "$BOXMODEL" = "hs7119")
++AM_CONDITIONAL(BOXMODEL_HS7429, test "$BOXMODEL" = "hs7429")
++AM_CONDITIONAL(BOXMODEL_HS7819, test "$BOXMODEL" = "hs7819")
+ 
+ AM_CONDITIONAL(BOXMODEL_VUSOLO2, test "$BOXMODEL" = "vusolo2")
+ AM_CONDITIONAL(BOXMODEL_VUDUO2, test "$BOXMODEL" = "vuduo2")
+@@ -812,6 +845,8 @@
+ 	AC_DEFINE(PLATFORM_XTREND, 1, [building for xtrend])
+ elif test "$BOXTYPE" = "fulan"; then
+ 	AC_DEFINE(PLATFORM_FULAN, 1, [building for fulan])
++elif test "$BOXTYPE" = "topfield"; then
++	AC_DEFINE(PLATFORM_TOPFIELD, 1, [building for topfield])
+ elif test "$BOXTYPE" = "kathrein"; then
+ 	AC_DEFINE(PLATFORM_KATHREIN, 1, [building for kathrein])
+ elif test "$BOXTYPE" = "ipbox"; then
+@@ -826,6 +861,8 @@
+ 	AC_DEFINE(PLATFORM_OCTAGON, 1, [building for octagon])
+ elif test "$BOXTYPE" = "atevio"; then
+ 	AC_DEFINE(PLATFORM_ATEVIO, 1, [building for atevio])
++elif test "$BOXTYPE" = "fortis"; then
++	AC_DEFINE(PLATFORM_FORTIS, 1, [building for fortis])
+ elif test "$BOXTYPE" = "adb_box"; then
+ 	AC_DEFINE(PLATFORM_ADB_BOX, 1, [building for adb_box])
+ elif test "$BOXTYPE" = "whitebox"; then
+@@ -951,6 +988,9 @@
+ elif test "$BOXMODEL" = "spark7162"; then
+ 	AC_DEFINE(PLATFORM_SPARK7162, 1, [building for spark 7162])
+ 
++elif test "$BOXMODEL" = "tf7700"; then
++	AC_DEFINE(PLATFORM_TF7700, 1, [building for topfield tf7700])
++
+ elif test "$BOXMODEL" = "ufs910"; then
+ 	AC_DEFINE(PLATFORM_UFS910, 1, [building for ufs910])
+ elif test "$BOXMODEL" = "ufs912"; then
+@@ -983,6 +1023,19 @@
+ 
+ elif test "$BOXMODEL" = "octagon1008"; then
+ 	AC_DEFINE(BOXMODEL_OCTAGON_1008, 1, [building for octagon1008])
++
++elif test "$BOXMODEL" = "hs7110"; then
++	AC_DEFINE(BOXMODEL_HS7110, 1, [building for hs7110])
++elif test "$BOXMODEL" = "hs7420"; then
++	AC_DEFINE(BOXMODEL_HS7420, 1, [building for hs7420])
++elif test "$BOXMODEL" = "hs7810a"; then
++	AC_DEFINE(BOXMODEL_HS7810A, 1, [building for hs7810a])
++elif test "$BOXMODEL" = "hs7119"; then
++	AC_DEFINE(BOXMODEL_HS7119, 1, [building for hs7119])
++elif test "$BOXMODEL" = "hs7429"; then
++	AC_DEFINE(BOXMODEL_HS7429, 1, [building for hs7429])
++elif test "$BOXMODEL" = "hs7819"; then
++	AC_DEFINE(BOXMODEL_HS7819, 1, [building for hs7819])
+ 
+ elif test "$BOXMODEL" = "vusolo2"; then
+ 	AC_DEFINE(BOXMODEL_VUSOLO2, 1, [vuplus solo2])
+@@ -1126,4 +1179,3 @@
+ fi
+ ])
+ 
+-
+--- nhd2-exp.org/lib/libdvbsub/dvbsubtitle.cpp
++++ nhd2-exp/lib/libdvbsub/dvbsubtitle.cpp
+@@ -21,9 +21,16 @@
+ #include <libavformat/avformat.h>
+ #include <libavcodec/avcodec.h>
+ #include <libavutil/avutil.h>
++#include <libavcodec/version.h>
+ }
+ #include "driver/framebuffer.h"
+ #include "Debug.hpp"
++
++#if LIBAVCODEC_VERSION_INT <= AV_VERSION_INT(57, 1, 99)
++	#define CODEC_DVB_SUB CODEC_ID_DVB_SUBTITLE
++#else
++	#define CODEC_DVB_SUB AV_CODEC_ID_DVB_SUBTITLE
++#endif
+ 
+ // Set these to 'true' for debug output:
+ static bool DebugConverter = false;
+@@ -186,7 +193,7 @@
+ 	avcodec_register_all();
+ 
+ #if LIBAVCODEC_VERSION_INT <= AV_VERSION_INT(57, 1, 99)
+-	avcodec = avcodec_find_decoder(CODEC_ID_DVB_SUBTITLE);
++	avcodec = avcodec_find_decoder(CODEC_DVB_SUB);
+ #else
+ 	avcodec = avcodec_find_decoder(AV_CODEC_ID_DVB_SUBTITLE);
+ #endif
+--- nhd2-exp.org/src/neutrino.h
++++ nhd2-exp/src/neutrino.h
+@@ -202,13 +202,13 @@
+ 		void StartSubtitles(bool show = true);
+ 		void SelectSubtitles();
+ 		
+-		// 0 - restart 
+-		// 1 - halt
+-		// 2 - reboot
++		// 0 - halt
++		// 1 - reboot
++		// 2 - restart 
+ 		enum {
+-			RESTART = 0,
+-			SHUTDOWN,
+-			REBOOT
++			SHUTDOWN = 0,
++			REBOOT,
++			RESTART
+ 		};
+ 		
+ 		void ExitRun(int retcode = SHUTDOWN);
+--- nhd2-exp.org/lib/libeplayer3/container/container_ffmpeg.c
++++ nhd2-exp/lib/libeplayer3/container/container_ffmpeg.c
+@@ -146,75 +146,75 @@
+ {
+ 	switch (codec->codec_id)
+ 	{
+-		case CODEC_ID_MPEG1VIDEO:
++		case AV_CODEC_ID_MPEG1VIDEO:
+ 			return "V_MPEG1";
+ 			
+-		case CODEC_ID_MPEG2VIDEO:
++		case AV_CODEC_ID_MPEG2VIDEO:
+ 			return "V_MPEG2";
+ 			
+-		case CODEC_ID_H263:
+-		case CODEC_ID_H263P:
+-		case CODEC_ID_H263I:
++		case AV_CODEC_ID_H263:
++		case AV_CODEC_ID_H263P:
++		case AV_CODEC_ID_H263I:
+ 			return "V_H263";
+ 			
+-		case CODEC_ID_FLV1:
++		case AV_CODEC_ID_FLV1:
+ 			return "V_FLV";
+ 			
+-		case CODEC_ID_VP5:
+-		case CODEC_ID_VP6:
+-		case CODEC_ID_VP6F:
++		case AV_CODEC_ID_VP5:
++		case AV_CODEC_ID_VP6:
++		case AV_CODEC_ID_VP6F:
+ 			return "V_VP6";
+ 			
+-		case CODEC_ID_RV10:
+-		case CODEC_ID_RV20:
++		case AV_CODEC_ID_RV10:
++		case AV_CODEC_ID_RV20:
+ 			return "V_RMV";
+ 			
+-		case CODEC_ID_MPEG4:
++		case AV_CODEC_ID_MPEG4:
+ #if LIBAVCODEC_VERSION_MAJOR < 53
+-		case CODEC_ID_XVID:
+-#endif
+-		case CODEC_ID_MSMPEG4V1:
+-		case CODEC_ID_MSMPEG4V2:
+-		case CODEC_ID_MSMPEG4V3:
++		case AV_CODEC_ID_XVID:
++#endif
++		case AV_CODEC_ID_MSMPEG4V1:
++		case AV_CODEC_ID_MSMPEG4V2:
++		case AV_CODEC_ID_MSMPEG4V3:
+ 			return "V_MSCOMP";
+ 			
+-		case CODEC_ID_WMV1:
++		case AV_CODEC_ID_WMV1:
+ 			*version = 1;
+ 			return "V_WMV";
+ 			
+-		case CODEC_ID_WMV2:
++		case AV_CODEC_ID_WMV2:
+ 			*version = 2;
+ 			return "V_WMV";
+ 			
+-		case CODEC_ID_WMV3:
++		case AV_CODEC_ID_WMV3:
+ 			*version = 3;
+ 			return "V_WMV";
+ 			
+-		case CODEC_ID_VC1:
++		case AV_CODEC_ID_VC1:
+ 			return "V_VC1";
+ 			
+-		case CODEC_ID_H264:
++		case AV_CODEC_ID_H264:
+ #if LIBAVCODEC_VERSION_MAJOR < 54
+-		case CODEC_ID_FFH264:
++		case AV_CODEC_ID_FFH264:
+ #endif
+ 			return "V_MPEG4/ISO/AVC";
+ 		
+-		case CODEC_ID_AVS:
++		case AV_CODEC_ID_AVS:
+ 			return "V_AVS";
+ 			
+-		case CODEC_ID_MP2:
++		case AV_CODEC_ID_MP2:
+ 			return "A_MPEG/L3";
+ 			
+-		case CODEC_ID_MP3:
++		case AV_CODEC_ID_MP3:
+ 			return "A_MP3";
+ 			
+-		case CODEC_ID_AAC:
++		case AV_CODEC_ID_AAC:
+ 			return "A_AAC";
+ 			
+-		case CODEC_ID_AC3:
++		case AV_CODEC_ID_AC3:
+ 			return "A_AC3";
+ 			
+-		case CODEC_ID_DTS:
++		case AV_CODEC_ID_DTS:
+ 			return "A_DTS";
+ 		
+ //#if LIBAVCODEC_VERSION_INT > AV_VERSION_INT(52, 72, 2)			
+@@ -222,46 +222,46 @@
+ //			return "A_EAC3";
+ //#endif			
+ 			
+-		case CODEC_ID_WMAV1:
+-		case CODEC_ID_WMAV2:
++		case AV_CODEC_ID_WMAV1:
++		case AV_CODEC_ID_WMAV2:
+ 		case 86056: //CODEC_ID_WMAPRO
+ 			return "A_WMA";
+ 			
+-		case CODEC_ID_MLP:
++		case AV_CODEC_ID_MLP:
+ 			return "A_MLP";
+ 			
+-		case CODEC_ID_RA_144:
++		case AV_CODEC_ID_RA_144:
+ 			return "A_RMA";
+ 			
+-		case CODEC_ID_RA_288:
++		case AV_CODEC_ID_RA_288:
+ 			return "A_RMA";
+ 			
+-		case CODEC_ID_VORBIS:
++		case AV_CODEC_ID_VORBIS:
+ 			return "A_IPCM"; //return "A_VORBIS";
+ 			
+-		case CODEC_ID_FLAC: //86030
++		case AV_CODEC_ID_FLAC: //86030
+ 			return "A_IPCM"; //return "A_FLAC";
+ 			
+ 		/* subtitle */
+-		case CODEC_ID_SSA:
++		case AV_CODEC_ID_SSA:
+ 			return "S_TEXT/ASS"; /* Hellmaster1024: seems to be ASS instead of SSA */
+ 			
+-		case CODEC_ID_TEXT: /* Hellmaster1024: i dont have most of this, but lets hope it is normal text :-) */
+-		case CODEC_ID_DVD_SUBTITLE:
+-		case CODEC_ID_DVB_SUBTITLE:
+-		case CODEC_ID_XSUB:
+-		case CODEC_ID_MOV_TEXT:
++		case AV_CODEC_ID_TEXT: /* Hellmaster1024: i dont have most of this, but lets hope it is normal text :-) */
++		case AV_CODEC_ID_DVD_SUBTITLE:
++		case AV_CODEC_ID_DVB_SUBTITLE:
++		case AV_CODEC_ID_XSUB:
++		case AV_CODEC_ID_MOV_TEXT:
+ #if LIBAVCODEC_VERSION_INT > AV_VERSION_INT(56, 72, 2)      
+-		case CODEC_ID_HDMV_PGS_SUBTITLE:
++		case AV_CODEC_ID_HDMV_PGS_SUBTITLE:
+ #endif
+ 
+ #if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(52,38,1)
+-		case CODEC_ID_DVB_TELETEXT:
++		case AV_CODEC_ID_DVB_TELETEXT:
+ #endif      
+ 			return "S_TEXT/SRT"; /* fixme */
+ 		
+ #if LIBAVCODEC_VERSION_INT > AV_VERSION_INT(52, 72, 2)
+-		case CODEC_ID_SRT:
++		case AV_CODEC_ID_SRT:
+ 			return "S_TEXT/SRT"; /* fixme */
+ #endif 
+ 
+@@ -626,7 +626,9 @@
+ 						{
+ 							int decoded_data_size = samples_size;
+ 
+-#if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(52, 64, 0)
++#if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(57, 1, 99)
++							bytesDone = avcodec_decode_audio4(( (AVStream*) audioTrack->stream)->codec, (short *)(samples), &decoded_data_size, &avpkt);
++#elif LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(52, 64, 0)
+ 							bytesDone = avcodec_decode_audio3(( (AVStream*) audioTrack->stream)->codec, (short *)(samples), &decoded_data_size, &avpkt);
+ #else
+ 							bytesDone = avcodec_decode_audio2(( (AVStream*) audioTrack->stream)->codec, (short *)(samples), &decoded_data_size, avpkt.data, avpkt.size);
+@@ -735,7 +737,7 @@
+ 						duration=((float)packet.duration)/1000.0;
+ 					else if(packet.convergence_duration != 0 && packet.convergence_duration != AV_NOPTS_VALUE )
+ 						duration=((float)packet.convergence_duration)/1000.0;		    
+-					else if(((AVStream*)subtitleTrack->stream)->codec->codec_id == CODEC_ID_SSA)
++					else if(((AVStream*)subtitleTrack->stream)->codec->codec_id == AV_CODEC_ID_SSA)
+ 					{
+ 						/*Hellmaster1024 if the duration is not stored in packet.duration or
+ 						  packet.convergence_duration we need to calculate it any other way, for SSA it is stored in
+@@ -793,7 +795,7 @@
+ 							}
+ 						}
+ 						else
+-						if(((AVStream*)subtitleTrack->stream)->codec->codec_id == CODEC_ID_SSA)
++						if(((AVStream*)subtitleTrack->stream)->codec->codec_id == AV_CODEC_ID_SSA)
+ 						{
+ 							SubtitleData_t data;
+ 
+@@ -1123,7 +1125,7 @@
+ 						printf("AVCODEC__INIT__FAILED\n");
+ 				}
+ 				// aac
+-				else if(stream->codec->codec_id == CODEC_ID_AAC) 
++				else if(stream->codec->codec_id == AV_CODEC_ID_AAC) 
+ 				{
+ 					ffmpeg_printf(10,"Create AAC ExtraData\n");
+ 					ffmpeg_printf(10,"stream->codec->extradata_size %d\n", stream->codec->extradata_size);
+@@ -1175,7 +1177,7 @@
+ 					track.have_aacheader = 1;
+ 				} 
+ 				// wma
+-				else if(stream->codec->codec_id == CODEC_ID_WMAV1 || stream->codec->codec_id == CODEC_ID_WMAV2 || 86056 ) //CODEC_ID_WMAPRO) //if (stream->codec->extradata_size > 0)
++				else if(stream->codec->codec_id == AV_CODEC_ID_WMAV1 || stream->codec->codec_id == AV_CODEC_ID_WMAV2 || 86056 ) //CODEC_ID_WMAPRO) //if (stream->codec->extradata_size > 0)
+ 				{
+ 					ffmpeg_printf(10,"Create WMA ExtraData\n");
+ 					track.aacbuflen = 104 + stream->codec->extradata_size;
+@@ -1221,10 +1223,10 @@
+ 						case 86056/*CODEC_ID_WMAPRO*/:
+ 							codec_id = WMA_VERSION_9_PRO;
+ 							break;
+-						case CODEC_ID_WMAV2:
++						case AV_CODEC_ID_WMAV2:
+ 							codec_id = WMA_VERSION_2_9 ;
+ 							break;
+-						case CODEC_ID_WMAV1:
++						case AV_CODEC_ID_WMAV1:
+ 						default:
+ 							codec_id = WMA_VERSION_1;
+ 							break;
+--- nhd2-exp.org/src/driver/vfd.h
++++ nhd2-exp/src/driver/vfd.h
+@@ -179,7 +178,137 @@
+ } vfd_icon;
+ #endif //ufs910, ufs913
+ 
++#if defined(PLATFORM_FORTIS_HDBOX)
++typedef enum
++{
++	HDBOX_ICON_USB = 0x10, // 16
++	HDBOX_ICON_STANDBY,    // 17
++	HDBOX_ICON_SAT,        // 18
++	HDBOX_ICON_REC,        // 19
++	HDBOX_ICON_TIMESHIFT,  // 20
++	HDBOX_ICON_TIMER,      // 21
++	HDBOX_ICON_HD,         // 22
++	HDBOX_ICON_SCRAMBLED,  // 23
++	HDBOX_ICON_DOLBY,      // 24
++	HDBOX_ICON_MUTE,       // 25
++	HDBOX_ICON_TUNER1,     // 26
++	HDBOX_ICON_TUNER2,     // 27
++	HDBOX_ICON_MP3,        // 28
++	HDBOX_ICON_REPEAT,     // 29
++	HDBOX_ICON_PLAY,       // 30
++	HDBOX_ICON_TER,        // 31
++	HDBOX_ICON_FILE,       // 32
++	HDBOX_ICON_480i,       // 33
++	HDBOX_ICON_480p,       // 34
++	HDBOX_ICON_576i,       // 35
++	HDBOX_ICON_576p,       // 36
++	HDBOX_ICON_720p,       // 37
++	HDBOX_ICON_1080i,      // 38
++	HDBOX_ICON_1080p,      // 39
++	HDBOX_ICON_Circ0,      // 40
++	HDBOX_ICON_Circ1,      // 41
++	HDBOX_ICON_Circ2,      // 42
++	HDBOX_ICON_Circ3,      // 43
++	HDBOX_ICON_Circ4,      // 44
++	HDBOX_ICON_Circ5,      // 45
++	HDBOX_ICON_Circ6,      // 46
++	HDBOX_ICON_Circ7,      // 47
++	HDBOX_ICON_Circ8,      // 48
++	HDBOX_ICON_COLON1,     // 49
++	HDBOX_ICON_COLON2,     // 50
++	HDBOX_ICON_COLON3,     // 51
++	HDBOX_ICON_COLON4,     // 52
++	HDBOX_ICON_TV,         // 53
++	HDBOX_ICON_RADIO,      // 54
++	ICON_ALL               // 55 new nuvoton will set/clear all icons with this number
++} fortis_hdbox_vfd_icon;
++
++typedef enum
++{
++	VFD_ICON_MUTE		= HDBOX_ICON_MUTE,
++	VFD_ICON_DOLBY		= HDBOX_ICON_DOLBY,
++	VFD_ICON_POWER		= HDBOX_ICON_STANDBY,
++	VFD_ICON_TIMESHIFT	= HDBOX_ICON_TIMESHIFT,
++	VFD_ICON_TV		= HDBOX_ICON_TV,
++	VFD_ICON_RADIO		= HDBOX_ICON_RADIO,
++	VFD_ICON_HD		= HDBOX_ICON_HD,
++	VFD_ICON_1080P		= HDBOX_ICON_1080p,
++	VFD_ICON_1080I		= HDBOX_ICON_1080i,
++	VFD_ICON_720P		= HDBOX_ICON_720p,
++	VFD_ICON_480P		= HDBOX_ICON_480p,
++	VFD_ICON_480I		= HDBOX_ICON_480i,
++	VFD_ICON_USB		= HDBOX_ICON_USB,
++	VFD_ICON_MP3		= HDBOX_ICON_MP3,
++	VFD_ICON_PLAY		= HDBOX_ICON_PLAY,
++	VFD_ICON_PAUSE		= HDBOX_ICON_TER,
++	VFD_ICON_LOCK 		= HDBOX_ICON_SCRAMBLED,
++	VFD_ICON_CLOCK		= HDBOX_ICON_TIMER,
++	VFD_ICON_STANDBY	= HDBOX_ICON_STANDBY	
++} vfd_icon;
++#endif //Fortis HDbox
++
++#if defined(PLATFORM_OCTAGON1008)
++typedef enum //HS9510 icon numbers and their names
++{
++	HS9510_ICON_DOLBY = 0x10, // 16
++	HS9510_ICON_DTS,          // 17
++	HS9510_ICON_VIDEO,        // 18
++	HS9510_ICON_AUDIO,        // 19
++	HS9510_ICON_LINK,         // 20
++	HS9510_ICON_HDD,          // 21
++	HS9510_ICON_DISC,         // 22
++	HS9510_ICON_DVB,          // 23
++	HS9510_ICON_DVD,          // 24
++	HS9510_ICON_TIME,         // 25
++	HS9510_ICON_TIMER,        // 26
++	HS9510_ICON_CARD,         // 27
++	HS9510_ICON_1,            // 28
++	HS9510_ICON_2,            // 29
++	HS9510_ICON_KEY,          // 30
++	HS9510_ICON_16_9,         // 31
++	HS9510_ICON_USB,          // 32
++	HS9510_ICON_CRYPTED,      // 33
++	HS9510_ICON_PLAY,         // 34
++	HS9510_ICON_REWIND,       // 35
++	HS9510_ICON_PAUSE,        // 36
++	HS9510_ICON_FF,           // 37
++	HS9510_ICON_REC,          // 38
++	HS9510_ICON_ARROW,        // 39
++	HS9510_ICON_COLON1,       // 40
++	HS9510_ICON_COLON2,       // 41
++	HS9510_ICON_COLON3,       // 42
++	ICON_ALL                  // 43 new novoton will set/clear all icons with this number
++} octagon1008_vfd_icon;
++
++typedef enum
++{
++	VFD_ICON_MUTE		= HS9510_ICON_TIME,
++	VFD_ICON_DOLBY		= HS9510_ICON_DOLBY,
++	VFD_ICON_POWER		= 0,
++	VFD_ICON_TIMESHIFT	= HS9510_ICON_REC,
++	VFD_ICON_TV		= HS9510_ICON_VIDEO,
++	VFD_ICON_RADIO		= HS9510_ICON_AUDIO,
++	VFD_ICON_HD		= HS9510_ICON_16_9,
++	VFD_ICON_1080P		= 0,
++	VFD_ICON_1080I		= 0,
++	VFD_ICON_720P		= 0,
++	VFD_ICON_480P		= 0,
++	VFD_ICON_480I		= 0,
++	VFD_ICON_USB		= HS9510_ICON_USB,
++	VFD_ICON_MP3		= 0,
++	VFD_ICON_PLAY		= HS9510_ICON_PLAY,
++	VFD_ICON_PAUSE		= HS9510_ICON_PAUSE,
++	VFD_ICON_LOCK 		= HS9510_ICON_CRYPTED,
++	VFD_ICON_CLOCK		= HS9510_ICON_TIMER,
++	VFD_ICON_STANDBY	= 0	
++} vfd_icon;
++#endif //Octagon1008
++
+-#if !defined(PLATFORM_KATHREIN) && !defined(PLATFORM_SPARK7162) && !defined (PLATFORM_COOLSTREAM)
++#if !defined(PLATFORM_KATHREIN) \
++ && !defined(PLATFORM_SPARK7162) \
++ && !defined(PLATFORM_FORTIS_HDBOX) \
++ && !defined(PLATFORM_OCTAGON1008) \
++ && !defined (PLATFORM_COOLSTREAM)
+ // duckbox
+ // token from micom
+ enum {
+@@ -236,7 +365,7 @@
+ 	VFD_ICON_PAUSE		= ICON_PAUSE,
+ 	VFD_ICON_LOCK 		= ICON_SCRAMBLED
+ } vfd_icon;
+-#endif  //common
++#endif
+ 
+ #if defined (__sh__)
+ #define VFDBRIGHTNESS         0xc0425a03
+@@ -263,7 +392,8 @@
+ #define VFDSETTIMEMODE        0xc0425b03
+ #define VFDDISPLAYCLR	      0xc0425b00
+ 
+-#if defined(PLATFORM_SPARK7162)
++#if defined(PLATFORM_SPARK7162) \
++ || defined (PLATFORM_SPARK)
+ /* structs are needed for sending icons etc. to aotom 				*/
+ struct set_mode_s {
+ 	int compat; /* 0 = compatibility mode to vfd driver; 1 = nuvoton mode */
+@@ -308,31 +438,34 @@
+ 		struct set_time_s time;
+ 	} u;
+ };
+-#elif defined (PLATFORM_SPARK)
+-/* ugly: this is copied from frontcontroller utility, but the driver
+- * does not seem to provide userspace headers... :-( */
+-
+-
+-/* this setups the mode temporarily (for one ioctl)
+- * to the desired mode. currently the "normal" mode
+- * is the compatible vfd mode
+- */
+-struct set_mode_s {
+-	int compat; /* 0 = compatibility mode to vfd driver; 1 = nuvoton mode */
+-};
+-
+-struct set_brightness_s {
++
++#elif defined(PLATFORM_FORTIS_HDBOX) \
++   || defined(PLATFORM_OCTAGON1008) \
++   || defined(PLATFORM_HS7110) \
++   || defined(PLATFORM_HS7810A) \
++   || defined(PLATFORM_HS7119) \
++   || defined(PLATFORM_HS7819)
++/* structs are needed for sending icons etc. to nuvoton */
++struct set_brightness_s
++{
+ 	int level;
+ };
+ 
+-struct set_icon_s {
++struct set_icon_s
++{
+ 	int icon_nr;
+ 	int on;
+ };
+ 
+-struct set_led_s {
++struct set_led_s
++{
+ 	int led_nr;
+-	int on;
++	int level;
++};
++
++struct set_light_s
++{
++	int onoff;
+ };
+ 
+ /* time must be given as follows:
+@@ -341,36 +474,46 @@
+  * time[3] = min
+  * time[4] = sec
+  */
+-struct set_standby_s {
++struct set_standby_s
++{
+ 	char time[5];
+ };
+ 
+-struct set_time_s {
++struct set_time_s
++{
+ 	char time[5];
+ };
+ 
+-struct aotom_ioctl_data {
++struct set_timeformat_s
++{
++	int format;
++};
++
++/* This will set the mode temporarily (for one ioctl)
++ * to the desired mode. Currently the "normal" mode
++ * is the compatible vfd mode
++ */
++struct set_mode_s
++{
++	int compat; /* 0 = compatibility mode to vfd driver; 1 = nuvoton mode */
++};
++
++
++struct nuvoton_ioctl_data
++{
+ 	union
+ 	{
+ 		struct set_icon_s icon;
+ 		struct set_led_s led;
+ 		struct set_brightness_s brightness;
++		struct set_light_s light;
+ 		struct set_mode_s mode;
+ 		struct set_standby_s standby;
+ 		struct set_time_s time;
++		struct set_timeformat_s timeformat;
+ 	} u;
+ };
+-
+-/* a strange way of defining ioctls... but anyway... */
+-#define VFDGETTIME      0xc0425afa
+-#define VFDSETTIME      0xc0425afb
+-#define VFDSTANDBY      0xc0425afc
+-#define VFDSETLED       0xc0425afe
+-#define VFDDISPLAYCHARS 0xc0425a00
+-#define VFDDISPLAYCLR   0xc0425b00
+-#define VFDSETMODE      0xc0425aff
+-#endif //Spark7162
+-
++#endif
+ 
+ struct vfd_ioctl_data {
+ 	unsigned char start_address;
+--- nhd2-exp.org/src/nhttpd/tuxboxapi/neutrinoyparser.cpp
++++ nhd2-exp/src/nhttpd/tuxboxapi/neutrinoyparser.cpp
+@@ -681,6 +681,18 @@
+ 	return "atevio7500";
+ #elif defined (BOXMODEL_ATEVIO7600)
+ 	return "atevio7600";
++#elif defined (BOXMODEL_FORTIS_HDBOX)
++	return "fortis_hdbox";
++#elif defined (BOXMODEL_OCTAGON1008)
++	return "octagon1008";
++#elif defined (BOXMODEL_HS7110)
++	return "hs7110";
++#elif defined (BOXMODEL_HS7810a)
++	return "hs7810a";
++#elif defined (BOXMODEL_HS7119)
++	return "hs7119";
++#elif defined (BOXMODEL_HS7819)
++	return "hs7819";
+ #elif defined (BOXMODEL_AZBOXHD)
+ 	return "azboxhd";
+ #elif defined (BOXMODEL_AZBOXME)
+--- nhd2-exp.org/src/driver/vfd.cpp
++++ nhd2-exp/src/driver/vfd.cpp
+@@ -47,15 +47,28 @@
+ 
+ 
+ #if defined (__sh__)
+-#if defined (PLATFORM_SPARK7162)
++  #if defined (PLATFORM_SPARK7162)
+ static struct aotom_ioctl_data aotom_data;
+-#endif
+-
+-#if defined (PLATFORM_KATHREIN) || defined (PLATFORM_SPARK7162)
++  #elif defined (PLATFORM_FORTIS_HDBOX) \
++     || defined (PLATFORM_OCTAGON1008) \
++     || defined (PLATFORM_ATEVIO7500) \
++     || defined (PLATFORM_HS7110) \
++     || defined (PLATFORM_HS7420) \
++     || defined (PLATFORM_HS7810A) \
++     || defined (PLATFORM_HS7119) \
++     || defined (PLATFORM_HS7429) \
++     || defined (PLATFORM_HS7819)
++static struct nuvoton_ioctl_data nuvoton_data;
++  #endif
++
++  #if defined (PLATFORM_KATHREIN) \
++   || defined (PLATFORM_SPARK7162) \
++   || defined (PLATFORM_FORTIS_HDBOX) \
++   || defined (PLATFORM_OCTAGON1008)
+ static bool usb_icon = false;
+ static bool timer_icon = false;
+ static bool hdd_icon = false;
+-#endif
++  #endif
+ 
+ //konfetti: let us share the device with evremote and fp_control
+ //it does currently not support more than one user (see e.g. micom)
+@@ -69,9 +82,11 @@
+ 		if(fd < 0)
+ 		{
+ 			printf("failed to open vfd\n");
++#if defined (PLATFORM_TF7700)
+ 			fd = open("/dev/fplarge", O_RDWR);
+ 			if (fd < 0)
+ 			    printf("failed to open fplarge\n");
++#endif
+ 		}
+ 		else
+ 			blocked = true;
+@@ -88,7 +103,7 @@
+ 	
+ 	fd = -1;
+ }
+-#endif
++#endif //__sh__
+ 
+ // default: has_lcd:1, is4digits:0, has_led:0
+ // constructor
+@@ -204,6 +219,9 @@
+ 	else
+ 		setPower(1);
+ #endif	
++#if defined (PLATFORM_OCTAGON1008)  
++			ShowIcon(HS9510_ICON_COLON2, false);
++#endif
+ }
+ 
+ void * CVFD::TimeThread(void *)
+@@ -339,12 +357,18 @@
+ 				minute = t->tm_min;
+ #if defined (PLATFORM_KATHREIN)							/* time and date at kathrein because 16 character vfd	*/
+ 				strftime(timestr, 20, "%H:%M - %d.%m.%y", t);
+-#elif !defined(PLATFORM_SPARK7162) && !defined (PLATFORM_KATHREIN)		/* no time at spark7162 because clock integrated	*/
++#elif defined (PLATFORM_OCTAGON1008)						/* no colon on octagon1008: it is an icon */
++				ShowIcon(HS9510_ICON_COLON2, true);
++ 				strftime(timestr, 4, "%H%M", t);
++#elif defined (PLATFORM_HS7810A) || defined (PLATFORM_HS7119) || defined (PLATFORM_HS7819)	/* do not scroll on these models */
++ 				strftime(timestr, 5, "%H:%M", t);
++
++#elif !defined(PLATFORM_SPARK7162)		/* no time at spark7162 because clock integrated	*/
+  				strftime(timestr, 20, "%H:%M", t);
+ #endif				
+ 				ShowText(timestr);
+ 			}
+-		} 
++		}
+ 	}
+ 
+ 	if (CNeutrinoApp::getInstance()->recordingstatus) 
+@@ -405,22 +429,42 @@
+ 		case AUDIO_MODE_PLAY:
+ 			ShowIcon(VFD_ICON_PLAY, true);
+ 			ShowIcon(VFD_ICON_PAUSE, false);
++#if defined (PLATFORM_OCTAGON1008)
++			ShowIcon(HS9510_ICON_REWIND, false);
++			ShowIcon(HS9510_ICON_FF, false);
++#endif
+ 			break;
+ 			
+ 		case AUDIO_MODE_STOP:
+ 			ShowIcon(VFD_ICON_PLAY, false);
+ 			ShowIcon(VFD_ICON_PAUSE, false);
++#if defined (PLATFORM_OCTAGON1008)
++			ShowIcon(HS9510_ICON_REWIND, false);
++			ShowIcon(HS9510_ICON_FF, false);
++#endif
+ 			break;
+ 			
+ 		case AUDIO_MODE_PAUSE:
+ 			ShowIcon(VFD_ICON_PLAY, false);
+ 			ShowIcon(VFD_ICON_PAUSE, true);
++#if defined (PLATFORM_OCTAGON1008)
++			ShowIcon(HS9510_ICON_REWIND, false);
++			ShowIcon(HS9510_ICON_FF, false);
++#endif
+ 			break;
+ 			
+ 		case AUDIO_MODE_FF:
++#if defined (PLATFORM_OCTAGON1008)
++			ShowIcon(HS9510_ICON_REWIND, false);
++			ShowIcon(HS9510_ICON_FF, true);
++#endif
+ 			break;
+ 			
+ 		case AUDIO_MODE_REV:
++#if defined (PLATFORM_OCTAGON1008)
++			ShowIcon(HS9510_ICON_REWIND, true);
++			ShowIcon(HS9510_ICON_FF, false);
++#endif
+ 			break;
+ 	}
+ 
+@@ -451,12 +495,15 @@
+ 			ShowIcon(VFD_ICON_MP3, false);	        // NOTE: @dbo  //ICON_MP3 and ICON_DOLBY switched in infoviewer 
+ #endif			
+ 	
+-#if defined (PLATFORM_KATHREIN)
++#if defined (PLATFORM_KATHREIN) || defined (PLATFORM_OCTAGON1008)
+ 			ShowIcon(VFD_ICON_USB, usb_icon);	
+ 			ShowIcon(VFD_ICON_HDD, hdd_icon);	
+ #elif defined(PLATFORM_SPARK7162)
+ 			ShowIcon(VFD_ICON_USB, usb_icon);	
+ 			ShowDiskLevel();
++			ShowIcon(VFD_ICON_STANDBY, false);	
++#elif defined(PLATFORM_FORTIS_HDBOX)
++			ShowIcon(VFD_ICON_USB, usb_icon);	
+ 			ShowIcon(VFD_ICON_STANDBY, false);	
+ #endif
+ 			showclock = true;
+@@ -498,7 +545,7 @@
+ 			//Clear();
+ 			/* clear all symbols */
+ 			ClearIcons();
+-#if defined(PLATFORM_SPARK7162)
++#if defined(PLATFORM_SPARK7162) || defined (PLATFORM_OCTAGON1008) || defined(PLATFORM_FORTIS_HDBOX)
+ 			ShowIcon(VFD_ICON_CLOCK, timer_icon);	
+ #endif			
+ 			showclock = false;
+@@ -507,7 +554,7 @@
+ 		case MODE_STANDBY:
+ 			ShowIcon(VFD_ICON_TV, false);
+ 			ClearIcons();
+-#if defined(PLATFORM_SPARK7162)
++#if defined(PLATFORM_SPARK7162) || defined(PLATFORM_FORTIS_HDBOX)
+ 			ShowIcon(VFD_ICON_STANDBY, true);	
+ #endif			
+ 			showclock = true;
+@@ -582,7 +629,15 @@
+ 
+ #if defined (__sh__)
+ 	struct vfd_ioctl_data data;
+-	data.start_address = power;
++
++	data.start_address = 0;
++#if defined (PLATFORM_FORTIS_HDBOX) || defined (PLATFORM_ATEVIO7500)
++	data.data[0] = 0xf2;
++	data.data[4] = power*2;
++#else
++	data.data[4] = power;
++#endif
++	data.length = 5;
+ 	
+ 	openDevice();
+ 	
+@@ -653,20 +708,21 @@
+ #elif defined (__sh__)
+ 	struct vfd_ioctl_data data;
+ 	
+-#if defined (PLATFORM_KATHREIN)		/* using this otherwise VFD of ufs910 is black and Neutrino has a segfault 		*/
++  #if defined (PLATFORM_KATHREIN)		/* using this otherwise VFD of ufs910 is black and Neutrino has a segfault 		*/
+ 	data.start_address = 0x01;
+ 	data.length = 0x0;
+ 	openDevice();	
+ 	if (ioctl(fd, VFDDISPLAYCLR, &data) <0)
+ 		perror("VFDDISPLAYCLR");
+ 	closeDevice();
+-#else
++  #else
+ 	data.start_address = 0;
++	data.length = 0;
+ 	openDevice();	
+ 	if( ioctl(fd, VFDDISPLAYWRITEONOFF, &data) < 0)
+-		perror("VFDDISPLAYCLR");
++		perror("VFDWRITEONOFF");
+ 	closeDevice();
+-#endif
++  #endif
+ #elif (PLATFORM_COOLSTREAM)
+ 	int ret = ioctl(fd, IOC_VFD_CLEAR_ALL, 0);
+ 	if(ret < 0)
+@@ -678,20 +734,32 @@
+ #endif
+ }
+ 
+-void CVFD::ClearIcons()				/* switcht all VFD Icons off		*/
++void CVFD::ClearIcons()				/* switch all VFD Icons off */
+ {
+ 	if(!has_lcd || is4digits) 
+ 		return;
+ 
+ #if defined (__sh__)	
+-#if defined(PLATFORM_SPARK7162)		/* using one command for switching off all Icons*/	 
++  #if defined(PLATFORM_SPARK7162)		/* using one command for switching off all Icons*/	 
+ 	openDevice();
+ 	aotom_data.u.icon.icon_nr = SPARK_ICON_ALL;
+ 	aotom_data.u.icon.on = 0;
+ 	if (ioctl(fd, VFDICONDISPLAYONOFF, &aotom_data) <0)
+ 		perror("VFDICONDISPLAYONOFF");
+ 	closeDevice();
+-#else
++  #elif defined(PLATFORM_FORTIS_HDBOX) || defined(PLATFORM_OCTAGON1008) /* using one command for switching off all Icons*/	 
++	struct vfd_ioctl_data data;
++	openDevice();
++
++	data.start_address = 0;
++	data.data[0] = ICON_ALL;
++	data.data[4] = 0;
++	data.length = 5;
++
++	if( ioctl(fd, VFDICONDISPLAYONOFF, &data) < 0)
++		perror("VFDICONDISPLAYONOFF");
++	closeDevice();
++  #else
+ 	int i;
+ 	struct vfd_ioctl_data data;
+ 	
+@@ -707,7 +775,7 @@
+ 	}
+ 	
+ 	closeDevice();
+-#endif
++  #endif
+ #endif
+ }
+ 
+@@ -753,7 +821,10 @@
+ 	dprintf(DEBUG_DEBUG, "CVFD::ShowIcon %s %x\n", show ? "show" : "hide", (int) icon);
+ 
+ #if defined (__sh__)
+-#if defined (PLATFORM_KATHREIN) || defined(PLATFORM_SPARK7162)
++  #if defined (PLATFORM_KATHREIN) \
++   || defined(PLATFORM_SPARK7162) \
++   || defined(PLATFORM_FORTIS_HDBOX) \
++   || defined(PLATFORM_OCTAGON1008)
+ 	switch (icon)
+ 	{
+ 		case VFD_ICON_USB:
+@@ -762,31 +833,42 @@
+ 		case VFD_ICON_CLOCK:
+ 			timer_icon = show;
+ 			break;
+-#if defined (PLATFORM_KATHREIN)
++    #if defined (PLATFORM_KATHREIN) || defined(PLATFORM_OCTAGON1008)
+ 		case VFD_ICON_HDD:
+ 			hdd_icon = show;
+ 			break;
+-#endif
++    #endif
+ 		default:
+ 			break;
+ 	}
+-#endif
++  #endif
+ 
+ 	openDevice();
+-#if defined(PLATFORM_SPARK7162)
++  #if defined(PLATFORM_SPARK7162)
+ 	aotom_data.u.icon.icon_nr = icon;
+ 	aotom_data.u.icon.on = show ? 1 : 0;
+ 	
+ 	if (ioctl(fd, VFDICONDISPLAYONOFF, &aotom_data) <0)
+ 		perror("VFDICONDISPLAYONOFF");	
++  #elif defined(PLATFORM_FORTIS_HDBOX) \
++     || defined(PLATFORM_OCTAGON1008)
++	struct vfd_ioctl_data data;
++
++	data.start_address = 0;
++	data.data[0] = icon;
++	data.data[4] = show ? 1 : 0;
++	data.length = 5;
++
++  	if( ioctl(fd, VFDICONDISPLAYONOFF, &data) < 0)
++		perror("VFDICONDISPLAYONOFF");
+ #else
+-#if defined (PLATFORM_KATHREIN)
++    #if defined (PLATFORM_KATHREIN)
+ 	if (icon == 17)				/* returning because not existing icon at ufs910 */
+ 	{
+ 		closeDevice();	
+ 		return;
+ 	}
+-#endif	
++    #endif	
+ 	struct vfd_ioctl_data data;
+ 
+ 	data.data[0] = (icon - 1) & 0x1F;
+@@ -794,7 +876,7 @@
+ 	
+ 	if( ioctl(fd, VFDICONDISPLAYONOFF, &data) < 0)
+ 		perror("VFDICONDISPLAYONOFF");
+-#endif	
++  #endif	
+ 	closeDevice();
+ #elif defined (PLATFORM_COOLSTREAM)
+ 	int ret = ioctl(fd, show ? IOC_VFD_SET_ICON : IOC_VFD_CLEAR_ICON, icon);
+@@ -811,6 +893,13 @@
+ 	dprintf(DEBUG_INFO, "CVFD::ShowText: [%s]\n", str);
+ 
+ 	int len = strlen(str);
++//	if (len > 63) {
++//		str[60] = '.';
++//		str[61] = '.';
++//		str[62] = '.';
++//		str[63] = '\0';
++//		len = 63;
++//	}
+ 	
+ 	//FIXME: some vfd treiber can not handle NULL string len
+ 	if(len == 0)
+@@ -834,19 +923,24 @@
+ 	 
+ #if defined (__sh__)	 
+ 	openDevice();
+-	
++  #if defined (PLATFORM_OCTAGON1008) || defined (PLATFORM_HS7420) || defined (PLATFORM_HS7429)
++	if(write(fd , text.c_str(), len > 8? 8 : len ) < 0)
++  #elif defined (PLATFORM_FORTIS_HDBOX) || defined (PLATFORM_ATEVIO7500)
++	if(write(fd , text.c_str(), len > 12? 12 : len ) < 0)
++//	if(write(fd , text.c_str(), len) < 0) //let driver scroll
++  #elif defined (PLATFORM_HS7810A) || defined (PLATFORM_HS7119) || defined (PLATFORM_HS7819)
++	if(write(fd , text.c_str(), len > 4? 4 : len ) < 0)
++  #else
+ 	if(write(fd , text.c_str(), len > 16? 16 : len ) < 0)
++  #endif
+ 		perror("write to vfd failed");
+-	
+ 	closeDevice();
+ #elif defined (PLATFORM_ODIN) || defined (PLATFORM_GIGABLUE)
+ 	if( write(fd, text.c_str(), len > 5? 5 : len ) < 0)
+-		perror("write to vfd failed");
+ #else
+ 	if( write(fd, text.c_str(), len > 12? 12 : len ) < 0)
++#endif
+ 		perror("write to vfd failed");
+-	
+-#endif
+ }
+ 
+ void CVFD::setFan(bool enable)
+@@ -951,7 +1045,7 @@
+ 	memcpy(&data, timebuf, 6); 
+ 	
+ 	if( ioctl(fd, VFDSETTIME, &data) < 0)  
+-		perror("VFDPWRLED");
++		perror("VFDSETTIME");
+ 	
+ 	closeDevice();
+ #endif
+

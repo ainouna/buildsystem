@@ -125,6 +125,12 @@ NEUTRINO_MP_CST_NEXT_MAX_PATCHES =
 yaud-neutrino-mp-cst-next-max: yaud-none \
 		$(D)/neutrino-mp-cst-next-max $(D)/release_neutrino
 	$(TUXBOX_YAUD_CUSTOMIZE)
+	@echo "********************************************************************************"
+	@echo -e "$(TERM_GREEN_BOLD)"
+	@echo " Build of neutrino-mp-cst-next-max for $(BOXTYPE) successfully completed."
+	@echo -e "$(TERM_NORMAL)"
+	@echo "********************************************************************************"
+	@touch $(D)/build_complete
 
 yaud-neutrino-mp-cst-next-max-plugins: yaud-none \
 		$(D)/neutrino-mp-cst-next-max $(D)/neutrino-mp-plugins $(D)/release_neutrino
@@ -154,7 +160,7 @@ $(D)/neutrino-mp-cst-next-max.config.status:
 		export PKG_CONFIG=$(PKG_CONFIG); \
 		export PKG_CONFIG_PATH=$(PKG_CONFIG_PATH); \
 		$(BUILDENV) \
-		$(SOURCE_DIR)/neutrino-mp-cst-next-max/configure --enable-silent-rules \
+		$(SOURCE_DIR)/neutrino-mp-cst-next-max/configure $(CONFIGURE_SILENT) --enable-silent-rules \
 			--build=$(BUILD) \
 			--host=$(TARGET) \
 			$(N_CONFIG_OPTS) \
@@ -247,7 +253,7 @@ $(D)/libstb-hal-cst-next.config.status: | $(NEUTRINO_DEPS)
 	cd $(LH_OBJDIR); \
 		$(SOURCE_DIR)/libstb-hal-cst-next/autogen.sh; \
 		$(BUILDENV) \
-		$(SOURCE_DIR)/libstb-hal-cst-next/configure --enable-silent-rules \
+		$(SOURCE_DIR)/libstb-hal-cst-next/configure $(CONFIGURE_SILENT) --enable-silent-rules \
 			--host=$(TARGET) \
 			--build=$(BUILD) \
 			--prefix= \
@@ -284,6 +290,12 @@ libstb-hal-cst-next-distclean:
 yaud-neutrino-mp-cst-next: yaud-none \
 		neutrino-mp-cst-next $(D)/release_neutrino
 	$(TUXBOX_YAUD_CUSTOMIZE)
+	@echo "***************************************************************************"
+	@echo -e "$(TERM_GREEN_BOLD)"
+	@echo " Build of neutrino-mp-cst-next for $(BOXTYPE) successfully completed."
+	@echo -e "$(TERM_NORMAL)"
+	@echo "***************************************************************************"
+	@touch $(D)/build_complete
 
 yaud-neutrino-mp-cst-next-plugins: yaud-none \
 		$(D)/neutrino-mp-cst-next $(D)/neutrino-mp-plugins $(D)/release_neutrino
@@ -313,7 +325,7 @@ $(D)/neutrino-mp-cst-next.config.status:
 	cd $(N_OBJDIR); \
 		$(SOURCE_DIR)/neutrino-mp-cst-next/autogen.sh; \
 		$(BUILDENV) \
-		$(SOURCE_DIR)/neutrino-mp-cst-next/configure --enable-silent-rules \
+		$(SOURCE_DIR)/neutrino-mp-cst-next/configure $(CONFIGURE_SILENT) --enable-silent-rules \
 			--build=$(BUILD) \
 			--host=$(TARGET) \
 			$(N_CONFIG_OPTS) \
@@ -322,6 +334,7 @@ $(D)/neutrino-mp-cst-next.config.status:
 			--enable-ffmpegdec \
 			--enable-giflib \
 			--with-tremor \
+			--enable-lua \
 			--with-libdir=/usr/lib \
 			--with-datadir=/usr/share/tuxbox \
 			--with-fontdir=/usr/share/fonts \
@@ -393,6 +406,12 @@ neutrino-mp-cst-next-distclean:
 yaud-neutrino-mp-cst-next-ni: yaud-none \
 		neutrino-mp-cst-next-ni $(D)/release_neutrino
 	$(TUXBOX_YAUD_CUSTOMIZE)
+	@echo "******************************************************************************"
+	@echo -e "$(TERM_GREEN_BOLD)"
+	@echo " Build of neutrino-mp-cst-next-ni for $(BOXTYPE) successfully completed."
+	@echo -e "$(TERM_NORMAL)"
+	@echo "******************************************************************************"
+	@touch $(D)/build_complete
 
 yaud-neutrino-mp-cst-next-ni-plugins: yaud-none \
 		$(D)/neutrino-mp-cst-next-ni $(D)/neutrino-mp-plugins $(D)/release_neutrino
@@ -431,6 +450,7 @@ $(D)/neutrino-mp-cst-next-ni.config.status:
 			--enable-ffmpegdec \
 			--enable-giflib \
 			--with-tremor \
+			--enable-lua \
 			--with-libdir=/usr/lib \
 			--with-datadir=/usr/share/tuxbox \
 			--with-fontdir=/usr/share/fonts \
@@ -509,6 +529,12 @@ neutrino-cdkroot-clean:
 yaud-neutrino-hd2: yaud-none \
 		$(D)/neutrino-hd2 $(D)/release_neutrino
 	$(TUXBOX_YAUD_CUSTOMIZE)
+	@echo "*********************************************************************"
+	@echo -e "$(TERM_GREEN_BOLD)"
+	@echo " Build of neutrino-hd2 for $(BOXTYPE) successfully completed."
+	@echo -e "$(TERM_NORMAL)"
+	@echo "*********************************************************************"
+	@touch $(D)/build_complete
 
 yaud-neutrino-hd2-plugins: yaud-none \
 		$(D)/neutrino-hd2 $(D)/neutrino-hd2-plugins $(D)/release_neutrino
@@ -548,7 +574,7 @@ $(SOURCE_DIR)/neutrino-hd2/config.status:
 	cd $(SOURCE_DIR)/neutrino-hd2; \
 		./autogen.sh; \
 		$(BUILDENV) \
-		./configure \
+		./configure $(CONFIGURE_SILENT) \
 			--build=$(BUILD) \
 			--host=$(TARGET) \
 			$(N_CONFIG_OPTS) \
@@ -658,6 +684,12 @@ libstb-hal-cst-next-tangos-distclean:
 yaud-neutrino-mp-tangos: yaud-none \
 		$(D)/neutrino-mp-tangos $(D)/release_neutrino
 	$(TUXBOX_YAUD_CUSTOMIZE)
+	@echo "***************************************************************************"
+	@echo -e "$(TERM_GREEN_BOLD)"
+	@echo " Build of neutrino-mp-tangos for $(BOXTYPE) successfully completed."
+	@echo -e "$(TERM_NORMAL)"
+	@echo "***************************************************************************"
+	@touch $(D)/build_complete
 
 yaud-neutrino-mp-tangos-plugins: yaud-none \
 		$(D)/neutrino-mp-tangos $(D)/neutrino-mp-plugins $(D)/release_neutrino
@@ -694,7 +726,7 @@ $(D)/neutrino-mp-tangos.config.status:
 	cd $(N_OBJDIR); \
 		$(SOURCE_DIR)/neutrino-mp-tangos/autogen.sh; \
 		$(BUILDENV) \
-		$(SOURCE_DIR)/neutrino-mp-tangos/configure --enable-silent-rules \
+		$(SOURCE_DIR)/neutrino-mp-tangos/configure $(CONFIGURE_SILENT) --enable-silent-rules \
 			--build=$(BUILD) \
 			--host=$(TARGET) \
 			$(N_CONFIG_OPTS) \

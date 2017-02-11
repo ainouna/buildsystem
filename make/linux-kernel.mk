@@ -56,14 +56,15 @@ OCTAGON1008_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-usbwait123_stm24.patch \
 		linux-sh4-stmmac_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-i2c-st40-pio_stm24_$(KERNEL_LABEL).patch
+ifeq ($(IMAGE), $(filter $(IMAGE), neutrino neutrino-wlandriver))
+OCTAGON1008_PATCHES_24 += linux-sh4-octagon100_stm24_$(KERNEL_LABEL).patch
+endif
 
 ATEVIO7500_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-sh4-lmb_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-atevio7500_setup_stm24_$(KERNEL_LABEL).patch \
+		linux-sh4-atevio7500_mtdconcat_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-stmmac_stm24_$(KERNEL_LABEL).patch
-ifeq ($(IMAGE), $(filter $(IMAGE), enigma2 enigma2-wlandriver))
-ATEVIO7500_PATCHES_24 += linux-sh4-atevio7500_mtdconcat_stm24_$(KERNEL_LABEL).patch
-endif
 
 HS7110_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-sh4-lmb_stm24_$(KERNEL_LABEL).patch \
@@ -166,6 +167,9 @@ FORTIS_HDBOX_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-sh4-stmmac_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-i2c-st40-pio_stm24_$(KERNEL_LABEL).patch \
 		$(if $(P0209),linux-sh4-fortis_hdbox_i2c_st40_stm24_$(KERNEL_LABEL).patch)
+ifeq ($(IMAGE), $(filter $(IMAGE), neutrino neutrino-wlandriver))
+FORTIS_HDBOX_PATCHES_24 += linux-sh4-fortis_hdbox_mtdconcat_stm24_$(KERNEL_LABEL).patch
+endif
 
 ADB_BOX_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-sh4-stx7100_fdma_fix_stm24_$(KERNEL_LABEL).patch \
@@ -256,30 +260,60 @@ ARIVALINK200_PATCHES_24 = $(COMMON_PATCHES_24) \
 HOST_KERNEL_PATCHES = $(KERNEL_PATCHES_24)
 HOST_KERNEL_CONFIG = linux-sh4-$(subst _stm24_,_,$(KERNEL_VERSION))_$(BOXTYPE).config
 
+ifneq ($(DESTINATION), USB)
 $(D)/linux-kernel.do_prepare: $(PATCHES)/$(BUILD_CONFIG)/$(HOST_KERNEL_CONFIG) \
 	$(if $(HOST_KERNEL_PATCHES),$(HOST_KERNEL_PATCHES:%=$(PATCHES)/$(BUILD_CONFIG)/%))
-	$(START_BUILD)
-	rm -rf $(KERNEL_DIR)
-	REPO=https://github.com/Duckbox-Developers/linux-sh4-2.6.32.71.git;protocol=https;branch=stmicro; \
-	[ -d "$(ARCHIVE)/linux-sh4-2.6.32.71.git" ] && \
-	(echo "Updating STlinux kernel source"; cd $(ARCHIVE)/linux-sh4-2.6.32.71.git; git pull;); \
-	[ -d "$(ARCHIVE)/linux-sh4-2.6.32.71.git" ] || \
-	(echo "Getting STlinux kernel source"; git clone -n $$REPO $(ARCHIVE)/linux-sh4-2.6.32.71.git); \
-	(echo "Copying kernel source code to build environment"; cp -ra $(ARCHIVE)/linux-sh4-2.6.32.71.git $(KERNEL_DIR)); \
-	(echo "Applying patch level P$(KERNEL_LABEL)"; cd $(KERNEL_DIR); git checkout -q $(HOST_KERNEL_REVISION))
+else
+$(D)/linux-kernel.do_prepare: $(PATCHES)/$(BUILD_CONFIG)/$(HOST_KERNEL_CONFIG) \
+	busybox_usb e2fsprogs sysvinit \
+	$(if $(HOST_KERNEL_PATCHES),$(HOST_KERNEL_PATCHES:%=$(PATCHES)/$(BUILD_CONFIG)/%))
+endif
+	@rm -rf $(KERNEL_DIR)
+	@REPO=https://github.com/Duckbox-Developers/linux-sh4-2.6.32.71.git;protocol=https;branch=stmicro
+	@echo
+	@echo "Starting Kernel build"
+	@echo "====================="
+	@echo
+	@if [ -e $(ARCHIVE)/linux-sh4-2.6.32.71-source-sh4-P$(KERNEL_LABEL).tar.gz ]; then \
+		mkdir $(KERNEL_DIR); \
+		echo -n "Getting archived P$(KERNEL_LABEL) kernel source..."; \
+		tar -xf $(ARCHIVE)/linux-sh4-2.6.32.71-source-sh4-P$(KERNEL_LABEL).tar.gz -C $(KERNEL_DIR); \
+		echo " done."; \
+	else \
+		if [ -d "$(ARCHIVE)/linux-sh4-2.6.32.71.git" ]; then \
+			echo -n "Updating STlinux kernel source..."; \
+			cd $(ARCHIVE)/linux-sh4-2.6.32.71.git; \
+			git pull -q; \
+			echo " done."; \
+		else \
+			echo "Getting STlinux kernel source (takes a while)..."; \
+			git clone -n $(REPO) $(ARCHIVE)/linux-sh4-2.6.32.71.git; \
+			echo "Clone of STlinux source completed."; \
+		fi; \
+		echo -n "Copying kernel source code to build environment..."; \
+		cp -ra $(ARCHIVE)/linux-sh4-2.6.32.71.git $(KERNEL_DIR); \
+		echo " done."; \
+		echo -n "Applying patch level P$(KERNEL_LABEL)..."; \
+		cd $(KERNEL_DIR); \
+		git checkout -q $(HOST_KERNEL_REVISION); \
+		echo " done."; \
+		echo -n "Archiving patched kernel source..."; \
+		tar --exclude=.git -czf $(ARCHIVE)/linux-sh4-2.6.32.71-source-sh4-P$(KERNEL_LABEL).tar.gz .; \
+		echo " done."; \
+	fi; \
 	set -e; cd $(KERNEL_DIR); \
-		for i in $(HOST_KERNEL_PATCHES); do \
-			echo -e "==> \033[31mApplying Patch:\033[0m $$i"; \
-			patch -p1 -i $(PATCHES)/$(BUILD_CONFIG)/$$i; \
-		done
-	install -m 644 $(PATCHES)/$(BUILD_CONFIG)/$(HOST_KERNEL_CONFIG) $(KERNEL_DIR)/.config
-	sed -i "s#^\(CONFIG_EXTRA_FIRMWARE_DIR=\).*#\1\"$(BASE_DIR)/integrated_firmware\"#" $(KERNEL_DIR)/.config
-	-rm $(KERNEL_DIR)/localversion*
-	echo "$(KERNEL_STM_LABEL)" > $(KERNEL_DIR)/localversion-stm
+	for i in $(HOST_KERNEL_PATCHES); do \
+		echo -e "==> $(TERM_RED)Applying Patch:$(TERM_NORMAL) $$i"; \
+		patch -p1 $(SILENT_PATCH) -i $(PATCHES)/$(BUILD_CONFIG)/$$i; \
+	done
+	@install -m 644 $(PATCHES)/$(BUILD_CONFIG)/$(HOST_KERNEL_CONFIG) $(KERNEL_DIR)/.config
+	@sed -i "s#^\(CONFIG_EXTRA_FIRMWARE_DIR=\).*#\1\"$(BASE_DIR)/integrated_firmware\"#" $(KERNEL_DIR)/.config
+	@rm $(KERNEL_DIR)/localversion*
+	@echo "$(KERNEL_STM_LABEL)" > $(KERNEL_DIR)/localversion-stm
 ifeq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), kerneldebug debug))
 	@echo "Using kernel debug"
 	@grep -v "CONFIG_PRINTK" "$(KERNEL_DIR)/.config" > "$(KERNEL_DIR)/.config.tmp"
-	cp "$(KERNEL_DIR)/.config.tmp" "$(KERNEL_DIR)/.config"
+	@cp "$(KERNEL_DIR)/.config.tmp" "$(KERNEL_DIR)/.config"
 	@echo "CONFIG_PRINTK=y" >> "$(KERNEL_DIR)/.config"
 	@echo "CONFIG_PRINTK_TIME=y" >> "$(KERNEL_DIR)/.config"
 endif
@@ -300,20 +334,41 @@ ifeq ($(IMAGE), $(filter $(IMAGE), enigma2-wlandriver neutrino-wlandriver))
 	@echo "# CONFIG_USB_ZD1201 is not set" >> "$(KERNEL_DIR)/.config"
 	@echo "# CONFIG_HOSTAP is not set" >> "$(KERNEL_DIR)/.config"
 endif
-	$(TOUCH)
+ifeq ($(DESTINATION), USB)
+	@echo "Using kernel USB"
+	@grep -v "CONFIG_BLK_DEV_INITRD" "$(KERNEL_DIR)/.config" > "$(KERNEL_DIR)/.config.tmp"
+	cp "$(KERNEL_DIR)/.config.tmp" "$(KERNEL_DIR)/.config"
+	@echo "CONFIG_BLK_DEV_INITRD=y " >> "$(KERNEL_DIR)/.config"
+	echo "CONFIG_INITRAMFS_SOURCE=\"$(APPS_DIR)/tools/USB_boot/initramfs_no_hdd\"" >> "$(KERNEL_DIR)/.config"
+	@echo "CONFIG_INITRAMFS_ROOT_UID=0" >> "$(KERNEL_DIR)/.config"
+	@echo "CONFIG_INITRAMFS_ROOT_GID=0" >> "$(KERNEL_DIR)/.config"
+	@echo "CONFIG_RD_GZIP=y" >> "$(KERNEL_DIR)/.config"
+	@echo "CONFIG_RD_BZIP2=y" >> "$(KERNEL_DIR)/.config"
+	@echo "# CONFIG_RD_LZMA is not set" >> "$(KERNEL_DIR)/.config"
+	@echo "# CONFIG_INITRAMFS_COMPRESSION_NONE is not set" >> "$(KERNEL_DIR)/.config"
+	@echo "CONFIG_INITRAMFS_COMPRESSION_GZIP=y" >> "$(KERNEL_DIR)/.config"
+	@echo "# CONFIG_INITRAMFS_COMPRESSION_BZIP2 is not set" >> "$(KERNEL_DIR)/.config"
+	@echo "# CONFIG_INITRAMFS_COMPRESSION_LZMA is not set" >> "$(KERNEL_DIR)/.config"
+	@grep -v "CONFIG_DECOMPRESS_GZIP" "$(KERNEL_DIR)/.config" > "$(KERNEL_DIR)/.config.tmp"
+	cp "$(KERNEL_DIR)/.config.tmp" "$(KERNEL_DIR)/.config"
+	@echo "CONFIG_DECOMPRESS_GZIP=y" >> $(KERNEL_DIR)/.config
+	@grep -v "CONFIG_DECOMPRESS_BZIP2" $(KERNEL_DIR)/.config > $(KERNEL_DIR)/.config.tmp
+	cp "$(KERNEL_DIR)/.config.tmp" "$(KERNEL_DIR)/.config"
+	@echo "CONFIG_DECOMPRESS_BZIP2=y" >> "$(KERNEL_DIR)/.config"
+endif
+	@touch $@
 
 $(D)/linux-kernel.do_compile: $(D)/linux-kernel.do_prepare
-	$(START_BUILD)
-	set -e; cd $(KERNEL_DIR); \
-		$(MAKE) -C $(KERNEL_DIR) ARCH=sh oldconfig; \
-		$(MAKE) -C $(KERNEL_DIR) ARCH=sh include/asm; \
-		$(MAKE) -C $(KERNEL_DIR) ARCH=sh include/linux/version.h; \
-		$(MAKE) -C $(KERNEL_DIR) ARCH=sh CROSS_COMPILE=$(TARGET)- uImage modules; \
-		$(MAKE) -C $(KERNEL_DIR) ARCH=sh CROSS_COMPILE=$(TARGET)- DEPMOD=$(DEPMOD) INSTALL_MOD_PATH=$(TARGETPREFIX) modules_install
-	$(TOUCH)
+	set -e; \
+	cd $(KERNEL_DIR); \
+	$(MAKE) -C $(KERNEL_DIR) ARCH=sh oldconfig; \
+	$(MAKE) -C $(KERNEL_DIR) ARCH=sh include/asm; \
+	$(MAKE) -C $(KERNEL_DIR) ARCH=sh include/linux/version.h; \
+	$(MAKE) -C $(KERNEL_DIR) ARCH=sh CROSS_COMPILE=$(TARGET)- uImage modules; \
+	$(MAKE) -C $(KERNEL_DIR) ARCH=sh CROSS_COMPILE=$(TARGET)- DEPMOD=$(DEPMOD) INSTALL_MOD_PATH=$(TARGETPREFIX) modules_install
+	@touch $@
 
 $(D)/linux-kernel: $(D)/bootstrap host_u_boot_tools $(D)/linux-kernel.do_compile
-	$(START_BUILD)
 	install -m 644 $(KERNEL_DIR)/arch/sh/boot/uImage $(BOOT_DIR)/vmlinux.ub
 	install -m 644 $(KERNEL_DIR)/vmlinux $(TARGETPREFIX)/boot/vmlinux-sh4-$(KERNEL_VERSION)
 	install -m 644 $(KERNEL_DIR)/System.map $(TARGETPREFIX)/boot/System.map-sh4-$(KERNEL_VERSION)
@@ -323,13 +378,18 @@ $(D)/linux-kernel: $(D)/bootstrap host_u_boot_tools $(D)/linux-kernel.do_compile
 	$(TOUCH)
 
 $(D)/kernel-headers: linux-kernel.do_prepare
+	cd $(KERNEL_DIR)
+	install -d $(TARGETPREFIX)/usr/include
+	cp -a include/linux $(TARGETPREFIX)/usr/include
+	cp -a include/asm-sh $(TARGETPREFIX)/usr/include/asm
+	cp -a include/asm-generic $(TARGETPREFIX)/usr/include
+	cp -a include/mtd $(TARGETPREFIX)/usr/include
+	$(TOUCH)
+
+$(D)/tfkernel:
 	$(START_BUILD)
-	cd $(KERNEL_DIR); \
-		install -d $(TARGETPREFIX)/usr/include; \
-		cp -a include/linux $(TARGETPREFIX)/usr/include; \
-		cp -a include/asm-sh $(TARGETPREFIX)/usr/include/asm; \
-		cp -a include/asm-generic $(TARGETPREFIX)/usr/include; \
-		cp -a include/mtd $(TARGETPREFIX)/usr/include
+	cd $(KERNEL_DIR)
+	$(MAKE) $(if $(TF7700),TF7700=y) ARCH=sh CROSS_COMPILE=$(TARGET)- uImage
 	$(TOUCH)
 
 linux-kernel-distclean:
@@ -341,57 +401,6 @@ linux-kernel-clean:
 	-$(MAKE) -C $(KERNEL_DIR) clean
 	rm -f $(D)/linux-kernel
 	rm -f $(D)/linux-kernel.do_compile
-
-#
-# TF7700 installer
-#
-TFINSTALLER_DIR := $(BASE_DIR)/tfinstaller
-
-tfinstaller: $(D)/bootstrap $(TFINSTALLER_DIR)/u-boot.ftfd $(D)/linux-kernel
-	$(START_BUILD)
-	$(MAKE) $(MAKE_OPTS) -C $(TFINSTALLER_DIR) HOSTPREFIX=$(HOSTPREFIX) BASE_DIR=$(BASE_DIR) KERNEL_DIR=$(KERNEL_DIR)
-	$(TOUCH)
-
-$(TFINSTALLER_DIR)/u-boot.ftfd: $(D)/uboot $(TFINSTALLER_DIR)/tfpacker
-	$(START_BUILD)
-	$(TFINSTALLER_DIR)/tfpacker $(BUILD_TMP)/u-boot-$(U_BOOT_VERSION)/u-boot.bin $(TFINSTALLER_DIR)/u-boot.ftfd
-	$(TFINSTALLER_DIR)/tfpacker -t $(BUILD_TMP)/u-boot-$(U_BOOT_VERSION)/u-boot.bin $(TFINSTALLER_DIR)/Enigma_Installer.tfd
-	$(REMOVE)/u-boot-$(U_BOOT_VERSION)
-	$(TOUCH)
-
-$(TFINSTALLER_DIR)/tfpacker:
-	$(START_BUILD)
-	$(MAKE) -C $(TFINSTALLER_DIR) tfpacker
-	$(TOUCH)
-
-$(D)/tfkernel:
-	$(START_BUILD)
-	cd $(KERNEL_DIR); \
-		$(MAKE) $(if $(TF7700),TF7700=y) ARCH=sh CROSS_COMPILE=$(TARGET)- uImage
-	$(TOUCH)
-
-#
-# u-boot
-#
-U_BOOT_VERSION = 1.3.1
-U_BOOT_PATCH  =  u-boot-$(U_BOOT_VERSION).patch
-ifeq ($(BOXTYPE), tf7700)
-U_BOOT_PATCH += u-boot-$(U_BOOT_VERSION)-tf7700.patch
-endif
-
-$(ARCHIVE)/u-boot-$(U_BOOT_VERSION).tar.bz2:
-	$(WGET) ftp://ftp.denx.de/pub/u-boot/u-boot-$(U_BOOT_VERSION).tar.bz2
-
-$(D)/uboot: bootstrap $(ARCHIVE)/u-boot-$(U_BOOT_VERSION).tar.bz2
-	$(START_BUILD)
-	$(REMOVE)/u-boot-$(U_BOOT_VERSION)
-	$(UNTAR)/u-boot-$(U_BOOT_VERSION).tar.bz2
-	set -e; cd $(BUILD_TMP)/u-boot-$(U_BOOT_VERSION); \
-		$(call post_patch,$(U_BOOT_PATCH)); \
-		$(MAKE) $(BOXTYPE)_config; \
-		$(MAKE)
-#	$(REMOVE)/u-boot-$(U_BOOT_VERSION)
-	$(TOUCH)
 
 #
 # Helper

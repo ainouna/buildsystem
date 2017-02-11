@@ -20,13 +20,39 @@ $(D)/busybox: $(D)/bootstrap $(ARCHIVE)/busybox-$(BUSYBOX_VERSION).tar.bz2 $(PAT
 	$(START_BUILD)
 	$(REMOVE)/busybox-$(BUSYBOX_VERSION)
 	$(UNTAR)/busybox-$(BUSYBOX_VERSION).tar.bz2
-	set -e; cd $(BUILD_TMP)/busybox-$(BUSYBOX_VERSION); \
+	$(SET) -e; cd $(BUILD_TMP)/busybox-$(BUSYBOX_VERSION); \
 		$(call post_patch,$(BUSYBOX_PATCH)); \
 		install -m 0644 $(lastword $^) .config; \
 		sed -i -e 's#^CONFIG_PREFIX.*#CONFIG_PREFIX="$(TARGETPREFIX)"#' .config; \
 		$(BUILDENV) $(MAKE) busybox CROSS_COMPILE=$(TARGET)- CFLAGS_EXTRA="$(TARGET_CFLAGS)"; \
 		$(MAKE) install CROSS_COMPILE=$(TARGET)- CFLAGS_EXTRA="$(TARGET_CFLAGS)" CONFIG_PREFIX=$(TARGETPREFIX)
 #	$(REMOVE)/busybox-$(BUSYBOX_VERSION)
+	$(TOUCH)
+
+#
+# busybox_usb
+#
+BUSYBOX_USB_VER = $(BUSYBOX_VER)
+
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE), spark spark7162 ufs912 ufs913))
+BUSYBOX_USB_CONFIG = busybox_usb-$(BUSYBOX_VERSION).config_nandwrite
+else
+BUSYBOX_USB_CONFIG = busybox_usb-$(BUSYBOX_VERSION).config
+endif
+
+$(D)/busybox_usb: $(D)/bootstrap $(ARCHIVE)/busybox-$(BUSYBOX_VERSION).tar.bz2 $(PATCHES)/$(BUSYBOX_USB_CONFIG)
+	$(START_BUILD)
+	$(REMOVE) -fr $(BUILD_TMP)/busybox_usb-$(BUSYBOX_USB_VERSION)
+	@mkdir $(BUILD_TMP)/busybox_usb-$(BUSYBOX_USB_VERSION)
+	@tar -C $(BUILD_TMP)/busybox_usb-$(BUSYBOX_USB_VERSION) -xf $(ARCHIVE)/busybox-$(BUSYBOX_USB_VERSION).tar.bz2 --strip-components=1
+	$(SET) -e; cd $(BUILD_TMP)/busybox_usb-$(BUSYBOX_USB_VERSION); \
+		$(call post_patch,$(BUSYBOX_PATCH)); \
+		install -m 0644 $(lastword $^) .config; \
+		sed -i -e 's#^CONFIG_PREFIX.*#CONFIG_PREFIX="$(TARGETPREFIX)"#' .config; \
+		$(BUILDENV) $(MAKE) busybox CROSS_COMPILE=$(TARGET)- CFLAGS_EXTRA="$(TARGET_CFLAGS)"; \
+		$(MAKE) install CROSS_COMPILE=$(TARGET)- CFLAGS_EXTRA="$(TARGET_CFLAGS)" CONFIG_PREFIX=$(TARGETPREFIX)
+		cp -f $(BUILD_TMP)/busybox_usb-$(BUSYBOX_USB_VERSION)/busybox $(APPS_DIR)/tools/USB_boot
+	$(REMOVE)/busybox_usb-$(BUSYBOX_USB_VERSION)
 	$(TOUCH)
 
 #
@@ -47,7 +73,7 @@ $(D)/host_pkgconfig: directories $(ARCHIVE)/pkg-config-$(PKGCONFIG_VERSION).tar.
 	$(START_BUILD)
 	$(REMOVE)/pkg-config-$(PKGCONFIG_VERSION)
 	$(UNTAR)/pkg-config-$(PKGCONFIG_VERSION).tar.gz
-	set -e; cd $(BUILD_TMP)/pkg-config-$(PKGCONFIG_VERSION); \
+	$(SET) -e; cd $(BUILD_TMP)/pkg-config-$(PKGCONFIG_VERSION); \
 		./configure $(CONFIGURE_SILENT) \
 			--prefix=$(HOSTPREFIX) \
 			--program-prefix=$(TARGET)- \
@@ -73,8 +99,8 @@ $(ARCHIVE)/mtd-utils-$(MTD_UTILS_VERSION).tar.bz2:
 $(D)/host_mtd_utils: directories $(ARCHIVE)/mtd-utils-$(MTD_UTILS_VERSION).tar.bz2
 	$(START_BUILD)
 	$(REMOVE)/mtd-utils-$(MTD_UTILS_VERSION)
-	$(UNTAR)/mtd-utils-$(MTD_UTILS_VERSION).tar.bz2; \
-	set -e; cd $(BUILD_TMP)/mtd-utils-$(MTD_UTILS_VERSION); \
+	$(UNTAR)/mtd-utils-$(MTD_UTILS_VERSION).tar.bz2
+	$(SET) -e; cd $(BUILD_TMP)/mtd-utils-$(MTD_UTILS_VERSION); \
 		$(call post_patch,$(MTD_UTILS_HOST_PATCH)); \
 		$(MAKE) `pwd`/mkfs.jffs2 `pwd`/sumtool BUILDDIR=`pwd` WITHOUT_XATTR=1 DESTDIR=$(HOSTPREFIX); \
 		$(MAKE) install DESTDIR=$(HOSTPREFIX)/bin
@@ -87,8 +113,8 @@ $(D)/host_mtd_utils: directories $(ARCHIVE)/mtd-utils-$(MTD_UTILS_VERSION).tar.b
 $(D)/mtd_utils: $(D)/bootstrap $(D)/zlib $(D)/lzo $(D)/e2fsprogs $(ARCHIVE)/mtd-utils-$(MTD_UTILS_VERSION).tar.bz2
 	$(START_BUILD)
 	$(REMOVE)/mtd-utils-$(MTD_UTILS_VERSION)
-	$(UNTAR)/mtd-utils-$(MTD_UTILS_VERSION).tar.bz2 ; \
-	set -e; cd $(BUILD_TMP)/mtd-utils-$(MTD_UTILS_VERSION); \
+	$(UNTAR)/mtd-utils-$(MTD_UTILS_VERSION).tar.bz2
+	$(SET) -e; cd $(BUILD_TMP)/mtd-utils-$(MTD_UTILS_VERSION); \
 		$(BUILDENV) \
 		$(MAKE) PREFIX= CC=$(TARGET)-gcc LD=$(TARGET)-ld STRIP=$(TARGET)-strip WITHOUT_XATTR=1 DESTDIR=$(TARGETPREFIX); \
 		$(MAKE) install DESTDIR=$(TARGETPREFIX)
@@ -109,7 +135,7 @@ $(D)/gdb-remote: $(ARCHIVE)/gdb-$(GDB_VERSION).tar.xz | $(TARGETPREFIX)
 	$(START_BUILD)
 	$(REMOVE)/gdb-$(GDB_VERSION)
 	$(UNTAR)/gdb-$(GDB_VERSION).tar.xz
-	set -e; cd $(BUILD_TMP)/gdb-$(GDB_VERSION); \
+	$(SET) -e; cd $(BUILD_TMP)/gdb-$(GDB_VERSION); \
 		./configure $(CONFIGURE_SILENT) \
 			--nfp --disable-werror \
 			--prefix=$(HOSTPREFIX) \
@@ -127,7 +153,7 @@ $(D)/gdb: $(D)/bootstrap $(D)/libncurses $(D)/zlib $(ARCHIVE)/gdb-$(GDB_VERSION)
 	$(START_BUILD)
 	$(REMOVE)/gdb-$(GDB_VERSION)
 	$(UNTAR)/gdb-$(GDB_VERSION).tar.xz
-	set -e; cd $(BUILD_TMP)/gdb-$(GDB_VERSION); \
+	$(SET) -e; cd $(BUILD_TMP)/gdb-$(GDB_VERSION); \
 		$(call post_patch,$(GDB_PATCH)); \
 		./configure $(CONFIGURE_SILENT) \
 			--host=$(BUILD) \
@@ -157,7 +183,7 @@ $(D)/opkg_host: directories $(D)/host_libarchive $(ARCHIVE)/opkg-$(OPKG_VERSION)
 	$(START_BUILD)
 	$(REMOVE)/opkg-$(OPKG_VERSION)
 	$(UNTAR)/opkg-$(OPKG_VERSION).tar.gz
-	set -e; cd $(BUILD_TMP)/opkg-$(OPKG_VERSION); \
+	$(SET) -e; cd $(BUILD_TMP)/opkg-$(OPKG_VERSION); \
 		$(call post_patch,$(OPKG_HOST_PATCH)); \
 		./autogen.sh; \
 		CFLAGS="-I$(HOSTPREFIX)/include" \
@@ -177,7 +203,7 @@ $(D)/opkg: $(D)/bootstrap $(D)/opkg_host $(D)/libarchive $(ARCHIVE)/opkg-$(OPKG_
 	$(START_BUILD)
 	$(REMOVE)/opkg-$(OPKG_VERSION)
 	$(UNTAR)/opkg-$(OPKG_VERSION).tar.gz
-	set -e; cd $(BUILD_TMP)/opkg-$(OPKG_VERSION); \
+	$(SET) -e; cd $(BUILD_TMP)/opkg-$(OPKG_VERSION); \
 		$(call post_patch,$(OPKG_PATCH)); \
 		LIBARCHIVE_LIBS="-L$(TARGETPREFIX)/usr/lib -larchive" \
 		LIBARCHIVE_CFLAGS="-I$(TARGETPREFIX)/usr/include" \
@@ -209,7 +235,7 @@ $(D)/sysvinit: $(D)/bootstrap $(ARCHIVE)/sysvinit_$(SYSVINIT_VERSION).orig.tar.g
 	$(START_BUILD)
 	$(REMOVE)/sysvinit-$(SYSVINIT_VERSION)
 	$(UNTAR)/sysvinit_$(SYSVINIT_VERSION).orig.tar.gz
-	set -e; cd $(BUILD_TMP)/sysvinit-$(SYSVINIT_VERSION); \
+	$(SET) -e; cd $(BUILD_TMP)/sysvinit-$(SYSVINIT_VERSION); \
 		sed -i -e 's/\ sulogin[^ ]*//' -e 's/pidof\.8//' -e '/ln .*pidof/d' \
 		-e '/bootlogd/d' -e '/utmpdump/d' -e '/mountpoint/d' -e '/mesg/d' src/Makefile; \
 		$(BUILDENV) \
@@ -227,18 +253,18 @@ endif
 #
 # host_module_init_tools
 #
-MODULE_INIT_TOOLS_VERSION = 3.15
+MODULE_INIT_TOOLS_VERSION = 3.16
 MODULE_INIT_TOOLS_PATCH = module-init-tools-$(MODULE_INIT_TOOLS_VERSION).patch
 MODULE_INIT_TOOLS_HOST_PATCH = module-init-tools-$(MODULE_INIT_TOOLS_VERSION).patch
 
-$(ARCHIVE)/module-init-tools-$(MODULE_INIT_TOOLS_VERSION).tar.xz:
-	$(WGET) https://www.kernel.org/pub/linux/utils/kernel/module-init-tools/module-init-tools-$(MODULE_INIT_TOOLS_VERSION).tar.xz
+$(ARCHIVE)/module-init-tools-$(MODULE_INIT_TOOLS_VERSION).tar.bz2:
+	$(WGET) http://ftp.be.debian.org/pub/linux/utils/kernel/module-init-tools/module-init-tools-$(MODULE_INIT_TOOLS_VERSION).tar.bz2
 
-$(D)/host_module_init_tools: $(ARCHIVE)/module-init-tools-$(MODULE_INIT_TOOLS_VERSION).tar.xz
+$(D)/host_module_init_tools: $(ARCHIVE)/module-init-tools-$(MODULE_INIT_TOOLS_VERSION).tar.bz2
 	$(START_BUILD)
 	$(REMOVE)/module-init-tools-$(MODULE_INIT_TOOLS_VERSION)
-	$(UNTAR)/module-init-tools-$(MODULE_INIT_TOOLS_VERSION).tar.xz
-	set -e; cd $(BUILD_TMP)/module-init-tools-$(MODULE_INIT_TOOLS_VERSION); \
+	$(UNTAR)/module-init-tools-$(MODULE_INIT_TOOLS_VERSION).tar.bz2
+	$(SET) -e; cd $(BUILD_TMP)/module-init-tools-$(MODULE_INIT_TOOLS_VERSION); \
 		$(call post_patch,$(MODULE_INIT_TOOLS_HOST_PATCH)); \
 		autoreconf -fi; \
 		./configure $(CONFIGURE_SILENT) \
@@ -253,11 +279,11 @@ $(D)/host_module_init_tools: $(ARCHIVE)/module-init-tools-$(MODULE_INIT_TOOLS_VE
 #
 # module_init_tools
 #
-$(D)/module_init_tools: $(D)/bootstrap $(D)/lsb $(ARCHIVE)/module-init-tools-$(MODULE_INIT_TOOLS_VERSION).tar.xz
+$(D)/module_init_tools: $(D)/bootstrap $(D)/lsb $(ARCHIVE)/module-init-tools-$(MODULE_INIT_TOOLS_VERSION).tar.bz2
 	$(START_BUILD)
 	$(REMOVE)/module-init-tools-$(MODULE_INIT_TOOLS_VERSION)
-	$(UNTAR)/module-init-tools-$(MODULE_INIT_TOOLS_VERSION).tar.xz
-	set -e; cd $(BUILD_TMP)/module-init-tools-$(MODULE_INIT_TOOLS_VERSION); \
+	$(UNTAR)/module-init-tools-$(MODULE_INIT_TOOLS_VERSION).tar.bz2
+	$(SET) -e; cd $(BUILD_TMP)/module-init-tools-$(MODULE_INIT_TOOLS_VERSION); \
 		$(call post_patch,$(MODULE_INIT_TOOLS_PATCH)); \
 		autoreconf -fi; \
 		$(CONFIGURE) \
@@ -281,14 +307,14 @@ LSB_MAJOR = 3.2
 LSB_MINOR = 20
 LSB_VERSION = $(LSB_MAJOR)-$(LSB_MINOR)
 
-$(ARCHIVE)/lsb_$(LSB_VERSION)$(LSB_SUBVER).tar.gz:
+$(ARCHIVE)/lsb_$(LSB_VERSION).tar.gz:
 	$(WGET) http://debian.sdinet.de/etch/sdinet/lsb/lsb_$(LSB_VERSION).tar.gz
 
 $(D)/lsb: $(D)/bootstrap $(ARCHIVE)/lsb_$(LSB_VERSION).tar.gz
 	$(START_BUILD)
 	$(REMOVE)/lsb-$(LSB_MAJOR)
 	$(UNTAR)/lsb_$(LSB_VERSION).tar.gz
-	set -e; cd $(BUILD_TMP)/lsb-$(LSB_MAJOR); \
+	$(SET) -e; cd $(BUILD_TMP)/lsb-$(LSB_MAJOR); \
 		install -m 0644 init-functions $(TARGETPREFIX)/lib/lsb
 	$(REMOVE)/lsb-$(LSB_MAJOR)
 	$(TOUCH)
@@ -309,9 +335,9 @@ $(D)/portmap: $(D)/bootstrap $(ARCHIVE)/portmap_$(PORTMAP_VERSION).orig.tar.gz $
 	$(START_BUILD)
 	$(REMOVE)/portmap-$(PORTMAP_VERSION)
 	$(UNTAR)/portmap_$(PORTMAP_VERSION).orig.tar.gz
-	set -e; cd $(BUILD_TMP)/portmap-$(PORTMAP_VERSION); \
+	$(SET) -e; cd $(BUILD_TMP)/portmap-$(PORTMAP_VERSION); \
 		gunzip -cd $(lastword $^) | cat > debian.patch; \
-		patch -p1 <debian.patch && \
+		patch -p1 $(SILENT_PATCH) <debian.patch && \
 		sed -e 's/### BEGIN INIT INFO/# chkconfig: S 41 10\n### BEGIN INIT INFO/g' -i debian/init.d; \
 		$(call post_patch,$(PORTMAP_PATCH)); \
 		$(BUILDENV) $(MAKE) NO_TCP_WRAPPER=1 DAEMON_UID=65534 DAEMON_GID=65535 CC="$(TARGET)-gcc"; \
@@ -335,7 +361,7 @@ $(D)/e2fsprogs: $(D)/bootstrap $(D)/util-linux $(ARCHIVE)/e2fsprogs-$(E2FSPROGS_
 	$(START_BUILD)
 	$(REMOVE)/e2fsprogs-$(E2FSPROGS_VERSION)
 	$(UNTAR)/e2fsprogs-$(E2FSPROGS_VERSION).tar.gz
-	set -e; cd $(BUILD_TMP)/e2fsprogs-$(E2FSPROGS_VERSION); \
+	$(SET) -e; cd $(BUILD_TMP)/e2fsprogs-$(E2FSPROGS_VERSION); \
 		$(call post_patch,$(E2FSPROGS_PATCH)); \
 		PATH=$(BUILD_TMP)/e2fsprogs-$(E2FSPROGS_VERSION):$(PATH) \
 		$(CONFIGURE) \
@@ -365,7 +391,7 @@ $(D)/e2fsprogs: $(D)/bootstrap $(D)/util-linux $(ARCHIVE)/e2fsprogs-$(E2FSPROGS_
 		$(MAKE); \
 		$(MAKE) install DESTDIR=$(TARGETPREFIX); \
 		$(MAKE) -C lib/uuid  install DESTDIR=$(TARGETPREFIX); \
-		$(MAKE) -C lib/blkid install DESTDIR=$(TARGETPREFIX); \
+		$(MAKE) -C lib/blkid install DESTDIR=$(TARGETPREFIX)
 	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/uuid.pc
 	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/blkid.pc
 	cd $(TARGETPREFIX) && rm sbin/badblocks sbin/dumpe2fs sbin/logsave \
@@ -386,7 +412,7 @@ $(D)/dosfstools: bootstrap $(ARCHIVE)/dosfstools-$(DOSFSTOOLS_VERSION).tar.xz
 	$(START_BUILD)
 	$(REMOVE)/dosfstools-$(DOSFSTOOLS_VERSION)
 	$(UNTAR)/dosfstools-$(DOSFSTOOLS_VERSION).tar.xz
-	set -e; cd $(BUILD_TMP)/dosfstools-$(DOSFSTOOLS_VERSION); \
+	$(SET) -e; cd $(BUILD_TMP)/dosfstools-$(DOSFSTOOLS_VERSION); \
 		autoreconf -fi; \
 		$(CONFIGURE) \
 			--prefix= \
@@ -412,7 +438,7 @@ $(D)/jfsutils: $(D)/bootstrap $(D)/e2fsprogs $(ARCHIVE)/jfsutils-$(JFSUTILS_VERS
 	$(START_BUILD)
 	$(REMOVE)/jfsutils-$(JFSUTILS_VERSION)
 	$(UNTAR)/jfsutils-$(JFSUTILS_VERSION).tar.gz
-	set -e; cd $(BUILD_TMP)/jfsutils-$(JFSUTILS_VERSION); \
+	$(SET) -e; cd $(BUILD_TMP)/jfsutils-$(JFSUTILS_VERSION); \
 		$(call post_patch,$(JFSUTILS_PATCH)); \
 		sed "s@<unistd.h>@&\n#include <sys/types.h>@g" -i fscklog/extract.c; \
 		autoreconf -fi; \
@@ -441,7 +467,7 @@ $(D)/util-linux: $(D)/bootstrap $(D)/zlib $(ARCHIVE)/util-linux-$(UTIL_LINUX_VER
 	$(START_BUILD)
 	$(REMOVE)/util-linux-$(UTIL_LINUX_VERSION)
 	$(UNTAR)/util-linux-$(UTIL_LINUX_VERSION).tar.xz
-	set -e; cd $(BUILD_TMP)/util-linux-$(UTIL_LINUX_VERSION); \
+	$(SET) -e; cd $(BUILD_TMP)/util-linux-$(UTIL_LINUX_VERSION); \
 		$(CONFIGURE) \
 			--prefix=/usr \
 			--mandir=/.remove \
@@ -530,7 +556,7 @@ $(D)/mc: $(D)/bootstrap $(D)/libncurses $(D)/libglib2 $(ARCHIVE)/mc-$(MC_VERSION
 	$(START_BUILD)
 	$(REMOVE)/mc-$(MC_VERSION)
 	$(UNTAR)/mc-$(MC_VERSION).tar.xz
-	set -e; cd $(BUILD_TMP)/mc-$(MC_VERSION); \
+	$(SET) -e; cd $(BUILD_TMP)/mc-$(MC_VERSION); \
 		autoreconf -fi; \
 		$(BUILDENV) \
 		./configure $(CONFIGURE_SILENT) \
@@ -564,7 +590,7 @@ $(D)/nano: $(D)/bootstrap $(ARCHIVE)/nano-$(NANO_VERSION).tar.gz
 	$(START_BUILD)
 	$(REMOVE)/nano-$(NANO_VERSION)
 	$(UNTAR)/nano-$(NANO_VERSION).tar.gz
-	set -e; cd $(BUILD_TMP)/nano-$(NANO_VERSION); \
+	$(SET) -e; cd $(BUILD_TMP)/nano-$(NANO_VERSION); \
 		$(CONFIGURE) \
 			--target=$(TARGET) \
 			--prefix=/usr \
@@ -580,16 +606,16 @@ $(D)/nano: $(D)/bootstrap $(ARCHIVE)/nano-$(NANO_VERSION).tar.gz
 #
 # rsync
 #
-RSYNC_VERSION = 3.1.1
+RSYNC_VERSION = 3.1.2
 
 $(ARCHIVE)/rsync-$(RSYNC_VERSION).tar.gz:
-	$(WGET) http://samba.anu.edu.au/ftp/rsync/src/rsync-$(RSYNC_VERSION).tar.gz
+	$(WGET) https://ftp.samba.org/pub/rsync/rsync-$(RSYNC_VERSION).tar.gz
 
 $(D)/rsync: $(D)/bootstrap $(ARCHIVE)/rsync-$(RSYNC_VERSION).tar.gz
 	$(START_BUILD)
 	$(REMOVE)/rsync-$(RSYNC_VERSION)
 	$(UNTAR)/rsync-$(RSYNC_VERSION).tar.gz
-	set -e; cd $(BUILD_TMP)/rsync-$(RSYNC_VERSION); \
+	$(SET) -e; cd $(BUILD_TMP)/rsync-$(RSYNC_VERSION); \
 		$(CONFIGURE) \
 			--prefix=/usr \
 			--mandir=/.remove \
@@ -614,7 +640,7 @@ $(D)/fuse: $(D)/bootstrap $(ARCHIVE)/fuse-$(FUSE_VERSION).tar.gz
 	$(START_BUILD)
 	$(REMOVE)/fuse-$(FUSE_VERSION)
 	$(UNTAR)/fuse-$(FUSE_VERSION).tar.gz
-	set -e; cd $(BUILD_TMP)/fuse-$(FUSE_VERSION); \
+	$(SET) -e; cd $(BUILD_TMP)/fuse-$(FUSE_VERSION); \
 		$(CONFIGURE) \
 			CFLAGS="$(TARGET_CFLAGS) -I$(KERNEL_DIR)/arch/sh" \
 			--prefix=/usr \
@@ -642,7 +668,7 @@ $(D)/curlftpfs: $(D)/bootstrap $(D)/libcurl $(D)/fuse $(D)/libglib2 $(ARCHIVE)/c
 	$(START_BUILD)
 	$(REMOVE)/curlftpfs-$(CURLFTPFS_VERSION)
 	$(UNTAR)/curlftpfs-$(CURLFTPFS_VERSION).tar.gz
-	set -e; cd $(BUILD_TMP)/curlftpfs-$(CURLFTPFS_VERSION); \
+	$(SET) -e; cd $(BUILD_TMP)/curlftpfs-$(CURLFTPFS_VERSION); \
 		$(call post_patch,$(CURLFTPFS_PATCH)); \
 		export ac_cv_func_malloc_0_nonnull=yes && \
 		export ac_cv_func_realloc_0_nonnull=yes && \
@@ -668,7 +694,7 @@ $(D)/sdparm: $(D)/bootstrap $(ARCHIVE)/sdparm-$(SDPARM_VERSION).tgz
 	$(START_BUILD)
 	$(REMOVE)/sdparm-$(SDPARM_VERSION)
 	$(UNTAR)/sdparm-$(SDPARM_VERSION).tgz
-	set -e; cd $(BUILD_TMP)/sdparm-$(SDPARM_VERSION); \
+	$(SET) -e; cd $(BUILD_TMP)/sdparm-$(SDPARM_VERSION); \
 		$(CONFIGURE) \
 			--prefix= \
 			--exec-prefix=/usr \
@@ -691,7 +717,7 @@ $(D)/hddtemp: $(D)/bootstrap $(ARCHIVE)/hddtemp-$(HDDTEMP_VERSION).tar.bz2
 	$(START_BUILD)
 	$(REMOVE)/hddtemp-$(HDDTEMP_VERSION)
 	$(UNTAR)/hddtemp-$(HDDTEMP_VERSION).tar.bz2
-	set -e; cd $(BUILD_TMP)/hddtemp-$(HDDTEMP_VERSION); \
+	$(SET) -e; cd $(BUILD_TMP)/hddtemp-$(HDDTEMP_VERSION); \
 		$(CONFIGURE) \
 			--prefix= \
 			--mandir=/.remove \
@@ -700,8 +726,8 @@ $(D)/hddtemp: $(D)/bootstrap $(ARCHIVE)/hddtemp-$(HDDTEMP_VERSION).tar.bz2
 		; \
 		$(MAKE) all; \
 		$(MAKE) install DESTDIR=$(TARGETPREFIX)
-		install -d $(TARGETPREFIX)/var/tuxbox/config
-		install -m 644 $(SKEL_ROOT)/release/hddtemp.db $(TARGETPREFIX)/var
+		$(SILENT)install -d $(TARGETPREFIX)/var/tuxbox/config
+		$(SILENT)install -m 644 $(SKEL_ROOT)/release/hddtemp.db $(TARGETPREFIX)/var
 	$(REMOVE)/hddtemp-$(HDDTEMP_VERSION)
 	$(TOUCH)
 
@@ -717,7 +743,7 @@ $(D)/hdparm: $(D)/bootstrap $(ARCHIVE)/hdparm-$(HDPARM_VERSION).tar.gz
 	$(START_BUILD)
 	$(REMOVE)/hdparm-$(HDPARM_VERSION)
 	$(UNTAR)/hdparm-$(HDPARM_VERSION).tar.gz
-	set -e; cd $(BUILD_TMP)/hdparm-$(HDPARM_VERSION); \
+	$(SET) -e; cd $(BUILD_TMP)/hdparm-$(HDPARM_VERSION); \
 		$(BUILDENV) \
 		$(MAKE) CROSS=$(TARGET)- all; \
 		$(MAKE) install DESTDIR=$(TARGETPREFIX)
@@ -736,7 +762,7 @@ $(D)/hd-idle: $(D)/bootstrap $(ARCHIVE)/hd-idle-$(HDIDLE_VERSION).tgz
 	$(START_BUILD)
 	$(REMOVE)/hd-idle
 	$(UNTAR)/hd-idle-$(HDIDLE_VERSION).tgz
-	set -e; cd $(BUILD_TMP)/hd-idle; \
+	$(SET) -e; cd $(BUILD_TMP)/hd-idle; \
 		sed -i -e 's/-g root -o root//g' Makefile; \
 		$(BUILDENV) \
 		$(MAKE) CC=$(TARGET)-gcc; \
@@ -760,7 +786,7 @@ $(TARGETPREFIX)/bin/fbshot: $(D)/bootstrap $(D)/libpng $(ARCHIVE)/fbshot-$(FBSHO
 	$(START_BUILD)
 	$(REMOVE)/fbshot-$(FBSHOT_VERSION)
 	$(UNTAR)/fbshot-$(FBSHOT_VERSION).tar.gz
-	set -e; cd $(BUILD_TMP)/fbshot-$(FBSHOT_VERSION); \
+	@set -e; cd $(BUILD_TMP)/fbshot-$(FBSHOT_VERSION); \
 		$(call post_patch,$(FBSHOT_PATCH)); \
 		$(TARGET)-gcc $(TARGET_CFLAGS) $(TARGET_LDFLAGS) fbshot.c -lpng -lz -o $@
 	$(REMOVE)/fbshot-$(FBSHOT_VERSION)
@@ -779,7 +805,7 @@ $(D)/parted: $(D)/bootstrap $(D)/libncurses $(D)/libreadline $(D)/e2fsprogs $(AR
 	$(START_BUILD)
 	$(REMOVE)/parted-$(PARTED_VERSION)
 	$(UNTAR)/parted-$(PARTED_VERSION).tar.xz
-	set -e; cd $(BUILD_TMP)/parted-$(PARTED_VERSION); \
+	$(SET) -e; cd $(BUILD_TMP)/parted-$(PARTED_VERSION); \
 		$(call post_patch,$(PARTED_PATCH)); \
 		$(CONFIGURE) \
 			--target=$(TARGET) \
@@ -809,7 +835,7 @@ $(D)/sysstat: $(D)/bootstrap $(ARCHIVE)/sysstat-$(SYSSTAT_VERSION).tar.bz2
 	$(START_BUILD)
 	$(REMOVE)/sysstat-$(SYSSTAT_VERSION)
 	$(UNTAR)/sysstat-$(SYSSTAT_VERSION).tar.bz2
-	set -e; cd $(BUILD_TMP)/sysstat-$(SYSSTAT_VERSION); \
+	$(SET) -e; cd $(BUILD_TMP)/sysstat-$(SYSSTAT_VERSION); \
 		$(CONFIGURE) \
 			--prefix=/usr \
 			--disable-documentation \
@@ -832,7 +858,7 @@ $(D)/autofs: $(D)/bootstrap $(D)/e2fsprogs $(ARCHIVE)/autofs-$(AUTOFS_VERSION).t
 	$(START_BUILD)
 	$(REMOVE)/autofs-$(AUTOFS_VERSION)
 	$(UNTAR)/autofs-$(AUTOFS_VERSION).tar.gz
-	set -e; cd $(BUILD_TMP)/autofs-$(AUTOFS_VERSION); \
+	$(SET) -e; cd $(BUILD_TMP)/autofs-$(AUTOFS_VERSION); \
 		$(call post_patch,$(AUTOFS_PATCH)); \
 		cp aclocal.m4 acinclude.m4; \
 		autoconf; \
@@ -841,11 +867,11 @@ $(D)/autofs: $(D)/bootstrap $(D)/e2fsprogs $(ARCHIVE)/autofs-$(AUTOFS_VERSION).t
 		; \
 		$(MAKE) all CC=$(TARGET)-gcc STRIP=$(TARGET)-strip; \
 		$(MAKE) install INSTALLROOT=$(TARGETPREFIX) SUBDIRS="lib daemon modules"
-	install -m 755 $(SKEL_ROOT)/etc/init.d/autofs $(TARGETPREFIX)/etc/init.d/
-	install -m 644 $(SKEL_ROOT)/etc/auto.hotplug $(TARGETPREFIX)/etc/
-	install -m 644 $(SKEL_ROOT)/etc/auto.master $(TARGETPREFIX)/etc/
-	install -m 644 $(SKEL_ROOT)/etc/auto.misc $(TARGETPREFIX)/etc/
-	install -m 644 $(SKEL_ROOT)/etc/auto.network $(TARGETPREFIX)/etc/
+	$(SILENT)install -m 755 $(SKEL_ROOT)/etc/init.d/autofs $(TARGETPREFIX)/etc/init.d/
+	$(SILENT)install -m 644 $(SKEL_ROOT)/etc/auto.hotplug $(TARGETPREFIX)/etc/
+	$(SILENT)install -m 644 $(SKEL_ROOT)/etc/auto.master $(TARGETPREFIX)/etc/
+	$(SILENT)install -m 644 $(SKEL_ROOT)/etc/auto.misc $(TARGETPREFIX)/etc/
+	$(SILENT)install -m 644 $(SKEL_ROOT)/etc/auto.network $(TARGETPREFIX)/etc/
 	$(REMOVE)/autofs-$(AUTOFS_VERSION)
 	$(TOUCH)
 
@@ -861,7 +887,7 @@ $(D)/imagemagick: $(D)/bootstrap $(ARCHIVE)/ImageMagick-$(IMAGEMAGICK_VERSION).t
 	$(START_BUILD)
 	$(REMOVE)/ImageMagick-$(IMAGEMAGICK_VERSION)
 	$(UNTAR)/ImageMagick-$(IMAGEMAGICK_VERSION).tar.gz
-	set -e; cd $(BUILD_TMP)/ImageMagick-$(IMAGEMAGICK_VERSION); \
+	$(SET) -e; cd $(BUILD_TMP)/ImageMagick-$(IMAGEMAGICK_VERSION); \
 		$(BUILDENV) \
 		CFLAGS="-O1" \
 		PKG_CONFIG=$(PKG_CONFIG) \
@@ -905,7 +931,7 @@ $(D)/imagemagick: $(D)/bootstrap $(ARCHIVE)/ImageMagick-$(IMAGEMAGICK_VERSION).t
 $(D)/shairport: $(D)/bootstrap $(D)/openssl $(D)/howl $(D)/alsa-lib
 	$(START_BUILD)
 	$(REMOVE)/shairport
-	set -e; if [ -d $(ARCHIVE)/shairport.git ]; \
+	$(SET) -e; if [ -d $(ARCHIVE)/shairport.git ]; \
 		then cd $(ARCHIVE)/shairport.git; git pull; \
 		else cd $(ARCHIVE); git clone -b 1.0-dev git://github.com/abrasive/shairport.git shairport.git; \
 		fi
@@ -931,7 +957,7 @@ $(D)/dbus: $(D)/bootstrap $(D)/libexpat $(ARCHIVE)/dbus-$(DBUS_VERSION).tar.gz
 	$(START_BUILD)
 	$(REMOVE)/dbus-$(DBUS_VERSION)
 	$(UNTAR)/dbus-$(DBUS_VERSION).tar.gz
-	set -e; cd $(BUILD_TMP)/dbus-$(DBUS_VERSION); \
+	$(SET) -e; cd $(BUILD_TMP)/dbus-$(DBUS_VERSION); \
 		$(CONFIGURE) \
 		CFLAGS="$(TARGET_CFLAGS) -Wno-cast-align" \
 			--without-x \
@@ -963,7 +989,7 @@ $(D)/avahi: $(D)/bootstrap $(D)/libexpat $(D)/libdaemon $(D)/dbus $(ARCHIVE)/ava
 	$(START_BUILD)
 	$(REMOVE)/avahi-$(AVAHI_VERSION)
 	$(UNTAR)/avahi-$(AVAHI_VERSION).tar.gz
-	set -e; cd $(BUILD_TMP)/avahi-$(AVAHI_VERSION); \
+	$(SET) -e; cd $(BUILD_TMP)/avahi-$(AVAHI_VERSION); \
 		$(CONFIGURE) \
 			--prefix=/usr \
 			--target=$(TARGET) \
@@ -1028,7 +1054,7 @@ $(D)/wget: $(D)/bootstrap $(D)/openssl $(ARCHIVE)/wget-$(WGET_VERSION).tar.xz
 	$(START_BUILD)
 	$(REMOVE)/wget-$(WGET_VERSION)
 	$(UNTAR)/wget-$(WGET_VERSION).tar.xz
-	set -e; cd $(BUILD_TMP)/wget-$(WGET_VERSION); \
+	$(SET) -e; cd $(BUILD_TMP)/wget-$(WGET_VERSION); \
 		$(CONFIGURE) \
 			--prefix=/usr \
 			--mandir=/.remove \
@@ -1060,7 +1086,7 @@ $(D)/coreutils: $(D)/bootstrap $(D)/openssl $(ARCHIVE)/coreutils-$(COREUTILS_VER
 	$(START_BUILD)
 	$(REMOVE)/coreutils-$(COREUTILS_VERSION)
 	$(UNTAR)/coreutils-$(COREUTILS_VERSION).tar.xz
-	set -e; cd $(BUILD_TMP)/coreutils-$(COREUTILS_VERSION); \
+	$(SET) -e; cd $(BUILD_TMP)/coreutils-$(COREUTILS_VERSION); \
 		$(call post_patch,$(COREUTILS_PATCH)); \
 		export fu_cv_sys_stat_statfs2_bsize=yes; \
 		$(CONFIGURE) \
@@ -1084,7 +1110,7 @@ $(D)/smartmontools: $(D)/bootstrap $(ARCHIVE)/smartmontools-$(SMARTMONTOOLS_VERS
 	$(START_BUILD)
 	$(REMOVE)/smartmontools-$(SMARTMONTOOLS_VERSION)
 	$(UNTAR)/smartmontools-$(SMARTMONTOOLS_VERSION).tar.gz
-	set -e; cd $(BUILD_TMP)/smartmontools-$(SMARTMONTOOLS_VERSION); \
+	$(SET) -e; cd $(BUILD_TMP)/smartmontools-$(SMARTMONTOOLS_VERSION); \
 		$(CONFIGURE) \
 			--prefix=/usr \
 		; \
@@ -1106,7 +1132,7 @@ $(D)/nfs_utils: $(D)/bootstrap $(D)/e2fsprogs $(ARCHIVE)/nfs-utils-$(NFSUTILS_VE
 	$(START_BUILD)
 	$(REMOVE)/nfs-utils-$(NFSUTILS_VERSION)
 	$(UNTAR)/nfs-utils-$(NFSUTILS_VERSION).tar.bz2
-	set -e; cd $(BUILD_TMP)/nfs-utils-$(NFSUTILS_VERSION); \
+	$(SET) -e; cd $(BUILD_TMP)/nfs-utils-$(NFSUTILS_VERSION); \
 		$(call post_patch,$(NFSUTILS_PATCH)); \
 		$(CONFIGURE) \
 			CC_FOR_BUILD=$(TARGET)-gcc \
@@ -1121,10 +1147,10 @@ $(D)/nfs_utils: $(D)/bootstrap $(D)/e2fsprogs $(ARCHIVE)/nfs-utils-$(NFSUTILS_VE
 		; \
 		$(MAKE); \
 		$(MAKE) install DESTDIR=$(TARGETPREFIX)
-	install -m 755 $(SKEL_ROOT)/etc/init.d/nfs-common $(TARGETPREFIX)/etc/init.d/
-	install -m 755 $(SKEL_ROOT)/etc/init.d/nfs-kernel-server $(TARGETPREFIX)/etc/init.d/
-	install -m 644 $(SKEL_ROOT)/etc/exports $(TARGETPREFIX)/etc/
-	cd $(TARGETPREFIX) && rm -f sbin/mount.nfs sbin/mount.nfs4 sbin/umount.nfs sbin/umount.nfs4 \
+	$(SILENT)install -m 755 $(SKEL_ROOT)/etc/init.d/nfs-common $(TARGETPREFIX)/etc/init.d/
+	$(SILENT)install -m 755 $(SKEL_ROOT)/etc/init.d/nfs-kernel-server $(TARGETPREFIX)/etc/init.d/
+	$(SILENT)install -m 644 $(SKEL_ROOT)/etc/exports $(TARGETPREFIX)/etc/
+	$(SILENT)cd $(TARGETPREFIX) && rm -f sbin/mount.nfs sbin/mount.nfs4 sbin/umount.nfs sbin/umount.nfs4 \
 				 sbin/osd_login
 	$(REMOVE)/nfs-utils-$(NFSUTILS_VERSION)
 	$(TOUCH)
@@ -1141,7 +1167,7 @@ $(D)/libevent: $(D)/bootstrap $(ARCHIVE)/libevent-$(LIBEVENT_VERSION).tar.gz
 	$(START_BUILD)
 	$(REMOVE)/libevent-$(LIBEVENT_VERSION)
 	$(UNTAR)/libevent-$(LIBEVENT_VERSION).tar.gz
-	set -e; cd $(BUILD_TMP)/libevent-$(LIBEVENT_VERSION);\
+	$(SET) -e; cd $(BUILD_TMP)/libevent-$(LIBEVENT_VERSION);\
 		$(CONFIGURE) \
 			--prefix=$(TARGETPREFIX)/usr \
 		; \
@@ -1162,7 +1188,7 @@ $(D)/libnfsidmap: $(D)/bootstrap $(ARCHIVE)/libnfsidmap-$(LIBNFSIDMAP_VERSION).t
 	$(START_BUILD)
 	$(REMOVE)/libnfsidmap-$(LIBNFSIDMAP_VERSION)
 	$(UNTAR)/libnfsidmap-$(LIBNFSIDMAP_VERSION).tar.gz
-	set -e; cd $(BUILD_TMP)/libnfsidmap-$(LIBNFSIDMAP_VERSION);\
+	$(SET) -e; cd $(BUILD_TMP)/libnfsidmap-$(LIBNFSIDMAP_VERSION);\
 		$(CONFIGURE) \
 		ac_cv_func_malloc_0_nonnull=yes \
 			--prefix=$(TARGETPREFIX)/usr \
@@ -1185,13 +1211,13 @@ $(D)/vsftpd: $(D)/bootstrap $(ARCHIVE)/vsftpd-$(VSFTPD_VERSION).tar.gz
 	$(START_BUILD)
 	$(REMOVE)/vsftpd-$(VSFTPD_VERSION)
 	$(UNTAR)/vsftpd-$(VSFTPD_VERSION).tar.gz
-	set -e; cd $(BUILD_TMP)/vsftpd-$(VSFTPD_VERSION); \
+	$(SET) -e; cd $(BUILD_TMP)/vsftpd-$(VSFTPD_VERSION); \
 		$(call post_patch,$(VSFTPD_PATCH)); \
 		$(MAKE) clean; \
 		$(MAKE) $(BUILDENV); \
 		$(MAKE) install PREFIX=$(TARGETPREFIX)
-	install -m 755 $(SKEL_ROOT)/etc/init.d/vsftpd $(TARGETPREFIX)/etc/init.d/
-	install -m 644 $(SKEL_ROOT)/etc/vsftpd.conf $(TARGETPREFIX)/etc/
+	$(SILENT)install -m 755 $(SKEL_ROOT)/etc/init.d/vsftpd $(TARGETPREFIX)/etc/init.d/
+	$(SILENT)install -m 644 $(SKEL_ROOT)/etc/vsftpd.conf $(TARGETPREFIX)/etc/
 	$(REMOVE)/vsftpd-$(VSFTPD_VERSION)
 	$(TOUCH)
 
@@ -1207,7 +1233,7 @@ $(D)/ethtool: $(D)/bootstrap $(ARCHIVE)/ethtool-$(ETHTOOL_VERSION).tar.gz
 	$(START_BUILD)
 	$(REMOVE)/ethtool-$(ETHTOOL_VERSION)
 	$(UNTAR)/ethtool-$(ETHTOOL_VERSION).tar.gz
-	set -e; cd $(BUILD_TMP)/ethtool-$(ETHTOOL_VERSION); \
+	$(SET) -e; cd $(BUILD_TMP)/ethtool-$(ETHTOOL_VERSION); \
 		$(CONFIGURE) \
 			--prefix=/usr \
 			--mandir=/.remove \
@@ -1225,13 +1251,13 @@ SAMBA_VERSION = 3.6.25
 SAMBA_PATCH = samba-$(SAMBA_VERSION).patch
 
 $(ARCHIVE)/samba-$(SAMBA_VERSION).tar.gz:
-	$(WGET) http://ftp.samba.org/pub/samba/stable/samba-$(SAMBA_VERSION).tar.gz
+	$(WGET) https://ftp.samba.org/pub/samba/stable/samba-$(SAMBA_VERSION).tar.gz
 
 $(D)/samba: $(D)/bootstrap $(ARCHIVE)/samba-$(SAMBA_VERSION).tar.gz
 	$(START_BUILD)
 	$(REMOVE)/samba-$(SAMBA_VERSION)
 	$(UNTAR)/samba-$(SAMBA_VERSION).tar.gz
-	set -e; cd $(BUILD_TMP)/samba-$(SAMBA_VERSION); \
+	$(SET) -e; cd $(BUILD_TMP)/samba-$(SAMBA_VERSION); \
 		$(call post_patch,$(SAMBA_PATCH)); \
 		cd source3; \
 		./autogen.sh; \
@@ -1290,8 +1316,8 @@ $(D)/samba: $(D)/bootstrap $(ARCHIVE)/samba-$(SAMBA_VERSION).tar.gz
 		$(MAKE) $(MAKE_OPTS); \
 		$(MAKE) $(MAKE_OPTS) installservers installbin installscripts installdat installmodules \
 			SBIN_PROGS="bin/smbd bin/nmbd bin/winbindd" DESTDIR=$(TARGETPREFIX) prefix=./. ; \
-	install -m 755 $(SKEL_ROOT)/etc/init.d/samba $(TARGETPREFIX)/etc/init.d/
-	install -m 644 $(SKEL_ROOT)/etc/smb.conf $(TARGETPREFIX)/etc/samba/
+	$(SILENT)install -m 755 $(SKEL_ROOT)/etc/init.d/samba $(TARGETPREFIX)/etc/init.d/
+	$(SILENT)install -m 644 $(SKEL_ROOT)/etc/samba/smb.conf $(TARGETPREFIX)/etc/samba/
 	$(REMOVE)/samba-$(SAMBA_VERSION)
 	$(TOUCH)
 
@@ -1308,7 +1334,7 @@ $(D)/ntp: $(D)/bootstrap $(ARCHIVE)/ntp-$(NTP_VERSION).tar.gz
 	$(START_BUILD)
 	$(REMOVE)/ntp-$(NTP_VERSION)
 	$(UNTAR)/ntp-$(NTP_VERSION).tar.gz
-	set -e; cd $(BUILD_TMP)/ntp-$(NTP_VERSION); \
+	$(SET) -e; cd $(BUILD_TMP)/ntp-$(NTP_VERSION); \
 		$(call post_patch,$(NTP_PATCH)); \
 		$(CONFIGURE) \
 			--target=$(TARGET) \
@@ -1337,7 +1363,7 @@ $(D)/wireless_tools: $(D)/bootstrap $(ARCHIVE)/wireless_tools.$(WIRELESSTOOLS_VE
 	$(START_BUILD)
 	$(REMOVE)/wireless_tools.$(WIRELESSTOOLS_VERSION)
 	$(UNTAR)/wireless_tools.$(WIRELESSTOOLS_VERSION).tar.gz
-	set -e; cd $(BUILD_TMP)/wireless_tools.$(WIRELESSTOOLS_VERSION); \
+	$(SET) -e; cd $(BUILD_TMP)/wireless_tools.$(WIRELESSTOOLS_VERSION); \
 		$(call post_patch,$(WIRELESSTOOLS_PATCH)); \
 		$(MAKE) CC="$(TARGET)-gcc" CFLAGS="$(TARGET_CFLAGS) -I."; \
 		$(MAKE) install PREFIX=$(TARGETPREFIX)/usr INSTALL_MAN=$(TARGETPREFIX)/.remove
@@ -1356,7 +1382,7 @@ $(D)/libnl: $(D)/bootstrap $(D)/openssl $(ARCHIVE)/libnl-$(LIBNL_VERSION).tar.gz
 	$(START_BUILD)
 	$(REMOVE)/libnl-$(LIBNL_VERSION)
 	$(UNTAR)/libnl-$(LIBNL_VERSION).tar.gz
-	set -e; cd $(BUILD_TMP)/libnl-$(LIBNL_VERSION); \
+	$(SET) -e; cd $(BUILD_TMP)/libnl-$(LIBNL_VERSION); \
 		$(CONFIGURE) \
 			--target=$(TARGET) \
 			--prefix=/usr \
@@ -1380,7 +1406,7 @@ $(D)/wpa_supplicant: $(D)/bootstrap $(D)/openssl $(D)/wireless_tools $(ARCHIVE)/
 	$(START_BUILD)
 	$(REMOVE)/wpa_supplicant-$(WPA_SUPPLICANT_VERSION)
 	$(UNTAR)/wpa_supplicant-$(WPA_SUPPLICANT_VERSION).tar.gz
-	set -e; cd $(BUILD_TMP)/wpa_supplicant-$(WPA_SUPPLICANT_VERSION)/wpa_supplicant; \
+	$(SET) -e; cd $(BUILD_TMP)/wpa_supplicant-$(WPA_SUPPLICANT_VERSION)/wpa_supplicant; \
 		cp -f defconfig .config; \
 		sed -i 's/#CONFIG_DRIVER_RALINK=y/CONFIG_DRIVER_RALINK=y/' .config; \
 		sed -i 's/#CONFIG_IEEE80211W=y/CONFIG_IEEE80211W=y/' .config; \
@@ -1404,12 +1430,12 @@ $(D)/wpa_supplicant: $(D)/bootstrap $(D)/openssl $(D)/wireless_tools $(ARCHIVE)/
 $(D)/dvbsnoop: $(D)/bootstrap
 	$(START_BUILD)
 	$(REMOVE)/dvbsnoop
-	set -e; if [ -d $(ARCHIVE)/dvbsnoop.git ]; \
+	$(SET) -e; if [ -d $(ARCHIVE)/dvbsnoop.git ]; \
 		then cd $(ARCHIVE)/dvbsnoop.git; git pull; \
 		else cd $(ARCHIVE); git clone https://github.com/cotdp/dvbsnoop.git dvbsnoop.git; \
 		fi
-	cp -ra $(ARCHIVE)/dvbsnoop.git $(BUILD_TMP)/dvbsnoop
-	set -e; cd $(BUILD_TMP)/dvbsnoop; \
+	$(SILENT)cp -ra $(ARCHIVE)/dvbsnoop.git $(BUILD_TMP)/dvbsnoop
+	$(SET) -e; cd $(BUILD_TMP)/dvbsnoop; \
 		$(CONFIGURE) \
 			--prefix=/usr \
 			--mandir=/.remove \
@@ -1432,7 +1458,7 @@ $(D)/udpxy: $(D)/bootstrap $(ARCHIVE)/udpxy.$(UDPXY_VERSION)-prod.tar.gz
 	$(START_BUILD)
 	$(REMOVE)/udpxy-$(UDPXY_VERSION)
 	$(UNTAR)/udpxy.$(UDPXY_VERSION)-prod.tar.gz
-	set -e; cd $(BUILD_TMP)/udpxy-$(UDPXY_VERSION); \
+	$(SET) -e; cd $(BUILD_TMP)/udpxy-$(UDPXY_VERSION); \
 		$(call post_patch,$(UDPXY_PATCH)); \
 		$(BUILDENV) \
 		$(MAKE) CC=$(TARGET)-gcc CCKIND=gcc; \
@@ -1452,7 +1478,7 @@ $(D)/openvpn: $(D)/bootstrap $(D)/openssl $(D)/lzo $(ARCHIVE)/openvpn-$(OPENVPN_
 	$(START_BUILD)
 	$(REMOVE)/openvpn-$(OPENVPN_VERSION)
 	$(UNTAR)/openvpn-$(OPENVPN_VERSION).tar.xz
-	set -e; cd $(BUILD_TMP)/openvpn-$(OPENVPN_VERSION); \
+	$(SET) -e; cd $(BUILD_TMP)/openvpn-$(OPENVPN_VERSION); \
 		$(CONFIGURE) \
 			--target=$(TARGET) \
 			--prefix=/usr \
@@ -1467,7 +1493,7 @@ $(D)/openvpn: $(D)/bootstrap $(D)/openssl $(D)/lzo $(ARCHIVE)/openvpn-$(OPENVPN_
 		; \
 		$(MAKE); \
 		$(MAKE) install DESTDIR=$(TARGETPREFIX)
-	install -m 755 $(SKEL_ROOT)/etc/init.d/openvpn $(TARGETPREFIX)/etc/init.d/
+	$(SILENT)install -m 755 $(SKEL_ROOT)/etc/init.d/openvpn $(TARGETPREFIX)/etc/init.d/
 	$(REMOVE)/openvpn-$(OPENVPN_VERSION)
 	$(TOUCH)
 
@@ -1483,7 +1509,7 @@ $(D)/openssh: $(D)/bootstrap $(D)/zlib $(D)/openssl $(ARCHIVE)/openssh-$(OPENSSH
 	$(START_BUILD)
 	$(REMOVE)/openssh-$(OPENSSH_VERSION)
 	$(UNTAR)/openssh-$(OPENSSH_VERSION).tar.gz
-	set -e; cd $(BUILD_TMP)/openssh-$(OPENSSH_VERSION); \
+	$(SET) -e; cd $(BUILD_TMP)/openssh-$(OPENSSH_VERSION); \
 		CC=$(TARGET)-gcc; \
 		./configure $(CONFIGURE_SILENT) \
 			$(CONFIGURE_OPTS) \
@@ -1497,8 +1523,8 @@ $(D)/openssh: $(D)/bootstrap $(D)/zlib $(D)/openssl $(ARCHIVE)/openssh-$(OPENSSH
 		; \
 		$(MAKE); \
 		$(MAKE) install-nokeys DESTDIR=$(TARGETPREFIX)
-	install -m 755 $(BUILD_TMP)/openssh-$(OPENSSH_VERSION)/opensshd.init $(TARGETPREFIX)/etc/init.d/openssh
-	sed -i 's/^#PermitRootLogin prohibit-password/PermitRootLogin yes/' $(TARGETPREFIX)/etc/ssh/sshd_config
+	$(SILENT)install -m 755 $(BUILD_TMP)/openssh-$(OPENSSH_VERSION)/opensshd.init $(TARGETPREFIX)/etc/init.d/openssh
+	$(SILENT)sed -i 's/^#PermitRootLogin prohibit-password/PermitRootLogin yes/' $(TARGETPREFIX)/etc/ssh/sshd_config
 	$(REMOVE)/openssh-$(OPENSSH_VERSION)
 	$(TOUCH)
 
@@ -1515,7 +1541,7 @@ $(D)/usb-modeswitch-data: $(D)/bootstrap $(ARCHIVE)/usb-modeswitch-data-$(USB_MO
 	$(START_BUILD)
 	$(REMOVE)/usb-modeswitch-data-$(USB_MODESWITCH_DATA_VERSION)
 	$(UNTAR)/usb-modeswitch-data-$(USB_MODESWITCH_DATA_VERSION).tar.bz2
-	set -e; cd $(BUILD_TMP)/usb-modeswitch-data-$(USB_MODESWITCH_DATA_VERSION); \
+	$(SET) -e; cd $(BUILD_TMP)/usb-modeswitch-data-$(USB_MODESWITCH_DATA_VERSION); \
 		$(call post_patch,$(USB_MODESWITCH_DATA_PATCH)); \
 		$(MAKE); \
 		$(MAKE) install DESTDIR=$(TARGETPREFIX)
@@ -1535,7 +1561,7 @@ $(D)/usb-modeswitch: $(D)/bootstrap $(D)/libusb $(D)/usb-modeswitch-data $(ARCHI
 	$(START_BUILD)
 	$(REMOVE)/usb-modeswitch-$(USB_MODESWITCH_VERSION)
 	$(UNTAR)/usb-modeswitch-$(USB_MODESWITCH_VERSION).tar.bz2
-	set -e; cd $(BUILD_TMP)/usb-modeswitch-$(USB_MODESWITCH_VERSION); \
+	$(SET) -e; cd $(BUILD_TMP)/usb-modeswitch-$(USB_MODESWITCH_VERSION); \
 		$(call post_patch,$(USB_MODESWITCH_PATCH)); \
 		sed -i -e "s/= gcc/= $(TARGET)-gcc/" -e "s/-l usb/-lusb -lusb-1.0 -lpthread -lrt/" -e "s/install -D -s/install -D --strip-program=$(TARGET)-strip -s/" Makefile; \
 		sed -i -e "s/@CC@/$(TARGET)-gcc/g" jim/Makefile.in; \

@@ -5,7 +5,7 @@ UID := $(shell id -u)
 ifeq ($(UID), 0)
 warn:
 	@echo "You are running as root. Do not do this, it is dangerous."
-	@echo "Aborting the build. Goodbye."
+	@echo "Aborting the build. Log in as a regular user and retry."
 else
 
 include make/buildenv.mk
@@ -16,7 +16,7 @@ include make/buildenv.mk
 # maybe a help about all supported targets would be nice here, too...
 #
 printenv:
-	clear
+	@echo
 	@echo '================================================================================'
 	@echo "Build Environment Variables:"
 	@echo "MAINTAINER       : $(MAINTAINER)"
@@ -107,7 +107,7 @@ update-self:
 	git pull
 
 update:
-	make distclean
+	$(MAKE) distclean
 	@if test -d $(BASE_DIR); then \
 		cd $(BASE_DIR)/; \
 		echo '=============================================================='; \
