@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20170206.1
+# Version 20170325.1
 
 ##############################################
 
@@ -331,10 +331,10 @@ case "$IMAGE" in
 				echo "=================================================================================================="
 				echo " 1)  Use your own Enigma2 git dir without patchfile"
 				echo "=================================================================================================="
-				echo " 2*) Mon, 16 May 2016 22:46 - E2 OpenPLi  any framework  577fa5ab7d5f0f83f18d625b547d148e93cf27d3"
-				echo " 3)  Thu, 31 Mar 2016 21:52 - E2 OpenPLi  any framework  7d63bf16e99741f0a5798b84a3688759317eecb3"
-				echo " 4)  Mon, 17 Aug 2015 07:08 - E2 OpenPLi  any framework  cd5505a4b8aba823334032bb6fd7901557575455"
-				echo " 5)  Sun, 19 Apr 2015 17:05 - E2 OpenPLi  any framework  4f2db7ace4d9b081cbbb3c13947e05312134ed8e"
+				echo " 2*) Fri, 24 Feb 2017 18:23 - E2 OpenPLi  any framework  ff98b15d49fa629c1b4e98698008602e5b4233be"
+				echo " 3)  Mon, 16 May 2016 22:46 - E2 OpenPLi  any framework  577fa5ab7d5f0f83f18d625b547d148e93cf27d3"
+				echo " 4)  Thu, 31 Mar 2016 21:52 - E2 OpenPLi  any framework  7d63bf16e99741f0a5798b84a3688759317eecb3"
+				echo " 5)  Mon, 17 Aug 2015 07:08 - E2 OpenPLi  any framework  cd5505a4b8aba823334032bb6fd7901557575455"
 				echo "=================================================================================================="
 				echo "Media Framework         : $MEDIAFW"
 				read -p "Select Enigma2 revision : ";;
@@ -344,15 +344,16 @@ case "$IMAGE" in
 			1)	DIFF="1"
 				REVISION="local";;
 			3)	DIFF="3"
-				REVISION="7d63bf16e99741f0a5798b84a3688759317eecb3";;
+				REVISION="577fa5ab7d5f0f83f18d625b547d148e93cf27d3";;
 			4)	DIFF="4"
-				REVISION="cd5505a4b8aba823334032bb6fd7901557575455";;
+				REVISION="7d63bf16e99741f0a5798b84a3688759317eecb3";;
 			5)	DIFF="5"
-				REVISION="4f2db7ace4d9b081cbbb3c13947e05312134ed8e";;
+				REVISION="cd5505a4b8aba823334032bb6fd7901557575455";;
 			0)	DIFF="0"
 				REVISION="newest";;
+#				REVISION="4b7b8e906e9f27cf44f8723a0c66d05eaf30f9e0";; #25/03/2017 18:44
 			*)	DIFF="2"
-				REVISION="577fa5ab7d5f0f83f18d625b547d148e93cf27d3";;
+				REVISION="ff98b15d49fa629c1b4e98698008602e5b4233be";;
 		esac
 		echo "E2_DIFF=$DIFF" >> config
 		echo "E2_REVISION=$REVISION" >> config

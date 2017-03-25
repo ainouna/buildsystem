@@ -36,10 +36,6 @@ ifeq ($(EXTERNAL_LCD), lcd4linux)
 ENIGMA2_DEPS += $(D)/lcd4linux
 endif
 
-ifeq ($(E2_DIFF), 5)
-ENIGMA2_DEPS  += $(D)/libxmlccwrap
-endif
-
 ifeq ($(MEDIAFW), eplayer3)
 ENIGMA2_DEPS  += $(D)/tools-eplayer3
 E_CONFIG_OPTS += --enable-libeplayer3
@@ -146,7 +142,10 @@ $(D)/enigma2.do_prepare: | $(ENIGMA2_DEPS)
 		[ -d "$(ARCHIVE)/enigma2-pli-nightly.git" ] || \
 		(echo "Cloning remote OpenPLi git..."; git clone -q -b $$HEAD $$REPO_0 $(ARCHIVE)/enigma2-pli-nightly.git;); \
 		echo "Copying local git content to build environment..."; cp -ra $(ARCHIVE)/enigma2-pli-nightly.git $(SOURCE_DIR)/enigma2; \
-		[ "$$REVISION" == "" ] || (cd $(SOURCE_DIR)/enigma2; echo "Checking out revision $$REVISION..."; git checkout -q "$$REVISION"; cd "$(BUILD_TMP)";); \
+		if [ "$$REVISION" != "newest" ]; then \
+			cd $(SOURCE_DIR)/enigma2; echo "Checking out revision $$REVISION..."; git checkout -q "$$REVISION"; \
+		fi; \
+		cd "$(BUILD_TMP)"; \
 		cp -ra $(SOURCE_DIR)/enigma2 $(SOURCE_DIR)/enigma2.org; \
 		echo "Applying diff-$$DIFF patch..."; \
 		set -e; cd $(SOURCE_DIR)/enigma2 && patch -p1 $(SILENT_PATCH) < "$(PATCHES)/enigma2-pli-nightly.$$DIFF.diff"; \
