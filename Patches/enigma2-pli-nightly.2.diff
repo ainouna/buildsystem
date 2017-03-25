@@ -637,7 +637,7 @@ diff -Nur '--exclude-from=diff-exclude' enigma2.org/lib/driver/rc.cpp enigma2/li
 diff -Nur '--exclude-from=diff-exclude' enigma2.org/lib/driver/vfd.cpp enigma2/lib/driver/vfd.cpp
 --- enigma2.org/lib/driver/vfd.cpp	1970-01-01 01:00:00.000000000 +0100
 +++ enigma2/lib/driver/vfd.cpp	2013-05-11 19:07:01.916432460 +0200
-@@ -0,0 +1,791 @@
+@@ -0,0 +1,804 @@
 +/*
 + * vfd.cpp
 + *
@@ -679,6 +679,7 @@ diff -Nur '--exclude-from=diff-exclude' enigma2.org/lib/driver/vfd.cpp enigma2/l
 + * 20140527 Audioniek       Spark7162 spins circle on init.
 + * 20150316 Audioniek       Spark7162 circle spin on init removed.
 + * 20160101 Audioniek       Fortis HS7420 and HS7429 added.
++ * 20170313 Audioniek       Kathrein UFS910/912 added.
 + *
 + ****************************************************************************/
 +#include <stdarg.h>
@@ -780,6 +781,8 @@ diff -Nur '--exclude-from=diff-exclude' enigma2.org/lib/driver/vfd.cpp enigma2/l
 +	vfd_type = 10;
 +#elif defined(PLATFORM_HS7420) || defined(PLATFORM_HS7429)
 +	vfd_type = 11;
++#elif defined(PLATFORM_UFS912) || defined(PLATFORM_UFS913)
++	vfd_type = 12;
 +#else
 +	vfd_type = -1;
 +#endif
@@ -934,6 +937,12 @@ diff -Nur '--exclude-from=diff-exclude' enigma2.org/lib/driver/vfd.cpp enigma2/l
 +		char str[] = "HS7429 Enigma2";
 +	#elif defined PLATFORM_HS7819
 +		char str[] = "7819 Enigma2";
++	#elif defined PLATFORM_UFS910
++		char str[] = "UFS910 Enigma2";
++	#elif defined PLATFORM_UFS912
++		char str[] = "UFS912 Enigma2";
++	#elif defined PLATFORM_UFS913
++		char str[] = "UFS913 Enigma2";
 +	#else
 +		char str[] = "SH4 Git Enigma2";
 +	#endif
@@ -953,6 +962,8 @@ diff -Nur '--exclude-from=diff-exclude' enigma2.org/lib/driver/vfd.cpp enigma2/l
 +	 && !defined(PLATFORM_CUBEREVO_2000HD) \
 +	 && !defined(PLATFORM_CUBEREVO_9500HD) \
 +	 && !defined(PLATFORM_SPARK7162) \
++	 && !defined PLATFORM_UFS912 \
++	 && !defined PLATFORM_UFS913 \
 +	 && !defined(PLATFORM_HS7119) \
 +	 && !defined(PLATFORM_HS7420) \
 +	 && !defined(PLATFORM_HS7429) \
@@ -969,7 +980,7 @@ diff -Nur '--exclude-from=diff-exclude' enigma2.org/lib/driver/vfd.cpp enigma2/l
 +		}
 +	}
 +	#else //modulate brightness 3 times
-+	for (int vloop = 0; vloop < 3*14; vloop++)
++	for (int vloop = 0; vloop < 3 * 14; vloop++)
 +	{
 +		if (vloop%14 == 0)
 +		{
@@ -1341,6 +1352,8 @@ diff -Nur '--exclude-from=diff-exclude' enigma2.org/lib/driver/vfd.cpp enigma2/l
 +		for (int id = 1; id < 40; id++)
 +	#elif defined OCTAGON1008
 +		for (int id = 1; id < 29; id++)
++	#elif defined PLATFORM_UFS912 || defined PLATFORM_UFS913
++		for (int id = 1; id < 16; id++)
 +	#else
 +		for (int id = 0x10; id < 0x20; id++)
 +	#endif
@@ -10695,8 +10708,8 @@ diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/SystemP
 +			idx = 4
 +		elif rctype == 11:	# Topfield TF77X0HDPVR
 +			idx = 5
-+#		elif rctype == 12:	# Kathrein UFS912
-+#			idx = 6
++		elif rctype == 12:	# Kathrein UFS912
++			idx = 6
 +#		elif rctype == 13:	# Cuberevo
 +#			idx = 7
 +#		elif rctype == 14:	# ...
@@ -10706,7 +10719,7 @@ diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/SystemP
  	if key in keyDescriptions[idx]:
 --- enigma2.org/lib/python/Screens/InputDeviceSetup.py
 +++ enigma2/lib/python/Screens/InputDeviceSetup.py
-@@ -296,45 +296,21 @@
+@@ -296,45 +296,23 @@
  class RemoteControlType(Screen, ConfigListScreen):
  	rcList = [
  			("0", _("Default")),
@@ -10729,6 +10742,7 @@ diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/SystemP
 +			("9", _("hs7110")),
 +			("10", _("spark")),
 +			("11", _("tf7700")),
++			("12", _("ufs912")),
  		]
  
  	defaultRcList = [
@@ -10759,12 +10773,13 @@ diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/SystemP
 +			("hs7110", 9),
 +			("spark", 10),
 +			("tf7700", 11),
++			("ufs912", 12),
  		]
  
  	def __init__(self, session):
 --- enigma2.org/data/rc_models/rc_models.cfg	2014-04-03 08:38:53.154073324 +0200
 +++ enigma2/data/rc_models/rc_models.cfg	2014-05-28 20:18:22.000000000 +0200
-@@ -19,51 +19,15 @@
+@@ -19,51 +19,17 @@
  #
  # When no entry matches at all, 'default' will be used as remoteName
  #
@@ -10828,6 +10843,8 @@ diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/SystemP
 +spark       spark
 +spark7162   spark
 +tf7700hdpvr tf7700
++ufs910      ufs912
++ufs912      ufs912
 --- enigma2.org/data/rc_models/Makefile.am
 +++ enigma2/data/rc_models/Makefile.am
 @@ -2,11 +2,9 @@
@@ -10843,9 +10860,9 @@ diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/SystemP
 -	hd2400.xml  hd1100.xml 	xsarius.xml  xsarius.png wetekplay.xml osmini.xml zgemma.png zgemma.xml miraclebox.xml spycat.xml \
 -	xpeedlx.xml
 +	dmmadv.png \
-+	fs9000.png  hs7110.png  hs9510.png  spark.png tf7700.png \
++	fs9000.png  hs7110.png  hs9510.png  spark.png tf7700.png ufs912.png\
 +	dmm.png \
 +	dmmadv.xml  \
-+	fs9000.xml  hs7110.xml  hs9510.xml  spark.xml tf7700.xml \
++	fs9000.xml  hs7110.xml  hs9510.xml  spark.xml tf7700.xml ufs912.xml\
 +	dmm.xml
 
