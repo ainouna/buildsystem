@@ -1,15 +1,6 @@
 --- neutrino-mp-tangos.org/acinclude.m4
 +++ neutrino-mp-tangos/acinclude.m4
-@@ -526,7 +526,7 @@
- 	[  --with-boxmodel         valid for coolstream: nevis, apollo
-                           valid for dreambox: dm500, dm500plus, dm600pvr, dm56x0, dm7000, dm7020, dm7025
-                           valid for ipbox: ip200, ip250, ip350, ip400
--                          valid for duckbox: ufs910, ufs912, ufs913, ufs922, atevio7500, fortis_hdbox, octagon1008, hs7110, hs7810a, hs7119, hs7819, dp7000, cuberevo, cuberevo_mini, cuberevo_mini2, cuberevo_250hd, cuberevo_2000hd, cuberevo_3000hd, ipbox9900, ipbox99, ipbox55, arivalink200, tf7700, hl101
-+                          valid for duckbox: ufs910, ufs912, ufs913, ufs922, atevio7500, fortis_hdbox, octagon1008, hs7110, hs7420, hs7810a, hs7119, hs7429, hs7819, cuberevo, cuberevo_mini, cuberevo_mini2, cuberevo_250hd, cuberevo_2000hd, cuberevo_3000hd, ipbox9900, ipbox99, ipbox55, arivalink200, tf7700, hl101
-                           valid for spark: spark, spark7162],
- 	[case "${withval}" in
- 		nevis|apollo)
-@@ -550,7 +550,7 @@
+@@ -364,7 +364,7 @@
  				AC_MSG_ERROR([unknown model $withval for boxtype $BOXTYPE])
  			fi
  			;;
@@ -18,7 +9,7 @@
  			if test "$BOXTYPE" = "duckbox"; then
  				BOXMODEL="$withval"
  			else
-@@ -616,8 +616,10 @@
+@@ -412,8 +412,10 @@
  AM_CONDITIONAL(BOXMODEL_FORTIS_HDBOX,test "$BOXMODEL" = "fortis_hdbox")
  AM_CONDITIONAL(BOXMODEL_OCTAGON1008,test "$BOXMODEL" = "octagon1008")
  AM_CONDITIONAL(BOXMODEL_HS7110,test "$BOXMODEL" = "hs7110")
@@ -29,7 +20,7 @@
  AM_CONDITIONAL(BOXMODEL_HS7819,test "$BOXMODEL" = "hs7819")
  AM_CONDITIONAL(BOXMODEL_DP7000,test "$BOXMODEL" = "dp7000")
  
-@@ -691,10 +693,14 @@
+@@ -471,10 +473,14 @@
  	AC_DEFINE(BOXMODEL_OCTAGON1008, 1, [octagon1008])
  elif test "$BOXMODEL" = "hs7110"; then
  	AC_DEFINE(BOXMODEL_HS7110, 1, [hs7110])

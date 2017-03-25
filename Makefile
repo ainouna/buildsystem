@@ -43,13 +43,19 @@ printenv:
 	@echo "MEDIAFW          : $(MEDIAFW)"
 	@echo "EXTERNAL_LCD     : $(EXTERNAL_LCD)"
 	@echo "CPU_CORES        : $(NR_CPU)"
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs7110 hs7119 hs7420 hs7429 hs7810a hs7819))
+	@echo "DESTINATION      : $(DESTINATION)"
+endif
 	@echo "IMAGE            : $(IMAGE)"
 	@echo '================================================================================'
 ifeq ($(IMAGE), $(filter $(IMAGE), neutrino neutrino-wlandriver))
+	@echo "NEUTRINO_VARIANT             : $(NEUTRINO_VARIANT)"
 	@echo "LOCAL_NEUTRINO_BUILD_OPTIONS : $(LOCAL_NEUTRINO_BUILD_OPTIONS)"
 	@echo "LOCAL_NEUTRINO_CFLAGS        : $(LOCAL_NEUTRINO_CFLAGS)"
 	@echo "LOCAL_NEUTRINO_DEPS          : $(LOCAL_NEUTRINO_DEPS)"
 else ifeq ($(IMAGE), $(filter $(IMAGE), enigma2 enigma2-wlandriver))
+	@echo "E2_DIFF                      : $(E2_DIFF)"
+	@echo "E2_REVISION                  : $(E2_REVISION)"
 	@echo "LOCAL_ENIGMA2_BUILD_OPTIONS  : $(LOCAL_ENIGMA2_BUILD_OPTIONS)"
 	@echo "LOCAL_ENIGMA2_CPPFLAGS       : $(LOCAL_ENIGMA2_CPPFLAGS)"
 	@echo "LOCAL_ENIGMA2_DEPS           : $(LOCAL_ENIGMA2_DEPS)"
@@ -110,33 +116,33 @@ update:
 	$(MAKE) distclean
 	@if test -d $(BASE_DIR); then \
 		cd $(BASE_DIR)/; \
-		echo '=============================================================='; \
-		echo '      updating $(GIT_NAME)-cdk git repo                       '; \
-		echo '=============================================================='; \
+		echo '===================================================================='; \
+		echo '      updating $(GIT_NAME)-buildsystem git repository'; \
+		echo '===================================================================='; \
 		echo; \
 		$(GIT_PULL); fi
 		@echo;
 	@if test -d $(DRIVER_DIR); then \
 		cd $(DRIVER_DIR)/; \
-		echo '=============================================================='; \
-		echo '      updating $(GIT_NAME_DRIVER)-driver git repo             '; \
-		echo '=============================================================='; \
+		echo '==================================================================='; \
+		echo '      updating $(GIT_NAME_DRIVER)-driver git repository'; \
+		echo '==================================================================='; \
 		echo; \
 		$(GIT_PULL); fi
 		@echo;
 	@if test -d $(APPS_DIR); then \
 		cd $(APPS_DIR)/; \
-		echo '=============================================================='; \
-		echo '      updating $(GIT_NAME_APPS)-apps git repo                 '; \
-		echo '=============================================================='; \
+		echo '==================================================================='; \
+		echo '      updating $(GIT_NAME_APPS)-apps git repository'; \
+		echo '==================================================================='; \
 		echo; \
 		$(GIT_PULL); fi
 		@echo;
 	@if test -d $(FLASH_DIR); then \
 		cd $(FLASH_DIR)/; \
-		echo '=============================================================='; \
-		echo '      updating $(GIT_NAME_FLASH)-flash git repo               '; \
-		echo '=============================================================='; \
+		echo '==================================================================='; \
+		echo '      updating $(GIT_NAME_FLASH)-flash git repository'; \
+		echo '==================================================================='; \
 		echo; \
 		$(GIT_PULL); fi
 		@echo;

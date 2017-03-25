@@ -107,8 +107,8 @@ PACKAGES="\
 	${UBUNTU:+texi2html}                                                                                          \
 	${UBUNTU:+help2man}                                                                                           \
 	${UBUNTU:+libcurl4-openssl-dev} ${SUSE:+libcurl-devel}       ${FEDORA:+libcurl-devel}                         \
-	${UBUNTU:+liblzo2-dev}          ${SUSE:+lzo-devel}           ${FEDORA:+lzo-devel}          ${GENTOO:+lzo:2}   \
-	${UBUNTU:+ruby}                                                                            ${GENTOO:+ruby}    \
+	${UBUNTU:+liblzo2-dev}          ${SUSE:+lzo-devel}           ${FEDORA:+lzo-devel}      ${GENTOO:+lzo:2}       \
+	${UBUNTU:+ruby}                                                                        ${GENTOO:+ruby}        \
 	${UBUNTU:+libltdl-dev}                                       ${FEDORA:+libtool-ltdl-devel}                    \
 	                                                             ${FEDORA:+byacc}                                 \
 	${UBUNTU:+libssl-dev}           ${SUSE:+libopenssl-devel}    ${FEDORA:+openssl-devel}                         \
@@ -133,8 +133,8 @@ if [ `which arch > /dev/null 2>&1 && arch || uname -m` == x86_64 ]; then
 	${UBUNTU:+binutils-multiarch}   ${SUSE:+glibc-devel-32bit}      ${FEDORA:+glibc-devel.i686}                   \
 	${UBUNTU:+lib32z1-dev}          ${SUSE:+zlib-devel-32bit}       ${FEDORA:+libgcc.i686}                        \
 	                                                                ${FEDORA:+ncurses-devel.i686}                 \
-	                                                                ${FEDORA:+redhat-lsb.i686}                    \
-	                                ${SUSE:+libstdc++-devel-32bit}  ${FEDORA:+glibc-static.i686}                  \
+                                                                    ${FEDORA:+redhat-lsb.i686}                    \
+                                    ${SUSE:+libstdc++-devel-32bit}  ${FEDORA:+glibc-static.i686}                  \
 	";
 fi
 echo $INSTALL $PACKAGES

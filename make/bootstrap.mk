@@ -48,10 +48,10 @@ $(D)/system-tools: $(SYSTEM_TOOLS) $(TOOLS)
 	$(TOUCH)
 
 $(HOSTPREFIX)/bin/opkg%sh: | directories
-	ln -sf $(SCRIPTS_DIR)/$(shell basename $@) $(HOSTPREFIX)/bin
+	$(SILENT)ln -sf $(SCRIPTS_DIR)/$(shell basename $@) $(HOSTPREFIX)/bin
 
 $(HOSTPREFIX)/bin/unpack-rpm.sh: | directories
-	ln -sf $(SCRIPTS_DIR)/$(shell basename $@) $(HOSTPREFIX)/bin
+	$(SILENT)ln -sf $(SCRIPTS_DIR)/$(shell basename $@) $(HOSTPREFIX)/bin
 
 #
 STM_RELOCATE     = /opt/STM/STLinux-2.4
@@ -108,11 +108,11 @@ $(STL_ARCHIVE)/stlinux24-sh4-libgcc-$(LIBGCC_VERSION).sh4.rpm \
 $(STL_ARCHIVE)/stlinux24-sh4-libstdc++-$(LIBGCC_VERSION).sh4.rpm \
 $(STL_ARCHIVE)/stlinux24-sh4-libstdc++-dev-$(LIBGCC_VERSION).sh4.rpm
 	$(START_BUILD)
-	unpack-rpm.sh $(BUILD_TMP) $(STM_RELOCATE)/devkit/sh4 $(CROSS_DIR) \
+	$(SILENT)unpack-rpm.sh $(BUILD_TMP) $(STM_RELOCATE)/devkit/sh4 $(CROSS_DIR) \
 		$^
 	@touch $(D)/$(notdir $@)
 	@echo "--------------------------------------------------------------"
-	@echo -e "Build of $(TERM_GREEN)$@$(TERM_NORMAL) completed."; echo
+	@echo -e "Build of $(TERM_GREEN_BOLD)$@$(TERM_NORMAL) completed."; echo
 
 crosstool: directories driver-symlink \
 $(HOSTPREFIX)/bin/unpack-rpm.sh \
@@ -122,7 +122,7 @@ crosstool-rpminstall
 	if [ -e $(CROSS_DIR)/target/usr/lib/libstdc++.la ]; then \
 		sed -i "s,^libdir=.*,libdir='$(CROSS_DIR)/target/usr/lib'," $(CROSS_DIR)/target/usr/lib/lib{std,sup}c++.la; \
 	fi
-	if test -e $(CROSS_DIR)/target/usr/lib/libstdc++.so; then \
+	$(SILENT)if test -e $(CROSS_DIR)/target/usr/lib/libstdc++.so; then \
 		cp -a $(CROSS_DIR)/target/usr/lib/libstdc++.s*[!y] $(TARGETPREFIX)/lib; \
 		cp -a $(CROSS_DIR)/target/usr/lib/libdl.so $(TARGETPREFIX)/usr/lib; \
 		cp -a $(CROSS_DIR)/target/usr/lib/libm.so $(TARGETPREFIX)/usr/lib; \
@@ -133,10 +133,10 @@ crosstool-rpminstall
 		ln -sf $(CROSS_DIR)/target/usr/lib/libc.so $(TARGETPREFIX)/usr/lib/libc.so; \
 		ln -sf $(CROSS_DIR)/target/usr/lib/libc_nonshared.a $(TARGETPREFIX)/usr/lib/libc_nonshared.a; \
 	fi
-	if test -e $(CROSS_DIR)/target/lib; then \
+	$(SILENT)if test -e $(CROSS_DIR)/target/lib; then \
 		cp -a $(CROSS_DIR)/target/lib/*so* $(TARGETPREFIX)/lib; \
 	fi
-	if test -e $(CROSS_DIR)/target/sbin/ldconfig; then \
+	$(SILENT)if test -e $(CROSS_DIR)/target/sbin/ldconfig; then \
 		cp -a $(CROSS_DIR)/target/sbin/ldconfig $(TARGETPREFIX)/sbin; \
 		cp -a $(CROSS_DIR)/target/etc/ld.so.conf $(TARGETPREFIX)/etc; \
 		cp -a $(CROSS_DIR)/target/etc/host.conf $(TARGETPREFIX)/etc; \
@@ -173,7 +173,7 @@ crosstool-ng: $(ARCHIVE)/crosstool-ng-$(CROSSTOOL_NG_VERSION).tar.xz
 	fi;
 	$(REMOVE)/crosstool-ng
 	$(UNTAR)/crosstool-ng-$(CROSSTOOL_NG_VERSION).tar.xz
-	set -e; unset CONFIG_SITE; cd $(BUILD_TMP)/crosstool-ng; \
+	$(SILENT)set -e; unset CONFIG_SITE; cd $(BUILD_TMP)/crosstool-ng; \
 		cp -a $(PATCHES)/crosstool-ng-$(CROSSTOOL_NG_VERSION).config .config; \
 		NUM_CPUS=$$(expr `getconf _NPROCESSORS_ONLN` \* 2); \
 		MEM_512M=$$(awk '/MemTotal/ {M=int($$2/1024/512); print M==0?1:M}' /proc/meminfo); \
@@ -209,27 +209,27 @@ PREQS += $(FLASH_DIR)
 preqs: $(PREQS)
 
 $(DRIVER_DIR):
-	@echo '=============================================================='
-	@echo '      Cloning $(GIT_NAME_DRIVER)-driver git repo              '
-	@echo '=============================================================='
+	@echo '===================================================================='
+	@echo '      Cloning $(GIT_NAME_DRIVER)-driver git repository'
+	@echo '===================================================================='
 	if [ ! -e $(DRIVER_DIR)/.git ]; then \
-		git clone $(GITHUB)/$(GIT_NAME_DRIVER)/driver.git driver; \
+		git clone $(CONFIGURE_SILENT) $(GITHUB)/$(GIT_NAME_DRIVER)/driver.git driver; \
 	fi
 
 $(APPS_DIR):
-	@echo '=============================================================='
-	@echo '      Cloning $(GIT_NAME_APPS)-apps git repo                  '
-	@echo '=============================================================='
+	@echo '===================================================================='
+	@echo '      Cloning $(GIT_NAME_APPS)-apps git repository'
+	@echo '===================================================================='
 	if [ ! -e $(APPS_DIR)/.git ]; then \
-		git clone $(GITHUB)/$(GIT_NAME_APPS)/apps.git apps; \
+		git clone $(CONFIGURE_SILENT) $(GITHUB)/$(GIT_NAME_APPS)/apps.git apps; \
 	fi
 
 $(FLASH_DIR):
-	@echo '=============================================================='
-	@echo '      Cloning $(GIT_NAME_FLASH)-flash git repo                '
-	@echo '=============================================================='
+	@echo '===================================================================='
+	@echo '      Cloning $(GIT_NAME_FLASH)-flash git repository'
+	@echo '===================================================================='
 	if [ ! -e $(FLASH_DIR)/.git ]; then \
-		git clone $(GITHUB)/$(GIT_NAME_FLASH)/flash.git flash; \
+		git clone $(CONFIGURE_SILENT) $(GITHUB)/$(GIT_NAME_FLASH)/flash.git flash; \
 	fi
 	@echo ''
 
@@ -238,29 +238,29 @@ $(FLASH_DIR):
 #
 directories:
 	$(START_BUILD)
-	test -d $(D) || mkdir $(D)
-	test -d $(ARCHIVE) || mkdir $(ARCHIVE)
-	test -d $(STL_ARCHIVE) || mkdir $(STL_ARCHIVE)
-	test -d $(BUILD_TMP) || mkdir $(BUILD_TMP)
-	test -d $(SOURCE_DIR) || mkdir $(SOURCE_DIR)
-	install -d $(TARGETPREFIX)
-	install -d $(CROSS_DIR)
-	install -d $(BOOT_DIR)
-	install -d $(HOSTPREFIX)
-	install -d $(HOSTPREFIX)/{bin,lib,share}
-	install -d $(TARGETPREFIX)/{bin,boot,etc,lib,sbin,usr,var}
-	install -d $(TARGETPREFIX)/etc/{init.d,mdev,network,rc.d}
-	install -d $(TARGETPREFIX)/etc/rc.d/{rc0.d,rc6.d}
-	ln -sf ../init.d $(TARGETPREFIX)/etc/rc.d/init.d
-	install -d $(TARGETPREFIX)/lib/{lsb,firmware}
-	install -d $(TARGETPREFIX)/usr/{bin,lib,local,sbin,share}
-	install -d $(TARGETPREFIX)/usr/lib/pkgconfig
-	install -d $(TARGETPREFIX)/usr/include/linux
-	install -d $(TARGETPREFIX)/usr/include/linux/dvb
-	install -d $(TARGETPREFIX)/usr/local/{bin,sbin,share}
-	install -d $(TARGETPREFIX)/var/{etc,lib,run}
-	install -d $(TARGETPREFIX)/var/lib/{misc,nfs}
-	install -d $(TARGETPREFIX)/var/bin
+	$(SILENT)test -d $(D) || mkdir $(D)
+	$(SILENT)test -d $(ARCHIVE) || mkdir $(ARCHIVE)
+	$(SILENT)test -d $(STL_ARCHIVE) || mkdir $(STL_ARCHIVE)
+	$(SILENT)test -d $(BUILD_TMP) || mkdir $(BUILD_TMP)
+	$(SILENT)test -d $(SOURCE_DIR) || mkdir $(SOURCE_DIR)
+	$(SILENT)install -d $(TARGETPREFIX)
+	$(SILENT)install -d $(CROSS_DIR)
+	$(SILENT)install -d $(BOOT_DIR)
+	$(SILENT)install -d $(HOSTPREFIX)
+	$(SILENT)install -d $(HOSTPREFIX)/{bin,lib,share}
+	$(SILENT)install -d $(TARGETPREFIX)/{bin,boot,etc,lib,sbin,usr,var}
+	$(SILENT)install -d $(TARGETPREFIX)/etc/{init.d,mdev,network,rc.d}
+	$(SILENT)install -d $(TARGETPREFIX)/etc/rc.d/{rc0.d,rc6.d}
+	$(SILENT)ln -sf ../init.d $(TARGETPREFIX)/etc/rc.d/init.d
+	$(SILENT)install -d $(TARGETPREFIX)/lib/{lsb,firmware}
+	$(SILENT)install -d $(TARGETPREFIX)/usr/{bin,lib,local,sbin,share}
+	$(SILENT)install -d $(TARGETPREFIX)/usr/lib/pkgconfig
+	$(SILENT)install -d $(TARGETPREFIX)/usr/include/linux
+	$(SILENT)install -d $(TARGETPREFIX)/usr/include/linux/dvb
+	$(SILENT)install -d $(TARGETPREFIX)/usr/local/{bin,sbin,share}
+	$(SILENT)install -d $(TARGETPREFIX)/var/{etc,lib,run}
+	$(SILENT)install -d $(TARGETPREFIX)/var/lib/{misc,nfs}
+	$(SILENT)install -d $(TARGETPREFIX)/var/bin
 	@touch $(D)/$(notdir $@)
 	@echo "--------------------------------------------------------------"
 	@echo -e "Build of $(TERM_GREEN_BOLD)$@$(TERM_NORMAL) completed."; echo
@@ -299,3 +299,4 @@ yaud-none: \
 	@touch $(D)/$(notdir $@)
 	@echo "--------------------------------------------------------------"
 	@echo -e "Build of $(TERM_GREEN_BOLD)$@$(TERM_NORMAL) completed."; echo
+

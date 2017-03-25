@@ -3,17 +3,17 @@
 #
 $(TARGETPREFIX)/var/etc/.version:
 	echo "imagename=Neutrino MP" > $@
-	echo "homepage=https://github.com/Duckbox-Developers" >> $@
+	echo "homepage=https://github.com/Audioniek" >> $@
 	echo "creator=`id -un`" >> $@
-	echo "docs=https://github.com/Duckbox-Developers" >> $@
-	echo "forum=https://github.com/Duckbox-Developers/neutrino-mp-cst-next" >> $@
+	echo "docs=https://github.com/Audioniek" >> $@
+#	echo "forum=https://github.com/Duckbox-Developers/neutrino-mp-cst-next" >> $@
 	echo "version=0200`date +%Y%m%d%H%M`" >> $@
 	echo "git=`git describe`" >> $@
 
 NEUTRINO_DEPS  = $(D)/bootstrap $(D)/libncurses $(D)/lirc $(D)/libcurl
 NEUTRINO_DEPS += $(D)/libpng $(D)/libjpeg $(D)/libgif $(D)/freetype
 NEUTRINO_DEPS += $(D)/alsa-utils $(D)/ffmpeg
-NEUTRINO_DEPS += $(D)/libfribidi  $(D)/libsigc $(D)/libdvbsi++ $(D)/libusb
+NEUTRINO_DEPS += $(D)/libfribidi $(D)/libsigc $(D)/libdvbsi++ $(D)/libusb
 NEUTRINO_DEPS += $(D)/pugixml $(D)/libopenthreads
 NEUTRINO_DEPS += $(D)/lua $(D)/luaexpat $(D)/luacurl $(D)/luasocket $(D)/lua-feedparser $(D)/luasoap $(D)/luajson
 NEUTRINO_DEPS += $(LOCAL_NEUTRINO_DEPS)
@@ -24,7 +24,8 @@ endif
 
 NEUTRINO_DEPS2 = $(D)/libid3tag $(D)/libmad $(D)/libflac
 
-N_CFLAGS       = -Wall -W -Wshadow -pipe -Os -fno-strict-aliasing
+N_CFLAGS       = -Wall -W -Wshadow -pipe -Os
+N_CFLAGS      += -fno-strict-aliasing -funsigned-char
 #N_CFLAGS      += -DCPU_FREQ
 N_CFLAGS      += $(LOCAL_NEUTRINO_CFLAGS)
 
@@ -75,7 +76,7 @@ $(D)/libstb-hal-cst-next-max.do_prepare:
 	git clone git://github.com/MaxWiesel/libstb-hal-cst-next-max.git $(ARCHIVE)/libstb-hal-cst-next-max.git; \
 	cp -ra $(ARCHIVE)/libstb-hal-cst-next-max.git $(SOURCE_DIR)/libstb-hal-cst-next-max;\
 	cp -ra $(SOURCE_DIR)/libstb-hal-cst-next-max $(SOURCE_DIR)/libstb-hal-cst-next-max.org
-	set -e; cd $(SOURCE_DIR)/libstb-hal-cst-next-max; \
+	$(SET) -e; cd $(SOURCE_DIR)/libstb-hal-cst-next-max; \
 		$(call post_patch,$(NEUTRINO_MP_LIBSTB_CST_NEXT_MAX_PATCHES))
 	$(TOUCH)
 
@@ -147,7 +148,7 @@ $(D)/neutrino-mp-cst-next-max.do_prepare: | $(NEUTRINO_DEPS) $(D)/libstb-hal-cst
 	git clone -b duckbox git://github.com/MaxWiesel/cst-public-gui-neutrino.git $(ARCHIVE)/cst-public-gui-neutrino-max.git; \
 	cp -ra $(ARCHIVE)/cst-public-gui-neutrino-max.git $(SOURCE_DIR)/neutrino-mp-cst-next-max; \
 	cp -ra $(SOURCE_DIR)/neutrino-mp-cst-next-max $(SOURCE_DIR)/neutrino-mp-cst-next-max.org
-	set -e; cd $(SOURCE_DIR)/neutrino-mp-cst-next-max; \
+	$(SET) -e; cd $(SOURCE_DIR)/neutrino-mp-cst-next-max; \
 		$(call post_patch,$(NEUTRINO_MP_CST_NEXT_MAX_PATCHES))
 	$(TOUCH)
 
@@ -242,7 +243,7 @@ $(D)/libstb-hal-cst-next.do_prepare:
 	git clone https://github.com/Duckbox-Developers/libstb-hal-cst-next.git $(ARCHIVE)/libstb-hal-cst-next.git; \
 	cp -ra $(ARCHIVE)/libstb-hal-cst-next.git $(SOURCE_DIR)/libstb-hal-cst-next;\
 	cp -ra $(SOURCE_DIR)/libstb-hal-cst-next $(SOURCE_DIR)/libstb-hal-cst-next.org
-	set -e; cd $(SOURCE_DIR)/libstb-hal-cst-next; \
+	$(SET) -e; cd $(SOURCE_DIR)/libstb-hal-cst-next; \
 		$(call post_patch,$(NEUTRINO_MP_LIBSTB_CST_NEXT_PATCHES))
 	$(TOUCH)
 
@@ -314,7 +315,7 @@ $(D)/neutrino-mp-cst-next.do_prepare: | $(NEUTRINO_DEPS) $(D)/libstb-hal-cst-nex
 	git clone https://github.com/Duckbox-Developers/neutrino-mp-cst-next.git $(ARCHIVE)/neutrino-mp-cst-next.git; \
 	cp -ra $(ARCHIVE)/neutrino-mp-cst-next.git $(SOURCE_DIR)/neutrino-mp-cst-next; \
 	cp -ra $(SOURCE_DIR)/neutrino-mp-cst-next $(SOURCE_DIR)/neutrino-mp-cst-next.org
-	set -e; cd $(SOURCE_DIR)/neutrino-mp-cst-next; \
+	$(SET) -e; cd $(SOURCE_DIR)/neutrino-mp-cst-next; \
 		$(call post_patch,$(NEUTRINO_MP_CST_NEXT_PATCHES))
 	$(TOUCH)
 
@@ -334,7 +335,6 @@ $(D)/neutrino-mp-cst-next.config.status:
 			--enable-ffmpegdec \
 			--enable-giflib \
 			--with-tremor \
-			--enable-lua \
 			--with-libdir=/usr/lib \
 			--with-datadir=/usr/share/tuxbox \
 			--with-fontdir=/usr/share/fonts \
@@ -383,10 +383,6 @@ $(D)/neutrino-mp-cst-next: $(D)/neutrino-mp-cst-next.do_prepare $(D)/neutrino-mp
 	$(MAKE) -C $(N_OBJDIR) install DESTDIR=$(TARGETPREFIX); \
 	rm -f $(TARGETPREFIX)/var/etc/.version
 	make $(TARGETPREFIX)/var/etc/.version
-	$(TARGET)-strip $(TARGETPREFIX)/usr/local/bin/neutrino
-	$(TARGET)-strip $(TARGETPREFIX)/usr/local/bin/pzapit
-	$(TARGET)-strip $(TARGETPREFIX)/usr/local/bin/sectionsdcontrol
-	$(TARGET)-strip $(TARGETPREFIX)/usr/local/sbin/udpstreampes
 	$(TOUCH)
 
 neutrino-mp-cst-next-clean:
@@ -430,7 +426,7 @@ $(D)/neutrino-mp-cst-next-ni.do_prepare: | $(NEUTRINO_DEPS) $(D)/libstb-hal-cst-
 	git clone -b ni https://github.com/Duckbox-Developers/neutrino-mp-cst-next.git $(ARCHIVE)/neutrino-mp-cst-next-ni.git; \
 	cp -ra $(ARCHIVE)/neutrino-mp-cst-next-ni.git $(SOURCE_DIR)/neutrino-mp-cst-next-ni; \
 	cp -ra $(SOURCE_DIR)/neutrino-mp-cst-next-ni $(SOURCE_DIR)/neutrino-mp-cst-next-ni.org
-	set -e; cd $(SOURCE_DIR)/neutrino-mp-cst-next-ni; \
+	$(SET) -e; cd $(SOURCE_DIR)/neutrino-mp-cst-next-ni; \
 		$(call post_patch,$(NEUTRINO_MP_CST_NEXT_NI_PATCHES))
 	$(TOUCH)
 
@@ -450,7 +446,6 @@ $(D)/neutrino-mp-cst-next-ni.config.status:
 			--enable-ffmpegdec \
 			--enable-giflib \
 			--with-tremor \
-			--enable-lua \
 			--with-libdir=/usr/lib \
 			--with-datadir=/usr/share/tuxbox \
 			--with-fontdir=/usr/share/fonts \
@@ -499,10 +494,6 @@ $(D)/neutrino-mp-cst-next-ni: $(D)/neutrino-mp-cst-next-ni.do_prepare $(D)/neutr
 	$(MAKE) -C $(N_OBJDIR) install DESTDIR=$(TARGETPREFIX); \
 	rm -f $(TARGETPREFIX)/var/etc/.version
 	make $(TARGETPREFIX)/var/etc/.version
-	$(TARGET)-strip $(TARGETPREFIX)/usr/local/bin/neutrino
-	$(TARGET)-strip $(TARGETPREFIX)/usr/local/bin/pzapit
-	$(TARGET)-strip $(TARGETPREFIX)/usr/local/bin/sectionsdcontrol
-	$(TARGET)-strip $(TARGETPREFIX)/usr/local/sbin/udpstreampes
 	$(TOUCH)
 
 neutrino-mp-cst-next-ni-clean:
@@ -565,7 +556,7 @@ $(D)/neutrino-hd2.do_prepare: | $(NEUTRINO_DEPS) $(NEUTRINO_DEPS2)
 	cp -ra $(ARCHIVE)/neutrino-hd2.git $(SOURCE_DIR)/neutrino-hd2.git; \
 	ln -s $(SOURCE_DIR)/neutrino-hd2.git/nhd2-exp $(SOURCE_DIR)/neutrino-hd2;\
 	cp -ra $(SOURCE_DIR)/neutrino-hd2.git/nhd2-exp $(SOURCE_DIR)/neutrino-hd2.org
-	set -e; cd $(SOURCE_DIR)/neutrino-hd2; \
+	$(SET) -e; cd $(SOURCE_DIR)/neutrino-hd2; \
 		$(call post_patch,$(NEUTRINO_HD2_PATCHES))
 	$(TOUCH)
 
@@ -597,9 +588,6 @@ $(D)/neutrino-hd2: $(D)/neutrino-hd2.do_prepare $(D)/neutrino-hd2.do_compile
 	$(MAKE) -C $(SOURCE_DIR)/neutrino-hd2 install DESTDIR=$(TARGETPREFIX); \
 	rm -f $(TARGETPREFIX)/var/etc/.version
 	make $(TARGETPREFIX)/var/etc/.version
-	$(TARGET)-strip $(TARGETPREFIX)/usr/local/bin/neutrino
-	$(TARGET)-strip $(TARGETPREFIX)/usr/local/bin/pzapit
-	$(TARGET)-strip $(TARGETPREFIX)/usr/local/bin/sectionsdcontrol
 	$(TOUCH)
 
 $(D)/neutrino-hd2.do_compile: $(SOURCE_DIR)/neutrino-hd2/config.status
@@ -636,7 +624,7 @@ $(D)/libstb-hal-cst-next-tangos.do_prepare:
 	git clone https://github.com/TangoCash/libstb-hal-cst-next.git $(ARCHIVE)/libstb-hal-cst-next-tangos.git; \
 	cp -ra $(ARCHIVE)/libstb-hal-cst-next-tangos.git $(SOURCE_DIR)/libstb-hal-cst-next-tangos;\
 	cp -ra $(SOURCE_DIR)/libstb-hal-cst-next-tangos $(SOURCE_DIR)/libstb-hal-cst-next-tangos.org
-	set -e; cd $(SOURCE_DIR)/libstb-hal-cst-next-tangos; \
+	$(SET) -e; cd $(SOURCE_DIR)/libstb-hal-cst-next-tangos; \
 		$(call post_patch,$(NEUTRINO_MP_LIBSTB_CST_NEXT_PATCHES))
 	$(TOUCH)
 
@@ -715,7 +703,7 @@ $(D)/neutrino-mp-tangos.do_prepare: | $(NEUTRINO_DEPS) $(D)/libstb-hal-cst-next-
 	git clone https://github.com/TangoCash/neutrino-mp-cst-next.git $(ARCHIVE)/neutrino-mp-tangos.git; \
 	cp -ra $(ARCHIVE)/neutrino-mp-tangos.git $(SOURCE_DIR)/neutrino-mp-tangos; \
 	cp -ra $(SOURCE_DIR)/neutrino-mp-tangos $(SOURCE_DIR)/neutrino-mp-tangos.org
-	set -e; cd $(SOURCE_DIR)/neutrino-mp-tangos; \
+	$(SET) -e; cd $(SOURCE_DIR)/neutrino-mp-tangos; \
 		$(call post_patch,$(NEUTRINO_MP_TANGOS_PATCHES))
 	$(TOUCH)
 
@@ -782,10 +770,6 @@ $(D)/neutrino-mp-tangos: $(D)/neutrino-mp-tangos.do_prepare $(D)/neutrino-mp-tan
 	$(MAKE) -C $(N_OBJDIR) install DESTDIR=$(TARGETPREFIX); \
 	rm -f $(TARGETPREFIX)/var/etc/.version
 	make $(TARGETPREFIX)/var/etc/.version
-	$(TARGET)-strip $(TARGETPREFIX)/usr/local/bin/neutrino
-	$(TARGET)-strip $(TARGETPREFIX)/usr/local/bin/pzapit
-	$(TARGET)-strip $(TARGETPREFIX)/usr/local/bin/sectionsdcontrol
-	$(TARGET)-strip $(TARGETPREFIX)/usr/local/sbin/udpstreampes
 	$(TOUCH)
 
 neutrino-mp-tangos-clean:

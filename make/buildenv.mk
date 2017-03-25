@@ -24,8 +24,8 @@ SOURCE_DIR            = $(BASE_DIR)/source
 
 # default platform...
 TARGET               ?= sh4-linux
+#HOST                 ?= sh4-linux
 BOXARCH              ?= sh4
-
 
 GIT_PROTOCOL         ?= http
 ifneq ($(GIT_PROTOCOL), http)
@@ -108,9 +108,9 @@ NR_CPU               := $(shell [ -f /proc/cpuinfo ] && grep -c '^processor\s*:'
 PARALLEL_MAKE        ?= -j $(NR_CPU)
 MAKEFLAGS            += $(PARALLEL_MAKE)
 ifndef VERBOSE
-VERBOSE               = 1
+VERBOSE               = 0
 endif
-ifeq ($(VERBOSE), 1)
+ifneq ($(VERBOSE), 1)
 SILENT                = @
 MAKEFLAGS            += --silent
 MAKEFLAGS            += --no-print-directory
@@ -148,6 +148,8 @@ define post_patch
 			for p in $$i/*; do \
 				if [ $${p:0:1} == "/" ]; then \
 					echo -e "==> $(TERM_RED)Applying Patch:$(TERM_NORMAL) $$p"; $(APATCH) $$p; \
+				else \
+					echo -e "==> $(TERM_RED)Applying Patch:$(TERM_NORMAL) $$p"; $(PATCH)/$$p; \
 				fi; \
 			done; \
 		else \
@@ -248,12 +250,12 @@ P0217                      = p0217
 endif
 
 split_version=$(subst _, ,$(1))
-KERNEL_UPSTREAM        =$(word 1,$(call split_version,$(KERNEL_VERSION)))
-KERNEL_STM            :=$(word 2,$(call split_version,$(KERNEL_VERSION)))
-KERNEL_LABEL          :=$(word 3,$(call split_version,$(KERNEL_VERSION)))
-KERNEL_RELEASE        :=$(subst ^0,,^$(KERNEL_LABEL))
-KERNEL_STM_LABEL      := _$(KERNEL_STM)_$(KERNEL_LABEL)
-KERNEL_DIR             =$(BUILD_TMP)/linux-sh4-$(KERNEL_VERSION)
+KERNEL_UPSTREAM    =$(word 1,$(call split_version,$(KERNEL_VERSION)))
+KERNEL_STM        :=$(word 2,$(call split_version,$(KERNEL_VERSION)))
+KERNEL_LABEL      :=$(word 3,$(call split_version,$(KERNEL_VERSION)))
+KERNEL_RELEASE    :=$(subst ^0,,^$(KERNEL_LABEL))
+KERNEL_STM_LABEL  := _$(KERNEL_STM)_$(KERNEL_LABEL)
+KERNEL_DIR         = $(BUILD_TMP)/linux-sh4-$(KERNEL_VERSION)
 
 #
 # image
@@ -303,10 +305,12 @@ endif
 ifeq ($(PLAYER_VERSION), 191)
 PLAYER2            = PLAYER191=player191
 PLAYER191          = 1
+PLAYER_VERSION_DRIVER = 191
 PLAYER2_LINK       = player2_191
 else ifeq ($(PLAYER_VERSION), 228)
 PLAYER2            = PLAYER228=player228
 PLAYER228          = 1
+PLAYER_VERSION_DRIVER = 228
 PLAYER2_LINK       = player2_228
 endif
 

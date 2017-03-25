@@ -297,7 +297,7 @@ case "$IMAGE" in
 
 #		if [ "$LASTIMAGE1" ] || [ "$LASTIMAGE3" ] || [ ! "$LASTBOX" == "$TARGET" ]; then
 		if [ "$LASTIMAGE1" ] || [ ! "$LASTBOX" == "$BOXTYPE" ]; then
-			if [ -e ./.deps/* ]; then
+			if [ -e ./.deps/ ]; then
 				echo -n -e "\nSettings changed, performing distclean..."
 				make distclean 2> /dev/null > /dev/null
 				echo "[Done]"
@@ -378,7 +378,7 @@ echo "MEDIAFW=$MEDIAFW" >> config
 
 ##############################################
 
-case "$TARGET" in
+case "$BOXTYPE" in
 	hs7110|hs7119|hs7420|hs7429|hs7810a|hs7819)
 		case $9 in
 			[1-2])	REPLY=$9;;

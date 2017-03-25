@@ -6,11 +6,11 @@ driver-clean:
 	rm -f $(D)/driver
 
 driver-symlink:
-	set -e; cd $(DRIVER_DIR); \
+	$(SET) -e; cd $(DRIVER_DIR); \
 		rm -f player2 multicom; \
 		ln -s $(PLAYER2_LINK) player2; \
 		ln -s $(MULTICOM_LINK) multicom; \
-		rm -f .config; printf "export CONFIG_PLAYER_$(PLAYER_VERSION)=y\nexport CONFIG_MULTICOM$(MULTICOM_VERSION)=y\n" > .config; \
+		rm -f .config; printf "export CONFIG_PLAYER_$(PLAYER_VERSION_DRIVER)=y\nexport CONFIG_MULTICOM$(MULTICOM_VERSION)=y\n" > .config; \
 		cd include; \
 		rm -f stmfb player2 multicom; \
 		ln -s stmfb-3.1_stm24_0104 stmfb; \
@@ -19,12 +19,12 @@ driver-symlink:
 		cd ../stgfb; \
 		rm -f stmfb; \
 		ln -s stmfb-3.1_stm24_0104 stmfb
-	cp $(DRIVER_DIR)/stgfb/stmfb/linux/drivers/video/stmfb.h $(TARGETPREFIX)/usr/include/linux
-	cp $(DRIVER_DIR)/player2/linux/include/linux/dvb/stm_ioctls.h $(TARGETPREFIX)/usr/include/linux/dvb
-	$(if $(PLAYER228),cp $(DRIVER_DIR)/player2/linux/include/linux/dvb/stm_audio.h $(TARGETPREFIX)/usr/include/linux/dvb)
-	$(if $(PLAYER228),cp $(DRIVER_DIR)/player2/linux/include/linux/dvb/stm_dvb.h $(TARGETPREFIX)/usr/include/linux/dvb)
-	$(if $(PLAYER228),cp $(DRIVER_DIR)/player2/linux/include/linux/dvb/stm_video.h $(TARGETPREFIX)/usr/include/linux/dvb)
-	touch $(D)/$(notdir $@)
+	$(SILENT)cp $(DRIVER_DIR)/stgfb/stmfb/linux/drivers/video/stmfb.h $(TARGETPREFIX)/usr/include/linux
+	$(SILENT)cp $(DRIVER_DIR)/player2/linux/include/linux/dvb/stm_ioctls.h $(TARGETPREFIX)/usr/include/linux/dvb
+	$(SILENT)$(if $(PLAYER228),cp $(DRIVER_DIR)/player2/linux/include/linux/dvb/stm_audio.h $(TARGETPREFIX)/usr/include/linux/dvb)
+	$(SILENT)$(if $(PLAYER228),cp $(DRIVER_DIR)/player2/linux/include/linux/dvb/stm_dvb.h $(TARGETPREFIX)/usr/include/linux/dvb)
+	$(SILENT)$(if $(PLAYER228),cp $(DRIVER_DIR)/player2/linux/include/linux/dvb/stm_video.h $(TARGETPREFIX)/usr/include/linux/dvb)
+	@touch $(D)/$(notdir $@)
 
 driver: $(D)/driver
 $(D)/driver: $(DRIVER_DIR)/Makefile $(D)/bootstrap $(D)/linux-kernel

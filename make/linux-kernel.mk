@@ -57,7 +57,7 @@ OCTAGON1008_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-sh4-stmmac_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-i2c-st40-pio_stm24_$(KERNEL_LABEL).patch
 ifeq ($(IMAGE), $(filter $(IMAGE), neutrino neutrino-wlandriver))
-OCTAGON1008_PATCHES_24 += linux-sh4-octagon100_stm24_$(KERNEL_LABEL).patch
+OCTAGON1008_PATCHES_24 += linux-sh4-octagon1008_stm24_$(KERNEL_LABEL).patch
 endif
 
 ATEVIO7500_PATCHES_24 = $(COMMON_PATCHES_24) \
@@ -274,7 +274,7 @@ endif
 	@echo "Starting Kernel build"
 	@echo "====================="
 	@echo
-	@if [ -e $(ARCHIVE)/linux-sh4-2.6.32.71-source-sh4-P$(KERNEL_LABEL).tar.gz ]; then \
+	$(SILENT)if [ -e $(ARCHIVE)/linux-sh4-2.6.32.71-source-sh4-P$(KERNEL_LABEL).tar.gz ]; then \
 		mkdir $(KERNEL_DIR); \
 		echo -n "Getting archived P$(KERNEL_LABEL) kernel source..."; \
 		tar -xf $(ARCHIVE)/linux-sh4-2.6.32.71-source-sh4-P$(KERNEL_LABEL).tar.gz -C $(KERNEL_DIR); \
@@ -306,101 +306,110 @@ endif
 		echo -e "==> $(TERM_RED)Applying Patch:$(TERM_NORMAL) $$i"; \
 		patch -p1 $(SILENT_PATCH) -i $(PATCHES)/$(BUILD_CONFIG)/$$i; \
 	done
-	@install -m 644 $(PATCHES)/$(BUILD_CONFIG)/$(HOST_KERNEL_CONFIG) $(KERNEL_DIR)/.config
-	@sed -i "s#^\(CONFIG_EXTRA_FIRMWARE_DIR=\).*#\1\"$(BASE_DIR)/integrated_firmware\"#" $(KERNEL_DIR)/.config
-	@rm $(KERNEL_DIR)/localversion*
-	@echo "$(KERNEL_STM_LABEL)" > $(KERNEL_DIR)/localversion-stm
+	$(SILENT)install -m 644 $(PATCHES)/$(BUILD_CONFIG)/$(HOST_KERNEL_CONFIG) $(KERNEL_DIR)/.config
+	$(SILENT)sed -i "s#^\(CONFIG_EXTRA_FIRMWARE_DIR=\).*#\1\"$(BASE_DIR)/integrated_firmware\"#" $(KERNEL_DIR)/.config
+	$(SILENT)rm $(KERNEL_DIR)/localversion*
+	$(SILENT)echo "$(KERNEL_STM_LABEL)" > $(KERNEL_DIR)/localversion-stm
 ifeq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), kerneldebug debug))
-	@echo "Using kernel debug"
-	@grep -v "CONFIG_PRINTK" "$(KERNEL_DIR)/.config" > "$(KERNEL_DIR)/.config.tmp"
-	@cp "$(KERNEL_DIR)/.config.tmp" "$(KERNEL_DIR)/.config"
-	@echo "CONFIG_PRINTK=y" >> "$(KERNEL_DIR)/.config"
-	@echo "CONFIG_PRINTK_TIME=y" >> "$(KERNEL_DIR)/.config"
+	$(SILENT)echo "Configuring kernel for debug"
+	$(SILENT)grep -v "CONFIG_PRINTK" "$(KERNEL_DIR)/.config" > $(KERNEL_DIR)/.config.tmp
+	cp $(KERNEL_DIR)/.config.tmp $(KERNEL_DIR)/.config
+	$(SILENT)echo "CONFIG_PRINTK=y" >> $(KERNEL_DIR)/.config
+	$(SILENT)echo "CONFIG_PRINTK_TIME=y" >> $(KERNEL_DIR)/.config
+	$(SILENT)grep -v "CONFIG_DYNAMIC_DEBUG" "$(KERNEL_DIR)/.config" > $(KERNEL_DIR)/.config.tmp
+	cp $(KERNEL_DIR)/.config.tmp $(KERNEL_DIR)/.config
+	$(SILENT)echo "# CONFIG_DYNAMIC_DEBUG is not set" >> $(KERNEL_DIR)/.config
 endif
 ifeq ($(IMAGE), $(filter $(IMAGE), enigma2-wlandriver neutrino-wlandriver))
-	@echo "Using kernel wireless"
-	@grep -v "CONFIG_WIRELESS" "$(KERNEL_DIR)/.config" > "$(KERNEL_DIR)/.config.tmp"
-	cp "$(KERNEL_DIR)/.config.tmp" "$(KERNEL_DIR)/.config"
-	@echo "CONFIG_WIRELESS=y" >> "$(KERNEL_DIR)/.config"
-	@echo "# CONFIG_CFG80211 is not set" >> "$(KERNEL_DIR)/.config"
-	@echo "# CONFIG_WIRELESS_OLD_REGULATORY is not set" >> "$(KERNEL_DIR)/.config"
-	@echo "CONFIG_WIRELESS_EXT=y" >> "$(KERNEL_DIR)/.config"
-	@echo "CONFIG_WIRELESS_EXT_SYSFS=y" >> "$(KERNEL_DIR)/.config"
-	@echo "# CONFIG_LIB80211 is not set" >> "$(KERNEL_DIR)/.config"
-	@echo "CONFIG_WLAN=y" >> "$(KERNEL_DIR)/.config"
-	@echo "# CONFIG_WLAN_PRE80211 is not set" >> "$(KERNEL_DIR)/.config"
-	@echo "CONFIG_WLAN_80211=y" >> "$(KERNEL_DIR)/.config"
-	@echo "# CONFIG_LIBERTAS is not set" >> "$(KERNEL_DIR)/.config"
-	@echo "# CONFIG_USB_ZD1201 is not set" >> "$(KERNEL_DIR)/.config"
-	@echo "# CONFIG_HOSTAP is not set" >> "$(KERNEL_DIR)/.config"
+	$(SILENT)echo "Configuring kernel for wireless LAN"
+	$(SILENT)grep -v "CONFIG_WIRELESS" "$(KERNEL_DIR)/.config" > $(KERNEL_DIR)/.config.tmp
+	cp $(KERNEL_DIR)/.config.tmp $(KERNEL_DIR)/.config
+	$(SILENT)echo "CONFIG_WIRELESS=y" >> $(KERNEL_DIR)/.config
+	$(SILENT)grep -v "CONFIG_CFG80211" "$(KERNEL_DIR)/.config" > $(KERNEL_DIR)/.config.tmp
+	cp $(KERNEL_DIR)/.config.tmp $(KERNEL_DIR)/.config
+	$(SILENT)echo "# CONFIG_CFG80211 is not set" >> $(KERNEL_DIR)/.config
+	$(SILENT)echo "# CONFIG_WIRELESS_OLD_REGULATORY is not set" >> $(KERNEL_DIR)/.config
+	$(SILENT)echo "CONFIG_WIRELESS_EXT=y" >> $(KERNEL_DIR)/.config
+	$(SILENT)echo "CONFIG_WIRELESS_EXT_SYSFS=y" >> $(KERNEL_DIR)/.config
+	$(SILENT)grep -v "CONFIG_LIB80211" "$(KERNEL_DIR)/.config" > $(KERNEL_DIR)/.config.tmp
+	$(SILENT)cp $(KERNEL_DIR)/.config.tmp $(KERNEL_DIR)/.config
+	$(SILENT)echo "# CONFIG_LIB80211 is not set" >> $(KERNEL_DIR)/.config
+	$(SILENT)grep -v "CONFIG_WLAN" "$(KERNEL_DIR)/.config" > $(KERNEL_DIR)/.config.tmp
+	$(SILENT)cp $(KERNEL_DIR)/.config.tmp $(KERNEL_DIR)/.config
+	$(SILENT)echo "CONFIG_WLAN=y" >> $(KERNEL_DIR)/.config
+	$(SILENT)echo "# CONFIG_WLAN_PRE80211 is not set" >> $(KERNEL_DIR)/.config
+	$(SILENT)echo "CONFIG_WLAN_80211=y" >> $(KERNEL_DIR)/.config
+	$(SILENT)echo "# CONFIG_LIBERTAS is not set" >> $(KERNEL_DIR)/.config
+	$(SILENT)echo "# CONFIG_USB_ZD1201 is not set" >> $(KERNEL_DIR)/.config
+	$(SILENT)echo "# CONFIG_HOSTAP is not set" >> $(KERNEL_DIR)/.config
 endif
 ifeq ($(DESTINATION), USB)
-	@echo "Using kernel USB"
-	@grep -v "CONFIG_BLK_DEV_INITRD" "$(KERNEL_DIR)/.config" > "$(KERNEL_DIR)/.config.tmp"
-	cp "$(KERNEL_DIR)/.config.tmp" "$(KERNEL_DIR)/.config"
-	@echo "CONFIG_BLK_DEV_INITRD=y " >> "$(KERNEL_DIR)/.config"
-	echo "CONFIG_INITRAMFS_SOURCE=\"$(APPS_DIR)/tools/USB_boot/initramfs_no_hdd\"" >> "$(KERNEL_DIR)/.config"
-	@echo "CONFIG_INITRAMFS_ROOT_UID=0" >> "$(KERNEL_DIR)/.config"
-	@echo "CONFIG_INITRAMFS_ROOT_GID=0" >> "$(KERNEL_DIR)/.config"
-	@echo "CONFIG_RD_GZIP=y" >> "$(KERNEL_DIR)/.config"
-	@echo "CONFIG_RD_BZIP2=y" >> "$(KERNEL_DIR)/.config"
-	@echo "# CONFIG_RD_LZMA is not set" >> "$(KERNEL_DIR)/.config"
-	@echo "# CONFIG_INITRAMFS_COMPRESSION_NONE is not set" >> "$(KERNEL_DIR)/.config"
-	@echo "CONFIG_INITRAMFS_COMPRESSION_GZIP=y" >> "$(KERNEL_DIR)/.config"
-	@echo "# CONFIG_INITRAMFS_COMPRESSION_BZIP2 is not set" >> "$(KERNEL_DIR)/.config"
-	@echo "# CONFIG_INITRAMFS_COMPRESSION_LZMA is not set" >> "$(KERNEL_DIR)/.config"
-	@grep -v "CONFIG_DECOMPRESS_GZIP" "$(KERNEL_DIR)/.config" > "$(KERNEL_DIR)/.config.tmp"
-	cp "$(KERNEL_DIR)/.config.tmp" "$(KERNEL_DIR)/.config"
-	@echo "CONFIG_DECOMPRESS_GZIP=y" >> $(KERNEL_DIR)/.config
-	@grep -v "CONFIG_DECOMPRESS_BZIP2" $(KERNEL_DIR)/.config > $(KERNEL_DIR)/.config.tmp
-	cp "$(KERNEL_DIR)/.config.tmp" "$(KERNEL_DIR)/.config"
-	@echo "CONFIG_DECOMPRESS_BZIP2=y" >> "$(KERNEL_DIR)/.config"
+	$(SILENT)echo "Configuring kernel for running on USB"
+	$(SILENT)grep -v "CONFIG_BLK_DEV_INITRD" "$(KERNEL_DIR)/.config" > $(KERNEL_DIR)/.config.tmp
+	$(SILENT)cp $(KERNEL_DIR)/.config.tmp $(KERNEL_DIR)/.config
+	$(SILENT)echo "CONFIG_BLK_DEV_INITRD=y " >> $(KERNEL_DIR)/.config
+	$(SILENT)echo "CONFIG_INITRAMFS_SOURCE=\"$(APPS_DIR)/tools/USB_boot/initramfs_no_hdd\"" >> $(KERNEL_DIR)/.config
+	$(SILENT)echo "CONFIG_INITRAMFS_ROOT_UID=0" >> $(KERNEL_DIR)/.config
+	$(SILENT)echo "CONFIG_INITRAMFS_ROOT_GID=0" >> $(KERNEL_DIR)/.config
+	$(SILENT)echo "CONFIG_RD_GZIP=y" >> $(KERNEL_DIR)/.config
+	$(SILENT)echo "CONFIG_RD_BZIP2=y" >> $(KERNEL_DIR)/.config
+	$(SILENT)echo "# CONFIG_RD_LZMA is not set" >> $(KERNEL_DIR)/.config
+	$(SILENT)echo "# CONFIG_INITRAMFS_COMPRESSION_NONE is not set" >> $(KERNEL_DIR)/.config
+	$(SILENT)echo "CONFIG_INITRAMFS_COMPRESSION_GZIP=y" >> $(KERNEL_DIR)/.config
+	$(SILENT)echo "# CONFIG_INITRAMFS_COMPRESSION_BZIP2 is not set" >> $(KERNEL_DIR)/.config
+	$(SILENT)echo "# CONFIG_INITRAMFS_COMPRESSION_LZMA is not set" >> $(KERNEL_DIR)/.config
+	$(SILENT)grep -v "CONFIG_DECOMPRESS_GZIP" "$(KERNEL_DIR)/.config" > $(KERNEL_DIR)/.config.tmp
+	$(SILENT)cp $(KERNEL_DIR)/.config.tmp $(KERNEL_DIR)/.config
+	$(SILENT)echo "CONFIG_DECOMPRESS_GZIP=y" >> $(KERNEL_DIR)/.config
+	$(SILENT)@grep -v "CONFIG_DECOMPRESS_BZIP2" $(KERNEL_DIR)/.config > $(KERNEL_DIR)/.config.tmp
+	$(SILENT)cp $(KERNEL_DIR)/.config.tmp $(KERNEL_DIR)/.config
+	$(SILENT)echo "CONFIG_DECOMPRESS_BZIP2=y" >> $(KERNEL_DIR)/.config
 endif
 	@touch $@
 
 $(D)/linux-kernel.do_compile: $(D)/linux-kernel.do_prepare
-	set -e; \
+	$(SILENT)set -e; \
 	cd $(KERNEL_DIR); \
-	$(MAKE) -C $(KERNEL_DIR) ARCH=sh oldconfig; \
-	$(MAKE) -C $(KERNEL_DIR) ARCH=sh include/asm; \
-	$(MAKE) -C $(KERNEL_DIR) ARCH=sh include/linux/version.h; \
-	$(MAKE) -C $(KERNEL_DIR) ARCH=sh CROSS_COMPILE=$(TARGET)- uImage modules; \
-	$(MAKE) -C $(KERNEL_DIR) ARCH=sh CROSS_COMPILE=$(TARGET)- DEPMOD=$(DEPMOD) INSTALL_MOD_PATH=$(TARGETPREFIX) modules_install
+		$(MAKE) -C $(KERNEL_DIR) ARCH=sh oldconfig
+		$(MAKE) -C $(KERNEL_DIR) ARCH=sh include/asm
+		$(MAKE) -C $(KERNEL_DIR) ARCH=sh include/linux/version.h
+		$(MAKE) -C $(KERNEL_DIR) ARCH=sh CROSS_COMPILE=$(TARGET)- uImage modules
+		$(MAKE) -C $(KERNEL_DIR) ARCH=sh CROSS_COMPILE=$(TARGET)- DEPMOD=$(DEPMOD) INSTALL_MOD_PATH=$(TARGETPREFIX) modules_install
 	@touch $@
 
 $(D)/linux-kernel: $(D)/bootstrap host_u_boot_tools $(D)/linux-kernel.do_compile
-	install -m 644 $(KERNEL_DIR)/arch/sh/boot/uImage $(BOOT_DIR)/vmlinux.ub
-	install -m 644 $(KERNEL_DIR)/vmlinux $(TARGETPREFIX)/boot/vmlinux-sh4-$(KERNEL_VERSION)
-	install -m 644 $(KERNEL_DIR)/System.map $(TARGETPREFIX)/boot/System.map-sh4-$(KERNEL_VERSION)
-	cp $(KERNEL_DIR)/arch/sh/boot/uImage $(TARGETPREFIX)/boot/
-	rm $(TARGETPREFIX)/lib/modules/$(KERNEL_VERSION)/build || true
-	rm $(TARGETPREFIX)/lib/modules/$(KERNEL_VERSION)/source || true
+	$(SILENT)install -m 644 $(KERNEL_DIR)/arch/sh/boot/uImage $(BOOT_DIR)/vmlinux.ub
+	$(SILENT)install -m 644 $(KERNEL_DIR)/vmlinux $(TARGETPREFIX)/boot/vmlinux-sh4-$(KERNEL_VERSION)
+	$(SILENT)install -m 644 $(KERNEL_DIR)/System.map $(TARGETPREFIX)/boot/System.map-sh4-$(KERNEL_VERSION)
+	$(SILENT)cp $(KERNEL_DIR)/arch/sh/boot/uImage $(TARGETPREFIX)/boot/
+	$(SILENT)rm $(TARGETPREFIX)/lib/modules/$(KERNEL_VERSION)/build || true
+	$(SILENT)rm $(TARGETPREFIX)/lib/modules/$(KERNEL_VERSION)/source || true
 	$(TOUCH)
 
 $(D)/kernel-headers: linux-kernel.do_prepare
-	cd $(KERNEL_DIR)
-	install -d $(TARGETPREFIX)/usr/include
-	cp -a include/linux $(TARGETPREFIX)/usr/include
-	cp -a include/asm-sh $(TARGETPREFIX)/usr/include/asm
-	cp -a include/asm-generic $(TARGETPREFIX)/usr/include
-	cp -a include/mtd $(TARGETPREFIX)/usr/include
+	$(SILENT)cd $(KERNEL_DIR)
+	$(SILENT)install -d $(TARGETPREFIX)/usr/include
+	$(SILENT)cp -a include/linux $(TARGETPREFIX)/usr/include
+	$(SILENT)cp -a include/asm-sh $(TARGETPREFIX)/usr/include/asm
+	$(SILENT)cp -a include/asm-generic $(TARGETPREFIX)/usr/include
+	$(SILENT)cp -a include/mtd $(TARGETPREFIX)/usr/include
 	$(TOUCH)
 
 $(D)/tfkernel:
 	$(START_BUILD)
-	cd $(KERNEL_DIR)
+	$(SILENT)cd $(KERNEL_DIR)
 	$(MAKE) $(if $(TF7700),TF7700=y) ARCH=sh CROSS_COMPILE=$(TARGET)- uImage
 	$(TOUCH)
 
 linux-kernel-distclean:
-	rm -f $(D)/linux-kernel
-	rm -f $(D)/linux-kernel.do_compile
-	rm -f $(D)/linux-kernel.do_prepare
+	$(SILENT)rm -f $(D)/linux-kernel
+	$(SILENT)rm -f $(D)/linux-kernel.do_compile
+	$(SILENT)rm -f $(D)/linux-kernel.do_prepare
 
 linux-kernel-clean:
 	-$(MAKE) -C $(KERNEL_DIR) clean
-	rm -f $(D)/linux-kernel
-	rm -f $(D)/linux-kernel.do_compile
+	$(SILENT)rm -f $(D)/linux-kernel
+	$(SILENT)rm -f $(D)/linux-kernel.do_compile
 
 #
 # Helper

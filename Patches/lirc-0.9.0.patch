@@ -49,7 +49,7 @@ diff -ur lirc-0.9.0-orig/daemons/ir_remote.c lirc-0.9.0/daemons/ir_remote.c
 diff -ur lirc-0.9.0-orig/daemons/lircd.c lirc-0.9.0/daemons/lircd.c
 --- lirc-0.9.0-orig/daemons/lircd.c	2011-03-25 23:28:18.000000000 +0100
 +++ lirc-0.9.0/daemons/lircd.c	2013-02-09 10:40:38.853626806 +0100
-@@ -60,6 +60,12 @@
+@@ -60,6 +60,15 @@
  #if defined(__linux__)
  #include <linux/input.h>
  #include <linux/uinput.h>
@@ -57,12 +57,15 @@ diff -ur lirc-0.9.0-orig/daemons/lircd.c lirc-0.9.0/daemons/lircd.c
 +extern __u64 pre_data_locked;
 +
 +#ifdef SPARK
++struct semaphore {
++	int dummy;
++};
 +#include <aotom_main.h>
 +#endif
  #include "input_map.h"
  #endif
  
-@@ -119,6 +125,8 @@
+@@ -119,6 +128,8 @@
  	{"VERSION", version},
  	{"SET_TRANSMITTERS", set_transmitters},
  	{"SIMULATE", simulate},
@@ -71,7 +74,7 @@ diff -ur lirc-0.9.0-orig/daemons/lircd.c lirc-0.9.0/daemons/lircd.c
  	{NULL, NULL}
  	/*
  	   {"DEBUG",debug},
-@@ -386,6 +394,9 @@
+@@ -386,6 +397,9 @@
  #endif
  
  	config();
@@ -81,7 +84,7 @@ diff -ur lirc-0.9.0-orig/daemons/lircd.c lirc-0.9.0/daemons/lircd.c
  
  	for (i = 0; i < clin; i++) {
  		if (!
-@@ -432,7 +443,7 @@
+@@ -432,7 +446,7 @@
  		goto setup_error;
  	}
  
@@ -90,7 +93,7 @@ diff -ur lirc-0.9.0-orig/daemons/lircd.c lirc-0.9.0/daemons/lircd.c
  		if (ioctl(fd, UI_SET_KEYBIT, key) != 0) {
  			goto setup_error;
  		}
-@@ -833,6 +844,7 @@
+@@ -833,6 +847,7 @@
  		end[0] = 0;
  		length = strlen(buffer);
  		LOGPRINTF(1, "received peer message: \"%s\"", buffer);
@@ -98,7 +101,7 @@ diff -ur lirc-0.9.0-orig/daemons/lircd.c lirc-0.9.0/daemons/lircd.c
  		for (i = 0; i < clin; i++) {
  			/* don't relay messages to remote clients */
  			if (cli_type[i] == CT_REMOTE)
-@@ -1609,6 +1621,145 @@
+@@ -1609,6 +1624,145 @@
  	return (1);
  }
  
@@ -244,7 +247,7 @@ diff -ur lirc-0.9.0-orig/daemons/lircd.c lirc-0.9.0/daemons/lircd.c
  int get_command(int fd)
  {
  	int length;
-@@ -1786,18 +1937,41 @@
+@@ -1786,18 +1940,41 @@
  	if (uinputfd != -1) {
  		linux_input_code input_code;
  
@@ -287,7 +290,7 @@ diff -ur lirc-0.9.0-orig/daemons/lircd.c lirc-0.9.0/daemons/lircd.c
  			/* Need to write sync event */
  			memset(&event, 0, sizeof(event));
  			event.type = EV_SYN;
-@@ -1807,6 +1981,7 @@
+@@ -1807,6 +1984,7 @@
  				logprintf(LOG_ERR, "writing EV_SYN to uinput failed");
  				logperror(LOG_ERR, NULL);
  			}
@@ -295,7 +298,7 @@ diff -ur lirc-0.9.0-orig/daemons/lircd.c lirc-0.9.0/daemons/lircd.c
  		}
  	}
  #endif
-@@ -2233,6 +2408,14 @@
+@@ -2233,6 +2411,14 @@
  
  	signal(SIGPIPE, SIG_IGN);
  
@@ -310,7 +313,7 @@ diff -ur lirc-0.9.0-orig/daemons/lircd.c lirc-0.9.0/daemons/lircd.c
  	start_server(permission, nodaemon);
  
  	act.sa_handler = sigterm;
-@@ -2246,8 +2429,10 @@
+@@ -2246,8 +2432,10 @@
  	act.sa_flags = SA_RESTART;	/* don't fiddle with EINTR */
  	sigaction(SIGALRM, &act, NULL);
  
