@@ -107,6 +107,7 @@ TERM_NORMAL          := \033[0m
 NR_CPU               := $(shell [ -f /proc/cpuinfo ] && grep -c '^processor\s*:' /proc/cpuinfo || echo 1)
 PARALLEL_MAKE        ?= -j $(NR_CPU)
 MAKEFLAGS            += $(PARALLEL_MAKE)
+
 ifndef VERBOSE
 VERBOSE               = 0
 endif
@@ -240,6 +241,13 @@ KERNEL_VERSION             = 2.6.32.46_stm24_0209
 STM_KERNEL_HEADERS_VERSION = 2.6.32.46-47
 HOST_KERNEL_REVISION       = 8c676f1a85935a94de1fb103c0de1dd25ff69014
 P0209                      = p0209
+endif
+
+ifeq ($(KERNEL), p0217_61)
+KERNEL_VERSION             = 2.6.32.61_stm24_0217
+STM_KERNEL_HEADERS_VERSION = 2.6.32.46-48
+HOST_KERNEL_REVISION       = b43f8252e9f72e5b205c8d622db3ac97736351fc
+P0217                      = p0217
 endif
 
 ifeq ($(KERNEL), p0217)

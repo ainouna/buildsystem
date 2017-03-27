@@ -274,10 +274,10 @@ endif
 	@echo "Starting Kernel build"
 	@echo "====================="
 	@echo
-	$(SILENT)if [ -e $(ARCHIVE)/linux-sh4-2.6.32.71-source-sh4-P$(KERNEL_LABEL).tar.gz ]; then \
+	$(SILENT)if [ -e $(ARCHIVE)/linux-sh4-$(KERNEL_UPSTREAM)-source-sh4-P$(KERNEL_LABEL).tar.gz ]; then \
 		mkdir $(KERNEL_DIR); \
 		echo -n "Getting archived P$(KERNEL_LABEL) kernel source..."; \
-		tar -xf $(ARCHIVE)/linux-sh4-2.6.32.71-source-sh4-P$(KERNEL_LABEL).tar.gz -C $(KERNEL_DIR); \
+		tar -xf $(ARCHIVE)/linux-sh4-$(KERNEL_UPSTREAM)-source-sh4-P$(KERNEL_LABEL).tar.gz -C $(KERNEL_DIR); \
 		echo " done."; \
 	else \
 		if [ -d "$(ARCHIVE)/linux-sh4-2.6.32.71.git" ]; then \
@@ -298,7 +298,7 @@ endif
 		git checkout -q $(HOST_KERNEL_REVISION); \
 		echo " done."; \
 		echo -n "Archiving patched kernel source..."; \
-		tar --exclude=.git -czf $(ARCHIVE)/linux-sh4-2.6.32.71-source-sh4-P$(KERNEL_LABEL).tar.gz .; \
+		tar --exclude=.git -czf $(ARCHIVE)/linux-sh4-$(KERNEL_UPSTREAM)-source-sh4-P$(KERNEL_LABEL).tar.gz .; \
 		echo " done."; \
 	fi; \
 	set -e; cd $(KERNEL_DIR); \

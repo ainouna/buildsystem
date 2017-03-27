@@ -179,13 +179,15 @@ case $2 in
 	[1-2]) REPLY=$2;;
 	*)	echo -e "\nKernel:"
 		echo "   1)  STM 24 P0209 [2.6.32.46]"
+#		echo "   2)  STM 24 P0217 [2.6.32.61]"
 		echo "   2*) STM 24 P0217 [2.6.32.71]"
 		read -p "Select kernel (1-2)? ";;
 esac
 
 case "$REPLY" in
 	1)  KERNEL="p0209";;
-#	2)  KERNEL="p0217";;
+#	2)  KERNEL="p0217_61";;
+#	3)  KERNEL="p0217";;
 	*)  KERNEL="p0217";;
 esac
 echo "KERNEL=$KERNEL" >> config
