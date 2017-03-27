@@ -259,6 +259,7 @@ ARIVALINK200_PATCHES_24 = $(COMMON_PATCHES_24) \
 #
 HOST_KERNEL_PATCHES = $(KERNEL_PATCHES_24)
 HOST_KERNEL_CONFIG = linux-sh4-$(subst _stm24_,_,$(KERNEL_VERSION))_$(BOXTYPE).config
+REPOS = "https://github.com/Duckbox-Developers/linux-sh4-2.6.32.71.git"
 
 ifneq ($(DESTINATION), USB)
 $(D)/linux-kernel.do_prepare: $(PATCHES)/$(BUILD_CONFIG)/$(HOST_KERNEL_CONFIG) \
@@ -269,7 +270,6 @@ $(D)/linux-kernel.do_prepare: $(PATCHES)/$(BUILD_CONFIG)/$(HOST_KERNEL_CONFIG) \
 	$(if $(HOST_KERNEL_PATCHES),$(HOST_KERNEL_PATCHES:%=$(PATCHES)/$(BUILD_CONFIG)/%))
 endif
 	@rm -rf $(KERNEL_DIR)
-	@REPO=https://github.com/Duckbox-Developers/linux-sh4-2.6.32.71.git;protocol=https;branch=stmicro
 	@echo
 	@echo "Starting Kernel build"
 	@echo "====================="
@@ -287,7 +287,7 @@ endif
 			echo " done."; \
 		else \
 			echo "Getting STlinux kernel source (takes a while)..."; \
-			git clone -n $(REPO) $(ARCHIVE)/linux-sh4-2.6.32.71.git; \
+			git clone -n -b stmicro $(REPOS) $(ARCHIVE)/linux-sh4-2.6.32.71.git; \
 			echo "Clone of STlinux source completed."; \
 		fi; \
 		echo -n "Copying kernel source code to build environment..."; \
