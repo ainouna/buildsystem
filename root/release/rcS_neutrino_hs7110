@@ -1,16 +1,18 @@
 #!/bin/sh
-#Version 140916.1
+#Version 160525.1
 
 echo "[rcS] Start"
 echo "Fortis HS7110 Neutrino"
 
 MODDIR=/lib/modules
 
+insmod $MODDIR/e2_proc.ko
+
 echo "[rcS] Init frontpanel"
 if [ ! -e /dev/vfd ]; then
    mknod -m 0660 /dev/vfd c 147 0
 fi
-insmod $MODDIR/nuvoton.ko paramDebug=0
+insmod $MODDIR/nuvoton.ko
 insmod $MODDIR/simu_button.ko
 
 if [ -e /var/etc/.firstboot ]; then
@@ -19,18 +21,18 @@ if [ -e /var/etc/.firstboot ]; then
    sleep 1
    touch /dev/.devfsd
 else
-   echo "LOAD 10"
+   echo "[rcs} Start (LOAD 10)"
 fi
 
 /etc/init.d/mountvirtfs start
-
-insmod $MODDIR/e2_proc.ko
 
 # Start automounter with umount timeout of 5 seconds
 if [ -e $MODDIR/autofs4.ko ]; then
    insmod $MODDIR/autofs4.ko
 fi
-/usr/sbin/automount --timeout=5 /autofs file /etc/auto.usb
+if [ -e /etc/init.d/automount ]; then
+   /usr/sbin/automount --timeout=5 /autofs file /etc/auto.usb
+fi
 
 echo "[rcS] Starting DEBUG Interface"
 /etc/init.d/mountall start
@@ -41,7 +43,7 @@ echo "[rcS] Starting telnetd"
 
 echo "[rcS] Init stmfb (LOAD 9)"
 insmod $MODDIR/stmcore-display-sti7111.ko
-insmod $MODDIR/stmfb.ko display0=1280x720-32@50:12m:pal:yuv:yuv;# display1=720x576-16@50:1m:pal:cvbs;
+insmod $MODDIR/stmfb.ko display0=1280x720-32@50:12m:pal:rgb:rgb;# display1=720x576-16@50:1m:pal:cvbs;
 
 echo "[rcS] Loading modules"
 
@@ -52,16 +54,16 @@ fi
 
 echo "[rcS] Load video firmware (LOAD 8)"
 /bin/dd if=/dev/zero of=/dev/st231-0 bs=1024 count=4096 2> /dev/null
-/bin/ustslave /dev/st231-0 /lib/firmware/video.elf
+/bin/ustslave /dev/st231-0 /lib/firmware/video.elf > /dev/null
 
 echo "[rcS] Load audio firmware (LOAD 7)"
 /bin/dd if=/dev/zero of=/dev/st231-1 bs=1024 count=4096 2> /dev/null
-/bin/ustslave /dev/st231-1 /lib/firmware/audio.elf
+/bin/ustslave /dev/st231-1 /lib/firmware/audio.elf > /dev/null
 
 echo "[rcS] Init embx (LOAD 6)"
 insmod $MODDIR/embxshell.ko
-insmod $MODDIR/embxmailbox.ko mailbox0=0xfe211000:136:set2 mailbox1=0xfe212000:0 ;
-insmod $MODDIR/embxshm.ko mailbox0=shm:0:7:0x60000000:0:256:256:0:512:0x40000000:0x10000000 ;
+insmod $MODDIR/embxmailbox.ko mailbox0=0xfe211000:136:set2 mailbox1=0xfe212000:0
+insmod $MODDIR/embxshm.ko mailbox0=shm:0:7:0x60000000:0:256:256:0:512:0x40000000:0x10000000
 insmod $MODDIR/mme_host.ko transport0=shm
 
 echo "[rcS] Init AVS (LOAD 5)"
@@ -83,7 +85,6 @@ insmod $MODDIR/stv090x.ko paramDebug=0
 insmod $MODDIR/hs711x.ko
 insmod $MODDIR/smartcard.ko
 mknod /dev/lnb c 149 0
-#mknod /dev/sci0 c 169 0
 
 insmod $MODDIR/pti.ko
 insmod $MODDIR/stm_monitor.ko
@@ -103,6 +104,12 @@ mknod /dev/bpamem c 153 0
 if [ -e $MODDIR/cec.ko ]; then
    insmod $MODDIR/cec.ko activemode=1
 fi
+
+#if [ -e /boot/neutrinologo.mvi ]; then
+#   showiframe -p /boot/neutrinologo.mvi &
+#fi
+#stfbcontrol a 0
+
 if [ -e $MODDIR/exportfs.ko ]; then
    insmod $MODDIR/exportfs.ko
 fi
@@ -130,15 +137,15 @@ stfbcontrol a 0
 echo "[rcS] Init remote control (LOAD 2)"
 /bin/evremote2 10 140 &
 
+# Load modules from /var/etc/modules.extra
+[ -f /var/etc/modules.extra ] && eval `sed -e 's/#.*//' -e '/^\s*$/d' -e 's/^\(.*\)/insmod \0;/' < /var/etc/modules.extra`
+
 stfbcontrol a 255
 
 echo "[rcS] Init portmap & ftp (LOAD 1)"
 /etc/init.d/portmap start
 /etc/init.d/vsftpd start
 /usr/sbin/inetd
-
-#timefix
-date -s "201409011200"
 
 NFS=`grep -c nfs /proc/cmdline`
 if [ "$NFS" -eq "1" ]; then
@@ -156,6 +163,24 @@ else
    fi
 fi
 
+#wlan=rtl8188cu
+if [ ! $wlan ] || [ ! -e $MODDIR/$wlan.ko ]; then
+   echo "No WLAN"
+else
+   insmod $MODDIR/$wlan.ko
+   echo "$wlan WLAN"
+#   echo "$wlan WLAN" > /dev/vfd
+#   sleep 3
+fi
+
+#timefix
+#date -s "201605011200"
+# Try and synchronise time
+if [ -e /usr/bin/ntpdate ]; then
+   echo "Set internet time"
+   (/usr/bin/ntpdate de.pool.ntp.org; /bin/fp_control -sst)
+fi
+
 echo "[rcS] LOADING neutrino"
 
 until false
@@ -169,6 +194,8 @@ do
          init 0;;
       1) echo "REBOOT"
          init 6;;
+      2) echo "RESTART"
+         ;;
       *) echo "ERROR"
          init 6;;
    esac

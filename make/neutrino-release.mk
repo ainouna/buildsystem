@@ -305,7 +305,7 @@ release_neutrino_hs7420:
 #
 release_neutrino_hs7429:
 	echo "hs7429" > $(RELEASE_DIR)/etc/hostname
-	install -m 0755 $(SKEL_ROOT)release/halt_hs742x $(RELEASE_DIR)/etc/init.d/halt
+	install -m 0755 $(SKEL_ROOT)/release/halt_hs742x $(RELEASE_DIR)/etc/init.d/halt
 	chmod 755 $(RELEASE_DIR)/etc/init.d/halt
 	cp $(TARGETPREFIX)/lib/modules/$(KERNEL_VERSION)/extra/frontcontroller/nuvoton/nuvoton.ko $(RELEASE_DIR)/lib/modules/
 	cp $(TARGETPREFIX)/lib/modules/$(KERNEL_VERSION)/extra/frontends/lnb/lnb.ko $(RELEASE_DIR)/lib/modules/
@@ -555,6 +555,7 @@ release_neutrino_base:
 	cp $(SKEL_ROOT)/bin/vdstandby $(RELEASE_DIR)/bin/
 	cp $(SKEL_ROOT)/usr/sbin/fw_printenv $(RELEASE_DIR)/usr/sbin/
 	ln -sf ../../usr/sbin/fw_printenv $(RELEASE_DIR)/usr/sbin/fw_setenv
+	cp -f $(SKEL_ROOT)/root_neutrino/boot/neutrinologo.mvi $(RELEASE_DIR)/boot/
 	cp -dp $(TARGETPREFIX)/usr/bin/vsftpd $(RELEASE_DIR)/usr/bin/
 	cp -dp $(TARGETPREFIX)/usr/bin/irexec $(RELEASE_DIR)/usr/bin/
 	cp -p $(TARGETPREFIX)/usr/bin/ffmpeg $(RELEASE_DIR)/usr/bin/
@@ -737,7 +738,19 @@ endif
 #
 # copy root_neutrino
 #
-	cp -aR $(SKEL_ROOT)/root_neutrino/* $(RELEASE_DIR)/
+	cp -aR $(SKEL_ROOT)/root_neutrino/etc/* $(RELEASE_DIR)/etc/
+ifeq ($(NEUTRINO_VARIANT), mp-cst-next)
+	cp -aR $(SKEL_ROOT)/root_neutrino/var_cst_next/* $(RELEASE_DIR)/var/
+endif
+ifeq ($(NEUTRINO_VARIANT), mp-cst-next-ni)
+	cp -aR $(SKEL_ROOT)/root_neutrino/var_cst_next_ni/* $(RELEASE_DIR)/var/
+endif
+ifeq ($(NEUTRINO_VARIANT), neutrino-hd2)
+	cp -aR $(SKEL_ROOT)/root_neutrino/var_hd2/* $(RELEASE_DIR)/var/
+endif
+ifeq ($(NEUTRINO_VARIANT), mp-tangos)
+	cp -aR $(SKEL_ROOT)/root_neutrino/var_tangos/* $(RELEASE_DIR)/var/
+endif
 ifneq ($(BOXTYPE), $(filter $(BOXTYPE), atevio7500 spark7162 cuberevo_mini2 cuberevo_3000hd))
 	rm -f $(RELEASE_DIR)/var/tuxbox/config/cables.xml
 	rm -f $(RELEASE_DIR)/var/tuxbox/config/terrestrial.xml

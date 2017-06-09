@@ -116,7 +116,7 @@ SILENT                = @
 MAKEFLAGS            += --silent
 MAKEFLAGS            += --no-print-directory
 CONFIGURE_SILENT      = -q
-SILENT_PATCH          = -s
+#SILENT_PATCH          = -s
 endif
 
 PKG_CONFIG            = $(HOSTPREFIX)/bin/$(TARGET)-pkg-config
@@ -163,7 +163,6 @@ define post_patch
 	done; \
 	echo
 endef
-#	echo -e "Patching of $(TERM_GREEN_BOLD)$(subst $(BASE_DIR)/.deps/,,$@)$(TERM_NORMAL) completed.";
 
 #
 #

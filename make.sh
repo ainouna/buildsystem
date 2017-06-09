@@ -20,9 +20,9 @@ if [ "$1" == -h ] || [ "$1" == --help ]; then
 	echo "Parameter 4: player (1-2)"
 	echo "Parameter 5: external LCD support (1-3)"
 	echo "Parameter 6: image (Enigma=1/2 Neutrino=3/4 (1-4)"
-	echo "Parameter 7: Neutrino variant (1-4) or Enigma2 diff (0-4)"
+	echo "Parameter 7: Neutrino variant (1-4) or Enigma2 diff (0-5)"
 	echo "Parameter 8: media Framework (1-3, Enigma2 only))"
-	echo "Parameter 9: destination (1-2)"
+	echo "Parameter 9: destination (1-2, 1=flash, 2=USB)"
 	exit
 fi
 
@@ -334,7 +334,7 @@ case "$IMAGE" in
 				echo " 1)  Use your own Enigma2 git dir without patchfile"
 				echo "=================================================================================================="
 				echo " 2*) Fri, 24 Feb 2017 18:23 - E2 OpenPLi  any framework  ff98b15d49fa629c1b4e98698008602e5b4233be"
-				echo " 3)  Mon, 16 May 2016 22:46 - E2 OpenPLi  any framework  577fa5ab7d5f0f83f18d625b547d148e93cf27d3"
+				echo " 3)  Mon, 17 May 2016 22:46 - E2 OpenPLi  any framework  577fa5ab7d5f0f83f18d625b547d148e93cf27d3"
 				echo " 4)  Thu, 31 Mar 2016 21:52 - E2 OpenPLi  any framework  7d63bf16e99741f0a5798b84a3688759317eecb3"
 				echo " 5)  Mon, 17 Aug 2015 07:08 - E2 OpenPLi  any framework  cd5505a4b8aba823334032bb6fd7901557575455"
 				echo "=================================================================================================="
@@ -353,7 +353,6 @@ case "$IMAGE" in
 				REVISION="cd5505a4b8aba823334032bb6fd7901557575455";;
 			0)	DIFF="0"
 				REVISION="newest";;
-#				REVISION="4b7b8e906e9f27cf44f8723a0c66d05eaf30f9e0";; #25/03/2017 18:44
 			*)	DIFF="2"
 				REVISION="ff98b15d49fa629c1b4e98698008602e5b4233be";;
 		esac

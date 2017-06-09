@@ -13,9 +13,8 @@ ENIGMA2_DEPS += $(D)/libpng $(D)/libjpeg $(D)/libgif $(D)/freetype
 ENIGMA2_DEPS += $(D)/alsa-utils $(D)/ffmpeg
 ENIGMA2_DEPS += $(D)/libfribidi $(D)/libsigc_e2 $(D)/libexpat $(D)/libdvbsi++ $(D)/libusb
 ENIGMA2_DEPS += $(D)/sdparm $(D)/minidlna $(D)/ethtool
-ENIGMA2_DEPS += $(D)/avahi
 ENIGMA2_DEPS += python-all
-ENIGMA2_DEPS += $(D)/libdreamdvd $(D)/tuxtxt32bpp $(D)/hotplug_e2
+ENIGMA2_DEPS += $(D)/libdreamdvd $(D)/tuxtxt32bpp $(D)/hotplug_e2 $(D)/parted
 ENIGMA2_DEPS += $(LOCAL_ENIGMA2_DEPS)
 
 ifeq ($(IMAGE), enigma2-wlandriver)
@@ -34,6 +33,10 @@ endif
 
 ifeq ($(EXTERNAL_LCD), lcd4linux)
 ENIGMA2_DEPS += $(D)/lcd4linux
+endif
+
+ifeq ($(E2_DIFF), $(filter $(E2_DIFF), 0 2))
+ENIGMA2_DEPS  += $(D)/avahi
 endif
 
 ifeq ($(MEDIAFW), eplayer3)
@@ -138,29 +141,28 @@ $(D)/enigma2.do_prepare: | $(ENIGMA2_DEPS)
 	echo ""; \
 	if [ "$$DIFF" != "1" ]; then \
 		[ -d "$(ARCHIVE)/enigma2-pli-nightly.git" ] && \
-		(cd $(ARCHIVE)/enigma2-pli-nightly.git; echo "Pulling archived OpenPLi git..."; git pull -q; echo "Checking out HEAD..."; git checkout -q HEAD; cd "$(BUILD_TMP)";); \
+		(cd $(ARCHIVE)/enigma2-pli-nightly.git; echo -n "Updating archived OpenPLi git..."; git pull -q; echo -e -n " done.\nChecking out HEAD..."; git checkout -q HEAD; echo " done."; cd "$(BUILD_TMP)";); \
 		[ -d "$(ARCHIVE)/enigma2-pli-nightly.git" ] || \
-		(echo "Cloning remote OpenPLi git..."; git clone -q -b $$HEAD $$REPO_0 $(ARCHIVE)/enigma2-pli-nightly.git;); \
-		echo "Copying local git content to build environment..."; cp -ra $(ARCHIVE)/enigma2-pli-nightly.git $(SOURCE_DIR)/enigma2; \
+		(echo -n "Cloning remote OpenPLi git..."; git clone -q -b $$HEAD $$REPO_0 $(ARCHIVE)/enigma2-pli-nightly.git; echo " done."); \
+		echo -n "Copying local git content to build environment..."; cp -ra $(ARCHIVE)/enigma2-pli-nightly.git $(SOURCE_DIR)/enigma2; echo " done."; \
 		if [ "$$REVISION" != "newest" ]; then \
-			cd $(SOURCE_DIR)/enigma2; echo "Checking out revision $$REVISION..."; git checkout -q "$$REVISION"; \
+			cd $(SOURCE_DIR)/enigma2; echo -n "Checking out revision $$REVISION..."; git checkout -q "$$REVISION"; echo " done."; \
 		fi; \
-		cd "$(BUILD_TMP)"; \
 		cp -ra $(SOURCE_DIR)/enigma2 $(SOURCE_DIR)/enigma2.org; \
 		echo "Applying diff-$$DIFF patch..."; \
 		set -e; cd $(SOURCE_DIR)/enigma2 && patch -p1 $(SILENT_PATCH) < "$(PATCHES)/enigma2-pli-nightly.$$DIFF.diff"; \
 		if [ "$(MEDIAFW)" == "eplayer3" ]; then \
 			set -e; cd $(SOURCE_DIR)/enigma2 && patch -p1 $(SILENT_PATCH) < "$(PATCHES)/eplayer3.$$DIFF.patch"; \
 		fi; \
-		echo "Patching to diff-$$DIFF completed."; echo; \
+		echo "Patching to diff-$$DIFF completed."; \
 		cd $(SOURCE_DIR)/enigma2; \
-		echo "Building VFD-drivers..."; \
-		patch -p1 $(SILENT_PATCH) -i "$(PATCHES)/vfd-drivers.patch"; \
+		echo -n "Building VFD-drivers..."; \
+		patch -p1 -s -i "$(PATCHES)/vfd-drivers.patch"; echo " done."; \
 		rm -rf $(TARGETPREFIX)/usr/local/share/enigma2/rc_models; \
 		echo; \
-		echo "Patching remote control files..."; \
-		patch -p1 $(SILENT_PATCH) -i "$(PATCHES)/rc-models.patch"; \
-		echo "Build preparation for OpenPLi complete."; echo; \
+		echo -n "Patching remote control files..."; \
+		patch -p1 -s -i "$(PATCHES)/rc-models.patch"; \
+		echo -e " done.\nBuild preparation for OpenPLi complete."; echo; \
 	else \
 		[ -d "$(SOURCE_DIR)/enigma2" ] ; \
 		echo "Cloning local git content to build environment..."; \
@@ -190,6 +192,7 @@ $(SOURCE_DIR)/enigma2/config.status:
 			$(PLATFORM_CPPFLAGS)
 
 $(D)/enigma2.do_compile: $(SOURCE_DIR)/enigma2/config.status
+	$(START_BUILD); \
 	cd $(SOURCE_DIR)/enigma2; \
 		$(MAKE) all
 	@touch $@
@@ -203,16 +206,18 @@ $(D)/enigma2: $(D)/enigma2.do_prepare $(D)/enigma2.do_compile
 	if [ -e $(TARGETPREFIX)/usr/local/bin/enigma2 ]; then \
 		$(TARGET)-strip $(TARGETPREFIX)/usr/local/bin/enigma2; \
 	fi
-	$(SILENT)echo; \
-	echo "Adding PLi-HD skin"; \
-	HEAD="master"; \
-	REPO="https://github.com/littlesat/skin-PLiHD.git"; \
+	$(SILENT)echo
+	$(SILENT)echo "Adding PLi-HD skin"
+	HEAD="master"
+	REPO="https://github.com/littlesat/skin-PLiHD.git"
 	[ -d $(ARCHIVE)/PLi-HD_skin.git ] && \
-		(echo -n "Pulling archived PLi-HD skin git..."; cd $(ARCHIVE)/PLi-HD_skin.git; git pull -q; git checkout -q $$HEAD; cd "$(BUILD_TMP)"; echo " done.";); \
+		(echo -n "Updating archived PLi-HD skin git..."; cd $(ARCHIVE)/PLi-HD_skin.git; git pull -q; git checkout -q $$HEAD; echo " done.";)
 	[ -d $(ARCHIVE)/PLi-HD_skin.git ] || \
-		(echo -n "Cloning PLi-HD skin git..."; git clone -q -b $$HEAD $$REPO $(ARCHIVE)/PLi-HD_skin.git; echo " done.";); \
-	cp -ra $(ARCHIVE)/PLi-HD_skin.git/usr/share/enigma2/* $(TARGETPREFIX)/usr/local/share/enigma2; \
+		(echo -n "Cloning PLi-HD skin git..."; git clone -q -b $$HEAD $$REPO $(ARCHIVE)/PLi-HD_skin.git; echo " done.";)
+	$(SILENT)cp -ra $(ARCHIVE)/PLi-HD_skin.git/usr/share/enigma2/* $(TARGETPREFIX)/usr/local/share/enigma2
 	$(call post_patch,$(PLI_SKIN_PATCH))
+	$(SILENT)rm -rf $(TARGETPREFIX)/usr/local/share/enigma2/PLi-FullHD
+	$(SILENT)rm -rf $(TARGETPREFIX)/usr/local/share/enigma2/PLi-FullNightHD
 	$(TOUCH)
 
 enigma2-clean:

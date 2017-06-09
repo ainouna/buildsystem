@@ -5,7 +5,7 @@
  typedef enum {
  #if defined(BOXMODEL_OCTAGON1008)
 -	ICON_DOLBY = 0x10,
-+	ICON_DOLBY = 0x1,
++	ICON_DOLBY = 1,
  	ICON_DTS,
  	ICON_VIDEO,
  	ICON_AUDIO,
@@ -17,7 +17,12 @@
  	ICON_FF,
  	ICON_REC,
  	ICON_ARROW,
-@@ -60,11 +61,11 @@
+@@ -56,15 +57,16 @@
+ 	ICON_COLON2,
+ 	ICON_COLON3,
+ 	ICON_MAX,
++	FP_ICON_MIN = ICON_DOLBY,
+ 	FP_ICON_USB = ICON_USB,
  	FP_ICON_HD = ICON_16_9,
  	FP_ICON_HDD = ICON_HDD,
  	FP_ICON_LOCK = ICON_CRYPTED,
@@ -33,7 +38,7 @@
  	FP_ICON_MUTE = ICON_TIME,
  	FP_ICON_PLAY = ICON_PLAY,
  	FP_ICON_PAUSE = ICON_PAUSE,
-@@ -72,18 +73,19 @@
+@@ -72,18 +74,153 @@
  	FP_ICON_FR = ICON_REWIND,
  	FP_ICON_REC = ICON_REC,
  	FP_ICON_CLOCK = ICON_TIMER,
@@ -42,10 +47,144 @@
  	FP_ICON_TV = ICON_VIDEO,
  	FP_ICON_DOWNLOAD = ICON_LINK,
  	FP_ICON_CAM1 = ICON_REC,
++	FP_ICON_MAX = ICON_MAX
++#elif defined(BOXMODEL_HS7420) \
++ || defined(BOXMODEL_HS7429)
++	ICON_DOT = 1,
++	ICON_COLON1,
++	ICON_COLON2,
++	ICON_COLON3,
++	ICON_MAX,
++	FP_ICON_MIN = ICON_DOT,
++	FP_ICON_USB = 0,
++	FP_ICON_HD = 0,
++	FP_ICON_HDD = 0,
++	FP_ICON_LOCK = 0,
++	FP_ICON_BT = 0,
++	FP_ICON_MP3 = 0,
++	FP_ICON_MUSIC = 0,
++	FP_ICON_DD = 0,
++	FP_ICON_MAIL = 0,
++	FP_ICON_MUTE = 0,
++	FP_ICON_PLAY = 0,
++	FP_ICON_PAUSE = 0,
++	FP_ICON_FF = 0,
++	FP_ICON_FR = 0,
++	FP_ICON_REC = 0,
++	FP_ICON_CLOCK = 0,
++	FP_ICON_TIMESHIFT = 0,
++	FP_ICON_RADIO = 0,
++	FP_ICON_TV = 0,
++	FP_ICON_DOWNLOAD = 0,
++	FP_ICON_CAM1 = 0,
++	FP_ICON_MAX = ICON_MAX
++#elif defined(BOXMODEL_HS7119)
++	ICON_COLON = 1,     // 01
++	FP_ICON_MIN = ICON_COLON,
++	FP_ICON_USB = 0,
++	FP_ICON_HD = 0,
++	FP_ICON_HDD = 0,
++	FP_ICON_LOCK = 0,
++	FP_ICON_BT = 0,
++	FP_ICON_MP3 = 0,
++	FP_ICON_MUSIC = 0,
++	FP_ICON_DD = 0,
++	FP_ICON_MAIL = 0,
++	FP_ICON_MUTE = 0,
++	FP_ICON_PLAY = 0,
++	FP_ICON_PAUSE = 0,
++	FP_ICON_FF = 0,
++	FP_ICON_FR = 0,
++	FP_ICON_REC = 0,
++	FP_ICON_CLOCK = 0,
++	FP_ICON_TIMESHIFT = 0,
++	FP_ICON_RADIO = 0,
++	FP_ICON_TV = 0,
++	FP_ICON_DOWNLOAD = 0,
++	FP_ICON_CAM1 = 0,
++	FP_ICON_MAX = ICON_COLON
++#elif defined(BOXMODEL_ATEVIO7500)
++	ICON_STANDBY = 1, // 01
++	ICON_REC,         // 02
++	ICON_TIMESHIFT,   // 03
++	ICON_TIMER,       // 04
++	ICON_HD,          // 05
++	ICON_USB,         // 06
++	ICON_SCRAMBLED,   // 07
++	ICON_DOLBY,       // 08
++	ICON_MUTE,        // 09
++	ICON_TUNER1,      // 10
++	ICON_TUNER2,      // 11
++	ICON_MP3,         // 12
++	ICON_REPEAT,      // 13
++	ICON_PLAY,        // 14
++	ICON_STOP,        // 15
++	ICON_PAUSE,       // 16
++	ICON_REWIND,      // 17
++	ICON_FF,          // 18
++	ICON_STEP_BACK,   // 19
++	ICON_STEP_FWD,    // 20
++	ICON_TV,          // 21
++	ICON_RADIO,       // 22
++	ICON_MAX,         // 23
++	ICON_SPINNER,     // 24
++	FP_ICON_MIN = ICON_STANDBY,
++	FP_ICON_USB = ICON_USB,
++	FP_ICON_HD = ICON_HD,
++	FP_ICON_HDD = 0,
++	FP_ICON_LOCK = ICON_SCRAMBLED,
++	FP_ICON_BT = 0,
++	FP_ICON_MP3 = ICON_MP3,
++	FP_ICON_MUSIC = 0,
++	FP_ICON_DD = ICON_DOLBY,
++	FP_ICON_MAIL = 0,
++	FP_ICON_MUTE = ICON_MUTE,
++	FP_ICON_PLAY = ICON_PLAY,
++	FP_ICON_PAUSE = ICON_PAUSE,
++	FP_ICON_FF = ICON_FF,
++	FP_ICON_FR = ICON_REWIND,
++	FP_ICON_REC = ICON_REC,
++	FP_ICON_CLOCK = ICON_TIMER,
++	FP_ICON_TIMESHIFT = ICON_TIMESHIFT,
++	FP_ICON_RADIO = ICON_RADIO,
++	FP_ICON_TV = ICON_TV,
++	FP_ICON_DOWNLOAD = 0,
++	FP_ICON_CAM1 = 0,
++	FP_ICON_MAX = ICON_MAX
++#elif defined(BOXMODEL_HS7810A) \
++ || defined(BOXMODEL_HS7819)
++	ICON_COLON = 1, // 01
++	ICON_PERIOD1,   // 02
++	ICON_PERIOD2,   // 03
++	ICON_PERIOD3,   // 04
++	ICON_MAX,       // 05
++	FP_ICON_MIN = ICON_COLON,
++	FP_ICON_USB = 0,
++	FP_ICON_HD = 0,
++	FP_ICON_HDD = 0,
++	FP_ICON_LOCK = 0,
++	FP_ICON_BT = 0,
++	FP_ICON_MP3 = 0,
++	FP_ICON_MUSIC = 0,
++	FP_ICON_DD = 0,
++	FP_ICON_MAIL = 0,
++	FP_ICON_MUTE = 0,
++	FP_ICON_PLAY = 0,
++	FP_ICON_PAUSE = 0,
++	FP_ICON_FF = 0,
++	FP_ICON_FR = 0,
++	FP_ICON_REC = 0,
++	FP_ICON_CLOCK = 0,
++	FP_ICON_TIMESHIFT = 0,
++	FP_ICON_RADIO = 0,
++	FP_ICON_TV = 0,
++	FP_ICON_DOWNLOAD = 0,
++	FP_ICON_CAM1 = 0,
++	FP_ICON_MAX = ICON_MAX
  #elif defined(BOXMODEL_FORTIS_HDBOX)
 -	ICON_USB = 0x10,
 -	ICON_STANDBY,
-+	ICON_STANDBY = 0x1,
++	ICON_STANDBY = 1,
  	ICON_SAT,
  	ICON_REC,
  	ICON_TIMESHIFT,
@@ -55,7 +194,7 @@
  	ICON_SCRAMBLED,
  	ICON_DOLBY,
  	ICON_MUTE,
-@@ -92,15 +94,6 @@
+@@ -92,15 +229,6 @@
  	ICON_MP3,
  	ICON_REPEAT,
  	ICON_Play,
@@ -71,7 +210,7 @@
  	ICON_Circ0,
  	ICON_Circ1,
  	ICON_Circ2,
-@@ -110,6 +103,15 @@
+@@ -110,6 +238,15 @@
  	ICON_Circ6,
  	ICON_Circ7,
  	ICON_Circ8,
@@ -87,11 +226,18 @@
  	ICON_COLON1,
  	ICON_COLON2,
  	ICON_COLON3,
-@@ -137,6 +139,80 @@
- 	FP_ICON_RADIO = ICON_RADIO,
+@@ -117,6 +254,7 @@
+ 	ICON_TV,
+ 	ICON_RADIO,
+ 	ICON_MAX,
++	FP_ICON_MIN = ICON_STANDBY,
+ 	FP_ICON_USB = ICON_USB,
+ 	FP_ICON_REC = ICON_REC,
+ 	FP_ICON_CAM1 = ICON_REC,
+@@ -138,8 +276,84 @@
  	FP_ICON_TV = ICON_TV,
  	FP_ICON_MUSIC = ICON_RADIO,
-+	FP_ICON_MAX = ICON_MAX
+ 	FP_ICON_MAX = ICON_MAX
 +#elif defined(BOXMODEL_TF7700)
 +	ICON_CD1 = 32,
 +	ICON_CD2,
@@ -143,6 +289,7 @@
 +	ICON_POWER,
 +	ICON_COLON,
 +	ICON_MAX,
++	FP_ICON_MIN = ICON_CD1,
 +	FP_ICON_USB = 0,
 +	FP_ICON_REC = ICON_REC,
 +	FP_ICON_RECORD = ICON_REC,
@@ -165,18 +312,131 @@
 +	FP_ICON_CAM1 = 0,
 +	FP_ICON_DOWNLOAD = 0,
 +	FP_ICON_TIMESHIFT = ICON_TIMESHIFT,
- 	FP_ICON_MAX = ICON_MAX
++	FP_ICON_MAX = ICON_MAX
  #elif defined(BOXMODEL_UFS910) || defined(BOXMODEL_UFS922) || defined(BOXMODEL_UFS912) || defined(BOXMODEL_UFS913)
  	FP_ICON_USB = 0x10,
-@@ -243,7 +319,7 @@
++	FP_ICON_MIN= FP_ICON_USB,
+ 	FP_ICON_HD,
+ 	FP_ICON_HDD,
+ 	FP_ICON_LOCK,
+@@ -218,9 +431,9 @@
+ 	FP_ICON_TV = 0,
+ 	FP_ICON_MAIL = 0,
+ 	FP_ICON_BT = 0,
+-
+ #else
+ 	FP_ICON_USB = 0x10,
++	FP_ICON_MIN = FP_ICON_USB,
+ 	FP_ICON_HD,
+ 	FP_ICON_HDD,
+ 	FP_ICON_LOCK,
+@@ -242,8 +456,21 @@
+ 	FP_ICON_RECORD = FP_ICON_REC,
  	FP_ICON_DOWNLOAD,
  	FP_ICON_TIMESHIFT,
- #endif
+-#endif
 -#if !defined(BOXMODEL_UFS910) && !defined(BOXMODEL_UFS922) && !defined(BOXMODEL_UFS912) && !defined(BOXMODEL_UFS913) && !defined(BOXMODEL_FORTIS_HDBOX)
-+#if !defined(BOXMODEL_TF7700) && !defined(BOXMODEL_UFS910) && !defined(BOXMODEL_UFS922) && !defined(BOXMODEL_UFS912) && !defined(BOXMODEL_UFS913) && !defined(BOXMODEL_FORTIS_HDBOX)
++//#endif
++//#if !defined(BOXMODEL_TF7700) \
++// && !defined(BOXMODEL_UFS910) \
++// && !defined(BOXMODEL_UFS922) \
++// && !defined(BOXMODEL_UFS912) \
++// && !defined(BOXMODEL_UFS913) \
++// && !defined(BOXMODEL_FORTIS_HDBOX) \
++// && !defined(BOXMODEL_OCTAGON1008) \
++// && !defined(BOXMODEL_ATEVIO7500) \
++// && !defined(BOXMODEL_HS7110) \
++// && !defined(BOXMODEL_HS7420) \
++// && !defined(BOXMODEL_HS7810A) \
++// && !defined(BOXMODEL_HS7119) \
++// && !defined(BOXMODEL_HS7429) \
++// && !defined(BOXMODEL_HS7819)
  	FP_ICON_MAX
  #endif
  } fp_icon;
+ 
+-typedef enum {
++typedef enum
++{
+ 	FP_FLAG_NONE			= 0x00,
+ 	FP_FLAG_SCROLL_ON		= 0x01,	/* switch scrolling on */
+-	FP_FLAG_SCROLL_LTR		= 0x02,	/* scroll from left to rightinstead of default right to left direction (i.e. for arabic text) */
++	FP_FLAG_SCROLL_LTR		= 0x02,	/* scroll from left to right instead of default right to left direction (i.e. for arabic text) */
+ 	FP_FLAG_SCROLL_SIO		= 0x04,	/* start/stop scrolling with empty screen (scroll in/out) */
+ 	FP_FLAG_SCROLL_DELAY		= 0x08,	/* delayed scroll start */
+ 	FP_FLAG_ALIGN_LEFT		= 0x10,	/* align the text in display from the left (default) */
+@@ -259,7 +473,8 @@
+ 	FP_FLAG_UPDATE_SCROLL_POS	= 0x40,	/* update the current position for scrolling */
+ } fp_flag;
+ 
+-typedef struct {
++typedef struct
++{
+ 	unsigned char		brightness;
+ 	unsigned char		flags;
+ 	unsigned char		current_hour;
+@@ -268,7 +483,8 @@
+ 	unsigned char		timer_minutes_lo;
+ } fp_standby_data_t;
+ 
+-typedef enum {
++typedef enum
++{
+ 	FP_LED_1_ON		= 0x81,
+ 	FP_LED_2_ON		= 0x82,
+ 	FP_LED_3_ON		= 0x83,
+@@ -277,13 +493,15 @@
+ 	FP_LED_3_OFF		= 0x03,
+ } fp_led_ctrl_t;
+ 
+-typedef struct {
++typedef struct
++{
+ 	unsigned char		source;
+ 	unsigned char		time_minutes_hi;
+ 	unsigned char		time_minutes_lo;
+ } fp_wakeup_data_t;
+ 
+-typedef enum {
++typedef enum
++{
+ 	FP_WAKEUP_SOURCE_TIMER  = 0x01,
+ 	FP_WAKEUP_SOURCE_BUTTON = 0x02,
+ 	FP_WAKEUP_SOURCE_REMOTE = 0x04,
+@@ -291,25 +509,29 @@
+ 	FP_WAKEUP_SOURCE_POWER  = 0xFF
+ } fp_wakeup_source;
+ 
+-typedef struct {
++typedef struct
++{
+ 	unsigned short		addr;
+ 	unsigned short		cmd;
+ } fp_standby_cmd_data_t;
+ 
+-typedef enum {
++typedef enum
++{
+ 	FP_DISPLAY_TEXT_NONE	= 0,
+ 	FP_DISPLAY_TEXT_LIMITED,
+ 	FP_DISPLAY_TEXT_ALL,
+ } fp_display_text_type_t;
+ 
+-typedef enum {
++typedef enum
++{
+ 	FP_DISPLAY_TYPE_NONE	= 0,
+ 	FP_DISPLAY_TYPE_VFD,
+ 	FP_DISPLAY_TYPE_OLED,
+ 	FP_DISPLAY_TYPE_LED_SEGMENT
+ } fp_display_type_t;
+ 
+-typedef struct {
++typedef struct
++{
+ 	fp_display_type_t	display_type;
+ 	unsigned short		xres, yres;
+ 	unsigned int		segment_count;
 --- libstb-hal-cst-next.org/libduckbox/hardware_caps.c
 +++ libstb-hal-cst-next/libduckbox/hardware_caps.c
 @@ -114,6 +114,15 @@

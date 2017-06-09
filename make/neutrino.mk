@@ -532,11 +532,13 @@ yaud-neutrino-hd2-plugins: yaud-none \
 	$(TUXBOX_YAUD_CUSTOMIZE)
 
 ifeq ($(BOXTYPE), spark)
-NHD2_OPTS = --enable-4digits
+NHD2_OPTS = --enable-4digits --enable-scart
 else ifeq ($(BOXTYPE), spark7162)
-NHD2_OPTS =
+NHD2_OPTS = --enable-scart
+#else ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs7119, hs7810a, hs7819))
+#NHD2_OPTS = --enable-ci --enable-4digits
 else
-NHD2_OPTS = --enable-ci
+NHD2_OPTS = --enable-ci --enable-scart
 endif
 
 #
@@ -561,23 +563,18 @@ $(D)/neutrino-hd2.do_prepare: | $(NEUTRINO_DEPS) $(NEUTRINO_DEPS2)
 	$(TOUCH)
 
 $(SOURCE_DIR)/neutrino-hd2/config.status:
-	$(START_BUILD)
 	cd $(SOURCE_DIR)/neutrino-hd2; \
 		./autogen.sh; \
 		$(BUILDENV) \
 		./configure $(CONFIGURE_SILENT) \
 			--build=$(BUILD) \
 			--host=$(TARGET) \
-			$(N_CONFIG_OPTS) \
+			$(LOCAL_NEUTRINO_BUILD_OPTIONS) \
 			--with-boxtype=$(BOXTYPE) \
 			--with-datadir=/usr/share/tuxbox \
-			--with-fontdir=/usr/share/fonts \
 			--with-configdir=/var/tuxbox/config \
-			--with-gamesdir=/var/tuxbox/games \
 			--with-plugindir=/var/tuxbox/plugins \
-			--with-isocodesdir=/usr/local/share/iso-codes \
 			$(NHD2_OPTS) \
-			--enable-scart \
 			PKG_CONFIG=$(PKG_CONFIG) \
 			PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) \
 			CPPFLAGS="$(N_CPPFLAGS)" LDFLAGS="$(TARGET_LDFLAGS)"
@@ -625,17 +622,16 @@ $(D)/libstb-hal-cst-next-tangos.do_prepare:
 	cp -ra $(ARCHIVE)/libstb-hal-cst-next-tangos.git $(SOURCE_DIR)/libstb-hal-cst-next-tangos;\
 	cp -ra $(SOURCE_DIR)/libstb-hal-cst-next-tangos $(SOURCE_DIR)/libstb-hal-cst-next-tangos.org
 	$(SET) -e; cd $(SOURCE_DIR)/libstb-hal-cst-next-tangos; \
-		$(call post_patch,$(NEUTRINO_MP_LIBSTB_CST_NEXT_PATCHES))
+		$(call post_patch,$(NEUTRINO_MP_LIBSTB_CST_NEXT_TANGOS_PATCHES))
 	$(TOUCH)
 
 $(D)/libstb-hal-cst-next-tangos.config.status: | $(NEUTRINO_DEPS)
-	$(START_BUILD)
 	rm -rf $(LH_OBJDIR); \
 	test -d $(LH_OBJDIR) || mkdir -p $(LH_OBJDIR); \
 	cd $(LH_OBJDIR); \
 		$(SOURCE_DIR)/libstb-hal-cst-next-tangos/autogen.sh; \
 		$(BUILDENV) \
-		$(SOURCE_DIR)/libstb-hal-cst-next-tangos/configure --enable-silent-rules \
+		$(SOURCE_DIR)/libstb-hal-cst-next-tangos/configure $(CONFIGURE_SILENT) --enable-silent-rules \
 			--host=$(TARGET) \
 			--build=$(BUILD) \
 			--prefix= \
@@ -708,7 +704,6 @@ $(D)/neutrino-mp-tangos.do_prepare: | $(NEUTRINO_DEPS) $(D)/libstb-hal-cst-next-
 	$(TOUCH)
 
 $(D)/neutrino-mp-tangos.config.status:
-	$(START_BUILD)
 	rm -rf $(N_OBJDIR)
 	test -d $(N_OBJDIR) || mkdir -p $(N_OBJDIR); \
 	cd $(N_OBJDIR); \

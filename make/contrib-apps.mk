@@ -364,7 +364,6 @@ $(D)/portmap: $(D)/bootstrap $(ARCHIVE)/$(PORTMAP_SOURCE) $(ARCHIVE)/portmap_$(P
 	$(REMOVE)/portmap-$(PORTMAP_VERSION)
 	$(TOUCH)
 
-#
 # e2fsprogs
 #
 E2FSPROGS_VERSION = 1.42.13
@@ -378,7 +377,7 @@ $(D)/e2fsprogs: $(D)/bootstrap $(D)/util-linux $(ARCHIVE)/$(E2FSPROGS_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/e2fsprogs-$(E2FSPROGS_VERSION)
 	$(UNTAR)/$(E2FSPROGS_SOURCE)
-	$(SET) -e; cd $(BUILD_TMP)/e2fsprogs-$(E2FSPROGS_VERSION); \
+	set -e; cd $(BUILD_TMP)/e2fsprogs-$(E2FSPROGS_VERSION); \
 		$(call post_patch,$(E2FSPROGS_PATCH)); \
 		PATH=$(BUILD_TMP)/e2fsprogs-$(E2FSPROGS_VERSION):$(PATH) \
 		$(CONFIGURE) \
@@ -416,6 +415,7 @@ $(D)/e2fsprogs: $(D)/bootstrap $(D)/util-linux $(ARCHIVE)/$(E2FSPROGS_SOURCE)
 				 usr/bin/chattr usr/bin/lsattr usr/bin/uuidgen
 	$(REMOVE)/e2fsprogs-$(E2FSPROGS_VERSION)
 	$(TOUCH)
+
 
 #
 # dosfstools
@@ -475,7 +475,7 @@ $(D)/jfsutils: $(D)/bootstrap $(D)/e2fsprogs $(ARCHIVE)/$(JFSUTILS_SOURCE)
 #
 # util-linux
 #
-UTIL_LINUX_MAJOR = 2.25
+UTIL_LINUX_MAJOR = 2.29
 UTIL_LINUX_MINOR = 2
 UTIL_LINUX_VERSION = $(UTIL_LINUX_MAJOR).$(UTIL_LINUX_MINOR)
 UTIL_LINUX_SOURCE = util-linux-$(UTIL_LINUX_VERSION).tar.xz
@@ -559,7 +559,6 @@ $(D)/util-linux: $(D)/bootstrap $(D)/zlib $(ARCHIVE)/$(UTIL_LINUX_SOURCE)
 			--without-systemdsystemunitdir \
 		; \
 		$(MAKE); \
-		install -D -m 755 sfdisk $(TARGETPREFIX)/sbin/sfdisk; \
 		install -D -m 755 mkfs $(TARGETPREFIX)/sbin/mkfs
 	$(REMOVE)/util-linux-$(UTIL_LINUX_VERSION)
 	$(TOUCH)

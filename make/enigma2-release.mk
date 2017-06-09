@@ -225,7 +225,7 @@ release_enigma2_spark:
 	mkdir -p $(RELEASE_DIR)/var/run/lirc
 	cp -f $(SKEL_ROOT)/release/rc_spark.png $(RELEASE_DIR)/usr/local/share/enigma2/skin_default/rc.png
 	if [ -e $(TARGETPREFIX)/usr/lib/enigma2/python/Plugins/Extensions/sparkVFD/plugin.py ]; then \
-		rm -f $(RELEASE_DIR)usr/lib/enigma2/python/Plugins/SystemPlugins/VFD-Icons/*; \
+		rm -f $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/SystemPlugins/VFD-Icons/*; \
 		cp -f $(SKEL_ROOT)/release/leddisplay.png $(TARGETPREFIX)/usr/lib/enigma2/python/Plugins/Extensions/sparkVFD; \
 		cp -rf $(TARGETPREFIX)/usr/lib/enigma2/python/Plugins/Extensions/sparkVFD/* $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/SystemPlugins/VFD-Icons; \
 		rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/sparkVFD; \
@@ -357,11 +357,11 @@ release_enigma2_hs7420:
 	cp $(SKEL_ROOT)/boot/audio_7111.elf $(RELEASE_DIR)/boot/audio.elf
 	cp $(SKEL_ROOT)/firmware/component_7111_mb618.fw $(RELEASE_DIR)/lib/firmware/component.fw
 	cp -f $(SKEL_ROOT)/release/rc_hs9510.png $(RELEASE_DIR)/usr/local/share/enigma2/skin_default/rc.png
-	if [ -e $(TARGETPREFIX)/usr/lib/enigma2/python/Plugins/Extensions/hs9510VFD/plugin.py ]; then \
+	if [ -e $(TARGETPREFIX)/usr/lib/enigma2/python/Plugins/Extensions/hs742xVFD/plugin.py ]; then \
 		rm -f $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/SystemPlugins/VFD-Icons/*; \
-		cp -f $(SKEL_ROOT)/release/vfddisplay.png $(TARGETPREFIX)/usr/lib/enigma2/python/Plugins/Extensions/hs9510VFD; \
-		cp -rf $(TARGETPREFIX)/usr/lib/enigma2/python/Plugins/Extensions/hs9510VFD/* $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/SystemPlugins/VFD-Icons; \
-		rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/hs9510VFD; \
+		cp -f $(SKEL_ROOT)/release/vfddisplay.png $(TARGETPREFIX)/usr/lib/enigma2/python/Plugins/Extensions/hs742xVFD; \
+		cp -rf $(TARGETPREFIX)/usr/lib/enigma2/python/Plugins/Extensions/hs742xVFD/* $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/SystemPlugins/VFD-Icons; \
+		rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/hs742xVFD; \
 	fi
 	cp -f $(SKEL_ROOT)/root_enigma2/usr/local/share/enigma2/keymap_fortis.xml $(RELEASE_DIR)/usr/local/share/enigma2/keymap.xml
 
@@ -380,11 +380,11 @@ release_enigma2_hs7429:
 	cp $(SKEL_ROOT)/boot/audio_7111.elf $(RELEASE_DIR)/boot/audio.elf
 	cp $(SKEL_ROOT)/firmware/component_7111_mb618.fw $(RELEASE_DIR)/lib/firmware/component.fw
 	cp -f $(SKEL_ROOT)/release/rc_hs9510.png $(RELEASE_DIR)/usr/local/share/enigma2/skin_default/rc.png
-	if [ -e $(TARGETPREFIX)/usr/lib/enigma2/python/Plugins/Extensions/hs9510VFD/plugin.py ]; then \
+	if [ -e $(TARGETPREFIX)/usr/lib/enigma2/python/Plugins/Extensions/hs742xVFD/plugin.py ]; then \
 		rm -f $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/SystemPlugins/VFD-Icons/*; \
-		cp -f $(SKEL_ROOT)/release/vfddisplay.png $(TARGETPREFIX)/usr/lib/enigma2/python/Plugins/Extensions/hs9510VFD; \
-		cp -rf $(TARGETPREFIX)/usr/lib/enigma2/python/Plugins/Extensions/hs9510VFD/* $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/SystemPlugins/VFD-Icons; \
-		rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/hs9510VFD; \
+		cp -f $(SKEL_ROOT)/release/vfddisplay.png $(TARGETPREFIX)/usr/lib/enigma2/python/Plugins/Extensions/hs742xVFD; \
+		cp -rf $(TARGETPREFIX)/usr/lib/enigma2/python/Plugins/Extensions/hs742xVFD/* $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/SystemPlugins/VFD-Icons; \
+		rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/hs742xVFD; \
 	fi
 	cp -f $(SKEL_ROOT)/root_enigma2/usr/local/share/enigma2/keymap_fortis.xml $(RELEASE_DIR)/usr/local/share/enigma2/keymap.xml
 
@@ -632,6 +632,7 @@ release_enigma2_base:
 	install -d $(RELEASE_DIR)/var/{etc,opkg}
 	export CROSS_COMPILE=$(TARGET)- && $(MAKE) install -C $(BUILD_TMP)/busybox-$(BUSYBOX_VERSION) CONFIG_PREFIX=$(RELEASE_DIR)
 #	remove the slink to busybox
+	echo -n "Copying image to release directory..."
 	rm -f $(RELEASE_DIR)/sbin/halt
 	cp -f $(TARGETPREFIX)/sbin/halt $(RELEASE_DIR)/sbin/
 	ln -fs halt $(RELEASE_DIR)/sbin/reboot
@@ -812,6 +813,7 @@ endif
 		cp -f $(TARGETPREFIX)/usr/local/bin/enigma2 $(RELEASE_DIR)/usr/local/bin/enigma2; \
 	fi
 	cp -a $(TARGETPREFIX)/usr/local/share/enigma2/* $(RELEASE_DIR)/usr/local/share/enigma2
+	cp -f $(SKEL_ROOT)/root_enigma2/usr/local/share/enigma2/skin_default/spinner/* $(RELEASE_DIR)/usr/local/share/enigma2/skin_default/spinner/
 	cp $(SKEL_ROOT)/root_enigma2/etc/enigma2/* $(RELEASE_DIR)/etc/enigma2
 	ln -s /usr/local/share/enigma2 $(RELEASE_DIR)/usr/share/enigma2
 	ln -sf /etc/timezone.xml $(RELEASE_DIR)/etc/tuxbox/timezone.xml
@@ -868,6 +870,12 @@ endif
 		cp -f $(TARGETPREFIX)/usr/sbin/rpc.nfsd $(RELEASE_DIR)/usr/sbin/; \
 		cp -f $(TARGETPREFIX)/usr/sbin/rpc.mountd $(RELEASE_DIR)/usr/sbin/; \
 		cp -f $(TARGETPREFIX)/usr/sbin/rpc.statd $(RELEASE_DIR)/usr/sbin/; \
+	fi
+#
+# parted
+#
+	if [ -e $(TARGETPREFIX)/usr/sbin/parted ]; then \
+		cp -f $(TARGETPREFIX)/usr/sbin/parted $(RELEASE_DIR)/usr/sbin/; \
 	fi
 #
 # autofs
@@ -964,6 +972,7 @@ endif
 		cp -rf $(TARGETPREFIX)/usr/lib/enigma2/python/Plugins/SystemPlugins/Videomode/YPbPr.png $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/SystemPlugins/Videomode/Component.png; \
 		cp -rf $(TARGETPREFIX)/usr/lib/enigma2/python/Plugins/SystemPlugins/Videomode/lcd_YPbPr.png $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/SystemPlugins/Videomode/lcd_Component.png; \
 	fi
+	echo " done."
 #
 # delete unnecessary files
 #

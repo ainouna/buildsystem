@@ -1,6 +1,6 @@
 --- nhd2-exp.org/acinclude.m4
 +++ nhd2-exp/acinclude.m4
-@@ -217,9 +217,9 @@
+@@ -201,9 +201,9 @@
  AC_DEFUN([TUXBOX_BOXTYPE],[
  
  AC_ARG_WITH(boxtype,
@@ -12,7 +12,7 @@
  			BOXTYPE="$withval"
  			;;
  		cu*)
-@@ -240,6 +240,10 @@
+@@ -224,6 +224,10 @@
  			;;
  		spa*)
  			BOXTYPE="fulan"
@@ -23,7 +23,7 @@
  			BOXMODEL="$withval"
  			;;
  		uf*)
-@@ -260,6 +264,10 @@
+@@ -244,6 +248,10 @@
  			;;
  		oct*)
  			BOXTYPE="octagon"
@@ -34,8 +34,8 @@
  			BOXMODEL="$withval"
  			;;
  		vu*)
-@@ -356,11 +364,13 @@
- 				valid for dreambox: dm500, dm500plus, dm600pvr, dm56x0, dm7000, dm7020, dm7025, dm500hd, dm7020hd, dm8000, dm800, dm800se
+@@ -340,11 +348,13 @@
+ 				valid for dreambox: dm500, dm500plus, dm600pvr, dm56x0, dm7000, dm7020, dm7025, dm500hd, dm7020hd, dm8000, dm800, dm800se, dm520
  				valid for xtrend: et4x00,et5x00,et6x00,et7x00, et8000,et8500,et9x00, et10000
  				valid for fulan: spark, spark7162
 +				valid for topfield: tf7700
@@ -48,7 +48,7 @@
  				valid for vuplus: vusolo,vuduo,vuuno,vuultimo,vuduo2,vusolo2,vusolo4k,vusolose,vuzero
  				valid for azbox: azboxhd,azboxme,azboxminime
  				valid for technomate: tmtwin,tm2t,tmsingle,tmnano
-@@ -414,6 +424,13 @@
+@@ -398,6 +408,13 @@
  				AC_MSG_ERROR([unknown model $withval for boxtype $BOXTYPE])
  			fi
  			;;
@@ -62,7 +62,7 @@
  		ufs910|ufs912|ufs913|ufs922|ufc960)
  			if test "$BOXTYPE" = "kathrein"; then
  				BOXMODEL="$withval"
-@@ -449,6 +466,13 @@
+@@ -433,6 +450,13 @@
  				AC_MSG_ERROR([unknown model $withval for boxtype $BOXTYPE])
  			fi
  			;;
@@ -73,10 +73,10 @@
 +				AC_MSG_ERROR([unknown model $withval for boxtype $BOXTYPE])
 +			fi
 +			;;
-		vusolo2|vuduo2|vusolo|vuduo|vuuno|vuultimo|vusolose|vusolo4k|vuzero)
+ 		vusolo2|vuduo2|vusolo|vuduo|vuuno|vuultimo|vusolose|vusolo4k|vuzero)
  			if test "$BOXTYPE" = "vuplus"; then
  				BOXMODEL="$withval"
-@@ -614,7 +638,7 @@
+@@ -598,13 +622,14 @@
  			AC_MSG_ERROR([unsupported value $withval for --with-boxmodel])
  			;;
  	esac],
@@ -85,16 +85,33 @@
  		AC_MSG_ERROR([this boxtype $BOXTYPE needs --with-boxmodel])
  	fi])
  
-@@ -630,7 +654,7 @@
+ AC_SUBST(BOXTYPE)
+ AC_SUBST(BOXMODEL)
+ 
++# BOXTYPE is a brand
+ AM_CONDITIONAL(BOXTYPE_GENERIC, test "$BOXTYPE" = "generic")
+ AM_CONDITIONAL(BOXTYPE_DGS, test "$BOXTYPE" = "dgs")
+ AM_CONDITIONAL(BOXTYPE_GIGABLUE, test "$BOXTYPE" = "gigablue")
+@@ -614,8 +639,8 @@
  AM_CONDITIONAL(BOXTYPE_KATHREIN, test "$BOXTYPE" = "kathrein")
  AM_CONDITIONAL(BOXTYPE_IPBOX, test "$BOXTYPE" = "ipbox")
  AM_CONDITIONAL(BOXTYPE_HL101, test "$BOXTYPE" = "hl101")
 -AM_CONDITIONAL(BOXTYPE_TOPFIELD, test "$BOXTYPE" = "toptfield")
+-AM_CONDITIONAL(BOXTYPE_FORTIS_HDBOX, test "$BOXTYPE" = "fortis_hdbox")
 +AM_CONDITIONAL(BOXTYPE_TOPFIELD, test "$BOXTYPE" = "topfield")
- AM_CONDITIONAL(BOXTYPE_FORTIS_HDBOX, test "$BOXTYPE" = "fortis_hdbox")
++AM_CONDITIONAL(BOXTYPE_FORTIS, test "$BOXTYPE" = "fortis")
  AM_CONDITIONAL(BOXTYPE_OCTAGON, test "$BOXTYPE" = "octagon")
  AM_CONDITIONAL(BOXTYPE_ATEVIO, test "$BOXTYPE" = "atevio")
-@@ -702,6 +726,8 @@
+ AM_CONDITIONAL(BOXTYPE_ADB_BOX, test "$BOXTYPE" = "adb_box")
+@@ -647,6 +672,7 @@
+ AM_CONDITIONAL(BOXTYPE_XSARIUS, test "$BOXTYPE" = "xsarius")
+ AM_CONDITIONAL(BOXTYPE_ZGEMMA, test "$BOXTYPE" = "zgemma")
+ 
++# BOXMODEL is a model within a brand
+ AM_CONDITIONAL(BOXMODEL_CUBEREVO, test "$BOXMODEL" = "cuberevo")
+ AM_CONDITIONAL(BOXMODEL_CUBEREVO_MINI, test "$BOXMODEL" = "cuberevo_mini")
+ AM_CONDITIONAL(BOXMODEL_CUBEREVO_MINI2, test "$BOXMODEL" = "cuberevo_mini2")
+@@ -687,6 +713,8 @@
  AM_CONDITIONAL(BOXMODEL_SPARK,test "$BOXMODEL" = "spark")
  AM_CONDITIONAL(BOXMODEL_SPARK7162,test "$BOXMODEL" = "spark7162")
  
@@ -103,9 +120,11 @@
  AM_CONDITIONAL(BOXMODEL_UFS910, test "$BOXMODEL" = "ufs910")
  AM_CONDITIONAL(BOXMODEL_UFS912, test "$BOXMODEL" = "ufs912")
  AM_CONDITIONAL(BOXMODEL_UFS913, test "$BOXMODEL" = "ufs913")
-@@ -720,6 +746,13 @@
+@@ -704,7 +732,15 @@
+ AM_CONDITIONAL(BOXMODEL_ATEVIO7500, test "$BOXMODEL" = "atevio7500")
  AM_CONDITIONAL(BOXMODEL_ATEVIO7600, test "$BOXMODEL" = "atevio7600")
  
++AM_CONDITIONAL(BOXMODEL_FORTIS_HDBOX, test "$BOXMODEL" = "fortis_hdbox")
  AM_CONDITIONAL(BOXMODEL_OCTAGON_1008, test "$BOXMODEL" = "octagon1008")
 +
 +AM_CONDITIONAL(BOXMODEL_HS7110, test "$BOXMODEL" = "hs7110")
@@ -117,7 +136,15 @@
  
  AM_CONDITIONAL(BOXMODEL_VUSOLO2, test "$BOXMODEL" = "vusolo2")
  AM_CONDITIONAL(BOXMODEL_VUDUO2, test "$BOXMODEL" = "vuduo2")
-@@ -812,6 +845,8 @@
+@@ -785,6 +821,7 @@
+ AM_CONDITIONAL(BOXMODEL_LC, test "$BOXMODEL" = "lc")
+ AM_CONDITIONAL(BOXMODEL_SH1, test "$BOXMODEL" = "sh1")
+ 
++# PLATFORM is derived from a BOXTYPE (a brand)
+ if test "$BOXTYPE" = "generic"; then
+ 	AC_DEFINE(PLATFORM_GENERIC, 1, [building for generic])
+ elif test "$BOXTYPE" = "dgs"; then
+@@ -797,6 +834,8 @@
  	AC_DEFINE(PLATFORM_XTREND, 1, [building for xtrend])
  elif test "$BOXTYPE" = "fulan"; then
  	AC_DEFINE(PLATFORM_FULAN, 1, [building for fulan])
@@ -126,7 +153,13 @@
  elif test "$BOXTYPE" = "kathrein"; then
  	AC_DEFINE(PLATFORM_KATHREIN, 1, [building for kathrein])
  elif test "$BOXTYPE" = "ipbox"; then
-@@ -826,6 +861,8 @@
+@@ -805,12 +844,12 @@
+ 	AC_DEFINE(HAVE_DUCKBOX_HARDWARE, 1, [building for a duckbox])	
+ elif test "$BOXTYPE" = "topfield"; then
+ 	AC_DEFINE(PLATFORM_TF7700, 1, [building for topfield])
+-elif test "$BOXTYPE" = "fortis_hdbox"; then
+-	AC_DEFINE(PLATFORM_FORTIS_HDBOX, 1, [building for fortis_hdbox])
+ elif test "$BOXTYPE" = "octagon"; then
  	AC_DEFINE(PLATFORM_OCTAGON, 1, [building for octagon])
  elif test "$BOXTYPE" = "atevio"; then
  	AC_DEFINE(PLATFORM_ATEVIO, 1, [building for atevio])
@@ -135,18 +168,30 @@
  elif test "$BOXTYPE" = "adb_box"; then
  	AC_DEFINE(PLATFORM_ADB_BOX, 1, [building for adb_box])
  elif test "$BOXTYPE" = "whitebox"; then
-@@ -951,6 +988,9 @@
+@@ -865,6 +904,7 @@
+ 	AC_DEFINE(PLATFORM_ZGEMMA, 1, [building for zgemma])
+ fi
+ 
++# Define the BOXMODELs
+ if test "$BOXMODEL" = "cuberevo"; then
+ 	AC_DEFINE(PLATFORM_CUBEREVO, 1, [building for cuberevo])
+ elif test "$BOXMODEL" = "cuberevo_mini"; then
+@@ -938,6 +978,9 @@
  elif test "$BOXMODEL" = "spark7162"; then
  	AC_DEFINE(PLATFORM_SPARK7162, 1, [building for spark 7162])
  
 +elif test "$BOXMODEL" = "tf7700"; then
-+	AC_DEFINE(PLATFORM_TF7700, 1, [building for topfield tf7700])
++	AC_DEFINE(BOXMODEL_TF7700, 1, [building for topfield tf7700])
 +
  elif test "$BOXMODEL" = "ufs910"; then
  	AC_DEFINE(PLATFORM_UFS910, 1, [building for ufs910])
  elif test "$BOXMODEL" = "ufs912"; then
-@@ -983,6 +1023,19 @@
+@@ -968,8 +1011,23 @@
+ elif test "$BOXMODEL" = "atevio7600"; then
+ 	AC_DEFINE(BOXMODEL_ATEVIO7600, 1, [building for atevio7600])
  
++elif test "$BOXMODEL" = "fortis_hdbox"; then
++	AC_DEFINE(BOXMODEL_FORTIS_HDBOX, 1, [building for fortis_hdbox])
  elif test "$BOXMODEL" = "octagon1008"; then
  	AC_DEFINE(BOXMODEL_OCTAGON_1008, 1, [building for octagon1008])
 +
@@ -165,7 +210,7 @@
  
  elif test "$BOXMODEL" = "vusolo2"; then
  	AC_DEFINE(BOXMODEL_VUSOLO2, 1, [vuplus solo2])
-@@ -1126,4 +1179,3 @@
+@@ -1113,4 +1171,3 @@
  fi
  ])
  
@@ -200,9 +245,9 @@
  #endif
 --- nhd2-exp.org/src/neutrino.h
 +++ nhd2-exp/src/neutrino.h
-@@ -202,13 +202,13 @@
- 		void StartSubtitles(bool show = true);
- 		void SelectSubtitles();
+@@ -206,13 +206,13 @@
+ 		void lockPlayBack(void);
+ 		void unlockPlayBack(void);
  		
 -		// 0 - restart 
 -		// 1 - halt
@@ -220,6 +265,24 @@
  		};
  		
  		void ExitRun(int retcode = SHUTDOWN);
+--- neutrino-hd2.org/src/neutrino.cpp
++++ neutrino-hd2.git/nhd2-exp/src/neutrino.cpp
+@@ -469,11 +469,11 @@
+ 	}
+ 
+ 	// video
+-#ifdef __sh__	
+-	g_settings.video_Mode = configfile.getInt32("video_Mode", VIDEO_STD_PAL);
+-#else
++//#ifdef __sh__	
++//	g_settings.video_Mode = configfile.getInt32("video_Mode", VIDEO_STD_PAL);
++//#else
+ 	g_settings.video_Mode = configfile.getInt32("video_Mode", VIDEO_STD_720P50);
+-#endif
++//#endif
+ 	prev_video_Mode = g_settings.video_Mode;
+ 	
+ 	//analog mode
 --- nhd2-exp.org/lib/libeplayer3/container/container_ffmpeg.c
 +++ nhd2-exp/lib/libeplayer3/container/container_ffmpeg.c
 @@ -146,75 +146,75 @@
@@ -452,53 +515,106 @@
  							break;
 --- nhd2-exp.org/src/driver/vfd.h
 +++ nhd2-exp/src/driver/vfd.h
-@@ -179,7 +178,137 @@
- } vfd_icon;
- #endif //ufs910, ufs913
+@@ -37,11 +37,23 @@
+ #include <cs_vfd.h>
+ #endif
  
-+#if defined(PLATFORM_FORTIS_HDBOX)
++// VFD/LED display width
++#if defined(PLATFORM_SPARK7162) || defined(BOXMODEL_OCTAGON1008) || defined(BOXMODEL_HS7420) || defined(BOXMODEL_HS7429)
++#define VFD_LENGTH 8
++#elif defined(BOXMODEL_FORTIS_HDBOX) || defined(BOXMODEL_ATEVIO7500)
++#define VFD_LENGTH 12
++#elif defined(BOXMODEL_HS7119) || defined(BOXMODEL_HS7810A) || defined(BOXMODEL_HS7819)
++#define VFD_LENGTH 4
++#elif defined(BOXMODEL_HS7110)
++#define VFD_LENGTH 0
++#else
++#define VFD_LENGTH 16
++#endif
+ 
+ #if defined(PLATFORM_SPARK7162)
+-/* SAB Triple VFD Icons								*/
+-/* taken from aotom_main.h, with these numbers the Icons on Spark7162		*/
+-/* will work right ( hopefully all Models )					*/
++/* SAB Triple VFD Icons                                               */
++/* taken from aotom_main.h, with these numbers the Icons on Spark7162 */
++/* will work right ( hopefully all Models )                           */
+ typedef enum {
+ //----------------------------------11G-------------------------------------
+ 	VFD_SPARK_PLAY_FASTBACKWARD = 1,		//11*16+1,
+@@ -92,7 +104,7 @@
+ 	VFD_SPARK_DOT1 = 44,
+ 	VFD_SPARK_CAB = 45,	
+ //----------------------------------end-------------------------------------
+-	SPARK_ICON_ALL = 46, 		/* with this number the aotom driver set all icons on (1) or off (0) */
++	SPARK_ICON_ALL = 46,  /* with this number the aotom driver set all icons on (1) or off (0) */
+ 	VFD_ICON_MAX
+ } spark7162_vfd_icon;
+ 
+@@ -131,9 +143,7 @@
+ 	VFD_ICON_STANDBY	= VFD_SPARK_CYCLE	
+ } vfd_icon;
+ 
+-#endif //spark7162
+-
+-#if defined(PLATFORM_KATHREIN)
++#elif defined(PLATFORM_KATHREIN)
+ typedef enum
+ {
+ 	vfd_910_usb = 1,
+@@ -177,11 +187,307 @@
+ 	VFD_ICON_HDD 		= vfd_910_hdd,	
+ 	VFD_ICON_CLOCK		= vfd_910_clock
+ } vfd_icon;
+-#endif //ufs910, ufs913
+-
+-#if !defined(PLATFORM_KATHREIN) && !defined(PLATFORM_SPARK7162) && !defined (PLATFORM_COOLSTREAM)
+-// duckbox
+-// token from micom
++
++#elif defined(BOXMODEL_FORTIS_HDBOX)
 +typedef enum
 +{
-+	HDBOX_ICON_USB = 0x10, // 16
-+	HDBOX_ICON_STANDBY,    // 17
-+	HDBOX_ICON_SAT,        // 18
-+	HDBOX_ICON_REC,        // 19
-+	HDBOX_ICON_TIMESHIFT,  // 20
-+	HDBOX_ICON_TIMER,      // 21
-+	HDBOX_ICON_HD,         // 22
-+	HDBOX_ICON_SCRAMBLED,  // 23
-+	HDBOX_ICON_DOLBY,      // 24
-+	HDBOX_ICON_MUTE,       // 25
-+	HDBOX_ICON_TUNER1,     // 26
-+	HDBOX_ICON_TUNER2,     // 27
-+	HDBOX_ICON_MP3,        // 28
-+	HDBOX_ICON_REPEAT,     // 29
-+	HDBOX_ICON_PLAY,       // 30
-+	HDBOX_ICON_TER,        // 31
-+	HDBOX_ICON_FILE,       // 32
-+	HDBOX_ICON_480i,       // 33
-+	HDBOX_ICON_480p,       // 34
-+	HDBOX_ICON_576i,       // 35
-+	HDBOX_ICON_576p,       // 36
-+	HDBOX_ICON_720p,       // 37
-+	HDBOX_ICON_1080i,      // 38
-+	HDBOX_ICON_1080p,      // 39
-+	HDBOX_ICON_Circ0,      // 40
-+	HDBOX_ICON_Circ1,      // 41
-+	HDBOX_ICON_Circ2,      // 42
-+	HDBOX_ICON_Circ3,      // 43
-+	HDBOX_ICON_Circ4,      // 44
-+	HDBOX_ICON_Circ5,      // 45
-+	HDBOX_ICON_Circ6,      // 46
-+	HDBOX_ICON_Circ7,      // 47
-+	HDBOX_ICON_Circ8,      // 48
-+	HDBOX_ICON_COLON1,     // 49
-+	HDBOX_ICON_COLON2,     // 50
-+	HDBOX_ICON_COLON3,     // 51
-+	HDBOX_ICON_COLON4,     // 52
-+	HDBOX_ICON_TV,         // 53
-+	HDBOX_ICON_RADIO,      // 54
-+	ICON_ALL               // 55 new nuvoton will set/clear all icons with this number
++	HDBOX_ICON_USB = 0x1,  // 01
++	HDBOX_ICON_STANDBY,    // 02
++	HDBOX_ICON_SAT,        // 03
++	HDBOX_ICON_REC,        // 04
++	HDBOX_ICON_TIMESHIFT,  // 05
++	HDBOX_ICON_TIMER,      // 06
++	HDBOX_ICON_HD,         // 07
++	HDBOX_ICON_SCRAMBLED,  // 08
++	HDBOX_ICON_DOLBY,      // 09
++	HDBOX_ICON_MUTE,       // 10
++	HDBOX_ICON_TUNER1,     // 11
++	HDBOX_ICON_TUNER2,     // 12
++	HDBOX_ICON_MP3,        // 13
++	HDBOX_ICON_REPEAT,     // 14
++	HDBOX_ICON_PLAY,       // 15
++	HDBOX_ICON_TER,        // 16
++	HDBOX_ICON_FILE,       // 17
++	HDBOX_ICON_480i,       // 18
++	HDBOX_ICON_480p,       // 19
++	HDBOX_ICON_576i,       // 20
++	HDBOX_ICON_576p,       // 21
++	HDBOX_ICON_720p,       // 22
++	HDBOX_ICON_1080i,      // 23
++	HDBOX_ICON_1080p,      // 24
++	HDBOX_ICON_Circ0,      // 25
++	HDBOX_ICON_Circ1,      // 26
++	HDBOX_ICON_Circ2,      // 27
++	HDBOX_ICON_Circ3,      // 28
++	HDBOX_ICON_Circ4,      // 29
++	HDBOX_ICON_Circ5,      // 30
++	HDBOX_ICON_Circ6,      // 31
++	HDBOX_ICON_Circ7,      // 32
++	HDBOX_ICON_Circ8,      // 33
++	HDBOX_ICON_COLON1,     // 34
++	HDBOX_ICON_COLON2,     // 35
++	HDBOX_ICON_COLON3,     // 36
++	HDBOX_ICON_COLON4,     // 37
++	HDBOX_ICON_TV,         // 38
++	HDBOX_ICON_RADIO,      // 39
++	ICON_ALL               // 40 new nuvoton will set/clear all icons with this number
 +} fortis_hdbox_vfd_icon;
 +
 +typedef enum
@@ -521,41 +637,41 @@
 +	VFD_ICON_PAUSE		= HDBOX_ICON_TER,
 +	VFD_ICON_LOCK 		= HDBOX_ICON_SCRAMBLED,
 +	VFD_ICON_CLOCK		= HDBOX_ICON_TIMER,
-+	VFD_ICON_STANDBY	= HDBOX_ICON_STANDBY	
++	VFD_ICON_STANDBY	= HDBOX_ICON_STANDBY
 +} vfd_icon;
-+#endif //Fortis HDbox
 +
-+#if defined(PLATFORM_OCTAGON1008)
++#elif defined(BOXMODEL_OCTAGON1008)
 +typedef enum //HS9510 icon numbers and their names
 +{
-+	HS9510_ICON_DOLBY = 0x10, // 16
-+	HS9510_ICON_DTS,          // 17
-+	HS9510_ICON_VIDEO,        // 18
-+	HS9510_ICON_AUDIO,        // 19
-+	HS9510_ICON_LINK,         // 20
-+	HS9510_ICON_HDD,          // 21
-+	HS9510_ICON_DISC,         // 22
-+	HS9510_ICON_DVB,          // 23
-+	HS9510_ICON_DVD,          // 24
-+	HS9510_ICON_TIME,         // 25
-+	HS9510_ICON_TIMER,        // 26
-+	HS9510_ICON_CARD,         // 27
-+	HS9510_ICON_1,            // 28
-+	HS9510_ICON_2,            // 29
-+	HS9510_ICON_KEY,          // 30
-+	HS9510_ICON_16_9,         // 31
-+	HS9510_ICON_USB,          // 32
-+	HS9510_ICON_CRYPTED,      // 33
-+	HS9510_ICON_PLAY,         // 34
-+	HS9510_ICON_REWIND,       // 35
-+	HS9510_ICON_PAUSE,        // 36
-+	HS9510_ICON_FF,           // 37
-+	HS9510_ICON_REC,          // 38
-+	HS9510_ICON_ARROW,        // 39
-+	HS9510_ICON_COLON1,       // 40
-+	HS9510_ICON_COLON2,       // 41
-+	HS9510_ICON_COLON3,       // 42
-+	ICON_ALL                  // 43 new novoton will set/clear all icons with this number
++	HS9510_ICON_DOLBY = 0x1,  // 01
++	HS9510_ICON_DTS,          // 02
++	HS9510_ICON_VIDEO,        // 03
++	HS9510_ICON_AUDIO,        // 04
++	HS9510_ICON_LINK,         // 05
++	HS9510_ICON_HDD,          // 06
++	HS9510_ICON_DISC,         // 07
++	HS9510_ICON_DVB,          // 08
++	HS9510_ICON_DVD,          // 09
++	HS9510_ICON_TIMER,        // 10
++	HS9510_ICON_TIME,         // 11
++	HS9510_ICON_CARD,         // 12
++	HS9510_ICON_1,            // 13
++	HS9510_ICON_2,            // 14
++	HS9510_ICON_KEY,          // 15
++	HS9510_ICON_16_9,         // 16
++	HS9510_ICON_USB,          // 17
++	HS9510_ICON_CRYPTED,      // 18
++	HS9510_ICON_PLAY,         // 19
++	HS9510_ICON_REWIND,       // 20
++	HS9510_ICON_PAUSE,        // 21
++	HS9510_ICON_FF,           // 22
++	HS9510_ICON_NONE,         // 23
++	HS9510_ICON_REC,          // 24
++	HS9510_ICON_ARROW,        // 25
++	HS9510_ICON_COLON1,       // 26
++	HS9510_ICON_COLON2,       // 27
++	HS9510_ICON_COLON3,       // 28
++	ICON_ALL                  // 29 new nuvoton will set/clear all icons with this number
 +} octagon1008_vfd_icon;
 +
 +typedef enum
@@ -578,20 +694,197 @@
 +	VFD_ICON_PAUSE		= HS9510_ICON_PAUSE,
 +	VFD_ICON_LOCK 		= HS9510_ICON_CRYPTED,
 +	VFD_ICON_CLOCK		= HS9510_ICON_TIMER,
-+	VFD_ICON_STANDBY	= 0	
++	VFD_ICON_STANDBY	= 0
 +} vfd_icon;
-+#endif //Octagon1008
 +
--#if !defined(PLATFORM_KATHREIN) && !defined(PLATFORM_SPARK7162) && !defined (PLATFORM_COOLSTREAM)
-+#if !defined(PLATFORM_KATHREIN) \
-+ && !defined(PLATFORM_SPARK7162) \
-+ && !defined(PLATFORM_FORTIS_HDBOX) \
-+ && !defined(PLATFORM_OCTAGON1008) \
-+ && !defined (PLATFORM_COOLSTREAM)
- // duckbox
- // token from micom
++#elif defined(BOXMODEL_ATEVIO7500)
++typedef enum //HS8200 icon numbers and their names
++{
++	HS8200_ICON_STANDBY = 1  // 01
++	HS8200_REC,              // 02
++	HS8200_ICON_TIMESHIFT,   // 03
++	HS8200_ICON_TIMER,       // 04
++	HS8200_ICON_HD,          // 05
++	HS8200_ICON_USB,         // 06
++	HS8200_ICON_SCRAMBLED,   // 07
++	HS8200_ICON_DOLBY,       // 08
++	HS8200_ICON_MUTE,        // 09
++	HS8200_ICON_TUNER1,      // 10
++	HS8200_ICON_TUNER2,      // 11
++	HS8200_ICON_MP3,         // 12
++	HS8200_ICON_REPEAT,      // 13
++	HS8200_ICON_PLAY,        // 14
++	HS8200_ICON_STOP,        // 15
++	HS8200_ICON_PAUSE,       // 16
++	HS8200_ICON_REWIND,      // 17
++	HS8200_ICON_FF,          // 18
++	HS8200_ICON_STEP_BACK,   // 19
++	HS8200_ICON_STEP_FWD,    // 20
++	HS8200_ICON_TV,          // 21
++	HS8200_ICON_RADIO,       // 22
++	ICON_ALL                 // 23 new nuvoton will set/clear all icons with this number
++} atevio7500_vfd_icon;
++
++typedef enum
++{
++	VFD_ICON_MUTE		= HS8200_ICON_TIME,
++	VFD_ICON_DOLBY		= HS8200_ICON_DOLBY,
++	VFD_ICON_POWER		= 0,
++	VFD_ICON_TIMESHIFT	= HS8200_TIMESHIFT,
++	VFD_ICON_TV		= HS8200_ICON_TV,
++	VFD_ICON_RADIO		= HS8200_ICON_RADIO,
++	VFD_ICON_HD		= HS8200_ICON_HD,
++	VFD_ICON_1080P		= 0,
++	VFD_ICON_1080I		= 0,
++	VFD_ICON_720P		= 0,
++	VFD_ICON_480P		= 0,
++	VFD_ICON_480I		= 0,
++	VFD_ICON_USB		= HS8200_ICON_USB,
++	VFD_ICON_MP3		= HS8200_ICON_MP3,
++	VFD_ICON_PLAY		= HS8200_ICON_PLAY,
++	VFD_ICON_PAUSE		= HS8200_ICON_PAUSE,
++	VFD_ICON_LOCK 		= HS8200_ICON_SCRAMBLED,
++	VFD_ICON_CLOCK		= HS8200_ICON_TIMER,
++	VFD_ICON_STANDBY	= HS8200_ICON_STANDBY
++} vfd_icon;
++
++#elif defined(BOXMODEL_HS7420) || defined(BOXMODEL_HS7429)
++typedef enum //HS742X icon numbers and their names
++{
++	HS742X_ICON_DOT = 1,      // 01
++	HS742X_ICON_COLON1,       // 02
++	HS742X_ICON_COLON2,       // 03
++	HS742X_ICON_COLON3,       // 04
++	ICON_ALL                  // 05 new nuvoton will set/clear all icons with this number
++} hs742x_vfd_icon;
++
++typedef enum
++{
++	VFD_ICON_MUTE		= 0,
++	VFD_ICON_DOLBY		= 0,
++	VFD_ICON_POWER		= 0,
++	VFD_ICON_TIMESHIFT	= 0,
++	VFD_ICON_TV		= 0,
++	VFD_ICON_RADIO		= 0,
++	VFD_ICON_HD		= 0,
++	VFD_ICON_1080P		= 0,
++	VFD_ICON_1080I		= 0,
++	VFD_ICON_720P		= 0,
++	VFD_ICON_480P		= 0,
++	VFD_ICON_480I		= 0,
++	VFD_ICON_USB		= 0,
++	VFD_ICON_MP3		= 0,
++	VFD_ICON_PLAY		= 0,
++	VFD_ICON_PAUSE		= 0,
++	VFD_ICON_LOCK 		= 0,
++	VFD_ICON_CLOCK		= 0,
++	VFD_ICON_STANDBY	= 0
++} vfd_icon;
++
++#elif defined(BOXMODEL_HS7119)
++typedef enum //HS7119 icon numbers and their names
++{
++	HS7119_ICON_COLON = 1,    // 01
++	ICON_ALL                  // 02 new nuvoton will set/clear all icons with this number
++} hs7119_vfd_icon;
++
++typedef enum
++{
++	VFD_ICON_MUTE		= 0,
++	VFD_ICON_DOLBY		= 0,
++	VFD_ICON_POWER		= 0,
++	VFD_ICON_TIMESHIFT	= 0,
++	VFD_ICON_TV		= 0,
++	VFD_ICON_RADIO		= 0,
++	VFD_ICON_HD		= 0,
++	VFD_ICON_1080P		= 0,
++	VFD_ICON_1080I		= 0,
++	VFD_ICON_720P		= 0,
++	VFD_ICON_480P		= 0,
++	VFD_ICON_480I		= 0,
++	VFD_ICON_USB		= 0,
++	VFD_ICON_MP3		= 0,
++	VFD_ICON_PLAY		= 0,
++	VFD_ICON_PAUSE		= 0,
++	VFD_ICON_LOCK 		= 0,
++	VFD_ICON_CLOCK		= 0,
++	VFD_ICON_STANDBY	= 0
++} vfd_icon;
++
++#elif defined(BOXMODEL_HS7810A) || defined(BOXMODEL_HS7819)
++typedef enum //HS7810A & HS7819 icon numbers and their names
++{
++	HS7810A_ICON_COLON = 1,   // 01
++	HS7810A_ICON_PERIOD1,     // 02
++	HS7810A_ICON_PERIOD2,     // 03
++	HS7810A_ICON_PERIOD3,     // 04
++	ICON_ALL                  // 05 new nuvoton will set/clear all icons with this number
++} hs7810a_vfd_icon;
++
++typedef enum
++{
++	VFD_ICON_MUTE		= 0,
++	VFD_ICON_DOLBY		= 0,
++	VFD_ICON_POWER		= 0,
++	VFD_ICON_TIMESHIFT	= 0,
++	VFD_ICON_TV		= 0,
++	VFD_ICON_RADIO		= 0,
++	VFD_ICON_HD		= 0,
++	VFD_ICON_1080P		= 0,
++	VFD_ICON_1080I		= 0,
++	VFD_ICON_720P		= 0,
++	VFD_ICON_480P		= 0,
++	VFD_ICON_480I		= 0,
++	VFD_ICON_USB		= 0,
++	VFD_ICON_MP3		= 0,
++	VFD_ICON_PLAY		= 0,
++	VFD_ICON_PAUSE		= 0,
++	VFD_ICON_LOCK 		= 0,
++	VFD_ICON_CLOCK		= 0,
++	VFD_ICON_STANDBY	= 0
++} vfd_icon;
++
++#elif defined(BOXMODEL_HS7110)
++typedef enum
++{
++	ICON_ALL		= 0,
++	VFD_ICON_MUTE		= 0,
++	VFD_ICON_DOLBY		= 0,
++	VFD_ICON_POWER		= 0,
++	VFD_ICON_TIMESHIFT	= 0,
++	VFD_ICON_TV		= 0,
++	VFD_ICON_RADIO		= 0,
++	VFD_ICON_HD		= 0,
++	VFD_ICON_1080P		= 0,
++	VFD_ICON_1080I		= 0,
++	VFD_ICON_720P		= 0,
++	VFD_ICON_480P		= 0,
++	VFD_ICON_480I		= 0,
++	VFD_ICON_USB		= 0,
++	VFD_ICON_MP3		= 0,
++	VFD_ICON_PLAY		= 0,
++	VFD_ICON_PAUSE		= 0,
++	VFD_ICON_LOCK 		= 0,
++	VFD_ICON_CLOCK		= 0,
++	VFD_ICON_STANDBY	= 0
++} vfd_icon;
++
++#else
++// generic duckbox
++// taken from micom
  enum {
-@@ -236,7 +365,7 @@
+ 	ICON_MIN,             // 0x00
+ 	ICON_STANDBY,
+@@ -212,7 +518,7 @@
+ 	ICON_RADIO,   
+ 	ICON_TV,      
+ 	ICON_PAUSE,   
+-	ICON_MAX
++	ICON_ALL
+ };
+ 
+ // neutrino common
+@@ -236,11 +542,11 @@
  	VFD_ICON_PAUSE		= ICON_PAUSE,
  	VFD_ICON_LOCK 		= ICON_SCRAMBLED
  } vfd_icon;
@@ -600,17 +893,24 @@
  
  #if defined (__sh__)
  #define VFDBRIGHTNESS         0xc0425a03
-@@ -263,7 +392,8 @@
+-#define VFDPWRLED             0xc0425a04 /* added by zeroone, also used in fp_control/global.h ; set PowerLed Brightness on HDBOX*/
++#define VFDPWRLED             0xc0425a04 /* Obsolete, use VFDSETLED */
+ #define VFDDRIVERINIT         0xc0425a08
+ #define VFDICONDISPLAYONOFF   0xc0425a0a
+ #define VFDDISPLAYWRITEONOFF  0xc0425a05
+@@ -263,8 +569,9 @@
  #define VFDSETTIMEMODE        0xc0425b03
  #define VFDDISPLAYCLR	      0xc0425b00
  
 -#if defined(PLATFORM_SPARK7162)
+-/* structs are needed for sending icons etc. to aotom 				*/
 +#if defined(PLATFORM_SPARK7162) \
-+ || defined (PLATFORM_SPARK)
- /* structs are needed for sending icons etc. to aotom 				*/
++ || defined(PLATFORM_SPARK)
++/* structs are needed for sending icons etc. to aotom */
  struct set_mode_s {
  	int compat; /* 0 = compatibility mode to vfd driver; 1 = nuvoton mode */
-@@ -308,31 +438,34 @@
+ };
+@@ -308,31 +615,38 @@
  		struct set_time_s time;
  	} u;
  };
@@ -629,12 +929,16 @@
 -
 -struct set_brightness_s {
 +
-+#elif defined(PLATFORM_FORTIS_HDBOX) \
-+   || defined(PLATFORM_OCTAGON1008) \
-+   || defined(PLATFORM_HS7110) \
-+   || defined(PLATFORM_HS7810A) \
-+   || defined(PLATFORM_HS7119) \
-+   || defined(PLATFORM_HS7819)
++#elif defined(BOXMODEL_FORTIS_HDBOX) \
++   || defined(BOXMODEL_OCTAGON1008) \
++   || defined(BOXMODEL_ATEVIO7500) \
++   || defined(BOXMODEL_HS7110) \
++   || defined(BOXMODEL_HS7420) \
++   || defined(BOXMODEL_HS7810A) \
++   || defined(BOXMODEL_HS7119) \
++   || defined(BOXMODEL_HS7429) \
++   || defined(BOXMODEL_HS7819)
++//#elif defined(PLATFORM_FORTIS)
 +/* structs are needed for sending icons etc. to nuvoton */
 +struct set_brightness_s
 +{
@@ -662,7 +966,7 @@
  };
  
  /* time must be given as follows:
-@@ -341,36 +474,46 @@
+@@ -341,38 +655,49 @@
   * time[3] = min
   * time[4] = sec
   */
@@ -719,31 +1023,15 @@
 -#define VFDSETMODE      0xc0425aff
 -#endif //Spark7162
 -
+-
+-struct vfd_ioctl_data {
 +#endif
- 
- struct vfd_ioctl_data {
++
++struct vfd_ioctl_data
++{
  	unsigned char start_address;
---- nhd2-exp.org/src/nhttpd/tuxboxapi/neutrinoyparser.cpp
-+++ nhd2-exp/src/nhttpd/tuxboxapi/neutrinoyparser.cpp
-@@ -681,6 +681,18 @@
- 	return "atevio7500";
- #elif defined (BOXMODEL_ATEVIO7600)
- 	return "atevio7600";
-+#elif defined (BOXMODEL_FORTIS_HDBOX)
-+	return "fortis_hdbox";
-+#elif defined (BOXMODEL_OCTAGON1008)
-+	return "octagon1008";
-+#elif defined (BOXMODEL_HS7110)
-+	return "hs7110";
-+#elif defined (BOXMODEL_HS7810a)
-+	return "hs7810a";
-+#elif defined (BOXMODEL_HS7119)
-+	return "hs7119";
-+#elif defined (BOXMODEL_HS7819)
-+	return "hs7819";
- #elif defined (BOXMODEL_AZBOXHD)
- 	return "azboxhd";
- #elif defined (BOXMODEL_AZBOXME)
+ 	unsigned char data[64];
+ 	unsigned char length;
 --- nhd2-exp.org/src/driver/vfd.cpp
 +++ nhd2-exp/src/driver/vfd.cpp
 @@ -47,15 +47,28 @@
@@ -756,22 +1044,22 @@
 -#endif
 -
 -#if defined (PLATFORM_KATHREIN) || defined (PLATFORM_SPARK7162)
-+  #elif defined (PLATFORM_FORTIS_HDBOX) \
-+     || defined (PLATFORM_OCTAGON1008) \
-+     || defined (PLATFORM_ATEVIO7500) \
-+     || defined (PLATFORM_HS7110) \
-+     || defined (PLATFORM_HS7420) \
-+     || defined (PLATFORM_HS7810A) \
-+     || defined (PLATFORM_HS7119) \
-+     || defined (PLATFORM_HS7429) \
-+     || defined (PLATFORM_HS7819)
++  #elif defined(BOXMODEL_FORTIS_HDBOX) \
++     || defined(BOXMODEL_OCTAGON1008) \
++     || defined(BOXMODEL_ATEVIO7500) \
++     || defined(BOXMODEL_HS7110) \
++     || defined(BOXMODEL_HS7420) \
++     || defined(BOXMODEL_HS7810A) \
++     || defined(BOXMODEL_HS7119) \
++     || defined(BOXMODEL_HS7429) \
++     || defined(BOXMODEL_HS7819)
 +static struct nuvoton_ioctl_data nuvoton_data;
 +  #endif
 +
-+  #if defined (PLATFORM_KATHREIN) \
-+   || defined (PLATFORM_SPARK7162) \
-+   || defined (PLATFORM_FORTIS_HDBOX) \
-+   || defined (PLATFORM_OCTAGON1008)
++  #if defined(PLATFORM_KATHREIN) \
++   || defined(PLATFORM_SPARK7162) \
++   || defined(BOXMODEL_FORTIS_HDBOX) \
++   || defined(BOXMODEL_OCTAGON1008)
  static bool usb_icon = false;
  static bool timer_icon = false;
  static bool hdd_icon = false;
@@ -784,7 +1072,7 @@
  		if(fd < 0)
  		{
  			printf("failed to open vfd\n");
-+#if defined (PLATFORM_TF7700)
++#if defined (BOXMODEL_TF7700)
  			fd = open("/dev/fplarge", O_RDWR);
  			if (fd < 0)
  			    printf("failed to open fplarge\n");
@@ -801,28 +1089,37 @@
  
  // default: has_lcd:1, is4digits:0, has_led:0
  // constructor
-@@ -204,6 +219,9 @@
+@@ -203,7 +218,11 @@
+ 	}
  	else
  		setPower(1);
- #endif	
-+#if defined (PLATFORM_OCTAGON1008)  
-+			ShowIcon(HS9510_ICON_COLON2, false);
+-#endif	
++#elif defined (BOXMODEL_OCTAGON1008)
++	ShowIcon((vfd_icon)HS9510_ICON_COLON2, false);
++#elif defined(BOXMODEL_HS7420) || defined(BOXMODEL_HS7429)
++	ShowIcon((vfd_icon)HS742X_ICON_COLON1, false);
 +#endif
  }
  
  void * CVFD::TimeThread(void *)
-@@ -339,12 +357,18 @@
+@@ -337,14 +356,23 @@
+ 			{
+ 				hour = t->tm_hour;
  				minute = t->tm_min;
- #if defined (PLATFORM_KATHREIN)							/* time and date at kathrein because 16 character vfd	*/
+-#if defined (PLATFORM_KATHREIN)							/* time and date at kathrein because 16 character vfd	*/
++#if defined(PLATFORM_KATHREIN)  /* time and date at kathrein because 16 character vfd */
  				strftime(timestr, 20, "%H:%M - %d.%m.%y", t);
 -#elif !defined(PLATFORM_SPARK7162) && !defined (PLATFORM_KATHREIN)		/* no time at spark7162 because clock integrated	*/
-+#elif defined (PLATFORM_OCTAGON1008)						/* no colon on octagon1008: it is an icon */
-+				ShowIcon(HS9510_ICON_COLON2, true);
-+ 				strftime(timestr, 4, "%H%M", t);
-+#elif defined (PLATFORM_HS7810A) || defined (PLATFORM_HS7119) || defined (PLATFORM_HS7819)	/* do not scroll on these models */
-+ 				strftime(timestr, 5, "%H:%M", t);
++#elif defined(BOXMODEL_OCTAGON1008)  /* no colon on octagon1008: it is an icon */
++				ShowIcon((vfd_icon)HS9510_ICON_COLON2, true);
++ 				strftime(timestr, 20, "%H%M", t);
++#elif defined(BOXMODEL_HS7420) || defined(BOXMODEL_HS7429)  /* no colon on HS742X: it is an icon */
++				ShowIcon((vfd_icon)HS742X_ICON_COLON1, true);
++ 				strftime(timestr, 20, "%H%M", t);
++#elif defined(BOXMODEL_HS7810A) || defined(BOXMODEL_HS7119) || defined (BOXMODEL)  /* do not scroll on these models */
++ 				strftime(timestr, 20, "%H:%M", t);
 +
-+#elif !defined(PLATFORM_SPARK7162)		/* no time at spark7162 because clock integrated	*/
++#elif !defined(PLATFORM_SPARK7162)  /* no time at spark7162 because clock integrated */
   				strftime(timestr, 20, "%H:%M", t);
  #endif				
  				ShowText(timestr);
@@ -832,128 +1129,296 @@
  	}
  
  	if (CNeutrinoApp::getInstance()->recordingstatus) 
-@@ -405,22 +429,42 @@
+@@ -403,25 +431,86 @@
+ 	switch(m) 
+ 	{
  		case AUDIO_MODE_PLAY:
++		{
  			ShowIcon(VFD_ICON_PLAY, true);
  			ShowIcon(VFD_ICON_PAUSE, false);
-+#if defined (PLATFORM_OCTAGON1008)
+-			break;
+-			
++#if defined(BOXMODEL_OCTAGON1008)
 +			ShowIcon(HS9510_ICON_REWIND, false);
 +			ShowIcon(HS9510_ICON_FF, false);
++#elif defined(BOXMODEL_ATEVIO7500)
++			ShowIcon(HS8200_ICON_REWIND, false);
++			ShowIcon(HS8200_ICON_FF, false);
++			ShowIcon(HS8200_ICON_PAUSE, false);
++#elif defined(PLATFORM_SPARK7162)
++			ShowIcon(VFD_SPARK_PLAY_FASTBACKWARD, false);
++			ShowIcon(VFD_SPARK_PLAY_FASTFORWARD, false);
 +#endif
- 			break;
- 			
++			break;
++		}
  		case AUDIO_MODE_STOP:
++		{
  			ShowIcon(VFD_ICON_PLAY, false);
  			ShowIcon(VFD_ICON_PAUSE, false);
-+#if defined (PLATFORM_OCTAGON1008)
+-			break;
+-			
++#if defined(BOXMODEL_OCTAGON1008)
 +			ShowIcon(HS9510_ICON_REWIND, false);
 +			ShowIcon(HS9510_ICON_FF, false);
++#elif defined(BOXMODEL_ATEVIO7500)
++			ShowIcon(HS8200_ICON_REWIND, false);
++			ShowIcon(HS8200_ICON_FF, false);
++			ShowIcon(HS8200_ICON_PAUSE, false);
++#elif defined(PLATFORM_SPARK7162)
++			ShowIcon(VFD_SPARK_PLAY_FASTBACKWARD, false);
++			ShowIcon(VFD_SPARK_PLAY_FASTFORWARD, false);
 +#endif
- 			break;
- 			
++			break;
++		}
  		case AUDIO_MODE_PAUSE:
++		{
  			ShowIcon(VFD_ICON_PLAY, false);
  			ShowIcon(VFD_ICON_PAUSE, true);
-+#if defined (PLATFORM_OCTAGON1008)
+-			break;
+-			
++#if defined(BOXMODEL_OCTAGON1008)
 +			ShowIcon(HS9510_ICON_REWIND, false);
 +			ShowIcon(HS9510_ICON_FF, false);
++#elif defined(BOXMODEL_ATEVIO7500)
++			ShowIcon(HS8200_ICON_REWIND, false);
++			ShowIcon(HS8200_ICON_FF, false);
++			ShowIcon(HS8200_ICON_PAUSE, true);
++#elif defined(PLATFORM_SPARK7162)
++			ShowIcon(VFD_SPARK_PLAY_FASTBACKWARD, false);
++			ShowIcon(VFD_SPARK_PLAY_FASTFORWARD, false);
 +#endif
- 			break;
- 			
++			break;
++		}
  		case AUDIO_MODE_FF:
-+#if defined (PLATFORM_OCTAGON1008)
+-			break;
+-			
++		{
++#if defined(BOXMODEL_OCTAGON1008)
 +			ShowIcon(HS9510_ICON_REWIND, false);
 +			ShowIcon(HS9510_ICON_FF, true);
++#elif defined(BOXMODEL_ATEVIO7500)
++			ShowIcon(HS8200_ICON_REWIND, false);
++			ShowIcon(HS8200_ICON_FF, true);
++			ShowIcon(HS8200_ICON_PAUSE, false);
++#elif defined(PLATFORM_SPARK7162)
++			ShowIcon(VFD_SPARK_PLAY_FASTBACKWARD, false);
++			ShowIcon(VFD_SPARK_PLAY_FASTFORWARD, true);
 +#endif
- 			break;
- 			
++			break;
++		}
  		case AUDIO_MODE_REV:
-+#if defined (PLATFORM_OCTAGON1008)
+-			break;
++		{
++#if defined(BOXMODEL_OCTAGON1008)
 +			ShowIcon(HS9510_ICON_REWIND, true);
 +			ShowIcon(HS9510_ICON_FF, false);
++#elif defined(BOXMODEL_ATEVIO7500)
++			ShowIcon(HS8200_ICON_REWIND, true);
++			ShowIcon(HS8200_ICON_FF, false);
++			ShowIcon(HS8200_ICON_PAUSE, false);
++#elif defined(PLATFORM_SPARK7162)
++			ShowIcon(VFD_SPARK_PLAY_FASTBACKWARD, true);
++			ShowIcon(VFD_SPARK_PLAY_FASTFORWARD, false);
 +#endif
- 			break;
++			break;
++		}
  	}
  
-@@ -451,12 +495,15 @@
+ 	wake_up();
+@@ -445,24 +534,28 @@
+ 
+ 	switch (m) 
+ 	{
+-		case MODE_TVRADIO:	
++		case MODE_TVRADIO:
++		{	
+ 			showServicename(servicename);
+ #if !defined(PLATFORM_SPARK7162)			
  			ShowIcon(VFD_ICON_MP3, false);	        // NOTE: @dbo  //ICON_MP3 and ICON_DOLBY switched in infoviewer 
  #endif			
  	
 -#if defined (PLATFORM_KATHREIN)
-+#if defined (PLATFORM_KATHREIN) || defined (PLATFORM_OCTAGON1008)
++#if defined(PLATFORM_KATHREIN) || defined(BOXMODEL_OCTAGON1008)
  			ShowIcon(VFD_ICON_USB, usb_icon);	
  			ShowIcon(VFD_ICON_HDD, hdd_icon);	
  #elif defined(PLATFORM_SPARK7162)
  			ShowIcon(VFD_ICON_USB, usb_icon);	
  			ShowDiskLevel();
-+			ShowIcon(VFD_ICON_STANDBY, false);	
-+#elif defined(PLATFORM_FORTIS_HDBOX)
-+			ShowIcon(VFD_ICON_USB, usb_icon);	
  			ShowIcon(VFD_ICON_STANDBY, false);	
- #endif
+-#endif
++#elif defined(BOXMODEL_FORTIS_HDBOX) || defined(BOXMODEL_ATEVIO7500)
++			ShowIcon(VFD_ICON_USB, usb_icon);	
++			ShowIcon(VFD_ICON_STANDBY, false);	
  			showclock = true;
-@@ -498,7 +545,7 @@
++#endif
+ 			//showTime();      /* "showclock = true;" implies that "showTime();" does a "displayUpdate();" */			
+ 			break;
+-
++		}
+ 		case MODE_AUDIO:
+ 		{
+ #if defined(PLATFORM_SPARK7162)
+@@ -472,7 +565,7 @@
+ 			ShowIcon(VFD_ICON_TV, false);			
+ 			showAudioPlayMode(AUDIO_MODE_STOP);			
+ 			showclock = true;
+-#if !defined (PLATFORM_COOLSTREAM)			
++#if !defined(PLATFORM_COOLSTREAM)			
+ 			ShowIcon(VFD_ICON_LOCK, false);
+ #endif			
+ 			ShowIcon(VFD_ICON_HD, false);
+@@ -480,61 +573,67 @@
+ 			//showTime();      /* "showclock = true;" implies that "showTime();" does a "displayUpdate();" */
+ 			break;
+ 		}
+-
+ 		case MODE_SCART:	  
++		{
+ 			ShowIcon(VFD_ICON_TV, false);	
+ 			showclock = true;
+ 			//showTime();      /* "showclock = true;" implies that "showTime();" does a "displayUpdate();" */
+ 			break;
+-
++		}
+ 		case MODE_MENU_UTF8:
++		{
+ 			ShowIcon(VFD_ICON_TV, false);			
+ 			ShowIcon(VFD_ICON_HD, false);
+ 			ShowIcon(VFD_ICON_DOLBY, false);
+ 			showclock = false;
+ 			break;
+-
++		}
+ 		case MODE_SHUTDOWN:
++		{
  			//Clear();
  			/* clear all symbols */
  			ClearIcons();
 -#if defined(PLATFORM_SPARK7162)
-+#if defined(PLATFORM_SPARK7162) || defined (PLATFORM_OCTAGON1008) || defined(PLATFORM_FORTIS_HDBOX)
++#if defined(PLATFORM_SPARK7162) || defined(BOXMODEL_OCTAGON1008) || defined(BOXMODEL_FORTIS_HDBOX)
  			ShowIcon(VFD_ICON_CLOCK, timer_icon);	
  #endif			
  			showclock = false;
-@@ -507,7 +554,7 @@
+ 			break;
+-
++		}
  		case MODE_STANDBY:
++		{
  			ShowIcon(VFD_ICON_TV, false);
  			ClearIcons();
 -#if defined(PLATFORM_SPARK7162)
-+#if defined(PLATFORM_SPARK7162) || defined(PLATFORM_FORTIS_HDBOX)
++#if defined(PLATFORM_SPARK7162) || defined(BOXMODEL_FORTIS_HDBOX) || defined(BOXMODEL_ATEVIO7500)
  			ShowIcon(VFD_ICON_STANDBY, true);	
  #endif			
  			showclock = true;
-@@ -582,7 +629,15 @@
+ 			showTime(true);      	/* "showclock = true;" implies that "showTime();" does a "displayUpdate();" */
+ 						/* "showTime()" clears the whole lcd in MODE_STANDBY */
+ 			break;
+-		
++		}
+ 		case MODE_PIC:	  
++		{
+ 			ShowIcon(VFD_ICON_TV, false);			
+ 			ShowIcon(VFD_ICON_HD, false);
+ 			ShowIcon(VFD_ICON_DOLBY, false);
+ 			
+ 			showclock = false;
+ 			break;
+-			
++		}
+ 		case MODE_MOVIE:  
++		{
+ 			ShowIcon(VFD_ICON_TV, false);			
+ 			showclock = false;
+ 			break;
+-			
+-		case MODE_IPTV: 
++		}
++		case MODE_IPTV:
++		{
+ 			showServicename(servicename);
+ 			ShowIcon(VFD_ICON_TV, false);			
+ 			showclock = false;
+ 			break;
+-	}
+-
++		}
++	}
+ 	wake_up();
+ }
+ 
+@@ -582,13 +681,29 @@
  
  #if defined (__sh__)
  	struct vfd_ioctl_data data;
 -	data.start_address = power;
 +
 +	data.start_address = 0;
-+#if defined (PLATFORM_FORTIS_HDBOX) || defined (PLATFORM_ATEVIO7500)
-+	data.data[0] = 0xf2;
-+	data.data[4] = power*2;
++#if defined(BOXMODEL_FORTIS_HDBOX) || defined(BOXMODEL_ATEVIO7500)
++	data.data[0] = power ? 0xf2 : 1;
++	data.data[4] = power * 2;
++#elif defined(BOXMODEL_OCTAGON1008) \
++   || defined(BOXMODEL_HS7420) \
++   || defined(BOXMODEL_HS7810A) \
++   || defined(BOXMODEL_HS7119) \
++   || defined(BOXMODEL_HS7429) \
++   || defined(BOXMODEL_HS7819)
++	data.data[0] = power ? 0 : 1;
++	data.data[4] = power;
 +#else
 +	data.data[4] = power;
 +#endif
 +	data.length = 5;
  	
  	openDevice();
- 	
-@@ -653,20 +708,21 @@
+-	
+-	if( ioctl(fd, VFDPWRLED, &data) < 0)  
+-		perror("VFDPWRLED");
+-	
++	if (ioctl(fd, VFDSETLED, &data) < 0)
++	{
++		perror("VFDSETLED");
++	}
+ 	closeDevice();
+ #endif
+ }
+@@ -651,22 +766,25 @@
+ #if defined (ENABLE_4DIGITS)
+ 	ShowText("     "); // 5 empty digits
  #elif defined (__sh__)
++
++  #if defined (PLATFORM_KATHREIN)  /* using this otherwise VFD of ufs910 is black and Neutrino has a segfault */
  	struct vfd_ioctl_data data;
- 	
+-	
 -#if defined (PLATFORM_KATHREIN)		/* using this otherwise VFD of ufs910 is black and Neutrino has a segfault 		*/
-+  #if defined (PLATFORM_KATHREIN)		/* using this otherwise VFD of ufs910 is black and Neutrino has a segfault 		*/
++
  	data.start_address = 0x01;
  	data.length = 0x0;
  	openDevice();	
- 	if (ioctl(fd, VFDDISPLAYCLR, &data) <0)
+-	if (ioctl(fd, VFDDISPLAYCLR, &data) <0)
++	if (ioctl(fd, VFDDISPLAYCLR, &data) < 0)
++	{
  		perror("VFDDISPLAYCLR");
++	}
  	closeDevice();
 -#else
-+  #else
- 	data.start_address = 0;
-+	data.length = 0;
- 	openDevice();	
- 	if( ioctl(fd, VFDDISPLAYWRITEONOFF, &data) < 0)
+-	data.start_address = 0;
+-	openDevice();	
+-	if( ioctl(fd, VFDDISPLAYWRITEONOFF, &data) < 0)
 -		perror("VFDDISPLAYCLR");
-+		perror("VFDWRITEONOFF");
- 	closeDevice();
+-	closeDevice();
 -#endif
++  #else
++	char buffer[VFD_LENGTH + 1];
++
++	memset(buffer, ' ', sizeof(buffer));
++	buffer[VFD_LENGTH] = 0;
++	ShowText(buffer);
 +  #endif
  #elif (PLATFORM_COOLSTREAM)
  	int ret = ioctl(fd, IOC_VFD_CLEAR_ALL, 0);
  	if(ret < 0)
-@@ -678,20 +734,32 @@
+@@ -678,20 +796,42 @@
  #endif
  }
  
@@ -973,23 +1438,33 @@
  		perror("VFDICONDISPLAYONOFF");
  	closeDevice();
 -#else
-+  #elif defined(PLATFORM_FORTIS_HDBOX) || defined(PLATFORM_OCTAGON1008) /* using one command for switching off all Icons*/	 
-+	struct vfd_ioctl_data data;
-+	openDevice();
++  #elif defined(BOXMODEL_FORTIS_HDBOX) \
++     || defined(BOXMODEL_OCTAGON1008)  \
++     || defined(BOXMODEL_ATEVIO7500)   \
++     || defined(BOXMODEL_HS7420)       \
++     || defined(BOXMODEL_HS7810A)      \
++     || defined(BOXMODEL_HS7119)       \
++     || defined(BOXMODEL_HS7429)       \
++     || defined(BOXMODEL_HS7819)  /* using one command for switching off all Icons */
++  //#elif defined(PLATFORM_FORTIS)  /* using one command for switching off all Icons*/
 +
++	struct vfd_ioctl_data data;
++
++	openDevice();
 +	data.start_address = 0;
 +	data.data[0] = ICON_ALL;
 +	data.data[4] = 0;
 +	data.length = 5;
-+
-+	if( ioctl(fd, VFDICONDISPLAYONOFF, &data) < 0)
++	if (ioctl(fd, VFDICONDISPLAYONOFF, &data) < 0)
++	{
 +		perror("VFDICONDISPLAYONOFF");
++	}
 +	closeDevice();
 +  #else
  	int i;
  	struct vfd_ioctl_data data;
  	
-@@ -707,7 +775,7 @@
+@@ -707,14 +847,14 @@
  	}
  	
  	closeDevice();
@@ -998,19 +1473,34 @@
  #endif
  }
  
-@@ -753,7 +821,10 @@
+ #if defined(PLATFORM_SPARK7162)			/* only for Spark7162 STB's which Display has a HDD Level indicator */	 
+ void CVFD::ShowDiskLevel()
+ {
+-	int hdd_icons[9] = {24, 23, 21, 20, 19, 18, 17, 16, 22};
++	int hdd_icons[9] = {VFD_SPARK_HDD_A1, VFD_SPARK_HDD_A2, VFD_SPARK_HDD_A3, VFD_SPARK_HDD_A4, VFD_SPARK_HDD_A5, VFD_SPARK_HDD_A6, VFD_SPARK_HDD_A7, VFD_SPARK_HDD_A8, VFD_SPARK_HDD_FULL};
+ 	int percent, digits, i, j;
+ 	uint64_t t, u;
+ 	
+@@ -747,13 +887,16 @@
+ 
+ void CVFD::ShowIcon(vfd_icon icon, bool show)
+ {
+-	if(!has_lcd || is4digits) 
++	if(!has_lcd || is4digits || icon == 0) 
+ 		return;
+ 	
  	dprintf(DEBUG_DEBUG, "CVFD::ShowIcon %s %x\n", show ? "show" : "hide", (int) icon);
  
  #if defined (__sh__)
 -#if defined (PLATFORM_KATHREIN) || defined(PLATFORM_SPARK7162)
 +  #if defined (PLATFORM_KATHREIN) \
 +   || defined(PLATFORM_SPARK7162) \
-+   || defined(PLATFORM_FORTIS_HDBOX) \
-+   || defined(PLATFORM_OCTAGON1008)
++   || defined(BOXMODEL_FORTIS_HDBOX) \
++   || defined(BOXMODEL_OCTAGON1008)
  	switch (icon)
  	{
  		case VFD_ICON_USB:
-@@ -762,31 +833,42 @@
+@@ -762,31 +905,51 @@
  		case VFD_ICON_CLOCK:
  			timer_icon = show;
  			break;
@@ -1035,8 +1525,15 @@
  	
  	if (ioctl(fd, VFDICONDISPLAYONOFF, &aotom_data) <0)
  		perror("VFDICONDISPLAYONOFF");	
-+  #elif defined(PLATFORM_FORTIS_HDBOX) \
-+     || defined(PLATFORM_OCTAGON1008)
++  #elif defined(BOXMODEL_FORTIS_HDBOX) \
++     || defined(BOXMODEL_OCTAGON1008) \
++     || defined(BOXMODEL_ATEVIO7500) \
++     || defined(BOXMODEL_HS7420) \
++     || defined(BOXMODEL_HS7810A) \
++     || defined(BOXMODEL_HS7119) \
++     || defined(BOXMODEL_HS7429) \
++     || defined(BOXMODEL_HS7819)
++  //#elif defined(PLATFORM_FORTIS)
 +	struct vfd_ioctl_data data;
 +
 +	data.start_address = 0;
@@ -1044,8 +1541,10 @@
 +	data.data[4] = show ? 1 : 0;
 +	data.length = 5;
 +
-+  	if( ioctl(fd, VFDICONDISPLAYONOFF, &data) < 0)
++  	if (ioctl(fd, VFDICONDISPLAYONOFF, &data) < 0)
++	{
 +		perror("VFDICONDISPLAYONOFF");
++	}
  #else
 -#if defined (PLATFORM_KATHREIN)
 +    #if defined (PLATFORM_KATHREIN)
@@ -1059,7 +1558,7 @@
  	struct vfd_ioctl_data data;
  
  	data.data[0] = (icon - 1) & 0x1F;
-@@ -794,7 +876,7 @@
+@@ -794,7 +957,7 @@
  	
  	if( ioctl(fd, VFDICONDISPLAYONOFF, &data) < 0)
  		perror("VFDICONDISPLAYONOFF");
@@ -1068,51 +1567,72 @@
  	closeDevice();
  #elif defined (PLATFORM_COOLSTREAM)
  	int ret = ioctl(fd, show ? IOC_VFD_SET_ICON : IOC_VFD_CLEAR_ICON, icon);
-@@ -811,6 +893,13 @@
+@@ -811,6 +974,14 @@
  	dprintf(DEBUG_INFO, "CVFD::ShowText: [%s]\n", str);
  
  	int len = strlen(str);
-+//	if (len > 63) {
++	if (len > 63)
++	{
 +//		str[60] = '.';
 +//		str[61] = '.';
 +//		str[62] = '.';
 +//		str[63] = '\0';
-+//		len = 63;
-+//	}
++		len = 63;
++	}
  	
  	//FIXME: some vfd treiber can not handle NULL string len
  	if(len == 0)
-@@ -834,19 +923,24 @@
+@@ -834,19 +1005,29 @@
  	 
  #if defined (__sh__)	 
  	openDevice();
 -	
-+  #if defined (PLATFORM_OCTAGON1008) || defined (PLATFORM_HS7420) || defined (PLATFORM_HS7429)
-+	if(write(fd , text.c_str(), len > 8? 8 : len ) < 0)
-+  #elif defined (PLATFORM_FORTIS_HDBOX) || defined (PLATFORM_ATEVIO7500)
-+	if(write(fd , text.c_str(), len > 12? 12 : len ) < 0)
-+//	if(write(fd , text.c_str(), len) < 0) //let driver scroll
-+  #elif defined (PLATFORM_HS7810A) || defined (PLATFORM_HS7119) || defined (PLATFORM_HS7819)
-+	if(write(fd , text.c_str(), len > 4? 4 : len ) < 0)
+-	if(write(fd , text.c_str(), len > 16? 16 : len ) < 0)
++//  #if defined(BOXMODEL_OCTAGON1008) || defined(BOXMODEL_HS7420) || defined(BOXMODEL_HS7429)
++//	if (write(fd, text.c_str(), len > 8 ? 8 : len ) < 0)
++//  #elif defined(BOXMODEL_FORTIS_HDBOX) || defined(BOXMODEL_ATEVIO7500)
++//	if (write(fd, text.c_str(), len > 12 ? 12 : len ) < 0)
++//  #elif defined(BOXMODEL_HS7810A) || defined(BOXMODEL_HS7119) || defined(BOXMODEL_HS7819)
++//	if (write(fd, text.c_str(), len > 4 ? 4 : len ) < 0)
++//  #else
++//	if (write(fd, text.c_str(), len > 16 ? 16 : len ) < 0)
++//  #endif
++	if (write(fd, text.c_str(), len > VFD_LENGTH ? VFD_LENGTH : len) < 0)
++//	if (write(fd, text.c_str(), len) < 0) // let driver do the scrolling
++	{
++		perror("write to /dev/vfd failed");
++	}
++	closeDevice();
++#else
++  #if defined (PLATFORM_ODIN) || defined (PLATFORM_GIGABLUE)
++	if (write(fd, text.c_str(), len > 5 ? 5 : len ) < 0)
 +  #else
- 	if(write(fd , text.c_str(), len > 16? 16 : len ) < 0)
++	if (write(fd, text.c_str(), len > 12 ? 12 : len ) < 0)
 +  #endif
  		perror("write to vfd failed");
 -	
- 	closeDevice();
- #elif defined (PLATFORM_ODIN) || defined (PLATFORM_GIGABLUE)
- 	if( write(fd, text.c_str(), len > 5? 5 : len ) < 0)
+-	closeDevice();
+-#elif defined (PLATFORM_ODIN) || defined (PLATFORM_GIGABLUE)
+-	if( write(fd, text.c_str(), len > 5? 5 : len ) < 0)
 -		perror("write to vfd failed");
- #else
- 	if( write(fd, text.c_str(), len > 12? 12 : len ) < 0)
-+#endif
- 		perror("write to vfd failed");
+-#else
+-	if( write(fd, text.c_str(), len > 12? 12 : len ) < 0)
+-		perror("write to vfd failed");
 -	
 -#endif
++#endif // __sh__
  }
  
  void CVFD::setFan(bool enable)
-@@ -951,7 +1045,7 @@
+@@ -944,14 +1125,14 @@
+ 	timebuf[2]=now->tm_hour;
+ 	timebuf[3]=now->tm_mday;
+ 	timebuf[4]=now->tm_mon+1;
+-	timebuf[5]=now->tm_year % 100;
++	timebuf[5]=now->tm_year % 100; // BUG?, should be - 1900?
+ 	
+ 	struct vfd_ioctl_data data;
+ 	memset(&data, 0, sizeof(struct vfd_ioctl_data));
  	memcpy(&data, timebuf, 6); 
  	
  	if( ioctl(fd, VFDSETTIME, &data) < 0)  
@@ -1121,4 +1641,398 @@
  	
  	closeDevice();
  #endif
+--- nhd2-exp.org/src/nhttpd/tuxboxapi/neutrinoyparser.cpp
++++ nhd2-exp/src/nhttpd/tuxboxapi/neutrinoyparser.cpp
+@@ -681,6 +681,22 @@
+ 	return "atevio7500";
+ #elif defined (BOXMODEL_ATEVIO7600)
+ 	return "atevio7600";
++#elif defined (BOXMODEL_FORTIS_HDBOX)
++	return "fortis_hdbox";
++#elif defined (BOXMODEL_OCTAGON1008)
++	return "octagon1008";
++#elif defined (BOXMODEL_HS7110)
++	return "hs7110";
++#elif defined (BOXMODEL_HS7420)
++	return "hs7420";
++#elif defined (BOXMODEL_HS7810a)
++	return "hs7810a";
++#elif defined (BOXMODEL_HS7119)
++	return "hs7119";
++#elif defined (BOXMODEL_HS7429)
++	return "hs7429";
++#elif defined (BOXMODEL_HS7819)
++	return "hs7819";
+ #elif defined (BOXMODEL_AZBOXHD)
+ 	return "azboxhd";
+ #elif defined (BOXMODEL_AZBOXME)
+--- nhd2-exp.org/data/locale/english.locale
++++ nhd2-exp/data/locale/english.locale
+@@ -20,17 +20,17 @@
+ audiomenu.monoright mono right
+ audiomenu.ost ost
+ audiomenu.PCMOffset Volume Decrease PCM
+-audiomenu.spdif_dd DD on SPDIF
++audiomenu.spdif_dd DD on SP/DIF
+ audiomenu.stereo stereo
+ audiomenu.ac3_delay AC3 Delay
+ audiomenu.pcm_delay PCM Delay
+ audiomenu.volume_adjust Volume adjustment (in %)
+ audiomenu.auto_lang Auto select audio
+ audiomenu.auto_subs Auto select subtitles
+-audiomenu.pref_lang Prefered language
++audiomenu.pref_lang Preferred language
+ audiomenu.pref_lang_head Audio language preferences
+ audiomenu.pref_languages Language preferences
+-audiomenu.pref_subs Prefered subtitle language
++audiomenu.pref_subs Preferred subtitle language
+ audiomenu.pref_subs_head Subtitle language preferences
+ audioplayer.add Add
+ audioplayer.add_ic Icecast
+@@ -84,14 +84,14 @@
+ bookmarkmanager.rename rename
+ bookmarkmanager.select select
+ bouqueteditor.add Add
+-bouqueteditor.bouquetname Name of bouquets
++bouqueteditor.bouquetname Name of bouquet
+ bouqueteditor.delete Delete
+ bouqueteditor.discardingchanges Discarding changes. Please be patient.
+ bouqueteditor.hide Hide
+ bouqueteditor.lock Lock
+ bouqueteditor.move Move
+ bouqueteditor.name Bouquet Editor
+-bouqueteditor.newbouquetname New name of bouquets
++bouqueteditor.newbouquetname New name of bouquet
+ bouqueteditor.rename Rename
+ bouqueteditor.return ready
+ bouqueteditor.savechanges? Do you want to save the changes?
+@@ -119,7 +119,7 @@
+ channellist.history History
+ channellist.make_hdlist Create list of HD channels
+ channellist.ca Display Icons
+-channellist.nonefound No channels were found!\nPlease execute a scan\n(MENU-key -> service)
++channellist.nonefound No channels were found!\nPlease execute a scan\n(MENU-key -> Service)
+ channellist.provs Providers
+ channellist.sats Satellites
+ channellist.since since %02d:%02d
+@@ -156,8 +156,8 @@
+ colorthememenu.save Save current theme
+ colorthememenu.select1 User Theme
+ colorthememenu.select2 Standard Theme
+-colormenu.head_title Head info
+-colormenu.foot_title Foot info
++colormenu.head_title Header info
++colormenu.foot_title Footer info
+ cpu.freq Cpu frequency
+ cpu.freq_default default frequency
+ cpu.freq_normal Normal frequency
+@@ -259,8 +259,8 @@
+ extra.auto_timeshift Permanent timeshift
+ extra.auto_to_record Move timeshift to records
+ extra.cache_txt Cache teletext
+-extra.chadded The current channel has been added to selected bouquet....\n
+-extra.chalreadyinbq The current channel is already in selected bouquet....\n
++extra.chadded The current channel has been added to selected bouquet...\n
++extra.chalreadyinbq The current channel is already in selected bouquet...\n
+ extra.clear_log Clear Log
+ extra.dboxinfo Box Info
+ extra.east East
+@@ -358,7 +358,7 @@
+ extra.zapit_backup Backup channels to /tmp
+ extra.zapit_fast_zap fast zap
+ extra.zapit_fe_timeout Tune timeout
+-extra.zapit_hvoltage High (13.5/18.5) voltage
++extra.zapit_hvoltage High voltage (13.5/18.5V)
+ extra.zapit_make_bouquet Make Remaining Channels list
+ extra.zapit_menu Zapit options
+ extra.zapit_motor_speed Motor moving speed (10 = 1deg/sec)
+@@ -377,7 +377,7 @@
+ favorites.chadded The current channel has been added to your favorites...\n
+ favorites.chalreadyinbq The current channel is already in your favorites...\n
+ favorites.copy Copy bouquet to Favorites
+-favorites.finalhint \nUse the bouqueteditor to modify your favorites.\n
++favorites.finalhint \nUse the bouquet editor to modify your favorites.\n
+ favorites.menueadd add channel to my favorites
+ favorites.nobouquets Favorites are available with activated Bouquets only.
+ filebrowser.delete Delete
+@@ -428,7 +428,7 @@
+ flashupdate.packagemd5sumerror package has errors
+ flashupdate.flashmsgbox Found the following new image:\nDate: %s, %s\nBaseImage: %s\nImageType: %s\n\nDo you want to install this version now?
+ flashupdate.packagemsgbox Found the following new package:\nPackage: %s\nDate: %s, %s\nBaseImage: %s\nType: %s\n\nDo you want to download and install this version now?
+-flashupdate.mtdselector Partition-Selector
++flashupdate.mtdselector Partition Selector
+ flashupdate.programmingflash programming flash
+ flashupdate.proxypassword Password
+ flashupdate.proxypassword_hint1 enter the proxyserver password
+@@ -451,7 +451,7 @@
+ flashupdate.titlewriteflash Writing Flash
+ flashupdate.updatemode Updatemode
+ flashupdate.updatemode_internet Online Software Manager
+-flashupdate.updatemode_manual Manuell(ftp) Software Manager
++flashupdate.updatemode_manual Manual (FTP) Software Manager
+ flashupdate.url_file Software update URL
+ flashupdate.versioncheck checking version
+ flashupdate.writeflash Write whole image
+@@ -470,8 +470,8 @@
+ fontmenu.scaling Global Font Zoom Factor
+ fontmenu.scaling_x Horizontal (in %)
+ fontmenu.scaling_x_hint2 Horizontal (in %) min 50 / max 200
+-fontmenu.scaling_y Vertikal (in %)
+-fontmenu.scaling_y_hint2 Vertikal (in %) min 50 / max 200
++fontmenu.scaling_y Vertical (in %)
++fontmenu.scaling_y_hint2 Vertical (in %) min 50 / max 200
+ fontmenu.font_contrast Contrast fonts
+ fontsize.channel_num_zap direct selection
+ fontsize.channellist Channellist
+@@ -587,17 +587,17 @@
+ hdd_fast Fast
+ hdd_format Format HDD
+ hdd_format_failed HDD format failed !
+-hdd_format_warn Are you sure to format ? You will lost all data !
+-hdd_init_failed HDD init failed !
++hdd_format_warn Are you sure to format ? You will lose all data !
++hdd_init_failed HDD initialise failed !
+ hdd_fs Filesystem
+ hdd_manage Manage
+ hdd_middle Middle
+ hdd_noise Noise
+ hdd_not_found No HDD found
+ hdd_init HDD Init
+-hdd_init_warn Are you sure to init ?
++hdd_init_warn Are you sure to initialise ?
+ hdd_browser HDD Explorer
+-hdd_reiser Reiserfs
++hdd_reiser Reiser fs
+ hdd_settings HDD Settings
+ hdd_sleep Sleep time
+ hdd_slow Slow
+@@ -613,7 +613,7 @@
+ imageinfo.version Version:
+ imageinfo.type Type:
+ inetradio.name Internetradio
+-infoviewer.epgnotload EPG not loaded....
++infoviewer.epgnotload EPG not loaded...
+ infoviewer.epgwait waiting for EPG...
+ infoviewer.eventlist Event-List
+ infoviewer.languages Audio
+@@ -627,7 +627,7 @@
+ infoviewer.features Features
+ infoviewer.subchan_disp_pos Subchannel display
+ infoviewer.subservice Subservices
+-infoviewer.waittime Waiting for time...
++infoviewer.waittime Waiting for timeinfo...
+ ipsetup.hint_1 Use 0..9, or use Up/Down,
+ ipsetup.hint_2 OK saves, HOME! aborts
+ keybindingmenu.addrecord Add record timer
+@@ -754,7 +754,7 @@
+ miscsettings.channellist_epgtext_align Programtext Align
+ miscsettings.driver_boot driver and boot options
+ miscsettings.epg_cache EPG-Cache (Days)
+-miscsettings.epg_cache_hint1 How long will EPG-Data in the future cached?
++miscsettings.epg_cache_hint1 How long will futue EPG-Data be cached?
+ miscsettings.epg_cache_hint2 Set in days.
+ miscsettings.epg_dir EPG save path
+ miscsettings.epg_extendedcache EPG Long Description (hours)
+@@ -764,8 +764,8 @@
+ miscsettings.epg_max_events Max. Events
+ miscsettings.epg_max_events_hint1 How many events should be stored?
+ miscsettings.epg_max_events_hint2 normaly 50000, 0 to disable limit
+-miscsettings.epg_old_events EPG remove after (std.)
+-miscsettings.epg_old_events_hint1 How long will EPG-Data be stored after they timed out?
++miscsettings.epg_old_events EPG remove after (hrs.)
++miscsettings.epg_old_events_hint1 How long will EPG-Data be stored after it times out?
+ miscsettings.epg_old_events_hint2 Set in hours
+ miscsettings.epg_read Restore EPG on boot
+ miscsettings.epg_save Save/Restore epg on reboot
+@@ -871,7 +871,7 @@
+ moviebrowser.info_filename Name
+ moviebrowser.info_genre_major Genre
+ moviebrowser.info_genre_minor Genre
+-moviebrowser.info_head Film Informationen
++moviebrowser.info_head Film Information
+ moviebrowser.info_head_update Save changes in all movie info files
+ moviebrowser.info_info1 Info 1
+ moviebrowser.info_length Length (Min)
+@@ -912,7 +912,7 @@
+ moviebrowser.reload_at_start Reload movie info at start
+ moviebrowser.remount_at_start Remount at start
+ moviebrowser.next_focus next focus
+-moviebrowser.scan_for_movies Scan for Movies ...
++moviebrowser.scan_for_movies Scan for movies...
+ moviebrowser.serie_auto_create Serie auto create
+ moviebrowser.serie_head Serie
+ moviebrowser.serie_name Change name
+@@ -952,8 +952,8 @@
+ movieplayer.vlcplayback VLC Player
+ movieplayer.vlcdvdplayback VLC (DVD) Player
+ movieplayer.vlcsvcdplayback VLC (SVCD) Player
+-movieplayer.records Records Player
+-movieplayer.movies Movies Player
++movieplayer.records Recordings Player
++movieplayer.movies Movie Player
+ movieplayer.fileplayback Media Player
+ movieplayer.showtshelp Help
+ movieplayer.goto Jump to ...
+@@ -994,7 +994,7 @@
+ movieplayer.vlchelp7 skip approx. 1 minute
+ movieplayer.vlchelp8 approx. 5 minutes back
+ movieplayer.vlchelp9 skip approx. 5 minutes
+-movieplayer.wrongvlcversion This feature is not support by your current version of VLC
++movieplayer.wrongvlcversion This feature is not supported by your current version of VLC
+ mpkey.audio Audio track
+ mpkey.bookmark Save bookmark
+ mpkey.forward Forward
+@@ -1052,7 +1052,7 @@
+ nfs.umount Umount Network volume
+ nfs.umounterror error umounting volume
+ nfs.username username
+-nfsmenu.head Network Mount Manager
++nfsmenu.head Network mount manager
+ nvod.percentage (%d%% over)
+ nvod.starting (starting in %d min)
+ nvodselector.directormode Direct-Mode
+@@ -1122,8 +1122,8 @@
+ ping.protocol is unreachable (host or protocol error)
+ ping.socket is unreachable (socket error)
+ ping.unreachable is unreachable
+-pinprotection.head Enter PIN code
+-pinprotection.wrongcode PIN-Code was wrong! Try again.
++pinprotection.head Enter PIN
++pinprotection.wrongcode PIN was wrong! Try again.
+ plugins.notinstalled is not installed please install again.
+ plugins.result plugin output
+ pluginlist.remove_plugin remove
+@@ -1131,7 +1131,7 @@
+ rclock.lockmsg Your box remote control will be locked.\n To unlock it, press <RED> \n and <MENU> on your remote control.
+ rclock.menueadd Lock RC
+ rclock.title Lock Remote Control
+-rclock.unlockmsg Remote control reactivated.
++rclock.unlockmsg Remote control reactivated
+ recordingmenu.apids default audio streams
+ recordingmenu.apids_ac3 Record AC3 streams
+ recordingmenu.apids_alt Record alternative streams
+@@ -1143,7 +1143,7 @@
+ recordingmenu.filesettings direct Recording settings
+ recordingmenu.head Recording Settings
+ recordingmenu.help Recording devices:\n--------------------------\nserver:\nusing streaming software on a PC\n\n(analog) vcr:\nusing the vcr outlet\n\ndirect (file):\ndirectly into an NFS mounted directory\nor onto an internal hard drive\nTS: use spts mode(dbox2)\nPES: do not use spts mode(dbox2)\n\n\nMax. file size:\n---------------------\nNFS V2: 2 GB (2048 MB)\nNFS V3: almost unlimited (0 MB)\nFAT: 2 GB (2048 MB)\nFAT32: 4 GB (4096 MB)
+-recordingmenu.no_scart do not switch to scart mode
++recordingmenu.no_scart do not switch to SCART mode
+ recordingmenu.off off
+ recordingmenu.record_in_spts_mode switch to spts mode before recording
+ recordingmenu.recording_type recording device
+@@ -1374,7 +1374,7 @@
+ timerlist.repeat.weekdays on weekdays
+ timerlist.repeat.weekly weekly
+ timerlist.repeatcount repeats
+-timerlist.repeatcount.help1 amount of timer repeats
++timerlist.repeatcount.help1 number of timer repeats
+ timerlist.repeatcount.help2 0 for unlimited repeats
+ timerlist.save Save timer
+ timerlist.standby SB mode
+@@ -1424,10 +1424,10 @@
+ usermenu.button_green User menu green
+ usermenu.button_red User menu red
+ usermenu.button_yellow User menu yellow
+-usermenu.button_f1 Benutzermenü F1
+-usermenu.button_f2 Benutzermenü F2
+-usermenu.button_f3 Benutzermenü F3
+-usermenu.button_f4 Benutzermenü F4
++usermenu.button_f1 User menu F1
++usermenu.button_f2 User menu F2
++usermenu.button_f3 User menu F3
++usermenu.button_f4 User menu F4
+ usermenu.head User menu
+ usermenu.item_bar ---- Border ----
+ usermenu.item_epg_misc EPG functions
+@@ -1437,14 +1437,14 @@
+ usermenu.name Name
+ video_mode_ok Is this video mode working ok ?
+ videomenu.analog_hd_rgb_cinch RGB on cinch (HD)
+-videomenu.analog_hd_rgb_scart RGB on scart (HD)
++videomenu.analog_hd_rgb_scart RGB on SCART (HD)
+ videomenu.analog_hd_yprpb_cinch YPbPr on cinch (HD)
+-videomenu.analog_hd_yprpb_scart YPbPr on scart (HD)
++videomenu.analog_hd_yprpb_scart YPbPr on SCART (HD)
+ videomenu.analog_mode Analog Output
+ videomenu.analog_sd_rgb_cinch RGB on cinch (SD)
+-videomenu.analog_sd_rgb_scart RGB on scart (SD)
++videomenu.analog_sd_rgb_scart RGB on SCART (SD)
+ videomenu.analog_sd_yprpb_cinch YPbPr on cinch (SD)
+-videomenu.analog_sd_yprpb_scart YPbPr on scart (SD)
++videomenu.analog_sd_yprpb_scart YPbPr on SCART (SD)
+ videomenu.auto Auto
+ videomenu.cinch Cinch
+ videomenu.csync sync correction
+@@ -1461,33 +1461,33 @@
+ videomenu.scart Scart
+ videomenu.screensetup Screen settings
+ videomenu.tv-scart Video
+-videomenu.vcr-scart VCR Scart
++videomenu.vcr-scart VCR SCART
+ videomenu.vcrsignal VCR Output Signal Type
+ videomenu.vcrsignal_composite CVBS
+ videomenu.vcrsignal_svideo S-Video
+-videomenu.vcrswitch Switch Scart automatically
++videomenu.vcrswitch Switch SCART automatically
+ videomenu.videoratio TV-System
+ videomenu.videoratio_149 14:9
+ videomenu.videoratio_169 16:9
+ videomenu.videoratio_43 4:3
+ videomenu.videoratio_autodetect autodetect
+ videomenu.videoformat Video Format
+-videomenu.panscan Panscan
++videomenu.panscan Pillarbox
+ videomenu.panscan2 Bestfit
+ videomenu.letterbox Letterbox
+-videomenu.fullscreen Vollbild
++videomenu.fullscreen Full screen
+ videomenu.videomode Video Resolution
+ zapit.scantype Scan for services
+ zapit.scantype.all All services
+ zapit.scantype.radio Only radio
+ zapit.scantype.tv Only tv
+ zapit.scantype.tvradio TV & Radio
+-zaptotimer.announce Zapto timer in one minute
+-hddmenu.hddmount HDD (Re)Mount
+-hddmenu.hddmounted HDD Mounted
+-hddmenu.hddmountfailed HDD Mount Failed
+-hddmenu.hddumount HDD Umount
+-hddmenu.hddumounted HDD Umounted
++zaptotimer.announce Zap to timer in one minute
++hddmenu.hddmount HDD (Re)mount
++hddmenu.hddmounted HDD mounted
++hddmenu.hddmountfailed HDD mount failed
++hddmenu.hddumount HDD unmount
++hddmenu.hddumounted HDD unmounted
+ mainmenu.mediaplayer Media Player
+ osd.timezone Time Zone
+ osd.corners OSD Corners
+@@ -1589,7 +1589,7 @@
+ psisetup.tint Tint
+ 
+ colormenu.helptxt Help text
+-colormenu.helpbar Foot bar
++colormenu.helpbar Footer bar
+ 
+ lcdmenu.menutitlevfd show Menu title on Display
+ 
+@@ -1605,7 +1605,7 @@
+ 
+ opkgmanager.head Software update manager
+ 
+-keybinding.key_recordsbrowser Records browser
++keybinding.key_recordsbrowser Recordings browser
+ keybinding.key_audioplayer Audioplayer
+ keybinding.key_pictureviewer PictureViewer
+ keybinding.key_timerlist Timerlist
+@@ -1678,7 +1678,7 @@
+ glcd.enable GraphLCD enabled
+ glcd.font Font
+ glcd.head GraphLCD
+-glcd.mirror_osd Show OSD menue on GraphLCD
++glcd.mirror_osd Show OSD menu on GraphLCD
+ glcd.restart Rescan
+ glcd.select.bar Progress bar color
+ glcd.select.bg Background color
+
 

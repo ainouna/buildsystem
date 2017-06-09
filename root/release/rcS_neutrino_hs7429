@@ -1,16 +1,18 @@
 #!/bin/sh
-#Version 151230.1
+#Version 170516.1
 
 echo "[rcS] Start"
 echo "Fortis HS7429 Neutrino"
 
 MODDIR=/lib/modules
 
+insmod $MODDIR/e2_proc.ko
+
 echo "[rcS] Init frontpanel"
 if [ ! -e /dev/vfd ]; then
    mknod -m 0660 /dev/vfd c 147 0
 fi
-insmod $MODDIR/nuvoton.ko paramDebug=0
+insmod $MODDIR/nuvoton.ko
 insmod $MODDIR/simu_button.ko
 
 if [ -e /var/etc/.firstboot ]; then
@@ -20,18 +22,19 @@ if [ -e /var/etc/.firstboot ]; then
    sleep 1
    touch /dev/.devfsd
 else
+   echo "[rcS] Start (LOAD 10)"
    echo "Load 10" > /dev/vfd
 fi
 
 /etc/init.d/mountvirtfs start
 
-insmod $MODDIR/e2_proc.ko
-
 # Start automounter with umount timeout of 5 seconds
 if [ -e $MODDIR/autofs4.ko ]; then
    insmod $MODDIR/autofs4.ko
 fi
-/usr/sbin/automount --timeout=5 /autofs file /etc/auto.usb
+if [ -e /etc/init.d/automount ]; then
+   /usr/sbin/automount --timeout=5 /autofs file /etc/auto.usb
+fi
 
 echo "[rcS] Starting DEBUG Interface"
 /etc/init.d/mountall start
@@ -43,7 +46,7 @@ echo "[rcS] Starting telnetd"
 echo "[rcS] Init stmfb (LOAD 9)"
 echo "Load 9" > /dev/vfd
 insmod $MODDIR/stmcore-display-sti7111.ko
-insmod $MODDIR/stmfb.ko display0=1280x720-32@50:12m:pal:yuv:yuv;# display1=720x576-16@50:1m:pal:cvbs;
+insmod $MODDIR/stmfb.ko display0=1280x720-32@50:12m:pal:cvbs:rgb;# display1=720x576-16@50i:1m:pal:cvbs;
 
 echo "[rcS] Loading modules"
 
@@ -56,18 +59,18 @@ fi
 echo "[rcS] Load video firmware (LOAD 8)"
 echo "Load 8" > /dev/vfd
 /bin/dd if=/dev/zero of=/dev/st231-0 bs=1024 count=4096 2> /dev/null
-/bin/ustslave /dev/st231-0 /lib/firmware/video.elf
+/bin/ustslave /dev/st231-0 /lib/firmware/video.elf > /dev/null
 
 echo "[rcS] Load audio firmware (LOAD 7)"
 echo "Load 7" > /dev/vfd
 /bin/dd if=/dev/zero of=/dev/st231-1 bs=1024 count=4096 2> /dev/null
-/bin/ustslave /dev/st231-1 /lib/firmware/audio.elf
+/bin/ustslave /dev/st231-1 /lib/firmware/audio.elf > /dev/null
 
 echo "[rcS] Init embx (LOAD 6)"
 echo "Load 6" > /dev/vfd
 insmod $MODDIR/embxshell.ko
-insmod $MODDIR/embxmailbox.ko mailbox0=0xfe211000:136:set2 mailbox1=0xfe212000:0 ;
-insmod $MODDIR/embxshm.ko mailbox0=shm:0:7:0x60000000:0:256:256:0:512:0x40000000:0x10000000 ;
+insmod $MODDIR/embxmailbox.ko mailbox0=0xfe211000:136:set2 mailbox1=0xfe212000:0
+insmod $MODDIR/embxshm.ko mailbox0=shm:0:7:0x60000000:0:256:256:0:512:0x40000000:0x10000000
 insmod $MODDIR/mme_host.ko transport0=shm
 
 echo "[rcS] Init AVS (LOAD 5)"
@@ -109,6 +112,11 @@ mknod /dev/bpamem c 153 0
 if [ -e $MODDIR/cec.ko ]; then
    insmod $MODDIR/cec.ko activemode=1
 fi
+
+#if [ -e /boot/neutrinologo.mvi ]; then
+#   showiframe -p /boot/neutrinologo.mvi &
+#fi
+
 if [ -e $MODDIR/exportfs.ko ]; then
    insmod $MODDIR/exportfs.ko
 fi
@@ -137,6 +145,9 @@ echo "[rcS] Init remote control (LOAD 2)"
 echo "Load 2" > /dev/vfd
 /bin/evremote2 10 140 &
 
+# Load modules from /var/etc/modules.extra
+[ -f /var/etc/modules.extra ] && eval `sed -e 's/#.*//' -e '/^\s*$/d' -e 's/^\(.*\)/insmod \0;/' < /var/etc/modules.extra`
+
 stfbcontrol a 255
 
 echo "[rcS] Init portmap & ftp (LOAD 1)"
@@ -144,9 +155,6 @@ echo "Load 1" >/dev/vfd
 /etc/init.d/portmap start
 /etc/init.d/vsftpd start
 /usr/sbin/inetd
-
-#timefix
-date -s "201601011200"
 
 NFS=`grep -c nfs /proc/cmdline`
 if [ "$NFS" -eq "1" ]; then
@@ -164,8 +172,24 @@ else
    fi
 fi
 
+#wlan=rtl8188cu
+if [ ! $wlan ] || [ ! -e $MODDIR/$wlan.ko ]; then
+   echo "No WLAN"
+else
+   insmod $MODDIR/$wlan.ko
+   echo "$wlan WLAN"
+#   echo "$wlan WLAN" > /dev/vfd
+#   sleep 3
+fi
+
+# Try and synchronise time
+if [ -e /usr/bin/ntpdate ]; then
+   echo "Set internet time"
+   (/usr/bin/ntpdate de.pool.ntp.org; /bin/fp_control -sst)
+fi
+
 echo "[rcS] LOADING neutrino"
-echo "Start Neutrino" > /dev/vfd
+echo "Load Neutrino" > /dev/vfd
 
 until false
 do
@@ -180,6 +204,9 @@ do
       1) echo "REBOOT"
          echo "Reboot" > /dev/vfd
          init 6;;
+      2) echo "RESTART"
+         echo "Restart" > /dev/vfd
+         ;;
       *) echo "ERROR"
          echo "Error " > /dev/vfd
          init 6;;
@@ -188,5 +215,5 @@ done
 
 #never reached
 echo "REBOOT Fortis HS7429"
-echo "REBOOT Fortis HS7429" > /dev/vfd
+echo "REBOOT" > /dev/vfd
 init 6

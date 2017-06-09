@@ -51,18 +51,19 @@ if [ ! -e /var/etc/.firstboot ]; then
 
    echo "init AVS"
    insmod $MODDIR/avs.ko
-   player=`cat /proc/stb/player/version`
-   if [ $player=='player179' ]; then
-      echo "init player 179"
-   else
-      echo "init player 131"
-   fi
-
    echo "init stmfb"
    insmod $MODDIR/stmcore-display-stx7100.ko
    insmod $MODDIR/stmfb.ko display0=1280x720-32@50:8m:pal:yuv:yuv;# display1=720x576-16@50:1m:pal:cvbs;
 
    echo "init player"
+   player=`cat /proc/stb/player/version`
+   if [ $player=='player191' ]; then
+      echo "init player 191"
+   elif [ $player=='player179' ]; then
+      echo "init player 179"
+   else
+      echo "init player 131"
+   fi
    insmod $MODDIR/mmelog.ko
    insmod $MODDIR/mpeg2hw.ko mmeName=MPEG2_TRANSFORMER0;
    insmod $MODDIR/stmsysfs.ko
@@ -70,23 +71,18 @@ if [ ! -e /var/etc/.firstboot ]; then
    insmod $MODDIR/p2div64.ko
    insmod $MODDIR/stm_v4l2.ko
    insmod $MODDIR/pseudocard.ko
-   if [ $player=='player179' ]; then
+   if [ $player=='player179' ] || [ $player=='player191' ]; then
       insmod $MODDIR/stmvout.ko
       insmod $MODDIR/stmvbi.ko
    fi
 
    insmod $MODDIR/cx24116.ko
    insmod $MODDIR/cimax.ko
-   if [ $player=='player179' ]; then
-      insmod $MODDIR/pti.ko
-      insmod $MODDIR/stm_monitor.ko
-      insmod $MODDIR/stmsysfs.ko
-      insmod $MODDIR/stmdvb.ko
-   else
-      insmod $MODDIR/pti.ko
-      insmod $MODDIR/stmdvb.ko
-      insmod $MODDIR/stm_monitor.ko
-   fi
+
+   insmod $MODDIR/pti.ko
+   insmod $MODDIR/stm_monitor.ko
+   insmod $MODDIR/stmdvb.ko
+
    insmod $MODDIR/player2.ko
    insmod $MODDIR/sth264pp.ko
    insmod $MODDIR/stmalloc.ko
@@ -125,32 +121,43 @@ if [ ! -e /var/etc/.firstboot ]; then
 
    stfbcontrol a 255
 
-   echo "LOADING Enigma1" > /dev/vfd
-   echo "LOADING Enigma1"
+   echo "LOADING Enigma2" > /dev/vfd
+   echo "LOADING Enigma2"
 
    until false
    do
-      echo "starting Enigma1 ->"
-      /usr/bin/enigma
+      echo "starting Enigma2 ->"
+      /usr/local/bin/enigma2
       rtv=$?
-      echo "neutrino ended <- RTV: " $rtv
+      echo "enigma2 ended <- RTV: " $rtv
       case "$rtv" in
-		0) echo "0"
-		   echo "ERROR"
-		   exit 1;;
-		1) echo "1"
-		   echo "SHUTDOWN"
-		   exit 1;;
-		2) echo "2"
-		   echo "REBOOT"
-		   exit 1;;
-		3) echo "3"
-		   echo "RESTART"
-		   echo "0" > /proc/progress
-		   showiframe -p /var/boot/bootlogo.mvi &;;
-		*) echo "*"
-		   echo "ERROR"
-           exit 6;;
+           0)  echo "E2 ERROR"
+               echo "E2 Error" > /dev/vfd
+               init 6;;
+           1)  echo "1"
+               echo "SHUTDOWN"
+               echo "Shutdown" > /dev/vfd
+               if [ -e /usr/local/share/enigma2/shutdown.mvi ]; then
+                    showiframe -p /usr/local/share/enigma2/shutdown.mvi &
+               fi
+               init 0;;
+           2)  echo "2"
+               echo "REBOOT"
+               echo "Reboot" > /dev/vfd
+               init 6;;
+           3)  echo "3"
+               echo "E2 RESTART"
+               echo "Restart GUI" > /dev/vfd
+               echo "0" > /proc/progress
+               if [ -e /usr/local/share/enigma2/backdrop.mvi ]; then
+                    showiframe -p /usr/local/share/enigma2/backdrop.mvi &
+               else
+                    showiframe -p /boot/bootlogo.mvi &
+               fi;;
+           *)  echo "*"
+               echo "ERROR"
+               echo "Error" > /dev/vfd
+               init 6;;
       esac
    done 
 fi
