@@ -894,7 +894,7 @@ $(D)/libgif: $(D)/bootstrap $(ARCHIVE)/giflib-$(GIFLIB_VERSION).tar.bz2
 #
 # libcurl
 #
-CURL_VERSION = 7.52.1
+CURL_VERSION = 7.54.0
 CURL_PATCH = libcurl-$(CURL_VERSION).patch
 
 $(ARCHIVE)/curl-$(CURL_VERSION).tar.bz2:
@@ -2179,7 +2179,7 @@ $(D)/libmodplug: $(D)/bootstrap $(ARCHIVE)/libmodplug-$(LIBMODPLUG_VERSION).tar.
 #
 # lzo
 #
-LZO_VERSION = 2.09
+LZO_VERSION = 2.10
 
 $(ARCHIVE)/lzo-$(LZO_VERSION).tar.gz:
 	$(WGET) http://www.oberhumer.com/opensource/lzo/download/lzo-$(LZO_VERSION).tar.gz
