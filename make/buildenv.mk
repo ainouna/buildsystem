@@ -24,7 +24,6 @@ SOURCE_DIR            = $(BASE_DIR)/source
 
 # default platform...
 TARGET               ?= sh4-linux
-#HOST                 ?= sh4-linux
 BOXARCH              ?= sh4
 
 GIT_PROTOCOL         ?= http
@@ -48,11 +47,11 @@ BOOT_DIR              = $(BASE_DIR)/tufsbox/cdkroot-tftpboot
 CROSS_BASE            = $(BASE_DIR)/tufsbox/cross
 CROSS_DIR             = $(CROSS_BASE)
 CONTROL_DIR           = $(BASE_DIR)/pkgs/control
-HOSTPREFIX            = $(BASE_DIR)/tufsbox/host
+HOST_DIR              = $(BASE_DIR)/tufsbox/host
 PACKAGE_DIR           = $(BASE_DIR)/pkgs/opkg
 RELEASE_DIR           = $(BASE_DIR)/tufsbox/release
 PKGPREFIX             = $(BUILD_TMP)/pkg
-TARGETPREFIX          = $(BASE_DIR)/tufsbox/cdkroot
+TARGET_DIR            = $(BASE_DIR)/tufsbox/cdkroot
 
 CUSTOM_DIR            = $(BASE_DIR)/custom
 OWN_BUILD             = $(BASE_DIR)/own_build
@@ -86,15 +85,15 @@ ifeq ($(OPTIMIZATIONS), debug)
 TARGET_CFLAGS        += -O0 -g
 endif
 
-TARGET_CFLAGS        += -I$(TARGETPREFIX)/usr/include
+TARGET_CFLAGS        += -I$(TARGET_DIR)/usr/include
 TARGET_CPPFLAGS       = $(TARGET_CFLAGS)
 TARGET_CXXFLAGS       = $(TARGET_CFLAGS)
-TARGET_LDFLAGS        = -Wl,-rpath -Wl,/usr/lib -Wl,-rpath-link -Wl,$(TARGETPREFIX)/usr/lib -L$(TARGETPREFIX)/usr/lib -L$(TARGETPREFIX)/lib
+TARGET_LDFLAGS        = -Wl,-rpath -Wl,/usr/lib -Wl,-rpath-link -Wl,$(TARGET_DIR)/usr/lib -L$(TARGET_DIR)/usr/lib -L$(TARGET_DIR)/lib
 LD_FLAGS              = $(TARGET_LDFLAGS)
 
 VPATH                 = $(D)
 
-PATH                 := $(HOSTPREFIX)/bin:$(CROSS_DIR)/bin:$(PATH):/sbin:/usr/sbin:/usr/local/sbin
+PATH                 := $(HOST_DIR)/bin:$(CROSS_DIR)/bin:$(PATH):/sbin:/usr/sbin:/usr/local/sbin
 
 TERM_BOLD            := $(shell tput smso 2>/dev/null)
 TERM_RESET           := $(shell tput rmso 2>/dev/null)
@@ -107,29 +106,28 @@ TERM_NORMAL          := \033[0m
 NR_CPU               := $(shell [ -f /proc/cpuinfo ] && grep -c '^processor\s*:' /proc/cpuinfo || echo 1)
 PARALLEL_MAKE        ?= -j $(NR_CPU)
 MAKEFLAGS            += $(PARALLEL_MAKE)
-
+MAKEFLAGS            += --no-print-directory
 ifndef VERBOSE
 VERBOSE               = 0
 endif
 ifneq ($(VERBOSE), 1)
 SILENT                = @
 MAKEFLAGS            += --silent
-MAKEFLAGS            += --no-print-directory
 CONFIGURE_SILENT      = -q
 #SILENT_PATCH          = -s
 endif
 
-PKG_CONFIG            = $(HOSTPREFIX)/bin/$(TARGET)-pkg-config
-PKG_CONFIG_PATH       = $(TARGETPREFIX)/usr/lib/pkgconfig
+PKG_CONFIG            = $(HOST_DIR)/bin/$(TARGET)-pkg-config
+PKG_CONFIG_PATH       = $(TARGET_DIR)/usr/lib/pkgconfig
 
 # helper-"functions":
-REWRITE_LIBTOOL       = $(SILENT)sed -i "s,^libdir=.*,libdir='$(TARGETPREFIX)/usr/lib'," $(TARGETPREFIX)/usr/lib
-REWRITE_LIBTOOL_V     = sed -i "s,^libdir=.*,libdir='$(TARGETPREFIX)/usr/lib'," $(TARGETPREFIX)/usr/lib
-REWRITE_LIBTOOLDEP    = $(SILENT)sed -i -e "s,\(^dependency_libs='\| \|-L\|^dependency_libs='\)/usr/lib,\ $(TARGETPREFIX)/usr/lib,g" $(TARGETPREFIX)/usr/lib
-REWRITE_PKGCONF       = $(SILENT)sed -i "s,^prefix=.*,prefix='$(TARGETPREFIX)/usr',"
-REWRITE_PKGCONF_V     = sed -i "s,^prefix=.*,prefix='$(TARGETPREFIX)/usr',"
-REWRITE_LIBTOOL_OPT   = $(SILENT)sed -i "s,^libdir=.*,libdir='$(TARGETPREFIX)/opt/pkg/lib'," $(TARGETPREFIX)/opt/pkg/lib
-REWRITE_PKGCONF_OPT   = $(SILENT)sed -i "s,^prefix=.*,prefix='$(TARGETPREFIX)/opt/pkg',"
+REWRITE_LIBTOOL       = $(SILENT)sed -i "s,^libdir=.*,libdir='$(TARGET_DIR)/usr/lib'," $(TARGET_DIR)/usr/lib
+REWRITE_LIBTOOL_V     = sed -i "s,^libdir=.*,libdir='$(TARGET_DIR)/usr/lib'," $(TARGET_DIR)/usr/lib
+REWRITE_LIBTOOLDEP    = $(SILENT)sed -i -e "s,\(^dependency_libs='\| \|-L\|^dependency_libs='\)/usr/lib,\ $(TARGET_DIR)/usr/lib,g" $(TARGET_DIR)/usr/lib
+REWRITE_PKGCONF       = $(SILENT)sed -i "s,^prefix=.*,prefix='$(TARGET_DIR)/usr',"
+REWRITE_PKGCONF_V     = sed -i "s,^prefix=.*,prefix='$(TARGET_DIR)/usr',"
+REWRITE_LIBTOOL_OPT   = $(SILENT)sed -i "s,^libdir=.*,libdir='$(TARGET_DIR)/opt/pkg/lib'," $(TARGET_DIR)/opt/pkg/lib
+REWRITE_PKGCONF_OPT   = $(SILENT)sed -i "s,^prefix=.*,prefix='$(TARGET_DIR)/opt/pkg',"
 
 export RM=$(shell which rm) -f
 
@@ -161,6 +159,7 @@ define post_patch
 			fi; \
 		fi; \
 	done; \
+	echo -e "Patching $(TERM_GREEN_BOLD)$(subst $(BASE_DIR)/.deps/,,$@)$(TERM_NORMAL) completed."; \
 	echo
 endef
 
@@ -178,8 +177,8 @@ OPKG_SH = $(OPKG_SH_ENV) opkg.sh
 # wget tarballs into archive directory
 WGET = wget --progress=bar:force --no-check-certificate -t6 -T20 -c -P $(ARCHIVE)
 
-TUXBOX_YAUD_CUSTOMIZE = [ -x $(CUSTOM_DIR)/$(notdir $@)-local.sh ] && KERNEL_VERSION=$(KERNEL_VERSION) && BOXTYPE=$(BOXTYPE) && $(CUSTOM_DIR)/$(notdir $@)-local.sh $(RELEASE_DIR) $(TARGETPREFIX) $(BASE_DIR) $(SOURCE_DIR) $(FLASH_DIR) $(BOXTYPE) || true
-TUXBOX_CUSTOMIZE      = [ -x $(CUSTOM_DIR)/$(notdir $@)-local.sh ] && KERNEL_VERSION=$(KERNEL_VERSION) && BOXTYPE=$(BOXTYPE) && $(CUSTOM_DIR)/$(notdir $@)-local.sh $(RELEASE_DIR) $(TARGETPREFIX) $(BASE_DIR) $(BOXTYPE) || true
+TUXBOX_YAUD_CUSTOMIZE = [ -x $(CUSTOM_DIR)/$(notdir $@)-local.sh ] && KERNEL_VERSION=$(KERNEL_VERSION) && BOXTYPE=$(BOXTYPE) && $(CUSTOM_DIR)/$(notdir $@)-local.sh $(RELEASE_DIR) $(TARGET_DIR) $(BASE_DIR) $(SOURCE_DIR) $(FLASH_DIR) $(BOXTYPE) || true
+TUXBOX_CUSTOMIZE      = [ -x $(CUSTOM_DIR)/$(notdir $@)-local.sh ] && KERNEL_VERSION=$(KERNEL_VERSION) && BOXTYPE=$(BOXTYPE) && $(CUSTOM_DIR)/$(notdir $@)-local.sh $(RELEASE_DIR) $(TARGET_DIR) $(BASE_DIR) $(BOXTYPE) || true
 
 #
 #
@@ -261,8 +260,8 @@ KERNEL_UPSTREAM    =$(word 1,$(call split_version,$(KERNEL_VERSION)))
 KERNEL_STM        :=$(word 2,$(call split_version,$(KERNEL_VERSION)))
 KERNEL_LABEL      :=$(word 3,$(call split_version,$(KERNEL_VERSION)))
 KERNEL_RELEASE    :=$(subst ^0,,^$(KERNEL_LABEL))
-KERNEL_STM_LABEL  := _$(KERNEL_STM)_$(KERNEL_LABEL)
-KERNEL_DIR         = $(BUILD_TMP)/linux-sh4-$(KERNEL_VERSION)
+KERNEL_STM_LABEL  :=_$(KERNEL_STM)_$(KERNEL_LABEL)
+KERNEL_DIR         =$(BUILD_TMP)/linux-sh4-$(KERNEL_VERSION)
 
 #
 # image

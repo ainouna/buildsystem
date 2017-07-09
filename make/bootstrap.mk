@@ -1,6 +1,6 @@
 TOOLCHECK  = find-git find-svn find-gzip find-bzip2 find-patch find-gawk
 TOOLCHECK += find-makeinfo find-automake find-gcc find-libtool
-TOOLCHECK += find-yacc find-flex find-tic find-pkg-config
+TOOLCHECK += find-yacc find-flex find-tic find-pkg-config find-help2man
 TOOLCHECK += find-cmake find-gperf
 
 find-%:
@@ -18,12 +18,13 @@ toolcheck: $(TOOLCHECK) preqs
 	fi
 
 BOOTSTRAP  = directories crosstool $(D)/ccache
-BOOTSTRAP += $(HOSTPREFIX)/bin/opkg.sh
-BOOTSTRAP += $(HOSTPREFIX)/bin/opkg-chksvn.sh
-BOOTSTRAP += $(HOSTPREFIX)/bin/opkg-gitdescribe.sh
-BOOTSTRAP += $(HOSTPREFIX)/bin/opkg-find-requires.sh
-BOOTSTRAP += $(HOSTPREFIX)/bin/opkg-find-provides.sh
-BOOTSTRAP += $(HOSTPREFIX)/bin/opkg-module-deps.sh
+BOOTSTRAP += $(HOST_DIR)/bin/opkg.sh
+BOOTSTRAP += $(HOST_DIR)/bin/opkg-chksvn.sh
+BOOTSTRAP += $(HOST_DIR)/bin/opkg-gitdescribe.sh
+BOOTSTRAP += $(HOST_DIR)/bin/opkg-find-requires.sh
+BOOTSTRAP += $(HOST_DIR)/bin/opkg-find-provides.sh
+BOOTSTRAP += $(HOST_DIR)/bin/opkg-module-deps.sh
+BOOTSTRAP += $(HOST_DIR)/bin/get-git-archive.sh
 BOOTSTRAP += $(D)/host_pkgconfig $(D)/host_module_init_tools $(D)/host_mtd_utils
 
 $(D)/bootstrap: $(BOOTSTRAP)
@@ -47,11 +48,10 @@ SYSTEM_TOOLS += $(D)/driver
 $(D)/system-tools: $(SYSTEM_TOOLS) $(TOOLS)
 	$(TOUCH)
 
-$(HOSTPREFIX)/bin/opkg%sh: | directories
-	$(SILENT)ln -sf $(SCRIPTS_DIR)/$(shell basename $@) $(HOSTPREFIX)/bin
-
-$(HOSTPREFIX)/bin/unpack-rpm.sh: | directories
-	$(SILENT)ln -sf $(SCRIPTS_DIR)/$(shell basename $@) $(HOSTPREFIX)/bin
+$(HOST_DIR)/bin/unpack%.sh \
+$(HOST_DIR)/bin/get%.sh \
+$(HOST_DIR)/bin/opkg%sh: | directories
+	ln -sf $(SCRIPTS_DIR)/$(shell basename $@) $(HOST_DIR)/bin
 
 #
 STM_RELOCATE     = /opt/STM/STLinux-2.4
@@ -115,7 +115,7 @@ $(STL_ARCHIVE)/stlinux24-sh4-libstdc++-dev-$(LIBGCC_VERSION).sh4.rpm
 	@echo -e "Build of $(TERM_GREEN_BOLD)$@$(TERM_NORMAL) completed."; echo
 
 crosstool: directories driver-symlink \
-$(HOSTPREFIX)/bin/unpack-rpm.sh \
+$(HOST_DIR)/bin/unpack-rpm.sh \
 crosstool-rpminstall
 	$(START_BUILD)
 	$(SET) -e; cd $(CROSS_BASE); rm -f sh4-linux/sys-root; ln -s ../target sh4-linux/sys-root; \
@@ -123,23 +123,23 @@ crosstool-rpminstall
 		sed -i "s,^libdir=.*,libdir='$(CROSS_DIR)/target/usr/lib'," $(CROSS_DIR)/target/usr/lib/lib{std,sup}c++.la; \
 	fi
 	$(SILENT)if test -e $(CROSS_DIR)/target/usr/lib/libstdc++.so; then \
-		cp -a $(CROSS_DIR)/target/usr/lib/libstdc++.s*[!y] $(TARGETPREFIX)/lib; \
-		cp -a $(CROSS_DIR)/target/usr/lib/libdl.so $(TARGETPREFIX)/usr/lib; \
-		cp -a $(CROSS_DIR)/target/usr/lib/libm.so $(TARGETPREFIX)/usr/lib; \
-		cp -a $(CROSS_DIR)/target/usr/lib/librt.so $(TARGETPREFIX)/usr/lib; \
-		cp -a $(CROSS_DIR)/target/usr/lib/libutil.so $(TARGETPREFIX)/usr/lib; \
-		cp -a $(CROSS_DIR)/target/usr/lib/libpthread.so $(TARGETPREFIX)/usr/lib; \
-		cp -a $(CROSS_DIR)/target/usr/lib/libresolv.so $(TARGETPREFIX)/usr/lib; \
-		ln -sf $(CROSS_DIR)/target/usr/lib/libc.so $(TARGETPREFIX)/usr/lib/libc.so; \
-		ln -sf $(CROSS_DIR)/target/usr/lib/libc_nonshared.a $(TARGETPREFIX)/usr/lib/libc_nonshared.a; \
+		cp -a $(CROSS_DIR)/target/usr/lib/libstdc++.s*[!y] $(TARGET_DIR)/lib; \
+		cp -a $(CROSS_DIR)/target/usr/lib/libdl.so $(TARGET_DIR)/usr/lib; \
+		cp -a $(CROSS_DIR)/target/usr/lib/libm.so $(TARGET_DIR)/usr/lib; \
+		cp -a $(CROSS_DIR)/target/usr/lib/librt.so $(TARGET_DIR)/usr/lib; \
+		cp -a $(CROSS_DIR)/target/usr/lib/libutil.so $(TARGET_DIR)/usr/lib; \
+		cp -a $(CROSS_DIR)/target/usr/lib/libpthread.so $(TARGET_DIR)/usr/lib; \
+		cp -a $(CROSS_DIR)/target/usr/lib/libresolv.so $(TARGET_DIR)/usr/lib; \
+		ln -sf $(CROSS_DIR)/target/usr/lib/libc.so $(TARGET_DIR)/usr/lib/libc.so; \
+		ln -sf $(CROSS_DIR)/target/usr/lib/libc_nonshared.a $(TARGET_DIR)/usr/lib/libc_nonshared.a; \
 	fi
 	$(SILENT)if test -e $(CROSS_DIR)/target/lib; then \
-		cp -a $(CROSS_DIR)/target/lib/*so* $(TARGETPREFIX)/lib; \
+		cp -a $(CROSS_DIR)/target/lib/*so* $(TARGET_DIR)/lib; \
 	fi
 	$(SILENT)if test -e $(CROSS_DIR)/target/sbin/ldconfig; then \
-		cp -a $(CROSS_DIR)/target/sbin/ldconfig $(TARGETPREFIX)/sbin; \
-		cp -a $(CROSS_DIR)/target/etc/ld.so.conf $(TARGETPREFIX)/etc; \
-		cp -a $(CROSS_DIR)/target/etc/host.conf $(TARGETPREFIX)/etc; \
+		cp -a $(CROSS_DIR)/target/sbin/ldconfig $(TARGET_DIR)/sbin; \
+		cp -a $(CROSS_DIR)/target/etc/ld.so.conf $(TARGETDIR)/etc; \
+		cp -a $(CROSS_DIR)/target/etc/host.conf $(TARGET_DIR)/etc; \
 	fi
 	@touch $(D)/$(notdir $@)
 	@echo "--------------------------------------------------------------"
@@ -151,7 +151,7 @@ crosstool-rpminstall
 host_u_boot_tools: \
 $(STL_ARCHIVE)/stlinux24-host-u-boot-tools-1.3.1_stm24-9.i386.rpm
 	$(START_BUILD)
-	$(SILENT)unpack-rpm.sh $(BUILD_TMP) $(STM_RELOCATE)/host/bin $(HOSTPREFIX)/bin \
+	$(SILENT)unpack-rpm.sh $(BUILD_TMP) $(STM_RELOCATE)/host/bin $(HOST_DIR)/bin \
 		$^
 	@touch $(D)/$(notdir $@)
 	@echo "--------------------------------------------------------------"
@@ -174,7 +174,7 @@ crosstool-ng: $(ARCHIVE)/crosstool-ng-$(CROSSTOOL_NG_VERSION).tar.xz
 	$(REMOVE)/crosstool-ng
 	$(UNTAR)/crosstool-ng-$(CROSSTOOL_NG_VERSION).tar.xz
 	$(SILENT)set -e; unset CONFIG_SITE; cd $(BUILD_TMP)/crosstool-ng; \
-		cp -a $(PATCHES)/crosstool-ng-$(CROSSTOOL_NG_VERSION).config .config; \
+		cp -a $(PATCHES)/crosstool-ng-$(CROSSTOOL_NG_VERSION)-$(BOXARCH).config .config; \
 		NUM_CPUS=$$(expr `getconf _NPROCESSORS_ONLN` \* 2); \
 		MEM_512M=$$(awk '/MemTotal/ {M=int($$2/1024/512); print M==0?1:M}' /proc/meminfo); \
 		test $$NUM_CPUS -gt $$MEM_512M && NUM_CPUS=$$MEM_512M; \
@@ -243,24 +243,24 @@ directories:
 	$(SILENT)test -d $(STL_ARCHIVE) || mkdir $(STL_ARCHIVE)
 	$(SILENT)test -d $(BUILD_TMP) || mkdir $(BUILD_TMP)
 	$(SILENT)test -d $(SOURCE_DIR) || mkdir $(SOURCE_DIR)
-	$(SILENT)install -d $(TARGETPREFIX)
+	$(SILENT)install -d $(TARGET_DIR)
 	$(SILENT)install -d $(CROSS_DIR)
 	$(SILENT)install -d $(BOOT_DIR)
-	$(SILENT)install -d $(HOSTPREFIX)
-	$(SILENT)install -d $(HOSTPREFIX)/{bin,lib,share}
-	$(SILENT)install -d $(TARGETPREFIX)/{bin,boot,etc,lib,sbin,usr,var}
-	$(SILENT)install -d $(TARGETPREFIX)/etc/{init.d,mdev,network,rc.d}
-	$(SILENT)install -d $(TARGETPREFIX)/etc/rc.d/{rc0.d,rc6.d}
-	$(SILENT)ln -sf ../init.d $(TARGETPREFIX)/etc/rc.d/init.d
-	$(SILENT)install -d $(TARGETPREFIX)/lib/{lsb,firmware}
-	$(SILENT)install -d $(TARGETPREFIX)/usr/{bin,lib,local,sbin,share}
-	$(SILENT)install -d $(TARGETPREFIX)/usr/lib/pkgconfig
-	$(SILENT)install -d $(TARGETPREFIX)/usr/include/linux
-	$(SILENT)install -d $(TARGETPREFIX)/usr/include/linux/dvb
-	$(SILENT)install -d $(TARGETPREFIX)/usr/local/{bin,sbin,share}
-	$(SILENT)install -d $(TARGETPREFIX)/var/{etc,lib,run}
-	$(SILENT)install -d $(TARGETPREFIX)/var/lib/{misc,nfs}
-	$(SILENT)install -d $(TARGETPREFIX)/var/bin
+	$(SILENT)install -d $(HOST_DIR)
+	$(SILENT)install -d $(HOST_DIR)/{bin,lib,share}
+	$(SILENT)install -d $(TARGET_DIR)/{bin,boot,etc,lib,sbin,usr,var}
+	$(SILENT)install -d $(TARGET_DIR)/etc/{init.d,mdev,network,rc.d}
+	$(SILENT)install -d $(TARGET_DIR)/etc/rc.d/{rc0.d,rc6.d}
+	$(SILENT)ln -sf ../init.d $(TARGET_DIR)/etc/rc.d/init.d
+	$(SILENT)install -d $(TARGET_DIR)/lib/{lsb,firmware}
+	$(SILENT)install -d $(TARGET_DIR)/usr/{bin,lib,local,sbin,share}
+	$(SILENT)install -d $(TARGET_DIR)/usr/lib/pkgconfig
+	$(SILENT)install -d $(TARGET_DIR)/usr/include/linux
+	$(SILENT)install -d $(TARGET_DIR)/usr/include/linux/dvb
+	$(SILENT)install -d $(TARGET_DIR)/usr/local/{bin,sbin,share}
+	$(SILENT)install -d $(TARGET_DIR)/var/{etc,lib,run}
+	$(SILENT)install -d $(TARGET_DIR)/var/lib/{misc,nfs}
+	$(SILENT)install -d $(TARGET_DIR)/var/bin
 	@touch $(D)/$(notdir $@)
 	@echo "--------------------------------------------------------------"
 	@echo -e "Build of $(TERM_GREEN_BOLD)$@$(TERM_NORMAL) completed."; echo
@@ -268,7 +268,7 @@ directories:
 #
 # ccache
 #
-CCACHE_BINDIR = $(HOSTPREFIX)/bin
+CCACHE_BINDIR = $(HOST_DIR)/bin
 CCACHE_BIN = $(CCACHE)
 
 CCACHE_LINKS = \

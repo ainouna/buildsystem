@@ -1,4 +1,4 @@
-DEPMOD = $(HOSTPREFIX)/bin/depmod
+DEPMOD = $(HOST_DIR)/bin/depmod
 
 #
 # Patches Kernel 24
@@ -57,7 +57,7 @@ OCTAGON1008_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-sh4-stmmac_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-i2c-st40-pio_stm24_$(KERNEL_LABEL).patch
 ifeq ($(IMAGE), $(filter $(IMAGE), neutrino neutrino-wlandriver))
-OCTAGON1008_PATCHES_24 += linux-sh4-octagon1008_stm24_$(KERNEL_LABEL).patch
+OCTAGON1008_PATCHES_24 += linux-sh4-octagon1008_mtdconcat_stm24_$(KERNEL_LABEL).patch
 endif
 
 ATEVIO7500_PATCHES_24 = $(COMMON_PATCHES_24) \
@@ -306,6 +306,7 @@ endif
 		echo -e "==> $(TERM_RED)Applying Patch:$(TERM_NORMAL) $$i"; \
 		patch -p1 $(SILENT_PATCH) -i $(PATCHES)/$(BUILD_CONFIG)/$$i; \
 	done
+	echo -e "Patching $(TERM_GREEN_BOLD)linux-kernel$(TERM_NORMAL) completed."
 	$(SILENT)install -m 644 $(PATCHES)/$(BUILD_CONFIG)/$(HOST_KERNEL_CONFIG) $(KERNEL_DIR)/.config
 	$(SILENT)sed -i "s#^\(CONFIG_EXTRA_FIRMWARE_DIR=\).*#\1\"$(BASE_DIR)/integrated_firmware\"#" $(KERNEL_DIR)/.config
 	$(SILENT)rm $(KERNEL_DIR)/localversion*
@@ -374,25 +375,25 @@ $(D)/linux-kernel.do_compile: $(D)/linux-kernel.do_prepare
 		$(MAKE) -C $(KERNEL_DIR) ARCH=sh include/asm
 		$(MAKE) -C $(KERNEL_DIR) ARCH=sh include/linux/version.h
 		$(MAKE) -C $(KERNEL_DIR) ARCH=sh CROSS_COMPILE=$(TARGET)- uImage modules
-		$(MAKE) -C $(KERNEL_DIR) ARCH=sh CROSS_COMPILE=$(TARGET)- DEPMOD=$(DEPMOD) INSTALL_MOD_PATH=$(TARGETPREFIX) modules_install
+		$(MAKE) -C $(KERNEL_DIR) ARCH=sh CROSS_COMPILE=$(TARGET)- DEPMOD=$(DEPMOD) INSTALL_MOD_PATH=$(TARGET_DIR) modules_install
 	@touch $@
 
 $(D)/linux-kernel: $(D)/bootstrap host_u_boot_tools $(D)/linux-kernel.do_compile
 	$(SILENT)install -m 644 $(KERNEL_DIR)/arch/sh/boot/uImage $(BOOT_DIR)/vmlinux.ub
-	$(SILENT)install -m 644 $(KERNEL_DIR)/vmlinux $(TARGETPREFIX)/boot/vmlinux-sh4-$(KERNEL_VERSION)
-	$(SILENT)install -m 644 $(KERNEL_DIR)/System.map $(TARGETPREFIX)/boot/System.map-sh4-$(KERNEL_VERSION)
-	$(SILENT)cp $(KERNEL_DIR)/arch/sh/boot/uImage $(TARGETPREFIX)/boot/
-	$(SILENT)rm $(TARGETPREFIX)/lib/modules/$(KERNEL_VERSION)/build || true
-	$(SILENT)rm $(TARGETPREFIX)/lib/modules/$(KERNEL_VERSION)/source || true
+	$(SILENT)install -m 644 $(KERNEL_DIR)/vmlinux $(TARGET_DIR)/boot/vmlinux-sh4-$(KERNEL_VERSION)
+	$(SILENT)install -m 644 $(KERNEL_DIR)/System.map $(TARGET_DIR)/boot/System.map-sh4-$(KERNEL_VERSION)
+	$(SILENT)cp $(KERNEL_DIR)/arch/sh/boot/uImage $(TARGET_DIR)/boot/
+	$(SILENT)rm $(TARGET_DIR)/lib/modules/$(KERNEL_VERSION)/build || true
+	$(SILENT)rm $(TARGET_DIR)/lib/modules/$(KERNEL_VERSION)/source || true
 	$(TOUCH)
 
 $(D)/kernel-headers: linux-kernel.do_prepare
 	$(SILENT)cd $(KERNEL_DIR)
-	$(SILENT)install -d $(TARGETPREFIX)/usr/include
-	$(SILENT)cp -a include/linux $(TARGETPREFIX)/usr/include
-	$(SILENT)cp -a include/asm-sh $(TARGETPREFIX)/usr/include/asm
-	$(SILENT)cp -a include/asm-generic $(TARGETPREFIX)/usr/include
-	$(SILENT)cp -a include/mtd $(TARGETPREFIX)/usr/include
+	$(SILENT)install -d $(TARGET_DIR)/usr/include
+	$(SILENT)cp -a include/linux $(TARGET_DIR)/usr/include
+	$(SILENT)cp -a include/asm-sh $(TARGET_DIR)/usr/include/asm
+	$(SILENT)cp -a include/asm-generic $(TARGET_DIR)/usr/include
+	$(SILENT)cp -a include/mtd $(TARGET_DIR)/usr/include
 	$(TOUCH)
 
 $(D)/tfkernel:
