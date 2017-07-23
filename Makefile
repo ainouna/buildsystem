@@ -7,6 +7,12 @@ warn:
 	@echo "You are running as root. Do not do this, it is dangerous."
 	@echo "Aborting the build. Log in as a regular user and retry."
 else
+LC_ALL:=C
+LANG:=C
+export TOPDIR LC_ALL LANG
+
+PARALLEL_JOBS := $(shell echo $$((1 + `getconf _NPROCESSORS_ONLN 2>/dev/null || echo 1`)))
+override MAKE = make $(if $(findstring j,$(filter-out --%,$(MAKEFLAGS))),,-j$(PARALLEL_JOBS))
 
 include make/buildenv.mk
 
@@ -29,25 +35,25 @@ printenv:
 	@echo "CROSS_DIR        : $(CROSS_DIR)"
 	@echo "CROSS_BASE       : $(CROSS_BASE)"
 	@echo "RELEASE_DIR      : $(RELEASE_DIR)"
-	@echo "HOSTPREFIX       : $(HOSTPREFIX)"
-	@echo "TARGETPREFIX     : $(TARGETPREFIX)"
+	@echo "HOST_DIR         : $(HOST_DIR)"
+	@echo "TARGET_DIR       : $(TARGET_DIR)"
 	@echo "PATH             : `type -p fmt>/dev/null&&echo $(PATH)|sed 's/:/ /g' |fmt -65|sed 's/ /:/g; 2,$$s/^/                 : /;'||echo $(PATH)`"
 	@echo "BOXARCH          : $(BOXARCH)"
 	@echo "BUILD            : $(BUILD)"
 	@echo "TARGET           : $(TARGET)"
 	@echo "PLATFORM         : $(PLATFORM)"
 	@echo "BOXTYPE          : $(BOXTYPE)"
-	@echo "KERNEL_UPSTREAM  : $(KERNEL_UPSTREAM)"
-	@echo "KERNEL_STM       : $(KERNEL_STM)"
-	@echo "KERNEL_LABEL     : $(KERNEL_LABEL)"
-	@echo "KERNEL_RELEASE   : $(KERNEL_RELEASE)"
-	@echo "KERNEL_STM_LABEL : $(KERNEL_STM_LABEL)"
+#	@echo "KERNEL_UPSTREAM  : $(KERNEL_UPSTREAM)"
+#	@echo "KERNEL_STM       : $(KERNEL_STM)"
+#	@echo "KERNEL_LABEL     : $(KERNEL_LABEL)"
+#	@echo "KERNEL_RELEASE   : $(KERNEL_RELEASE)"
+#	@echo "KERNEL_STM_LABEL : $(KERNEL_STM_LABEL)"
 	@echo "KERNEL_VERSION   : $(KERNEL_VERSION)"
 	@echo "MULTICOM_VERSION : $(MULTICOM_VERSION)"
 	@echo "PLAYER_VERSION   : $(PLAYER_VERSION)"
 	@echo "MEDIAFW          : $(MEDIAFW)"
 	@echo "EXTERNAL_LCD     : $(EXTERNAL_LCD)"
-	@echo "CPU_CORES        : $(NR_CPU)"
+	@echo "PARALLEL_JOBS    : $(PARALLEL_JOBS)"
 ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs7110 hs7119 hs7420 hs7429 hs7810a hs7819))
 	@echo "DESTINATION      : $(DESTINATION)"
 endif

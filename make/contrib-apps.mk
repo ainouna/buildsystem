@@ -1,12 +1,11 @@
 #
 # busybox
 #
-BUSYBOX_VERSION = 1.26.2
+BUSYBOX_VERSION = 1.27.1
 BUSYBOX_SOURCE = busybox-$(BUSYBOX_VERSION).tar.bz2
 BUSYBOX_PATCH  = busybox-$(BUSYBOX_VERSION)-nandwrite.patch
 BUSYBOX_PATCH += busybox-$(BUSYBOX_VERSION)-unicode.patch
 BUSYBOX_PATCH += busybox-$(BUSYBOX_VERSION)-extra.patch
-BUSYBOX_PATCH += busybox-$(BUSYBOX_VERSION)-wget_fix_for_brain-damaged_HTTP_servers.patch
 
 $(ARCHIVE)/$(BUSYBOX_SOURCE):
 	$(WGET) http://busybox.net/downloads/$(BUSYBOX_SOURCE)
@@ -17,7 +16,7 @@ else
 BUSYBOX_CONFIG = busybox-$(BUSYBOX_VERSION).config
 endif
 
-$(D)/busybox: $(D)/bootstrap $(ARCHIVE)/$(BUSYBOX_SOURCE) $(PATCHES)/$(BUSYBOX_CONFIG)
+$(D)/busybox: $(D)/bootstrap $(D)/module_init_tools $(ARCHIVE)/$(BUSYBOX_SOURCE) $(PATCHES)/$(BUSYBOX_CONFIG)
 	$(START_BUILD)
 	$(REMOVE)/busybox-$(BUSYBOX_VERSION)
 	$(UNTAR)/$(BUSYBOX_SOURCE)
@@ -41,7 +40,7 @@ else
 BUSYBOX_USB_CONFIG = busybox_usb-$(BUSYBOX_USB_VERSION).config
 endif
 
-$(D)/busybox_usb: $(D)/bootstrap $(ARCHIVE)/$(BUSYBOX_SOURCE) $(PATCHES)/$(BUSYBOX_USB_CONFIG)
+$(D)/busybox_usb: $(D)/bootstrap $(D)/module_init_tools $(ARCHIVE)/$(BUSYBOX_SOURCE) $(PATCHES)/$(BUSYBOX_USB_CONFIG)
 	$(START_BUILD)
 	$(REMOVE)/busybox_usb-$(BUSYBOX_USB_VERSION)
 	@mkdir $(BUILD_TMP)/busybox_usb-$(BUSYBOX_USB_VERSION)
@@ -253,7 +252,8 @@ $(D)/sysvinit: $(D)/bootstrap $(ARCHIVE)/$(SYSVINIT_SOURCE)
 		$(BUILDENV) \
 		$(MAKE) -C src SULOGINLIBS=-lcrypt; \
 		$(MAKE) install ROOT=$(TARGET_DIR) MANDIR=/.remove
-	cd $(TARGET_DIR) && rm sbin/fstab-decode sbin/runlevel sbin/telinit
+	rm -f $(addprefix $(TARGET_DIR)/sbin/,fstab-decode runlevel telinit)
+	rm -f $(addprefix $(TARGET_DIR)/usr/bin/,lastb)
 ifeq ($(BOXTYPE), $(filter $(BOXTYPE), fortis_hdbox octagon1008 cuberevo cuberevo_mini2 cuberevo_2000hd))
 	install -m 644 $(SKEL_ROOT)/etc/inittab_ttyAS1 $(TARGET_DIR)/etc/inittab
 else
@@ -411,9 +411,9 @@ $(D)/e2fsprogs: $(D)/bootstrap $(D)/util-linux $(ARCHIVE)/$(E2FSPROGS_SOURCE)
 		$(MAKE) -C lib/blkid install DESTDIR=$(TARGET_DIR)
 	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/uuid.pc
 	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/blkid.pc
-	cd $(TARGET_DIR) && rm sbin/badblocks sbin/dumpe2fs sbin/logsave \
-				 sbin/e2undo usr/sbin/filefrag usr/sbin/e2freefrag \
-				 usr/bin/chattr usr/bin/lsattr usr/bin/uuidgen
+	rm -f $(addprefix $(TARGET_DIR)/sbin/,badblocks dumpe2fs logsave e2undo)
+	rm -f $(addprefix $(TARGET_DIR)/usr/sbin/,filefrag e2freefrag mklost+found uuidd)
+	rm -f $(addprefix $(TARGET_DIR)/usr/bin/,chattr lsattr uuidgen)
 	$(REMOVE)/e2fsprogs-$(E2FSPROGS_VERSION)
 	$(TOUCH)
 
@@ -468,8 +468,44 @@ $(D)/jfsutils: $(D)/bootstrap $(D)/e2fsprogs $(ARCHIVE)/$(JFSUTILS_SOURCE)
 		; \
 		$(MAKE); \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
-	cd $(TARGET_DIR) && rm sbin/jfs_debugfs sbin/jfs_fscklog sbin/jfs_logdump
+	rm -f $(addprefix $(TARGET_DIR)/sbin/,jfs_debugfs jfs_fscklog jfs_logdump)
 	$(REMOVE)/jfsutils-$(JFSUTILS_VERSION)
+	$(TOUCH)
+
+#
+# ntfs-3g
+#
+NTFS_3G_VERSION = 2017.3.23
+NTFS_3G_SOURCE = ntfs-3g_ntfsprogs-$(NTFS_3G_VERSION).tgz
+
+$(ARCHIVE)/$(NTFS_3G_SOURCE):
+	$(WGET) http://tuxera.com/opensource/$(NTFS_3G_SOURCE)
+
+$(D)/ntfs-3g: $(D)/bootstrap $(ARCHIVE)/$(NTFS_3G_SOURCE)
+	$(START_BUILD)
+	$(REMOVE)/ntfs-3g_ntfsprogs-$(NTFS_3G_VERSION)
+	$(UNTAR)/$(NTFS_3G_SOURCE)
+	$(SET) -e; cd $(BUILD_TMP)/ntfs-3g_ntfsprogs-$(NTFS_3G_VERSION); \
+		CFLAGS="-pipe -Os" ./configure \
+			--build=$(BUILD) \
+			--host=$(TARGET) \
+			--prefix=/usr \
+			--exec-prefix=/usr \
+			--bindir=/usr/bin \
+			--mandir=/.remove \
+			--docdir=/.remove \
+			--disable-ldconfig \
+			--disable-ntfsprogs \
+			--disable-static \
+			--enable-silent-rules \
+		; \
+		$(MAKE); \
+		$(MAKE) install DESTDIR=$(TARGET_DIR)
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libntfs-3g.pc
+	$(REWRITE_LIBTOOL)/libntfs-3g.la
+	rm -f $(addprefix $(TARGET_DIR)/usr/bin/,lowntfs-3g ntfs-3g.probe)
+	rm -f $(addprefix $(TARGET_DIR)/sbin/,mount.lowntfs-3g)
+	$(REMOVE)/ntfs-3g_ntfsprogs-$(NTFS_3G_VERSION)
 	$(TOUCH)
 
 #
@@ -722,11 +758,12 @@ $(D)/sdparm: $(D)/bootstrap $(ARCHIVE)/$(SDPARM_SOURCE)
 	$(SET) -e; cd $(BUILD_TMP)/sdparm-$(SDPARM_VERSION); \
 		$(CONFIGURE) \
 			--prefix= \
-			--exec-prefix=/usr \
+			--bindir=/sbin \
 			--mandir=/.remove \
 		; \
 		$(MAKE); \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
+	rm -f $(addprefix $(TARGET_DIR)/sbin/,sas_disk_blink scsi_ch_swp)
 	$(REMOVE)/sdparm-$(SDPARM_VERSION)
 	$(TOUCH)
 
@@ -904,6 +941,7 @@ $(D)/autofs: $(D)/bootstrap $(D)/e2fsprogs $(ARCHIVE)/$(AUTOFS_SOURCE)
 	$(SILENT)install -m 644 $(SKEL_ROOT)/etc/auto.master $(TARGET_DIR)/etc/
 	$(SILENT)install -m 644 $(SKEL_ROOT)/etc/auto.misc $(TARGET_DIR)/etc/
 	$(SILENT)install -m 644 $(SKEL_ROOT)/etc/auto.network $(TARGET_DIR)/etc/
+	$(SILENT)ln -sf ../usr/sbin/automount $(TARGET_DIR)/sbin/automount
 	$(REMOVE)/autofs-$(AUTOFS_VERSION)
 	$(TOUCH)
 
@@ -1008,6 +1046,7 @@ $(D)/dbus: $(D)/bootstrap $(D)/libexpat $(ARCHIVE)/$(DBUS_SOURCE)
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
 	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/dbus-1.pc
 	$(REWRITE_LIBTOOL)/libdbus-1.la
+	rm -f $(addprefix $(TARGET_DIR)/usr/bin/,dbus-cleanup-sockets dbus-daemon dbus-launch dbus-monitor)
 	$(REMOVE)/dbus-$(DBUS_VERSION)
 	$(TOUCH)
 
@@ -1189,8 +1228,8 @@ $(D)/nfs_utils: $(D)/bootstrap $(D)/e2fsprogs $(ARCHIVE)/$(NFSUTILS_SOURCE)
 	$(SILENT)install -m 755 $(SKEL_ROOT)/etc/init.d/nfs-common $(TARGET_DIR)/etc/init.d/
 	$(SILENT)install -m 755 $(SKEL_ROOT)/etc/init.d/nfs-kernel-server $(TARGET_DIR)/etc/init.d/
 	$(SILENT)install -m 644 $(SKEL_ROOT)/etc/exports $(TARGET_DIR)/etc/
-	$(SILENT)cd $(TARGET_DIR) && rm -f sbin/mount.nfs sbin/mount.nfs4 sbin/umount.nfs sbin/umount.nfs4 \
-				 sbin/osd_login
+	$(SILENT)rm -f $(addprefix $(TARGET_DIR)/sbin/,mount.nfs mount.nfs4 umount.nfs umount.nfs4 osd_login)
+	$(SILENT)rm -f $(addprefix $(TARGET_DIR)/usr/sbin/,mountstats nfsiostat nfsstat rpcdebug showmount sm-notify start-statd)
 	$(REMOVE)/nfs-utils-$(NFSUTILS_VERSION)
 	$(TOUCH)
 
@@ -1547,6 +1586,7 @@ $(D)/openvpn: $(D)/bootstrap $(D)/openssl $(D)/lzo $(ARCHIVE)/$(OPENVPN_SOURCE)
 		$(MAKE); \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
 	$(SILENT)install -m 755 $(SKEL_ROOT)/etc/init.d/openvpn $(TARGET_DIR)/etc/init.d/
+	$(SILENT)install -d $(TARGET_DIR)/etc/openvpn
 	$(REMOVE)/openvpn-$(OPENVPN_VERSION)
 	$(TOUCH)
 

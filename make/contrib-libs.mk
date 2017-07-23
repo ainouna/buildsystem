@@ -136,7 +136,7 @@ LIBGLIB2_PATCH = libglib2-$(LIBGLIB2_VERSION)-disable-tests.patch
 $(ARCHIVE)/$(LIBGLIB2_SOURCE):
 	$(WGET) http://ftp.gnome.org/pub/gnome/sources/glib/$(LIBGLIB2_VERSION_MAJOR).$(LIBGLIB2_VERSION_MINOR)/$(LIBGLIB2_SOURCE)
 
-$(D)/host_libglib2_genmarshal: $(D)/host_libffi $(ARCHIVE)/$(LIBGLIB2_SOURCE)
+$(D)/host_libglib2_genmarshal: $(D)/bootstrap $(D)/host_libffi $(ARCHIVE)/$(LIBGLIB2_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/glib-$(LIBGLIB2_VERSION)
 	$(UNTAR)/$(LIBGLIB2_SOURCE)
@@ -359,7 +359,7 @@ $(D)/openssl: $(D)/bootstrap $(ARCHIVE)/$(OPENSSL_SOURCE)
 	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/openssl.pc
 	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libcrypto.pc
 	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libssl.pc
-	cd $(TARGET_DIR) && rm -rf etc/ssl/man usr/bin/openssl
+	cd $(TARGET_DIR) && rm -rf etc/ssl/man usr/bin/openssl usr/lib/engines
 	ln -sf libcrypto.so.1.0.0 $(TARGET_DIR)/usr/lib/libcrypto.so.0.9.8
 	ln -sf libssl.so.1.0.0 $(TARGET_DIR)/usr/lib/libssl.so.0.9.8
 	$(REMOVE)/openssl-$(OPENSSL_VERSION)
@@ -710,9 +710,12 @@ $(D)/freetype: $(D)/bootstrap $(D)/zlib $(D)/libpng $(ARCHIVE)/$(FREETYPE_SOURCE
 #
 # lirc
 #
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE),adb_box arivalink200 ipbox55 ipbox99 ipbox9900 cuberevo cuberevo_mini cuberevo_mini2 cuberevo_250hd cuberevo_2000hd cuberevo_3000hd hl101 sagemcom88 spark spark7162 ufs910 vitamin_hd5000))
+
 LIRC_VERSION = 0.9.0
 LIRC_SOURCE = lirc-$(LIRC_VERSION).tar.bz2
 LIRC_PATCH = lirc-$(LIRC_VERSION).patch
+LIRC = $(D)/lirc
 
 $(ARCHIVE)/$(LIRC_SOURCE):
 	$(WGET) https://sourceforge.net/projects/lirc/files/LIRC/$(LIRC_VERSION)/$(LIRC_SOURCE)
@@ -739,6 +742,7 @@ $(D)/lirc: $(D)/bootstrap $(ARCHIVE)/$(LIRC_SOURCE)
 			--build=$(BUILD) \
 			--host=$(TARGET) \
 			--prefix=/usr \
+			--sbindir=/usr/bin \
 			--mandir=/.remove \
 			--with-kerneldir=$(KERNEL_DIR) \
 			--without-x \
@@ -753,8 +757,10 @@ $(D)/lirc: $(D)/bootstrap $(ARCHIVE)/$(LIRC_SOURCE)
 		$(MAKE) -j1 all; \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
 	$(REWRITE_LIBTOOL)/liblirc_client.la
+	rm -f $(addprefix $(TARGET_DIR)/usr/bin/,lircmd ircat irpty irrecord irsend irw lircrcd mode2 pronto2lirc)
 	$(REMOVE)/lirc-$(LIRC_VERSION)
 	$(TOUCH)
+endif
 
 #
 # libjpeg
@@ -780,6 +786,7 @@ $(D)/libjpeg_old: $(D)/bootstrap $(ARCHIVE)/$(JPEG_SOURCE)
 		$(MAKE); \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
 	$(REWRITE_LIBTOOL)/libjpeg.la
+	rm -f $(addprefix $(TARGET_DIR)/usr/bin/,cjpeg djpeg jpegtran rdjpgcom wrjpgcom)
 	$(REMOVE)/jpeg-$(JPEG_VERSION)
 	$(TOUCH)
 
@@ -830,6 +837,7 @@ $(D)/libjpeg_turbo: $(D)/bootstrap $(ARCHIVE)/$(JPEG_TURBO_SOURCE)
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
 	$(REWRITE_LIBTOOL)/libjpeg.la
 	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libjpeg.pc
+	rm -f $(addprefix $(TARGET_DIR)/usr/bin/,cjpeg djpeg jpegtran rdjpgcom wrjpgcom tjbench)
 	rm -f $(TARGET_DIR)/usr/lib/libturbojpeg* $(TARGET_DIR)/usr/include/turbojpeg.h $(PKG_CONFIG_PATH)/libturbojpeg.pc
 	$(REMOVE)/libjpeg-turbo-$(JPEG_TURBO_VERSION)
 	$(TOUCH)
@@ -905,7 +913,7 @@ $(D)/libungif: $(D)/bootstrap $(ARCHIVE)/$(UNGIF_SOURCE)
 	$(TOUCH)
 
 #
-# libgif
+# giflib
 #
 GIFLIB_VERSION = 5.1.4
 GIFLIB_SOURCE = giflib-$(GIFLIB_VERSION).tar.bz2
@@ -913,7 +921,7 @@ GIFLIB_SOURCE = giflib-$(GIFLIB_VERSION).tar.bz2
 $(ARCHIVE)/$(GIFLIB_SOURCE):
 	$(WGET) https://sourceforge.net/projects/giflib/files/$(GIFLIB_SOURCE)
 
-$(D)/libgif: $(D)/bootstrap $(ARCHIVE)/$(GIFLIB_SOURCE)
+$(D)/giflib: $(D)/bootstrap $(ARCHIVE)/$(GIFLIB_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/giflib-$(GIFLIB_VERSION)
 	$(UNTAR)/$(GIFLIB_SOURCE)
@@ -926,6 +934,7 @@ $(D)/libgif: $(D)/bootstrap $(ARCHIVE)/$(GIFLIB_SOURCE)
 		$(MAKE) all; \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
 	$(REWRITE_LIBTOOL)/libgif.la
+	rm -f $(addprefix $(TARGET_DIR)/usr/bin/,gif2rgb gifbuild gifclrmp gifecho giffix gifinto giftext giftool)
 	$(REMOVE)/giflib-$(GIFLIB_VERSION)
 	$(TOUCH)
 
@@ -972,7 +981,7 @@ $(D)/libcurl: $(D)/bootstrap $(D)/openssl $(D)/zlib $(ARCHIVE)/$(CURL_SOURCE)
 		rm -f $(TARGET_DIR)/usr/bin/curl-config
 	$(REWRITE_LIBTOOL)/libcurl.la
 	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libcurl.pc
-	cd $(TARGET_DIR) && rm usr/bin/curl
+	rm -f $(addprefix $(TARGET_DIR)/usr/bin/,curl)
 	$(REMOVE)/curl-$(CURL_VERSION)
 	$(TOUCH)
 
@@ -981,6 +990,7 @@ $(D)/libcurl: $(D)/bootstrap $(D)/openssl $(D)/zlib $(ARCHIVE)/$(CURL_SOURCE)
 #
 FRIBIDI_VERSION = 0.19.7
 FRIBIDI_SOURCE = fribidi-$(FRIBIDI_VERSION).tar.bz2
+FRIBIDI_PATCH = fribidi-$(FRIBIDI_VERSION).patch
 
 $(ARCHIVE)/$(FRIBIDI_SOURCE):
 	$(WGET) https://fribidi.org/download/$(FRIBIDI_SOURCE)
@@ -990,6 +1000,7 @@ $(D)/libfribidi: $(D)/bootstrap $(ARCHIVE)/$(FRIBIDI_SOURCE)
 	$(REMOVE)/fribidi-$(FRIBIDI_VERSION)
 	$(UNTAR)/$(FRIBIDI_SOURCE)
 	$(SET) -e; cd $(BUILD_TMP)/fribidi-$(FRIBIDI_VERSION); \
+		$(call post_patch,$(FRIBIDI_PATCH)); \
 		$(CONFIGURE) \
 			--prefix=/usr \
 			--mandir=/.remove \
@@ -1224,7 +1235,7 @@ $(D)/libiconv: $(D)/bootstrap $(ARCHIVE)/$(ICONV_SOURCE)
 #
 # libexpat
 #
-EXPAT_VERSION = 2.1.1
+EXPAT_VERSION = 2.2.0
 EXPAT_SOURCE = expat-$(EXPAT_VERSION).tar.bz2
 
 $(ARCHIVE)/$(EXPAT_SOURCE):
@@ -1607,6 +1618,7 @@ $(D)/ffmpeg: $(D)/bootstrap $(D)/openssl $(D)/bzip2 $(D)/libass $(D)/libroxml $(
 			--target-os=linux \
 			--arch=sh4 \
 			--prefix=/usr \
+			--bindir=/sbin \
 			--mandir=/.remove \
 			--datadir=/.remove \
 			--docdir=/.remove \
@@ -1676,6 +1688,7 @@ $(D)/sqlite: $(D)/bootstrap $(ARCHIVE)/$(SQLITE_SOURCE)
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
 	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/sqlite3.pc
 	$(REWRITE_LIBTOOL)/libsqlite3.la
+	rm -f $(addprefix $(TARGET_DIR)/usr/bin/,sqlite3)
 	$(REMOVE)/sqlite-autoconf-$(SQLITE_VERSION)
 	$(TOUCH)
 
@@ -1832,6 +1845,7 @@ $(D)/libxml2: $(D)/bootstrap $(D)/zlib $(ARCHIVE)/$(LIBXML2_SOURCE)
 	sed -e "/^XML2_LIBDIR/ s,/usr/lib,$(TARGET_DIR)/usr/lib,g" -i $(TARGET_DIR)/usr/lib/xml2Conf.sh; \
 	sed -e "/^XML2_INCLUDEDIR/ s,/usr/include,$(TARGET_DIR)/usr/include,g" -i $(TARGET_DIR)/usr/lib/xml2Conf.sh
 	$(REWRITE_LIBTOOL)/libxml2.la
+	rm -f $(addprefix $(TARGET_DIR)/usr/bin/,xmlcatalog xmllint)
 	$(REMOVE)/libxml2-$(LIBXML2_VERSION)
 	$(TOUCH)
 
@@ -1876,6 +1890,7 @@ $(D)/libxslt: $(D)/bootstrap $(D)/libxml2 $(ARCHIVE)/$(LIBXSLT_SOURCE)
 	$(REWRITE_LIBTOOL)/libexslt.la
 	$(REWRITE_LIBTOOL)/libxslt.la
 	$(REWRITE_LIBTOOLDEP)/libexslt.la
+	rm -f $(addprefix $(TARGET_DIR)/usr/bin/,xsltproc xslt-config)
 	$(REMOVE)/libxslt-$(LIBXSLT_VERSION)
 	$(TOUCH)
 
@@ -1956,6 +1971,7 @@ $(D)/graphlcd: $(D)/bootstrap $(D)/freetype $(D)/libusb $(ARCHIVE)/$(GRAPHLCD_SO
 		$(BUILDENV) \
 		$(MAKE) DESTDIR=$(TARGET_DIR); \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
+	rm -f $(addprefix $(TARGET_DIR)/usr/bin/,convpic crtfont genfont showpic showtext lcdtestpattern skintest)
 	$(REMOVE)/graphlcd-$(GRAPHLCD_VERSION)
 	$(TOUCH)
 
@@ -2201,6 +2217,7 @@ $(D)/librtmpdump: $(D)/bootstrap $(D)/zlib $(D)/openssl $(ARCHIVE)/$(LIBRTMPDUMP
 		$(MAKE) CROSS_COMPILE=$(TARGET)- ; \
 		$(MAKE) install prefix=/usr DESTDIR=$(TARGET_DIR) MANDIR=$(TARGET_DIR)/.remove
 	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/librtmp.pc
+	rm -f $(addprefix $(TARGET_DIR)/usr/sbin/,rtmpgw rtmpsrv rtmpsuck)
 	$(REMOVE)/librtmpdump-$(LIBRTMPDUMP_VERSION)
 	$(TOUCH)
 
@@ -2403,23 +2420,24 @@ $(D)/rarfs: $(D)/bootstrap $(D)/fuse $(ARCHIVE)/$(RARFS_SOURCE)
 #
 # sshfs
 #
-SSHFS_VERSION = 2.5
-SSHFS_SOURCE = sshfs-fuse-$(SSHFS_VERSION).tar.gz
+SSHFS_VERSION = 2.9
+SSHFS_SOURCE = sshfs-$(SSHFS_VERSION).tar.gz
 
 $(ARCHIVE)/$(SSHFS_SOURCE):
-	$(WGET) https://fossies.org/linux/misc/$(SSHFS_SOURCE)
+	$(WGET) https://github.com/libfuse/sshfs/releases/download/sshfs-$(SSHFS_VERSION)/$(SSHFS_SOURCE)
 
 $(D)/sshfs: $(D)/bootstrap $(D)/libglib2 $(D)/fuse $(ARCHIVE)/$(SSHFS_SOURCE)
 	$(START_BUILD)
-	$(REMOVE)/sshfs-fuse-$(SSHFS_VERSION)
+	$(REMOVE)/sshfs-$(SSHFS_VERSION)
 	$(UNTAR)/$(SSHFS_SOURCE)
-	$(SET) -e; cd $(BUILD_TMP)/sshfs-fuse-$(SSHFS_VERSION); \
+	$(SET) -e; cd $(BUILD_TMP)/sshfs-$(SSHFS_VERSION); \
 		$(CONFIGURE) \
 			--prefix=/usr \
+			--mandir=/.remove \
 		; \
 		$(MAKE) all; \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
-	$(REMOVE)/sshfs-fuse-$(SSHFS_VERSION)
+	$(REMOVE)/sshfs-$(SSHFS_VERSION)
 	$(TOUCH)
 
 #
@@ -2557,6 +2575,7 @@ $(D)/nettle: $(D)/bootstrap $(D)/gmp $(ARCHIVE)/$(NETTLE_SOURCE)
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
 	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/hogweed.pc
 	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/nettle.pc
+	rm -f $(addprefix $(TARGET_DIR)/usr/bin/,sexp-conv nettle-hash nettle-pbkdf2 nettle-lfib-stream pkcs1-conv)
 	$(REMOVE)/nettle-$(NETTLE_VERSION)
 	$(TOUCH)
 
@@ -2595,6 +2614,7 @@ $(D)/gnutls: $(D)/bootstrap $(D)/nettle $(ARCHIVE)/$(GNUTLS_SOURCE)
 	$(REWRITE_LIBTOOL)/libgnutls.la
 	$(REWRITE_LIBTOOL)/libgnutlsxx.la
 	$(REWRITE_LIBTOOLDEP)/libgnutlsxx.la
+	rm -f $(addprefix $(TARGET_DIR)/usr/bin/,psktool gnutls-cli-debug certtool srptool ocsptool gnutls-serv gnutls-cli)
 	$(REMOVE)/gnutls-$(GNUTLS_VERSION)
 	$(TOUCH)
 

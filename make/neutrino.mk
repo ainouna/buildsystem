@@ -10,8 +10,8 @@ $(TARGET_DIR)/var/etc/.version:
 	echo "version=0200`date +%Y%m%d%H%M`" >> $@
 	echo "git=`git describe`" >> $@
 
-NEUTRINO_DEPS  = $(D)/bootstrap $(D)/libncurses $(D)/lirc $(D)/libcurl
-NEUTRINO_DEPS += $(D)/libpng $(D)/libjpeg $(D)/libgif $(D)/freetype
+NEUTRINO_DEPS  = $(D)/bootstrap $(D)/libncurses $(LIRC) $(D)/libcurl
+NEUTRINO_DEPS += $(D)/libpng $(D)/libjpeg $(D)/giflib $(D)/freetype
 NEUTRINO_DEPS += $(D)/alsa-utils $(D)/ffmpeg
 NEUTRINO_DEPS += $(D)/libfribidi $(D)/libsigc $(D)/libdvbsi++ $(D)/libusb
 NEUTRINO_DEPS += $(D)/pugixml $(D)/libopenthreads
@@ -213,7 +213,7 @@ $(D)/neutrino-mp-cst-next-max: $(D)/neutrino-mp-cst-next-max.do_prepare $(D)/neu
 	$(START_BUILD)
 	$(MAKE) -C $(N_OBJDIR) install DESTDIR=$(TARGET_DIR); \
 	rm -f $(TARGET_DIR)/var/etc/.version
-	make $(TARGET_DIR)/var/etc/.version
+	$(MAKE) $(TARGET_DIR)/var/etc/.version
 	$(TOUCH)
 
 neutrino-mp-cst-next-max-clean:
@@ -382,7 +382,7 @@ $(D)/neutrino-mp-cst-next: $(D)/neutrino-mp-cst-next.do_prepare $(D)/neutrino-mp
 	$(START_BUILD)
 	$(MAKE) -C $(N_OBJDIR) install DESTDIR=$(TARGET_DIR); \
 	rm -f $(TARGET_DIR)/var/etc/.version
-	make $(TARGET_DIR)/var/etc/.version
+	$(MAKE) $(TARGET_DIR)/var/etc/.version
 	$(TOUCH)
 
 neutrino-mp-cst-next-clean:
@@ -569,7 +569,7 @@ $(SOURCE_DIR)/neutrino-hd2/config.status:
 		./configure $(CONFIGURE_SILENT) \
 			--build=$(BUILD) \
 			--host=$(TARGET) \
-			$(LOCAL_NEUTRINO_BUILD_OPTIONS) \
+			$(N_CONFIG_OPTS) \
 			--with-boxtype=$(BOXTYPE) \
 			--with-datadir=/usr/share/tuxbox \
 			--with-configdir=/var/tuxbox/config \
@@ -584,7 +584,7 @@ $(D)/neutrino-hd2: $(D)/neutrino-hd2.do_prepare $(D)/neutrino-hd2.do_compile
 	$(START_BUILD)
 	$(MAKE) -C $(SOURCE_DIR)/neutrino-hd2 install DESTDIR=$(TARGET_DIR); \
 	rm -f $(TARGET_DIR)/var/etc/.version
-	make $(TARGET_DIR)/var/etc/.version
+	$(MAKE) $(TARGET_DIR)/var/etc/.version
 	$(TOUCH)
 
 $(D)/neutrino-hd2.do_compile: $(SOURCE_DIR)/neutrino-hd2/config.status
@@ -764,7 +764,7 @@ $(D)/neutrino-mp-tangos: $(D)/neutrino-mp-tangos.do_prepare $(D)/neutrino-mp-tan
 	$(START_BUILD)
 	$(MAKE) -C $(N_OBJDIR) install DESTDIR=$(TARGET_DIR); \
 	rm -f $(TARGET_DIR)/var/etc/.version
-	make $(TARGET_DIR)/var/etc/.version
+	$(MAKE) $(TARGET_DIR)/var/etc/.version
 	$(TOUCH)
 
 neutrino-mp-tangos-clean:
