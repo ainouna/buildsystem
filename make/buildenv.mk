@@ -50,7 +50,7 @@ CONTROL_DIR           = $(BASE_DIR)/pkgs/control
 HOST_DIR              = $(BASE_DIR)/tufsbox/host
 PACKAGE_DIR           = $(BASE_DIR)/pkgs/opkg
 RELEASE_DIR           = $(BASE_DIR)/tufsbox/release
-PKGPREFIX             = $(BUILD_TMP)/pkg
+PKG_DIR               = $(BUILD_TMP)/pkg
 TARGET_DIR            = $(BASE_DIR)/tufsbox/cdkroot
 
 CUSTOM_DIR            = $(BASE_DIR)/custom
@@ -101,11 +101,6 @@ TERM_GREEN_BOLD      := \033[01;32m
 TERM_RED             := \033[31m
 TERM_NORMAL          := \033[0m
 
-# Adjust according to the number CPU cores to use for parallel build.
-# Default: Number of processors in /proc/cpuinfo, if present, or 1.
-NR_CPU               := $(shell [ -f /proc/cpuinfo ] && grep -c '^processor\s*:' /proc/cpuinfo || echo 1)
-PARALLEL_MAKE        ?= -j $(NR_CPU)
-MAKEFLAGS            += $(PARALLEL_MAKE)
 MAKEFLAGS            += --no-print-directory
 ifndef VERBOSE
 VERBOSE               = 0
@@ -135,7 +130,7 @@ export RM=$(shell which rm) -f
 UNTAR                 = $(SILENT)tar -C $(BUILD_TMP) -xf $(ARCHIVE)
 SET                   = $(SILENT)set
 REMOVE                = $(SILENT)rm -rf $(BUILD_TMP)
-RM_PKGPREFIX          = rm -rf $(PKGPREFIX)
+RM_PKG_DIR            = rm -rf $(PKGPREFIX)
 PATCH                 = patch -p1 $(SILENT_PATCH) -i $(PATCHES)
 APATCH                = patch -p1 $(SILENT_PATCH) -i
 START_BUILD           = @echo "=============================================================="; echo; echo -e "Start build of $(TERM_GREEN_BOLD)$(subst $(BASE_DIR)/.deps/,,$@)$(TERM_NORMAL)."
