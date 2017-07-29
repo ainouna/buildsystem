@@ -136,6 +136,12 @@ yaud-neutrino-mp-cst-next-max: yaud-none \
 yaud-neutrino-mp-cst-next-max-plugins: yaud-none \
 		$(D)/neutrino-mp-cst-next-max $(D)/neutrino-mp-plugins $(D)/release_neutrino
 	$(TUXBOX_YAUD_CUSTOMIZE)
+	@echo "***********************************************************************************************"
+	@echo -e "$(TERM_GREEN_BOLD)"
+	@echo " Build of neutrino-mp-cst-next-max with plugins for $(BOXTYPE) successfully completed."
+	@echo -e "$(TERM_NORMAL)"
+	@echo "***********************************************************************************************"
+	@touch $(D)/build_complete
 
 $(D)/neutrino-mp-cst-next-max.do_prepare: | $(NEUTRINO_DEPS) $(D)/libstb-hal-cst-next-max
 	$(START_BUILD)
@@ -301,6 +307,12 @@ yaud-neutrino-mp-cst-next: yaud-none \
 yaud-neutrino-mp-cst-next-plugins: yaud-none \
 		$(D)/neutrino-mp-cst-next $(D)/neutrino-mp-plugins $(D)/release_neutrino
 	$(TUXBOX_YAUD_CUSTOMIZE)
+	@echo "*****************************************************************************************"
+	@echo -e "$(TERM_GREEN_BOLD)"
+	@echo " Build of neutrino-mp-cst-next with plugins for $(BOXTYPE) successfully completed."
+	@echo -e "$(TERM_NORMAL)"
+	@echo "*****************************************************************************************"
+	@touch $(D)/build_complete
 
 NEUTRINO_MP_CST_NEXT_PATCHES =
 
@@ -412,6 +424,12 @@ yaud-neutrino-mp-cst-next-ni: yaud-none \
 yaud-neutrino-mp-cst-next-ni-plugins: yaud-none \
 		$(D)/neutrino-mp-cst-next-ni $(D)/neutrino-mp-plugins $(D)/release_neutrino
 	$(TUXBOX_YAUD_CUSTOMIZE)
+	@echo "*******************************************************************************************"
+	@echo -e "$(TERM_GREEN_BOLD)"
+	@echo " Build of neutrino-mp-cst-next-ni with plugins for $(BOXTYPE) successfully completed."
+	@echo -e "$(TERM_NORMAL)"
+	@echo "*******************************************************************************************"
+	@touch $(D)/build_complete
 
 NEUTRINO_MP_CST_NEXT_NI_PATCHES =
 
@@ -530,6 +548,12 @@ yaud-neutrino-hd2: yaud-none \
 yaud-neutrino-hd2-plugins: yaud-none \
 		$(D)/neutrino-hd2 $(D)/neutrino-hd2-plugins $(D)/release_neutrino
 	$(TUXBOX_YAUD_CUSTOMIZE)
+	@echo "********************************************************************************"
+	@echo -e "$(TERM_GREEN_BOLD)"
+	@echo " Build of neutrino-hd2 with plugin for $(BOXTYPE) successfully completed."
+	@echo -e "$(TERM_NORMAL)"
+	@echo "********************************************************************************"
+	@touch $(D)/build_complete
 
 ifeq ($(BOXTYPE), spark)
 NHD2_OPTS = --enable-4digits --enable-scart
@@ -678,6 +702,12 @@ yaud-neutrino-mp-tangos: yaud-none \
 yaud-neutrino-mp-tangos-plugins: yaud-none \
 		$(D)/neutrino-mp-tangos $(D)/neutrino-mp-plugins $(D)/release_neutrino
 	$(TUXBOX_YAUD_CUSTOMIZE)
+	@echo "***************************************************************************************"
+	@echo -e "$(TERM_GREEN_BOLD)"
+	@echo " Build of neutrino-mp-tangos with plugins for $(BOXTYPE) successfully completed."
+	@echo -e "$(TERM_NORMAL)"
+	@echo "***************************************************************************************"
+	@touch $(D)/build_complete
 
 yaud-neutrino-mp-tangos-all: yaud-none \
 		$(D)/neutrino-mp-tangos $(D)/neutrino-mp-plugins shairport $(D)/release_neutrino
