@@ -156,7 +156,7 @@ $(D)/host_libglib2_genmarshal: $(D)/bootstrap $(D)/host_libffi $(ARCHIVE)/$(LIBG
 #
 # libglib2
 #
-$(D)/libglib2: $(D)/bootstrap $(D)/host_libglib2_genmarshal $(D)/zlib $(D)/libffi $(ARCHIVE)/$(LIBGLIB2_SOURCE)
+$(D)/libglib2: $(D)/bootstrap $(D)/host_libglib2_genmarshal $(D)/zlib $(D)/libffi $(D)/libpcre $(ARCHIVE)/$(LIBGLIB2_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/glib-$(LIBGLIB2_VERSION)
 	$(UNTAR)/$(LIBGLIB2_SOURCE)
@@ -176,8 +176,6 @@ $(D)/libglib2: $(D)/bootstrap $(D)/host_libglib2_genmarshal $(D)/zlib $(D)/libff
 			--disable-gtk-doc \
 			--disable-gtk-doc-html \
 			--disable-libmount \
-			--disable-fam \
-			--with-pcre=internal \
 			--with-threads="posix" \
 			--with-html-dir=/.remove \
 			--enable-static=yes \
@@ -332,6 +330,7 @@ OPENSSL_SOURCE = openssl-$(OPENSSL_VERSION).tar.gz
 OPENSSL_PATCH  = openssl-$(OPENSSL_VERSION)-optimize-for-size.patch
 OPENSSL_PATCH += openssl-$(OPENSSL_VERSION)-makefile-dirs.patch
 OPENSSL_PATCH += openssl-$(OPENSSL_VERSION)-disable_doc_tests.patch
+OPENSSL_PATCH += openssl-$(OPENSSL_VERSION)-fix-parallel-building.patch
 
 $(ARCHIVE)/$(OPENSSL_SOURCE):
 	$(WGET) http://www.openssl.org/source/$(OPENSSL_SOURCE)
@@ -425,7 +424,7 @@ $(D)/lua: $(D)/bootstrap $(D)/libncurses $(ARCHIVE)/$(LUA_POSIX_SOURCE) $(ARCHIV
 	$(REMOVE)/lua-$(LUA_VERSION)
 	mkdir -p $(TARGET_DIR)/usr/share/lua/$(LUA_VERSION_SHORT)
 	$(UNTAR)/$(LUA_SOURCE)
-	set -e; cd $(BUILD_TMP)/lua-$(LUA_VERSION); \
+	$(SET) -e; cd $(BUILD_TMP)/lua-$(LUA_VERSION); \
 		$(call post_patch,$(LUA_POSIX_PATCH)); \
 		tar xf $(ARCHIVE)/$(LUA_POSIX_SOURCE); \
 		cd luaposix-$(LUA_POSIX_VERSION)/ext; cp posix/posix.c include/lua52compat.h ../../src/; cd ../..; \
@@ -687,8 +686,8 @@ $(D)/freetype: $(D)/bootstrap $(D)/zlib $(D)/libpng $(ARCHIVE)/$(FREETYPE_SOURCE
 			-i include/freetype/config/ftoption.h; \
 		sed -i '/^FONT_MODULES += \(type1\|cid\|pfr\|type42\|pcf\|bdf\|winfonts\|cff\)/d' modules.cfg; \
 		$(CONFIGURE) \
-			--prefix=$(TARGET_DIR)/usr \
-			--mandir=$(TARGET_DIR)/.remove \
+			--prefix=/usr \
+			--mandir=/.remove \
 			--disable-static \
 			--enable-shared \
 			--with-png \
@@ -697,10 +696,15 @@ $(D)/freetype: $(D)/bootstrap $(D)/zlib $(D)/libpng $(ARCHIVE)/$(FREETYPE_SOURCE
 			--without-bzip2 \
 		; \
 		$(MAKE) all; \
-		$(MAKE) install
+		$(MAKE) install DESTDIR=$(TARGET_DIR)
 		if [ ! -e $(TARGET_DIR)/usr/include/freetype ] ; then \
 			ln -sf freetype2 $(TARGET_DIR)/usr/include/freetype; \
 		fi; \
+		sed -e 's:^prefix=.*:prefix="$(TARGET_DIR)/usr":' \
+		    -e 's:^exec_prefix=.*:exec_prefix="$${prefix}":' \
+		    -e 's:^includedir=.*:includedir="$${prefix}/include":' \
+		    -e 's:^libdir=.*:libdir="$${exec_prefix}/lib":' \
+		    -i $(TARGET_DIR)/usr/bin/freetype-config; \
 		mv $(TARGET_DIR)/usr/bin/freetype-config $(HOST_DIR)/bin/freetype-config
 	$(REWRITE_LIBTOOL)/libfreetype.la
 	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/freetype2.pc
@@ -776,7 +780,7 @@ $(D)/libjpeg_old: $(D)/bootstrap $(ARCHIVE)/$(JPEG_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/jpeg-$(JPEG_VERSION)
 	$(UNTAR)/$(JPEG_SOURCE)
-	($SET) -e; cd $(BUILD_TMP)/jpeg-$(JPEG_VERSION); \
+	$(SET) -e; cd $(BUILD_TMP)/jpeg-$(JPEG_VERSION); \
 		$(call post_patch,$(JPEG_PATCH)); \
 		$(CONFIGURE) \
 			--prefix=/usr \
@@ -851,7 +855,7 @@ PNG_SOURCE = libpng-$(PNG_VERSION).tar.xz
 PNG_PATCH = libpng-$(PNG_VERSION)-disable-tools.patch
 
 $(ARCHIVE)/$(PNG_SOURCE):
-	$(WGET) https://sourceforge.net/projects/libpng/files/libpng$(PNG_VERSION_X)/$(PNG_VERSION)/$(PNG_SOURCE)
+	$(WGET) https://sourceforge.net/projects/libpng/files/libpng$(PNG_VERSION_X)/older-releases/$(PNG_VERSION)/$(PNG_SOURCE)
 
 $(D)/libpng: $(D)/bootstrap $(D)/zlib $(ARCHIVE)/$(PNG_SOURCE)
 	$(START_BUILD)
@@ -860,12 +864,17 @@ $(D)/libpng: $(D)/bootstrap $(D)/zlib $(ARCHIVE)/$(PNG_SOURCE)
 	$(SET) -e; cd $(BUILD_TMP)/libpng-$(PNG_VERSION); \
 		$(call post_patch,$(PNG_PATCH)); \
 		$(CONFIGURE) \
-			--prefix=$(TARGET_DIR)/usr \
-			--mandir=$(TARGET_DIR)/.remove \
-			--bindir=$(HOST_DIR)/bin \
+			--prefix=/usr \
+			--disable-mips-msa \
+			--disable-powerpc-vsx \
+			--mandir=/.remove \
 		; \
-		ECHO=echo $(MAKE) all; \
-		$(MAKE) install
+		$(MAKE) all; \
+		$(MAKE) install DESTDIR=$(TARGET_DIR)
+		sed -e 's:^prefix=.*:prefix="$(TARGET_DIR)/usr":' -i $(TARGET_DIR)/usr/bin/libpng$(PNG_VERSION_X)-config; \
+		mv $(TARGET_DIR)/usr/bin/libpng*-config $(HOST_DIR)/bin/
+	$(REWRITE_LIBTOOL)/libpng16.la
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libpng$(PNG_VERSION_X).pc
 	$(REMOVE)/libpng-$(PNG_VERSION)
 	$(TOUCH)
 
@@ -1391,7 +1400,7 @@ $(D)/libdreamdvd: $(D)/bootstrap $(D)/libdvdnav
 		$(call post_patch,$(LIBDREAMDVD_PATCH)); \
 		$(BUILDENV) \
 		libtoolize --copy --ltdl --force --quiet; \
-		autoreconf --verbose --force --install; \
+		autoreconf -fi; \
 		./configure $(CONFIGURE_SILENT) \
 			--build=$(BUILD) \
 			--host=$(TARGET) \
@@ -1820,6 +1829,7 @@ $(D)/libxml2: $(D)/bootstrap $(D)/zlib $(ARCHIVE)/$(LIBXML2_SOURCE)
 	$(REMOVE)/libxml2-$(LIBXML2_VERSION).tar.gz
 	$(UNTAR)/$(LIBXML2_SOURCE)
 	$(SET) -e; cd $(BUILD_TMP)/libxml2-$(LIBXML2_VERSION); \
+		autoreconf -fi; \
 		$(call post_patch,$(LIBXML2_PATCH)); \
 		$(CONFIGURE) \
 			--target=$(TARGET) \
@@ -2045,7 +2055,7 @@ $(D)/libusb: $(D)/bootstrap $(ARCHIVE)/$(LIBUSB_SOURCE)
 	$(REMOVE)/libusb-$(LIBUSB_VERSION)
 	$(UNTAR)/$(LIBUSB_SOURCE)
 	$(SET) -e; cd $(BUILD_TMP)/libusb-$(LIBUSB_VERSION); \
-		$(call post_patch,$(USB_PATCH)); \
+		$(call post_patch,$(LIBUSB_PATCH)); \
 		$(CONFIGURE) \
 			--prefix=/usr \
 			--enable-static \
@@ -2161,7 +2171,8 @@ $(D)/alsa-utils: $(D)/bootstrap $(D)/alsa-lib $(ARCHIVE)/$(ALSA_UTILS_SOURCE)
 	install -m 755 $(SKEL_ROOT)/etc/init.d/amixer $(TARGET_DIR)/etc/init.d/amixer
 	install -m 644 $(SKEL_ROOT)/etc/amixer.conf $(TARGET_DIR)/etc/amixer.conf
 	install -m 644 $(SKEL_ROOT)/etc/asound.conf $(TARGET_DIR)/etc/asound.conf
-	cd $(TARGET_DIR) && rm -f usr/bin/aserver
+	rm -f $(addprefix $(TARGET_DIR)/usr/bin/,aserver)
+	rm -f $(addprefix $(TARGET_DIR)/usr/sbin/,alsa-info.sh)
 	$(TOUCH)
 
 #
@@ -2239,10 +2250,12 @@ $(D)/libdvbsi++: $(D)/bootstrap $(ARCHIVE)/$(LIBDVBSI++_SOURCE)
 	$(SET) -e; cd $(BUILD_TMP)/libdvbsi++-$(LIBDVBSI++_VERSION); \
 		$(call post_patch,$(LIBDVBSI++_PATCH)); \
 		$(CONFIGURE) \
-			--prefix=$(TARGET_DIR)/usr \
+			--prefix=/usr \
 		; \
 		$(MAKE); \
-		$(MAKE) install
+		$(MAKE) install DESTDIR=$(TARGET_DIR)
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libdvbsi++.pc
+	$(REWRITE_LIBTOOL)/libdvbsi++.la
 	$(REMOVE)/libdvbsi++-$(LIBDVBSI++_VERSION)
 	$(TOUCH)
 
@@ -2368,7 +2381,7 @@ $(D)/djmount: $(D)/bootstrap $(D)/fuse $(ARCHIVE)/$(DJMOUNT_SOURCE)
 #
 # libupnp
 #
-LIBUPNP_VERSION = 1.6.19
+LIBUPNP_VERSION = 1.6.22
 LIBUPNP_SOURCE = libupnp-$(LIBUPNP_VERSION).tar.bz2
 
 $(ARCHIVE)/$(LIBUPNP_SOURCE):

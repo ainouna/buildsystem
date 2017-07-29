@@ -198,22 +198,33 @@ $(D)/enigma2.do_compile: $(SOURCE_DIR)/enigma2/config.status
 	@touch $@
 
 PLI_SKIN_PATCH = PLi-HD_skin.patch
+HEAD="master"
+REPO="https://github.com/littlesat/skin-PLiHD.git"
+
 $(D)/enigma2: $(D)/enigma2.do_prepare $(D)/enigma2.do_compile
 	$(MAKE) -C $(SOURCE_DIR)/enigma2 install DESTDIR=$(TARGET_DIR)
+	$(SILENT)echo -n "Stripping..."
 	if [ -e $(TARGET_DIR)/usr/bin/enigma2 ]; then \
 		$(TARGET)-strip $(TARGET_DIR)/usr/bin/enigma2; \
 	fi
 	if [ -e $(TARGET_DIR)/usr/local/bin/enigma2 ]; then \
 		$(TARGET)-strip $(TARGET_DIR)/usr/local/bin/enigma2; \
 	fi
+	$(SILENT)echo " done."
 	$(SILENT)echo
 	$(SILENT)echo "Adding PLi-HD skin"
-	HEAD="master"
-	REPO="https://github.com/littlesat/skin-PLiHD.git"
-	[ -d $(ARCHIVE)/PLi-HD_skin.git ] && \
-		(echo -n "Updating archived PLi-HD skin git..."; cd $(ARCHIVE)/PLi-HD_skin.git; git pull -q; git checkout -q $$HEAD; echo " done.";)
-	[ -d $(ARCHIVE)/PLi-HD_skin.git ] || \
-		(echo -n "Cloning PLi-HD skin git..."; git clone -q -b $$HEAD $$REPO $(ARCHIVE)/PLi-HD_skin.git; echo " done.";)
+	HEAD="master"; \
+	REPO="https://github.com/littlesat/skin-PLiHD.git"; \
+	if [ -d $(ARCHIVE)/PLi-HD_skin.git ]; then \
+		echo -n "Updating archived PLi-HD skin git..." \
+		$(SILENT)cd $(ARCHIVE)/PLi-HD_skin.git; \
+		git pull -q; git checkout -q $$HEAD; \
+		echo " done."; \
+	else \
+		echo -n "Cloning PLi-HD skin git..."; \
+		git clone -q -b $$HEAD $$REPO $(ARCHIVE)/PLi-HD_skin.git; \
+		echo " done."; \
+	fi
 	$(SILENT)cp -ra $(ARCHIVE)/PLi-HD_skin.git/usr/share/enigma2/* $(TARGET_DIR)/usr/local/share/enigma2
 	$(call post_patch,$(PLI_SKIN_PATCH))
 	$(SILENT)rm -rf $(TARGET_DIR)/usr/local/share/enigma2/PLi-FullHD

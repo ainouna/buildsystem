@@ -259,7 +259,7 @@ ARIVALINK200_PATCHES_24 = $(COMMON_PATCHES_24) \
 #
 HOST_KERNEL_PATCHES = $(KERNEL_PATCHES_24)
 HOST_KERNEL_CONFIG = linux-sh4-$(subst _stm24_,_,$(KERNEL_VERSION))_$(BOXTYPE).config
-REPOS = "https://github.com/Duckbox-Developers/linux-sh4-2.6.32.71.git;protocol=https"
+REPOS = "https://github.com/Duckbox-Developers/linux-sh4-2.6.32.71.git"
 
 ifneq ($(DESTINATION), USB)
 $(D)/linux-kernel.do_prepare: $(PATCHES)/$(BUILD_CONFIG)/$(HOST_KERNEL_CONFIG) \

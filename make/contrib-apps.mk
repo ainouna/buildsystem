@@ -271,7 +271,6 @@ MODULE_INIT_TOOLS_PATCH = module-init-tools-$(MODULE_INIT_TOOLS_VERSION).patch
 MODULE_INIT_TOOLS_HOST_PATCH = module-init-tools-$(MODULE_INIT_TOOLS_VERSION).patch
 
 $(ARCHIVE)/$(MODULE_INIT_TOOLS_SOURCE):
-#	$(WGET) https://www.kernel.org/pub/linux/utils/kernel/module-init-tools/$(MODULE_INIT_TOOLS_SOURCE)
 	$(WGET) http://ftp.europeonline.com/pub/linux/utils/kernel/module-init-tools/$(MODULE_INIT_TOOLS_SOURCE)
 
 $(D)/host_module_init_tools: $(ARCHIVE)/$(MODULE_INIT_TOOLS_SOURCE)
@@ -378,7 +377,7 @@ $(D)/e2fsprogs: $(D)/bootstrap $(D)/util-linux $(ARCHIVE)/$(E2FSPROGS_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/e2fsprogs-$(E2FSPROGS_VERSION)
 	$(UNTAR)/$(E2FSPROGS_SOURCE)
-	set -e; cd $(BUILD_TMP)/e2fsprogs-$(E2FSPROGS_VERSION); \
+	$(SET) -e; cd $(BUILD_TMP)/e2fsprogs-$(E2FSPROGS_VERSION); \
 		$(call post_patch,$(E2FSPROGS_PATCH)); \
 		PATH=$(BUILD_TMP)/e2fsprogs-$(E2FSPROGS_VERSION):$(PATH) \
 		$(CONFIGURE) \
@@ -511,7 +510,8 @@ $(D)/ntfs-3g: $(D)/bootstrap $(ARCHIVE)/$(NTFS_3G_SOURCE)
 #
 # util-linux
 #
-UTIL_LINUX_MAJOR = 2.29
+#UTIL_LINUX_MAJOR = 2.29
+UTIL_LINUX_MAJOR = 2.25
 UTIL_LINUX_MINOR = 2
 UTIL_LINUX_VERSION = $(UTIL_LINUX_MAJOR).$(UTIL_LINUX_MINOR)
 UTIL_LINUX_SOURCE = util-linux-$(UTIL_LINUX_VERSION).tar.xz
@@ -618,7 +618,7 @@ $(D)/mc: $(D)/bootstrap $(D)/libncurses $(D)/libglib2 $(ARCHIVE)/$(MC_SOURCE)
 		./configure $(CONFIGURE_SILENT) \
 			--build=$(BUILD) \
 			--host=$(TARGET) \
-			--prefix=$(DEFAULT_DIR) \
+			--prefix=/usr \
 			--mandir=/.remove \
 			--without-gpm-mouse \
 			--disable-doxygen-doc \
@@ -852,7 +852,7 @@ $(TARGET_DIR)/bin/fbshot: $(D)/bootstrap $(D)/libpng $(ARCHIVE)/$(FBSHOT_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/fbshot-$(FBSHOT_VERSION)
 	$(UNTAR)/$(FBSHOT_SOURCE)
-	@set -e; cd $(BUILD_TMP)/fbshot-$(FBSHOT_VERSION); \
+	$(SET) -e; cd $(BUILD_TMP)/fbshot-$(FBSHOT_VERSION); \
 		$(call post_patch,$(FBSHOT_PATCH)); \
 		$(TARGET)-gcc $(TARGET_CFLAGS) $(TARGET_LDFLAGS) fbshot.c -lpng -lz -o $@
 	$(REMOVE)/fbshot-$(FBSHOT_VERSION)
@@ -1007,7 +1007,7 @@ $(D)/shairport: $(D)/bootstrap $(D)/openssl $(D)/howl $(D)/alsa-lib
 		else cd $(ARCHIVE); git clone -b 1.0-dev git://github.com/abrasive/shairport.git shairport.git; \
 		fi
 	cp -ra $(ARCHIVE)/shairport.git $(BUILD_TMP)/shairport
-	set -e; cd $(BUILD_TMP)/shairport; \
+	$(SET) -e; cd $(BUILD_TMP)/shairport; \
 		sed -i 's|pkg-config|$$PKG_CONFIG|g' configure; \
 		PKG_CONFIG=$(PKG_CONFIG) \
 		$(BUILDENV) \
@@ -1248,10 +1248,18 @@ $(D)/libevent: $(D)/bootstrap $(ARCHIVE)/$(LIBEVENT_SOURCE)
 	$(UNTAR)/$(LIBEVENT_SOURCE)
 	$(SET) -e; cd $(BUILD_TMP)/libevent-$(LIBEVENT_VERSION);\
 		$(CONFIGURE) \
-			--prefix=$(TARGET_DIR)/usr \
+			--prefix=/usr \
 		; \
 		$(MAKE); \
-		$(MAKE) install
+		$(MAKE) install DESTDIR=$(TARGET_DIR)
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libevent.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libevent_openssl.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libevent_pthreads.pc
+	$(REWRITE_LIBTOOL)/libevent_core.la
+	$(REWRITE_LIBTOOL)/libevent_extra.la
+	$(REWRITE_LIBTOOL)/libevent.la
+	$(REWRITE_LIBTOOL)/libevent_openssl.la
+	$(REWRITE_LIBTOOL)/libevent_pthreads.la
 	$(REMOVE)/libevent-$(LIBEVENT_VERSION)
 	$(TOUCH)
 
@@ -1271,10 +1279,12 @@ $(D)/libnfsidmap: $(D)/bootstrap $(ARCHIVE)/$(LIBNFSIDMAP_SOURCE)
 	$(SET) -e; cd $(BUILD_TMP)/libnfsidmap-$(LIBNFSIDMAP_VERSION);\
 		$(CONFIGURE) \
 		ac_cv_func_malloc_0_nonnull=yes \
-			--prefix=$(TARGET_DIR)/usr \
+			--prefix=/usr \
 		; \
 		$(MAKE); \
-		$(MAKE) install
+		$(MAKE) install DESTDIR=$(TARGET_DIR)
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libnfsidmap.pc
+	$(REWRITE_LIBTOOL)/libnfsidmap.la
 	$(REMOVE)/libnfsidmap-$(LIBNFSIDMAP_VERSION)
 	$(TOUCH)
 
@@ -1576,12 +1586,17 @@ $(D)/openvpn: $(D)/bootstrap $(D)/openssl $(D)/lzo $(ARCHIVE)/$(OPENVPN_SOURCE)
 			--prefix=/usr \
 			--mandir=/.remove \
 			--docdir=/.remove \
+			--disable-lz4 \
 			--disable-selinux \
 			--disable-systemd \
 			--disable-plugins \
 			--disable-debug \
 			--disable-pkcs11 \
 			--enable-small \
+			NETSTAT="/bin/netstat" \
+			IFCONFIG="/sbin/ifconfig" \
+			IPROUTE="/sbin/ip" \
+			ROUTE="/sbin/route" \
 		; \
 		$(MAKE); \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
