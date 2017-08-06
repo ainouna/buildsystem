@@ -1,2 +1,2 @@
-# buildsystem-ddt
-Build system for the Duckbox Development Toolchain
+# buildsystem
+Build system for Audioniek's Development Toolchain
