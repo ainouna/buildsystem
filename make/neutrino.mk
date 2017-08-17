@@ -173,7 +173,7 @@ $(D)/neutrino-mp-cst-next-max.config.status:
 		export PKG_CONFIG=$(PKG_CONFIG); \
 		export PKG_CONFIG_PATH=$(PKG_CONFIG_PATH); \
 		$(BUILDENV) \
-		$(SOURCE_DIR)/neutrino-mp-cst-next-max/configure $(CONFIGURE_SILENT) --enable-silent-rules \
+		$(SOURCE_DIR)/neutrino-mp-cst-next-max/configure $(SILENT_OPT) --enable-silent-rules \
 			--build=$(BUILD) \
 			--host=$(TARGET) \
 			$(N_CONFIG_OPTS) \
@@ -263,7 +263,7 @@ $(D)/libstb-hal-cst-next.config.status: | $(NEUTRINO_DEPS)
 	cd $(LH_OBJDIR); \
 		$(SOURCE_DIR)/libstb-hal-cst-next/autogen.sh; \
 		$(BUILDENV) \
-		$(SOURCE_DIR)/libstb-hal-cst-next/configure $(CONFIGURE_SILENT) --enable-silent-rules \
+		$(SOURCE_DIR)/libstb-hal-cst-next/configure $(SILENT_OPT) --enable-silent-rules \
 			--host=$(TARGET) \
 			--build=$(BUILD) \
 			--prefix= \
@@ -343,7 +343,7 @@ $(D)/neutrino-mp-cst-next.config.status:
 	cd $(N_OBJDIR); \
 		$(SOURCE_DIR)/neutrino-mp-cst-next/autogen.sh; \
 		$(BUILDENV) \
-		$(SOURCE_DIR)/neutrino-mp-cst-next/configure $(CONFIGURE_SILENT) --enable-silent-rules \
+		$(SOURCE_DIR)/neutrino-mp-cst-next/configure $(SILENT_OPT) --enable-silent-rules \
 			--build=$(BUILD) \
 			--host=$(TARGET) \
 			$(N_CONFIG_OPTS) \
@@ -614,7 +614,7 @@ $(SOURCE_DIR)/neutrino-hd2/config.status:
 	cd $(SOURCE_DIR)/neutrino-hd2; \
 		./autogen.sh; \
 		$(BUILDENV) \
-		./configure $(CONFIGURE_SILENT) \
+		./configure $(SILENT_OPT) \
 			--build=$(BUILD) \
 			--host=$(TARGET) \
 			$(N_CONFIG_OPTS) \
@@ -684,7 +684,7 @@ $(D)/libstb-hal-cst-next-tangos.config.status: | $(NEUTRINO_DEPS)
 	cd $(LH_OBJDIR); \
 		$(SOURCE_DIR)/libstb-hal-cst-next-tangos/autogen.sh; \
 		$(BUILDENV) \
-		$(SOURCE_DIR)/libstb-hal-cst-next-tangos/configure $(CONFIGURE_SILENT) --enable-silent-rules \
+		$(SOURCE_DIR)/libstb-hal-cst-next-tangos/configure $(SILENT_OPT) --enable-silent-rules \
 			--host=$(TARGET) \
 			--build=$(BUILD) \
 			--prefix= \
@@ -768,7 +768,7 @@ $(D)/neutrino-mp-tangos.config.status:
 	cd $(N_OBJDIR); \
 		$(SOURCE_DIR)/neutrino-mp-tangos/autogen.sh; \
 		$(BUILDENV) \
-		$(SOURCE_DIR)/neutrino-mp-tangos/configure $(CONFIGURE_SILENT) --enable-silent-rules \
+		$(SOURCE_DIR)/neutrino-mp-tangos/configure $(SILENT_OPT) --enable-silent-rules \
 			--build=$(BUILD) \
 			--host=$(TARGET) \
 			$(N_CONFIG_OPTS) \
