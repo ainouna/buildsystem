@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 160525.1
+#Version 170817.1
 
 echo "[rcS] Start"
 echo "Fortis HS8200 Neutrino"
@@ -54,7 +54,7 @@ echo "with autologin"
 echo "[rcS] Init stmfb (LOAD 9)"
 echo "Load 9" > /dev/vfd
 insmod $MODDIR/stmcore-display-sti7105.ko
-insmod $MODDIR/stmfb.ko display0=1280x720-32@50:12m:pal:rgb:rgb # display1=720x576-16@50:1m:pal:cvbs;
+insmod $MODDIR/stmfb.ko display0=1280x720-32@50:12m:pal:rgb:rgb # display1=720x576-16@50:1m:pal:cvbs
 
 echo "[rcS] Loading modules"
 
@@ -65,7 +65,7 @@ if [ ! -e /lib/firmware/audio.elf ] || [ ! -e /lib/firmware/video.elf ]; then
 fi
 
 echo "[rcS] Load video firmware (LOAD 8)"
-echo "LOAD 8" > /dev/vfd
+echo "Load 8" > /dev/vfd
 /bin/dd if=/dev/zero of=/dev/st231-0 bs=1024 count=4096 2> /dev/null
 /bin/ustslave /dev/st231-0 /lib/firmware/video.elf > /dev/null
 
@@ -112,7 +112,13 @@ insmod $MODDIR/avl2108.ko
 insmod $MODDIR/starci.ko
 insmod $MODDIR/smartcard.ko
 
-insmod $MODDIR/pti.ko
+insmod $MODDIR/pti.ko waitMS=20 videoMem=4096
+if [ $?=='2' ]; then
+   insmod $MODDIR/pti.ko
+   echo "[rcS] Simple pti"
+else
+   echo "[rcS] Full feature pti"
+fi
 insmod $MODDIR/stm_monitor.ko
 insmod $MODDIR/stmsysfs.ko
 insmod $MODDIR/stmdvb.ko

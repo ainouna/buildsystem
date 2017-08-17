@@ -1,26 +1,26 @@
 #
 # python helpers
 #
-PYTHON_DIR         = /usr/lib/python$(PYTHON_VERSION_MAJOR)
-PYTHON_INCLUDE_DIR = /usr/include/python$(PYTHON_VERSION_MAJOR)
+PYTHON_DIR         = usr/lib/python$(PYTHON_VERSION_MAJOR)
+PYTHON_INCLUDE_DIR = usr/include/python$(PYTHON_VERSION_MAJOR)
 
 PYTHON_BUILD = \
 	CC="$(TARGET)-gcc" \
 	CFLAGS="$(TARGET_CFLAGS)" \
 	LDFLAGS="$(TARGET_LDFLAGS)" \
 	LDSHARED="$(TARGET)-gcc -shared" \
-	PYTHONPATH=$(TARGET_DIR)$(PYTHON_DIR)/site-packages \
-	CPPFLAGS="$(TARGET_CPPFLAGS) -I$(TARGET_DIR)$(PYTHON_INCLUDE_DIR)" \
-	$(HOST_DIR)/bin/python ./setup.py build --executable=/usr/bin/python
+	PYTHONPATH=$(TARGET_DIR)/$(PYTHON_DIR)/site-packages \
+	CPPFLAGS="$(TARGET_CPPFLAGS) -I$(TARGET_DIR)/$(PYTHON_INCLUDE_DIR)" \
+	$(HOST_DIR)/bin/python ./setup.py $(SILENT_OPT) build --executable=/usr/bin/python
 
 PYTHON_INSTALL = \
 	CC="$(TARGET)-gcc" \
 	CFLAGS="$(TARGET_CFLAGS)" \
 	LDFLAGS="$(TARGET_LDFLAGS)" \
 	LDSHARED="$(TARGET)-gcc -shared" \
-	PYTHONPATH=$(TARGET_DIR)$(PYTHON_DIR)/site-packages \
-	CPPFLAGS="$(TARGET_CPPFLAGS) -I$(TARGET_DIR)$(PYTHON_INCLUDE_DIR)" \
-	$(HOST_DIR)/bin/python ./setup.py install --root=$(TARGET_DIR) --prefix=/usr
+	PYTHONPATH=$(TARGET_DIR)/$(PYTHON_DIR)/site-packages \
+	CPPFLAGS="$(TARGET_CPPFLAGS) -I$(TARGET_DIR)/$(PYTHON_INCLUDE_DIR)" \
+	$(HOST_DIR)/bin/python ./setup.py $(SILENT_OPT) install --root=$(TARGET_DIR) --prefix=/usr
 
 #
 # host_python
@@ -43,7 +43,7 @@ $(D)/host_python: $(ARCHIVE)/$(PYTHON_SOURCE)
 		autoconf; \
 		CONFIG_SITE= \
 		OPT="$(HOST_CFLAGS)" \
-		./configure $(CONFIGURE_SILENT) \
+		./configure $(SILENT_OPT) \
 			--without-cxx-main \
 			--with-threads \
 		; \
@@ -52,7 +52,7 @@ $(D)/host_python: $(ARCHIVE)/$(PYTHON_SOURCE)
 		mv Parser/pgen ./hostpgen; \
 		\
 		$(MAKE) distclean; \
-		./configure $(CONFIGURE_SILENT) \
+		./configure $(SILENT_OPT) \
 			--prefix=$(HOST_DIR) \
 			--sysconfdir=$(HOST_DIR)/etc \
 			--without-cxx-main \
@@ -71,7 +71,7 @@ PYTHON_PATCH += python-$(PYTHON_VERSION)-xcompile.patch
 PYTHON_PATCH += python-$(PYTHON_VERSION)-revert_use_of_sysconfigdata.patch
 PYTHON_PATCH += python-$(PYTHON_VERSION)-pgettext.patch
 
-$(D)/python: $(D)/bootstrap $(D)/host_python $(D)/libncurses $(D)/zlib $(D)/openssl $(D)/libffi $(D)/bzip2 $(D)/libreadline $(D)/sqlite $(ARCHIVE)/$(PYTHON_SOURCE)
+$(D)/python: $(D)/bootstrap $(D)/host_python $(D)/ncurses $(D)/zlib $(D)/openssl $(D)/libffi $(D)/bzip2 $(D)/readline $(D)/sqlite $(ARCHIVE)/$(PYTHON_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/Python-$(PYTHON_VERSION)
 	$(UNTAR)/$(PYTHON_SOURCE)
@@ -81,7 +81,7 @@ $(D)/python: $(D)/bootstrap $(D)/host_python $(D)/libncurses $(D)/zlib $(D)/open
 		$(BUILDENV) \
 		autoreconf --verbose --install --force Modules/_ctypes/libffi; \
 		autoconf; \
-		./configure $(CONFIGURE_SILENT) \
+		./configure $(SILENT_OPT) \
 			--build=$(BUILD) \
 			--host=$(TARGET) \
 			--target=$(TARGET) \
@@ -123,11 +123,11 @@ $(D)/python: $(D)/bootstrap $(D)/host_python $(D)/libncurses $(D)/zlib $(D)/open
 			LD="$(TARGET)-gcc" \
 			HOSTPYTHON=$(HOST_DIR)/bin/python$(PYTHON_VERSION_MAJOR) \
 			HOSTPGEN=$(HOST_DIR)/bin/pgen \
-			all install DESTDIR=$(TARGET_DIR) \
+			all DESTDIR=$(TARGET_DIR) \
 		; \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
-	ln -sf ../../libpython$(PYTHON_VERSION_MAJOR).so.1.0 $(TARGET_DIR)$(PYTHON_DIR)/config/libpython$(PYTHON_VERSION_MAJOR).so; \
-	ln -sf $(TARGET_DIR)$(PYTHON_INCLUDE_DIR) $(TARGET_DIR)/usr/include/python
+	ln -sf ../../libpython$(PYTHON_VERSION_MAJOR).so.1.0 $(TARGET_DIR)/$(PYTHON_DIR)/config/libpython$(PYTHON_VERSION_MAJOR).so; \
+	ln -sf $(TARGET_DIR)/$(PYTHON_INCLUDE_DIR) $(TARGET_DIR)/usr/include/python
 	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/python-2.7.pc
 	$(REMOVE)/Python-$(PYTHON_VERSION)
 	$(TOUCH)

@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20170729.1
+# Version 20170816.1
 
 ##############################################
 
@@ -312,7 +312,7 @@ case "$IMAGE" in
 #		if [ "$LASTIMAGE1" ] || [ "$LASTIMAGE3" ] || [ ! "$LASTBOX" == "$TARGET" ]; then
 		if [ "$LASTIMAGE1" ] || [ ! "$LASTBOX" == "$BOXTYPE" ]; then
 			if [ -e ./.deps/ ]; then
-				echo -n -e "\nSettings changed, performing distclean..."
+				echo -n -e "Settings changed, performing distclean..."
 				make distclean 2> /dev/null > /dev/null
 				echo "[Done]"
 			fi
@@ -376,12 +376,12 @@ case "$IMAGE" in
 #		if [ "$LASTIMAGE2" ] || [ "$LASTIMAGE3" ] || [ ! "$LASTBOX" == "$BOXTYPE" ]; then
 		if [ "$LASTIMAGE2" ] || [ ! "$LASTBOX" == "$BOXTYPE" ]; then
 			if [ -e ./.deps/ ]; then
-				echo -n -e "\nSettings changed, performing distclean..."
+				echo -n -e "Settings changed, performing distclean..."
 				make distclean 2> /dev/null > /dev/null
 				echo " [Done]"
 			fi
 		elif [ ! "$DIFF" == "$LASTDIFF" ]; then
-			echo -n -e "\nDiff changed, OpenPli Enigma2 will be rebuilt."
+			echo -n -e "Diff changed, OpenPli Enigma2 will be rebuilt."
 			rm -f ./.deps/enigma2.do_prepare
 			rm -f ./.deps/enigma2_networkbrowser
 			rm -f ./.deps/enigma2_openwebif

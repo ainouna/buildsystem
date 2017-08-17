@@ -8,13 +8,13 @@ E_CPPFLAGS   += -I$(APPS_DIR)/tools/libeplayer3/include
 E_CPPFLAGS   += -I$(APPS_DIR)/tools
 E_CPPFLAGS   += $(LOCAL_ENIGMA2_CPPFLAGS)
 
-ENIGMA2_DEPS  = $(D)/bootstrap $(D)/opkg $(D)/libncurses $(LIRC) $(D)/libcurl $(D)/libid3tag $(D)/libmad
+ENIGMA2_DEPS  = $(D)/bootstrap $(D)/opkg $(D)/ncurses $(LIRC) $(D)/libcurl $(D)/libid3tag $(D)/libmad
 ENIGMA2_DEPS += $(D)/libpng $(D)/libjpeg $(D)/giflib $(D)/freetype
-ENIGMA2_DEPS += $(D)/alsa-utils $(D)/ffmpeg
-ENIGMA2_DEPS += $(D)/libfribidi $(D)/libsigc_e2 $(D)/libexpat $(D)/libdvbsi++ $(D)/libusb
+ENIGMA2_DEPS += $(D)/alsa_utils $(D)/ffmpeg
+ENIGMA2_DEPS += $(D)/libfribidi $(D)/libsigc_e2 $(D)/expat $(D)/libdvbsi $(D)/libusb
 ENIGMA2_DEPS += $(D)/sdparm $(D)/minidlna $(D)/ethtool
 ENIGMA2_DEPS += python-all
-ENIGMA2_DEPS += $(D)/libdreamdvd $(D)/tuxtxt32bpp $(D)/hotplug_e2 $(D)/parted
+ENIGMA2_DEPS += $(D)/libdreamdvd $(D)/enigma2_tuxtxt32bpp $(D)/enigma2_hotplug_e2_helper $(D)/parted
 ENIGMA2_DEPS += $(LOCAL_ENIGMA2_DEPS)
 
 ifeq ($(IMAGE), enigma2-wlandriver)
@@ -109,7 +109,7 @@ endif
 #
 # yaud-enigma2
 #
-yaud-enigma2: yaud-none $(D)/enigma2 $(D)/enigma2-plugins $(D)/release_enigma2
+yaud-enigma2: yaud-none $(D)/enigma2 $(D)/enigma2-plugins $(D)/enigma2_release
 	$(TUXBOX_YAUD_CUSTOMIZE)
 	@echo "***************************************************************"
 	@echo -e "\033[01;32m"

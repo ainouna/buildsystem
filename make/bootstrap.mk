@@ -33,7 +33,7 @@ BOOTSTRAP += $(D)/host_mksquashfs
 
 bootstrap: $(D)/bootstrap
 $(D)/bootstrap: $(BOOTSTRAP)
-	touch $@
+	@touch $@
 
 SYSTEM_TOOLS  = $(D)/module_init_tools
 SYSTEM_TOOLS += $(D)/busybox
@@ -42,12 +42,16 @@ SYSTEM_TOOLS += $(D)/sysvinit
 SYSTEM_TOOLS += $(D)/diverse-tools
 SYSTEM_TOOLS += $(D)/e2fsprogs
 SYSTEM_TOOLS += $(D)/jfsutils
-SYSTEM_TOOLS += $(D)/hd-idle
+SYSTEM_TOOLS += $(D)/hdidle
 SYSTEM_TOOLS += $(D)/fbshot
 SYSTEM_TOOLS += $(D)/portmap
+ifneq ($(BOXTYPE), $(filter $(BOXTYPE), ufs922))
 SYSTEM_TOOLS += $(D)/nfs_utils
+endif
 SYSTEM_TOOLS += $(D)/vsftpd
 SYSTEM_TOOLS += $(D)/autofs
+SYSTEM_TOOLS += $(D)/udpxy
+SYSTEM_TOOLS += $(D)/dvbsnoop
 SYSTEM_TOOLS += $(D)/driver
 
 $(D)/system-tools: $(SYSTEM_TOOLS) $(TOOLS)
@@ -143,7 +147,7 @@ crosstool-rpminstall
 	fi
 	$(SILENT)if test -e $(CROSS_DIR)/target/sbin/ldconfig; then \
 		cp -a $(CROSS_DIR)/target/sbin/ldconfig $(TARGET_DIR)/sbin; \
-		cp -a $(CROSS_DIR)/target/etc/ld.so.conf $(TARGETDIR)/etc; \
+		cp -a $(CROSS_DIR)/target/etc/ld.so.conf $(TARGET_DIR)/etc; \
 		cp -a $(CROSS_DIR)/target/etc/host.conf $(TARGET_DIR)/etc; \
 	fi
 	@touch $(D)/$(notdir $@)
@@ -166,18 +170,14 @@ $(STL_ARCHIVE)/stlinux24-host-u-boot-tools-1.3.1_stm24-9.i386.rpm
 # crosstool-ng
 #
 CROSSTOOL_NG_VERSION = 1.22.0
+CROSSTOOL_NG_SOURCE = crosstool-ng-$(CROSSTOOL_NG_VERSION).tar.xz
 
 $(ARCHIVE)/crosstool-ng-$(CROSSTOOL_NG_VERSION).tar.xz:
-	$(WGET) http://crosstool-ng.org/download/crosstool-ng/crosstool-ng-$(CROSSTOOL_NG_VERSION).tar.xz
+	$(WGET) http://crosstool-ng.org/download/crosstool-ng/$(CROSSTOOL_NG_SOURCE)
 
-crosstool-ng: $(ARCHIVE)/crosstool-ng-$(CROSSTOOL_NG_VERSION).tar.xz
-	$(START_BUILD)
-	make $(BUILD_TMP)
-	if [ ! -e $(BASE_DIR)/cross ]; then \
-		mkdir -p $(BASE_DIR)/cross; \
-	fi;
+crosstool-ng: directories $(ARCHIVE)/$(CROSSTOOL_NG_SOURCE)
 	$(REMOVE)/crosstool-ng
-	$(UNTAR)/crosstool-ng-$(CROSSTOOL_NG_VERSION).tar.xz
+	$(UNTAR)/$(CROSSTOOL_NG_SOURCE)
 	$(SILENT)set -e; unset CONFIG_SITE; cd $(BUILD_TMP)/crosstool-ng; \
 		cp -a $(PATCHES)/crosstool-ng-$(CROSSTOOL_NG_VERSION)-$(BOXARCH).config .config; \
 		NUM_CPUS=$$(expr `getconf _NPROCESSORS_ONLN` \* 2); \
@@ -185,8 +185,7 @@ crosstool-ng: $(ARCHIVE)/crosstool-ng-$(CROSSTOOL_NG_VERSION).tar.xz
 		test $$NUM_CPUS -gt $$MEM_512M && NUM_CPUS=$$MEM_512M; \
 		test $$NUM_CPUS = 0 && NUM_CPUS=1; \
 		sed -i "s@^CT_PARALLEL_JOBS=.*@CT_PARALLEL_JOBS=$$NUM_CPUS@" .config; \
-		export NG_ARCHIVE=$(ARCHIVE); \
-		export BS_BASE_DIR=$(BASE_DIR); \
+		export BS_BASE_DIR=$(TUFSBOX_DIR); \
 		./configure --enable-local; \
 		MAKELEVEL=0 make; \
 		./ct-ng oldconfig; \
@@ -194,13 +193,12 @@ crosstool-ng: $(ARCHIVE)/crosstool-ng-$(CROSSTOOL_NG_VERSION).tar.xz
 	@echo "--------------------------------------------------------------"
 	@echo -e "Build of $(TERM_GREEN_BOLD)$@$(TERM_NORMAL) completed."; echo
 
-crossmenuconfig: $(ARCHIVE)/crosstool-ng-$(CROSSTOOL_NG_VERSION).tar.xz
+crossmenuconfig: $(ARCHIVE)/$(CROSSTOOL_NG_SOURCE)
 	$(START_BUILD)
-	make $(BUILD_TMP)
-	$(REMOVE)/crosstool-ng-$(CROSSTOOL_NG_VERSION)
-	$(UNTAR)/crosstool-ng-$(CROSSTOOL_NG_VERSION).tar.xz
+	$(REMOVE)/crosstool-ng
+	$(UNTAR)/$(CROSSTOOL_NG_SOURCE)
 	$(SET) -e; unset CONFIG_SITE; cd $(BUILD_TMP)/crosstool-ng; \
-		cp -a $(PATCHES)/crosstool-ng-$(CROSSTOOL_NG_VERSION).config .config; \
+		cp -a $(PATCHES)/crosstool-ng-$(CROSSTOOL_NG_VERSION)-$(BOXARCH).config .config; \
 		test -f ./configure || ./bootstrap && \
 		./configure --enable-local; MAKELEVEL=0 make; chmod 0755 ct-ng; \
 		./ct-ng menuconfig
