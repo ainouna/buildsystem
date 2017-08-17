@@ -133,8 +133,8 @@ if [ `which arch > /dev/null 2>&1 && arch || uname -m` == x86_64 ]; then
 	${UBUNTU:+binutils-multiarch}   ${SUSE:+glibc-devel-32bit}      ${FEDORA:+glibc-devel.i686}                   \
 	${UBUNTU:+lib32z1-dev}          ${SUSE:+zlib-devel-32bit}       ${FEDORA:+libgcc.i686}                        \
 	                                                                ${FEDORA:+ncurses-devel.i686}                 \
-                                                                    ${FEDORA:+redhat-lsb.i686}                    \
-                                    ${SUSE:+libstdc++-devel-32bit}  ${FEDORA:+glibc-static.i686}                  \
+	                                                                ${FEDORA:+redhat-lsb.i686}                    \
+	                                ${SUSE:+libstdc++-devel-32bit}  ${FEDORA:+glibc-static.i686}                  \
 	";
 fi
 echo $INSTALL $PACKAGES
@@ -152,5 +152,5 @@ if [ ! "$?" -eq "0" ]; then
 fi
 
 # for user mknod
-chmod +s /bin/mknod
+#chmod +s /bin/mknod
 

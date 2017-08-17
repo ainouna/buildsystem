@@ -19,7 +19,7 @@ SOURCE_DIR            = $(BASE_DIR)/source
 
 -include $(BASE_DIR)/config
 
-# for local extensions, e.g. LOCAL_NEUTRINO_DEPS
+# for local extensions
 -include $(BASE_DIR)/config.local
 
 # default platform...
@@ -37,21 +37,17 @@ GIT_NAME_DRIVER      ?= Audioniek
 GIT_NAME_APPS        ?= Audioniek
 GIT_NAME_FLASH       ?= Audioniek
 
-ifneq ($(GIT_STASH_PULL), stashpull)
-GIT_PULL              = git pull
-else
-GIT_PULL              = git stash && git stash show -p stash@{0} > ./pull-stash.patch || true && git pull && git stash pop || true
-endif
-
-BOOT_DIR              = $(BASE_DIR)/tufsbox/cdkroot-tftpboot
-CROSS_BASE            = $(BASE_DIR)/tufsbox/cross
+TUFSBOX_DIR           = $(BASE_DIR)/tufsbox
+TARGET_DIR            = $(TUFSBOX_DIR)/cdkroot
+BOOT_DIR              = $(TUFSBOX_DIR)/cdkroot-tftpboot
+CROSS_BASE            = $(TUFSBOX_DIR)/cross
 CROSS_DIR             = $(CROSS_BASE)
+HOST_DIR              = $(TUFSBOX_DIR)/host
+RELEASE_DIR           = $(TUFSBOX_DIR)/release
+
 CONTROL_DIR           = $(BASE_DIR)/pkgs/control
-HOST_DIR              = $(BASE_DIR)/tufsbox/host
 PACKAGE_DIR           = $(BASE_DIR)/pkgs/opkg
-RELEASE_DIR           = $(BASE_DIR)/tufsbox/release
 PKG_DIR               = $(BUILD_TMP)/pkg
-TARGET_DIR            = $(BASE_DIR)/tufsbox/cdkroot
 
 CUSTOM_DIR            = $(BASE_DIR)/custom
 OWN_BUILD             = $(BASE_DIR)/own_build
@@ -73,7 +69,7 @@ BUILD                ?= $(shell /usr/share/libtool/config.guess 2>/dev/null || /
 OPTIMIZATIONS        ?= size
 TARGET_CFLAGS         = -pipe
 ifeq ($(OPTIMIZATIONS), size)
-TARGET_CFLAGS        += -Os
+TARGET_CFLAGS        += -Os -ffunction-sections -fdata-sections
 endif
 ifeq ($(OPTIMIZATIONS), normal)
 TARGET_CFLAGS        += -O2
@@ -88,8 +84,10 @@ endif
 TARGET_CFLAGS        += -I$(TARGET_DIR)/usr/include
 TARGET_CPPFLAGS       = $(TARGET_CFLAGS)
 TARGET_CXXFLAGS       = $(TARGET_CFLAGS)
-TARGET_LDFLAGS        = -Wl,-rpath -Wl,/usr/lib -Wl,-rpath-link -Wl,$(TARGET_DIR)/usr/lib -L$(TARGET_DIR)/usr/lib -L$(TARGET_DIR)/lib
+TARGET_LDFLAGS        = -Wl,-rpath -Wl,/usr/lib -Wl,-rpath-link -Wl,$(TARGET_DIR)/usr/lib -L$(TARGET_DIR)/usr/lib -L$(TARGET_DIR)/lib -Wl,--gc-sections
 LD_FLAGS              = $(TARGET_LDFLAGS)
+PKG_CONFIG            = $(HOST_DIR)/bin/$(TARGET)-pkg-config
+PKG_CONFIG_PATH       = $(TARGET_DIR)/usr/lib/pkgconfig
 
 VPATH                 = $(D)
 
@@ -102,18 +100,34 @@ TERM_RED             := \033[31m
 TERM_NORMAL          := \033[0m
 
 MAKEFLAGS            += --no-print-directory
-ifndef VERBOSE
-VERBOSE               = 0
+# To put more focus on warnings, be less verbose as default
+# Use 'make V=1' to see the full commands
+ifeq ("$(origin V)", "command line")
+KBUILD_VERBOSE        = $(V)
 endif
-ifneq ($(VERBOSE), 1)
-SILENT                = @
-MAKEFLAGS            += --silent
-CONFIGURE_SILENT      = -q
-#SILENT_PATCH          = -s
+ifndef KBUILD_VERBOSE
+KBUILD_VERBOSE        = 0
 endif
 
-PKG_CONFIG            = $(HOST_DIR)/bin/$(TARGET)-pkg-config
-PKG_CONFIG_PATH       = $(TARGET_DIR)/usr/lib/pkgconfig
+# If KBUILD_VERBOSE equals 0 then the above command will be hidden.
+# If KBUILD_VERBOSE equals 1 then the above command is displayed.
+ifeq ($(KBUILD_VERBOSE),1)
+SILENT_PATCH          =
+SILENT_OPT            =
+SILENT                =
+WGET_SILENT_OPT       =
+MAKE_TRACE           :=
+else
+SILENT_PATCH          = -s
+SILENT_OPT            = -q
+SILENT                = @
+WGET_SILENT_OPT       = -o /dev/null
+MAKE_TRACE           := >/dev/null 2>&1
+MAKEFLAGS            += --silent
+endif
+
+#PKG_CONFIG            = $(HOST_DIR)/bin/$(TARGET)-pkg-config
+#PKG_CONFIG_PATH       = $(TARGET_DIR)/usr/lib/pkgconfig
 
 # helper-"functions":
 REWRITE_LIBTOOL       = $(SILENT)sed -i "s,^libdir=.*,libdir='$(TARGET_DIR)/usr/lib'," $(TARGET_DIR)/usr/lib
@@ -130,12 +144,25 @@ export RM=$(shell which rm) -f
 UNTAR                 = $(SILENT)tar -C $(BUILD_TMP) -xf $(ARCHIVE)
 SET                   = $(SILENT)set
 REMOVE                = $(SILENT)rm -rf $(BUILD_TMP)
-RM_PKG_DIR            = rm -rf $(PKGPREFIX)
+RM_PKG_DIR            = $(SILENT)rm -rf $(PKG_DIR)
+
+#
+split_deps_dir=$(subst ., ,$(1))
+DEPS_DIR              = $(subst $(D)/,,$@)
+BUILD_INFO            = $(word 1,$(call split_deps_dir,$(DEPS_DIR)))
+BUILD_INFO2           = $(shell echo $(BUILD_INFO) | sed 's/.*/\U&/')
+BUILD_INFO3           = " "$($(BUILD_INFO2)_VERSION)
+START_BUILD           = @echo "=============================================================="; \
+                        echo; \
+                        echo -e "Start build of $(TERM_GREEN_BOLD)$(BUILD_INFO)$(BUILD_INFO3)$(TERM_NORMAL)";
+TOUCH                 = @touch $@; \
+                        echo "--------------------------------------------------------------"; \
+                        echo -e "Build of $(TERM_GREEN_BOLD)$(BUILD_INFO)$(BUILD_INFO3)$(TERM_NORMAL) completed."; \
+                        echo
+
+#
 PATCH                 = patch -p1 $(SILENT_PATCH) -i $(PATCHES)
 APATCH                = patch -p1 $(SILENT_PATCH) -i
-START_BUILD           = @echo "=============================================================="; echo; echo -e "Start build of $(TERM_GREEN_BOLD)$(subst $(BASE_DIR)/.deps/,,$@)$(TERM_NORMAL)."
-TOUCH                 = @touch $@; echo "--------------------------------------------------------------"; echo -e "Build of $(TERM_GREEN_BOLD)$(subst $(BASE_DIR)/.deps/,,$@)$(TERM_NORMAL) completed."; echo
-
 define post_patch
 	for i in $(1); do \
 		if [ -d $$i ] ; then \
@@ -154,7 +181,7 @@ define post_patch
 			fi; \
 		fi; \
 	done; \
-	echo -e "Patching $(TERM_GREEN_BOLD)$(subst $(BASE_DIR)/.deps/,,$@)$(TERM_NORMAL) completed."; \
+	echo -e "Patching $(TERM_GREEN_BOLD)$(BUILD_INFO)$(TERM_NORMAL) completed."; \
 	echo
 endef
 
@@ -170,7 +197,7 @@ OPKG_SH_ENV += BUILD_TMP=$(BUILD_TMP)
 OPKG_SH = $(OPKG_SH_ENV) opkg.sh
 
 # wget tarballs into archive directory
-WGET = wget --progress=bar:force --no-check-certificate -t6 -T20 -c -P $(ARCHIVE)
+WGET = wget --progress=bar:force --no-check-certificate $(WGET_SILENT_OPT) -t6 -T20 -c -P $(ARCHIVE)
 
 TUXBOX_YAUD_CUSTOMIZE = [ -x $(CUSTOM_DIR)/$(notdir $@)-local.sh ] && KERNEL_VERSION=$(KERNEL_VERSION) && BOXTYPE=$(BOXTYPE) && $(CUSTOM_DIR)/$(notdir $@)-local.sh $(RELEASE_DIR) $(TARGET_DIR) $(BASE_DIR) $(SOURCE_DIR) $(FLASH_DIR) $(BOXTYPE) || true
 TUXBOX_CUSTOMIZE      = [ -x $(CUSTOM_DIR)/$(notdir $@)-local.sh ] && KERNEL_VERSION=$(KERNEL_VERSION) && BOXTYPE=$(BOXTYPE) && $(CUSTOM_DIR)/$(notdir $@)-local.sh $(RELEASE_DIR) $(TARGET_DIR) $(BASE_DIR) $(BOXTYPE) || true
@@ -181,7 +208,7 @@ TUXBOX_CUSTOMIZE      = [ -x $(CUSTOM_DIR)/$(notdir $@)-local.sh ] && KERNEL_VER
 CONFIGURE_OPTS = \
 	--build=$(BUILD) \
 	--host=$(TARGET) \
-	$(CONFIGURE_SILENT)
+	$(SILENT_OPT)
 
 BUILDENV = \
 	CC=$(TARGET)-gcc \
@@ -202,14 +229,37 @@ BUILDENV = \
 	PKG_CONFIG_PATH=$(PKG_CONFIG_PATH)
 
 CONFIGURE = \
-	test -f ./configure || ./autogen.sh && \
+	test -f ./configure || ./autogen.sh $(MAKE_TRACE) && \
 	$(BUILDENV) \
-	./configure $(CONFIGURE_OPTS)
+	./configure $(MAKE_TRACE) $(CONFIGURE_OPTS)
 
 CONFIGURE_TOOLS = \
-	./autogen.sh && \
+	./autogen.sh $(MAKE_TRACE) && \
 	$(BUILDENV) \
-	./configure $(CONFIGURE_OPTS)
+	./configure $(MAKE_TRACE) $(CONFIGURE_OPTS)
+
+BUILDENV_ALSA = \
+	CC=$(TARGET)-gcc \
+	CXX=$(TARGET)-g++ \
+	LD=$(TARGET)-ld \
+	NM=$(TARGET)-nm \
+	AR=$(TARGET)-ar \
+	AS=$(TARGET)-as \
+	RANLIB=$(TARGET)-ranlib \
+	STRIP=$(TARGET)-strip \
+	OBJCOPY=$(TARGET)-objcopy \
+	OBJDUMP=$(TARGET)-objdump \
+	LN_S="ln -s" \
+	CFLAGS="-pipe -Os -I$(TARGET_DIR)/usr/include" \
+	CPPFLAGS="-pipe -Os -I$(TARGET_DIR)/usr/include" \
+	CXXFLAGS="-pipe -Os -I$(TARGET_DIR)/usr/include" \
+	LDFLAGS="-Wl,-rpath -Wl,/usr/lib -Wl,-rpath-link -Wl,$(TARGET_DIR)/usr/lib -L$(TARGET_DIR)/usr/lib -L$(TARGET_DIR)/lib" \
+	PKG_CONFIG_PATH="$(PKG_CONFIG_PATH)"
+
+CONFIGURE_ALSA = \
+	test -f ./configure || ./autogen.sh $(MAKE_TRACE) && \
+	$(BUILDENV_ALSA) \
+	./configure $(MAKE_TRACE) $(CONFIGURE_OPTS)
 
 MAKE_OPTS := \
 	CC=$(TARGET)-gcc \
@@ -534,7 +584,3 @@ endif
 
 #
 PLATFORM_CPPFLAGS := CPPFLAGS="$(PLATFORM_CPPFLAGS)"
-#
-
-#V ?= 0
-#export V

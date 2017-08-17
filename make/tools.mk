@@ -31,6 +31,9 @@ endif
 	-$(MAKE) -C $(APPS_DIR)/tools/ustslave distclean
 	-$(MAKE) -C $(APPS_DIR)/tools/vfdctl distclean
 	-$(MAKE) -C $(APPS_DIR)/tools/wait4button distclean
+ifneq ($(wildcard $(APPS_DIR)/tools/own-tools),)
+	-$(MAKE) -C $(APPS_DIR)/tools/own-tools distclean
+endif
 
 #
 # aio-grab
@@ -59,24 +62,11 @@ $(D)/tools-devinit: $(D)/bootstrap
 	$(TOUCH)
 
 #
-# eplayer3
-#
-$(D)/tools-eplayer3: $(D)/bootstrap $(D)/ffmpeg
-	$(START_BUILD)
-	$(SET) -e; cd $(APPS_DIR)/tools/eplayer3; \
-		$(CONFIGURE_TOOLS) \
-			--prefix= \
-		; \
-		$(MAKE); \
-		$(MAKE) install DESTDIR=$(TARGET_DIR)
-	$(TOUCH)
-
-#
 # evremote2
 #
 $(D)/tools-evremote2: $(D)/bootstrap
-	@$(START_BUILD)
-	set -e; cd $(APPS_DIR)/tools/evremote2; \
+	$(START_BUILD)
+	$(SET) -e; cd $(APPS_DIR)/tools/evremote2; \
 		$(CONFIGURE_TOOLS) \
 			--prefix= \
 		; \
@@ -95,7 +85,7 @@ $(D)/tools-fp_control: $(D)/bootstrap
 		; \
 		$(MAKE); \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
-	@$(TOUCH)
+	$(TOUCH)
 
 #
 # hotplug
@@ -298,6 +288,32 @@ $(D)/tools-wait4button: $(D)/bootstrap
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
 	$(TOUCH)
 
+#
+# eplayer3
+#
+$(D)/tools-eplayer3: $(D)/bootstrap $(D)/ffmpeg
+	$(START_BUILD)
+	$(SET) -e; cd $(APPS_DIR)/tools/eplayer3; \
+		$(CONFIGURE_TOOLS) \
+			--prefix= \
+		; \
+		$(MAKE); \
+		$(MAKE) install DESTDIR=$(TARGET_DIR)
+	$(TOUCH)
+
+#
+# own-tools
+#
+$(D)/tools-own-tools: $(D)/bootstrap $(D)/libcurl
+	$(START_BUILD)
+	$(SET) -e; cd $(APPS_DIR)/tools/own-tools; \
+		$(CONFIGURE_TOOLS) \
+			--prefix= \
+		; \
+		$(MAKE); \
+		$(MAKE) install DESTDIR=$(TARGET_DIR)
+	$(TOUCH)
+
 TOOLS  = $(D)/tools-aio-grab
 TOOLS += $(D)/tools-devinit
 TOOLS += $(D)/tools-evremote2
@@ -325,6 +341,9 @@ TOOLS += $(D)/tools-libeplayer3
 endif
 ifeq ($(MEDIAFW), $(filter $(MEDIAFW), eplayer3))
 TOOLS += $(D)/tools-eplayer3
+endif
+ifneq ($(wildcard $(APPS_DIR)/tools/own-tools),)
+TOOLS += $(D)/tools-own-tools
 endif
 
 $(D)/tools: $(TOOLS)

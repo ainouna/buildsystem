@@ -369,8 +369,7 @@ endif
 	@touch $@
 
 $(D)/linux-kernel.do_compile: $(D)/linux-kernel.do_prepare
-	$(SILENT)set -e; \
-	cd $(KERNEL_DIR); \
+	$(SILENT)set -e; cd $(KERNEL_DIR); \
 		$(MAKE) -C $(KERNEL_DIR) ARCH=sh oldconfig
 		$(MAKE) -C $(KERNEL_DIR) ARCH=sh include/asm
 		$(MAKE) -C $(KERNEL_DIR) ARCH=sh include/linux/version.h
@@ -387,19 +386,14 @@ $(D)/linux-kernel: $(D)/bootstrap host_u_boot_tools $(D)/linux-kernel.do_compile
 	$(SILENT)rm $(TARGET_DIR)/lib/modules/$(KERNEL_VERSION)/source || true
 	$(TOUCH)
 
-$(D)/kernel-headers: linux-kernel.do_prepare
-	$(SILENT)cd $(KERNEL_DIR)
-	$(SILENT)install -d $(TARGET_DIR)/usr/include
-	$(SILENT)cp -a include/linux $(TARGET_DIR)/usr/include
-	$(SILENT)cp -a include/asm-sh $(TARGET_DIR)/usr/include/asm
-	$(SILENT)cp -a include/asm-generic $(TARGET_DIR)/usr/include
-	$(SILENT)cp -a include/mtd $(TARGET_DIR)/usr/include
-	$(TOUCH)
-
-$(D)/tfkernel:
+$(D)/kernel-headers: $(D)/linux-kernel.do_prepare
 	$(START_BUILD)
-	$(SILENT)cd $(KERNEL_DIR)
-	$(MAKE) $(if $(TF7700),TF7700=y) ARCH=sh CROSS_COMPILE=$(TARGET)- uImage
+	$(SILENT)cd $(KERNEL_DIR); \
+		install -d $(TARGET_DIR)/usr/include; \
+		cp -a include/linux $(TARGET_DIR)/usr/include; \
+		cp -a include/asm-sh $(TARGET_DIR)/usr/include/asm; \
+		cp -a include/asm-generic $(TARGET_DIR)/usr/include; \
+		cp -a include/mtd $(TARGET_DIR)/usr/include
 	$(TOUCH)
 
 linux-kernel-distclean:
@@ -411,6 +405,12 @@ linux-kernel-clean:
 	-$(MAKE) -C $(KERNEL_DIR) clean
 	$(SILENT)rm -f $(D)/linux-kernel
 	$(SILENT)rm -f $(D)/linux-kernel.do_compile
+
+$(D)/tfkernel:
+	$(START_BUILD)
+	$(SILENT)cd $(KERNEL_DIR)
+	$(MAKE) $(if $(TF7700),TF7700=y) ARCH=sh CROSS_COMPILE=$(TARGET)- uImage
+	$(TOUCH)
 
 #
 # Helper

@@ -8,7 +8,7 @@ BUSYBOX_PATCH += busybox-$(BUSYBOX_VERSION)-unicode.patch
 BUSYBOX_PATCH += busybox-$(BUSYBOX_VERSION)-extra.patch
 
 $(ARCHIVE)/$(BUSYBOX_SOURCE):
-	$(WGET) http://busybox.net/downloads/$(BUSYBOX_SOURCE)
+	$(WGET) https://busybox.net/downloads/$(BUSYBOX_SOURCE)
 
 ifeq ($(BOXTYPE), $(filter $(BOXTYPE), spark spark7162 ufs912 ufs913))
 BUSYBOX_CONFIG = busybox-$(BUSYBOX_VERSION).config_nandwrite
@@ -26,7 +26,7 @@ $(D)/busybox: $(D)/bootstrap $(D)/module_init_tools $(ARCHIVE)/$(BUSYBOX_SOURCE)
 		sed -i -e 's#^CONFIG_PREFIX.*#CONFIG_PREFIX="$(TARGET_DIR)"#' .config; \
 		$(BUILDENV) $(MAKE) busybox CROSS_COMPILE=$(TARGET)- CFLAGS_EXTRA="$(TARGET_CFLAGS)"; \
 		$(MAKE) install CROSS_COMPILE=$(TARGET)- CFLAGS_EXTRA="$(TARGET_CFLAGS)" CONFIG_PREFIX=$(TARGET_DIR)
-#	$(REMOVE)/busybox-$(BUSYBOX_VERSION)
+	$(REMOVE)/busybox-$(BUSYBOX_VERSION)
 	$(TOUCH)
 
 #
@@ -75,7 +75,7 @@ $(D)/host_pkgconfig: directories $(ARCHIVE)/$(PKGCONFIG_SOURCE) | pkg-config-pre
 	$(REMOVE)/pkg-config-$(PKGCONFIG_VERSION)
 	$(UNTAR)/$(PKGCONFIG_SOURCE)
 	$(SET) -e; cd $(BUILD_TMP)/pkg-config-$(PKGCONFIG_VERSION); \
-		./configure $(CONFIGURE_SILENT) \
+		./configure $(MAKE_TRACE) \
 			--prefix=$(HOST_DIR) \
 			--program-prefix=$(TARGET)- \
 			--disable-host-tool \
@@ -118,7 +118,9 @@ $(D)/mtd_utils: $(D)/bootstrap $(D)/zlib $(D)/lzo $(D)/e2fsprogs $(ARCHIVE)/$(MT
 	$(SET) -e; cd $(BUILD_TMP)/mtd-utils-$(MTD_UTILS_VERSION); \
 		$(BUILDENV) \
 		$(MAKE) PREFIX= CC=$(TARGET)-gcc LD=$(TARGET)-ld STRIP=$(TARGET)-strip WITHOUT_XATTR=1 DESTDIR=$(TARGET_DIR); \
-		$(MAKE) install DESTDIR=$(TARGET_DIR)
+		cp -a $(BUILD_TMP)/mtd-utils-$(MTD_UTILS_VERSION)/mkfs.jffs2 $(TARGET_DIR)/usr/sbin
+		cp -a $(BUILD_TMP)/mtd-utils-$(MTD_UTILS_VERSION)/sumtool $(TARGET_DIR)/usr/sbin
+#		$(MAKE) install DESTDIR=$(TARGET_DIR)
 	$(REMOVE)/mtd-utils-$(MTD_UTILS_VERSION)
 	$(TOUCH)
 
@@ -210,7 +212,7 @@ $(D)/gdb-remote: $(ARCHIVE)/$(GDB_SOURCE)
 	$(REMOVE)/gdb-$(GDB_VERSION)
 	$(UNTAR)/$(GDB_SOURCE)
 	$(SET) -e; cd $(BUILD_TMP)/gdb-$(GDB_VERSION); \
-		./configure $(CONFIGURE_SILENT) \
+		./configure $(MAKE_TRACE) \
 			--nfp --disable-werror \
 			--prefix=$(HOST_DIR) \
 			--build=$(BUILD) \
@@ -227,13 +229,13 @@ $(D)/gdb-remote: $(ARCHIVE)/$(GDB_SOURCE)
 #
 
 # gdb built for target or local-PC
-$(D)/gdb: $(D)/bootstrap $(D)/libncurses $(D)/zlib $(ARCHIVE)/$(GDB_SOURCE)
+$(D)/gdb: $(D)/bootstrap $(D)/ncurses $(D)/zlib $(ARCHIVE)/$(GDB_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/gdb-$(GDB_VERSION)
 	$(UNTAR)/$(GDB_SOURCE)
 	$(SET) -e; cd $(BUILD_TMP)/gdb-$(GDB_VERSION); \
 		$(call post_patch,$(GDB_PATCH)); \
-		./configure $(CONFIGURE_SILENT) \
+		./configure $(MAKE_TRACE) \
 			--host=$(BUILD) \
 			--build=$(BUILD) \
 			--target=$(TARGET) \
@@ -267,7 +269,7 @@ $(D)/host_opkg: directories $(D)/host_libarchive $(ARCHIVE)/$(OPKG_SOURCE)
 		./autogen.sh; \
 		CFLAGS="-I$(HOST_DIR)/include" \
 		LDFLAGS="-L$(HOST_DIR)/lib" \
-		./configure $(CONFIGURE_SILENT) \
+		./configure $(MAKE_TRACE) \
 			PKG_CONFIG_PATH=$(HOST_DIR)/lib/pkgconfig \
 			--prefix= \
 			--disable-curl \
@@ -338,12 +340,12 @@ endif
 # host_module_init_tools
 #
 MODULE_INIT_TOOLS_VERSION = 3.16
-MODULE_INIT_TOOLS_SOURCE = module-init-tools-$(MODULE_INIT_TOOLS_VERSION).tar.gz
+MODULE_INIT_TOOLS_SOURCE = module-init-tools-$(MODULE_INIT_TOOLS_VERSION).tar.bz2
 MODULE_INIT_TOOLS_PATCH = module-init-tools-$(MODULE_INIT_TOOLS_VERSION).patch
 MODULE_INIT_TOOLS_HOST_PATCH = module-init-tools-$(MODULE_INIT_TOOLS_VERSION).patch
 
 $(ARCHIVE)/$(MODULE_INIT_TOOLS_SOURCE):
-	$(WGET) http://ftp.europeonline.com/pub/linux/utils/kernel/module-init-tools/$(MODULE_INIT_TOOLS_SOURCE)
+	$(WGET) ftp.europeonline.com/pub/linux/utils/kernel/module-init-tools/$(MODULE_INIT_TOOLS_SOURCE)
 
 $(D)/host_module_init_tools: $(ARCHIVE)/$(MODULE_INIT_TOOLS_SOURCE)
 	$(START_BUILD)
@@ -351,8 +353,8 @@ $(D)/host_module_init_tools: $(ARCHIVE)/$(MODULE_INIT_TOOLS_SOURCE)
 	$(UNTAR)/$(MODULE_INIT_TOOLS_SOURCE)
 	$(SET) -e; cd $(BUILD_TMP)/module-init-tools-$(MODULE_INIT_TOOLS_VERSION); \
 		$(call post_patch,$(MODULE_INIT_TOOLS_HOST_PATCH)); \
-		autoreconf -fi; \
-		./configure $(CONFIGURE_SILENT) \
+		autoreconf -fi $(MAKE_TRACE); \
+		./configure $(MAKE_TRACE) \
 			--prefix=$(HOST_DIR) \
 			--sbindir=$(HOST_DIR)/bin \
 		; \
@@ -370,7 +372,7 @@ $(D)/module_init_tools: $(D)/bootstrap $(D)/lsb $(ARCHIVE)/$(MODULE_INIT_TOOLS_S
 	$(UNTAR)/$(MODULE_INIT_TOOLS_SOURCE)
 	$(SET) -e; cd $(BUILD_TMP)/module-init-tools-$(MODULE_INIT_TOOLS_VERSION); \
 		$(call post_patch,$(MODULE_INIT_TOOLS_PATCH)); \
-		autoreconf -fi; \
+		autoreconf -fi $(MAKE_TRACE); \
 		$(CONFIGURE) \
 			--target=$(TARGET) \
 			--prefix= \
@@ -394,7 +396,7 @@ LSB_VERSION = $(LSB_MAJOR)-$(LSB_MINOR)
 LSB_SOURCE = lsb_$(LSB_VERSION).tar.gz
 
 $(ARCHIVE)/$(LSB_SOURCE):
-	$(WGET) http://debian.sdinet.de/etch/sdinet/lsb/$(LSB_SOURCE)
+	$(WGET) https://debian.sdinet.de/etch/sdinet/lsb/$(LSB_SOURCE)
 
 $(D)/lsb: $(D)/bootstrap $(ARCHIVE)/$(LSB_SOURCE)
 	$(START_BUILD)
@@ -445,7 +447,7 @@ E2FSPROGS_PATCH = e2fsprogs-$(E2FSPROGS_VERSION).patch
 $(ARCHIVE)/$(E2FSPROGS_SOURCE):
 	$(WGET) https://sourceforge.net/projects/e2fsprogs/files/e2fsprogs/v$(E2FSPROGS_VERSION)/$(E2FSPROGS_SOURCE)
 
-$(D)/e2fsprogs: $(D)/bootstrap $(D)/util-linux $(ARCHIVE)/$(E2FSPROGS_SOURCE)
+$(D)/e2fsprogs: $(D)/bootstrap $(D)/util_linux $(ARCHIVE)/$(E2FSPROGS_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/e2fsprogs-$(E2FSPROGS_VERSION)
 	$(UNTAR)/$(E2FSPROGS_SOURCE)
@@ -531,7 +533,7 @@ $(D)/jfsutils: $(D)/bootstrap $(D)/e2fsprogs $(ARCHIVE)/$(JFSUTILS_SOURCE)
 	$(SET) -e; cd $(BUILD_TMP)/jfsutils-$(JFSUTILS_VERSION); \
 		$(call post_patch,$(JFSUTILS_PATCH)); \
 		sed "s@<unistd.h>@&\n#include <sys/types.h>@g" -i fscklog/extract.c; \
-		autoreconf -fi; \
+		autoreconf -fi $(MAKE_TRACE); \
 		$(CONFIGURE) \
 			--prefix= \
 			--target=$(TARGET) \
@@ -550,9 +552,9 @@ NTFS_3G_VERSION = 2017.3.23
 NTFS_3G_SOURCE = ntfs-3g_ntfsprogs-$(NTFS_3G_VERSION).tgz
 
 $(ARCHIVE)/$(NTFS_3G_SOURCE):
-	$(WGET) http://tuxera.com/opensource/$(NTFS_3G_SOURCE)
+	$(WGET) https://tuxera.com/opensource/$(NTFS_3G_SOURCE)
 
-$(D)/ntfs-3g: $(D)/bootstrap $(ARCHIVE)/$(NTFS_3G_SOURCE)
+$(D)/ntfs_3g: $(D)/bootstrap $(ARCHIVE)/$(NTFS_3G_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/ntfs-3g_ntfsprogs-$(NTFS_3G_VERSION)
 	$(UNTAR)/$(NTFS_3G_SOURCE)
@@ -580,7 +582,7 @@ $(D)/ntfs-3g: $(D)/bootstrap $(ARCHIVE)/$(NTFS_3G_SOURCE)
 	$(TOUCH)
 
 #
-# util-linux
+# util_linux
 #
 #UTIL_LINUX_MAJOR = 2.29
 UTIL_LINUX_MAJOR = 2.25
@@ -591,7 +593,7 @@ UTIL_LINUX_SOURCE = util-linux-$(UTIL_LINUX_VERSION).tar.xz
 $(ARCHIVE)/$(UTIL_LINUX_SOURCE):
 	$(WGET) https://www.kernel.org/pub/linux/utils/util-linux/v$(UTIL_LINUX_MAJOR)/$(UTIL_LINUX_SOURCE)
 
-$(D)/util-linux: $(D)/bootstrap $(D)/zlib $(ARCHIVE)/$(UTIL_LINUX_SOURCE)
+$(D)/util_linux: $(D)/bootstrap $(D)/zlib $(ARCHIVE)/$(UTIL_LINUX_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/util-linux-$(UTIL_LINUX_VERSION)
 	$(UNTAR)/$(UTIL_LINUX_SOURCE)
@@ -667,6 +669,7 @@ $(D)/util-linux: $(D)/bootstrap $(D)/zlib $(ARCHIVE)/$(UTIL_LINUX_SOURCE)
 			--without-systemdsystemunitdir \
 		; \
 		$(MAKE); \
+		install -D -m 755 sfdisk $(TARGET_DIR)/sbin/sfdisk; \
 		install -D -m 755 mkfs $(TARGET_DIR)/sbin/mkfs
 	$(REMOVE)/util-linux-$(UTIL_LINUX_VERSION)
 	$(TOUCH)
@@ -678,16 +681,16 @@ MC_VERSION = 4.8.14
 MC_SOURCE = mc-$(MC_VERSION).tar.xz
 
 $(ARCHIVE)/$(MC_SOURCE):
-	$(WGET) http://ftp.midnight-commander.org/$(MC_SOURCE)
+	$(WGET) ftp.midnight-commander.org/$(MC_SOURCE)
 
-$(D)/mc: $(D)/bootstrap $(D)/libncurses $(D)/libglib2 $(ARCHIVE)/$(MC_SOURCE)
+$(D)/mc: $(D)/bootstrap $(D)/ncurses $(D)/libglib2 $(ARCHIVE)/$(MC_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/mc-$(MC_VERSION)
 	$(UNTAR)/$(MC_SOURCE)
 	$(SET) -e; cd $(BUILD_TMP)/mc-$(MC_VERSION); \
 		autoreconf -fi; \
 		$(BUILDENV) \
-		./configure $(CONFIGURE_SILENT) \
+		./configure $(MAKE_TRACE) \
 			--build=$(BUILD) \
 			--host=$(TARGET) \
 			--prefix=/usr \
@@ -713,7 +716,7 @@ NANO_VERSION = 2.2.6
 NANO_SOURCE = nano-$(NANO_VERSION).tar.gz
 
 $(ARCHIVE)/$(NANO_SOURCE):
-	$(WGET) http://www.nano-editor.org/dist/v2.2/$(NANO_SOURCE)
+	$(WGET) https://www.nano-editor.org/dist/v2.2/$(NANO_SOURCE)
 
 $(D)/nano: $(D)/bootstrap $(ARCHIVE)/$(NANO_SOURCE)
 	$(START_BUILD)
@@ -771,7 +774,7 @@ $(D)/fuse: $(D)/bootstrap $(ARCHIVE)/$(FUSE_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/fuse-$(FUSE_VERSION)
 	$(UNTAR)/$(FUSE_SOURCE)
-	set -e; cd $(BUILD_TMP)/fuse-$(FUSE_VERSION); \
+	$(SET) -e; cd $(BUILD_TMP)/fuse-$(FUSE_VERSION); \
 		$(CONFIGURE) \
 			CFLAGS="$(TARGET_CFLAGS) -I$(KERNEL_DIR)/arch/sh" \
 			--prefix=/usr \
@@ -887,7 +890,7 @@ $(D)/hdparm: $(D)/bootstrap $(ARCHIVE)/$(HDPARM_SOURCE)
 	$(TOUCH)
 
 #
-# hd-idle
+# hdidle
 #
 HDIDLE_VERSION = 1.05
 HDIDLE_SOURCE = hd-idle-$(HDIDLE_VERSION).tgz
@@ -895,7 +898,7 @@ HDIDLE_SOURCE = hd-idle-$(HDIDLE_VERSION).tgz
 $(ARCHIVE)/$(HDIDLE_SOURCE):
 	$(WGET) https://sourceforge.net/projects/hd-idle/files/$(HDIDLE_SOURCE)
 
-$(D)/hd-idle: $(D)/bootstrap $(ARCHIVE)/$(HDIDLE_SOURCE)
+$(D)/hdidle: $(D)/bootstrap $(ARCHIVE)/$(HDIDLE_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/hd-idle
 	$(UNTAR)/$(HDIDLE_SOURCE)
@@ -915,7 +918,7 @@ FBSHOT_SOURCE = fbshot-$(FBSHOT_VERSION).tar.gz
 FBSHOT_PATCH = fbshot-$(FBSHOT_VERSION).patch
 
 $(ARCHIVE)/$(FBSHOT_SOURCE):
-	$(WGET) http://www.sourcefiles.org/Graphics/Tools/Capture/$(FBSHOT_SOURCE)
+	$(WGET) http://distro.ibiblio.org/amigolinux/download/Utils/fbshot/$(FBSHOT_SOURCE)
 
 $(D)/fbshot: $(TARGET_DIR)/bin/fbshot
 	$(TOUCH)
@@ -938,9 +941,9 @@ PARTED_SOURCE = parted-$(PARTED_VERSION).tar.xz
 PARTED_PATCH = parted-$(PARTED_VERSION)-device-mapper.patch
 
 $(ARCHIVE)/$(PARTED_SOURCE):
-	$(WGET) http://ftp.gnu.org/gnu/parted/$(PARTED_SOURCE)
+	$(WGET) https://ftp.gnu.org/gnu/parted/$(PARTED_SOURCE)
 
-$(D)/parted: $(D)/bootstrap $(D)/libncurses $(D)/libreadline $(D)/e2fsprogs $(ARCHIVE)/$(PARTED_SOURCE)
+$(D)/parted: $(D)/bootstrap $(D)/ncurses $(D)/readline $(D)/e2fsprogs $(ARCHIVE)/$(PARTED_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/parted-$(PARTED_VERSION)
 	$(UNTAR)/$(PARTED_SOURCE)
@@ -965,7 +968,7 @@ $(D)/parted: $(D)/bootstrap $(D)/libncurses $(D)/libreadline $(D)/e2fsprogs $(AR
 #
 # sysstat
 #
-SYSSTAT_VERSION = 11.3.5
+SYSSTAT_VERSION = 11.5.7
 SYSSTAT_SOURCE = sysstat-$(SYSSTAT_VERSION).tar.bz2
 
 $(ARCHIVE)/$(SYSSTAT_SOURCE):
@@ -993,7 +996,7 @@ AUTOFS_SOURCE = autofs-$(AUTOFS_VERSION).tar.gz
 AUTOFS_PATCH = autofs-$(AUTOFS_VERSION).patch
 
 $(ARCHIVE)/$(AUTOFS_SOURCE):
-	$(WGET) http://www.kernel.org/pub/linux/daemons/autofs/v4/$(AUTOFS_SOURCE)
+	$(WGET) https://www.kernel.org/pub/linux/daemons/autofs/v4/$(AUTOFS_SOURCE)
 
 $(D)/autofs: $(D)/bootstrap $(D)/e2fsprogs $(ARCHIVE)/$(AUTOFS_SOURCE)
 	$(START_BUILD)
@@ -1034,7 +1037,7 @@ $(D)/imagemagick: $(D)/bootstrap $(ARCHIVE)/$(IMAGEMAGICK_SOURCE)
 		$(BUILDENV) \
 		CFLAGS="-O1" \
 		PKG_CONFIG=$(PKG_CONFIG) \
-		./configure $(CONFIGURE_SILENT) \
+		./configure $(MAKE_TRACE) \
 			--build=$(BUILD) \
 			--host=$(TARGET) \
 			--prefix=/usr \
@@ -1095,9 +1098,9 @@ DBUS_VERSION = 1.8.0
 DBUS_SOURCE = dbus-$(DBUS_VERSION).tar.gz
 
 $(ARCHIVE)/$(DBUS_SOURCE):
-	$(WGET) http://dbus.freedesktop.org/releases/dbus/$(DBUS_SOURCE)
+	$(WGET) https://dbus.freedesktop.org/releases/dbus/$(DBUS_SOURCE)
 
-$(D)/dbus: $(D)/bootstrap $(D)/libexpat $(ARCHIVE)/$(DBUS_SOURCE)
+$(D)/dbus: $(D)/bootstrap $(D)/expat $(ARCHIVE)/$(DBUS_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/dbus-$(DBUS_VERSION)
 	$(UNTAR)/$(DBUS_SOURCE)
@@ -1131,7 +1134,7 @@ AVAHI_SOURCE = avahi-$(AVAHI_VERSION).tar.gz
 $(ARCHIVE)/$(AVAHI_SOURCE):
 	$(WGET) https://github.com/lathiat/avahi/releases/download/v$(AVAHI_VERSION)/$(AVAHI_SOURCE)
 
-$(D)/avahi: $(D)/bootstrap $(D)/libexpat $(D)/libdaemon $(D)/dbus $(ARCHIVE)/$(AVAHI_SOURCE)
+$(D)/avahi: $(D)/bootstrap $(D)/expat $(D)/libdaemon $(D)/dbus $(ARCHIVE)/$(AVAHI_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/avahi-$(AVAHI_VERSION)
 	$(UNTAR)/$(AVAHI_SOURCE)
@@ -1195,7 +1198,7 @@ WGET_VERSION = 1.19.1
 WGET_SOURCE = wget-$(WGET_VERSION).tar.xz
 
 $(ARCHIVE)/$(WGET_SOURCE):
-	$(WGET) http://ftp.gnu.org/gnu/wget/$(WGET_SOURCE)
+	$(WGET) https://ftp.gnu.org/gnu/wget/$(WGET_SOURCE)
 
 $(D)/wget: $(D)/bootstrap $(D)/openssl $(ARCHIVE)/$(WGET_SOURCE)
 	$(START_BUILD)
@@ -1228,7 +1231,7 @@ COREUTILS_SOURCE = coreutils-$(COREUTILS_VERSION).tar.xz
 COREUTILS_PATCH = coreutils-$(COREUTILS_VERSION).patch
 
 $(ARCHIVE)/$(COREUTILS_SOURCE):
-	$(WGET) http://ftp.gnu.org/gnu/coreutils/$(COREUTILS_SOURCE)
+	$(WGET) https://ftp.gnu.org/gnu/coreutils/$(COREUTILS_SOURCE)
 
 $(D)/coreutils: $(D)/bootstrap $(D)/openssl $(ARCHIVE)/$(COREUTILS_SOURCE)
 	$(START_BUILD)
@@ -1271,19 +1274,19 @@ $(D)/smartmontools: $(D)/bootstrap $(ARCHIVE)/$(SMARTMONTOOLS_SOURCE)
 #
 # nfs_utils
 #
-NFSUTILS_VERSION = 1.3.3
-NFSUTILS_SOURCE = nfs-utils-$(NFSUTILS_VERSION).tar.bz2
-NFSUTILS_PATCH = nfs-utils-$(NFSUTILS_VERSION).patch
+NFS_UTILS_VERSION = 1.3.3
+NFS_UTILS_SOURCE = nfs-utils-$(NFS_UTILS_VERSION).tar.bz2
+NFS_UTILS_PATCH = nfs-utils-$(NFS_UTILS_VERSION).patch
 
-$(ARCHIVE)/$(NFSUTILS_SOURCE):
-	$(WGET) https://sourceforge.net/projects/nfs/files/nfs-utils/$(NFSUTILS_VERSION)/$(NFSUTILS_SOURCE)
+$(ARCHIVE)/$(NFS_UTILS_SOURCE):
+	$(WGET) https://sourceforge.net/projects/nfs/files/nfs-utils/$(NFS_UTILS_VERSION)/$(NFS_UTILS_SOURCE)
 
-$(D)/nfs_utils: $(D)/bootstrap $(D)/e2fsprogs $(ARCHIVE)/$(NFSUTILS_SOURCE)
+$(D)/nfs_utils: $(D)/bootstrap $(D)/e2fsprogs $(ARCHIVE)/$(NFS_UTILS_SOURCE)
 	$(START_BUILD)
-	$(REMOVE)/nfs-utils-$(NFSUTILS_VERSION)
-	$(UNTAR)/$(NFSUTILS_SOURCE)
-	$(SET) -e; cd $(BUILD_TMP)/nfs-utils-$(NFSUTILS_VERSION); \
-		$(call post_patch,$(NFSUTILS_PATCH)); \
+	$(REMOVE)/nfs-utils-$(NFS_UTILS_VERSION)
+	$(UNTAR)/$(NFS_UTILS_SOURCE)
+	$(SET) -e; cd $(BUILD_TMP)/nfs-utils-$(NFS_UTILS_VERSION); \
+		$(call post_patch,$(NFS_UTILS_PATCH)); \
 		$(CONFIGURE) \
 			CC_FOR_BUILD=$(TARGET)-gcc \
 			--prefix=/usr \
@@ -1301,8 +1304,8 @@ $(D)/nfs_utils: $(D)/bootstrap $(D)/e2fsprogs $(ARCHIVE)/$(NFSUTILS_SOURCE)
 	$(SILENT)install -m 755 $(SKEL_ROOT)/etc/init.d/nfs-kernel-server $(TARGET_DIR)/etc/init.d/
 	$(SILENT)install -m 644 $(SKEL_ROOT)/etc/exports $(TARGET_DIR)/etc/
 	$(SILENT)rm -f $(addprefix $(TARGET_DIR)/sbin/,mount.nfs mount.nfs4 umount.nfs umount.nfs4 osd_login)
-	$(SILENT)rm -f $(addprefix $(TARGET_DIR)/usr/sbin/,mountstats nfsiostat nfsstat rpcdebug showmount sm-notify start-statd)
-	$(REMOVE)/nfs-utils-$(NFSUTILS_VERSION)
+	$(SILENT)rm -f $(addprefix $(TARGET_DIR)/usr/sbin/,mountstats nfsiostat sm-notify start-statd)
+	$(REMOVE)/nfs-utils-$(NFS_UTILS_VERSION)
 	$(TOUCH)
 
 #
@@ -1391,7 +1394,7 @@ ETHTOOL_VERSION = 6
 ETHTOOL_SOURCE = ethtool-$(ETHTOOL_VERSION).tar.gz
 
 $(ARCHIVE)/$(ETHTOOL_SOURCE):
-	$(WGET) http://downloads.openwrt.org/sources/$(ETHTOOL_SOURCE)
+	$(WGET) https://downloads.openwrt.org/sources/$(ETHTOOL_SOURCE)
 
 $(D)/ethtool: $(D)/bootstrap $(ARCHIVE)/$(ETHTOOL_SOURCE)
 	$(START_BUILD)
@@ -1429,7 +1432,7 @@ $(D)/samba: $(D)/bootstrap $(ARCHIVE)/$(SAMBA_SOURCE)
 		$(BUILDENV) \
 		libreplace_cv_HAVE_GETADDRINFO=no \
 		libreplace_cv_READDIR_NEEDED=no \
-		./configure $(CONFIGURE_SILENT) \
+		./configure $(MAKE_TRACE) \
 			--build=$(BUILD) \
 			--host=$(TARGET) \
 			--prefix= \
@@ -1524,7 +1527,7 @@ WIRELESS_TOOLS_SOURCE = wireless_tools.$(WIRELESS_TOOLS_VERSION).tar.gz
 WIRELESS_TOOLS_PATCH = wireless-tools.$(WIRELESS_TOOLS_VERSION).patch
 
 $(ARCHIVE)/$(WIRELESS_TOOLS_SOURCE):
-	$(WGET) http://www.hpl.hp.com/personal/Jean_Tourrilhes/Linux/$(WIRELESS_TOOLS_SOURCE)
+	$(WGET) https://www.hpl.hp.com/personal/Jean_Tourrilhes/Linux/$(WIRELESS_TOOLS_SOURCE)
 
 $(D)/wireless_tools: $(D)/bootstrap $(ARCHIVE)/$(WIRELESS_TOOLS_SOURCE)
 	$(START_BUILD)
@@ -1544,7 +1547,7 @@ LIBNL_VERSION = 2.0
 LIBNL_SOURCE = libnl-$(LIBNL_VERSION).tar.gz
 
 $(ARCHIVE)/$(LIBNL_SOURCE):
-	$(WGET) http://www.carisma.slowglass.com/~tgr/libnl/files/$(LIBNL_SOURCE)
+	$(WGET) https://www.carisma.slowglass.com/~tgr/libnl/files/$(LIBNL_SOURCE)
 
 $(D)/libnl: $(D)/bootstrap $(D)/openssl $(ARCHIVE)/$(LIBNL_SOURCE)
 	$(START_BUILD)
@@ -1684,7 +1687,7 @@ OPENSSH_VERSION = 7.5p1
 OPENSSH_SOURCE = openssh-$(OPENSSH_VERSION).tar.gz
 
 $(ARCHIVE)/$(OPENSSH_SOURCE):
-	$(WGET) http://artfiles.org/openbsd/OpenSSH/portable/$(OPENSSH_SOURCE)
+	$(WGET) https://artfiles.org/openbsd/OpenSSH/portable/$(OPENSSH_SOURCE)
 
 $(D)/openssh: $(D)/bootstrap $(D)/zlib $(D)/openssl $(ARCHIVE)/$(OPENSSH_SOURCE)
 	$(START_BUILD)
@@ -1692,7 +1695,7 @@ $(D)/openssh: $(D)/bootstrap $(D)/zlib $(D)/openssl $(ARCHIVE)/$(OPENSSH_SOURCE)
 	$(UNTAR)/$(OPENSSH_SOURCE)
 	$(SET) -e; cd $(BUILD_TMP)/openssh-$(OPENSSH_VERSION); \
 		CC=$(TARGET)-gcc; \
-		./configure $(CONFIGURE_SILENT) \
+		./configure $(MAKE_TRACE) \
 			$(CONFIGURE_OPTS) \
 			--prefix=/usr \
 			--mandir=/.remove \
@@ -1748,7 +1751,7 @@ $(D)/usb-modeswitch: $(D)/bootstrap $(D)/libusb $(D)/usb-modeswitch-data $(ARCHI
 		$(call post_patch,$(USB_MODESWITCH_PATCH)); \
 		sed -i -e "s/= gcc/= $(TARGET)-gcc/" -e "s/-l usb/-lusb -lusb-1.0 -lpthread -lrt/" -e "s/install -D -s/install -D --strip-program=$(TARGET)-strip -s/" Makefile; \
 		sed -i -e "s/@CC@/$(TARGET)-gcc/g" jim/Makefile.in; \
-		$(BUILDENV) $(MAKE) DESTDIR=$(TARGET_DIR) install-static; \
+		$(BUILDENV) $(MAKE) DESTDIR=$(TARGET_DIR); \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
 	$(REMOVE)/usb-modeswitch-$(USB_MODESWITCH_VERSION)
 	$(TOUCH)
