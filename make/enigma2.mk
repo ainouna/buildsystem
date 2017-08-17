@@ -172,10 +172,10 @@ $(D)/enigma2.do_prepare: | $(ENIGMA2_DEPS)
 
 $(SOURCE_DIR)/enigma2/config.status:
 	$(SILENT)cd $(SOURCE_DIR)/enigma2; \
-		./autogen.sh; \
+		./autogen.sh $(MAKE_TRACE); \
 		sed -e 's|#!/usr/bin/python|#!$(HOST_DIR)/bin/python|' -i po/xml2po.py; \
 		$(BUILDENV) \
-		./configure $(CONFIGURE_SILENT) \
+		./configure $(MAKE_TRACE) \
 			--build=$(BUILD) \
 			--host=$(TARGET) \
 			$(E_CONFIG_OPTS) \

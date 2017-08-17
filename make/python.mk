@@ -11,7 +11,7 @@ PYTHON_BUILD = \
 	LDSHARED="$(TARGET)-gcc -shared" \
 	PYTHONPATH=$(TARGET_DIR)/$(PYTHON_DIR)/site-packages \
 	CPPFLAGS="$(TARGET_CPPFLAGS) -I$(TARGET_DIR)/$(PYTHON_INCLUDE_DIR)" \
-	$(HOST_DIR)/bin/python ./setup.py $(SILENT_OPT) build --executable=/usr/bin/python
+	$(HOST_DIR)/bin/python ./setup.py $(MAKE_TRACE) build --executable=/usr/bin/python
 
 PYTHON_INSTALL = \
 	CC="$(TARGET)-gcc" \
@@ -20,7 +20,7 @@ PYTHON_INSTALL = \
 	LDSHARED="$(TARGET)-gcc -shared" \
 	PYTHONPATH=$(TARGET_DIR)/$(PYTHON_DIR)/site-packages \
 	CPPFLAGS="$(TARGET_CPPFLAGS) -I$(TARGET_DIR)/$(PYTHON_INCLUDE_DIR)" \
-	$(HOST_DIR)/bin/python ./setup.py $(SILENT_OPT) install --root=$(TARGET_DIR) --prefix=/usr
+	$(HOST_DIR)/bin/python ./setup.py $(MAKE_TRACE) install --root=$(TARGET_DIR) --prefix=/usr
 
 #
 # host_python
@@ -81,7 +81,7 @@ $(D)/python: $(D)/bootstrap $(D)/host_python $(D)/ncurses $(D)/zlib $(D)/openssl
 		$(BUILDENV) \
 		autoreconf --verbose --install --force Modules/_ctypes/libffi; \
 		autoconf; \
-		./configure $(SILENT_OPT) \
+		./configure $(MAKE_TRACE) \
 			--build=$(BUILD) \
 			--host=$(TARGET) \
 			--target=$(TARGET) \
