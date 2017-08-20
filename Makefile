@@ -65,11 +65,17 @@ ifeq ($(IMAGE), $(filter $(IMAGE), neutrino neutrino-wlandriver))
 	@echo "LOCAL_NEUTRINO_CFLAGS        : $(LOCAL_NEUTRINO_CFLAGS)"
 	@echo "LOCAL_NEUTRINO_DEPS          : $(LOCAL_NEUTRINO_DEPS)"
 else ifeq ($(IMAGE), $(filter $(IMAGE), enigma2 enigma2-wlandriver))
-	@echo "E2_DIFF                      : $(E2_DIFF)"
-	@echo "E2_REVISION                  : $(E2_REVISION)"
-	@echo "LOCAL_ENIGMA2_BUILD_OPTIONS  : $(LOCAL_ENIGMA2_BUILD_OPTIONS)"
-	@echo "LOCAL_ENIGMA2_CPPFLAGS       : $(LOCAL_ENIGMA2_CPPFLAGS)"
-	@echo "LOCAL_ENIGMA2_DEPS           : $(LOCAL_ENIGMA2_DEPS)"
+	@echo "E2_DIFF                     : $(E2_DIFF)"
+	@echo "E2_REVISION                 : $(E2_REVISION)"
+	@echo "LOCAL_ENIGMA2_BUILD_OPTIONS : $(LOCAL_ENIGMA2_BUILD_OPTIONS)"
+	@echo "LOCAL_ENIGMA2_CPPFLAGS      : $(LOCAL_ENIGMA2_CPPFLAGS)"
+	@echo "LOCAL_ENIGMA2_DEPS          : $(LOCAL_ENIGMA2_DEPS)"
+else ifeq ($(IMAGE), $(filter $(IMAGE), tvheadend))
+	@echo "TVHEADEND_DIFF                : $(TVHEADEND_DIFF)"
+	@echo "THVEADEND_REVISION            : $(TVHEADEND_REVISION)"
+	@echo "LOCAL_TVHEADEND_BUILD_OPTIONS : $(LOCAL_TVHEADEND_BUILD_OPTIONS)"
+	@echo "LOCAL_TVHEADEND_CPPFLAGS      : $(LOCAL_TVHEADEND_CPPFLAGS)"
+	@echo "LOCAL_TVHEADEND_DEPS          : $(LOCAL_TVHEADEND_DEPS)"
 endif
 	@echo '================================================================================'
 	@echo ""
@@ -116,6 +122,8 @@ include make/enigma2-release.mk
 include make/neutrino.mk
 include make/neutrino-plugins.mk
 include make/neutrino-release.mk
+include make/tvheadend.mk
+include make/tvheadend-release.mk
 include make/cleantargets.mk
 include make/patches.mk
 include make/bootstrap.mk
@@ -190,3 +198,4 @@ PHONY += update update-self
 # parallel, which is useful on multi-processor / multi-core machines
 .NOTPARALLEL:
 endif
+

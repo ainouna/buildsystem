@@ -321,6 +321,8 @@ BUILD_CONFIG       = build-neutrino
 else ifeq ($(IMAGE), neutrino-wlandriver)
 BUILD_CONFIG       = build-neutrino
 WLANDRIVER         = WLANDRIVER=wlandriver
+else ifeq ($(IMAGE), tvheadend)
+BUILD_CONFIG       = build-tvheadend
 else
 BUILD_CONFIG       = build-neutrino
 endif

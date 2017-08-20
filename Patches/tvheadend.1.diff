@@ -1,0 +1,214 @@
+--- tvheadend.org/Makefile
++++ tvheadend/Makefile
+@@ -97,8 +97,10 @@
+ 	$(MAKE) all
+ endif
+ 
+-FFMPEG_PREFIX := $(BUILDDIR)/ffmpeg/build/ffmpeg
+-FFMPEG_LIBDIR := $(FFMPEG_PREFIX)/lib
++#FFMPEG_PREFIX := $(BUILDDIR)/ffmpeg/build/ffmpeg
++#FFMPEG_LIBDIR := $(FFMPEG_PREFIX)/lib
++FFMPEG_PREFIX := ./ffmpeg
++FFMPEG_LIBDIR := ../../tufsbox/cdkroot/usr/lib/pkgconfig
+ FFMPEG_CONFIG := \
+     PKG_CONFIG_LIBDIR=$(FFMPEG_LIBDIR)/pkgconfig $(PKG_CONFIG) \
+     --define-variable=prefix=$(FFMPEG_PREFIX) --static
+--- tvheadend.org/configure
++++ tvheadend/configure
+@@ -110,6 +110,11 @@
+       opt=${opt#*-}
+       disable $opt 1
+       ;;
++    with-boxtype*)
++      boxtype=$val
++      _BOXTYPE="$(toupper $val)"
++      CFLAGS+=" -D$_BOXTYPE"
++    ;;
+   esac
+ done
+ 
+@@ -156,7 +161,7 @@
+ 
+ check_cc_snippet atomic64 '#include <stdint.h>
+ uint64_t test(uint64_t *ptr){
+-return __sync_fetch_and_add(ptr, 1);
++return __sync_fetch_and_add(ptr, 1)
+ }'
+ 
+ check_cc_snippet atomic_time_t '#include <stdint.h>
+@@ -664,6 +669,9 @@
+ 
+ # Output config
+ print_config
++echo "Building for receiver:"
++echo "  $boxtype"
++echo ""
+ echo "Final Binary:"
+ echo "  $BUILDDIR/tvheadend"
+ echo ""
+--- tvheadend.org/src/tvheadend.h
++++ tvheadend/src/tvheadend.h
+@@ -70,12 +70,12 @@
+ 
+ htsmsg_t *tvheadend_capabilities_list(int check);
+ 
+-typedef struct str_list
++typedef struct strg_list
+ {
+   int max;
+   int num;
+   char **str;
+-} str_list_t;
++} strg_list_t;
+ 
+ #define PTS_UNSET INT64_C(0x8000000000000000)
+ #define PTS_MASK  INT64_C(0x00000001ffffffff)
+@@ -871,4 +871,18 @@
+ #define PRItime_t       "ld"
+ #endif
+ 
++/* VFD output */
++#if defined(TF7700)
++#define VFD_DEVICE "/dev/fplarge"
++#else
++#define VFD_DEVICE "/dev/vfd"
++#endif
++#define VFDDISPLAYCHARS 0xc0425a00
++
++struct vfd_ioctl_data {
++  unsigned char start;
++  unsigned char data[64];
++  unsigned char length;
++};
++
+ #endif /* TVHEADEND_H */
+--- tvheadend.org/src/input/mpegts.c
++++ tvheadend/src/input/mpegts.c
+@@ -24,8 +24,8 @@
+ extern memoryinfo_t mpegts_input_table_memoryinfo;
+ 
+ void
+-mpegts_init ( int linuxdvb_mask, int nosatip, str_list_t *satip_client,
+-              str_list_t *tsfiles, int tstuners )
++mpegts_init ( int linuxdvb_mask, int nosatip, strg_list_t *satip_client,
++              strg_list_t *tsfiles, int tstuners )
+ {
+   /* Register classes (avoid API 400 errors due to not yet defined) */
+   idclass_register(&mpegts_network_class);
+--- tvheadend.org/src/input/mpegts.h
++++ tvheadend/src/input/mpegts.h
+@@ -73,8 +73,8 @@
+  * Setup / Tear down
+  * *************************************************************************/
+ 
+-void mpegts_init ( int linuxdvb_mask, int nosatip, str_list_t *satip_client,
+-                   str_list_t *tsfiles, int tstuners );
++void mpegts_init ( int linuxdvb_mask, int nosatip, strg_list_t *satip_client,
++                   strg_list_t *tsfiles, int tstuners );
+ void mpegts_done ( void );
+ 
+ /* **************************************************************************
+--- tvheadend.org/src/input/mpegts/satip/satip.c
++++ tvheadend/src/input/mpegts/satip/satip.c
+@@ -805,7 +805,7 @@
+ static mtimer_t satip_discovery_static_timer;
+ static mtimer_t satip_discovery_timerq;
+ static mtimer_t satip_discovery_msearch_timer;
+-static str_list_t *satip_static_clients;
++static strg_list_t *satip_static_clients;
+ 
+ static void
+ satip_discovery_destroy(satip_discovery_t *d, int unlink)
+@@ -1275,7 +1275,7 @@
+  * Initialization
+  */
+ 
+-void satip_init ( int nosatip, str_list_t *clients )
++void satip_init ( int nosatip, strg_list_t *clients )
+ {
+   idclass_register(&satip_device_class);
+ 
+--- tvheadend.org/src/input/mpegts/satip/satip.h
++++ tvheadend/src/input/mpegts/satip/satip.h
+@@ -22,7 +22,7 @@
+ 
+ void satip_device_discovery_start( void );
+ 
+-void satip_init( int nosatip, str_list_t *clients );
++void satip_init( int nosatip, strg_list_t *clients );
+ void satip_done( void );
+ 
+ #endif /* __TVH_SATIP_H__ */
+--- tvheadend.org/src/main.c
++++ tvheadend/src/main.c
+@@ -82,6 +82,7 @@
+ #include <openssl/err.h>
+ #include <openssl/rand.h>
+ #include <openssl/engine.h>
++#include <stropts.h>
+ 
+ pthread_t main_tid;
+ 
+@@ -742,6 +743,10 @@
+   } randseed;
+   extern int dvb_bouquets_parse;
+ 
++ /* for writing to VFD */
++  int file_vfd = -1;
++  struct vfd_ioctl_data vfddata;
++
+   main_tid = pthread_self();
+ 
+   /* Setup global mutexes */
+@@ -805,9 +810,9 @@
+              *opt_user_agent   = NULL,
+              *opt_satip_bindaddr = NULL;
+   static char *__opt_satip_xml[10];
+-  str_list_t  opt_satip_xml    = { .max = 10, .num = 0, .str = __opt_satip_xml };
++  strg_list_t  opt_satip_xml    = { .max = 10, .num = 0, .str = __opt_satip_xml };
+   static char *__opt_satip_tsfile[10];
+-  str_list_t  opt_tsfile       = { .max = 10, .num = 0, .str = __opt_satip_tsfile };
++  strg_list_t  opt_tsfile       = { .max = 10, .num = 0, .str = __opt_satip_tsfile };
+   cmdline_opt_t cmdline_opts[] = {
+     {   0, NULL,        N_("Generic options"),         OPT_BOOL, NULL         },
+     { 'h', "help",      N_("Show this page"),          OPT_BOOL, &opt_help    },
+@@ -936,7 +941,7 @@
+     else if (opt->type == OPT_INT)
+       *((int*)opt->param) = atoi(argv[i]);
+     else if (opt->type == OPT_STR_LIST) {
+-      str_list_t *strl = opt->param;
++      strg_list_t *strl = opt->param;
+       if (strl->num < strl->max)
+         strl->str[strl->num++] = argv[i];
+     }
+@@ -1276,6 +1281,29 @@
+          getpid(), getuid(), getgid(), getcwd(buf, sizeof(buf)),
+          hts_settings_get_root());
+ 
++/* Sign on to VFD */
++#if defined(OCTAGON1008) || defined(FORTIS_HDBOX) || defined(ATEVIO7500) || defined(HS7420) || defined(HS7429) || defined(SPARK7162) || defined(TF7700)
++	char txtstr[] = "Tvheadend";
++#elif defined(HS7810A) || defined(HS7119) || defined(HS7819) || defined(SPARK)
++	char txtstr[] = "tvHE";
++#endif
++#if !defined(HS7110) //models without front panel display
++	vfddata.start = 0;
++	vfddata.length = strlen(txtstr);
++	memset(vfddata.data, 0, 64);
++	memcpy(vfddata.data, txtstr, vfddata.length);
++
++	if (file_vfd == -1)
++	{
++		file_vfd = open(VFD_DEVICE, O_WRONLY);
++	}
++	if (file_vfd > -1)
++	{
++		write(file_vfd, vfddata.data, vfddata.length);
++		close(file_vfd);
++		file_vfd = -1;
++	}
++#endif
+   if(opt_abort)
+     abort();
+ 
+
