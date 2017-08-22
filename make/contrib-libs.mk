@@ -1189,8 +1189,8 @@ $(D)/libvorbisidec: $(D)/bootstrap $(D)/libogg $(ARCHIVE)/$(LIBVORBISIDEC_SOURCE
 #
 # libiconv
 #
-LIBICONV_VERSION = 1.14
-LIBICONV_SOURCE = libiconv-$(ICONV_VERSION).tar.gz
+LIBICONV_VERSION = 1.15
+LIBICONV_SOURCE = libiconv-$(LIBICONV_VERSION).tar.gz
 
 $(ARCHIVE)/$(LIBICONV_SOURCE):
 	$(WGET) https://ftp.gnu.org/gnu/libiconv/$(LIBICONV_SOURCE)
@@ -2632,3 +2632,4 @@ $(D)/glib_networking: $(D)/bootstrap $(D)/gnutls $(D)/libglib2 $(ARCHIVE)/$(GLIB
 		$(MAKE) install prefix=$(TARGET_DIR) giomoduledir=$(TARGET_DIR)/usr/lib/gio/modules
 	$(REMOVE)/glib-networking-$(GLIB_NETWORKING_VERSION)
 	$(TOUCH)
+
