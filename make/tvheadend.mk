@@ -5,53 +5,8 @@
 TVHEADEND_DEPS  = $(D)/bootstrap $(D)/openssl $(D)/zlib
 TVHEADEND_DEPS += $(LOCAL_TVHEADEND_DEPS)
 
-ifeq ($(BOXTYPE),spark)
-TVHEADEND_CONFIG_OPTS += --enable-spark
-endif
-
-ifeq ($(BOXTYPE),spark7162)
-TVHEADEND_CONFIG_OPTS += --enable-spark7162n
-TVHEADEND_DEPS += ntp
-endif
-
-ifeq ($(BOXTYPE),fortis_hdbox)
-TVHEADEND_CONFIG_OPTS += --enable-fortis_hdbox
-endif
-
-ifeq ($(BOXTYPE),octagon1008)
-TVHEADEND_CONFIG_OPTS += --enable-octagon1008
-endif
-
-ifeq ($(BOXTYPE),atevio7500)
-TVHEADEND_CONFIG_OPTS += --enable-atevio7500
-endif
-
-ifeq ($(BOXTYPE),hs7110)
-TVHEADEND_CONFIG_OPTS += --enable-hs7110
-endif
-
-ifeq ($(BOXTYPE),hs7420)
-TVHEADEND_CONFIG_OPTS += --enable-hs7420
-endif
-
-ifeq ($(BOXTYPE),hs7810a)
-TVHEADEND_CONFIG_OPTS += --enable-hs7810a
-endif
-
-ifeq ($(BOXTYPE),hs7119)
-TVHEADEND_CONFIG_OPTS += --enable-hs7119
-endif
-
-ifeq ($(BOXTYPE),hs7429)
-TVHEADEND_CONFIG_OPTS += --enable-hs7429
-endif
-
-ifeq ($(BOXTYPE),hs7819)
-TVHEADEND_CONFIG_OPTS += --enable-hs7819
-endif
-
 ifeq ($(BOXTYPE), tf7700)
-YAUD_ENIGMA2_DEPS = $(D)/uboot_tf7700 $(D)/u-boot.ftfd $(D)/tfinstaller
+TVHEADEND_DEPS += $(D)/uboot_tf7700 $(D)/u-boot.ftfd $(D)/tfinstaller
 endif
 
 TVHEADEND_CONFIG_OPTS +=$(LOCAL_TVHEADEND_BUILD_OPTIONS)
@@ -67,7 +22,6 @@ yaud-tvheadend: yaud-none $(D)/tvheadend $(D)/tvheadend_release
 	@echo -e "$(TERM_NORMAL)"
 	@echo "***************************************************************"
 	@touch $(D)/build_complete
-
 
 #
 # tvheadend
@@ -130,12 +84,14 @@ $(SOURCE_DIR)/tvheadend/config.status:
 			--disable-libfdkaac \
 			--disable-libfdkaac-static \
 			--disable-uriparser \
+			--disable-pcre \
+			--disable-pcre2 \
 			--disable-dvben50221 \
 			--disable-dbus_1 \
 			--with-boxtype=$(BOXTYPE) \
 			PKG_CONFIG=$(PKG_CONFIG) \
 			PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) \
-			PY_PATH=$(targetprefix)/usr \
+			PY_PATH=$(TARGET_DIR)/usr \
 			$(PLATFORM_CPPFLAGS)
 	@touch $@
 
