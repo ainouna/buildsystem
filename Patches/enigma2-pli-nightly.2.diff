@@ -5502,9 +5502,9 @@ diff -Nur '--exclude-from=diff-exclude' enigma2.org/lib/python/Plugins/SystemPlu
 +			info=service.info()
 +			crypted = info and info.getInfo(iServiceInformation.sIsCrypted) or -1
 +			if crypted == 1 : #set crypt symbol
-+				evfd.getInstance().vfd_set_icon(0x13,1)
++				evfd.getInstance().vfd_set_icon(0x13,True)
 +			else:
-+				evfd.getInstance().vfd_set_icon(0x13,0)
++				evfd.getInstance().vfd_set_icon(0x13,False)
 +
 +	def checkAudioTracks(self):
 +		self.dolbyAvailable = False
@@ -5525,16 +5525,16 @@ diff -Nur '--exclude-from=diff-exclude' enigma2.org/lib/python/Plugins/SystemPlu
 +	def showDolby(self):
 +		print "[showDolby]"
 +		if self.dolbyAvailable:
-+			evfd.getInstance().vfd_set_icon(0x17,1)
++			evfd.getInstance().vfd_set_icon(0x17,True)
 +		else:
-+			evfd.getInstance().vfd_set_icon(0x17,0)
++			evfd.getInstance().vfd_set_icon(0x17,False)
 +
 +	def showMp3(self):
 +		print "[showMp3]"
 +		if self.mp3Available:
-+			evfd.getInstance().vfd_set_icon(0x15,1)
++			evfd.getInstance().vfd_set_icon(0x15,True)
 +		else:
-+			evfd.getInstance().vfd_set_icon(0x15,0)
++			evfd.getInstance().vfd_set_icon(0x15,False)
 +
 +	def __evUpdatedEventInfo(self):
 +		print "[__evUpdatedEventInfo]"
@@ -5551,9 +5551,9 @@ diff -Nur '--exclude-from=diff-exclude' enigma2.org/lib/python/Plugins/SystemPlu
 +	def __evSeekableStatusChanged(self):
 +		print "[__evSeekableStatusChanged]"
 +		if self.getSeekState():
-+			evfd.getInstance().vfd_set_icon(0x1A,1)
++			evfd.getInstance().vfd_set_icon(0x1A,True)
 +		else:
-+			evfd.getInstance().vfd_set_icon(0x1A,0)
++			evfd.getInstance().vfd_set_icon(0x1A,False)
 +
 +	def __evVideoSizeChanged(self):
 +		print "[__evVideoSizeChanged]"
@@ -5562,17 +5562,17 @@ diff -Nur '--exclude-from=diff-exclude' enigma2.org/lib/python/Plugins/SystemPlu
 +			info=service.info()
 +			height = info and info.getInfo(iServiceInformation.sVideoHeight) or -1
 +			if height > 576 : #set HD symbol
-+				evfd.getInstance().vfd_set_icon(0x11,1)
++				evfd.getInstance().vfd_set_icon(0x11,True)
 +			else:
-+				evfd.getInstance().vfd_set_icon(0x11,0)
++				evfd.getInstance().vfd_set_icon(0x11,False)
 +
 +	def gotRecordEvent(self, service, event):
 +		recs = self.session.nav.getRecordings()
 +		nrecs = len(recs)
 +		if nrecs > 0: #set rec symbol
-+			evfd.getInstance().vfd_set_icon(0x1e,1)
++			evfd.getInstance().vfd_set_icon(0x1e,True)
 +		else:
-+			evfd.getInstance().vfd_set_icon(0x1e,0)
++			evfd.getInstance().vfd_set_icon(0x1e,False)
 +
 +VFDIconsInstance = None
 +
@@ -10220,6 +10220,17 @@ diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/SystemP
  		if os.path.isfile('/proc/stb/fp/temp_sensor_avs'):
  			temperature = open("/proc/stb/fp/temp_sensor_avs").readline().replace('\n','')
  		if os.path.isfile("/sys/devices/virtual/thermal/thermal_zone0/temp"):
+--- enigma2/lib/python/Components/Network.py
++++ enigma2/lib/python/Components/Network.py
+@@ -331,7 +331,7 @@
+ 
+ 	def setAdapterAttribute(self, iface, attribute, value):
+ 		print "setting for adapter", iface, "attribute", attribute, " to value", value
+-		if iface in elf.ifaces:
++		if iface in self.ifaces:
+ 			self.ifaces[iface][attribute] = value
+ 
+ 	def removeAdapterAttribute(self, iface, attribute):
 --- enigma2.org/lib/python/Screens/About.py
 +++ enigma2/lib/python/Screens/About.py
 @@ -36,7 +36,7 @@
