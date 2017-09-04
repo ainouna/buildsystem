@@ -112,12 +112,13 @@ PACKAGES="\
 	${UBUNTU:+libltdl-dev}                                       ${FEDORA:+libtool-ltdl-devel}                    \
 	                                                             ${FEDORA:+byacc}                                 \
 	${UBUNTU:+libssl-dev}           ${SUSE:+libopenssl-devel}    ${FEDORA:+openssl-devel}                         \
+	${UBUNTU:+libmount-dev}                                                                                       \
 ";
 
 if [ "$UBUNTU" == 1 ]; then
 	UBUNTU_VERSION=`lsb_release -r | grep "Release" | cut -f2 | cut -d . -f1`
 elif [ "$UBUNTU" == 2 ]; then
-	MINT_VERSION=`lsb_release -r | grep "Release" | cut -f2`
+	MINT_VERSION=`lsb_release -r | grep "Release" | cut -f2 | cut -d . -f1`
 fi
 if ([ "$UBUNTU" == 1  ] &&  [ "$UBUNTU_VERSION" -ge "16" ]) || ([ "$UBUNTU" == 2 ] && [ "$MINT_VERSION" -ge "18" ]); then
 	PACKAGES="$PACKAGES \
