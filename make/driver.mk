@@ -6,11 +6,12 @@ driver-clean:
 	rm -f $(D)/driver
 
 driver-symlink:
+	$(START_BUILD)
 	$(SET) -e; cd $(DRIVER_DIR); \
 		rm -f player2 multicom; \
 		ln -s $(PLAYER2_LINK) player2; \
 		ln -s $(MULTICOM_LINK) multicom; \
-		rm -f .config; printf "export CONFIG_PLAYER_$(PLAYER_VERSION_DRIVER)=y\nexport CONFIG_MULTICOM$(MULTICOM_VERSION)=y\n" > .config; \
+		rm -f .config; printf "export CONFIG_PLAYER_$(PLAYER_VER_DRIVER)=y\nexport CONFIG_MULTICOM$(MULTICOM_VER)=y\n" > .config; \
 		cd include; \
 		rm -f stmfb player2 multicom; \
 		ln -s stmfb-3.1_stm24_0104 stmfb; \
@@ -25,9 +26,12 @@ driver-symlink:
 	$(SILENT)$(if $(PLAYER228),cp $(DRIVER_DIR)/player2/linux/include/linux/dvb/stm_dvb.h $(TARGET_DIR)/usr/include/linux/dvb)
 	$(SILENT)$(if $(PLAYER228),cp $(DRIVER_DIR)/player2/linux/include/linux/dvb/stm_video.h $(TARGET_DIR)/usr/include/linux/dvb)
 	@touch $(D)/$(notdir $@)
+	@echo "--------------------------------------------------------------"
+	@echo -e "Build of $(TERM_GREEN_BOLD)$(PKG_NAME)$(TERM_NORMAL) completed."
+	@echo
 
 driver: $(D)/driver
-$(D)/driver: $(DRIVER_DIR)/Makefile $(D)/bootstrap $(D)/linux-kernel
+$(D)/driver: $(DRIVER_DIR)/Makefile $(D)/bootstrap $(D)/kernel
 	$(START_BUILD)
 	$(MAKE) -C $(KERNEL_DIR) ARCH=sh CONFIG_DEBUG_SECTION_MISMATCH=y \
 		CONFIG_MODULES_PATH=$(CROSS_DIR)/target \
@@ -47,5 +51,5 @@ $(D)/driver: $(DRIVER_DIR)/Makefile $(D)/bootstrap $(D)/linux-kernel
 		BIN_DEST=$(TARGET_DIR)/bin \
 		INSTALL_MOD_PATH=$(TARGET_DIR) \
 		modules_install
-	$(DEPMOD) -ae -b $(TARGET_DIR) -F $(KERNEL_DIR)/System.map -r $(KERNEL_VERSION)
+	$(DEPMOD) -ae -b $(TARGET_DIR) -F $(KERNEL_DIR)/System.map -r $(KERNEL_VER)
 	$(TOUCH)

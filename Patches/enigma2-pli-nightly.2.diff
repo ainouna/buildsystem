@@ -1935,7 +1935,7 @@ diff -Nur '--exclude-from=diff-exclude' enigma2.org/lib/dvb/dvb.h enigma2/lib/dv
  		fetype = feCable;
  	}
  	else if (!strcmp(type, "ATSC"))
-@@ -2838,11 +2833,8 @@
+@@ -2838,11 +2833,9 @@
  		case SYS_ISDBS:		ss << " ISDBS"; break;
  		case SYS_ISDBT:		ss << " ISDBT"; break;
  		case SYS_UNDEFINED:	ss << " UNDEFINED"; break;
@@ -1945,6 +1945,7 @@ diff -Nur '--exclude-from=diff-exclude' enigma2.org/lib/dvb/dvb.h enigma2/lib/dv
  		case SYS_DVBT2:		ss << " DVBT2"; break;
 -		case SYS_TURBO:		ss << " TURBO"; break;
 -		case SYS_DTMB:		ss << " DTMB"; break;
++		case SYS_DMBTH:		ss << " UNDEFINED"; break;
  		}
  	}
  
@@ -9856,7 +9857,7 @@ diff -Nur '--exclude-from=diff-exclude' enigma2.org/m4/ax_python_devel.m4 enigma
  			print (distutils.sysconfig.get_python_inc ());"`
  		if test -n "${python_path}"; then
 -			python_path="-I$python_path"
-+			python_path="-I$PY_PATH/include/python$PYTHON_VERSION"
++			python_path="-I$PY_PATH/include/python$PYTHON_VER_MAJOR"
  		fi
  		PYTHON_CPPFLAGS=$python_path
  	fi
@@ -9865,7 +9866,7 @@ diff -Nur '--exclude-from=diff-exclude' enigma2.org/m4/ax_python_devel.m4 enigma
  			  import os; \
  			  print (os.path.join(f(plat_specific=1, standard_lib=1), 'config'));"`
 -			PYTHON_LDFLAGS="-L$ac_python_libdir -lpython$ac_python_version"
-+			PYTHON_LDFLAGS="-L$PY_PATH/include/python$PYTHON_VERSION -lpython$ac_python_version"
++			PYTHON_LDFLAGS="-L$PY_PATH/include/python$PYTHON_VER_MAJOR -lpython$ac_python_version"
 +#			PYTHON_LDFLAGS="-L$ac_python_libdir -lpython$ac_python_version"
  		fi
  
@@ -9876,7 +9877,7 @@ diff -Nur '--exclude-from=diff-exclude' enigma2.org/m4/ax_python_devel.m4 enigma
  	if test -z "$PYTHON_SITE_PKG"; then
 -		PYTHON_SITE_PKG=`$PYTHON -c "import distutils.sysconfig; \
 -			print (distutils.sysconfig.get_python_lib(0,0));"`
-+		PYTHON_SITE_PKG="$PY_PATH/lib/python$PYTHON_VERSION/site-packages"
++		PYTHON_SITE_PKG="$PY_PATH/lib/python$PYTHON_VER_MAJOR/site-packages"
 +#		PYTHON_SITE_PKG=`$PYTHON -c "import distutils.sysconfig; \
 +#			print (distutils.sysconfig.get_python_lib(0,0));"`
  	fi
@@ -10231,6 +10232,18 @@ diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/SystemP
  			self.ifaces[iface][attribute] = value
  
  	def removeAdapterAttribute(self, iface, attribute):
+#@@ -553,7 +553,10 @@
+# 				callback(True)
+# 
+# 	def sysfsPath(self, iface):
+#-		return '/sys/class/net/' + iface
+#+		if iface is None:
+#+			return '/sys/class/net/'
+#+		else
+#+			return '/sys/class/net/' + iface
+# 
+# 	def isWirelessInterface(self, iface):
+# 		if iface in self.wlan_interfaces:
 --- enigma2.org/lib/python/Screens/About.py
 +++ enigma2/lib/python/Screens/About.py
 @@ -36,7 +36,7 @@

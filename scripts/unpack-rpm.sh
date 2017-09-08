@@ -18,8 +18,14 @@ fi
 ROOT=$(mktemp -d --tmpdir=${TEMPROOT} unpack-rpm.XXXXXX)
 cd $ROOT
 for f in $FILES; do
-	printf "%60.60s: " "${f##*/}"
-	rpm2cpio $f | cpio ${CPIO_OPTS}
+	if [ "$SILENT" != "@" ]; then
+		printf "%60.60s: " "${f##*/}"
+		rpm2cpio $f | cpio ${CPIO_OPTS}
+	else
+#		echo -n -e "Unpacking $f..."
+		rpm2cpio $f | cpio ${CPIO_OPTS} >/dev/null 2>&1
+#		echo " done."
+	fi
 done
 
 if ! test -d $TARGETDIR; then
@@ -31,3 +37,4 @@ cp -af $ROOT/$RELOCATE/* $TARGETDIR/
 
 # clean up after myself
 rm -fr $ROOT
+

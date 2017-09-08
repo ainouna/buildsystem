@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20170817.1
+# Version 20170908.1
 
 ##############################################
 
@@ -14,21 +14,30 @@ fi
 ##############################################
 
 if [ "$1" == -h ] || [ "$1" == --help ]; then
-	echo "Parameter 1: target system (1-36)"
-	echo "Parameter 2: kernel (1-2)"
-	echo "Parameter 3: optimization (1-4)"
-	echo "Parameter 4: player (1-2)"
-	echo "Parameter 5: external LCD support (1-3)"
-	echo "Parameter 6: image (Enigma=1/2 Neutrino=3/4 Tvheadend=5 (1-5)"
-	echo "Parameter 7: Neutrino variant (1-8) or Enigma2/Tvheadend diff (0-5)"
-	echo "Parameter 8: media Framework (1-3, Enigma2 only))"
-	echo "Parameter 9: destination (1-2, 1=flash, 2=USB)"
+	echo "Usage: $0 [-v | --verbose] [Parameter1 Parameter2 ... Parameter9]"
+	echo
+	echo "-v or --verbose : verbose build"
+	echo "Parameter 1     : target system (1-36)"
+	echo "Parameter 2     : kernel (1-2)"
+	echo "Parameter 3     : optimization (1-4)"
+	echo "Parameter 4     : player (1-2)"
+	echo "Parameter 5     : external LCD support (1-3)"
+	echo "Parameter 6     : image (Enigma=1/2 Neutrino=3/4 Tvheadend=5 (1-5)"
+	echo "Parameter 7     : Neutrino variant (1-8) or Enigma2/Tvheadend diff (0-5)"
+	echo "Parameter 8     : media Framework (1-3, Enigma2 only))"
+	echo "Parameter 9     : destination (1-2, 1=flash, 2=USB)"
 	exit
 fi
 
+if [ "$1" == -v ] || [ "$1" == --verbose ]; then
+	shift
+	VERBOSE_BUILD=1
+else
+	VERBOSE_BUILD=0
+fi
+export VERBOSE_BUILD
+
 ##############################################
-
-
 
 echo "                    _ _             _      _    _"
 echo "     /\            | (_)           (_)    | |  ( )"
@@ -128,52 +137,52 @@ case $1 in
 		echo "   34)  Vitamin HD5000"
 		echo "   35)  SagemCom 88 series"
 		echo "   36)  Ferguson Ariva @Link 200"
-		echo "   37)  PC"
+		echo "   37)  armbox for internal testing"
 		echo
 		read -p "Select target (1-37)? ";;
 esac
 
 case "$REPLY" in
-	 1) PLATFORM="sh4";BOXTYPE="ufs910";;
-	 2) PLATFORM="sh4";BOXTYPE="ufs912";;
-	 3) PLATFORM="sh4";BOXTYPE="ufs913";;
-	 4) PLATFORM="sh4";BOXTYPE="ufs922";;
-	 5) PLATFORM="sh4";BOXTYPE="ufc960";;
-	 6) PLATFORM="sh4";BOXTYPE="tf7700";;
-	 7) PLATFORM="sh4";BOXTYPE="fortis_hdbox";;
-	 8) PLATFORM="sh4";BOXTYPE="octagon1008";;
-#	 9) PLATFORM="sh4";BOXTYPE="atevio7500";;
-	10) PLATFORM="sh4";BOXTYPE="hs7110";;
-	11) PLATFORM="sh4";BOXTYPE="hs7119";;
-	12) PLATFORM="sh4";BOXTYPE="hs7420";;
-	13) PLATFORM="sh4";BOXTYPE="hs7429";;
-	14) PLATFORM="sh4";BOXTYPE="hs7810a";;
-	15) PLATFORM="sh4";BOXTYPE="hs7819";;
-	16) PLATFORM="sh4";BOXTYPE="ipbox55";;
-	17) PLATFORM="sh4";BOXTYPE="ipbox99";;
-	18) PLATFORM="sh4";BOXTYPE="ipbox9900";;
-	19) PLATFORM="sh4";BOXTYPE="cuberevo";;
-	20) PLATFORM="sh4";BOXTYPE="cuberevo_mini";;
-	21) PLATFORM="sh4";BOXTYPE="cuberevo_mini2";;
-	22) PLATFORM="sh4";BOXTYPE="cuberevo_250hd";;
-	23) PLATFORM="sh4";BOXTYPE="cuberevo_9500hd";;
-	24) PLATFORM="sh4";BOXTYPE="cuberevo_2000hd";;
-	25) PLATFORM="sh4";BOXTYPE="cuberevo_mini_fta";;
-	26) PLATFORM="sh4";BOXTYPE="cuberevo_3000hd";;
-	27) PLATFORM="sh4";BOXTYPE="spark";;
-	28) PLATFORM="sh4";BOXTYPE="spark7162";;
-	29) PLATFORM="sh4";BOXTYPE="atemio520";;
-	30) PLATFORM="sh4";BOXTYPE="atemio530";;
-	31) PLATFORM="sh4";BOXTYPE="hl101";;
-	32) PLATFORM="sh4";BOXTYPE="hl101";;
-	33) PLATFORM="sh4";BOXTYPE="adb_box";;
-	34) PLATFORM="sh4";BOXTYPE="vitamin_hd5000";;
-	35) PLATFORM="sh4";BOXTYPE="sagemcom88";;
-	36) PLATFORM="sh4";BOXTYPE="arivalink200";;
-	37) PLATFORM="pc";BOXTYPE="generic";;
-	 *) PLATFORM="sh4";BOXTYPE="atevio7500";;
+	 1) BOXARCH="sh4";BOXTYPE="ufs910";;
+	 2) BOXARCH="sh4";BOXTYPE="ufs912";;
+	 3) BOXARCH="sh4";BOXTYPE="ufs913";;
+	 4) BOXARCH="sh4";BOXTYPE="ufs922";;
+	 5) BOXARCH="sh4";BOXTYPE="ufc960";;
+	 6) BOXARCH="sh4";BOXTYPE="tf7700";;
+	 7) BOXARCH="sh4";BOXTYPE="fortis_hdbox";;
+	 8) BOXARCH="sh4";BOXTYPE="octagon1008";;
+#	 9) BOXARCH="sh4";BOXTYPE="atevio7500";;
+	10) BOXARCH="sh4";BOXTYPE="hs7110";;
+	11) BOXARCH="sh4";BOXTYPE="hs7119";;
+	12) BOXARCH="sh4";BOXTYPE="hs7420";;
+	13) BOXARCH="sh4";BOXTYPE="hs7429";;
+	14) BOXARCH="sh4";BOXTYPE="hs7810a";;
+	15) BOXARCH="sh4";BOXTYPE="hs7819";;
+	16) BOXARCH="sh4";BOXTYPE="ipbox55";;
+	17) BOXARCH="sh4";BOXTYPE="ipbox99";;
+	18) BOXARCH="sh4";BOXTYPE="ipbox9900";;
+	19) BOXARCH="sh4";BOXTYPE="cuberevo";;
+	20) BOXARCH="sh4";BOXTYPE="cuberevo_mini";;
+	21) BOXARCH="sh4";BOXTYPE="cuberevo_mini2";;
+	22) BOXARCH="sh4";BOXTYPE="cuberevo_250hd";;
+	23) BOXARCH="sh4";BOXTYPE="cuberevo_9500hd";;
+	24) BOXARCH="sh4";BOXTYPE="cuberevo_2000hd";;
+	25) BOXARCH="sh4";BOXTYPE="cuberevo_mini_fta";;
+	26) BOXARCH="sh4";BOXTYPE="cuberevo_3000hd";;
+	27) BOXARCH="sh4";BOXTYPE="spark";;
+	28) BOXARCH="sh4";BOXTYPE="spark7162";;
+	29) BOXARCH="sh4";BOXTYPE="atemio520";;
+	30) BOXARCH="sh4";BOXTYPE="atemio530";;
+	31) BOXARCH="sh4";BOXTYPE="hl101";;
+	32) BOXARCH="sh4";BOXTYPE="hl101";;
+	33) BOXARCH="sh4";BOXTYPE="adb_box";;
+	34) BOXARCH="sh4";BOXTYPE="vitamin_hd5000";;
+	35) BOXARCH="sh4";BOXTYPE="sagemcom88";;
+	36) BOXARCH="sh4";BOXTYPE="arivalink200";;
+	37) BOXARCH="arm";BOXTYPE="armbox";;
+	 *) BOXARCH="sh4";BOXTYPE="atevio7500";;
 esac
-echo "PLATFORM=$PLATFORM" > config
+echo "BOXARCH=$BOXARCH" > config
 echo "BOXTYPE=$BOXTYPE" >> config
 
 ##############################################
@@ -188,12 +197,12 @@ case $2 in
 esac
 
 case "$REPLY" in
-	1)  KERNEL="p0209";;
-#	2)  KERNEL="p0217_61";;
-#	3)  KERNEL="p0217";;
-	*)  KERNEL="p0217";;
+	1)  KERNEL_STM="p0209";;
+#	2)  KERNEL_STM="p0217_61";;
+#	3)  KERNEL_STM="p0217";;
+	*)  KERNEL_STM="p0217";;
 esac
-echo "KERNEL=$KERNEL" >> config
+echo "KERNEL_STM=$KERNEL_STM" >> config
 
 ##############################################
 
@@ -227,11 +236,11 @@ case $4 in
 esac
 
 case "$REPLY" in
-	1)	echo "PLAYER_VERSION=191_test" >> config
-		echo "MULTICOM_VERSION=324" >> config
+	1)	echo "PLAYER_VER=191_test" >> config
+		echo "MULTICOM_VER=324" >> config
 		;;
-	*)	echo "PLAYER_VERSION=191" >> config
-		echo "MULTICOM_VERSION=324" >> config
+	*)	echo "PLAYER_VER=191" >> config
+		echo "MULTICOM_VER=324" >> config
 		;;
 esac
 
@@ -294,21 +303,21 @@ case "$IMAGE" in
 				read -p " Select Neutrino variant (1-8)? ";;
 		esac
 		case "$REPLY" in
-			1)	echo "make yaud-neutrino-mp-cst-next" > $CURDIR/build
+			1)	echo "make yaud-neutrino-mp-cst-next V=$VERBOSE_BUILD" > $CURDIR/build
 				NEUTRINO_VAR=mp-cst-next;;
-			2)	echo "make yaud-neutrino-mp-cst-next-plugins" > $CURDIR/build
+			2)	echo "make yaud-neutrino-mp-cst-next-plugins V=$VERBOSE_BUILD" > $CURDIR/build
 				NEUTRINO_VAR="mp-cst-next + plugins";;
-			3)	echo "make yaud-neutrino-mp-cst-next-ni" > $CURDIR/build
-				NEUTRINO_VAR="mp-cst-next-ni;;
-			4)	echo "make yaud-neutrino-mp-cst-next-ni-plugins" > $CURDIR/build
-				NEUTRINO_VAR=mp-cst-next-ni + plugins";;
-			5)	echo "make yaud-neutrino-hd2" > $CURDIR/build
-				NEUTRINO_VAR=neutrino-hd2;;
-			6)	echo "make yaud-neutrino-hd2-plugins" > $CURDIR/build
+			3)	echo "make yaud-neutrino-mp-cst-next-ni V=$VERBOSE_BUILD" > $CURDIR/build
+				NEUTRINO_VAR="mp-cst-next-ni";;
+			4)	echo "make yaud-neutrino-mp-cst-next-ni-plugins V=$VERBOSE_BUILD" > $CURDIR/build
+				NEUTRINO_VAR="mp-cst-next-ni + plugins";;
+			5)	echo "make yaud-neutrino-hd2 V=$VERBOSE_BUILD" > $CURDIR/build
+				NEUTRINO_VAR="neutrino-hd2";;
+			6)	echo "make yaud-neutrino-hd2-plugins V=$VERBOSE_BUILD" > $CURDIR/build
 				NEUTRINO_VAR="neutrino-hd2 + plugins";;
-			7)	echo "make yaud-neutrino-mp-tangos" > $CURDIR/build
+			7)	echo "make yaud-neutrino-mp-tangos V=$VERBOSE_BUILD" > $CURDIR/build
 				NEUTRINO_VAR=mp-tangos;;
-			*)	echo "make yaud-neutrino-mp-tangos-plugins" > $CURDIR/build
+			*)	echo "make yaud-neutrino-mp-tangos-plugins V=$VERBOSE_BUILD" > $CURDIR/build
 				NEUTRINO_VAR="mp-tangos + plugins";;
 		esac
 		echo "NEUTRINO_VARIANT=$NEUTRINO_VAR" >> config
@@ -316,7 +325,7 @@ case "$IMAGE" in
 
 		if [ "$LASTIMAGE1" ] || [ "$LASTIMAGE3" ] || [ ! "$LASTBOX" == "$BOXTYPE" ]; then
 			if [ -e ./.deps/ ]; then
-				echo -n -e "Settings changed, performing distclean..."
+				echo -n -e "\nSettings changed, performing distclean..."
 				make distclean 2> /dev/null > /dev/null
 				echo "[Done]"
 			fi
@@ -349,16 +358,16 @@ case "$IMAGE" in
 		echo "TVHEADEND_DIFF=$DIFF" >> config
 		echo "TVHEADEND_REVISION=$REVISION" >> config
 
-		echo "make yaud-tvheadend" > $CURDIR/build
+		echo "make yaud-tvheadend V=$VERBOSE_BUILD" > $CURDIR/build
 
 		if [ "$LASTIMAGE2" ] || [ "$LASTIMAGE3" ] || [ ! "$LASTBOX" == "$BOXTYPE" ]; then
 			if [ -e ./.deps/ ]; then
-				echo -n -e "Settings changed, performing distclean..."
+				echo -n -e "\nSettings changed, performing distclean..."
 				make distclean 2> /dev/null > /dev/null
 				echo " [Done]"
 			fi
 		elif [ ! "$DIFF" == "$LASTDIFF" ]; then
-			echo -n -e "Diff changed, Tvheadend will be rebuilt."
+			echo -n -e "\nDiff changed, Tvheadend will be rebuilt."
 			rm -f ./.deps/tvheadend.do_prepare
 		fi;;
 #	enigma*)
@@ -415,16 +424,16 @@ case "$IMAGE" in
 		echo "E2_DIFF=$DIFF" >> config
 		echo "E2_REVISION=$REVISION" >> config
 
-		echo "make yaud-enigma2" > $CURDIR/build
+		echo "make yaud-enigma2 V=$VERBOSE_BUILD" > $CURDIR/build
 
 		if [ "$LASTIMAGE2" ] || [ "$LASTIMAGE3" ] || [ ! "$LASTBOX" == "$BOXTYPE" ]; then
 			if [ -e ./.deps/ ]; then
-				echo -n -e "Settings changed, performing distclean..."
+				echo -n -e "\nSettings changed, performing distclean..."
 				make distclean 2> /dev/null > /dev/null
 				echo " [Done]"
 			fi
 		elif [ ! "$DIFF" == "$LASTDIFF" ]; then
-			echo -n -e "Diff changed, OpenPli Enigma2 will be rebuilt."
+			echo -n -e "\nDiff changed, OpenPli Enigma2 will be rebuilt."
 			rm -f ./.deps/enigma2.do_prepare
 			rm -f ./.deps/enigma2_networkbrowser
 			rm -f ./.deps/enigma2_openwebif

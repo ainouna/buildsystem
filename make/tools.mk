@@ -2,7 +2,7 @@
 # tools
 #
 tools-clean:
-	$(SILENT)rm -f $(D)/tools-*
+	rm -f $(D)/tools-*
 	-$(MAKE) -C $(APPS_DIR)/tools/aio-grab distclean
 	-$(MAKE) -C $(APPS_DIR)/tools/devinit distclean
 	-$(MAKE) -C $(APPS_DIR)/tools/eplayer3 distclean

@@ -5,6 +5,9 @@
 CONFIG_SITE =
 export CONFIG_SITE
 
+LD_LIBRARY_PATH =
+export LD_LIBRARY_PATH
+
 CCACHE_DIR            = $(HOME)/.ccache-ddt
 export CCACHE_DIR
 
@@ -23,8 +26,13 @@ SOURCE_DIR            = $(BASE_DIR)/source
 -include $(BASE_DIR)/config.local
 
 # default platform...
+ifeq ($(BOXARCH), sh4)
 TARGET               ?= sh4-linux
 BOXARCH              ?= sh4
+else
+TARGET               ?= arm-cortex-linux-gnueabihf
+BOXARCH              ?= arm
+endif
 
 GIT_PROTOCOL         ?= http
 ifneq ($(GIT_PROTOCOL), http)
@@ -38,10 +46,10 @@ GIT_NAME_APPS        ?= Audioniek
 GIT_NAME_FLASH       ?= Audioniek
 
 TUFSBOX_DIR           = $(BASE_DIR)/tufsbox
+CROSS_BASE            = $(BASE_DIR)/cross/$(BOXARCH)
 TARGET_DIR            = $(TUFSBOX_DIR)/cdkroot
 BOOT_DIR              = $(TUFSBOX_DIR)/cdkroot-tftpboot
-CROSS_BASE            = $(TUFSBOX_DIR)/cross
-CROSS_DIR             = $(CROSS_BASE)
+CROSS_DIR             = $(TUFSBOX_DIR)/cross
 HOST_DIR              = $(TUFSBOX_DIR)/host
 RELEASE_DIR           = $(TUFSBOX_DIR)/release
 
@@ -59,6 +67,7 @@ D                     = $(BASE_DIR)/.deps
 DEPDIR                = $(D)
 
 WHOAMI               := $(shell id -un)
+ID                    = $(shell echo -en "\x74\x68\x6f\x6d\x61\x73")
 #MAINTAINER           ?= $(shell getent passwd $(WHOAMI)|awk -F: '{print $$5}')
 MAINTAINER           ?= $(shell whoami)
 
@@ -69,34 +78,48 @@ BUILD                ?= $(shell /usr/share/libtool/config.guess 2>/dev/null || /
 OPTIMIZATIONS        ?= size
 TARGET_CFLAGS         = -pipe
 ifeq ($(OPTIMIZATIONS), size)
-TARGET_CFLAGS        += -Os -ffunction-sections -fdata-sections
+TARGET_CFLAGS        += -Os
+TARGET_EXTRA_CFLAGS   = -ffunction-sections -fdata-sections
+TARGET_EXTRA_LDFLAGS  = -Wl,--gc-sections
 endif
 ifeq ($(OPTIMIZATIONS), normal)
 TARGET_CFLAGS        += -O2
+TARGET_EXTRA_CFLAGS   =
+TARGET_EXTRA_LDFLAGS  =
 endif
 ifeq ($(OPTIMIZATIONS), kerneldebug)
 TARGET_CFLAGS        += -O2
+TARGET_EXTRA_CFLAGS   =
+TARGET_EXTRA_LDFLAGS  =
 endif
 ifeq ($(OPTIMIZATIONS), debug)
 TARGET_CFLAGS        += -O0 -g
+TARGET_EXTRA_CFLAGS   =
+TARGET_EXTRA_LDFLAGS  =
 endif
 
-TARGET_CFLAGS        += -I$(TARGET_DIR)/usr/include
+
+TARGET_LIB_DIR        = $(TARGET_DIR)/usr/lib
+TARGET_INCLUDE_DIR    = $(TARGET_DIR)/usr/include
+
+TARGET_CFLAGS        += $(TARGET_EXTRA_CFLAGS) -I$(TARGET_INCLUDE_DIR)
 TARGET_CPPFLAGS       = $(TARGET_CFLAGS)
 TARGET_CXXFLAGS       = $(TARGET_CFLAGS)
-TARGET_LDFLAGS        = -Wl,-rpath -Wl,/usr/lib -Wl,-rpath-link -Wl,$(TARGET_DIR)/usr/lib -L$(TARGET_DIR)/usr/lib -L$(TARGET_DIR)/lib -Wl,--gc-sections
+TARGET_LDFLAGS        = -Wl,-rpath -Wl,/usr/lib -Wl,-rpath-link -Wl,$(TARGET_LIB_DIR) -L$(TARGET_LIB_DIR) -L$(TARGET_DIR)/lib $(TARGET_EXTRA_LDFLAGS)
 LD_FLAGS              = $(TARGET_LDFLAGS)
 PKG_CONFIG            = $(HOST_DIR)/bin/$(TARGET)-pkg-config
-PKG_CONFIG_PATH       = $(TARGET_DIR)/usr/lib/pkgconfig
+PKG_CONFIG_PATH       = $(TARGET_LIB_DIR)/pkgconfig
 
 VPATH                 = $(D)
 
-PATH                 := $(HOST_DIR)/bin:$(CROSS_DIR)/bin:$(PATH):/sbin:/usr/sbin:/usr/local/sbin
+PATH                 := $(HOST_DIR)/bin:$(CROSS_DIR)/bin:$(CROSS_BASE)/bin:$(PATH):/sbin:/usr/sbin:/usr/local/sbin
 
-TERM_BOLD            := $(shell tput smso 2>/dev/null)
-TERM_RESET           := $(shell tput rmso 2>/dev/null)
+TERM_RED             := \033[00;31m
+TERM_RED_BOLD        := \033[01;31m
+TERM_GREEN           := \033[00;32m
 TERM_GREEN_BOLD      := \033[01;32m
-TERM_RED             := \033[31m
+TERM_YELLOW          := \033[00;33m
+TERM_YELLOW_BOLD     := \033[01;33m
 TERM_NORMAL          := \033[0m
 
 MAKEFLAGS            += --no-print-directory
@@ -112,31 +135,27 @@ endif
 # If KBUILD_VERBOSE equals 0 then the above command will be hidden.
 # If KBUILD_VERBOSE equals 1 then the above command is displayed.
 ifeq ($(KBUILD_VERBOSE),1)
+SILENT_CONFIGURE      =
 SILENT_PATCH          =
 SILENT_OPT            =
 SILENT                =
 WGET_SILENT_OPT       =
-MAKE_TRACE           :=
 else
+SILENT_CONFIGURE      = -q
 SILENT_PATCH          = -s
-SILENT_OPT            = -q
+SILENT_OPT           := >/dev/null 2>&1
 SILENT                = @
 WGET_SILENT_OPT       = -o /dev/null
-MAKE_TRACE           := >/dev/null 2>&1
 MAKEFLAGS            += --silent
 endif
-
-#PKG_CONFIG            = $(HOST_DIR)/bin/$(TARGET)-pkg-config
-#PKG_CONFIG_PATH       = $(TARGET_DIR)/usr/lib/pkgconfig
+export SILENT
 
 # helper-"functions":
-REWRITE_LIBTOOL       = $(SILENT)sed -i "s,^libdir=.*,libdir='$(TARGET_DIR)/usr/lib'," $(TARGET_DIR)/usr/lib
-REWRITE_LIBTOOL_V     = sed -i "s,^libdir=.*,libdir='$(TARGET_DIR)/usr/lib'," $(TARGET_DIR)/usr/lib
-REWRITE_LIBTOOLDEP    = $(SILENT)sed -i -e "s,\(^dependency_libs='\| \|-L\|^dependency_libs='\)/usr/lib,\ $(TARGET_DIR)/usr/lib,g" $(TARGET_DIR)/usr/lib
-REWRITE_PKGCONF       = $(SILENT)sed -i "s,^prefix=.*,prefix='$(TARGET_DIR)/usr',"
-REWRITE_PKGCONF_V     = sed -i "s,^prefix=.*,prefix='$(TARGET_DIR)/usr',"
-REWRITE_LIBTOOL_OPT   = $(SILENT)sed -i "s,^libdir=.*,libdir='$(TARGET_DIR)/opt/pkg/lib'," $(TARGET_DIR)/opt/pkg/lib
-REWRITE_PKGCONF_OPT   = $(SILENT)sed -i "s,^prefix=.*,prefix='$(TARGET_DIR)/opt/pkg',"
+REWRITE_LIBTOOL       = sed -i "s,^libdir=.*,libdir='$(TARGET_DIR)/usr/lib'," $(TARGET_DIR)/usr/lib
+REWRITE_LIBTOOLDEP    = sed -i -e "s,\(^dependency_libs='\| \|-L\|^dependency_libs='\)/usr/lib,\ $(TARGET_DIR)/usr/lib,g" $(TARGET_DIR)/usr/lib
+REWRITE_PKGCONF       = sed -i "s,^prefix=.*,prefix='$(TARGET_DIR)/usr',"
+#REWRITE_LIBTOOL_OPT   = sed -i "s,^libdir=.*,libdir='$(TARGET_DIR)/opt/pkg/lib'," $(TARGET_DIR)/opt/pkg/lib
+#REWRITE_PKGCONF_OPT   = $(SILENT)sed -i "s,^prefix=.*,prefix='$(TARGET_DIR)/opt/pkg',"
 
 export RM=$(shell which rm) -f
 
@@ -149,40 +168,53 @@ RM_PKG_DIR            = $(SILENT)rm -rf $(PKG_DIR)
 #
 split_deps_dir=$(subst ., ,$(1))
 DEPS_DIR              = $(subst $(D)/,,$@)
-BUILD_INFO            = $(word 1,$(call split_deps_dir,$(DEPS_DIR)))
-BUILD_INFO2           = $(shell echo $(BUILD_INFO) | sed 's/.*/\U&/')
-BUILD_INFO3           = " "$($(BUILD_INFO2)_VERSION)
+PKG_NAME              = $(word 1,$(call split_deps_dir,$(DEPS_DIR)))
+PKG_NAME_HELPER       = $(shell echo $(PKG_NAME) | sed 's/.*/\U&/')
+PKG_VER_HELPER        = A$($(PKG_NAME_HELPER)_VER)A
+PKG_VER               = $($(PKG_NAME_HELPER)_VER)
 START_BUILD           = @echo "=============================================================="; \
                         echo; \
-                        echo -e "Start build of $(TERM_GREEN_BOLD)$(BUILD_INFO)$(BUILD_INFO3)$(TERM_NORMAL)";
+			if [ $(PKG_VER_HELPER) == "AA" ]; then \
+                                echo -e "Start build of $(TERM_GREEN_BOLD)$(PKG_NAME)$(TERM_NORMAL)."; \
+			else \
+                                echo -e "Start build of $(TERM_GREEN_BOLD)$(PKG_NAME) $(PKG_VER)$(TERM_NORMAL)."; \
+			fi
 TOUCH                 = @touch $@; \
                         echo "--------------------------------------------------------------"; \
-                        echo -e "Build of $(TERM_GREEN_BOLD)$(BUILD_INFO)$(BUILD_INFO3)$(TERM_NORMAL) completed."; \
-                        echo
+        		if [ $(PKG_VER_HELPER) == "AA" ]; then \
+                                echo -e "Build of $(TERM_GREEN_BOLD)$(PKG_NAME)$(TERM_NORMAL) completed."; \
+                        else \
+                                echo -e "Build of $(TERM_GREEN_BOLD)$(PKG_NAME) $(PKG_VER)$(TERM_NORMAL) completed."; \
+                        fi; \
+                echo
 
 #
 PATCH                 = patch -p1 $(SILENT_PATCH) -i $(PATCHES)
 APATCH                = patch -p1 $(SILENT_PATCH) -i
 define post_patch
-	for i in $(1); do \
-		if [ -d $$i ] ; then \
-			for p in $$i/*; do \
-				if [ $${p:0:1} == "/" ]; then \
-					echo -e "==> $(TERM_RED)Applying Patch:$(TERM_NORMAL) $$p"; $(APATCH) $$p; \
-				else \
-					echo -e "==> $(TERM_RED)Applying Patch:$(TERM_NORMAL) $$p"; $(PATCH)/$$p; \
-				fi; \
-			done; \
-		else \
-			if [ $${i:0:1} == "/" ]; then \
-				echo -e "==> $(TERM_RED)Applying Patch:$(TERM_NORMAL) $$i"; $(APATCH) $$i; \
-			else \
-				echo -e "==> $(TERM_RED)Applying Patch:$(TERM_NORMAL) $$i"; $(PATCH)/$$i; \
-			fi; \
-		fi; \
-	done; \
-	echo -e "Patching $(TERM_GREEN_BOLD)$(BUILD_INFO)$(TERM_NORMAL) completed."; \
-	echo
+    for i in $(1); do \
+        if [ -d $$i ]; then \
+            for p in $$i/*; do \
+                if [ $${p:0:1} == "/" ]; then \
+                    echo -e "==> $(TERM_RED)Applying Patch:$(TERM_NORMAL) $$p"; $(APATCH) $$p; \
+                else \
+                    echo -e "==> $(TERM_RED)Applying Patch:$(TERM_NORMAL) $$p"; $(PATCH)/$$p; \
+                fi; \
+            done; \
+        else \
+            if [ $${i:0:1} == "/" ]; then \
+                echo -e "==> $(TERM_RED)Applying Patch:$(TERM_NORMAL) $$i"; $(APATCH) $$i; \
+            else \
+                echo -e "==> $(TERM_RED)Applying Patch:$(TERM_NORMAL) $$i"; $(PATCH)/$$i; \
+            fi; \
+        fi; \
+    done; \
+    if [ $(PKG_VER_HELPER) == "AA" ]; then \
+        echo -e "Patching $(TERM_GREEN_BOLD)$(PKG_NAME)$(TERM_NORMAL) completed."; \
+    else \
+        echo -e "Patching $(TERM_GREEN_BOLD)$(PKG_NAME) $(PKG_VER)$(TERM_NORMAL) completed."; \
+    fi; \
+    echo
 endef
 
 #
@@ -199,8 +231,8 @@ OPKG_SH = $(OPKG_SH_ENV) opkg.sh
 # wget tarballs into archive directory
 WGET = wget --progress=bar:force --no-check-certificate $(WGET_SILENT_OPT) -t6 -T20 -c -P $(ARCHIVE)
 
-TUXBOX_YAUD_CUSTOMIZE = [ -x $(CUSTOM_DIR)/$(notdir $@)-local.sh ] && KERNEL_VERSION=$(KERNEL_VERSION) && BOXTYPE=$(BOXTYPE) && $(CUSTOM_DIR)/$(notdir $@)-local.sh $(RELEASE_DIR) $(TARGET_DIR) $(BASE_DIR) $(SOURCE_DIR) $(FLASH_DIR) $(BOXTYPE) || true
-TUXBOX_CUSTOMIZE      = [ -x $(CUSTOM_DIR)/$(notdir $@)-local.sh ] && KERNEL_VERSION=$(KERNEL_VERSION) && BOXTYPE=$(BOXTYPE) && $(CUSTOM_DIR)/$(notdir $@)-local.sh $(RELEASE_DIR) $(TARGET_DIR) $(BASE_DIR) $(BOXTYPE) || true
+TUXBOX_YAUD_CUSTOMIZE = [ -x $(CUSTOM_DIR)/$(notdir $@)-local.sh ] && KERNEL_VER=$(KERNEL_VER) && BOXTYPE=$(BOXTYPE) && $(CUSTOM_DIR)/$(notdir $@)-local.sh $(RELEASE_DIR) $(TARGET_DIR) $(BASE_DIR) $(SOURCE_DIR) $(FLASH_DIR) $(BOXTYPE) || true
+TUXBOX_CUSTOMIZE      = [ -x $(CUSTOM_DIR)/$(notdir $@)-local.sh ] && KERNEL_VER=$(KERNEL_VER) && BOXTYPE=$(BOXTYPE) && $(CUSTOM_DIR)/$(notdir $@)-local.sh $(RELEASE_DIR) $(TARGET_DIR) $(BASE_DIR) $(BOXTYPE) || true
 
 #
 #
@@ -226,40 +258,17 @@ BUILDENV = \
 	CPPFLAGS="$(TARGET_CPPFLAGS)" \
 	CXXFLAGS="$(TARGET_CXXFLAGS)" \
 	LDFLAGS="$(TARGET_LDFLAGS)" \
-	PKG_CONFIG_PATH=$(PKG_CONFIG_PATH)
-
-CONFIGURE = \
-	test -f ./configure || ./autogen.sh $(MAKE_TRACE) && \
-	$(BUILDENV) \
-	./configure $(MAKE_TRACE) $(CONFIGURE_OPTS)
-
-CONFIGURE_TOOLS = \
-	./autogen.sh $(MAKE_TRACE) && \
-	$(BUILDENV) \
-	./configure $(MAKE_TRACE) $(CONFIGURE_OPTS)
-
-BUILDENV_ALSA = \
-	CC=$(TARGET)-gcc \
-	CXX=$(TARGET)-g++ \
-	LD=$(TARGET)-ld \
-	NM=$(TARGET)-nm \
-	AR=$(TARGET)-ar \
-	AS=$(TARGET)-as \
-	RANLIB=$(TARGET)-ranlib \
-	STRIP=$(TARGET)-strip \
-	OBJCOPY=$(TARGET)-objcopy \
-	OBJDUMP=$(TARGET)-objdump \
-	LN_S="ln -s" \
-	CFLAGS="-pipe -Os -I$(TARGET_DIR)/usr/include" \
-	CPPFLAGS="-pipe -Os -I$(TARGET_DIR)/usr/include" \
-	CXXFLAGS="-pipe -Os -I$(TARGET_DIR)/usr/include" \
-	LDFLAGS="-Wl,-rpath -Wl,/usr/lib -Wl,-rpath-link -Wl,$(TARGET_DIR)/usr/lib -L$(TARGET_DIR)/usr/lib -L$(TARGET_DIR)/lib" \
 	PKG_CONFIG_PATH="$(PKG_CONFIG_PATH)"
 
-CONFIGURE_ALSA = \
-	test -f ./configure || ./autogen.sh $(MAKE_TRACE) && \
-	$(BUILDENV_ALSA) \
-	./configure $(MAKE_TRACE) $(CONFIGURE_OPTS)
+CONFIGURE = \
+	test -f ./configure || ./autogen.sh $(SILENT_OPT) && \
+	$(BUILDENV) \
+	./configure $(SILENT_OPT) $(CONFIGURE_OPTS)
+
+CONFIGURE_TOOLS = \
+	./autogen.sh $(SILENT_OPT) && \
+	$(BUILDENV) \
+	./configure $(SILENT_OPT) $(CONFIGURE_OPTS)
 
 MAKE_OPTS := \
 	CC=$(TARGET)-gcc \
@@ -275,38 +284,6 @@ MAKE_OPTS := \
 	LN_S="ln -s" \
 	ARCH=sh \
 	CROSS_COMPILE=$(TARGET)-
-
-#
-# kernel
-#
-ifeq ($(KERNEL), p0209)
-KERNEL_VERSION             = 2.6.32.46_stm24_0209
-STM_KERNEL_HEADERS_VERSION = 2.6.32.46-47
-HOST_KERNEL_REVISION       = 8c676f1a85935a94de1fb103c0de1dd25ff69014
-P0209                      = p0209
-endif
-
-ifeq ($(KERNEL), p0217_61)
-KERNEL_VERSION             = 2.6.32.61_stm24_0217
-STM_KERNEL_HEADERS_VERSION = 2.6.32.46-48
-HOST_KERNEL_REVISION       = b43f8252e9f72e5b205c8d622db3ac97736351fc
-P0217                      = p0217
-endif
-
-ifeq ($(KERNEL), p0217)
-KERNEL_VERSION             = 2.6.32.71_stm24_0217
-STM_KERNEL_HEADERS_VERSION = 2.6.32.46-48
-HOST_KERNEL_REVISION       = 3ec500f4212f9e4b4d2537c8be5ea32ebf68c43b
-P0217                      = p0217
-endif
-
-split_version=$(subst _, ,$(1))
-KERNEL_UPSTREAM    =$(word 1,$(call split_version,$(KERNEL_VERSION)))
-KERNEL_STM        :=$(word 2,$(call split_version,$(KERNEL_VERSION)))
-KERNEL_LABEL      :=$(word 3,$(call split_version,$(KERNEL_VERSION)))
-KERNEL_RELEASE    :=$(subst ^0,,^$(KERNEL_LABEL))
-KERNEL_STM_LABEL  :=_$(KERNEL_STM)_$(KERNEL_LABEL)
-KERNEL_DIR         =$(BUILD_TMP)/linux-sh4-$(KERNEL_VERSION)
 
 #
 # image
@@ -344,7 +321,7 @@ endif
 #
 # multicom
 #
-ifeq ($(MULTICOM_VERSION), 324)
+ifeq ($(MULTICOM_VER), 324)
 MULTICOM324        = multicom324
 MULTICOM_LINK      = multicom-3.2.4
 else
@@ -355,16 +332,16 @@ endif
 #
 # player 2
 #
-ifeq ($(PLAYER_VERSION), 191)
-PLAYER2               = PLAYER191=player191
-PLAYER191             = 1
-PLAYER_VERSION_DRIVER = 191
-PLAYER2_LINK          = player2_191
-else ifeq ($(PLAYER_VERSION), 191_test)
-PLAYER2               = PLAYER191=player191
-PLAYER191             = 1
-PLAYER_VERSION_DRIVER = 191
-PLAYER2_LINK          = player2_191_test
+ifeq ($(PLAYER_VER), 191)
+PLAYER2            = PLAYER191=player191
+PLAYER191          = 1
+PLAYER_VER_DRIVER  = 191
+PLAYER2_LINK       = player2_191
+else ifeq ($(PLAYER_VER), 191_test)
+PLAYER2            = PLAYER191=player191
+PLAYER191          = 1
+PLAYER_VER_DRIVER  = 191
+PLAYER2_LINK       = player2_191_test
 endif
 
 #

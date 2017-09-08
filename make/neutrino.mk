@@ -421,7 +421,7 @@ neutrino-mp-cst-next-distclean: neutrino-cdkroot-clean
 # neutrino-mp-cst-next-ni
 #
 yaud-neutrino-mp-cst-next-ni: yaud-none \
-		neutrino-mp-cst-next-ni $(D)/release_neutrino
+		neutrino-mp-cst-next-ni $(D)/neutrino_release
 	$(TUXBOX_YAUD_CUSTOMIZE)
 	@echo "******************************************************************************"
 	@echo -e "$(TERM_GREEN_BOLD)"
@@ -522,7 +522,7 @@ $(D)/neutrino-mp-cst-next-ni: $(D)/neutrino-mp-cst-next-ni.do_prepare $(D)/neutr
 	make $(TARGET_DIR)/var/etc/.version
 	$(TOUCH)
 
-neutrino-mp-cst-next-ni-clean:
+neutrino-mp-cst-next-ni-clean: neutrino-cdkroot-clean
 	rm -f $(D)/neutrino-mp-cst-next-ni
 	rm -f $(D)/neutrino-mp-cst-next-ni.config.status
 	rm -f $(SOURCE_DIR)/neutrino-mp-cst-next-ni/src/gui/version.h
@@ -614,7 +614,7 @@ $(SOURCE_DIR)/neutrino-hd2/config.status:
 	cd $(SOURCE_DIR)/neutrino-hd2; \
 		./autogen.sh; \
 		$(BUILDENV) \
-		./configure $(SILENT_OPT) \
+		$(CONFIGURE) \
 			--build=$(BUILD) \
 			--host=$(TARGET) \
 			$(N_CONFIG_OPTS) \

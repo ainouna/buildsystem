@@ -11,10 +11,12 @@ LC_ALL:=C
 LANG:=C
 export TOPDIR LC_ALL LANG
 
-PARALLEL_JOBS := $(shell echo $$((1 + `getconf _NPROCESSORS_ONLN 2>/dev/null || echo 1`)))
-override MAKE = make $(if $(findstring j,$(filter-out --%,$(MAKEFLAGS))),,-j$(PARALLEL_JOBS))
-
 include make/buildenv.mk
+include make/linux-kernel.mk
+
+PARALLEL_JOBS := $(shell echo $$((1 + `getconf _NPROCESSORS_ONLN 2>/dev/null || echo 1`)))
+override MAKE = make $(if $(findstring j,$(filter-out --%,$(MAKEFLAGS))),,-j$(PARALLEL_JOBS)) $(SILENT_OPT)
+
 
 ############################################################################
 #  A print out of environment variables
@@ -37,23 +39,28 @@ printenv:
 	@echo "RELEASE_DIR      : $(RELEASE_DIR)"
 	@echo "HOST_DIR         : $(HOST_DIR)"
 	@echo "TARGET_DIR       : $(TARGET_DIR)"
+	@echo "KERNEL_DIR       : $(KERNEL_DIR)"
 	@echo "PATH             : `type -p fmt>/dev/null&&echo $(PATH)|sed 's/:/ /g' |fmt -65|sed 's/ /:/g; 2,$$s/^/                 : /;'||echo $(PATH)`"
 	@echo "BOXARCH          : $(BOXARCH)"
 	@echo "BUILD            : $(BUILD)"
 	@echo "TARGET           : $(TARGET)"
-	@echo "PLATFORM         : $(PLATFORM)"
 	@echo "BOXTYPE          : $(BOXTYPE)"
+	@echo "KERNEL_VERSION   : $(KERNEL_VER)"
 #	@echo "KERNEL_UPSTREAM  : $(KERNEL_UPSTREAM)"
 #	@echo "KERNEL_STM       : $(KERNEL_STM)"
 #	@echo "KERNEL_LABEL     : $(KERNEL_LABEL)"
 #	@echo "KERNEL_RELEASE   : $(KERNEL_RELEASE)"
 #	@echo "KERNEL_STM_LABEL : $(KERNEL_STM_LABEL)"
-	@echo "KERNEL_VERSION   : $(KERNEL_VERSION)"
-	@echo "MULTICOM_VERSION : $(MULTICOM_VERSION)"
-	@echo "PLAYER_VERSION   : $(PLAYER_VERSION)"
+	@echo "MULTICOM_VERSION : $(MULTICOM_VER)"
+	@echo "PLAYER_VERSION   : $(PLAYER_VER)"
 	@echo "MEDIAFW          : $(MEDIAFW)"
 	@echo "EXTERNAL_LCD     : $(EXTERNAL_LCD)"
 	@echo "PARALLEL_JOBS    : $(PARALLEL_JOBS)"
+ifeq ($(VERBOSE_BUILD), 1))
+	@echo "VERBOSE_BUILD    : yes"
+else
+	@echo "VERBOSE_BUILD    : no"
+endif
 ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs7110 hs7119 hs7420 hs7429 hs7810a hs7819))
 	@echo "DESTINATION      : $(DESTINATION)"
 endif
@@ -110,10 +117,14 @@ help:
 # define package versions first...
 include make/contrib-libs.mk
 include make/contrib-apps.mk
-include make/linux-kernel.mk
+ifeq ($(BOXARCH), sh4)
+include make/crosstool-sh4.mk
 include make/driver.mk
 include make/tools.mk
 include make/root-etc.mk
+else
+include make/crosstool-arm.mk
+endif
 include make/python.mk
 include make/gstreamer.mk
 include make/enigma2.mk
@@ -139,32 +150,52 @@ update:
 		echo '      updating $(GIT_NAME)-buildsystem git repository'; \
 		echo '===================================================================='; \
 		echo; \
-		$(GIT_PULL); fi
-		@echo;
+		if [ "$(GIT_STASH_PULL)" = "stashpull" ]; then \
+			git stash && git stash show -p > ./pull-stash-cdk.patch || true && git pull && git stash pop || true; \
+		else \
+			git pull; \
+		fi; \
+	fi
+	@echo;
 	@if test -d $(DRIVER_DIR); then \
 		cd $(DRIVER_DIR)/; \
 		echo '==================================================================='; \
 		echo '      updating $(GIT_NAME_DRIVER)-driver git repository'; \
 		echo '==================================================================='; \
 		echo; \
-		$(GIT_PULL); fi
-		@echo;
+		if [ "$(GIT_STASH_PULL)" = "stashpull" ]; then \
+			git stash && git stash show -p > ./pull-stash-driver.patch || true && git pull && git stash pop || true; \
+		else \
+			git pull; \
+		fi; \
+	fi
+	@echo;
 	@if test -d $(APPS_DIR); then \
 		cd $(APPS_DIR)/; \
 		echo '==================================================================='; \
 		echo '      updating $(GIT_NAME_APPS)-apps git repository'; \
 		echo '==================================================================='; \
 		echo; \
-		$(GIT_PULL); fi
-		@echo;
+		if [ "$(GIT_STASH_PULL)" = "stashpull" ]; then \
+			git stash && git stash show -p > ./pull-stash-apps.patch || true && git pull && git stash pop || true; \
+		else \
+			git pull; \
+		fi; \
+	fi
+	@echo;
 	@if test -d $(FLASH_DIR); then \
 		cd $(FLASH_DIR)/; \
 		echo '==================================================================='; \
 		echo '      updating $(GIT_NAME_FLASH)-flash git repository'; \
 		echo '==================================================================='; \
 		echo; \
-		$(GIT_PULL); fi
-		@echo;
+		if [ "$(GIT_STASH_PULL)" = "stashpull" ]; then \
+			git stash && git stash show -p > ./pull-stash-flash.patch || true && git pull && git stash pop || true; \
+		else \
+			git pull; \
+		fi; \
+	fi
+	@echo;
 
 all:
 	@echo "'make all' is not a valid target. Please read the documentation."
@@ -175,7 +206,7 @@ everything: $(shell sed -n 's/^\$$.D.\/\(.*\):.*/\1/p' make/*.mk)
 # print all present targets...
 print-targets:
 	@sed -n 's/^\$$.D.\/\(.*\):.*/\1/p; s/^\([a-z].*\):\( \|$$\).*/\1/p;' \
-		`ls -1 make/*.mk|grep -v make/unmaintained.mk` Makefile | \
+		`ls -1 make/*.mk|grep -v make/buildenv.mk|grep -v make/neutrino-release.mk|grep -v make/enigma2-release.mk` | \
 		sort -u | fold -s -w 65
 
 # for local extensions, e.g. special plugins or similar...
@@ -197,5 +228,5 @@ PHONY += update update-self
 # downloads in parallel...), but the sub-targets are still built in
 # parallel, which is useful on multi-processor / multi-core machines
 .NOTPARALLEL:
-endif
 
+endif

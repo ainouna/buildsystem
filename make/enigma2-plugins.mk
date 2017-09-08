@@ -42,7 +42,7 @@ $(D)/enigma2_tuxtxtlib: $(D)/bootstrap
 		libtoolize --force; \
 		automake --foreign --add-missing; \
 		$(BUILDENV) \
-		./configure $(MAKE_TRACE) \
+		./configure $(SILENT_OPT) \
 			--build=$(BUILD) \
 			--host=$(TARGET) \
 			--prefix=/usr \
@@ -53,8 +53,8 @@ $(D)/enigma2_tuxtxtlib: $(D)/bootstrap
 		; \
 		$(MAKE) all; \
 		$(MAKE) install prefix=/usr DESTDIR=$(TARGET_DIR)
-	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/tuxbox-tuxtxt.pc
-	$(REWRITE_LIBTOOL)/libtuxtxt.la
+	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/tuxbox-tuxtxt.pc
+	$(SILENT)$(REWRITE_LIBTOOL)/libtuxtxt.la
 	$(REMOVE)/tuxtxtlib
 	$(TOUCH)
 
@@ -75,7 +75,7 @@ $(D)/enigma2_tuxtxt32bpp: $(D)/bootstrap $(D)/enigma2_tuxtxtlib
 		libtoolize --force; \
 		automake --foreign --add-missing; \
 		$(BUILDENV) \
-		./configure $(MAKE_TRACE) \
+		./configure $(SILENT_OPT) \
 			--build=$(BUILD) \
 			--host=$(TARGET) \
 			--prefix=/usr \
@@ -87,7 +87,7 @@ $(D)/enigma2_tuxtxt32bpp: $(D)/bootstrap $(D)/enigma2_tuxtxtlib
 		; \
 		$(MAKE) all; \
 		$(MAKE) install prefix=/usr DESTDIR=$(TARGET_DIR)
-	$(REWRITE_LIBTOOL)/libtuxtxt32bpp.la
+	$(SILENT)$(REWRITE_LIBTOOL)/libtuxtxt32bpp.la
 	$(REMOVE)/tuxtxt
 	$(TOUCH)
 
@@ -144,7 +144,7 @@ $(D)/enigma2_networkbrowser: $(D)/bootstrap $(D)/python
 	set -e; cd $(BUILD_TMP)/enigma2-networkbrowser/src/lib; \
 		$(BUILDENV) \
 		sh4-linux-gcc -shared -o netscan.so \
-			-I $(TARGET_DIR)/usr/include/python$(PYTHON_VERSION_MAJOR) \
+			-I $(TARGET_DIR)/usr/include/python$(PYTHON_VER_MAJOR) \
 			-include Python.h \
 			errors.h \
 			list.c \
@@ -171,4 +171,3 @@ $(D)/enigma2_networkbrowser: $(D)/bootstrap $(D)/python
 		rm -rf $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/SystemPlugins/NetworkBrowser/lib
 	$(REMOVE)/enigma2-networkbrowser
 	$(TOUCH)
-

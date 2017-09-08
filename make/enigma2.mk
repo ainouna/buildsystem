@@ -136,8 +136,8 @@ $(D)/enigma2.do_prepare: | $(ENIGMA2_DEPS)
 	echo "Starting OpenPLi Enigma2 build"; \
 	echo "=============================="; \
 	echo; \
-	echo "Revision : "$$REVISION; \
-	echo "Diff     : "$$DIFF; \
+	echo "Revision  : "$$REVISION; \
+	echo "Diff      : "$$DIFF; \
 	echo ""; \
 	if [ "$$DIFF" != "1" ]; then \
 		[ -d "$(ARCHIVE)/enigma2-pli-nightly.git" ] && \
@@ -171,11 +171,11 @@ $(D)/enigma2.do_prepare: | $(ENIGMA2_DEPS)
 	@touch $@
 
 $(SOURCE_DIR)/enigma2/config.status:
-	$(SILENT)cd $(SOURCE_DIR)/enigma2; \
-		./autogen.sh $(MAKE_TRACE); \
+	cd $(SOURCE_DIR)/enigma2; \
+		./autogen.sh $(SILENT_OPT); \
 		sed -e 's|#!/usr/bin/python|#!$(HOST_DIR)/bin/python|' -i po/xml2po.py; \
 		$(BUILDENV) \
-		./configure $(MAKE_TRACE) \
+		./configure $(SILENT_OPT) \
 			--build=$(BUILD) \
 			--host=$(TARGET) \
 			$(E_CONFIG_OPTS) \
@@ -192,37 +192,35 @@ $(SOURCE_DIR)/enigma2/config.status:
 			$(PLATFORM_CPPFLAGS)
 
 $(D)/enigma2.do_compile: $(SOURCE_DIR)/enigma2/config.status
-	$(START_BUILD)
 	cd $(SOURCE_DIR)/enigma2; \
 		$(MAKE) all
 	@touch $@
 
 PLI_SKIN_PATCH = PLi-HD_skin.patch
-HEAD="master"
 REPO="https://github.com/littlesat/skin-PLiHD.git"
 
 $(D)/enigma2: $(D)/enigma2.do_prepare $(D)/enigma2.do_compile
 	$(MAKE) -C $(SOURCE_DIR)/enigma2 install DESTDIR=$(TARGET_DIR)
-	$(SILENT)echo -n "Stripping..."
+	$(SILENT)echo -n "\nStripping..."; \
 	if [ -e $(TARGET_DIR)/usr/bin/enigma2 ]; then \
 		$(TARGET)-strip $(TARGET_DIR)/usr/bin/enigma2; \
 	fi
 	if [ -e $(TARGET_DIR)/usr/local/bin/enigma2 ]; then \
 		$(TARGET)-strip $(TARGET_DIR)/usr/local/bin/enigma2; \
 	fi
-	$(SILENT)echo " done."
-	$(SILENT)echo
-	$(SILENT)echo "Adding PLi-HD skin"
+	echo " done."; \
+	echo ; \
+	echo "Adding PLi-HD skin"; \
 	HEAD="master"; \
-	REPO="https://github.com/littlesat/skin-PLiHD.git"; \
+	REPO_0=$(REPO); \
 	if [ -d $(ARCHIVE)/PLi-HD_skin.git ]; then \
-		echo -n "Updating archived PLi-HD skin git..." \
-		$(SILENT)cd $(ARCHIVE)/PLi-HD_skin.git; \
+		cd $(ARCHIVE)/PLi-HD_skin.git; \
+		echo -n "Updating archived PLi-HD skin git..."; \
 		git pull -q; git checkout -q $$HEAD; \
 		echo " done."; \
 	else \
 		echo -n "Cloning PLi-HD skin git..."; \
-		git clone -q -b $$HEAD $$REPO $(ARCHIVE)/PLi-HD_skin.git; \
+		git clone -q -b $$HEAD $$REPO_0 $(ARCHIVE)/PLi-HD_skin.git; \
 		echo " done."; \
 	fi
 	$(SILENT)cp -ra $(ARCHIVE)/PLi-HD_skin.git/usr/share/enigma2/* $(TARGET_DIR)/usr/local/share/enigma2
@@ -232,14 +230,14 @@ $(D)/enigma2: $(D)/enigma2.do_prepare $(D)/enigma2.do_compile
 	$(TOUCH)
 
 enigma2-clean:
-	$(SILENT)rm -f $(D)/enigma2
-	$(SILENT)rm -f $(D)/enigma2.do_compile
-	$(SILENT)cd $(SOURCE_DIR)/enigma2; \
+	rm -f $(D)/enigma2
+	rm -f $(D)/enigma2.do_compile
+	cd $(SOURCE_DIR)/enigma2; \
 		$(MAKE) distclean
 
 enigma2-distclean:
-	$(SILENT)rm -f $(D)/enigma2
-	$(SILENT)rm -f $(D)/enigma2.do_compile
-	$(SILENT)rm -f $(D)/enigma2.do_prepare
-	$(SILENT)rm -rf $(SOURCE_DIR)/enigma2
+	rm -f $(D)/enigma2
+	rm -f $(D)/enigma2.do_compile
+	rm -f $(D)/enigma2.do_prepare
+	rm -rf $(SOURCE_DIR)/enigma2
 	rm -rf $(SOURCE_DIR)/enigma2.org
