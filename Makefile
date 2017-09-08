@@ -56,7 +56,7 @@ printenv:
 	@echo "MEDIAFW          : $(MEDIAFW)"
 	@echo "EXTERNAL_LCD     : $(EXTERNAL_LCD)"
 	@echo "PARALLEL_JOBS    : $(PARALLEL_JOBS)"
-ifeq ($(VERBOSE_BUILD), 1))
+ifeq ($(VERBOSE_BUILD), 1)
 	@echo "VERBOSE_BUILD    : yes"
 else
 	@echo "VERBOSE_BUILD    : no"
