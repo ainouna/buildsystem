@@ -12,7 +12,6 @@ LANG:=C
 export TOPDIR LC_ALL LANG
 
 include make/buildenv.mk
-include make/linux-kernel.mk
 
 PARALLEL_JOBS := $(shell echo $$((1 + `getconf _NPROCESSORS_ONLN 2>/dev/null || echo 1`)))
 override MAKE = make $(if $(findstring j,$(filter-out --%,$(MAKEFLAGS))),,-j$(PARALLEL_JOBS)) $(SILENT_OPT)
@@ -56,7 +55,9 @@ printenv:
 	@echo "MEDIAFW          : $(MEDIAFW)"
 	@echo "EXTERNAL_LCD     : $(EXTERNAL_LCD)"
 	@echo "PARALLEL_JOBS    : $(PARALLEL_JOBS)"
-ifeq ($(VERBOSE_BUILD), 1)
+ifeq ($(VERBOSE_BUILD), 2)
+	@echo "VERBOSE_BUILD    : yes (very verbose)"
+else ifeq ($(VERBOSE_BUILD), 1)
 	@echo "VERBOSE_BUILD    : yes"
 else
 	@echo "VERBOSE_BUILD    : no"
@@ -118,6 +119,7 @@ help:
 include make/contrib-libs.mk
 include make/contrib-apps.mk
 ifeq ($(BOXARCH), sh4)
+include make/linux-kernel.mk
 include make/crosstool-sh4.mk
 include make/driver.mk
 include make/tools.mk

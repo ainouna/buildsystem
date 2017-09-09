@@ -68,8 +68,6 @@ D                     = $(BASE_DIR)/.deps
 DEPDIR                = $(D)
 
 WHOAMI               := $(shell id -un)
-ID                    = $(shell echo -en "\x74\x68\x6f\x6d\x61\x73")
-#MAINTAINER           ?= $(shell getent passwd $(WHOAMI)|awk -F: '{print $$5}')
 MAINTAINER           ?= $(shell whoami)
 
 CCACHE                = /usr/bin/ccache
@@ -123,30 +121,38 @@ TERM_YELLOW          := \033[00;33m
 TERM_YELLOW_BOLD     := \033[01;33m
 TERM_NORMAL          := \033[0m
 
-MAKEFLAGS            += --no-print-directory
 # To put more focus on warnings, be less verbose as default
-# Use 'make V=1' to see the full commands
+# Use 'make V=2' to see the full commands, V=1 to see some
 ifeq ("$(origin V)", "command line")
 KBUILD_VERBOSE        = $(V)
 endif
+# set the default verbosity
 ifndef KBUILD_VERBOSE
 KBUILD_VERBOSE        = 0
 endif
 
 # If KBUILD_VERBOSE equals 0 then the above command will be hidden.
 # If KBUILD_VERBOSE equals 1 then the above command is displayed.
-ifeq ($(KBUILD_VERBOSE),1)
+ifeq ($(KBUILD_VERBOSE),2)
 SILENT_CONFIGURE      =
 SILENT_PATCH          =
 SILENT_OPT            =
 SILENT                =
 WGET_SILENT_OPT       =
-else
+else ifeq ($(KBUILD_VERBOSE),1)
 SILENT_CONFIGURE      = -q
+SILENT_PATCH          =
+SILENT_OPT            =
+SILENT                = @
+MAKEFLAGS            += --no-print-directory
+WGET_SILENT_OPT       = -o /dev/null
+else
+SILENT_CONFIGURE      = >/dev/null 2>&1
 SILENT_PATCH          = -s
 SILENT_OPT           := >/dev/null 2>&1
 SILENT                = @
 WGET_SILENT_OPT       = -o /dev/null
+MAKEFLAGS            += --no-print-directory
 MAKEFLAGS            += --silent
 endif
 export SILENT
@@ -173,6 +179,7 @@ PKG_NAME              = $(word 1,$(call split_deps_dir,$(DEPS_DIR)))
 PKG_NAME_HELPER       = $(shell echo $(PKG_NAME) | sed 's/.*/\U&/')
 PKG_VER_HELPER        = A$($(PKG_NAME_HELPER)_VER)A
 PKG_VER               = $($(PKG_NAME_HELPER)_VER)
+
 START_BUILD           = @echo "=============================================================="; \
                         echo; \
 			if [ $(PKG_VER_HELPER) == "AA" ]; then \
@@ -241,7 +248,7 @@ TUXBOX_CUSTOMIZE      = [ -x $(CUSTOM_DIR)/$(notdir $@)-local.sh ] && KERNEL_VER
 CONFIGURE_OPTS = \
 	--build=$(BUILD) \
 	--host=$(TARGET) \
-	$(SILENT_OPT)
+	$(SILENT_CONFIGURE)
 
 BUILDENV = \
 	CC=$(TARGET)-gcc \
@@ -286,6 +293,37 @@ MAKE_OPTS := \
 	ARCH=sh \
 	CROSS_COMPILE=$(TARGET)-
 
+#
+# kernel
+#
+ifeq ($(KERNEL_STM), p0209)
+KERNEL_VER             = 2.6.32.46_stm24_0209
+KERNEL_REVISION        = 8c676f1a85935a94de1fb103c0de1dd25ff69014
+STM_KERNEL_HEADERS_VER = 2.6.32.46-47
+P0209                  = p0209
+endif
+
+ifeq ($(KERNEL_STM), p0217_61)
+KERNEL_VER             = 2.6.32.61_stm24_0217
+KERNEL_REVISION        = b43f8252e9f72e5b205c8d622db3ac97736351fc
+STM_KERNEL_HEADERS_VER = 2.6.32.46-48
+P0217                  = p0217
+endif
+
+ifeq ($(KERNEL_STM), p0217)
+KERNEL_VER             = 2.6.32.71_stm24_0217
+KERNEL_REVISION        = 3ec500f4212f9e4b4d2537c8be5ea32ebf68c43b
+STM_KERNEL_HEADERS_VER = 2.6.32.46-48
+P0217                  = p0217
+endif
+
+split_version=$(subst _, ,$(1))
+KERNEL_UPSTREAM    =$(word 1,$(call split_version,$(KERNEL_VER)))
+KERNEL_STM        :=$(word 2,$(call split_version,$(KERNEL_VER)))
+KERNEL_LABEL      :=$(word 3,$(call split_version,$(KERNEL_VER)))
+KERNEL_RELEASE    :=$(subst ^0,,^$(KERNEL_LABEL))
+KERNEL_STM_LABEL  :=_$(KERNEL_STM)_$(KERNEL_LABEL)
+KERNEL_DIR         =$(BUILD_TMP)/linux-sh4-$(KERNEL_VER)
 #
 # image
 #
