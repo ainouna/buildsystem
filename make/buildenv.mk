@@ -197,16 +197,16 @@ define post_patch
         if [ -d $$i ]; then \
             for p in $$i/*; do \
                 if [ $${p:0:1} == "/" ]; then \
-                    echo -e "==> $(TERM_RED)Applying Patch:$(TERM_NORMAL) $$p"; $(APATCH) $$p; \
+                    echo -e "$(TERM_RED)Applying Patch:$(TERM_NORMAL) $$p"; $(APATCH) $$p; \
                 else \
-                    echo -e "==> $(TERM_RED)Applying Patch:$(TERM_NORMAL) $$p"; $(PATCH)/$$p; \
+                    echo -e "$(TERM_RED)Applying Patch:$(TERM_NORMAL) $$p"; $(PATCH)/$$p; \
                 fi; \
             done; \
         else \
             if [ $${i:0:1} == "/" ]; then \
-                echo -e "==> $(TERM_RED)Applying Patch:$(TERM_NORMAL) $$i"; $(APATCH) $$i; \
+                echo -e "$(TERM_RED)Applying Patch:$(TERM_NORMAL) $$i"; $(APATCH) $$i; \
             else \
-                echo -e "==> $(TERM_RED)Applying Patch:$(TERM_NORMAL) $$i"; $(PATCH)/$$i; \
+                echo -e "$(TERM_RED)Applying Patch:$(TERM_NORMAL) $$i"; $(PATCH)/$$i; \
             fi; \
         fi; \
     done; \

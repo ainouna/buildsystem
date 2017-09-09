@@ -1,5 +1,5 @@
---- linux-sh4-2.6.32.61_stm24_0212.org/arch/sh/kernel/setup.c	2014-03-05 10:10:33.760522906 +0100
-+++ linux-sh4-2.6.32.61_stm24_0212/arch/sh/kernel/setup.c	2014-03-05 08:53:35.000000000 +0100
+--- linux-sh4/arch/sh/kernel/setup.c.org
++++ linux-sh4/arch/sh/kernel/setup.c
 @@ -389,6 +389,30 @@
  #endif
  #endif
@@ -31,8 +31,8 @@
  	/* Save unparsed command line copy for /proc/cmdline */
  	memcpy(boot_command_line, command_line, COMMAND_LINE_SIZE);
  	*cmdline_p = command_line;
---- linux-sh4-2.6.32.61_stm24_0212.org/arch/sh/boards/mach-hdk7105/setup.c	2014-03-05 08:32:54.000000000 +0100
-+++ linux-sh4-2.6.32.61_stm24_0212/arch/sh/boards/mach-hdk7105/setup.c	2014-03-05 08:53:35.000000000 +0100
+--- linux-sh4/arch/sh/boards/mach-hdk7105/setup.c.org
++++ linux-sh4/arch/sh/boards/mach-hdk7105/setup.c
 @@ -29,10 +29,44 @@
  #include <linux/mtd/physmap.h>
  #include <linux/mtd/nand.h>
@@ -253,12 +253,12 @@
 +
 +EXPORT_SYMBOL(hdk7105_configure_ssc_spi);
 +
-+void hdk7105_spi_register(void)
++void __init hdk7105_spi_register(void)
 +{
 +	spi_register_board_info(&hdk7105_serial_flash, 1);
 +}
 +
-+EXPORT_SYMBOL(hdk7105_spi_register);
++//EXPORT_SYMBOL(hdk7105_spi_register);
 +
  static int __init hdk7105_device_init(void)
  {
@@ -345,8 +345,8 @@
  
  	stx7105_configure_nand(&(struct stm_nand_config) {
  			.driver = stm_nand_flex,
---- linux-sh4-2.6.32.61_stm24_0212.org/drivers/mtd/devices/m25p80.c	2014-03-05 08:32:56.000000000 +0100
-+++ linux-sh4-2.6.32.61_stm24_0212/drivers/mtd/devices/m25p80.c	2014-03-05 08:53:35.000000000 +0100
+--- linux-sh4/drivers/mtd/devices/m25p80.c.org
++++ linux-sh4/drivers/mtd/devices/m25p80.c
 @@ -28,6 +28,14 @@
  
  #include <linux/spi/spi.h>
@@ -610,8 +610,8 @@
  	flash->spi = spi;
  	mutex_init(&flash->lock);
  	dev_set_drvdata(&spi->dev, flash);
---- linux-sh4-2.6.32.61_stm24_0212.org/drivers/mtd/nand/nand_base.c	2014-03-05 08:32:56.000000000 +0100
-+++ linux-sh4-2.6.32.61_stm24_0212/drivers/mtd/nand/nand_base.c	2014-03-05 08:53:35.000000000 +0100
+--- linux-sh4/drivers/mtd/nand/nand_base.c.org
++++ linux-sh4/drivers/mtd/nand/nand_base.c
 @@ -1386,20 +1386,15 @@
  
  			/* Now read the page into the buffer */
@@ -647,8 +647,8 @@
  		return ERR_PTR(-EINVAL);
  	}
  
---- linux-sh4-2.6.32.61_stm24_0212.org/drivers/mtd/nand/nand_ecc.c	2014-03-05 08:32:56.000000000 +0100
-+++ linux-sh4-2.6.32.61_stm24_0212/drivers/mtd/nand/nand_ecc.c	2014-03-05 08:53:35.000000000 +0100
+--- linux-sh4/drivers/mtd/nand/nand_ecc.c.org
++++ linux-sh4/drivers/mtd/nand/nand_ecc.c
 @@ -492,12 +492,12 @@
  	}
  	/* count nr of bits; use table lookup, faster than calculating it */
@@ -665,8 +665,8 @@
  	return -1;
  }
  EXPORT_SYMBOL(__nand_correct_data);
---- linux-sh4-2.6.32.61_stm24_0212.org/drivers/mtd/nand/stm_nand_flex.c	2014-03-05 08:32:56.000000000 +0100
-+++ linux-sh4-2.6.32.61_stm24_0212/drivers/mtd/nand/stm_nand_flex.c	2014-03-05 08:53:35.000000000 +0100
+--- linux-sh4/drivers/mtd/nand/stm_nand_flex.c.org
++++ linux-sh4/drivers/mtd/nand/stm_nand_flex.c
 @@ -1449,7 +1449,16 @@
  	platform_driver_unregister(&stm_nand_flex_driver);
  }
@@ -684,8 +684,8 @@
  module_exit(stm_nand_flex_exit);
  
  MODULE_LICENSE("GPL");
---- linux-sh4-2.6.32.61_stm24_0212.org/drivers/net/phy/phy_device.c	2014-03-05 08:32:56.000000000 +0100
-+++ linux-sh4-2.6.32.61_stm24_0212/drivers/net/phy/phy_device.c	2014-03-05 08:53:35.000000000 +0100
+--- linux-sh4/drivers/net/phy/phy_device.c.org
++++ linux-sh4/drivers/net/phy/phy_device.c
 @@ -1104,7 +1104,7 @@
  		return retval;
  	}
@@ -695,8 +695,8 @@
  
  	return 0;
  }
---- linux-sh4-2.6.32.61_stm24_0212.org/drivers/net/stmmac/stmmac_mdio.c	2014-03-05 08:32:56.000000000 +0100
-+++ linux-sh4-2.6.32.61_stm24_0212/drivers/net/stmmac/stmmac_mdio.c	2014-03-05 08:53:35.000000000 +0100
+--- linux-sh4/drivers/net/stmmac/stmmac_mdio.c.org
++++ linux-sh4/drivers/net/stmmac/stmmac_mdio.c
 @@ -170,6 +170,7 @@
  	priv->mii = new_bus;
  
@@ -732,8 +732,8 @@
  			switch (phydev->irq) {
  			case PHY_POLL:
  				irq_str = "POLL";
---- linux-sh4-2.6.32.61_stm24_0212.org/drivers/spi/spi_stm.c	2014-03-05 08:32:56.000000000 +0100
-+++ linux-sh4-2.6.32.61_stm24_0212/drivers/spi/spi_stm.c	2014-03-05 08:53:35.000000000 +0100
+--- linux-sh4/drivers/spi/spi_stm.c.org
++++ linux-sh4/drivers/spi/spi_stm.c
 @@ -338,7 +338,7 @@
  
  }
@@ -743,8 +743,8 @@
  {
  	struct stm_plat_ssc_data *plat_data = pdev->dev.platform_data;
  	struct spi_master *master;
---- linux-sh4-2.6.32.61_stm24_0212.org/drivers/stm/gpio.c	2014-03-05 08:32:56.000000000 +0100
-+++ linux-sh4-2.6.32.61_stm24_0212/drivers/stm/gpio.c	2014-03-05 08:53:35.000000000 +0100
+--- linux-sh4/drivers/stm/gpio.c.org
++++ linux-sh4/drivers/stm/gpio.c
 @@ -28,12 +28,17 @@
  #include <linux/stm/pad.h>
  #include <linux/stm/pio.h>
@@ -945,8 +945,8 @@
  	ret = platform_driver_register(&stm_gpio_driver);
  	if (ret)
  		return ret;
---- linux-sh4-2.6.32.61_stm24_0212.org/drivers/stm/miphy365x.c	2014-03-05 08:32:56.000000000 +0100
-+++ linux-sh4-2.6.32.61_stm24_0212/drivers/stm/miphy365x.c	2014-03-05 08:53:35.000000000 +0100
+--- linux-sh4/drivers/stm/miphy365x.c.org
++++ linux-sh4/drivers/stm/miphy365x.c
 @@ -99,6 +99,7 @@
  
  static void miphy365x_tap_start_port0(const struct stm_miphy_device *miphy_dev)
@@ -972,8 +972,8 @@
  
  	/* Enable macro1 to use rx_lspd  & tx_lspd from link interface */
  	reg_write(0, 0x10, 0x00);
---- linux-sh4-2.6.32.61_stm24_0212.org/drivers/stm/stx7105_comms.c	2014-03-05 08:32:56.000000000 +0100
-+++ linux-sh4-2.6.32.61_stm24_0212/drivers/stm/stx7105_comms.c	2014-03-05 08:53:35.000000000 +0100
+--- linux-sh4/drivers/stm/stx7105_comms.c.org
++++ linux-sh4/drivers/stm/stx7105_comms.c
 @@ -344,11 +344,27 @@
  			/* .pad_config_* set in stx7105_configure_ssc_*() */
  		},
@@ -1000,7 +1000,7 @@
 +	printk(KERN_INFO "ssc_i2c_dev_release...\n");
 +}
 +
-+int stx7105_configure_ssc_i2c(int ssc, struct stx7105_ssc_config *config)
++int __init stx7105_configure_ssc_i2c(int ssc, struct stx7105_ssc_config *config)
  {
  	static int i2c_busnum;
  	struct stx7105_ssc_config default_config = {};
@@ -1017,7 +1017,7 @@
  }
  
 -int __init stx7105_configure_ssc_spi(int ssc, struct stx7105_ssc_config *config)
-+int stx7105_unconfigure_ssc_i2c(int ssc, struct stx7105_ssc_config *config)
++int __init stx7105_unconfigure_ssc_i2c(int ssc, struct stx7105_ssc_config *config)
 +{
 +	static int i2c_busnum = 1;
 +	struct stx7105_ssc_config default_config = {};
@@ -1181,7 +1181,7 @@
 +	return i2c_busnum++;
 +}
 +
-+int stx7105_configure_ssc_spi(int ssc, struct stx7105_ssc_config *config)
++int __init stx7105_configure_ssc_spi(int ssc, struct stx7105_ssc_config *config)
  {
  	static int spi_busnum;
  	struct stx7105_ssc_config default_config = {};
@@ -1211,8 +1211,8 @@
  	case 2:
  		pad_config = stm_pad_config_alloc(3, 2);
  
---- linux-sh4-2.6.32.61_stm24_0212.org/include/linux/stm/stx7105.h	2014-03-05 08:32:56.000000000 +0100
-+++ linux-sh4-2.6.32.61_stm24_0212/include/linux/stm/stx7105.h	2014-03-05 08:53:35.000000000 +0100
+--- linux-sh4/include/linux/stm/stx7105.h.org
++++ linux-sh4/include/linux/stm/stx7105.h
 @@ -113,6 +113,7 @@
  };
  /* SSC configure functions return I2C/SPI bus number */
@@ -1221,3 +1221,44 @@
  int stx7105_configure_ssc_spi(int ssc, struct stx7105_ssc_config *config);
  
  
+--- linux-sh4/arch/sh/drivers/pci/pci.c.org
++++ linux-sh4/arch/sh/drivers/pci/pci.c
+@@ -86,7 +86,7 @@
+ 	for (hose = hose_head; hose; hose = hose->next)
+ 		pcibios_scanbus(hose);
+ 
+-	pci_fixup_irqs(pci_common_swizzle, pcibios_map_platform_irq);
++//	pci_fixup_irqs(pci_common_swizzle, pcibios_map_platform_irq);
+ 
+ 	dma_debug_add_bus(&pci_bus_type);
+ 
+--- linux-sh4/arch/sh/include/asm/pci.h.org
++++ linux-sh4/arch/sh/include/asm/pci.h
+@@ -128,7 +128,7 @@
+ #endif
+ 
+ /* Board-specific fixup routines. */
+-int pcibios_map_platform_irq(struct pci_dev *dev, u8 slot, u8 pin);
++//int pcibios_map_platform_irq(struct pci_dev *dev, u8 slot, u8 pin);
+ 
+ extern void pcibios_resource_to_bus(struct pci_dev *dev,
+ 	struct pci_bus_region *region, struct resource *res);
+--- linux-sh4/drivers/stm/stx7105_pci.c.org
++++ linux-sh4/drivers/stm/stx7105_pci.c
+@@ -24,6 +24,7 @@
+ /* You may pass one of the PCI_PIN_* constants to use dedicated pin or
+  * just pass interrupt number generated with gpio_to_irq() when PIO pads
+  * are used as interrupts or IRLx_IRQ when using external interrupts inputs */
++#if 0
+ int stx7105_pcibios_map_platform_irq(struct stm_plat_pci_config *pci_config,
+ 		u8 pin)
+ {
+@@ -63,6 +64,7 @@
+ 
+ 	return irq;
+ }
++#endif
+ 
+ static struct platform_device stx7105_pci_device = {
+ 	.name = "pci_stm",
+
