@@ -811,6 +811,9 @@ $(D)/parted: $(D)/bootstrap $(D)/e2fsprogs $(ARCHIVE)/$(PARTED_SOURCE)
 			--mandir=/.remove \
 			--infodir=/.remove \
 			--without-readline \
+			--disable-shared \
+			--disable-dynamic-loading \
+			--disable-debug \
 			--disable-device-mapper \
 			--disable-nls \
 		; \
