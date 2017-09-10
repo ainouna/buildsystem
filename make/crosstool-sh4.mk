@@ -64,6 +64,12 @@ CROSSTOOL = crosstool
 crosstool: directories driver-symlink \
 $(HOST_DIR)/bin/unpack-rpm.sh \
 crosstool-rpminstall
+	@touch $(D)/$(notdir $@)
+	@echo "--------------------------------------------------------------"
+	@echo -e "Build of $(TERM_GREEN_BOLD)$(PKG_NAME)$(TERM_NORMAL) completed."
+	@echo
+
+$(TARGET_DIR)/lib/libc.so.6:
 	$(START_BUILD)
 	$(SET) -e; cd $(CROSS_DIR); rm -f sh4-linux/sys-root; ln -s ../target sh4-linux/sys-root; \
 	if [ -e $(CROSS_DIR)/target/usr/lib/libstdc++.la ]; then \
@@ -88,10 +94,10 @@ crosstool-rpminstall
 		cp -a $(CROSS_DIR)/target/etc/ld.so.conf $(TARGET_DIR)/etc; \
 		cp -a $(CROSS_DIR)/target/etc/host.conf $(TARGET_DIR)/etc; \
 	fi
-	@touch $(D)/$(notdir $@)
-	@echo "--------------------------------------------------------------"
-	@echo -e "Build of $(TERM_GREEN_BOLD)$(PKG_NAME)$(TERM_NORMAL) completed."
-	@echo
+#	@touch $(D)/$(notdir $@)
+#	@echo "--------------------------------------------------------------"
+#	@echo -e "Build of $(TERM_GREEN_BOLD)$(PKG_NAME)$(TERM_NORMAL) completed."
+#	@echo
 
 #
 # host_u_boot_tools
