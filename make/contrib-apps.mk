@@ -35,11 +35,11 @@ $(D)/busybox: $(D)/bootstrap $(D)/module_init_tools $(ARCHIVE)/$(BUSYBOX_SOURCE)
 #
 BUSYBOX_USB_VER = $(BUSYBOX_VER)
 
-#ifeq ($(BOXTYPE), $(filter $(BOXTYPE), spark spark7162 ufs912 ufs913))
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE), spark spark7162 ufs912 ufs913))
 BUSYBOX_USB_CONFIG = busybox_usb-$(BUSYBOX_USB_VER).config_nandwrite
-#else
-#BUSYBOX_USB_CONFIG = busybox_usb-$(BUSYBOX_USB_VER).config
-#endif
+else
+BUSYBOX_USB_CONFIG = busybox_usb-$(BUSYBOX_USB_VER).config
+endif
 
 $(D)/busybox_usb: $(D)/bootstrap $(D)/module_init_tools $(ARCHIVE)/$(BUSYBOX_SOURCE) $(PATCHES)/$(BUSYBOX_USB_CONFIG)
 	$(START_BUILD)

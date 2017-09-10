@@ -95,6 +95,14 @@ endif
 
 E_CONFIG_OPTS +=$(LOCAL_ENIGMA2_BUILD_OPTIONS)
 
+E_CPPFLAGS    = -I$(DRIVER_DIR)/include
+E_CPPFLAGS   += -I$(TARGET_DIR)/usr/include
+E_CPPFLAGS   += -I$(KERNEL_DIR)/include
+E_CPPFLAGS   += -I$(APPS_DIR)/tools/libeplayer3/include
+E_CPPFLAGS   += -I$(APPS_DIR)/tools
+E_CPPFLAGS   += $(LOCAL_ENIGMA2_CPPFLAGS)
+E_CPPFLAGS   += $(PLATFORM_CPPFLAGS)
+
 ifeq ($(BOXTYPE), tf7700)
 YAUD_ENIGMA2_DEPS = $(D)/uboot_tf7700 $(D)/u-boot.ftfd $(D)/tfinstaller
 endif
@@ -182,8 +190,7 @@ $(SOURCE_DIR)/enigma2/config.status:
 			PKG_CONFIG=$(PKG_CONFIG) \
 			PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) \
 			PY_PATH=$(TARGET_DIR)/usr \
-			$(PLATFORM_CPPFLAGS) \
-			$(LOCAL_ENIGMA2_CPPFLAGS)
+			CPPFLAGS="$(E_CPPFLAGS)"
 
 $(D)/enigma2.do_compile: $(SOURCE_DIR)/enigma2/config.status
 	cd $(SOURCE_DIR)/enigma2; \
@@ -195,7 +202,7 @@ REPO="https://github.com/littlesat/skin-PLiHD.git"
 
 $(D)/enigma2: $(D)/enigma2.do_prepare $(D)/enigma2.do_compile
 	$(MAKE) -C $(SOURCE_DIR)/enigma2 install DESTDIR=$(TARGET_DIR)
-	$(SILENT)echo -n "\nStripping..."; \
+	$(SILENT)echo -n "Stripping..."; \
 	if [ -e $(TARGET_DIR)/usr/bin/enigma2 ]; then \
 		$(TARGET)-strip $(TARGET_DIR)/usr/bin/enigma2; \
 	fi

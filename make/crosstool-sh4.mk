@@ -70,7 +70,7 @@ crosstool-rpminstall
 	@echo
 
 $(TARGET_DIR)/lib/libc.so.6:
-	$(START_BUILD)
+#	$(START_BUILD)
 	$(SET) -e; cd $(CROSS_DIR); rm -f sh4-linux/sys-root; ln -s ../target sh4-linux/sys-root; \
 	if [ -e $(CROSS_DIR)/target/usr/lib/libstdc++.la ]; then \
 		sed -i "s,^libdir=.*,libdir='$(CROSS_DIR)/target/usr/lib'," $(CROSS_DIR)/target/usr/lib/lib{std,sup}c++.la; \

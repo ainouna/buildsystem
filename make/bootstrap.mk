@@ -84,7 +84,7 @@ $(D)/host_mtd_utils: directories $(ARCHIVE)/$(HOST_MTD_UTILS_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/mtd-utils-$(HOST_MTD_UTILS_VER)
 	$(UNTAR)/$(HOST_MTD_UTILS_SOURCE)
-	$(SET)set -e; cd $(BUILD_TMP)/mtd-utils-$(HOST_MTD_UTILS_VER); \
+	$(SET) -e; cd $(BUILD_TMP)/mtd-utils-$(HOST_MTD_UTILS_VER); \
 		$(call post_patch,$(HOST_MTD_UTILS_PATCH)); \
 		$(MAKE) `pwd`/mkfs.jffs2 `pwd`/sumtool BUILDDIR=`pwd` WITHOUT_XATTR=1 DESTDIR=$(HOST_DIR); \
 		$(MAKE) install DESTDIR=$(HOST_DIR)/bin

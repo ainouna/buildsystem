@@ -7,8 +7,8 @@ $(D)/enigma2_hotplug_e2_helper: $(D)/bootstrap
 	$(START_BUILD)
 	$(REMOVE)/hotplug-e2-helper
 	$(SET) -e; if [ -d $(ARCHIVE)/hotplug-e2-helper.git ]; \
-		then cd $(ARCHIVE)/hotplug-e2-helper.git; git pull; \
-		else cd $(ARCHIVE); git clone https://github.com/OpenPLi/hotplug-e2-helper.git hotplug-e2-helper.git; \
+		then cd $(ARCHIVE)/hotplug-e2-helper.git; git pull $(CONFIGURE_SILENT); \
+		else cd $(ARCHIVE); git clone $(CONFIGURE_SILENT) https://github.com/OpenPLi/hotplug-e2-helper.git hotplug-e2-helper.git; \
 		fi
 	cp -ra $(ARCHIVE)/hotplug-e2-helper.git $(BUILD_TMP)/hotplug-e2-helper
 	set -e; cd $(BUILD_TMP)/hotplug-e2-helper; \
@@ -30,8 +30,8 @@ $(D)/enigma2_tuxtxtlib: $(D)/bootstrap
 	$(START_BUILD)
 	$(REMOVE)/tuxtxtlib
 	if [ -d $(ARCHIVE)/tuxtxt.git ]; \
-		then cd $(ARCHIVE)/tuxtxt.git; git pull; \
-		else cd $(ARCHIVE); git clone https://github.com/OpenPLi/tuxtxt.git tuxtxt.git; \
+		then cd $(ARCHIVE)/tuxtxt.git; git pull $(CONFIGURE_SILENT); \
+		else cd $(ARCHIVE); git clone $(CONFIGURE_SILENT) https://github.com/OpenPLi/tuxtxt.git tuxtxt.git; \
 		fi
 	cp -ra $(ARCHIVE)/tuxtxt.git/libtuxtxt $(BUILD_TMP)/tuxtxtlib
 	cd $(BUILD_TMP)/tuxtxtlib; \
@@ -103,8 +103,8 @@ $(D)/enigma2_openwebif: $(D)/bootstrap $(D)/python $(D)/python_cheetah $(D)/pyth
 	$(START_BUILD)
 	$(REMOVE)/e2openplugin-OpenWebif
 	if [ -d $(ARCHIVE)/e2openplugin-OpenWebif.git ]; \
-		then cd $(ARCHIVE)/e2openplugin-OpenWebif.git; git pull; \
-		else cd $(ARCHIVE); git clone https://github.com/E2OpenPlugins/e2openplugin-OpenWebif.git e2openplugin-OpenWebif.git; \
+		then cd $(ARCHIVE)/e2openplugin-OpenWebif.git; git pull $(CONFIGURE_SILENT); \
+		else cd $(ARCHIVE); git clone $(CONFIGURE_SILENT) https://github.com/E2OpenPlugins/e2openplugin-OpenWebif.git e2openplugin-OpenWebif.git; \
 		fi
 	cp -ra $(ARCHIVE)/e2openplugin-OpenWebif.git $(BUILD_TMP)/e2openplugin-OpenWebif
 	$(SET) -e; cd $(BUILD_TMP)/e2openplugin-OpenWebif; \
@@ -135,8 +135,8 @@ $(D)/enigma2_networkbrowser: $(D)/bootstrap $(D)/python
 	$(START_BUILD)
 	$(REMOVE)/enigma2-networkbrowser
 	if [ -d $(ARCHIVE)/enigma2-plugins.git ]; \
-		then cd $(ARCHIVE)/enigma2-plugins.git; git pull; \
-		else cd $(ARCHIVE); git clone https://github.com/OpenPLi/enigma2-plugins.git enigma2-plugins.git; \
+		then cd $(ARCHIVE)/enigma2-plugins.git; git pull $(CONFIGURE_SILENT); \
+		else cd $(ARCHIVE); git clone $(CONFIGURE_SILENT) https://github.com/OpenPLi/enigma2-plugins.git enigma2-plugins.git; \
 		fi
 	cp -ra $(ARCHIVE)/enigma2-plugins.git/networkbrowser/ $(BUILD_TMP)/enigma2-networkbrowser
 	$(SET) -e; cd $(BUILD_TMP)/enigma2-networkbrowser; \

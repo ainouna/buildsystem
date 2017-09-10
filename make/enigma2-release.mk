@@ -555,6 +555,9 @@ enigma2_release_arivalink200:
 #
 # the following target creates the common file base
 enigma2_release_base:
+	echo "=============================================================="
+	echo
+	echo -e "Start build of $(TERM_GREEN_BOLD)enigma2_release$(TERM_NORMAL)."
 	rm -rf $(RELEASE_DIR) || true
 	echo -n "Copying image to release directory..."
 	install -d $(RELEASE_DIR)
