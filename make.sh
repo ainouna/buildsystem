@@ -14,22 +14,26 @@ fi
 ##############################################
 
 if [ "$1" == -h ] || [ "$1" == --help ]; then
-	echo "Usage: $0 [-v | --verbose] [Parameter1 Parameter2 ... Parameter9]"
+	echo "Usage: $0 [-v | --verbose | -vv | --very_verbose] [Parameter1 Parameter2 ... Parameter9]"
 	echo
-	echo "-v or --verbose : verbose build"
-	echo "Parameter 1     : target system (1-36)"
-	echo "Parameter 2     : kernel (1-2)"
-	echo "Parameter 3     : optimization (1-4)"
-	echo "Parameter 4     : player (1-2)"
-	echo "Parameter 5     : external LCD support (1-3)"
-	echo "Parameter 6     : image (Enigma=1/2 Neutrino=3/4 Tvheadend=5 (1-5)"
-	echo "Parameter 7     : Neutrino variant (1-8) or Enigma2/Tvheadend diff (0-5)"
-	echo "Parameter 8     : media Framework (1-3, Enigma2 only))"
-	echo "Parameter 9     : destination (1-2, 1=flash, 2=USB)"
+	echo "-v or --verbose       : verbose build"
+	echo "-vv or --very_verbose : verbose build (very noisy!)"
+	echo "Parameter 1           : target system (1-37)"
+	echo "Parameter 2           : kernel (1-2)"
+	echo "Parameter 3           : optimization (1-4)"
+	echo "Parameter 4           : player (1-2)"
+	echo "Parameter 5           : external LCD support (1-3)"
+	echo "Parameter 6           : image (Enigma=1/2 Neutrino=3/4 Tvheadend=5 (1-5)"
+	echo "Parameter 7           : Neutrino variant (1-8) or Enigma2/Tvheadend diff (0-5)"
+	echo "Parameter 8           : media Framework (1-3, Enigma2 only))"
+	echo "Parameter 9           : destination (1-2, 1=flash, 2=USB)"
 	exit
 fi
 
-if [ "$1" == -v ] || [ "$1" == --verbose ]; then
+if [ "$1" == -vv ] || [ "$1" == --very_verbose ]; then
+	shift
+	VERBOSE_BUILD=2
+elif [ "$1" == -v ] || [ "$1" == --verbose ]; then
 	shift
 	VERBOSE_BUILD=1
 else

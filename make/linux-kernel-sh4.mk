@@ -307,7 +307,7 @@ endif
 	fi; \
 	set -e; cd $(KERNEL_DIR); \
 	for i in $(KERNEL_PATCHES); do \
-		echo -e "==> $(TERM_RED)Applying Patch:$(TERM_NORMAL) $$i"; \
+		echo -e "$(TERM_RED)Applying Patch:$(TERM_NORMAL) $$i"; \
 		patch -p1 $(SILENT_PATCH) -i $(PATCHES)/$(BUILD_CONFIG)/$$i; \
 	done
 	echo -e "Patching $(TERM_GREEN_BOLD)kernel$(TERM_NORMAL) completed."
