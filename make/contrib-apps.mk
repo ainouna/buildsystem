@@ -17,7 +17,7 @@ else
 BUSYBOX_CONFIG = busybox-$(BUSYBOX_VER).config
 endif
 
-$(D)/busybox: $(D)/bootstrap $(D)/module_init_tools $(ARCHIVE)/$(BUSYBOX_SOURCE) $(PATCHES)/$(BUSYBOX_CONFIG)
+$(D)/busybox: $(D)/bootstrap $(ARCHIVE)/$(BUSYBOX_SOURCE) $(PATCHES)/$(BUSYBOX_CONFIG)
 	$(START_BUILD)
 	$(REMOVE)/busybox-$(BUSYBOX_VER)
 	$(UNTAR)/$(BUSYBOX_SOURCE)
@@ -41,7 +41,7 @@ else
 BUSYBOX_USB_CONFIG = busybox_usb-$(BUSYBOX_USB_VER).config
 endif
 
-$(D)/busybox_usb: $(D)/bootstrap $(D)/module_init_tools $(ARCHIVE)/$(BUSYBOX_SOURCE) $(PATCHES)/$(BUSYBOX_USB_CONFIG)
+$(D)/busybox_usb: $(D)/bootstrap $(ARCHIVE)/$(BUSYBOX_SOURCE) $(PATCHES)/$(BUSYBOX_USB_CONFIG)
 	$(START_BUILD)
 	$(REMOVE)/busybox_usb-$(BUSYBOX_USB_VER)
 	@mkdir $(BUILD_TMP)/busybox_usb-$(BUSYBOX_USB_VER)
