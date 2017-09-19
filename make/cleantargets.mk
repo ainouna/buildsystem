@@ -12,7 +12,7 @@ clean: depsclean
 	@printf " $(TERM_YELLOW)done.\n$(TERM_NORMAL)"
 
 distclean:
-	@printf "$(TERM_YELLOW)Cleaning system build directories and files... $(TERM_NORMAL)"
+	@printf "$(TERM_YELLOW)Cleaning system build directories and files...$(TERM_NORMAL)"
 	@-$(MAKE) tools-clean
 	@-$(MAKE) driver-clean
 	@-rm -rf $(BASE_DIR)/tufsbox

@@ -26,10 +26,10 @@ yaud-tvheadend: yaud-none $(D)/tvheadend $(D)/tvheadend_release
 #
 # tvheadend
 #
-REPO="https://github.com/tvheadend/tvheadend.git"
+REPO_TVHE="https://github.com/tvheadend/tvheadend.git"
 
 $(D)/tvheadend.do_prepare: | $(TVHEADEND_DEPS)
-	REPO_0=$(REPO); \
+	REPO_0=$(REPO_TVHE); \
 	REVISION=$(TVHEADEND_REVISION); \
 	HEAD="master"; \
 	DIFF=$(TVHEADEND_DIFF); \

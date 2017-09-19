@@ -122,11 +122,11 @@ yaud-enigma2: yaud-none $(D)/enigma2 $(D)/enigma2-plugins $(D)/enigma2_release
 #
 # enigma2
 #
-REPO="https://github.com/OpenPLi/enigma2.git"
+REPO_OPENPLI="https://github.com/OpenPLi/enigma2.git"
 REPO_REPLY_1="https://github.com/MaxWiesel/enigma2-openpli-fulan.git"
 
 $(D)/enigma2.do_prepare: | $(ENIGMA2_DEPS)
-	REPO_0=$(REPO); \
+	REPO_0=$(REPO_OPENPLI); \
 	REPO_1=$(REPO_REPLY_1); \
 	REVISION=$(E2_REVISION); \
 	HEAD="master"; \
@@ -137,8 +137,13 @@ $(D)/enigma2.do_prepare: | $(ENIGMA2_DEPS)
 	echo "Starting OpenPLi Enigma2 build"; \
 	echo "=============================="; \
 	echo; \
-	echo "Revision  : "$$REVISION; \
-	echo "Diff      : "$$DIFF; \
+	if [ "$$DIFF" != "1" ]; then \
+		echo "Repository : "$$REPO_0; \
+		echo "Revision   : "$$REVISION; \
+		echo "Diff       : "$$DIFF; \
+	else \
+		echo "Repository : "$$REPO_1; \
+	fi; \
 	echo ""; \
 	if [ "$$DIFF" != "1" ]; then \
 		[ -d "$(ARCHIVE)/enigma2-pli-nightly.git" ] && \
@@ -147,7 +152,7 @@ $(D)/enigma2.do_prepare: | $(ENIGMA2_DEPS)
 		(echo -n "Cloning remote OpenPLi git..."; git clone -q -b $$HEAD $$REPO_0 $(ARCHIVE)/enigma2-pli-nightly.git; echo " done."); \
 		echo -n "Copying local git content to build environment..."; cp -ra $(ARCHIVE)/enigma2-pli-nightly.git $(SOURCE_DIR)/enigma2; echo " done."; \
 		if [ "$$REVISION" != "newest" ]; then \
-			cd $(SOURCE_DIR)/enigma2; echo -n "Checking out revision $$REVISION..."; git checkout -q "$$REVISION"; echo " done."; \
+			cd $(SOURCE_DIR)/enigma2; pwd; echo -n "Checking out revision $$REVISION..."; git checkout -q "$$REVISION"; echo " done."; \
 		fi; \
 		cp -ra $(SOURCE_DIR)/enigma2 $(SOURCE_DIR)/enigma2.org; \
 		echo "Applying diff-$$DIFF patch..."; \
@@ -198,7 +203,7 @@ $(D)/enigma2.do_compile: $(SOURCE_DIR)/enigma2/config.status
 	@touch $@
 
 PLI_SKIN_PATCH = PLi-HD_skin.patch
-REPO="https://github.com/littlesat/skin-PLiHD.git"
+REPO_PLIHD="https://github.com/littlesat/skin-PLiHD.git"
 
 $(D)/enigma2: $(D)/enigma2.do_prepare $(D)/enigma2.do_compile
 	$(MAKE) -C $(SOURCE_DIR)/enigma2 install DESTDIR=$(TARGET_DIR)
@@ -213,7 +218,7 @@ $(D)/enigma2: $(D)/enigma2.do_prepare $(D)/enigma2.do_compile
 	echo ; \
 	echo "Adding PLi-HD skin"; \
 	HEAD="master"; \
-	REPO_0=$(REPO); \
+	REPO_0=$(REPO_PLIHD); \
 	if [ -d $(ARCHIVE)/PLi-HD_skin.git ]; then \
 		cd $(ARCHIVE)/PLi-HD_skin.git; \
 		echo -n "Updating archived PLi-HD skin git..."; \
