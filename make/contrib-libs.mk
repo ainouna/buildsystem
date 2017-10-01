@@ -1182,7 +1182,7 @@ $(D)/libvorbis: $(D)/bootstrap $(D)/libogg $(ARCHIVE)/$(LIBVORBIS_SOURCE)
 			--disable-examples \
 		; \
 		$(MAKE); \
-		$(MAKE) install DESTDIR=$(TARGET_DIR)
+		$(MAKE) install DESTDIR=$(TARGET_DIR) docdir=/.remove
 	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/vorbis.pc
 	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/vorbisenc.pc
 	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/vorbisfile.pc
