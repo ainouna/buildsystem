@@ -1177,6 +1177,7 @@ $(D)/libvorbis: $(D)/bootstrap $(D)/libogg $(ARCHIVE)/$(LIBVORBIS_SOURCE)
 		$(CONFIGURE) \
 			--prefix=/usr \
 			--docdir=/.remove \
+			--mandir=/.remove \
 			--disable-docs \
 			--disable-examples \
 		; \
