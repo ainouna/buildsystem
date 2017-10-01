@@ -67,7 +67,6 @@ D                     = $(BASE_DIR)/.deps
 # backwards compatibility
 DEPDIR                = $(D)
 
-WHOAMI               := $(shell id -un)
 MAINTAINER           ?= $(shell whoami)
 
 CCACHE                = /usr/bin/ccache
