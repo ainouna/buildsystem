@@ -122,36 +122,35 @@ TERM_NORMAL          := \033[0m
 
 # To put more focus on warnings, be less verbose as default
 # Use 'make V=2' to see the full commands, V=1 to see some
-ifeq ("$(origin V)", "command line")
-KBUILD_VERBOSE        = $(V)
-endif
+#ifeq ("$(origin V)", "command line")
+#KBUILD_VERBOSE        = $(V)
+#endif
 # set the default verbosity
 ifndef KBUILD_VERBOSE
-KBUILD_VERBOSE        = 0
+KBUILD_VERBOSE        = normal
 endif
 
-# If KBUILD_VERBOSE equals 0 then the above command will be hidden.
-# If KBUILD_VERBOSE equals 1 then the above command is displayed.
-ifeq ($(KBUILD_VERBOSE),2)
+MAKEFLAGS            += --no-print-directory
+ifeq ($(KBUILD_VERBOSE), verbose)
 SILENT_CONFIGURE      =
 SILENT_PATCH          =
 SILENT_OPT            =
 SILENT                =
 WGET_SILENT_OPT       =
-else ifeq ($(KBUILD_VERBOSE),1)
+endif
+ifeq ($(KBUILD_VERBOSE), normal)
 SILENT_CONFIGURE      = -q
 SILENT_PATCH          =
 SILENT_OPT            =
 SILENT                = @
-MAKEFLAGS            += --no-print-directory
 WGET_SILENT_OPT       = -o /dev/null
-else
+endif
+ifeq ($(KBUILD_VERBOSE), quiet)
 SILENT_CONFIGURE      = >/dev/null 2>&1
 SILENT_PATCH          = -s
-SILENT_OPT           := >/dev/null 2>&1
+SILENT_OPT            = >/dev/null 2>&1
 SILENT                = @
 WGET_SILENT_OPT       = -o /dev/null
-MAKEFLAGS            += --no-print-directory
 MAKEFLAGS            += --silent
 endif
 export SILENT
@@ -238,8 +237,8 @@ OPKG_SH = $(OPKG_SH_ENV) opkg.sh
 # wget tarballs into archive directory
 WGET = wget --progress=bar:force --no-check-certificate $(WGET_SILENT_OPT) -t6 -T20 -c -P $(ARCHIVE)
 
-TUXBOX_YAUD_CUSTOMIZE = [ -x $(CUSTOM_DIR)/$(notdir $@)-local.sh ] && KERNEL_VER=$(KERNEL_VER) && BOXTYPE=$(BOXTYPE) && $(CUSTOM_DIR)/$(notdir $@)-local.sh $(RELEASE_DIR) $(TARGET_DIR) $(BASE_DIR) $(SOURCE_DIR) $(FLASH_DIR) $(BOXTYPE) || true
-TUXBOX_CUSTOMIZE      = [ -x $(CUSTOM_DIR)/$(notdir $@)-local.sh ] && KERNEL_VER=$(KERNEL_VER) && BOXTYPE=$(BOXTYPE) && $(CUSTOM_DIR)/$(notdir $@)-local.sh $(RELEASE_DIR) $(TARGET_DIR) $(BASE_DIR) $(BOXTYPE) || true
+TUXBOX_YAUD_CUSTOMIZE = $(SILENT)[ -x $(CUSTOM_DIR)/$(notdir $@)-local.sh ] && KERNEL_VER=$(KERNEL_VER) && BOXTYPE=$(BOXTYPE) && $(CUSTOM_DIR)/$(notdir $@)-local.sh $(RELEASE_DIR) $(TARGET_DIR) $(BASE_DIR) $(SOURCE_DIR) $(FLASH_DIR) $(BOXTYPE) || true
+TUXBOX_CUSTOMIZE      = $(SILENT)[ -x $(CUSTOM_DIR)/$(notdir $@)-local.sh ] && KERNEL_VER=$(KERNEL_VER) && BOXTYPE=$(BOXTYPE) && $(CUSTOM_DIR)/$(notdir $@)-local.sh $(RELEASE_DIR) $(TARGET_DIR) $(BASE_DIR) $(BOXTYPE) || true
 
 #
 #

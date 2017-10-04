@@ -55,13 +55,7 @@ printenv:
 	@echo "MEDIAFW          : $(MEDIAFW)"
 	@echo "EXTERNAL_LCD     : $(EXTERNAL_LCD)"
 	@echo "PARALLEL_JOBS    : $(PARALLEL_JOBS)"
-ifeq ($(VERBOSE_BUILD), 2)
-	@echo "VERBOSE_BUILD    : yes (very verbose)"
-else ifeq ($(VERBOSE_BUILD), 1)
-	@echo "VERBOSE_BUILD    : yes"
-else
-	@echo "VERBOSE_BUILD    : no"
-endif
+	@echo "KBUILD_VERBOSE   : $(KBUILD_VERBOSE)"
 ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs7110 hs7119 hs7420 hs7429 hs7810a hs7819))
 	@echo "DESTINATION      : $(DESTINATION)"
 endif
