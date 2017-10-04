@@ -15,7 +15,7 @@
      --define-variable=prefix=$(FFMPEG_PREFIX) --static
 --- tvheadend.org/configure
 +++ tvheadend/configure
-@@ -114,6 +114,11 @@
+@@ -117,6 +117,11 @@
        opt=${opt#*-}
        disable $opt 1
        ;;
@@ -27,7 +27,7 @@
    esac
  done
  
-@@ -165,7 +170,7 @@
+@@ -168,7 +173,7 @@
  
  check_cc_snippet atomic64 '#include <stdint.h>
  uint64_t test(uint64_t *ptr){
@@ -36,7 +36,7 @@
  }'
  
  check_cc_snippet atomic_time_t '#include <stdint.h>
-@@ -721,6 +726,9 @@
+@@ -743,6 +748,9 @@
  
  # Output config
  print_config
@@ -63,9 +63,9 @@
  
  #define PTS_UNSET INT64_C(0x8000000000000000)
  #define PTS_MASK  INT64_C(0x00000001ffffffff)
-@@ -875,4 +875,18 @@
- #define PRItime_t       "ld"
- #endif
+@@ -899,4 +899,18 @@
+ #define TVH_NAME_LEN 32
+ #define TVH_TITLE_LEN 256
  
 +/* VFD output */
 +#if defined(TF7700)
@@ -110,7 +110,7 @@
  /* **************************************************************************
 --- tvheadend.org/src/input/mpegts/satip/satip.c
 +++ tvheadend/src/input/mpegts/satip/satip.c
-@@ -828,7 +828,7 @@
+@@ -831,7 +831,7 @@
  static mtimer_t satip_discovery_static_timer;
  static mtimer_t satip_discovery_timerq;
  static mtimer_t satip_discovery_msearch_timer;
@@ -119,7 +119,7 @@
  
  static void
  satip_discovery_destroy(satip_discovery_t *d, int unlink)
-@@ -1298,7 +1298,7 @@
+@@ -1309,7 +1309,7 @@
   * Initialization
   */
  
@@ -141,6 +141,7 @@
  #endif /* __TVH_SATIP_H__ */
 --- tvheadend.org/src/main.c
 +++ tvheadend/src/main.c
+@@ -85,6 +85,7 @@
  #include <openssl/err.h>
  #include <openssl/rand.h>
  #include <openssl/engine.h>
@@ -148,7 +149,7 @@
  
  pthread_t main_tid;
  
-@@ -744,6 +745,10 @@
+@@ -745,6 +746,10 @@
    struct rlimit rl;
    extern int dvb_bouquets_parse;
  
@@ -159,7 +160,7 @@
    main_tid = pthread_self();
  
    /* Setup global mutexes */
-@@ -807,9 +812,9 @@
+@@ -808,9 +813,9 @@
               *opt_user_agent   = NULL,
               *opt_satip_bindaddr = NULL;
    static char *__opt_satip_xml[10];
@@ -171,7 +172,7 @@
    cmdline_opt_t cmdline_opts[] = {
      {   0, NULL,        N_("Generic options"),         OPT_BOOL, NULL         },
      { 'h', "help",      N_("Show this page"),          OPT_BOOL, &opt_help    },
-@@ -938,7 +943,7 @@
+@@ -939,7 +944,7 @@
      else if (opt->type == OPT_INT)
        *((int*)opt->param) = atoi(argv[i]);
      else if (opt->type == OPT_STR_LIST) {
@@ -180,7 +181,7 @@
        if (strl->num < strl->max)
          strl->str[strl->num++] = argv[i];
      }
-@@ -1263,6 +1268,29 @@
+@@ -1265,6 +1270,31 @@
           getpid(), getuid(), getgid(), getcwd(buf, sizeof(buf)),
           hts_settings_get_root());
  
@@ -189,6 +190,8 @@
 +	char txtstr[] = "Tvheadend";
 +#elif defined(HS7810A) || defined(HS7119) || defined(HS7819) || defined(SPARK)
 +	char txtstr[] = "tvHE";
++#else
++	char txtstr[] = "Tvhe";
 +#endif
 +#if !defined(HS7110) //models without front panel display
 +	vfddata.start = 0;

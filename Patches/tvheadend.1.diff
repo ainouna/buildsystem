@@ -181,7 +181,7 @@
        if (strl->num < strl->max)
          strl->str[strl->num++] = argv[i];
      }
-@@ -1276,6 +1281,29 @@
+@@ -1276,6 +1281,31 @@
           getpid(), getuid(), getgid(), getcwd(buf, sizeof(buf)),
           hts_settings_get_root());
  
@@ -190,6 +190,8 @@
 +	char txtstr[] = "Tvheadend";
 +#elif defined(HS7810A) || defined(HS7119) || defined(HS7819) || defined(SPARK)
 +	char txtstr[] = "tvHE";
++#else
++	char txtstr[] = "Tvhe";
 +#endif
 +#if !defined(HS7110) //models without front panel display
 +	vfddata.start = 0;
