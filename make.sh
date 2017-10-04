@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20170908.1
+# Version 20171004.1
 
 ##############################################
 
@@ -14,10 +14,10 @@ fi
 ##############################################
 
 if [ "$1" == -h ] || [ "$1" == --help ]; then
-	echo "Usage: $0 [-v | --verbose | -vv | --very_verbose] [Parameter1 Parameter2 ... Parameter9]"
+	echo "Usage: $0 [-v | --verbose | -q | --quiet] [Parameter1 Parameter2 ... Parameter9]"
 	echo
-	echo "-v or --verbose       : verbose build"
-	echo "-vv or --very_verbose : verbose build (very noisy!)"
+	echo "-v or --verbose       : verbose build (very noisy!)"
+	echo "-q or --quiet         : quiet build, fastest, almost silent"
 	echo "Parameter 1           : target system (1-37)"
 	echo "Parameter 2           : kernel (1-2)"
 	echo "Parameter 3           : optimization (1-4)"
@@ -29,17 +29,6 @@ if [ "$1" == -h ] || [ "$1" == --help ]; then
 	echo "Parameter 9           : destination (1-2, 1=flash, 2=USB)"
 	exit
 fi
-
-if [ "$1" == -vv ] || [ "$1" == --very_verbose ]; then
-	shift
-	VERBOSE_BUILD=2
-elif [ "$1" == -v ] || [ "$1" == --verbose ]; then
-	shift
-	VERBOSE_BUILD=1
-else
-	VERBOSE_BUILD=0
-fi
-export VERBOSE_BUILD
 
 ##############################################
 
@@ -65,17 +54,31 @@ echo "                            |___/"
 if [ -e ./config ]; then
 	cp ./config ./config.old
 	LASTBOX=`grep -e "BOXTYPE=" ./config.old | awk '{print substr($0,9,length($0)-7)}'`
-	LASTIMAGE1=`grep -e "enigma2" ./config.old`
-	LASTIMAGE2=`grep -e "neutrino" ./config.old`
-	LASTIMAGE3=`grep -e "tvheadend" ./config.old`
+	LASTIMAGE1=`grep -e "enigma2" ./config.old | awk '{print substr($0,7,length($0)-7)}'`
+	LASTIMAGE2=`grep -e "neutrino" ./config.old | awk '{print substr($0,7,length($0)-7)}'`
+	LASTIMAGE3=`grep -e "tvheadend" ./config.old | awk '{print substr($0,7,length($0)-6)}'`
 	if [ $LASTIMAGE1 ]; then
 		LASTDIFF=`grep -e "E2_DIFF=" ./config.old | awk '{print substr($0,9,length($0)-7)}'`
 	fi
 	if [ $LASTIMAGE3 ]; then
-		LASTDIFF=`grep -e "TVHE_DIFF=" ./config.old | awk '{print substr($0,9,length($0)-7)}'`
+		LASTDIFF=`grep -e "TVHEADEND_DIFF=" ./config.old | awk '{print substr($0,16,length($0)-7)}'`
 	fi
 	rm -f ./config.old
 fi
+
+##############################################
+
+if [ "$1" == -q ] || [ "$1" == --quiet ]; then
+	shift
+	VERBOSE_BUILD=quiet
+elif [ "$1" == -v ] || [ "$1" == --verbose ]; then
+	shift
+	VERBOSE_BUILD=verbose
+else
+	VERBOSE_BUILD=normal
+fi
+export VERBOSE_BUILD
+echo "VERBOSE_BUILD=$VERBOSE_BUILD" > config
 
 ##############################################
 
@@ -100,7 +103,6 @@ echo " [OK]"
 if [ -e $CURDIR/root/boot/put_your_elf_files_here ]; then
 	rm $CURDIR/root/boot/put_your_elf_files_here
 fi
-echo
 
 ##############################################
 
@@ -186,7 +188,7 @@ case "$REPLY" in
 	37) BOXARCH="arm";BOXTYPE="armbox";;
 	 *) BOXARCH="sh4";BOXTYPE="atevio7500";;
 esac
-echo "BOXARCH=$BOXARCH" > config
+echo "BOXARCH=$BOXARCH" >> config
 echo "BOXTYPE=$BOXTYPE" >> config
 
 ##############################################
@@ -307,21 +309,21 @@ case "$IMAGE" in
 				read -p " Select Neutrino variant (1-8)? ";;
 		esac
 		case "$REPLY" in
-			1)	echo "make yaud-neutrino-mp-cst-next V=$VERBOSE_BUILD" > $CURDIR/build
+			1)	echo "make yaud-neutrino-mp-cst-next" > $CURDIR/build
 				NEUTRINO_VAR=mp-cst-next;;
-			2)	echo "make yaud-neutrino-mp-cst-next-plugins V=$VERBOSE_BUILD" > $CURDIR/build
+			2)	echo "make yaud-neutrino-mp-cst-next-plugins" > $CURDIR/build
 				NEUTRINO_VAR="mp-cst-next + plugins";;
-			3)	echo "make yaud-neutrino-mp-cst-next-ni V=$VERBOSE_BUILD" > $CURDIR/build
+			3)	echo "make yaud-neutrino-mp-cst-next-ni" > $CURDIR/build
 				NEUTRINO_VAR="mp-cst-next-ni";;
-			4)	echo "make yaud-neutrino-mp-cst-next-ni-plugins V=$VERBOSE_BUILD" > $CURDIR/build
+			4)	echo "make yaud-neutrino-mp-cst-next-ni-plugins" > $CURDIR/build
 				NEUTRINO_VAR="mp-cst-next-ni + plugins";;
-			5)	echo "make yaud-neutrino-hd2 V=$VERBOSE_BUILD" > $CURDIR/build
+			5)	echo "make yaud-neutrino-hd2" > $CURDIR/build
 				NEUTRINO_VAR="neutrino-hd2";;
-			6)	echo "make yaud-neutrino-hd2-plugins V=$VERBOSE_BUILD" > $CURDIR/build
+			6)	echo "make yaud-neutrino-hd2-plugins" > $CURDIR/build
 				NEUTRINO_VAR="neutrino-hd2 + plugins";;
-			7)	echo "make yaud-neutrino-mp-tangos V=$VERBOSE_BUILD" > $CURDIR/build
+			7)	echo "make yaud-neutrino-mp-tangos" > $CURDIR/build
 				NEUTRINO_VAR=mp-tangos;;
-			*)	echo "make yaud-neutrino-mp-tangos-plugins V=$VERBOSE_BUILD" > $CURDIR/build
+			*)	echo "make yaud-neutrino-mp-tangos-plugins" > $CURDIR/build
 				NEUTRINO_VAR="mp-tangos + plugins";;
 		esac
 		echo "NEUTRINO_VARIANT=$NEUTRINO_VAR" >> config
@@ -362,9 +364,9 @@ case "$IMAGE" in
 		echo "TVHEADEND_DIFF=$DIFF" >> config
 		echo "TVHEADEND_REVISION=$REVISION" >> config
 
-		echo "make yaud-tvheadend V=$VERBOSE_BUILD" > $CURDIR/build
+		echo "make yaud-tvheadend" > $CURDIR/build
 
-		if [ "$LASTIMAGE2" ] || [ "$LASTIMAGE3" ] || [ ! "$LASTBOX" == "$BOXTYPE" ]; then
+		if [ "$LASTIMAGE1" ] || [ "$LASTIMAGE2" ] || [ ! "$LASTBOX" == "$BOXTYPE" ]; then
 			if [ -e ./.deps/ ]; then
 				echo -n -e "\nSettings changed, performing distclean..."
 				make distclean 2> /dev/null > /dev/null
@@ -428,7 +430,7 @@ case "$IMAGE" in
 		echo "E2_DIFF=$DIFF" >> config
 		echo "E2_REVISION=$REVISION" >> config
 
-		echo "make yaud-enigma2 V=$VERBOSE_BUILD" > $CURDIR/build
+		echo "make yaud-enigma2" > $CURDIR/build
 
 		if [ "$LASTIMAGE2" ] || [ "$LASTIMAGE3" ] || [ ! "$LASTBOX" == "$BOXTYPE" ]; then
 			if [ -e ./.deps/ ]; then
