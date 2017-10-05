@@ -41,11 +41,11 @@ $(D)/ncurses: $(D)/bootstrap $(ARCHIVE)/$(NCURSES_SOURCE)
 		$(MAKE) install.libs DESTDIR=$(TARGET_DIR); \
 		install -D -m 0755 misc/ncurses-config $(HOST_DIR)/bin/ncurses5-config; \
 		rm -f $(TARGET_DIR)/usr/bin/ncurses5-config
-	$(SILENT)$(REWRITE_PKGCONF) $(HOST_DIR)/bin/ncurses5-config
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/form.pc
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/menu.pc
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/ncurses.pc
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/panel.pc
+	$(REWRITE_PKGCONF) $(HOST_DIR)/bin/ncurses5-config
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/form.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/menu.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/ncurses.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/panel.pc
 	$(REMOVE)/ncurses-$(NCURSES_VER)
 	$(TOUCH)
 
@@ -90,7 +90,7 @@ $(D)/host_libffi: $(ARCHIVE)/$(LIBFFI_SOURCE)
 	$(REMOVE)/libffi-$(LIBFFI_VER)
 	$(UNTAR)/$(LIBFFI_SOURCE)
 	$(SET) -e; cd $(BUILD_TMP)/libffi-$(LIBFFI_VER); \
-		./configure $(SILENT_OPT) \
+		./configure $(SILENT_CONFIGURE) $(SILENT_OPT) \
 			--prefix=$(HOST_DIR) \
 			--disable-static \
 		; \
@@ -118,8 +118,8 @@ $(D)/libffi: $(D)/bootstrap $(ARCHIVE)/$(LIBFFI_SOURCE)
 		; \
 		$(MAKE); \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libffi.pc
-	$(SILENT)$(REWRITE_LIBTOOL)/libffi.la
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libffi.pc
+	$(REWRITE_LIBTOOL)/libffi.la
 	$(REMOVE)/libffi-$(LIBFFI_VER)
 	$(TOUCH)
 
@@ -145,7 +145,7 @@ $(D)/host_libglib2_genmarshal: $(D)/bootstrap $(D)/host_libffi $(ARCHIVE)/$(LIBG
 		export PKG_CONFIG=/usr/bin/pkg-config; \
 		export PKG_CONFIG_PATH=$(HOST_DIR)/lib/pkgconfig; \
 		$(call post_patch,$(LIBGLIB2_HOST_PATCH)); \
-		./configure $(SILENT_OPT) \
+		./configure $(SILENT_CONFIGURE) $(SILENT_OPT) \
 			--enable-static=yes \
 			--enable-shared=no \
 			--disable-fam \
@@ -176,6 +176,7 @@ $(D)/libglib2: $(D)/bootstrap $(D)/host_libglib2_genmarshal $(D)/zlib $(D)/libff
 			--prefix=/usr \
 			--mandir=/.remove \
 			--cache-file=config.cache \
+			--disable-fam \
 			--disable-gtk-doc \
 			--disable-gtk-doc-html \
 			--disable-libmount \
@@ -185,24 +186,24 @@ $(D)/libglib2: $(D)/bootstrap $(D)/host_libglib2_genmarshal $(D)/zlib $(D)/libff
 		; \
 		$(MAKE) all; \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/glib-2.0.pc
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gmodule-2.0.pc
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gio-2.0.pc
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gio-unix-2.0.pc
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gmodule-export-2.0.pc
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gmodule-no-export-2.0.pc
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gobject-2.0.pc
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gthread-2.0.pc
-	$(SILENT)$(REWRITE_LIBTOOL)/libglib-2.0.la
-	$(SILENT)$(REWRITE_LIBTOOL)/libgmodule-2.0.la
-	$(SILENT)$(REWRITE_LIBTOOL)/libgio-2.0.la
-	$(SILENT)$(REWRITE_LIBTOOL)/libgobject-2.0.la
-	$(SILENT)$(REWRITE_LIBTOOL)/libgthread-2.0.la
-	$(SILENT)$(REWRITE_LIBTOOLDEP)/libglib-2.0.la
-	$(SILENT)$(REWRITE_LIBTOOLDEP)/libgmodule-2.0.la
-	$(SILENT)$(REWRITE_LIBTOOLDEP)/libgio-2.0.la
-	$(SILENT)$(REWRITE_LIBTOOLDEP)/libgobject-2.0.la
-	$(SILENT)$(REWRITE_LIBTOOLDEP)/libgthread-2.0.la
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/glib-2.0.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gmodule-2.0.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gio-2.0.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gio-unix-2.0.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gmodule-export-2.0.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gmodule-no-export-2.0.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gobject-2.0.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gthread-2.0.pc
+	$(REWRITE_LIBTOOL)/libglib-2.0.la
+	$(REWRITE_LIBTOOL)/libgmodule-2.0.la
+	$(REWRITE_LIBTOOL)/libgio-2.0.la
+	$(REWRITE_LIBTOOL)/libgobject-2.0.la
+	$(REWRITE_LIBTOOL)/libgthread-2.0.la
+	$(REWRITE_LIBTOOLDEP)/libglib-2.0.la
+	$(REWRITE_LIBTOOLDEP)/libgmodule-2.0.la
+	$(REWRITE_LIBTOOLDEP)/libgio-2.0.la
+	$(REWRITE_LIBTOOLDEP)/libgobject-2.0.la
+	$(REWRITE_LIBTOOLDEP)/libgthread-2.0.la
 	$(REMOVE)/glib-$(LIBGLIB2_VER)
 	$(TOUCH)
 
@@ -229,15 +230,15 @@ $(D)/libpcre: $(D)/bootstrap $(ARCHIVE)/$(LIBPCRE_SOURCE)
 		$(MAKE) all; \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
 		mv $(TARGET_DIR)/usr/bin/pcre-config $(HOST_DIR)/bin/pcre-config
-	$(SILENT)$(REWRITE_PKGCONF) $(HOST_DIR)/bin/pcre-config
-	$(SILENT)$(REWRITE_LIBTOOL)/libpcre.la
-	$(SILENT)$(REWRITE_LIBTOOL)/libpcrecpp.la
-	$(SILENT)$(REWRITE_LIBTOOL)/libpcreposix.la
-	$(SILENT)$(REWRITE_LIBTOOLDEP)/libpcrecpp.la
-	$(SILENT)$(REWRITE_LIBTOOLDEP)/libpcreposix.la
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libpcre.pc
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libpcrecpp.pc
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libpcreposix.pc
+	$(REWRITE_PKGCONF) $(HOST_DIR)/bin/pcre-config
+	$(REWRITE_LIBTOOL)/libpcre.la
+	$(REWRITE_LIBTOOL)/libpcrecpp.la
+	$(REWRITE_LIBTOOL)/libpcreposix.la
+	$(REWRITE_LIBTOOLDEP)/libpcrecpp.la
+	$(REWRITE_LIBTOOLDEP)/libpcreposix.la
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libpcre.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libpcrecpp.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libpcreposix.pc
 	$(REMOVE)/pcre-$(LIBPCRE_VER)
 	$(TOUCH)
 
@@ -255,7 +256,7 @@ $(D)/host_libarchive: $(D)/bootstrap $(ARCHIVE)/$(LIBARCHIVE_SOURCE)
 	$(REMOVE)/libarchive-$(LIBARCHIVE_VER)
 	$(UNTAR)/$(LIBARCHIVE_SOURCE)
 	$(SET) -e; cd $(BUILD_TMP)/libarchive-$(LIBARCHIVE_VER); \
-		./configure $(SILENT_OPT) \
+		./configure $(SILENT_CONFIGURE) $(SILENT_OPT) \
 			--build=$(BUILD) \
 			--host=$(BUILD) \
 			--prefix= \
@@ -289,8 +290,8 @@ $(D)/libarchive: $(D)/bootstrap $(ARCHIVE)/$(LIBARCHIVE_SOURCE)
 		; \
 		$(MAKE); \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libarchive.pc
-	$(SILENT)$(REWRITE_LIBTOOL)/libarchive.la
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libarchive.pc
+	$(REWRITE_LIBTOOL)/libarchive.la
 	$(REMOVE)/libarchive-$(LIBARCHIVE_VER)
 	$(TOUCH)
 
@@ -364,9 +365,9 @@ $(D)/openssl: $(D)/bootstrap $(ARCHIVE)/$(OPENSSL_SOURCE)
 		$(MAKE) all; \
 		$(MAKE) install_sw INSTALL_PREFIX=$(TARGET_DIR)
 	chmod 0755 $(TARGET_DIR)/usr/lib/lib{crypto,ssl}.so.*
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/openssl.pc
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libcrypto.pc
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libssl.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/openssl.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libcrypto.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libssl.pc
 	cd $(TARGET_DIR) && rm -rf etc/ssl/man usr/bin/openssl usr/lib/engines
 	ln -sf libcrypto.so.1.0.0 $(TARGET_DIR)/usr/lib/libcrypto.so.0.9.8
 	ln -sf libssl.so.1.0.0 $(TARGET_DIR)/usr/lib/libssl.so.0.9.8
@@ -405,8 +406,8 @@ $(D)/libbluray: $(D)/bootstrap $(ARCHIVE)/$(LIBBLURAY_SOURCE)
 		; \
 		$(MAKE); \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libbluray.pc
-	$(SILENT)$(REWRITE_LIBTOOL)/libbluray.la
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libbluray.pc
+	$(REWRITE_LIBTOOL)/libbluray.la
 	$(REMOVE)/libbluray-$(LIBBLURAY_VER)
 	$(TOUCH)
 
@@ -612,7 +613,7 @@ $(D)/zlib: $(D)/bootstrap $(ARCHIVE)/$(ZLIB_SOURCE)
 		$(MAKE); \
 		ln -sf /bin/true ldconfig; \
 		$(MAKE) install prefix=$(TARGET_DIR)/usr
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/zlib.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/zlib.pc
 	$(REMOVE)/zlib-$(ZLIB_VER)
 	$(TOUCH)
 
@@ -714,8 +715,8 @@ $(D)/freetype: $(D)/bootstrap $(D)/zlib $(D)/libpng $(ARCHIVE)/$(FREETYPE_SOURCE
 		    -e 's:^libdir=.*:libdir="$${exec_prefix}/lib":' \
 		    -i $(TARGET_DIR)/usr/bin/freetype-config; \
 		mv $(TARGET_DIR)/usr/bin/freetype-config $(HOST_DIR)/bin/freetype-config
-	$(SILENT)$(REWRITE_LIBTOOL)/libfreetype.la
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/freetype2.pc
+	$(REWRITE_LIBTOOL)/libfreetype.la
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/freetype2.pc
 	$(REMOVE)/freetype-$(FREETYPE_VER)
 	$(TOUCH)
 
@@ -768,7 +769,7 @@ $(D)/lirc: $(D)/bootstrap $(ARCHIVE)/$(LIRC_SOURCE)
 		; \
 		$(MAKE) -j1 all; \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
-	$(SILENT)$(REWRITE_LIBTOOL)/liblirc_client.la
+	$(REWRITE_LIBTOOL)/liblirc_client.la
 	rm -f $(addprefix $(TARGET_DIR)/usr/bin/,lircmd ircat irpty irrecord irsend irw lircrcd mode2 pronto2lirc)
 	$(REMOVE)/lirc-$(LIRC_VER)
 	$(TOUCH)
@@ -797,7 +798,7 @@ $(D)/jpeg: $(D)/bootstrap $(ARCHIVE)/$(JPEG_SOURCE)
 		; \
 		$(MAKE); \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
-	$(SILENT)$(REWRITE_LIBTOOL)/libjpeg.la
+	$(REWRITE_LIBTOOL)/libjpeg.la
 	rm -f $(addprefix $(TARGET_DIR)/usr/bin/,cjpeg djpeg jpegtran rdjpgcom wrjpgcom)
 	$(REMOVE)/jpeg-$(JPEG_VER)
 	$(TOUCH)
@@ -847,8 +848,8 @@ $(D)/jpeg_turbo: $(D)/bootstrap $(ARCHIVE)/$(JPEG_TURBO_SOURCE)
 		; \
 		$(MAKE); \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
-	$(SILENT)$(REWRITE_LIBTOOL)/libjpeg.la
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libjpeg.pc
+	$(REWRITE_LIBTOOL)/libjpeg.la
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libjpeg.pc
 	rm -f $(addprefix $(TARGET_DIR)/usr/bin/,cjpeg djpeg jpegtran rdjpgcom wrjpgcom tjbench)
 	rm -f $(TARGET_DIR)/usr/lib/libturbojpeg* $(TARGET_DIR)/usr/include/turbojpeg.h $(PKG_CONFIG_PATH)/libturbojpeg.pc
 	$(REMOVE)/libjpeg-turbo-$(JPEG_TURBO_VER)
@@ -881,8 +882,8 @@ $(D)/libpng: $(D)/bootstrap $(D)/zlib $(ARCHIVE)/$(LIBPNG_SOURCE)
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
 		sed -e 's:^prefix=.*:prefix="$(TARGET_DIR)/usr":' -i $(TARGET_DIR)/usr/bin/libpng$(LIBPNG_VER_X)-config; \
 		mv $(TARGET_DIR)/usr/bin/libpng*-config $(HOST_DIR)/bin/
-	$(SILENT)$(REWRITE_LIBTOOL)/libpng16.la
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libpng$(LIBPNG_VER_X).pc
+	$(REWRITE_LIBTOOL)/libpng16.la
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libpng$(LIBPNG_VER_X).pc
 	rm -f $(addprefix $(TARGET_DIR)/usr/bin/,pngfix png-fix-itxt)
 	$(REMOVE)/libpng-$(LIBPNG_VER)
 	$(TOUCH)
@@ -926,7 +927,7 @@ $(D)/giflib: $(D)/bootstrap $(ARCHIVE)/$(GIFLIB_SOURCE)
 		; \
 		$(MAKE) all; \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
-	$(SILENT)$(REWRITE_LIBTOOL)/libgif.la
+	$(REWRITE_LIBTOOL)/libgif.la
 	rm -f $(addprefix $(TARGET_DIR)/usr/bin/,gif2rgb gifbuild gifclrmp gifecho giffix gifinto giftext giftool)
 	$(REMOVE)/giflib-$(GIFLIB_VER)
 	$(TOUCH)
@@ -952,7 +953,7 @@ $(D)/libconfig: $(D)/bootstrap $(ARCHIVE)/$(LIBCONFIG_SOURCE)
 		$(MAKE) all; \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
 	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libconfig.pc
-	$(SILENT)$(REWRITE_LIBTOOL)/libconfig.la
+	$(REWRITE_LIBTOOL)/libconfig.la
 	$(REMOVE)/libconfig-$(LIBCONFIG_VER)
 	$(TOUCH)
 
@@ -997,8 +998,8 @@ $(D)/libcurl: $(D)/bootstrap $(D)/openssl $(D)/zlib $(ARCHIVE)/$(LIBCURL_SOURCE)
 		chmod 755 $(HOST_DIR)/bin/curl-config; \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
 		rm -f $(TARGET_DIR)/usr/bin/curl-config
-	$(SILENT)$(REWRITE_LIBTOOL)/libcurl.la
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libcurl.pc
+	$(REWRITE_LIBTOOL)/libcurl.la
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libcurl.pc
 	rm -f $(addprefix $(TARGET_DIR)/usr/bin/,curl)
 	$(REMOVE)/curl-$(LIBCURL_VER)
 	$(TOUCH)
@@ -1031,8 +1032,8 @@ $(D)/libfribidi: $(D)/bootstrap $(ARCHIVE)/$(LIBFRIBIDI_SOURCE)
 		; \
 		$(MAKE); \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/fribidi.pc
-	$(SILENT)$(REWRITE_LIBTOOL)/libfribidi.la
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/fribidi.pc
+	$(REWRITE_LIBTOOL)/libfribidi.la
 	cd $(TARGET_DIR) && rm usr/bin/fribidi
 	$(REMOVE)/fribidi-$(LIBFRIBIDI_VER)
 	$(TOUCH)
@@ -1060,8 +1061,8 @@ $(D)/libsigc_e2: $(D)/bootstrap $(ARCHIVE)/$(LIBSIGC_E2_SOURCE)
 		; \
 		$(MAKE) all; \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/sigc++-1.2.pc
-	$(SILENT)$(REWRITE_LIBTOOL)/libsigc-1.2.la
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/sigc++-1.2.pc
+	$(REWRITE_LIBTOOL)/libsigc-1.2.la
 	$(REMOVE)/libsigc++-$(LIBSIGC_E2_VER)
 	$(TOUCH)
 
@@ -1094,8 +1095,8 @@ $(D)/libsigc: $(D)/bootstrap $(ARCHIVE)/$(LIBSIGC_SOURCE)
 		fi;
 		mv $(TARGET_DIR)/usr/lib/sigc++-2.0/include/sigc++config.h $(TARGET_DIR)/usr/include; \
 		rm -fr $(TARGET_DIR)/usr/lib/sigc++-2.0
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/sigc++-2.0.pc
-	$(SILENT)$(REWRITE_LIBTOOL)/libsigc-2.0.la
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/sigc++-2.0.pc
+	$(REWRITE_LIBTOOL)/libsigc-2.0.la
 	$(REMOVE)/libsigc++-$(LIBSIGC_VER)
 	$(TOUCH)
 
@@ -1126,8 +1127,8 @@ $(D)/libmad: $(D)/bootstrap $(ARCHIVE)/$(LIBMAD_SOURCE)
 		; \
 		$(MAKE) all; \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/mad.pc
-	$(SILENT)$(REWRITE_LIBTOOL)/libmad.la
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/mad.pc
+	$(REWRITE_LIBTOOL)/libmad.la
 	$(REMOVE)/libmad-$(LIBMAD_VER)
 	$(TOUCH)
 
@@ -1155,8 +1156,8 @@ $(D)/libid3tag: $(D)/bootstrap $(D)/zlib $(ARCHIVE)/$(LIBID3TAG_SOURCE)
 		; \
 		$(MAKE) all; \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/id3tag.pc
-	$(SILENT)$(REWRITE_LIBTOOL)/libid3tag.la
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/id3tag.pc
+	$(REWRITE_LIBTOOL)/libid3tag.la
 	$(REMOVE)/libid3tag-$(LIBID3TAG_VER)
 	$(TOUCH)
 
@@ -1183,15 +1184,15 @@ $(D)/libvorbis: $(D)/bootstrap $(D)/libogg $(ARCHIVE)/$(LIBVORBIS_SOURCE)
 		; \
 		$(MAKE); \
 		$(MAKE) install DESTDIR=$(TARGET_DIR) docdir=/.remove
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/vorbis.pc
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/vorbisenc.pc
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/vorbisfile.pc
-	$(SILENT)$(REWRITE_LIBTOOL)/libvorbis.la
-	$(SILENT)$(REWRITE_LIBTOOL)/libvorbisenc.la
-	$(SILENT)$(REWRITE_LIBTOOL)/libvorbisfile.la
-	$(SILENT)$(REWRITE_LIBTOOLDEP)/libvorbis.la
-	$(SILENT)$(REWRITE_LIBTOOLDEP)/libvorbisenc.la
-	$(SILENT)$(REWRITE_LIBTOOLDEP)/libvorbisfile.la
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/vorbis.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/vorbisenc.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/vorbisfile.pc
+	$(REWRITE_LIBTOOL)/libvorbis.la
+	$(REWRITE_LIBTOOL)/libvorbisenc.la
+	$(REWRITE_LIBTOOL)/libvorbisfile.la
+	$(REWRITE_LIBTOOLDEP)/libvorbis.la
+	$(REWRITE_LIBTOOLDEP)/libvorbisenc.la
+	$(REWRITE_LIBTOOLDEP)/libvorbisfile.la
 	$(REMOVE)/libvorbis-$(LIBVORBIS_VER)
 	$(TOUCH)
 
@@ -1217,8 +1218,8 @@ $(D)/libvorbisidec: $(D)/bootstrap $(D)/libogg $(ARCHIVE)/$(LIBVORBISIDEC_SOURCE
 		$(BUILDENV) ./autogen.sh $(CONFIGURE_OPTS) --prefix=/usr; \
 		$(MAKE) all; \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/vorbisidec.pc
-	$(SILENT)$(REWRITE_LIBTOOL)/libvorbisidec.la
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/vorbisidec.pc
+	$(REWRITE_LIBTOOL)/libvorbisidec.la
 	$(REMOVE)/libvorbisidec-$(LIBVORBISIDEC_VER)
 	$(TOUCH)
 
@@ -1247,7 +1248,7 @@ $(D)/libiconv: $(D)/bootstrap $(ARCHIVE)/$(LIBICONV_SOURCE)
 		$(MAKE); \
 		cp ./srcm4/* $(HOST_DIR)/share/aclocal/ ; \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
-	$(SILENT)$(REWRITE_LIBTOOL)/libiconv.la
+	$(REWRITE_LIBTOOL)/libiconv.la
 	$(REMOVE)/libiconv-$(LIBICONV_VER)
 	$(TOUCH)
 
@@ -1272,8 +1273,8 @@ $(D)/expat: $(D)/bootstrap $(ARCHIVE)/$(EXPAT_SOURCE)
 		; \
 		$(MAKE); \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/expat.pc
-	$(SILENT)$(REWRITE_LIBTOOL)/libexpat.la
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/expat.pc
+	$(REWRITE_LIBTOOL)/libexpat.la
 	$(REMOVE)/expat-$(EXPAT_VER)
 	$(TOUCH)
 
@@ -1301,8 +1302,8 @@ $(D)/fontconfig: $(D)/bootstrap $(D)/freetype $(D)/expat $(ARCHIVE)/$(FONTCONFIG
 		; \
 		$(MAKE) all; \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
-	$(SILENT)$(REWRITE_LIBTOOL)/libfontconfig.la
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/fontconfig.pc
+	$(REWRITE_LIBTOOL)/libfontconfig.la
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/fontconfig.pc
 	$(REMOVE)/fontconfig-$(FONTCONFIG_VER)
 	$(TOUCH)
 
@@ -1326,7 +1327,7 @@ $(D)/libdvdcss: $(D)/bootstrap $(ARCHIVE)/$(LIBDVDCSS_SOURCE)
 		; \
 		$(MAKE); \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libdvdcss.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libdvdcss.pc
 	$(REWRITE_LIBTOOL)/libdvdcss.la
 	$(SILENT)$(REMOVE)/libdvdcss-$(LIBDVDCSS_VER)
 	$(TOUCH)
@@ -1358,10 +1359,10 @@ $(D)/libdvdnav: $(D)/bootstrap $(D)/libdvdread $(ARCHIVE)/$(LIBDVDNAV_SOURCE)
 		; \
 		$(MAKE) all; \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/dvdnav.pc
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/dvdnavmini.pc
-	$(SILENT)$(REWRITE_LIBTOOL)/libdvdnav.la
-	$(SILENT)$(REWRITE_LIBTOOL)/libdvdnavmini.la
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/dvdnav.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/dvdnavmini.pc
+	$(REWRITE_LIBTOOL)/libdvdnav.la
+	$(REWRITE_LIBTOOL)/libdvdnavmini.la
 	$(REMOVE)/libdvdnav-$(LIBDVDNAV_VER)
 	$(TOUCH)
 
@@ -1388,8 +1389,8 @@ $(D)/libdvdread: $(D)/bootstrap $(ARCHIVE)/$(LIBDVDREAD_SOURCE)
 		; \
 		$(MAKE) all; \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/dvdread.pc
-	$(SILENT)$(REWRITE_LIBTOOL)/libdvdread.la
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/dvdread.pc
+	$(REWRITE_LIBTOOL)/libdvdread.la
 	$(REMOVE)/libdvdread-$(LIBDVDREAD_VER)
 	$(TOUCH)
 
@@ -1411,15 +1412,15 @@ $(D)/libdreamdvd: $(D)/bootstrap $(D)/libdvdnav
 		$(BUILDENV) \
 		libtoolize --copy --ltdl --force --quiet; \
 		autoreconf --verbose --force --install; \
-		./configure $(SILENT_OPT) \
+		./configure $(SILENT_CONFIGURE) $(SILENT_OPT) \
 			--build=$(BUILD) \
 			--host=$(TARGET) \
 			--prefix=/usr \
 		; \
 		$(MAKE) all; \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libdreamdvd.pc
-	$(SILENT)$(REWRITE_LIBTOOL)/libdreamdvd.la
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libdreamdvd.pc
+	$(REWRITE_LIBTOOL)/libdreamdvd.la
 	$(REMOVE)/libdreamdvd
 	$(TOUCH)
 
@@ -1646,13 +1647,13 @@ $(D)/ffmpeg: $(D)/bootstrap $(D)/openssl $(D)/bzip2 $(D)/libass $(D)/libroxml $(
 		; \
 		$(MAKE); \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libavcodec.pc
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libavdevice.pc
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libavfilter.pc
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libavformat.pc
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libavutil.pc
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libswresample.pc
-	$(SILENT)test -e $(PKG_CONFIG_PATH)/libswscale.pc && $(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libswscale.pc || true
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libavcodec.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libavdevice.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libavfilter.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libavformat.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libavutil.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libswresample.pc
+	$(SILENT)test -e $(PKG_CONFIG_PATH)/libswscale.pc && $(REWRITE_PKGCONF_NQ) $(PKG_CONFIG_PATH)/libswscale.pc || true
 	$(REMOVE)/ffmpeg-$(FFMPEG_VER)
 	$(TOUCH)
 
@@ -1682,8 +1683,8 @@ $(D)/libass: $(D)/bootstrap $(D)/freetype $(D)/libfribidi $(ARCHIVE)/$(LIBASS_SO
 		; \
 		$(MAKE); \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libass.pc
-	$(SILENT)$(REWRITE_LIBTOOL)/libass.la
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libass.pc
+	$(REWRITE_LIBTOOL)/libass.la
 	$(REMOVE)/libass-$(LIBASS_VER)
 	$(TOUCH)
 
@@ -1707,8 +1708,8 @@ $(D)/sqlite: $(D)/bootstrap $(ARCHIVE)/$(SQLITE_SOURCE)
 		; \
 		$(MAKE) all; \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/sqlite3.pc
-	$(SILENT)$(REWRITE_LIBTOOL)/libsqlite3.la
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/sqlite3.pc
+	$(REWRITE_LIBTOOL)/libsqlite3.la
 	rm -f $(addprefix $(TARGET_DIR)/usr/bin/,sqlite3)
 	$(REMOVE)/sqlite-autoconf-$(SQLITE_VER)
 	$(TOUCH)
@@ -1739,9 +1740,9 @@ $(D)/libsoup: $(D)/bootstrap $(D)/sqlite $(D)/libxml2 $(D)/libglib2 $(ARCHIVE)/$
 			--disable-gtk-doc-pdf \
 		; \
 		$(MAKE); \
-		$(MAKE) install DESTDIR=$(TARGET_DIR) itlocaledir=$$(TARGET_DIR)/.remove
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libsoup-2.4.pc
-	$(SILENT)$(REWRITE_LIBTOOL)/libsoup-2.4.la
+		$(MAKE) install DESTDIR=$(TARGET_DIR) itlocaledir=$(TARGET_DIR)/.remove
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libsoup-2.4.pc
+	$(REWRITE_LIBTOOL)/libsoup-2.4.la
 	$(REMOVE)/libsoup-$(LIBSOUP_VER)
 	$(TOUCH)
 
@@ -1767,8 +1768,8 @@ $(D)/libogg: $(D)/bootstrap $(ARCHIVE)/$(LIBOGG_SOURCE)
 		; \
 		$(MAKE); \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
-	$(SILENT)$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/ogg.pc
-	$(SILENT)$(SILENT)$(REWRITE_LIBTOOL)/libogg.la
+	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/ogg.pc
+	$(SILENT)$(REWRITE_LIBTOOL)/libogg.la
 	$(REMOVE)/libogg-$(LIBOGG_VER)
 	$(TOUCH)
 
@@ -1797,7 +1798,6 @@ $(D)/flac: $(D)/bootstrap $(ARCHIVE)/$(FLAC_SOURCE)
 			--disable-debug \
 			--disable-asm-optimizations \
 			--disable-sse \
-			--disable-3dnow \
 			--disable-altivec \
 			--disable-doxygen-docs \
 			--disable-thorough-tests \
@@ -1810,8 +1810,8 @@ $(D)/flac: $(D)/bootstrap $(ARCHIVE)/$(FLAC_SOURCE)
 		; \
 		$(MAKE); \
 		$(MAKE) install DESTDIR=$(TARGET_DIR) docdir=/.remove
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/flac.pc
-	$(SILENT)$(REWRITE_LIBTOOL)/libFLAC.la
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/flac.pc
+	$(REWRITE_LIBTOOL)/libFLAC.la
 	$(REMOVE)/flac-$(FLAC_VER)
 	$(TOUCH)
 
@@ -1858,7 +1858,7 @@ $(D)/libxml2: $(D)/bootstrap $(D)/zlib $(ARCHIVE)/$(LIBXML2_SOURCE)
 		$(MAKE) all; \
 		$(MAKE) install DESTDIR=$(TARGET_DIR);
 		mv $(TARGET_DIR)/usr/bin/xml2-config $(HOST_DIR)/bin
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libxml-2.0.pc $(HOST_DIR)/bin/xml2-config
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libxml-2.0.pc $(HOST_DIR)/bin/xml2-config
 	sed -i 's/^\(Libs:.*\)/\1 -lz/' $(PKG_CONFIG_PATH)/libxml-2.0.pc
 	if [ -e "$(TARGET_DIR)/$(PYTHON_DIR)/site-packages/libxml2mod.la" ]; then \
 		sed -e "/^dependency_libs/ s,/usr/lib/libxml2.la,$(TARGET_DIR)/usr/lib/libxml2.la,g" -i $(TARGET_DIR)/$(PYTHON_DIR)/site-packages/libxml2mod.la; \
@@ -1866,7 +1866,7 @@ $(D)/libxml2: $(D)/bootstrap $(D)/zlib $(ARCHIVE)/$(LIBXML2_SOURCE)
 	fi; \
 	sed -e "/^XML2_LIBDIR/ s,/usr/lib,$(TARGET_DIR)/usr/lib,g" -i $(TARGET_DIR)/usr/lib/xml2Conf.sh; \
 	sed -e "/^XML2_INCLUDEDIR/ s,/usr/include,$(TARGET_DIR)/usr/include,g" -i $(TARGET_DIR)/usr/lib/xml2Conf.sh
-	$(SILENT)$(REWRITE_LIBTOOL)/libxml2.la
+	$(REWRITE_LIBTOOL)/libxml2.la
 	rm -f $(addprefix $(TARGET_DIR)/usr/bin/,xmlcatalog xmllint)
 	$(REMOVE)/libxml2-$(LIBXML2_VER)
 	$(TOUCH)
@@ -1907,11 +1907,11 @@ $(D)/libxslt: $(D)/bootstrap $(D)/libxml2 $(ARCHIVE)/$(LIBXSLT_SOURCE)
 		fi; \
 		sed -e "/^XSLT_LIBDIR/ s,/usr/lib,$(TARGET_DIR)/usr/lib,g" -i $(TARGET_DIR)/usr/lib/xsltConf.sh; \
 		sed -e "/^XSLT_INCLUDEDIR/ s,/usr/include,$(TARGET_DIR)/usr/include,g" -i $(TARGET_DIR)/usr/lib/xsltConf.sh
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libexslt.pc $(HOST_DIR)/bin/xslt-config
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libxslt.pc
-	$(SILENT)$(REWRITE_LIBTOOL)/libexslt.la
-	$(SILENT)$(REWRITE_LIBTOOL)/libxslt.la
-	$(SILENT)$(REWRITE_LIBTOOLDEP)/libexslt.la
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libexslt.pc $(HOST_DIR)/bin/xslt-config
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libxslt.pc
+	$(REWRITE_LIBTOOL)/libexslt.la
+	$(REWRITE_LIBTOOL)/libxslt.la
+	$(REWRITE_LIBTOOLDEP)/libexslt.la
 	rm -f $(addprefix $(TARGET_DIR)/usr/bin/,xsltproc xslt-config)
 	$(REMOVE)/libxslt-$(LIBXSLT_VER)
 	$(TOUCH)
@@ -1936,8 +1936,8 @@ $(D)/libpopt: $(D)/bootstrap $(ARCHIVE)/$(LIBPOPT_SOURCE)
 		; \
 		$(MAKE); \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/popt.pc
-	$(SILENT)$(REWRITE_LIBTOOL)/libpopt.la
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/popt.pc
+	$(REWRITE_LIBTOOL)/libpopt.la
 	$(REMOVE)/popt-$(LIBPOPT_VER)
 	$(TOUCH)
 
@@ -1963,8 +1963,8 @@ $(D)/libroxml: $(D)/bootstrap $(ARCHIVE)/$(LIBROXML_SOURCE)
 		; \
 		$(MAKE); \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libroxml.pc
-	$(SILENT)$(REWRITE_LIBTOOL)/libroxml.la
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libroxml.pc
+	$(REWRITE_LIBTOOL)/libroxml.la
 	$(REMOVE)/libroxml-$(LIBROXML_VER)
 	$(TOUCH)
 
@@ -2072,8 +2072,8 @@ $(D)/gd: $(D)/bootstrap $(D)/libpng $(D)/libjpeg $(D)/freetype $(ARCHIVE)/$(GD_S
 		; \
 		$(MAKE); \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
-	$(SILENT)$(REWRITE_LIBTOOL)/libgd.la
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gdlib.pc
+	$(REWRITE_LIBTOOL)/libgd.la
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gdlib.pc
 	$(REMOVE)/libgd-$(GD_VER)
 	$(TOUCH)
 
@@ -2104,8 +2104,8 @@ $(D)/libusb: $(D)/bootstrap $(ARCHIVE)/$(LIBUSB_SOURCE)
 		; \
 		$(MAKE) ; \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
-	$(SILENT)$(REWRITE_LIBTOOL)/libusb-1.0.la
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libusb-1.0.pc
+	$(REWRITE_LIBTOOL)/libusb-1.0.la
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libusb-1.0.pc
 	$(REMOVE)/libusb-$(LIBUSB_VER)
 	$(TOUCH)
 
@@ -2132,8 +2132,8 @@ $(D)/libusb_compat: $(D)/bootstrap $(D)/libusb $(ARCHIVE)/$(LIBUSB_COMPAT_SOURCE
 		$(MAKE) ; \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
 	rm -f $(TARGET_DIR)/usr/bin/libusb-config
-	$(SILENT)$(REWRITE_LIBTOOL)/libusb.la
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libusb.pc
+	$(REWRITE_LIBTOOL)/libusb.la
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libusb.pc
 	$(REMOVE)/libusb-compat-$(LIBUSB_COMPAT_VER)
 	$(TOUCH)
 
@@ -2172,8 +2172,8 @@ $(D)/alsa_lib: $(D)/bootstrap $(ARCHIVE)/$(ALSA_LIB_SOURCE)
 		; \
 		$(MAKE); \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/alsa.pc
-	$(SILENT)$(REWRITE_LIBTOOL)/libasound.la
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/alsa.pc
+	$(REWRITE_LIBTOOL)/libasound.la
 	$(REMOVE)/alsa-lib-$(ALSA_LIB_VER)
 	$(TOUCH)
 
@@ -2244,7 +2244,7 @@ $(D)/libopenthreads: $(D)/bootstrap $(ARCHIVE)/$(LIBOPENTHREADS_SOURCE)
 		sed -i 's@SET(CMAKE_INSTALL_PREFIX "/usr/local")@SET(CMAKE_INSTALL_PREFIX "")@'; \
 		$(MAKE); \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)/usr
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/openthreads.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/openthreads.pc
 	$(REMOVE)/OpenThreads-$(LIBOPENTHREADS_VER)
 	$(TOUCH)
 
@@ -2268,7 +2268,7 @@ $(D)/librtmpdump: $(D)/bootstrap $(D)/zlib $(D)/openssl $(ARCHIVE)/$(LIBRTMPDUMP
 		$(BUILDENV) \
 		$(MAKE) CROSS_COMPILE=$(TARGET)- ; \
 		$(MAKE) install prefix=/usr DESTDIR=$(TARGET_DIR) MANDIR=$(TARGET_DIR)/.remove
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/librtmp.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/librtmp.pc
 	rm -f $(addprefix $(TARGET_DIR)/usr/sbin/,rtmpgw rtmpsrv rtmpsuck)
 	$(REMOVE)/librtmpdump-$(LIBRTMPDUMP_VER)
 	$(TOUCH)
@@ -2295,8 +2295,8 @@ $(D)/libdvbsi: $(D)/bootstrap $(ARCHIVE)/$(LIBDVBSI_SOURCE)
 		; \
 		$(MAKE); \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libdvbsi++.pc
-	$(SILENT)$(REWRITE_LIBTOOL)/libdvbsi++.la
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libdvbsi++.pc
+	$(REWRITE_LIBTOOL)/libdvbsi++.la
 	$(REMOVE)/libdvbsi-$(LIBDVBSI_VER)
 	$(TOUCH)
 
@@ -2319,8 +2319,8 @@ $(D)/libmodplug: $(D)/bootstrap $(ARCHIVE)/$(LIBMODPLUG_SOURCE)
 		; \
 		$(MAKE) all; \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libmodplug.pc
-	$(SILENT)$(REWRITE_LIBTOOL)/libmodplug.la
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libmodplug.pc
+	$(REWRITE_LIBTOOL)/libmodplug.la
 	$(REMOVE)/libmodplug-$(LIBMODPLUG_VER)
 	$(TOUCH)
 
@@ -2344,7 +2344,7 @@ $(D)/lzo: $(D)/bootstrap $(ARCHIVE)/$(LZO_SOURCE)
 		; \
 		$(MAKE); \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
-	$(SILENT)$(REWRITE_LIBTOOL)/liblzo2.la
+	$(REWRITE_LIBTOOL)/liblzo2.la
 	$(REMOVE)/lzo-$(LZO_VER)
 	$(TOUCH)
 
@@ -2392,8 +2392,8 @@ $(D)/libexif: $(D)/bootstrap $(ARCHIVE)/$(LIBEXIF_SOURCE)
 		; \
 		$(MAKE); \
 		$(MAKE) install prefix=/usr DESTDIR=$(TARGET_DIR)
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libexif.pc
-	$(SILENT)$(REWRITE_LIBTOOL)/libexif.la
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libexif.pc
+	$(REWRITE_LIBTOOL)/libexif.la
 	$(REMOVE)/libexif-$(LIBEXIF_VER)
 	$(TOUCH)
 
@@ -2438,10 +2438,10 @@ $(D)/libupnp: $(D)/bootstrap $(ARCHIVE)/$(LIBUPNP_SOURCE)
 		; \
 		$(MAKE) all; \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libupnp.pc
-	$(SILENT)$(REWRITE_LIBTOOL)/libixml.la
-	$(SILENT)$(REWRITE_LIBTOOL)/libthreadutil.la
-	$(SILENT)$(REWRITE_LIBTOOL)/libupnp.la
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libupnp.pc
+	$(REWRITE_LIBTOOL)/libixml.la
+	$(REWRITE_LIBTOOL)/libthreadutil.la
+	$(REWRITE_LIBTOOL)/libupnp.la
 	$(REMOVE)/libupnp-$(LIBUPNP_VER)
 	$(TOUCH)
 
@@ -2514,8 +2514,8 @@ $(D)/howl: $(D)/bootstrap $(ARCHIVE)/$(HOWL_SOURCE)
 		; \
 		$(MAKE) all; \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/howl.pc
-	$(SILENT)$(REWRITE_LIBTOOL)/libhowl.la
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/howl.pc
+	$(REWRITE_LIBTOOL)/libhowl.la
 	$(REMOVE)/howl-$(HOWL_VER)
 	$(TOUCH)
 
@@ -2540,8 +2540,8 @@ $(D)/libdaemon: $(D)/bootstrap $(ARCHIVE)/$(LIBDAEMON_SOURCE)
 		; \
 		$(MAKE) all; \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libdaemon.pc
-	$(SILENT)$(REWRITE_LIBTOOL)/libdaemon.la
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libdaemon.pc
+	$(REWRITE_LIBTOOL)/libdaemon.la
 	$(REMOVE)/libdaemon-$(LIBDAEMON_VER)
 	$(TOUCH)
 
@@ -2572,8 +2572,8 @@ $(D)/libplist: $(D)/bootstrap $(D)/libxml2 $(ARCHIVE)/$(LIBPLIST_SOURCE)
 		sed -i 's@SET(CMAKE_INSTALL_PREFIX "/usr/local")@SET(CMAKE_INSTALL_PREFIX "")@'; \
 		$(MAKE) all; \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libplist.pc
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libplist++.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libplist.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libplist++.pc
 	$(REMOVE)/libplist-$(LIBPLIST_VER)
 	$(TOUCH)
 
@@ -2600,8 +2600,8 @@ $(D)/libao: $(D)/bootstrap $(D)/alsa-lib $(ARCHIVE)/$(LIBAO_SOURCE)
 		; \
 		$(MAKE) all; \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/ao.pc
-	$(SILENT)$(REWRITE_LIBTOOL)/libao.la
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/ao.pc
+	$(REWRITE_LIBTOOL)/libao.la
 	$(REMOVE)/libao-$(LIBAO_VER)
 	$(TOUCH)
 
@@ -2627,8 +2627,8 @@ $(D)/nettle: $(D)/bootstrap $(D)/gmp $(ARCHIVE)/$(NETTLE_SOURCE)
 		; \
 		$(MAKE) all; \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/hogweed.pc
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/nettle.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/hogweed.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/nettle.pc
 	rm -f $(addprefix $(TARGET_DIR)/usr/bin/,sexp-conv nettle-hash nettle-pbkdf2 nettle-lfib-stream pkcs1-conv)
 	$(REMOVE)/nettle-$(NETTLE_VER)
 	$(TOUCH)
@@ -2662,13 +2662,16 @@ $(D)/gnutls: $(D)/bootstrap $(D)/nettle $(ARCHIVE)/$(GNUTLS_SOURCE)
 			--disable-guile \
 			--disable-crywrap \
 			--without-p11-kit \
+			--without-idn \
+			--disable-libdane \
+			--without-tpm \
 		; \
 		$(MAKE); \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gnutls.pc
-	$(SILENT)$(REWRITE_LIBTOOL)/libgnutls.la
-	$(SILENT)$(REWRITE_LIBTOOL)/libgnutlsxx.la
-	$(SILENT)$(REWRITE_LIBTOOLDEP)/libgnutlsxx.la
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gnutls.pc
+	$(REWRITE_LIBTOOL)/libgnutls.la
+	$(REWRITE_LIBTOOL)/libgnutlsxx.la
+	$(REWRITE_LIBTOOLDEP)/libgnutlsxx.la
 	rm -f $(addprefix $(TARGET_DIR)/usr/bin/,psktool gnutls-cli-debug certtool srptool ocsptool gnutls-serv gnutls-cli)
 	$(REMOVE)/gnutls-$(GNUTLS_VER)
 	$(TOUCH)
@@ -2699,3 +2702,4 @@ $(D)/glib_networking: $(D)/bootstrap $(D)/gnutls $(D)/libglib2 $(ARCHIVE)/$(GLIB
 		$(MAKE) install prefix=$(TARGET_DIR) giomoduledir=$(TARGET_DIR)/usr/lib/gio/modules itlocaledir=$(TARGET_DIR)/.remove
 	$(REMOVE)/glib-networking-$(GLIB_NETWORKING_VER)
 	$(TOUCH)
+

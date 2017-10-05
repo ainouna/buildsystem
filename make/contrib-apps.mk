@@ -148,7 +148,7 @@ $(D)/gdb-remote: $(ARCHIVE)/$(GDB_SOURCE)
 	$(REMOVE)/gdb-$(GDB_VER)
 	$(UNTAR)/$(GDB_SOURCE)
 	$(SET) -e; cd $(BUILD_TMP)/gdb-$(GDB_VER); \
-		./configure $(SILENT_OPT) \
+		./configure $(SILENT_CONFIGURE) $(SILENT_OPT) \
 			--nfp --disable-werror \
 			--prefix=$(HOST_DIR) \
 			--build=$(BUILD) \
@@ -170,7 +170,7 @@ $(D)/gdb: $(D)/bootstrap $(D)/ncurses $(D)/zlib $(ARCHIVE)/$(GDB_SOURCE)
 	$(UNTAR)/$(GDB_SOURCE)
 	$(SET) -e; cd $(BUILD_TMP)/gdb-$(GDB_VER); \
 		$(call post_patch,$(GDB_PATCH)); \
-		./configure $(SILENT_OPT) \
+		./configure $(SILENT_CONFIGURE) $(SILENT_OPT) \
 			--host=$(BUILD) \
 			--build=$(BUILD) \
 			--target=$(TARGET) \
@@ -204,7 +204,7 @@ $(D)/host_opkg: directories $(D)/host_libarchive $(ARCHIVE)/$(OPKG_SOURCE)
 		./autogen.sh $(SILENT_OPT); \
 		CFLAGS="-I$(HOST_DIR)/include" \
 		LDFLAGS="-L$(HOST_DIR)/lib" \
-		./configure $(SILENT_OPT) \
+		./configure $(SILENT_CONFIGURE) $(SILENT_OPT) \
 			PKG_CONFIG_PATH=$(HOST_DIR)/lib/pkgconfig \
 			--prefix= \
 			--disable-curl \
@@ -237,8 +237,8 @@ $(D)/opkg: $(D)/bootstrap $(D)/host_opkg $(D)/libarchive $(ARCHIVE)/$(OPKG_SOURC
 	install -d -m 0755 $(TARGET_DIR)/usr/lib/opkg
 	install -d -m 0755 $(TARGET_DIR)/etc/opkg
 	ln -sf opkg $(TARGET_DIR)/usr/bin/opkg-cl
-	$(SILENT)$(REWRITE_LIBTOOL)/libopkg.la
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libopkg.pc
+	$(REWRITE_LIBTOOL)/libopkg.la
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libopkg.pc
 	$(REMOVE)/opkg-$(OPKG_VER)
 	$(TOUCH)
 
@@ -337,8 +337,8 @@ $(D)/e2fsprogs: $(D)/bootstrap $(D)/util_linux $(ARCHIVE)/$(E2FSPROGS_SOURCE)
 		$(MAKE) install DESTDIR=$(TARGET_DIR); \
 		$(MAKE) -C lib/uuid  install DESTDIR=$(TARGET_DIR); \
 		$(MAKE) -C lib/blkid install DESTDIR=$(TARGET_DIR)
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/uuid.pc
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/blkid.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/uuid.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/blkid.pc
 	rm -f $(addprefix $(TARGET_DIR)/sbin/,badblocks dumpe2fs logsave e2undo)
 	rm -f $(addprefix $(TARGET_DIR)/usr/sbin/,filefrag e2freefrag mklost+found uuidd)
 	rm -f $(addprefix $(TARGET_DIR)/usr/bin/,chattr lsattr uuidgen)
@@ -430,8 +430,8 @@ $(D)/ntfs_3g: $(D)/bootstrap $(ARCHIVE)/$(NTFS_3G_SOURCE)
 		; \
 		$(MAKE); \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libntfs-3g.pc
-	$(SILENT)$(REWRITE_LIBTOOL)/libntfs-3g.la
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libntfs-3g.pc
+	$(REWRITE_LIBTOOL)/libntfs-3g.la
 	rm -f $(addprefix $(TARGET_DIR)/usr/bin/,lowntfs-3g ntfs-3g.probe)
 	rm -f $(addprefix $(TARGET_DIR)/sbin/,mount.lowntfs-3g)
 	$(REMOVE)/ntfs-3g_ntfsprogs-$(NTFS_3G_VER)
@@ -546,7 +546,7 @@ $(D)/mc: $(D)/bootstrap $(D)/ncurses $(D)/libglib2 $(ARCHIVE)/$(MC_SOURCE)
 	$(SET) -e; cd $(BUILD_TMP)/mc-$(MC_VER); \
 		autoreconf -fi; \
 		$(BUILDENV) \
-		./configure $(SILENT_OPT) \
+		./configure $(SILENT_CONFIGURE) $(SILENT_OPT) \
 			--build=$(BUILD) \
 			--host=$(TARGET) \
 			--prefix=/usr \
@@ -640,8 +640,8 @@ $(D)/fuse: $(D)/bootstrap $(ARCHIVE)/$(FUSE_SOURCE)
 		-rm $(TARGET_DIR)/etc/udev/rules.d/99-fuse.rules
 		-rmdir $(TARGET_DIR)/etc/udev/rules.d
 		-rmdir $(TARGET_DIR)/etc/udev
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/fuse.pc
-	$(SILENT)$(REWRITE_LIBTOOL)/libfuse.la
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/fuse.pc
+	$(REWRITE_LIBTOOL)/libfuse.la
 	$(REMOVE)/fuse-$(FUSE_VER)
 	$(TOUCH)
 
@@ -819,9 +819,9 @@ $(D)/parted: $(D)/bootstrap $(D)/e2fsprogs $(ARCHIVE)/$(PARTED_SOURCE)
 		; \
 		$(MAKE) all; \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libparted.pc
-	$(SILENT)$(REWRITE_LIBTOOL)/libparted.la
-	$(SILENT)$(REWRITE_LIBTOOL)/libparted-fs-resize.la
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libparted.pc
+	$(REWRITE_LIBTOOL)/libparted.la
+	$(REWRITE_LIBTOOL)/libparted-fs-resize.la
 	$(REMOVE)/parted-$(PARTED_VER)
 	$(TOUCH)
 
@@ -957,8 +957,8 @@ $(D)/dbus: $(D)/bootstrap $(D)/expat $(ARCHIVE)/$(DBUS_SOURCE)
 		; \
 		$(MAKE) all; \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/dbus-1.pc
-	$(SILENT)$(REWRITE_LIBTOOL)/libdbus-1.la
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/dbus-1.pc
+	$(REWRITE_LIBTOOL)/libdbus-1.la
 	rm -f $(addprefix $(TARGET_DIR)/usr/bin/,dbus-cleanup-sockets dbus-daemon dbus-launch dbus-monitor)
 	$(REMOVE)/dbus-$(DBUS_VER)
 	$(TOUCH)
@@ -1021,11 +1021,11 @@ $(D)/avahi: $(D)/bootstrap $(D)/expat $(D)/libdaemon $(D)/dbus $(ARCHIVE)/$(AVAH
 		; \
 		$(MAKE) all; \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/avahi-core.pc
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/avahi-client.pc
-	$(SILENT)$(REWRITE_LIBTOOL)/libavahi-common.la
-	$(SILENT)$(REWRITE_LIBTOOL)/libavahi-core.la
-	$(SILENT)$(REWRITE_LIBTOOL)/libavahi-client.la
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/avahi-core.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/avahi-client.pc
+	$(REWRITE_LIBTOOL)/libavahi-common.la
+	$(REWRITE_LIBTOOL)/libavahi-core.la
+	$(REWRITE_LIBTOOL)/libavahi-client.la
 	$(REMOVE)/avahi-$(AVAHI_VER)
 	$(TOUCH)
 
@@ -1165,14 +1165,14 @@ $(D)/libevent: $(D)/bootstrap $(ARCHIVE)/$(LIBEVENT_SOURCE)
 		; \
 		$(MAKE); \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libevent.pc
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libevent_openssl.pc
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libevent_pthreads.pc
-	$(SILENT)$(REWRITE_LIBTOOL)/libevent_core.la
-	$(SILENT)$(REWRITE_LIBTOOL)/libevent_extra.la
-	$(SILENT)$(REWRITE_LIBTOOL)/libevent.la
-	$(SILENT)$(REWRITE_LIBTOOL)/libevent_openssl.la
-	$(SILENT)$(REWRITE_LIBTOOL)/libevent_pthreads.la
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libevent.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libevent_openssl.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libevent_pthreads.pc
+	$(REWRITE_LIBTOOL)/libevent_core.la
+	$(REWRITE_LIBTOOL)/libevent_extra.la
+	$(REWRITE_LIBTOOL)/libevent.la
+	$(REWRITE_LIBTOOL)/libevent_openssl.la
+	$(REWRITE_LIBTOOL)/libevent_pthreads.la
 	$(SILENT)$(REMOVE)/libevent-$(LIBEVENT_VER)
 	$(TOUCH)
 
@@ -1196,8 +1196,8 @@ $(D)/libnfsidmap: $(D)/bootstrap $(ARCHIVE)/$(LIBNFSIDMAP_SOURCE)
 		; \
 		$(MAKE); \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libnfsidmap.pc
-	$(SILENT)$(REWRITE_LIBTOOL)/libnfsidmap.la
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libnfsidmap.pc
+	$(REWRITE_LIBTOOL)/libnfsidmap.la
 	$(REMOVE)/libnfsidmap-$(LIBNFSIDMAP_VER)
 	$(TOUCH)
 
@@ -1270,7 +1270,7 @@ $(D)/samba: $(D)/bootstrap $(ARCHIVE)/$(SAMBA_SOURCE)
 		$(BUILDENV) \
 		libreplace_cv_HAVE_GETADDRINFO=no \
 		libreplace_cv_READDIR_NEEDED=no \
-		./configure $(SILENT_OPT) \
+		./configure $(SILENT_CONFIGURE) $(SILENT_OPT) \
 			--build=$(BUILD) \
 			--host=$(TARGET) \
 			--prefix= \
@@ -1400,12 +1400,12 @@ $(D)/libnl: $(D)/bootstrap $(D)/openssl $(ARCHIVE)/$(LIBNL_SOURCE)
 			--infodir=/.remove \
 		make $(SILENT_OPT); \
 		make install $(SILENT_OPT) DESTDIR=$(TARGET_DIR)
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libnl-$(LIBNL_VER).pc
-	$(SILENT)$(REWRITE_LIBTOOL)/libnl.la
-	$(SILENT)$(REWRITE_LIBTOOL)/libnl-cli.la
-	$(SILENT)$(REWRITE_LIBTOOL)/libnl-genl.la
-	$(SILENT)$(REWRITE_LIBTOOL)/libnl-nf.la
-	$(SILENT)$(REWRITE_LIBTOOL)/libnl-route.la
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libnl-$(LIBNL_VER).pc
+	$(REWRITE_LIBTOOL)/libnl.la
+	$(REWRITE_LIBTOOL)/libnl-cli.la
+	$(REWRITE_LIBTOOL)/libnl-genl.la
+	$(REWRITE_LIBTOOL)/libnl-nf.la
+	$(REWRITE_LIBTOOL)/libnl-route.la
 	$(REMOVE)/libnl-$(LIBNL_VER)
 	$(TOUCH)
 
@@ -1539,7 +1539,7 @@ $(D)/openssh: $(D)/bootstrap $(D)/zlib $(D)/openssl $(ARCHIVE)/$(OPENSSH_SOURCE)
 	$(UNTAR)/$(OPENSSH_SOURCE)
 	$(SET) -e; cd $(BUILD_TMP)/openssh-$(OPENSSH_VER); \
 		CC=$(TARGET)-gcc; \
-		./configure $(SILENT_OPT) \
+		./configure $(SILENT_CONFIGURE) $(SILENT_OPT) \
 			$(CONFIGURE_OPTS) \
 			--prefix=/usr \
 			--mandir=/.remove \

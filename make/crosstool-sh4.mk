@@ -53,9 +53,9 @@ $(STL_ARCHIVE)/stlinux24-sh4-libgcc-$(LIBGCC_VER).sh4.rpm \
 $(STL_ARCHIVE)/stlinux24-sh4-libstdc++-$(LIBGCC_VER).sh4.rpm \
 $(STL_ARCHIVE)/stlinux24-sh4-libstdc++-dev-$(LIBGCC_VER).sh4.rpm
 	$(START_BUILD)
-	unpack-rpm.sh $(BUILD_TMP) $(STM_RELOCATE)/devkit/sh4 $(CROSS_DIR) \
+	$(SILENT)unpack-rpm.sh $(BUILD_TMP) $(STM_RELOCATE)/devkit/sh4 $(CROSS_DIR) \
 		$^
-	touch $(D)/$(notdir $@)
+	$(SILENT)touch $(D)/$(notdir $@)
 	@echo "--------------------------------------------------------------"
 	@echo -e "Build of $(TERM_GREEN_BOLD)$(PKG_NAME)$(TERM_NORMAL) completed."
 	@echo
@@ -75,7 +75,7 @@ $(TARGET_DIR)/lib/libc.so.6:
 	if [ -e $(CROSS_DIR)/target/usr/lib/libstdc++.la ]; then \
 		sed -i "s,^libdir=.*,libdir='$(CROSS_DIR)/target/usr/lib'," $(CROSS_DIR)/target/usr/lib/lib{std,sup}c++.la; \
 	fi
-	if test -e $(CROSS_DIR)/target/usr/lib/libstdc++.so; then \
+	$(SILENT)if test -e $(CROSS_DIR)/target/usr/lib/libstdc++.so; then \
 		cp -a $(CROSS_DIR)/target/usr/lib/libstdc++.s*[!y] $(TARGET_DIR)/lib; \
 		cp -a $(CROSS_DIR)/target/usr/lib/libdl.so $(TARGET_DIR)/usr/lib; \
 		cp -a $(CROSS_DIR)/target/usr/lib/libm.so $(TARGET_DIR)/usr/lib; \
@@ -86,10 +86,10 @@ $(TARGET_DIR)/lib/libc.so.6:
 		ln -sf $(CROSS_DIR)/target/usr/lib/libc.so $(TARGET_DIR)/usr/lib/libc.so; \
 		ln -sf $(CROSS_DIR)/target/usr/lib/libc_nonshared.a $(TARGET_DIR)/usr/lib/libc_nonshared.a; \
 	fi
-	if test -e $(CROSS_DIR)/target/lib; then \
+	$(SILENT)if test -e $(CROSS_DIR)/target/lib; then \
 		cp -a $(CROSS_DIR)/target/lib/*so* $(TARGET_DIR)/lib; \
 	fi
-	if test -e $(CROSS_DIR)/target/sbin/ldconfig; then \
+	$(SILENT)if test -e $(CROSS_DIR)/target/sbin/ldconfig; then \
 		cp -a $(CROSS_DIR)/target/sbin/ldconfig $(TARGET_DIR)/sbin; \
 		cp -a $(CROSS_DIR)/target/etc/ld.so.conf $(TARGET_DIR)/etc; \
 		cp -a $(CROSS_DIR)/target/etc/host.conf $(TARGET_DIR)/etc; \
@@ -107,9 +107,9 @@ HOST_U_BOOT_TOOLS_VER = 1.3.1_stm24-9
 host_u_boot_tools: \
 $(STL_ARCHIVE)/stlinux24-host-u-boot-tools-$(HOST_U_BOOT_TOOLS_VER).i386.rpm
 	$(START_BUILD)
-	unpack-rpm.sh $(BUILD_TMP) $(STM_RELOCATE)/host/bin $(HOST_DIR)/bin \
+	$(SILENT)unpack-rpm.sh $(BUILD_TMP) $(STM_RELOCATE)/host/bin $(HOST_DIR)/bin \
 		$^
-	@touch $(D)/$(notdir $@)
+	$(SILENT)touch $(D)/$(notdir $@)
 	@echo "--------------------------------------------------------------"
 	@echo -e "Build of $(TERM_GREEN_BOLD)$(PKG_NAME) $(PKG_VER)$(TERM_NORMAL) completed."
 	@echo
@@ -126,7 +126,7 @@ $(ARCHIVE)/$(CROSSTOOL_NG_SOURCE):
 crosstool-ng: directories $(ARCHIVE)/$(CROSSTOOL_NG_SOURCE)
 	$(START_BUILD)
 	make $(BUILD_TMP)
-	if [ ! -e $(CROSS_BASE) ]; then \
+	$(SILENT)if [ ! -e $(CROSS_BASE) ]; then \
 		mkdir -p $(CROSS_BASE); \
 	fi;
 	$(REMOVE)/crosstool-ng
@@ -146,9 +146,9 @@ crosstool-ng: directories $(ARCHIVE)/$(CROSSTOOL_NG_SOURCE)
 		MAKELEVEL=0 make; \
 		./ct-ng oldconfig; \
 		./ct-ng build
-	chmod -R +w $(CROSS_BASE)
-	test -e $(CROSS_BASE)/sh4-unknown-linux-gnu/lib || ln -sf sys-root/lib $(CROSS_BASE)/sh4-unknown-linux-gnu/
-	rm -f $(CROSS_BASE)/sh4-unknown-linux-gnu/sys-root/lib/libstdc++.so.6.0.20-gdb.py
+	$(SILENT)chmod -R +w $(CROSS_BASE)
+	$(SILENT)test -e $(CROSS_BASE)/sh4-unknown-linux-gnu/lib || ln -sf sys-root/lib $(CROSS_BASE)/sh4-unknown-linux-gnu/
+	$(SILENT)rm -f $(CROSS_BASE)/sh4-unknown-linux-gnu/sys-root/lib/libstdc++.so.6.0.20-gdb.py
 	$(REMOVE)/crosstool-ng
 	$(TOUCH)
 

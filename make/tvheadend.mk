@@ -39,8 +39,9 @@ $(D)/tvheadend.do_prepare: | $(TVHEADEND_DEPS)
 	echo "Starting Tvheadhead build"; \
 	echo "=============================="; \
 	echo; \
-	echo "Revision : "$$REVISION; \
-	echo "Diff     : "$$DIFF; \
+	echo "Repository : "$$REPO_0; \
+	echo "Revision   : "$$REVISION; \
+	echo "Diff       : "$$DIFF; \
 	echo ""; \
 	[ -d "$(ARCHIVE)/tvheadend.git" ] && \
 	(cd $(ARCHIVE)/tvheadend.git; echo -n "Updating archived Tvheadend git..."; git pull -q; echo -e -n " done.\nChecking out HEAD..."; git checkout -q HEAD; echo " done."; cd "$(BUILD_TMP)";); \
@@ -61,7 +62,7 @@ $(D)/tvheadend.do_prepare: | $(TVHEADEND_DEPS)
 $(SOURCE_DIR)/tvheadend/config.status:
 	$(SILENT)cd $(SOURCE_DIR)/tvheadend; \
 		$(BUILDENV) \
-		./configure $(SILENT_OPT) \
+		./configure $(SILENT_CONFIGURE) $(SILENT_OPT) \
 			--build=$(BUILD) \
 			--host=$(TARGET) \
 			--disable-hdhomerun_static \

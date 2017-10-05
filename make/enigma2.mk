@@ -177,11 +177,11 @@ $(D)/enigma2.do_prepare: | $(ENIGMA2_DEPS)
 	@touch $@
 
 $(SOURCE_DIR)/enigma2/config.status:
-	cd $(SOURCE_DIR)/enigma2; \
+	$(SILENT)cd $(SOURCE_DIR)/enigma2; \
 		./autogen.sh $(SILENT_OPT); \
 		sed -e 's|#!/usr/bin/python|#!$(HOST_DIR)/bin/python|' -i po/xml2po.py; \
 		$(BUILDENV) \
-		./configure $(SILENT_OPT) \
+		./configure $(SILENT_CONFIGURE) $(SILENT_OPT) \
 			--build=$(BUILD) \
 			--host=$(TARGET) \
 			$(E_CONFIG_OPTS) \
@@ -198,7 +198,7 @@ $(SOURCE_DIR)/enigma2/config.status:
 			CPPFLAGS="$(E_CPPFLAGS)"
 
 $(D)/enigma2.do_compile: $(SOURCE_DIR)/enigma2/config.status
-	cd $(SOURCE_DIR)/enigma2; \
+	$(SILENT)cd $(SOURCE_DIR)/enigma2; \
 		$(MAKE) all
 	@touch $@
 
@@ -207,16 +207,16 @@ REPO_PLIHD="https://github.com/littlesat/skin-PLiHD.git"
 
 $(D)/enigma2: $(D)/enigma2.do_prepare $(D)/enigma2.do_compile
 	$(MAKE) -C $(SOURCE_DIR)/enigma2 install DESTDIR=$(TARGET_DIR)
-	$(SILENT)echo -n "Stripping..."; \
-	if [ -e $(TARGET_DIR)/usr/bin/enigma2 ]; then \
+	@echo -n "Stripping..."
+	$(SILENT)if [ -e $(TARGET_DIR)/usr/bin/enigma2 ]; then \
 		$(TARGET)-strip $(TARGET_DIR)/usr/bin/enigma2; \
 	fi
-	if [ -e $(TARGET_DIR)/usr/local/bin/enigma2 ]; then \
+	$(SILENT)if [ -e $(TARGET_DIR)/usr/local/bin/enigma2 ]; then \
 		$(TARGET)-strip $(TARGET_DIR)/usr/local/bin/enigma2; \
 	fi
-	echo " done."; \
-	echo ; \
-	echo "Adding PLi-HD skin"; \
+	@echo " done."
+	@echo
+	@echo "Adding PLi-HD skin"; \
 	HEAD="master"; \
 	REPO_0=$(REPO_PLIHD); \
 	if [ -d $(ARCHIVE)/PLi-HD_skin.git ]; then \
@@ -231,8 +231,8 @@ $(D)/enigma2: $(D)/enigma2.do_prepare $(D)/enigma2.do_compile
 	fi
 	$(SILENT)cp -ra $(ARCHIVE)/PLi-HD_skin.git/usr/share/enigma2/* $(TARGET_DIR)/usr/local/share/enigma2
 #	$(call post_patch,$(PLI_SKIN_PATCH))
-	echo -e "$(TERM_RED)Applying Patch:$(TERM_NORMAL) $(PLI_SKIN_PATCH)"; $(PATCH)/$(PLI_SKIN_PATCH)
-	echo -e "Patching $(TERM_GREEN_BOLD)PLi-HD skin$(TERM_NORMAL) completed.";
+	@echo -e "$(TERM_RED)Applying Patch:$(TERM_NORMAL) $(PLI_SKIN_PATCH)"; $(PATCH)/$(PLI_SKIN_PATCH)
+	@echo -e "Patching $(TERM_GREEN_BOLD)PLi-HD skin$(TERM_NORMAL) completed.";
 	$(SILENT)rm -rf $(TARGET_DIR)/usr/local/share/enigma2/PLi-FullHD
 	$(SILENT)rm -rf $(TARGET_DIR)/usr/local/share/enigma2/PLi-FullNightHD
 	$(TOUCH)
@@ -249,3 +249,4 @@ enigma2-distclean:
 	rm -f $(D)/enigma2.do_prepare
 	rm -rf $(SOURCE_DIR)/enigma2
 	rm -rf $(SOURCE_DIR)/enigma2.org
+

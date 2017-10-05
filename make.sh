@@ -70,15 +70,15 @@ fi
 
 if [ "$1" == -q ] || [ "$1" == --quiet ]; then
 	shift
-	VERBOSE_BUILD=quiet
+	KBUILD_VERBOSE=quiet
 elif [ "$1" == -v ] || [ "$1" == --verbose ]; then
 	shift
-	VERBOSE_BUILD=verbose
+	KBUILD_VERBOSE=verbose
 else
-	VERBOSE_BUILD=normal
+	KBUILD_VERBOSE=normal
 fi
-export VERBOSE_BUILD
-echo "VERBOSE_BUILD=$VERBOSE_BUILD" > config
+export KBUILD_VERBOSE
+echo "KBUILD_VERBOSE=$KBUILD_VERBOSE" > config
 
 ##############################################
 

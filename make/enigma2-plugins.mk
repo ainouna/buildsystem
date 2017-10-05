@@ -7,11 +7,11 @@ $(D)/enigma2_hotplug_e2_helper: $(D)/bootstrap
 	$(START_BUILD)
 	$(REMOVE)/hotplug-e2-helper
 	$(SET) -e; if [ -d $(ARCHIVE)/hotplug-e2-helper.git ]; \
-		then cd $(ARCHIVE)/hotplug-e2-helper.git; git pull $(CONFIGURE_SILENT); \
-		else cd $(ARCHIVE); git clone $(CONFIGURE_SILENT) https://github.com/OpenPLi/hotplug-e2-helper.git hotplug-e2-helper.git; \
+		then cd $(ARCHIVE)/hotplug-e2-helper.git; git pull $(SILENT_CONFIGURE); \
+		else cd $(ARCHIVE); git clone $(SILENT_CONFIGURE) https://github.com/OpenPLi/hotplug-e2-helper.git hotplug-e2-helper.git; \
 		fi
-	cp -ra $(ARCHIVE)/hotplug-e2-helper.git $(BUILD_TMP)/hotplug-e2-helper
-	set -e; cd $(BUILD_TMP)/hotplug-e2-helper; \
+	$(SILENT)cp -ra $(ARCHIVE)/hotplug-e2-helper.git $(BUILD_TMP)/hotplug-e2-helper
+	$(SET) -e; cd $(BUILD_TMP)/hotplug-e2-helper; \
 		$(call post_patch,$(HOTPLUG_E2_PATCH)); \
 		$(CONFIGURE) \
 			--prefix=/usr \
@@ -29,12 +29,12 @@ TUXTXTLIB_PATCH = tuxtxtlib-1.0-fix-dbox-headers.patch
 $(D)/enigma2_tuxtxtlib: $(D)/bootstrap
 	$(START_BUILD)
 	$(REMOVE)/tuxtxtlib
-	if [ -d $(ARCHIVE)/tuxtxt.git ]; \
-		then cd $(ARCHIVE)/tuxtxt.git; git pull $(CONFIGURE_SILENT); \
-		else cd $(ARCHIVE); git clone $(CONFIGURE_SILENT) https://github.com/OpenPLi/tuxtxt.git tuxtxt.git; \
+	$(SILENT)if [ -d $(ARCHIVE)/tuxtxt.git ]; \
+		then cd $(ARCHIVE)/tuxtxt.git; git pull $(SILENT_CONFIGURE); \
+		else cd $(ARCHIVE); git clone $(SILENT_CONFIGURE) https://github.com/OpenPLi/tuxtxt.git tuxtxt.git; \
 		fi
-	cp -ra $(ARCHIVE)/tuxtxt.git/libtuxtxt $(BUILD_TMP)/tuxtxtlib
-	cd $(BUILD_TMP)/tuxtxtlib; \
+	$(SILENT)cp -ra $(ARCHIVE)/tuxtxt.git/libtuxtxt $(BUILD_TMP)/tuxtxtlib
+	$(SILENT)cd $(BUILD_TMP)/tuxtxtlib; \
 		$(call post_patch,$(TUXTXTLIB_PATCH)); \
 		aclocal; \
 		autoheader; \
@@ -42,7 +42,7 @@ $(D)/enigma2_tuxtxtlib: $(D)/bootstrap
 		libtoolize --force; \
 		automake --foreign --add-missing; \
 		$(BUILDENV) \
-		./configure $(SILENT_OPT) \
+		./configure $(SILENT_CONFIGURE) $(SILENT_OPT) \
 			--build=$(BUILD) \
 			--host=$(TARGET) \
 			--prefix=/usr \
@@ -53,8 +53,8 @@ $(D)/enigma2_tuxtxtlib: $(D)/bootstrap
 		; \
 		$(MAKE) all; \
 		$(MAKE) install prefix=/usr DESTDIR=$(TARGET_DIR)
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/tuxbox-tuxtxt.pc
-	$(SILENT)$(REWRITE_LIBTOOL)/libtuxtxt.la
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/tuxbox-tuxtxt.pc
+	$(REWRITE_LIBTOOL)/libtuxtxt.la
 	$(REMOVE)/tuxtxtlib
 	$(TOUCH)
 
@@ -66,7 +66,7 @@ TUXTXT32BPP_PATCH = tuxtxt32bpp-1.0-fix-dbox-headers.patch
 $(D)/enigma2_tuxtxt32bpp: $(D)/bootstrap $(D)/enigma2_tuxtxtlib
 	$(START_BUILD)
 	$(REMOVE)/tuxtxt
-	cp -ra $(ARCHIVE)/tuxtxt.git/tuxtxt $(BUILD_TMP)/tuxtxt
+	$(SILENT)cp -ra $(ARCHIVE)/tuxtxt.git/tuxtxt $(BUILD_TMP)/tuxtxt
 	$(SET) -e; cd $(BUILD_TMP)/tuxtxt; \
 		$(call post_patch,$(TUXTXT32BPP_PATCH)); \
 		aclocal; \
@@ -75,7 +75,7 @@ $(D)/enigma2_tuxtxt32bpp: $(D)/bootstrap $(D)/enigma2_tuxtxtlib
 		libtoolize --force; \
 		automake --foreign --add-missing; \
 		$(BUILDENV) \
-		./configure $(SILENT_OPT) \
+		./configure $(SILENT_CONFIGURE) $(SILENT_OPT) \
 			--build=$(BUILD) \
 			--host=$(TARGET) \
 			--prefix=/usr \
@@ -87,7 +87,7 @@ $(D)/enigma2_tuxtxt32bpp: $(D)/bootstrap $(D)/enigma2_tuxtxtlib
 		; \
 		$(MAKE) all; \
 		$(MAKE) install prefix=/usr DESTDIR=$(TARGET_DIR)
-	$(SILENT)$(REWRITE_LIBTOOL)/libtuxtxt32bpp.la
+	$(REWRITE_LIBTOOL)/libtuxtxt32bpp.la
 	$(REMOVE)/tuxtxt
 	$(TOUCH)
 
@@ -102,11 +102,11 @@ $(D)/enigma2-plugins: $(D)/enigma2_networkbrowser $(D)/enigma2_openwebif
 $(D)/enigma2_openwebif: $(D)/bootstrap $(D)/python $(D)/python_cheetah $(D)/python_ipaddress
 	$(START_BUILD)
 	$(REMOVE)/e2openplugin-OpenWebif
-	if [ -d $(ARCHIVE)/e2openplugin-OpenWebif.git ]; \
-		then cd $(ARCHIVE)/e2openplugin-OpenWebif.git; git pull $(CONFIGURE_SILENT); \
-		else cd $(ARCHIVE); git clone $(CONFIGURE_SILENT) https://github.com/E2OpenPlugins/e2openplugin-OpenWebif.git e2openplugin-OpenWebif.git; \
-		fi
-	cp -ra $(ARCHIVE)/e2openplugin-OpenWebif.git $(BUILD_TMP)/e2openplugin-OpenWebif
+	$(SILENT)if [ -d $(ARCHIVE)/e2openplugin-OpenWebif.git ]; \
+		then cd $(ARCHIVE)/e2openplugin-OpenWebif.git; git pull $(SILENT_CONFIGURE); \
+		else cd $(ARCHIVE); git clone $(SILENT_CONFIGURE) https://github.com/E2OpenPlugins/e2openplugin-OpenWebif.git e2openplugin-OpenWebif.git; \
+	fi
+	$(SILENT)cp -ra $(ARCHIVE)/e2openplugin-OpenWebif.git $(BUILD_TMP)/e2openplugin-OpenWebif
 	$(SET) -e; cd $(BUILD_TMP)/e2openplugin-OpenWebif; \
 		$(BUILDENV) \
 		cp -a plugin $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif; \
@@ -134,14 +134,14 @@ ENIGMA2_NETWORBROWSER_PATCH = enigma2-networkbrowser-support-autofs.patch
 $(D)/enigma2_networkbrowser: $(D)/bootstrap $(D)/python
 	$(START_BUILD)
 	$(REMOVE)/enigma2-networkbrowser
-	if [ -d $(ARCHIVE)/enigma2-plugins.git ]; \
-		then cd $(ARCHIVE)/enigma2-plugins.git; git pull $(CONFIGURE_SILENT); \
-		else cd $(ARCHIVE); git clone $(CONFIGURE_SILENT) https://github.com/OpenPLi/enigma2-plugins.git enigma2-plugins.git; \
+	$(SILENT)if [ -d $(ARCHIVE)/enigma2-plugins.git ]; \
+		then cd $(ARCHIVE)/enigma2-plugins.git; git pull $(SILENT_CONFIGURE); \
+		else cd $(ARCHIVE); git clone $(SILENT_CONFIGURE) https://github.com/OpenPLi/enigma2-plugins.git enigma2-plugins.git; \
 		fi
-	cp -ra $(ARCHIVE)/enigma2-plugins.git/networkbrowser/ $(BUILD_TMP)/enigma2-networkbrowser
+	$(SILENT)cp -ra $(ARCHIVE)/enigma2-plugins.git/networkbrowser/ $(BUILD_TMP)/enigma2-networkbrowser
 	$(SET) -e; cd $(BUILD_TMP)/enigma2-networkbrowser; \
 		$(call post_patch,$(ENIGMA2_NETWORBROWSER_PATCH))
-	set -e; cd $(BUILD_TMP)/enigma2-networkbrowser/src/lib; \
+	$(SET) -e; cd $(BUILD_TMP)/enigma2-networkbrowser/src/lib; \
 		$(BUILDENV) \
 		sh4-linux-gcc -shared -o netscan.so \
 			-I $(TARGET_DIR)/usr/include/python$(PYTHON_VER_MAJOR) \
@@ -171,3 +171,4 @@ $(D)/enigma2_networkbrowser: $(D)/bootstrap $(D)/python
 		rm -rf $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/SystemPlugins/NetworkBrowser/lib
 	$(REMOVE)/enigma2-networkbrowser
 	$(TOUCH)
+

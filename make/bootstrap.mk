@@ -30,7 +30,7 @@ $(D)/host_pkgconfig: directories $(ARCHIVE)/$(HOST_PKGCONFIG_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/pkg-config-$(HOST_PKGCONFIG_VER)
 	$(UNTAR)/$(HOST_PKGCONFIG_SOURCE)
-	set -e; cd $(BUILD_TMP)/pkg-config-$(HOST_PKGCONFIG_VER); \
+	$(SET) -e; cd $(BUILD_TMP)/pkg-config-$(HOST_PKGCONFIG_VER); \
 		./configure $(SILENT_CONFIGURE) $(SILENT_OPT) \
 			--prefix=$(HOST_DIR) \
 			--program-prefix=$(TARGET)- \
@@ -169,7 +169,7 @@ $(D)/host_mksquashfs: directories $(ARCHIVE)/$(LZMA_SOURCE) $(ARCHIVE)/$(HOST_MK
 $(HOST_DIR)/bin/unpack%.sh \
 $(HOST_DIR)/bin/get%.sh \
 $(HOST_DIR)/bin/opkg%sh: | directories
-	ln -sf $(SCRIPTS_DIR)/$(shell basename $@) $(HOST_DIR)/bin
+	$(SILENT)ln -sf $(SCRIPTS_DIR)/$(shell basename $@) $(HOST_DIR)/bin
 
 #
 #
@@ -313,7 +313,7 @@ CCACHE_LINKS = \
 	ln -sf $(CCACHE_BIN) $(CCACHE_BINDIR)/$(TARGET)-gcc; \
 	ln -sf $(CCACHE_BIN) $(CCACHE_BINDIR)/$(TARGET)-g++
 
-CCACHE_ENV = install -d $(CCACHE_BINDIR); \
+CCACHE_ENV = $(SILENT)install -d $(CCACHE_BINDIR); \
 	$(CCACHE_LINKS)
 
 $(D)/ccache:

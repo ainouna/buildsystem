@@ -120,11 +120,6 @@ TERM_YELLOW          := \033[00;33m
 TERM_YELLOW_BOLD     := \033[01;33m
 TERM_NORMAL          := \033[0m
 
-# To put more focus on warnings, be less verbose as default
-# Use 'make V=2' to see the full commands, V=1 to see some
-#ifeq ("$(origin V)", "command line")
-#KBUILD_VERBOSE        = $(V)
-#endif
 # set the default verbosity
 ifndef KBUILD_VERBOSE
 KBUILD_VERBOSE        = normal
@@ -156,11 +151,11 @@ endif
 export SILENT
 
 # helper-"functions":
-REWRITE_LIBTOOL       = sed -i "s,^libdir=.*,libdir='$(TARGET_DIR)/usr/lib'," $(TARGET_DIR)/usr/lib
-REWRITE_LIBTOOLDEP    = sed -i -e "s,\(^dependency_libs='\| \|-L\|^dependency_libs='\)/usr/lib,\ $(TARGET_DIR)/usr/lib,g" $(TARGET_DIR)/usr/lib
-REWRITE_PKGCONF       = sed -i "s,^prefix=.*,prefix='$(TARGET_DIR)/usr',"
-#REWRITE_LIBTOOL_OPT   = sed -i "s,^libdir=.*,libdir='$(TARGET_DIR)/opt/pkg/lib'," $(TARGET_DIR)/opt/pkg/lib
-#REWRITE_PKGCONF_OPT   = $(SILENT)sed -i "s,^prefix=.*,prefix='$(TARGET_DIR)/opt/pkg',"
+REWRITE_LIBTOOL       = $(SILENT)sed -i "s,^libdir=.*,libdir='$(TARGET_DIR)/usr/lib'," $(TARGET_DIR)/usr/lib
+REWRITE_LIBTOOL_NQ    = sed -i "s,^libdir=.*,libdir='$(TARGET_DIR)/usr/lib'," $(TARGET_DIR)/usr/lib
+REWRITE_LIBTOOLDEP    = $(SILENT)sed -i -e "s,\(^dependency_libs='\| \|-L\|^dependency_libs='\)/usr/lib,\ $(TARGET_DIR)/usr/lib,g" $(TARGET_DIR)/usr/lib
+REWRITE_PKGCONF       = $(SILENT)sed -i "s,^prefix=.*,prefix='$(TARGET_DIR)/usr',"
+REWRITE_PKGCONF_NQ    = sed -i "s,^prefix=.*,prefix='$(TARGET_DIR)/usr',"
 
 export RM=$(shell which rm) -f
 
@@ -180,19 +175,20 @@ PKG_VER               = $($(PKG_NAME_HELPER)_VER)
 
 START_BUILD           = @echo "=============================================================="; \
                         echo; \
-			if [ $(PKG_VER_HELPER) == "AA" ]; then \
-                                echo -e "Start build of $(TERM_GREEN_BOLD)$(PKG_NAME)$(TERM_NORMAL)."; \
-			else \
-                                echo -e "Start build of $(TERM_GREEN_BOLD)$(PKG_NAME) $(PKG_VER)$(TERM_NORMAL)."; \
-			fi
+                        if [ $(PKG_VER_HELPER) == "AA" ]; then \
+                            echo -e "Start build of $(TERM_GREEN_BOLD)$(PKG_NAME)$(TERM_NORMAL)."; \
+                        else \
+                            echo -e "Start build of $(TERM_GREEN_BOLD)$(PKG_NAME) $(PKG_VER)$(TERM_NORMAL)."; \
+                        fi
+
 TOUCH                 = @touch $@; \
                         echo "--------------------------------------------------------------"; \
         		if [ $(PKG_VER_HELPER) == "AA" ]; then \
-                                echo -e "Build of $(TERM_GREEN_BOLD)$(PKG_NAME)$(TERM_NORMAL) completed."; \
+                            echo -e "Build of $(TERM_GREEN_BOLD)$(PKG_NAME)$(TERM_NORMAL) completed."; \
                         else \
-                                echo -e "Build of $(TERM_GREEN_BOLD)$(PKG_NAME) $(PKG_VER)$(TERM_NORMAL) completed."; \
+                            echo -e "Build of $(TERM_GREEN_BOLD)$(PKG_NAME) $(PKG_VER)$(TERM_NORMAL) completed."; \
                         fi; \
-                echo
+                        echo
 
 #
 PATCH                 = patch -p1 $(SILENT_PATCH) -i $(PATCHES)
@@ -264,17 +260,24 @@ BUILDENV = \
 	CPPFLAGS="$(TARGET_CPPFLAGS)" \
 	CXXFLAGS="$(TARGET_CXXFLAGS)" \
 	LDFLAGS="$(TARGET_LDFLAGS)" \
-	PKG_CONFIG_PATH="$(PKG_CONFIG_PATH)"
+	PKG_CONFIG_PATH=$(PKG_CONFIG_PATH)
 
+ifneq ($(KBUILD_VERBOSE), verbose)
 CONFIGURE = \
 	test -f ./configure || ./autogen.sh $(SILENT_OPT) && \
 	$(BUILDENV) \
-	./configure $(SILENT_OPT) $(CONFIGURE_OPTS)
+	./configure $(CONFIGURE_OPTS) $(SILENT_OPT)
+else
+CONFIGURE = \
+	test -f ./configure || ./autogen.sh && \
+	$(BUILDENV) \
+	./configure $(CONFIGURE_OPTS)
+endif
 
 CONFIGURE_TOOLS = \
 	./autogen.sh $(SILENT_OPT) && \
 	$(BUILDENV) \
-	./configure $(SILENT_OPT) $(CONFIGURE_OPTS)
+	./configure $(CONFIGURE_OPTS) $(SILENT_OPT)
 
 MAKE_OPTS := \
 	CC=$(TARGET)-gcc \
@@ -351,9 +354,8 @@ PLAYER2_LINK       = player2_191_test
 endif
 
 #
-#
-#
 DRIVER_PLATFORM   := $(PLAYER2) $(WLANDRIVER)
+
 #
 ifeq ($(BOXTYPE), ufs910)
 KERNEL_PATCHES_24  = $(UFS910_PATCHES_24)

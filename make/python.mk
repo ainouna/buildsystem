@@ -43,7 +43,7 @@ $(D)/host_python: $(ARCHIVE)/$(PYTHON_SOURCE)
 		autoconf; \
 		CONFIG_SITE= \
 		OPT="$(HOST_CFLAGS)" \
-		./configure $(SILENT_OPT) \
+		./configure $(SILENT_CONFIGURE) $(SILENT_OPT) \
 			--without-cxx-main \
 			--with-threads \
 		; \
@@ -52,7 +52,7 @@ $(D)/host_python: $(ARCHIVE)/$(PYTHON_SOURCE)
 		mv Parser/pgen ./hostpgen; \
 		\
 		$(MAKE) distclean; \
-		./configure $(SILENT_OPT) \
+		./configure $(SILENT_CONFIGURE) $(SILENT_OPT) \
 			--prefix=$(HOST_DIR) \
 			--sysconfdir=$(HOST_DIR)/etc \
 			--without-cxx-main \
@@ -81,7 +81,7 @@ $(D)/python: $(D)/bootstrap $(D)/host_python $(D)/ncurses $(D)/zlib $(D)/openssl
 		$(BUILDENV) \
 		autoreconf --verbose --install --force Modules/_ctypes/libffi; \
 		autoconf $(SILENT_OPT); \
-		./configure $(SILENT_OPT) \
+		./configure $(SILENT_CONFIGURE) $(SILENT_OPT) \
 			--build=$(BUILD) \
 			--host=$(TARGET) \
 			--target=$(TARGET) \
@@ -128,7 +128,7 @@ $(D)/python: $(D)/bootstrap $(D)/host_python $(D)/ncurses $(D)/zlib $(D)/openssl
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
 	ln -sf ../../libpython$(PYTHON_VER_MAJOR).so.1.0 $(TARGET_DIR)/$(PYTHON_DIR)/config/libpython$(PYTHON_VER_MAJOR).so; \
 	ln -sf $(TARGET_DIR)/$(PYTHON_INCLUDE_DIR) $(TARGET_DIR)/usr/include/python
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/python-2.7.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/python-2.7.pc
 	$(REMOVE)/Python-$(PYTHON_VER)
 	$(TOUCH)
 
@@ -171,7 +171,7 @@ $(D)/libxmlccwrap: $(D)/bootstrap $(D)/libxml2 $(D)/libxslt $(ARCHIVE)/$(LIBXMLC
 		; \
 		$(MAKE) all; \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
-	$(SILENT)$(REWRITE_LIBTOOL)/libxmlccwrap.la
+	$(REWRITE_LIBTOOL)/libxmlccwrap.la
 	$(REMOVE)/libxmlccwrap-$(LIBXMLCCWRAP_VER)
 	$(TOUCH)
 

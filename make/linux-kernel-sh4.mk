@@ -339,7 +339,7 @@ endif
 		echo -e "$(TERM_RED)Applying Patch:$(TERM_NORMAL) $$i"; \
 		patch -p1 $(SILENT_PATCH) -i $(PATCHES)/$(BUILD_CONFIG)/$$i; \
 	done
-	echo -e "Patching $(TERM_GREEN_BOLD)kernel$(TERM_NORMAL) completed."
+	@echo -e "Patching $(TERM_GREEN_BOLD)kernel$(TERM_NORMAL) completed."
 	$(SILENT)install -m 644 $(PATCHES)/$(BUILD_CONFIG)/$(KERNEL_CONFIG) $(KERNEL_DIR)/.config
 	$(SILENT)sed -i "s#^\(CONFIG_EXTRA_FIRMWARE_DIR=\).*#\1\"$(BASE_DIR)/integrated_firmware\"#" $(KERNEL_DIR)/.config
 	$(SILENT)rm $(KERNEL_DIR)/localversion*
@@ -347,20 +347,20 @@ endif
 ifeq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), kerneldebug debug))
 	$(SILENT)echo "Configuring kernel for debug."
 	$(SILENT)grep -v "CONFIG_PRINTK" "$(KERNEL_DIR)/.config" > $(KERNEL_DIR)/.config.tmp
-	cp $(KERNEL_DIR)/.config.tmp $(KERNEL_DIR)/.config
+	$(SILENT)cp $(KERNEL_DIR)/.config.tmp $(KERNEL_DIR)/.config
 	$(SILENT)echo "CONFIG_PRINTK=y" >> $(KERNEL_DIR)/.config
 	$(SILENT)echo "# CONFIG_PRINTK_TIME is not set" >> $(KERNEL_DIR)/.config
 	$(SILENT)grep -v "CONFIG_DYNAMIC_DEBUG" "$(KERNEL_DIR)/.config" > $(KERNEL_DIR)/.config.tmp
-	cp $(KERNEL_DIR)/.config.tmp $(KERNEL_DIR)/.config
+	$(SILENT)cp $(KERNEL_DIR)/.config.tmp $(KERNEL_DIR)/.config
 	$(SILENT)echo "# CONFIG_DYNAMIC_DEBUG is not set" >> $(KERNEL_DIR)/.config
 endif
 ifeq ($(IMAGE), $(filter $(IMAGE), enigma2-wlandriver neutrino-wlandriver))
 	$(SILENT)echo "Configuring kernel for wireless LAN."
 	$(SILENT)grep -v "CONFIG_WIRELESS" "$(KERNEL_DIR)/.config" > $(KERNEL_DIR)/.config.tmp
-	cp $(KERNEL_DIR)/.config.tmp $(KERNEL_DIR)/.config
+	$(SILENT)cp $(KERNEL_DIR)/.config.tmp $(KERNEL_DIR)/.config
 	$(SILENT)echo "CONFIG_WIRELESS=y" >> $(KERNEL_DIR)/.config
 	$(SILENT)grep -v "CONFIG_CFG80211" "$(KERNEL_DIR)/.config" > $(KERNEL_DIR)/.config.tmp
-	cp $(KERNEL_DIR)/.config.tmp $(KERNEL_DIR)/.config
+	$(SILENT)cp $(KERNEL_DIR)/.config.tmp $(KERNEL_DIR)/.config
 	$(SILENT)echo "# CONFIG_CFG80211 is not set" >> $(KERNEL_DIR)/.config
 	$(SILENT)echo "# CONFIG_WIRELESS_OLD_REGULATORY is not set" >> $(KERNEL_DIR)/.config
 	$(SILENT)echo "CONFIG_WIRELESS_EXT=y" >> $(KERNEL_DIR)/.config
@@ -419,8 +419,8 @@ $(D)/kernel: $(D)/bootstrap host_u_boot_tools $(D)/kernel.do_compile
 	$(SILENT)install -m 644 $(KERNEL_DIR)/vmlinux $(TARGET_DIR)/boot/vmlinux-sh4-$(KERNEL_VER)
 	$(SILENT)install -m 644 $(KERNEL_DIR)/System.map $(TARGET_DIR)/boot/System.map-sh4-$(KERNEL_VER)
 	$(SILENT)cp $(KERNEL_DIR)/arch/sh/boot/uImage $(TARGET_DIR)/boot/
-	rm $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/build || true
-	rm $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/source || true
+	$(SILENT)rm $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/build || true
+	$(SILENT)rm $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/source || true
 	$(TOUCH)
 
 $(D)/kernel-headers: $(D)/kernel.do_prepare

@@ -35,17 +35,17 @@ $(D)/gstreamer: $(D)/bootstrap $(D)/libglib2 $(D)/libxml2 $(D)/glib_networking $
 		; \
 		$(MAKE); \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gstreamer-1.0.pc
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gstreamer-base-1.0.pc
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gstreamer-controller-1.0.pc
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gstreamer-net-1.0.pc
-	$(SILENT)$(REWRITE_LIBTOOL)/libgstreamer-1.0.la
-	$(SILENT)$(REWRITE_LIBTOOL)/libgstbase-1.0.la
-	$(SILENT)$(REWRITE_LIBTOOL)/libgstcontroller-1.0.la
-	$(SILENT)$(REWRITE_LIBTOOL)/libgstnet-1.0.la
-	$(SILENT)$(REWRITE_LIBTOOLDEP)/libgstbase-1.0.la
-	$(SILENT)$(REWRITE_LIBTOOLDEP)/libgstcontroller-1.0.la
-	$(SILENT)$(REWRITE_LIBTOOLDEP)/libgstnet-1.0.la
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gstreamer-1.0.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gstreamer-base-1.0.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gstreamer-controller-1.0.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gstreamer-net-1.0.pc
+	$(REWRITE_LIBTOOL)/libgstreamer-1.0.la
+	$(REWRITE_LIBTOOL)/libgstbase-1.0.la
+	$(REWRITE_LIBTOOL)/libgstcontroller-1.0.la
+	$(REWRITE_LIBTOOL)/libgstnet-1.0.la
+	$(REWRITE_LIBTOOLDEP)/libgstbase-1.0.la
+	$(REWRITE_LIBTOOLDEP)/libgstcontroller-1.0.la
+	$(REWRITE_LIBTOOLDEP)/libgstnet-1.0.la
 	$(REMOVE)/gstreamer-$(GSTREAMER_VER)
 	$(TOUCH)
 
@@ -83,41 +83,41 @@ $(D)/gst_plugins_base: $(D)/bootstrap $(D)/libglib2 $(D)/orc $(D)/gstreamer $(D)
 		$(MAKE); \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
 	$(SILENT)for i in `cd $(TARGET_DIR)/usr/lib/gstreamer-1.0; echo *.la`; do \
-		$(REWRITE_LIBTOOL)/gstreamer-1.0/$$i; done
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gstreamer-allocators-1.0.pc
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gstreamer-app-1.0.pc
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gstreamer-audio-1.0.pc
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gstreamer-fft-1.0.pc
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gstreamer-pbutils-1.0.pc
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gstreamer-riff-1.0.pc
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gstreamer-rtp-1.0.pc
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gstreamer-rtsp-1.0.pc
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gstreamer-sdp-1.0.pc
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gstreamer-tag-1.0.pc
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gstreamer-video-1.0.pc
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gstreamer-plugins-base-1.0.pc
-	$(SILENT)$(REWRITE_LIBTOOL)/libgstallocators-1.0.la
-	$(SILENT)$(REWRITE_LIBTOOL)/libgstapp-1.0.la
-	$(SILENT)$(REWRITE_LIBTOOL)/libgstaudio-1.0.la
-	$(SILENT)$(REWRITE_LIBTOOL)/libgstfft-1.0.la
-	$(SILENT)$(REWRITE_LIBTOOL)/libgstpbutils-1.0.la
-	$(SILENT)$(REWRITE_LIBTOOL)/libgstriff-1.0.la
-	$(SILENT)$(REWRITE_LIBTOOL)/libgstrtp-1.0.la
-	$(SILENT)$(REWRITE_LIBTOOL)/libgstrtsp-1.0.la
-	$(SILENT)$(REWRITE_LIBTOOL)/libgstsdp-1.0.la
-	$(SILENT)$(REWRITE_LIBTOOL)/libgsttag-1.0.la
-	$(SILENT)$(REWRITE_LIBTOOL)/libgstvideo-1.0.la
-	$(SILENT)$(REWRITE_LIBTOOLDEP)/libgstallocators-1.0.la
-	$(SILENT)$(REWRITE_LIBTOOLDEP)/libgstapp-1.0.la
-	$(SILENT)$(REWRITE_LIBTOOLDEP)/libgstaudio-1.0.la
-	$(SILENT)$(REWRITE_LIBTOOLDEP)/libgstfft-1.0.la
-	$(SILENT)$(REWRITE_LIBTOOLDEP)/libgstpbutils-1.0.la
-	$(SILENT)$(REWRITE_LIBTOOLDEP)/libgstriff-1.0.la
-	$(SILENT)$(REWRITE_LIBTOOLDEP)/libgstrtp-1.0.la
-	$(SILENT)$(REWRITE_LIBTOOLDEP)/libgstrtsp-1.0.la
-	$(SILENT)$(REWRITE_LIBTOOLDEP)/libgstsdp-1.0.la
-	$(SILENT)$(REWRITE_LIBTOOLDEP)/libgsttag-1.0.la
-	$(SILENT)$(REWRITE_LIBTOOLDEP)/libgstvideo-1.0.la
+		$(REWRITE_LIBTOOL_NQ)/gstreamer-1.0/$$i; done
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gstreamer-allocators-1.0.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gstreamer-app-1.0.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gstreamer-audio-1.0.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gstreamer-fft-1.0.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gstreamer-pbutils-1.0.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gstreamer-riff-1.0.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gstreamer-rtp-1.0.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gstreamer-rtsp-1.0.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gstreamer-sdp-1.0.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gstreamer-tag-1.0.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gstreamer-video-1.0.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gstreamer-plugins-base-1.0.pc
+	$(REWRITE_LIBTOOL)/libgstallocators-1.0.la
+	$(REWRITE_LIBTOOL)/libgstapp-1.0.la
+	$(REWRITE_LIBTOOL)/libgstaudio-1.0.la
+	$(REWRITE_LIBTOOL)/libgstfft-1.0.la
+	$(REWRITE_LIBTOOL)/libgstpbutils-1.0.la
+	$(REWRITE_LIBTOOL)/libgstriff-1.0.la
+	$(REWRITE_LIBTOOL)/libgstrtp-1.0.la
+	$(REWRITE_LIBTOOL)/libgstrtsp-1.0.la
+	$(REWRITE_LIBTOOL)/libgstsdp-1.0.la
+	$(REWRITE_LIBTOOL)/libgsttag-1.0.la
+	$(REWRITE_LIBTOOL)/libgstvideo-1.0.la
+	$(REWRITE_LIBTOOLDEP)/libgstallocators-1.0.la
+	$(REWRITE_LIBTOOLDEP)/libgstapp-1.0.la
+	$(REWRITE_LIBTOOLDEP)/libgstaudio-1.0.la
+	$(REWRITE_LIBTOOLDEP)/libgstfft-1.0.la
+	$(REWRITE_LIBTOOLDEP)/libgstpbutils-1.0.la
+	$(REWRITE_LIBTOOLDEP)/libgstriff-1.0.la
+	$(REWRITE_LIBTOOLDEP)/libgstrtp-1.0.la
+	$(REWRITE_LIBTOOLDEP)/libgstrtsp-1.0.la
+	$(REWRITE_LIBTOOLDEP)/libgstsdp-1.0.la
+	$(REWRITE_LIBTOOLDEP)/libgsttag-1.0.la
+	$(REWRITE_LIBTOOLDEP)/libgstvideo-1.0.la
 	$(REMOVE)/gst-plugins-base-$(GST_PLUGINS_BASE_VER)
 	$(TOUCH)
 
@@ -143,6 +143,7 @@ $(D)/gst_plugins_good: $(D)/bootstrap $(D)/gstreamer $(D)/gst_plugins_base $(D)/
 			--enable-oss \
 			--enable-gst_v4l2 \
 			--without-libv4l2 \
+			--disable-aalib \
 			--disable-examples \
 			--disable-debug \
 			--disable-gtk-doc \
@@ -152,7 +153,7 @@ $(D)/gst_plugins_good: $(D)/bootstrap $(D)/gstreamer $(D)/gst_plugins_base $(D)/
 		$(MAKE); \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
 	$(SILENT)for i in `cd $(TARGET_DIR)/usr/lib/gstreamer-1.0; echo *.la`; do \
-		$(REWRITE_LIBTOOL)/gstreamer-1.0/$$i; done
+		$(REWRITE_LIBTOOL_NQ)/gstreamer-1.0/$$i; done
 	$(REMOVE)/gst-plugins-good-$(GST_PLUGINS_GOOD_VER)
 	$(TOUCH)
 
@@ -210,6 +211,7 @@ $(D)/gst_plugins_bad: $(D)/bootstrap $(D)/gstreamer $(D)/gst_plugins_base $(ARCH
 			--disable-mplex \
 			--disable-musepack \
 			--disable-ofa \
+			--disable-opencv \
 			--disable-openjpeg \
 			--disable-opensles \
 			--disable-resindvd \
@@ -235,29 +237,29 @@ $(D)/gst_plugins_bad: $(D)/bootstrap $(D)/gstreamer $(D)/gst_plugins_base $(ARCH
 		$(MAKE); \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
 	$(SILENT)for i in `cd $(TARGET_DIR)/usr/lib/gstreamer-1.0; echo *.la`; do \
-		$(REWRITE_LIBTOOL)/gstreamer-1.0/$$i; done
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gstreamer-codecparsers-1.0.pc
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gstreamer-bad-audio-1.0.pc
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gstreamer-bad-base-1.0.pc
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gstreamer-bad-video-1.0.pc
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gstreamer-insertbin-1.0.pc
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gstreamer-mpegts-1.0.pc
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gstreamer-player-1.0.pc
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gstreamer-plugins-bad-1.0.pc
-	$(SILENT)$(REWRITE_LIBTOOL)/libgstbasecamerabinsrc-1.0.la
-	$(SILENT)$(REWRITE_LIBTOOL)/libgstcodecparsers-1.0.la
-	$(SILENT)$(REWRITE_LIBTOOL)/libgstphotography-1.0.la
-	$(SILENT)$(REWRITE_LIBTOOL)/libgstadaptivedemux-1.0.la
-	$(SILENT)$(REWRITE_LIBTOOL)/libgstbadbase-1.0.la
-	$(SILENT)$(REWRITE_LIBTOOL)/libgstbadaudio-1.0.la
-	$(SILENT)$(REWRITE_LIBTOOL)/libgstbadvideo-1.0.la
-	$(SILENT)$(REWRITE_LIBTOOL)/libgstinsertbin-1.0.la
-	$(SILENT)$(REWRITE_LIBTOOL)/libgstmpegts-1.0.la
-	$(SILENT)$(REWRITE_LIBTOOL)/libgstplayer-1.0.la
-	$(SILENT)$(REWRITE_LIBTOOL)/libgsturidownloader-1.0.la
-	$(SILENT)$(REWRITE_LIBTOOLDEP)/libgstbadaudio-1.0.la
-	$(SILENT)$(REWRITE_LIBTOOLDEP)/libgstadaptivedemux-1.0.la
-	$(SILENT)$(REWRITE_LIBTOOLDEP)/libgstbadvideo-1.0.la
+		$(REWRITE_LIBTOOL_NQ)/gstreamer-1.0/$$i; done
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gstreamer-codecparsers-1.0.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gstreamer-bad-audio-1.0.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gstreamer-bad-base-1.0.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gstreamer-bad-video-1.0.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gstreamer-insertbin-1.0.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gstreamer-mpegts-1.0.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gstreamer-player-1.0.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gstreamer-plugins-bad-1.0.pc
+	$(REWRITE_LIBTOOL)/libgstbasecamerabinsrc-1.0.la
+	$(REWRITE_LIBTOOL)/libgstcodecparsers-1.0.la
+	$(REWRITE_LIBTOOL)/libgstphotography-1.0.la
+	$(REWRITE_LIBTOOL)/libgstadaptivedemux-1.0.la
+	$(REWRITE_LIBTOOL)/libgstbadbase-1.0.la
+	$(REWRITE_LIBTOOL)/libgstbadaudio-1.0.la
+	$(REWRITE_LIBTOOL)/libgstbadvideo-1.0.la
+	$(REWRITE_LIBTOOL)/libgstinsertbin-1.0.la
+	$(REWRITE_LIBTOOL)/libgstmpegts-1.0.la
+	$(REWRITE_LIBTOOL)/libgstplayer-1.0.la
+	$(REWRITE_LIBTOOL)/libgsturidownloader-1.0.la
+	$(REWRITE_LIBTOOLDEP)/libgstbadaudio-1.0.la
+	$(REWRITE_LIBTOOLDEP)/libgstadaptivedemux-1.0.la
+	$(REWRITE_LIBTOOLDEP)/libgstbadvideo-1.0.la
 	$(REMOVE)/gst-plugins-bad-$(GST_PLUGINS_BAD_VER)
 	$(TOUCH)
 
@@ -294,7 +296,7 @@ $(D)/gst_plugins_ugly: $(D)/bootstrap $(D)/gstreamer $(D)/gst_plugins_base $(ARC
 		$(MAKE); \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
 	$(SILENT)for i in `cd $(TARGET_DIR)/usr/lib/gstreamer-1.0; echo *.la`; do \
-		$(REWRITE_LIBTOOL)/gstreamer-1.0/$$i; done
+		$(REWRITE_LIBTOOL_NQ)/gstreamer-1.0/$$i; done
 	$(REMOVE)/gst-plugins-ugly-$(GST_PLUGINS_UGLY_VER)
 	$(TOUCH)
 
@@ -430,10 +432,10 @@ $(D)/orc: $(D)/bootstrap $(ARCHIVE)/$(ORC_SOURCE)
 		; \
 		$(MAKE) all; \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/orc-0.4.pc
-	$(SILENT)$(REWRITE_LIBTOOL)/liborc-0.4.la
-	$(SILENT)$(REWRITE_LIBTOOL)/liborc-test-0.4.la
-	$(SILENT)$(REWRITE_LIBTOOLDEP)/liborc-test-0.4.la
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/orc-0.4.pc
+	$(REWRITE_LIBTOOL)/liborc-0.4.la
+	$(REWRITE_LIBTOOL)/liborc-test-0.4.la
+	$(REWRITE_LIBTOOLDEP)/liborc-test-0.4.la
 	rm -f $(addprefix $(TARGET_DIR)/usr/bin/,orc-bugreport orcc)
 	$(REMOVE)/orc-$(ORC_VER)
 	$(TOUCH)
@@ -460,9 +462,9 @@ $(D)/libdca: $(D)/bootstrap $(ARCHIVE)/$(LIBDCA_SOURCE)
 		; \
 		$(MAKE) all; \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libdca.pc
-	$(SILENT)$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libdts.pc
-	$(SILENT)$(REWRITE_LIBTOOL)/libdca.la
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libdca.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libdts.pc
+	$(REWRITE_LIBTOOL)/libdca.la
 	rm -f $(addprefix $(TARGET_DIR)/usr/bin/,extract_dca extract_dts)
 	$(REMOVE)/libdca-$(LIBDCA_VER)
 	$(TOUCH)
@@ -494,7 +496,7 @@ $(D)/gst_plugin_subsink: $(D)/bootstrap $(D)/gstreamer $(D)/gst_plugins_base $(D
 		$(MAKE); \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
 	$(SILENT)for i in `cd $(TARGET_DIR)/usr/lib/gstreamer-1.0; echo *.la`; do \
-		$(REWRITE_LIBTOOL)/gstreamer-1.0/$$i; done
+		$(REWRITE_LIBTOOL_NQ)/gstreamer-1.0/$$i; done
 	$(REMOVE)/gstreamer$(GST_PLUGIN_SUBSINK_VER)-plugin-subsink
 	$(TOUCH)
 
@@ -532,6 +534,7 @@ $(D)/gst_plugins_dvbmediasink: $(D)/bootstrap $(D)/gstreamer $(D)/gst_plugins_ba
 		$(MAKE) all; \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
 	$(SILENT)for i in `cd $(TARGET_DIR)/usr/lib/gstreamer-1.0; echo *.la`; do \
-		$(REWRITE_LIBTOOL)/gstreamer-1.0/$$i; done
+		$(REWRITE_LIBTOOL_NQ)/gstreamer-1.0/$$i; done
 	$(REMOVE)/gstreamer$(GST_PLUGINS_DVBMEDIASINK_VER)-plugin-multibox-dvbmediasink
 	$(TOUCH)
+
