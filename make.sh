@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20171004.1
+# Version 20171008.1
 
 ##############################################
 
@@ -16,17 +16,17 @@ fi
 if [ "$1" == -h ] || [ "$1" == --help ]; then
 	echo "Usage: $0 [-v | --verbose | -q | --quiet] [Parameter1 Parameter2 ... Parameter9]"
 	echo
-	echo "-v or --verbose       : verbose build (very noisy!)"
-	echo "-q or --quiet         : quiet build, fastest, almost silent"
-	echo "Parameter 1           : target system (1-37)"
-	echo "Parameter 2           : kernel (1-2)"
-	echo "Parameter 3           : optimization (1-4)"
-	echo "Parameter 4           : player (1-2)"
-	echo "Parameter 5           : external LCD support (1-3)"
-	echo "Parameter 6           : image (Enigma=1/2 Neutrino=3/4 Tvheadend=5 (1-5)"
-	echo "Parameter 7           : Neutrino variant (1-8) or Enigma2/Tvheadend diff (0-5)"
-	echo "Parameter 8           : media Framework (1-3, Enigma2 only))"
-	echo "Parameter 9           : destination (1-2, 1=flash, 2=USB)"
+	echo "-v or --verbose : verbose build (very noisy!)"
+	echo "-q or --quiet   : quiet build, fastest, almost silent"
+	echo "Parameter 1     : target system (1-37)"
+	echo "Parameter 2     : kernel (1-2)"
+	echo "Parameter 3     : optimization (1-4)"
+	echo "Parameter 4     : player (1-2)"
+	echo "Parameter 5     : external LCD support (1-3)"
+	echo "Parameter 6     : image (Enigma=1/2 Neutrino=3/4 Tvheadend=5 (1-5)"
+	echo "Parameter 7     : Neutrino variant (1-8) or Enigma2/Tvheadend diff (0-5)"
+	echo "Parameter 8     : media Framework (1-3, Enigma2 only))"
+	echo "Parameter 9     : destination (1-2, 1=flash, 2=USB)"
 	exit
 fi
 
@@ -107,14 +107,14 @@ fi
 ##############################################
 
 case $1 in
-	[1-9] | 1[0-9] | 2[0-9] | 3[0-7]) REPLY=$1;;
+	[1-9] | 1[0-9] | 2[0-9] | 3[0-8]) REPLY=$1;;
 	*)
 		echo "Target receivers:"
 		echo
 		echo "  Kathrein             Fortis"
 		echo "    1)  UFS-910          7)  FS9000 / FS9200 (formerly Fortis HDbox)"
 		echo "    2)  UFS-912          8)  HS9510 (formerly Octagon SF1008P)"
-		echo "    3)  UFS-913          9*) HS8200 (formerly Atevio AV7500)"
+		echo "    3)  UFS-913          9*) HS8200 (bootloader 6.00, formerly Atevio AV7500)"
 		echo "    4)  UFS-922         10)  HS7110"
 		echo "    5)  UFC-960         11)  HS7119"
 		echo "                        12)  HS7420"
@@ -143,9 +143,10 @@ case $1 in
 		echo "   34)  Vitamin HD5000"
 		echo "   35)  SagemCom 88 series"
 		echo "   36)  Ferguson Ariva @Link 200"
-		echo "   37)  armbox for internal testing"
+		echo "   37)  Mutant HD51"
+		echo "   38)  VU Solo 4k"
 		echo
-		read -p "Select target (1-37)? ";;
+		read -p "Select target (1-38)? ";;
 esac
 
 case "$REPLY" in
@@ -185,7 +186,8 @@ case "$REPLY" in
 	34) BOXARCH="sh4";BOXTYPE="vitamin_hd5000";;
 	35) BOXARCH="sh4";BOXTYPE="sagemcom88";;
 	36) BOXARCH="sh4";BOXTYPE="arivalink200";;
-	37) BOXARCH="arm";BOXTYPE="armbox";;
+	37) BOXARCH="arm";BOXTYPE="hd51";;
+	38) BOXARCH="arm";BOXTYPE="vusolo4k";;
 	 *) BOXARCH="sh4";BOXTYPE="atevio7500";;
 esac
 echo "BOXARCH=$BOXARCH" >> config
