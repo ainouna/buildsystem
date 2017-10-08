@@ -345,7 +345,7 @@ endif
 	$(SILENT)rm $(KERNEL_DIR)/localversion*
 	$(SILENT)echo "$(KERNEL_STM_LABEL)" > $(KERNEL_DIR)/localversion-stm
 ifeq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), kerneldebug debug))
-	$(SILENT)echo "Configuring kernel for debug."
+	@echo "Configuring kernel for debug."
 	$(SILENT)grep -v "CONFIG_PRINTK" "$(KERNEL_DIR)/.config" > $(KERNEL_DIR)/.config.tmp
 	$(SILENT)cp $(KERNEL_DIR)/.config.tmp $(KERNEL_DIR)/.config
 	$(SILENT)echo "CONFIG_PRINTK=y" >> $(KERNEL_DIR)/.config
@@ -355,7 +355,7 @@ ifeq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), kerneldebug debug))
 	$(SILENT)echo "# CONFIG_DYNAMIC_DEBUG is not set" >> $(KERNEL_DIR)/.config
 endif
 ifeq ($(IMAGE), $(filter $(IMAGE), enigma2-wlandriver neutrino-wlandriver))
-	$(SILENT)echo "Configuring kernel for wireless LAN."
+	@echo "Configuring kernel for wireless LAN."
 	$(SILENT)grep -v "CONFIG_WIRELESS" "$(KERNEL_DIR)/.config" > $(KERNEL_DIR)/.config.tmp
 	$(SILENT)cp $(KERNEL_DIR)/.config.tmp $(KERNEL_DIR)/.config
 	$(SILENT)echo "CONFIG_WIRELESS=y" >> $(KERNEL_DIR)/.config
@@ -380,7 +380,7 @@ ifeq ($(IMAGE), $(filter $(IMAGE), enigma2-wlandriver neutrino-wlandriver))
 	$(SILENT)echo "# CONFIG_HOSTAP is not set" >> $(KERNEL_DIR)/.config
 endif
 ifeq ($(DESTINATION), USB)
-	$(SILENT)echo "Configuring kernel for running on USB."
+	@echo "Configuring kernel for running on USB."
 	$(SILENT)grep -v "CONFIG_BLK_DEV_INITRD" "$(KERNEL_DIR)/.config" > $(KERNEL_DIR)/.config.tmp
 	$(SILENT)cp $(KERNEL_DIR)/.config.tmp $(KERNEL_DIR)/.config
 	$(SILENT)echo "CONFIG_BLK_DEV_INITRD=y " >> $(KERNEL_DIR)/.config
@@ -434,18 +434,18 @@ $(D)/kernel-headers: $(D)/kernel.do_prepare
 	$(TOUCH)
 
 kernel-distclean:
-	rm -f $(D)/kernel
-	rm -f $(D)/kernel.do_compile
-	rm -f $(D)/kernel.do_prepare
+	$(SILENT)rm -f $(D)/kernel
+	$(SILENT)rm -f $(D)/kernel.do_compile
+	$(SILENT)rm -f $(D)/kernel.do_prepare
 
 kernel-clean:
 	-$(MAKE) -C $(KERNEL_DIR) clean
-	rm -f $(D)/kernel
-	rm -f $(D)/kernel.do_compile
+	$(SILENT)rm -f $(D)/kernel
+	$(SILENT)rm -f $(D)/kernel.do_compile
 
 $(D)/tfkernel:
 	$(START_BUILD)
-	cd $(KERNEL_DIR); \
+	$(SILENT)cd $(KERNEL_DIR); \
 		$(MAKE) $(if $(TF7700),TF7700=y) ARCH=sh CROSS_COMPILE=$(TARGET)- uImage
 	$(TOUCH)
 
