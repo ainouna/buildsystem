@@ -138,7 +138,7 @@ SILENT_CONFIGURE      = -q
 SILENT_PATCH          =
 SILENT_OPT            =
 SILENT                = @
-WGET_SILENT_OPT       = -o /dev/null
+WGET_SILENT_OPT       =
 endif
 ifeq ($(KBUILD_VERBOSE), quiet)
 SILENT_CONFIGURE      = >/dev/null 2>&1
@@ -231,7 +231,7 @@ OPKG_SH_ENV += BUILD_TMP=$(BUILD_TMP)
 OPKG_SH = $(OPKG_SH_ENV) opkg.sh
 
 # wget tarballs into archive directory
-WGET = wget --progress=bar:force --no-check-certificate $(WGET_SILENT_OPT) -t6 -T20 -c -P $(ARCHIVE)
+WGET = $(SILENT)wget --progress=bar:force --no-check-certificate $(WGET_SILENT_OPT) -t6 -T20 -c -P $(ARCHIVE)
 
 TUXBOX_YAUD_CUSTOMIZE = $(SILENT)[ -x $(CUSTOM_DIR)/$(notdir $@)-local.sh ] && KERNEL_VER=$(KERNEL_VER) && BOXTYPE=$(BOXTYPE) && $(CUSTOM_DIR)/$(notdir $@)-local.sh $(RELEASE_DIR) $(TARGET_DIR) $(BASE_DIR) $(SOURCE_DIR) $(FLASH_DIR) $(BOXTYPE) || true
 TUXBOX_CUSTOMIZE      = $(SILENT)[ -x $(CUSTOM_DIR)/$(notdir $@)-local.sh ] && KERNEL_VER=$(KERNEL_VER) && BOXTYPE=$(BOXTYPE) && $(CUSTOM_DIR)/$(notdir $@)-local.sh $(RELEASE_DIR) $(TARGET_DIR) $(BASE_DIR) $(BOXTYPE) || true

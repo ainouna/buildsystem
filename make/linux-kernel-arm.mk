@@ -67,11 +67,11 @@ $(ARCHIVE)/$(KERNEL_SRC):
 
 $(D)/kernel.do_prepare: $(ARCHIVE)/$(KERNEL_SRC) $(PATCHES)/armbox/$(KERNEL_CONFIG)
 	$(START_BUILD)
-	rm -rf $(KERNEL_DIR)
+	$(SILENT)rm -rf $(KERNEL_DIR)
 	$(UNTAR)/$(KERNEL_SRC)
 	$(SET) -e; cd $(KERNEL_DIR); \
 		for i in $(KERNEL_PATCHES); do \
-			echo -e "(TERM_RED)Applying Patch:$(TERM_NORMAL) $$i"; \
+			echo -e "$(TERM_RED)Applying Patch:$(TERM_NORMAL) $$i"; \
 			$(PATCH)/$$i; \
 		done
 	$(SILENT)install -m 644 $(PATCHES)/armbox/$(KERNEL_CONFIG) $(KERNEL_DIR)/.config
@@ -93,18 +93,18 @@ $(D)/kernel.do_compile: $(D)/kernel.do_prepare
 
 KERNEL = $(D)/kernel
 $(D)/kernel: $(D)/bootstrap $(D)/kernel.do_compile
-	install -m 644 $(KERNEL_DIR)/arch/arm/boot/zImage $(BOOT_DIR)/vmlinux.ub
-	install -m 644 $(KERNEL_DIR)/vmlinux $(TARGET_DIR)/boot/vmlinux-arm-$(KERNEL_VER)
-	install -m 644 $(KERNEL_DIR)/System.map $(TARGET_DIR)/boot/System.map-arm-$(KERNEL_VER)
-	cp $(KERNEL_DIR)/arch/arm/boot/zImage $(TARGET_DIR)/boot/
-	rm $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/build || true
-	rm $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/source || true
+	$(SILENT)install -m 644 $(KERNEL_DIR)/arch/arm/boot/zImage $(BOOT_DIR)/vmlinux.ub
+	$(SILENT)install -m 644 $(KERNEL_DIR)/vmlinux $(TARGET_DIR)/boot/vmlinux-arm-$(KERNEL_VER)
+	$(SILENT)install -m 644 $(KERNEL_DIR)/System.map $(TARGET_DIR)/boot/System.map-arm-$(KERNEL_VER)
+	$(SILENT)cp $(KERNEL_DIR)/arch/arm/boot/zImage $(TARGET_DIR)/boot/
+	$(SILENT)rm $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/build || true
+	$(SILENT)rm $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/source || true
 	$(TOUCH)
 
 $(D)/kernel-headers: $(D)/kernel.do_prepare
 	$(START_BUILD)
-	cd $(KERNEL_DIR); \
-		$(SILENT)install -d $(TARGET_DIR)/usr/include; \
+	$(SILENT)cd $(KERNEL_DIR); \
+		install -d $(TARGET_DIR)/usr/include; \
 		cp -a include/linux $(TARGET_DIR)/usr/include; \
 		cp -a include/asm-arm $(TARGET_DIR)/usr/include/asm; \
 		cp -a include/asm-generic $(TARGET_DIR)/usr/include; \
@@ -132,3 +132,4 @@ kernel.%: $(D)/kernel
 	@echo ""
 	$(SILENT)diff $(KERNEL_DIR)/.config.old $(KERNEL_DIR)/.config
 	@echo ""
+
