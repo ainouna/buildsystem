@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20171009.1
+# Version 20171009.2
 
 ##############################################
 
@@ -401,7 +401,7 @@ case "$IMAGE" in
 				*) MEDIAFW="gst-eplayer3";;
 			esac
 		else
-				MEDIAFW="gstreamer";;
+				MEDIAFW="gstreamer"
 		fi
 
 		# Determine the OpenPLi diff-level
