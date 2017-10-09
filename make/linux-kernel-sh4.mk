@@ -458,5 +458,5 @@ kernel.%: $(D)/kernel
 	@echo ""
 	@echo "You have to edit $(PATCHES)/$(BUILD_CONFIG)/$(KERNEL_CONFIG) m a n u a l l y to make changes permanent !!!"
 	@echo ""
-	diff $(KERNEL_DIR)/.config.old $(KERNEL_DIR)/.config
+	$(SILENT)diff $(KERNEL_DIR)/.config.old $(KERNEL_DIR)/.config
 	@echo ""

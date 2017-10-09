@@ -68,7 +68,9 @@ $(ARCHIVE)/$(KERNEL_SRC):
 $(D)/kernel.do_prepare: $(ARCHIVE)/$(KERNEL_SRC) $(PATCHES)/armbox/$(KERNEL_CONFIG)
 	$(START_BUILD)
 	$(SILENT)rm -rf $(KERNEL_DIR)
+	@echo -n "Unpacking kernel source..."
 	$(UNTAR)/$(KERNEL_SRC)
+	@echo " done."
 	$(SET) -e; cd $(KERNEL_DIR); \
 		for i in $(KERNEL_PATCHES); do \
 			echo -e "$(TERM_RED)Applying Patch:$(TERM_NORMAL) $$i"; \
@@ -76,11 +78,11 @@ $(D)/kernel.do_prepare: $(ARCHIVE)/$(KERNEL_SRC) $(PATCHES)/armbox/$(KERNEL_CONF
 		done
 	$(SILENT)install -m 644 $(PATCHES)/armbox/$(KERNEL_CONFIG) $(KERNEL_DIR)/.config
 ifeq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), kerneldebug debug))
-	@echo "Configuring kernel for debug"
-	@grep -v "CONFIG_PRINTK" "$(KERNEL_DIR)/.config" > $(KERNEL_DIR)/.config.tmp
-	cp $(KERNEL_DIR)/.config.tmp $(KERNEL_DIR)/.config
-	@echo "CONFIG_PRINTK=y" >> $(KERNEL_DIR)/.config
-	@echo "CONFIG_PRINTK_TIME=y" >> $(KERNEL_DIR)/.config
+	@echo "Configuring kernel for debug."
+	$(SILENT)grep -v "CONFIG_PRINTK" "$(KERNEL_DIR)/.config" > $(KERNEL_DIR)/.config.tmp
+	$(SILENT)cp $(KERNEL_DIR)/.config.tmp $(KERNEL_DIR)/.config
+	$(SILENT)echo "CONFIG_PRINTK=y" >> $(KERNEL_DIR)/.config
+	$(SILENT)echo "# CONFIG_PRINTK_TIME is not set" >> $(KERNEL_DIR)/.config
 endif
 	@touch $@
 
