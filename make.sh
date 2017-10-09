@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20171008.1
+# Version 20171009.1
 
 ##############################################
 
@@ -195,22 +195,24 @@ echo "BOXTYPE=$BOXTYPE" >> config
 
 ##############################################
 
-case $2 in
-	[1-2]) REPLY=$2;;
-	*)	echo -e "\nKernel:"
-		echo "   1)  STM 24 P0209 [2.6.32.46]"
-#		echo "   2)  STM 24 P0217 [2.6.32.61]"
-		echo "   2*) STM 24 P0217 [2.6.32.71]"
-		read -p "Select kernel (1-2)? ";;
-esac
+if [ $BOXARCH == "sh4" ]; then
+	case $2 in
+		[1-2]) REPLY=$2;;
+		*)	echo -e "\nKernel:"
+			echo "   1)  STM 24 P0209 [2.6.32.46]"
+#			echo "   2)  STM 24 P0217 [2.6.32.61]"
+			echo "   2*) STM 24 P0217 [2.6.32.71]"
+			read -p "Select kernel (1-2)? ";;
+	esac
 
-case "$REPLY" in
-	1)  KERNEL_STM="p0209";;
-#	2)  KERNEL_STM="p0217_61";;
-#	3)  KERNEL_STM="p0217";;
-	*)  KERNEL_STM="p0217";;
-esac
-echo "KERNEL_STM=$KERNEL_STM" >> config
+	case "$REPLY" in
+		1)  KERNEL_STM="p0209";;
+	#	2)  KERNEL_STM="p0217_61";;
+	#	3)  KERNEL_STM="p0217";;
+		*)  KERNEL_STM="p0217";;
+	esac
+	echo "KERNEL_STM=$KERNEL_STM" >> config
+fi
 
 ##############################################
 
@@ -235,22 +237,24 @@ echo "OPTIMIZATIONS=$OPTIMIZATIONS" >> config
 
 ##############################################
 
-case $4 in
-	[1-2]) REPLY=$4;;
-	*)	echo -e "\nPlayer:"
-		echo "   1)  Player 191 test (stmfb-3.1_stm24_0104, for internal testing)"
-		echo "   2*) Player 191      (stmfb-3.1_stm24_0104, recommended)"
-		read -p "Select player (1-2)? ";;
-esac
+if [ $BOXARCH == "sh4" ]; then
+	case $4 in
+		[1-2]) REPLY=$4;;
+		*)	echo -e "\nPlayer:"
+			echo "   1)  Player 191 test (stmfb-3.1_stm24_0104, for internal testing)"
+			echo "   2*) Player 191      (stmfb-3.1_stm24_0104, recommended)"
+			read -p "Select player (1-2)? ";;
+	esac
 
-case "$REPLY" in
-	1)	echo "PLAYER_VER=191_test" >> config
-		echo "MULTICOM_VER=324" >> config
-		;;
-	*)	echo "PLAYER_VER=191" >> config
-		echo "MULTICOM_VER=324" >> config
-		;;
-esac
+	case "$REPLY" in
+		1)	echo "PLAYER_VER=191_test" >> config
+			echo "MULTICOM_VER=324" >> config
+			;;
+		*)	echo "PLAYER_VER=191" >> config
+			echo "MULTICOM_VER=324" >> config
+			;;
+	esac
+fi
 
 ##############################################
 
@@ -380,21 +384,25 @@ case "$IMAGE" in
 		fi;;
 #	enigma*)
 	*)
-		case $8 in
-			[1-3]) REPLY=$8;;
-			*)	echo -e "\nMedia Framework:"
-				echo "   1)  eplayer3"
-				echo "   2)  gstreamer"
-				echo "   3*) gstreamer+eplayer3 (recommended)"
-				read -p "Select media framework (1-3)? ";;
-		esac
+		if [ $BOXARCH == "sh4" ]; then
+			case $8 in
+				[1-3]) REPLY=$8;;
+				*)	echo -e "\nMedia Framework:"
+					echo "   1)  eplayer3"
+					echo "   2)  gstreamer"
+					echo "   3*) gstreamer+eplayer3 (recommended)"
+					read -p "Select media framework (1-3)? ";;
+			esac
 
-		case "$REPLY" in
-			1) MEDIAFW="eplayer3";;
-			2) MEDIAFW="gstreamer";;
-		#	3) MEDIAFW="gst-eplayer3";;
-			*) MEDIAFW="gst-eplayer3";;
-		esac
+			case "$REPLY" in
+				1) MEDIAFW="eplayer3";;
+				2) MEDIAFW="gstreamer";;
+			#	3) MEDIAFW="gst-eplayer3";;
+				*) MEDIAFW="gst-eplayer3";;
+			esac
+		else
+				MEDIAFW="gstreamer";;
+		fi
 
 		# Determine the OpenPLi diff-level
 		case $7 in
