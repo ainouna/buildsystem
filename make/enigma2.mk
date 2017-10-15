@@ -129,7 +129,8 @@ $(D)/enigma2.do_prepare: | $(ENIGMA2_DEPS)
 	REPO_0=$(REPO_OPENPLI); \
 	REPO_1=$(REPO_REPLY_1); \
 	REVISION=$(E2_REVISION); \
-	HEAD="master"; \
+	HEAD_0="release"; \
+	HEAD_1="master"; \
 	DIFF=$(E2_DIFF); \
 	rm -rf $(SOURCE_DIR)/enigma2; \
 	rm -rf $(SOURCE_DIR)/enigma2.org; \
@@ -149,7 +150,7 @@ $(D)/enigma2.do_prepare: | $(ENIGMA2_DEPS)
 		[ -d "$(ARCHIVE)/enigma2-pli-nightly.git" ] && \
 		(cd $(ARCHIVE)/enigma2-pli-nightly.git; echo -n "Updating archived OpenPLi git..."; git pull -q; echo -e -n " done.\nChecking out HEAD..."; git checkout -q HEAD; echo " done."; cd "$(BUILD_TMP)";); \
 		[ -d "$(ARCHIVE)/enigma2-pli-nightly.git" ] || \
-		(echo -n "Cloning remote OpenPLi git..."; git clone -q -b $$HEAD $$REPO_0 $(ARCHIVE)/enigma2-pli-nightly.git; echo " done."); \
+		(echo -n "Cloning remote OpenPLi git..."; git clone -q -b $$HEAD_0 $$REPO_0 $(ARCHIVE)/enigma2-pli-nightly.git; echo " done."); \
 		echo -n "Copying local git content to build environment..."; cp -ra $(ARCHIVE)/enigma2-pli-nightly.git $(SOURCE_DIR)/enigma2; echo " done."; \
 		if [ "$$REVISION" != "newest" ]; then \
 			cd $(SOURCE_DIR)/enigma2; pwd; echo -n "Checking out revision $$REVISION..."; git checkout -q "$$REVISION"; echo " done."; \
@@ -172,7 +173,7 @@ $(D)/enigma2.do_prepare: | $(ENIGMA2_DEPS)
 	else \
 		[ -d "$(SOURCE_DIR)/enigma2" ] ; \
 		echo "Cloning local git content to build environment..."; \
-		git clone -b $$HEAD $$REPO_1 $(SOURCE_DIR)/enigma2; \
+		git clone -b $$HEAD_1 $$REPO_1 $(SOURCE_DIR)/enigma2; \
 	fi
 	@touch $@
 
