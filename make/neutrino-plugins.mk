@@ -52,6 +52,10 @@ NEUTRINO_PLUGINS  = $(D)/neutrino-mp-plugins
 NEUTRINO_PLUGINS += $(D)/neutrino-mp-plugins-scripts-lua
 NEUTRINO_PLUGINS += $(D)/xupnpd
 
+ifeq ($(BOXARCH), sh4)
+EXTRA_CPPFLAGS_MP_PLUGINS = -DMARTII
+endif
+
 $(D)/neutrino-plugins: $(NEUTRINO_PLUGINS)
 	@touch $@
 
