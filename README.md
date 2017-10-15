@@ -24,7 +24,7 @@ Instructions
 
 7. Download and extract a ready built image for the receiver you want
    to build for and extract the files audio.elf and video.elf from its
-   /boot directory. Copy the files to the directory X/cdk/root/boot
+   /boot directory. Copy the files to the directory X/root/boot
    using the following names (so 4 copies each):
    audio.elf to audio_7100.elf, audio_7105.elf, audio_7109.elf and audio_7111.elf,
    video.elf to video_7100.elf, video_7105.elf, video_7109.elf and video_7111.elf.
@@ -36,13 +36,13 @@ Instructions
    target will be much quicker.
 
 9. After the build is complete change to the directory X/flash and
-   execute fakeroot ./flash.sh to create the image to run on your
+   execute "fakeroot ./flash.sh" to create the image to run on your
    receiver. When the script completes and there were no errors,
    the file(s) required will be in the directory X/flash/out.
    Follow the instructions shown in green to move the image to
    the receiver and run it.
 
-To update your build environment, execute make update in
+To update your build environment, execute "make update" in
 directory X. To update one repository, go to the corresponding directory
-X/apps, X/driver, X/flash or X itself and execute a git pull.
+X/apps, X/driver, X/flash or X itself and execute a "git pull".
 
