@@ -157,7 +157,7 @@ $(D)/tools-libmme_image: $(D)/bootstrap
 #
 # minimon
 #
-$(D)/tools-minimon: $(D)/bootstrap $(D)/libjpeg_turbo
+$(D)/tools-minimon: $(D)/bootstrap $(D)/jpeg_turbo
 	$(START_BUILD)
 	$(SET) -e; cd $(APPS_DIR)/tools/minimon; \
 		$(CONFIGURE_TOOLS) \
@@ -322,6 +322,7 @@ TOOLS += $(D)/tools-hotplug
 ifeq ($(BOXTYPE), $(filter $(BOXTYPE), ipbox55 ipbox99 ipbox9900 cuberevo cuberevo_mini cuberevo_mini2 cuberevo_250hd cuberevo_2000hd cuberevo_3000hd))
 TOOLS += $(D)/tools-ipbox_eeprom
 endif
+#TOOLS += $(D)/tools-minimon
 TOOLS += $(D)/tools-showiframe
 TOOLS += $(D)/tools-stfbcontrol
 TOOLS += $(D)/tools-streamproxy
@@ -349,3 +350,4 @@ endif
 $(D)/tools: $(TOOLS)
 	$(START_BUILD)
 	$(TOUCH)
+
