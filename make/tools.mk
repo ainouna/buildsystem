@@ -20,6 +20,7 @@ ifeq ($(IMAGE), $(filter $(IMAGE), enigma2 enigma2-wlandriver))
 	-$(MAKE) -C $(APPS_DIR)/tools/libmme_image distclean
 endif
 	-$(MAKE) -C $(APPS_DIR)/tools/minimon distclean
+	-$(MAKE) -C $(APPS_DIR)/tools/satfind distclean
 	-$(MAKE) -C $(APPS_DIR)/tools/showiframe distclean
 	-$(MAKE) -C $(APPS_DIR)/tools/spf_tool distclean
 	-$(MAKE) -C $(APPS_DIR)/tools/stfbcontrol distclean
@@ -165,6 +166,19 @@ $(D)/tools-minimon: $(D)/bootstrap $(D)/jpeg_turbo
 		; \
 		$(MAKE) KERNEL_DIR=$(KERNEL_DIR) TARGET=$(TARGET) TARGET_DIR=$(TARGET_DIR); \
 		$(MAKE) install KERNEL_DIR=$(KERNEL_DIR) TARGET=$(TARGET) TARGET_DIR=$(TARGET_DIR) DESTDIR=$(TARGET_DIR)
+	$(TOUCH)
+
+#
+# satfind
+#
+$(D)/tools-satfind: $(D)/bootstrap
+	$(START_BUILD)
+	$(SET) -e; cd $(APPS_DIR)/tools/satfind; \
+		$(CONFIGURE_TOOLS) \
+			--prefix= \
+		; \
+		$(MAKE); \
+		$(MAKE) install DESTDIR=$(TARGET_DIR)
 	$(TOUCH)
 
 #
@@ -323,6 +337,7 @@ ifeq ($(BOXTYPE), $(filter $(BOXTYPE), ipbox55 ipbox99 ipbox9900 cuberevo cubere
 TOOLS += $(D)/tools-ipbox_eeprom
 endif
 #TOOLS += $(D)/tools-minimon
+TOOLS += $(D)/tools-satfind
 TOOLS += $(D)/tools-showiframe
 TOOLS += $(D)/tools-stfbcontrol
 TOOLS += $(D)/tools-streamproxy
