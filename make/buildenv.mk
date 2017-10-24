@@ -54,10 +54,6 @@ CROSS_DIR             = $(TUFSBOX_DIR)/cross
 HOST_DIR              = $(TUFSBOX_DIR)/host
 RELEASE_DIR           = $(TUFSBOX_DIR)/release
 
-CONTROL_DIR           = $(BASE_DIR)/pkgs/control
-PACKAGE_DIR           = $(BASE_DIR)/pkgs/opkg
-PKG_DIR               = $(BUILD_TMP)/pkg
-
 CUSTOM_DIR            = $(BASE_DIR)/custom
 OWN_BUILD             = $(BASE_DIR)/own_build
 PATCHES               = $(BASE_DIR)/Patches
@@ -163,7 +159,6 @@ export RM=$(shell which rm) -f
 UNTAR                 = $(SILENT)tar -C $(BUILD_TMP) -xf $(ARCHIVE)
 SET                   = $(SILENT)set
 REMOVE                = $(SILENT)rm -rf $(BUILD_TMP)
-RM_PKG_DIR            = $(SILENT)rm -rf $(PKG_DIR)
 
 #
 split_deps_dir=$(subst ., ,$(1))
@@ -218,17 +213,6 @@ define post_patch
     fi; \
     echo
 endef
-
-#
-#
-#
-OPKG_SH_ENV  = PACKAGE_DIR=$(PACKAGE_DIR)
-OPKG_SH_ENV += STRIP=$(TARGET)-strip
-OPKG_SH_ENV += MAINTAINER="$(MAINTAINER)"
-OPKG_SH_ENV += ARCH=$(BOXARCH)
-OPKG_SH_ENV += SOURCE=$(PKG_DIR)
-OPKG_SH_ENV += BUILD_TMP=$(BUILD_TMP)
-OPKG_SH = $(OPKG_SH_ENV) opkg.sh
 
 # wget tarballs into archive directory
 WGET = $(SILENT)wget --progress=bar:force --no-check-certificate $(WGET_SILENT_OPT) -t6 -T20 -c -P $(ARCHIVE)
@@ -354,7 +338,7 @@ PLAYER2_LINK       = player2_191_test
 endif
 
 #
-DRIVER_PLATFORM   := $(PLAYER2) $(WLANDRIVER)
+DRIVER_PLATFORM   := $(WLANDRIVER)
 
 #
 ifeq ($(BOXTYPE), ufs910)
