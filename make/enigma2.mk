@@ -19,15 +19,6 @@ ENIGMA2_DEPS += $(D)/busybox_usb
 E_CONFIG_OPTS += --enable-run_from_usb
 endif
 
-ifeq ($(EXTERNAL_LCD), externallcd)
-ENIGMA2_DEPS  += $(D)/graphlcd
-E_CONFIG_OPTS += --with-graphlcd
-endif
-
-ifeq ($(EXTERNAL_LCD), lcd4linux)
-ENIGMA2_DEPS += $(D)/lcd4linux
-endif
-
 ifeq ($(E2_DIFF), $(filter $(E2_DIFF), 0 2))
 ENIGMA2_DEPS  += $(D)/avahi
 endif

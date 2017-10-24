@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20171009.2
+# Version 20171024.1
 
 ##############################################
 
@@ -21,12 +21,10 @@ if [ "$1" == -h ] || [ "$1" == --help ]; then
 	echo "Parameter 1     : target system (1-37)"
 	echo "Parameter 2     : kernel (1-2)"
 	echo "Parameter 3     : optimization (1-4)"
-	echo "Parameter 4     : player (1-2)"
-	echo "Parameter 5     : external LCD support (1-3)"
-	echo "Parameter 6     : image (Enigma=1/2 Neutrino=3/4 Tvheadend=5 (1-5)"
-	echo "Parameter 7     : Neutrino variant (1-8) or Enigma2/Tvheadend diff (0-5)"
-	echo "Parameter 8     : media Framework (1-3, Enigma2 only))"
-	echo "Parameter 9     : destination (1-2, 1=flash, 2=USB)"
+	echo "Parameter 4     : image (Enigma=1/2 Neutrino=3/4 Tvheadend=5 (1-5)"
+	echo "Parameter 5     : Neutrino variant (1-8) or Enigma2/Tvheadend diff (0-5)"
+	echo "Parameter 6     : media Framework (1-3, Enigma2 only))"
+	echo "Parameter 7     : destination (1-2, 1=flash, 2=USB)"
 	exit
 fi
 
@@ -237,48 +235,8 @@ echo "OPTIMIZATIONS=$OPTIMIZATIONS" >> config
 
 ##############################################
 
-if [ $BOXARCH == "sh4" ]; then
-	case $4 in
-		[1-2]) REPLY=$4;;
-		*)	echo -e "\nPlayer:"
-			echo "   1)  Player 191 test (stmfb-3.1_stm24_0104, for internal testing)"
-			echo "   2*) Player 191      (stmfb-3.1_stm24_0104, recommended)"
-			read -p "Select player (1-2)? ";;
-	esac
-
-	case "$REPLY" in
-		1)	echo "PLAYER_VER=191_test" >> config
-			echo "MULTICOM_VER=324" >> config
-			;;
-		*)	echo "PLAYER_VER=191" >> config
-			echo "MULTICOM_VER=324" >> config
-			;;
-	esac
-fi
-
-##############################################
-
-case $5 in
-	[1-3]) REPLY=$5;;
-	*)	echo -e "\nExternal LCD support:"
-		echo "   1*) No external LCD"
-		echo "   2)  graphlcd for external LCD"
-		echo "   3)  lcd4linux for external LCD"
-		read -p "Select external LCD support (1-3)? ";;
-esac
-
-case "$REPLY" in
-#	1) EXTERNAL_LCD="none";;
-	2) EXTERNAL_LCD="externallcd";;
-	3) EXTERNAL_LCD="lcd4linux";;
-	*) EXTERNAL_LCD="none";;
-esac
-echo "EXTERNAL_LCD=$EXTERNAL_LCD" >> config
-
-##############################################
-
-case $6 in
-	[1-5])	REPLY=$6;;
+case $4 in
+	[1-5])	REPLY=$4;;
 	*)	echo -e "\nWhich Image do you want to build:"
 		echo "   1)  Enigma2"
 		echo "   2*) Enigma2 (includes WLAN drivers)"
@@ -300,8 +258,8 @@ echo "IMAGE=$IMAGE" >> config
 
 case "$IMAGE" in
 	neutrin*)
-		case $7 in
-			[1-8])	REPLY=$7;;
+		case $5 in
+			[1-8])	REPLY=$5;;
 			*)	echo -e "\nWhich Neutrino variant do you want to build?"
 				echo "   1)  Neutrino mp (cst-next)"
 				echo "   2)  Neutrino mp (cst-next) + plugins"
@@ -345,8 +303,8 @@ case "$IMAGE" in
 	tvheadend)
 		MEDIAFW="buildinplayer"
 		# Determine the Tvheadend diff-level
-		case $7 in
-			[0-1])	REPLY=$7;;
+		case $5 in
+			[0-1])	REPLY=$5;;
 			*)	echo
 				echo "Please select one of the following Tvheadend revisions (default = 1):"
 				echo "=================================================================================================="
@@ -385,8 +343,8 @@ case "$IMAGE" in
 #	enigma*)
 	*)
 		if [ $BOXARCH == "sh4" ]; then
-			case $8 in
-				[1-3]) REPLY=$8;;
+			case $6 in
+				[1-3]) REPLY=$6;;
 				*)	echo -e "\nMedia Framework:"
 					echo "   1)  eplayer3"
 					echo "   2)  gstreamer"
@@ -405,8 +363,8 @@ case "$IMAGE" in
 		fi
 
 		# Determine the OpenPLi diff-level
-		case $7 in
-			[0-5])	REPLY=$7;;
+		case $5 in
+			[0-5])	REPLY=$5;;
 			*)	echo
 				echo "Please select one of the following Enigma2 revisions (default = 2):"
 				echo "=================================================================================================="
@@ -462,8 +420,8 @@ echo "MEDIAFW=$MEDIAFW" >> config
 
 case "$BOXTYPE" in
 	hs7110|hs7119|hs7420|hs7429|hs7810a|hs7819)
-		case $9 in
-			[1-2])	REPLY=$9;;
+		case $7 in
+			[1-2])	REPLY=$7;;
 			*)	echo -e "\nWhere will the image be running:"
 				echo "   1*) Flash memory or hard disk"
 				echo "   2)  USB stick"
