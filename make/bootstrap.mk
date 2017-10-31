@@ -1,10 +1,10 @@
-TOOLCHECK  = find-git find-svn find-gzip find-bzip2 find-patch find-gawk
-TOOLCHECK += find-makeinfo find-automake find-gcc find-libtool
-TOOLCHECK += find-yacc find-flex find-tic find-pkg-config find-help2man
-TOOLCHECK += find-cmake find-gperf
+TOOLCHECK  = find_git find_svn find_gzip find_bzip2 find_patch find_gawk
+TOOLCHECK += find_makeinfo find_automake find_gcc find_libtool
+TOOLCHECK += find_yacc find_flex find_tic find_pkg-config find_help2man
+TOOLCHECK += find_cmake find_gperf
 
-find-%:
-	@TOOL=$(patsubst find-%,%,$@); \
+find_%:
+	@TOOL=$(patsubst find_%,%,$@); \
 		type -p $$TOOL >/dev/null || \
 		{ echo "required tool $$TOOL missing."; false; }
 
