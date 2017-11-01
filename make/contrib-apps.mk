@@ -110,7 +110,8 @@ SYSVINIT_VER = 2.88dsf
 SYSVINIT_SOURCE = sysvinit_$(SYSVINIT_VER).orig.tar.gz
 
 $(ARCHIVE)/$(SYSVINIT_SOURCE):
-	$(WGET) ftp://ftp.debian.org/debian/pool/main/s/sysvinit/$(SYSVINIT_SOURCE)
+#	$(WGET) ftp://ftp.debian.org/debian/pool/main/s/sysvinit/$(SYSVINIT_SOURCE)
+	$(WGET) ftp://ftp.univ-nantes.fr/ubuntu/pool/main/s/sysvinit/$(SYSVINIT_SOURCE)
 
 $(D)/sysvinit: $(D)/bootstrap $(ARCHIVE)/$(SYSVINIT_SOURCE)
 	$(START_BUILD)
@@ -1365,7 +1366,8 @@ WIRELESS_TOOLS_SOURCE = wireless_tools.$(WIRELESS_TOOLS_VER).tar.gz
 WIRELESS_TOOLS_PATCH = wireless-tools.$(WIRELESS_TOOLS_VER).patch
 
 $(ARCHIVE)/$(WIRELESS_TOOLS_SOURCE):
-	$(WGET) https://www.hpl.hp.com/personal/Jean_Tourrilhes/Linux/$(WIRELESS_TOOLS_SOURCE)
+#	$(WGET) https://www.hpl.hp.com/personal/Jean_Tourrilhes/Linux/$(WIRELESS_TOOLS_SOURCE)
+	$(WGET) https://ftp.osuosl.org/pub/blfs/conglomeration/wireless_tools/$(WIRELESS_TOOLS_SOURCE)
 
 $(D)/wireless_tools: $(D)/bootstrap $(ARCHIVE)/$(WIRELESS_TOOLS_SOURCE)
 	$(START_BUILD)
@@ -1472,7 +1474,8 @@ UDPXY_SOURCE = udpxy.$(UDPXY_VER)-prod.tar.gz
 UDPXY_PATCH = udpxy-$(UDPXY_VER).patch
 
 $(ARCHIVE)/$(UDPXY_SOURCE):
-	$(WGET) http://www.udpxy.com/download/1_23/$(UDPXY_SOURCE)
+#	$(WGET) http://www.udpxy.com/download/1_23/$(UDPXY_SOURCE)
+	$(WGET) https://fossies.org/linux/www/$(UDPXY_SOURCE)
 
 $(D)/udpxy: $(D)/bootstrap $(ARCHIVE)/$(UDPXY_SOURCE)
 	$(START_BUILD)
