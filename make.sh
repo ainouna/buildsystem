@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20171024.1
+# Version 20171101.1
 
 ##############################################
 
@@ -81,28 +81,6 @@ echo "KBUILD_VERBOSE=$KBUILD_VERBOSE" > config
 ##############################################
 
 CURDIR=`pwd`
-echo -ne "\nChecking the .elf files in $CURDIR/root/boot..."
-set='audio_7100 audio_7105 audio_7109 audio_7111 video_7100 video_7105 video_7109 video_7111'
-ELFMISSING=0
-for i in $set;
-do
-	if [ ! -e $CURDIR/root/boot/$i.elf ]; then
-		echo -e -n "\n\033[31mERROR\033[0m: file $i.elf is missing in ./root/boot"
-		ELFMISSING=1
-	fi
-done
-if [ "$ELFMISSING" == "1" ]; then
-	echo -e "\n"
-	echo "Correct this and retry."
-	echo
-	exit
-fi
-echo " [OK]"
-if [ -e $CURDIR/root/boot/put_your_elf_files_here ]; then
-	rm $CURDIR/root/boot/put_your_elf_files_here
-fi
-
-##############################################
 
 case $1 in
 	[1-9] | 1[0-9] | 2[0-9] | 3[0-8]) REPLY=$1;;
@@ -194,6 +172,28 @@ echo "BOXTYPE=$BOXTYPE" >> config
 ##############################################
 
 if [ $BOXARCH == "sh4" ]; then
+	echo -ne "\nChecking the .elf files in $CURDIR/root/boot..."
+	set='audio_7100 audio_7105 audio_7109 audio_7111 video_7100 video_7105 video_7109 video_7111'
+	ELFMISSING=0
+	for i in $set;
+	do
+		if [ ! -e $CURDIR/root/boot/$i.elf ]; then
+			echo -e -n "\n\033[31mERROR\033[0m: file $i.elf is missing in ./root/boot"
+			ELFMISSING=1
+		fi
+	done
+	if [ "$ELFMISSING" == "1" ]; then
+		echo -e "\n"
+		echo "Correct this and retry."
+		echo
+		exit
+	fi
+	echo " [OK]"
+	if [ -e $CURDIR/root/boot/put_your_elf_files_here ]; then
+		rm $CURDIR/root/boot/put_your_elf_files_here
+	fi
+
+##############################################
 	case $2 in
 		[1-2]) REPLY=$2;;
 		*)	echo -e "\nKernel:"
@@ -453,4 +453,5 @@ case "$REPLY" in
 		exit;;
   	*)	$CURDIR/build;;
 esac
-echo " "
+echo
+

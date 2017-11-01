@@ -50,10 +50,7 @@ printenv:
 #	@echo "KERNEL_LABEL     : $(KERNEL_LABEL)"
 #	@echo "KERNEL_RELEASE   : $(KERNEL_RELEASE)"
 #	@echo "KERNEL_STM_LABEL : $(KERNEL_STM_LABEL)"
-	@echo "MULTICOM_VERSION : $(MULTICOM_VER)"
-	@echo "PLAYER_VERSION   : $(PLAYER_VER)"
 	@echo "MEDIAFW          : $(MEDIAFW)"
-	@echo "EXTERNAL_LCD     : $(EXTERNAL_LCD)"
 	@echo "PARALLEL_JOBS    : $(PARALLEL_JOBS)"
 	@echo "KBUILD_VERBOSE   : $(KBUILD_VERBOSE)"
 ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs7110 hs7119 hs7420 hs7429 hs7810a hs7819))
