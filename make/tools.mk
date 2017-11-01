@@ -3,7 +3,12 @@
 #
 tools-clean:
 	rm -f $(D)/tools-*
-	-$(MAKE) -C $(APPS_DIR)/tools/aio-grab distclean
+	-$(MAKE) -C $(APPS_DIR)/tools/aio-grab-$(BOXARCH) distclean
+	-$(MAKE) -C $(APPS_DIR)/tools/satfind distclean
+	-$(MAKE) -C $(APPS_DIR)/tools/showiframe-$(BOXARCH) distclean
+	-$(MAKE) -C $(APPS_DIR)/tools/minimon distclean
+	-$(MAKE) -C $(APPS_DIR)/tools/spf_tool distclean
+ifeq ($(BOXARCH), sh4)
 	-$(MAKE) -C $(APPS_DIR)/tools/devinit distclean
 	-$(MAKE) -C $(APPS_DIR)/tools/eplayer3 distclean
 	-$(MAKE) -C $(APPS_DIR)/tools/evremote2 distclean
@@ -19,10 +24,6 @@ ifeq ($(IMAGE), $(filter $(IMAGE), enigma2 enigma2-wlandriver))
 	-$(MAKE) -C $(APPS_DIR)/tools/libmme_host distclean
 	-$(MAKE) -C $(APPS_DIR)/tools/libmme_image distclean
 endif
-	-$(MAKE) -C $(APPS_DIR)/tools/minimon distclean
-	-$(MAKE) -C $(APPS_DIR)/tools/satfind distclean
-	-$(MAKE) -C $(APPS_DIR)/tools/showiframe distclean
-	-$(MAKE) -C $(APPS_DIR)/tools/spf_tool distclean
 	-$(MAKE) -C $(APPS_DIR)/tools/stfbcontrol distclean
 	-$(MAKE) -C $(APPS_DIR)/tools/streamproxy distclean
 ifeq ($(BOXTYPE), $(filter $(BOXTYPE), tf7700))
@@ -32,6 +33,7 @@ endif
 	-$(MAKE) -C $(APPS_DIR)/tools/ustslave distclean
 	-$(MAKE) -C $(APPS_DIR)/tools/vfdctl distclean
 	-$(MAKE) -C $(APPS_DIR)/tools/wait4button distclean
+endif
 ifneq ($(wildcard $(APPS_DIR)/tools/own-tools),)
 	-$(MAKE) -C $(APPS_DIR)/tools/own-tools distclean
 endif
@@ -327,6 +329,10 @@ $(D)/tools-own-tools: $(D)/bootstrap $(D)/libcurl
 	$(TOUCH)
 
 TOOLS  = $(D)/tools-aio-grab
+TOOLS += $(D)/tools-satfind
+TOOLS += $(D)/tools-showiframe
+#TOOLS += $(D)/tools-minimon
+ifeq ($(BOXARCH), sh4)
 TOOLS += $(D)/tools-devinit
 TOOLS += $(D)/tools-evremote2
 TOOLS += $(D)/tools-fp_control
@@ -334,9 +340,6 @@ TOOLS += $(D)/tools-hotplug
 ifeq ($(BOXTYPE), $(filter $(BOXTYPE), ipbox55 ipbox99 ipbox9900 cuberevo cuberevo_mini cuberevo_mini2 cuberevo_250hd cuberevo_2000hd cuberevo_3000hd))
 TOOLS += $(D)/tools-ipbox_eeprom
 endif
-#TOOLS += $(D)/tools-minimon
-TOOLS += $(D)/tools-satfind
-TOOLS += $(D)/tools-showiframe
 TOOLS += $(D)/tools-stfbcontrol
 TOOLS += $(D)/tools-streamproxy
 ifeq ($(BOXTYPE), $(filter $(BOXTYPE), tf7700))
@@ -355,6 +358,7 @@ TOOLS += $(D)/tools-libeplayer3
 endif
 ifeq ($(MEDIAFW), $(filter $(MEDIAFW), eplayer3))
 TOOLS += $(D)/tools-eplayer3
+endif
 endif
 ifneq ($(wildcard $(APPS_DIR)/tools/own-tools),)
 TOOLS += $(D)/tools-own-tools
