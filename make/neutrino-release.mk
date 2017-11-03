@@ -442,6 +442,18 @@ neutrino_release_arivalink200:
 	${SILENT}cp -dp $(SKEL_ROOT)/release/lircd_arivalink200.conf $(RELEASE_DIR)/etc/lircd.conf
 
 #
+# Mutant HD51
+#
+neutrino_release_hd51:
+	install -m 0755 $(SKEL_ROOT)/release/halt_hd51 $(RELEASE_DIR)/etc/init.d/halt
+	cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/*.ko $(RELEASE_DIR)/lib/modules/
+	cp $(TARGET_DIR)/boot/zImage.dtb $(RELEASE_DIR)/boot/
+	install -m 0644 $(SKEL_ROOT)/release/mdev_hd51.conf $(RELEASE_DIR)/etc/mdev.conf
+	find $(RELEASE_DIR)/usr/lib/ -name '*.a' -exec rm -f {} \;
+	find $(RELEASE_DIR)/usr/lib/ -name '*.o' -exec rm -f {} \;
+	find $(RELEASE_DIR)/usr/lib/ -name '*.la' -exec rm -f {} \;
+
+#
 # neutrino_release_base
 #
 # the following target creates the common file base
@@ -453,21 +465,23 @@ neutrino_release_base:
 	$(SILENT)echo -n "Copying image to release directory..."
 	${SILENT}install -d $(RELEASE_DIR)
 	${SILENT}install -d $(RELEASE_DIR)/{autofs,bin,boot,dev,dev.static,etc,hdd,lib,media,mnt,proc,ram,root,sbin,swap,sys,tmp,usr,var}
-	${SILENT}install -d $(RELEASE_DIR)/etc/{init.d,network,mdev}
+	${SILENT}install -d $(RELEASE_DIR)/etc/{init.d,network,mdev,pem,ssl}
 	${SILENT}install -d $(RELEASE_DIR)/etc/network/if-{post-{up,down},pre-{up,down},up,down}.d
-	${SILENT}install -d $(RELEASE_DIR)/lib/{modules,udev,firmware}
+	${SILENT}install -d $(RELEASE_DIR)/lib/{modules,udev,firmware,tuxbox}
+	${SILENT}install -d $(RELEASE_DIR)/lib/tuxbox/plugins
 	${SILENT}install -d $(RELEASE_DIR)/media/{dvd,nfs,usb,sda1,sdb1}
 	${SILENT}ln -sf /hdd $(RELEASE_DIR)/media/hdd
 	${SILENT}install -d $(RELEASE_DIR)/mnt/{hdd,nfs,usb}
 	${SILENT}install -d $(RELEASE_DIR)/mnt/mnt{0..7}
 	${SILENT}install -d $(RELEASE_DIR)/usr/{bin,lib,local,sbin,share}
 	${SILENT}install -d $(RELEASE_DIR)/usr/local/{bin,sbin}
-	${SILENT}install -d $(RELEASE_DIR)/usr/share/{fonts,tuxbox,udhcpc,zoneinfo}
+	${SILENT}install -d $(RELEASE_DIR)/usr/share/{fonts,tuxbox,udhcpc,zoneinfo,lua}
 	${SILENT}install -d $(RELEASE_DIR)/usr/share/tuxbox/neutrino
 	${SILENT}install -d $(RELEASE_DIR)/usr/share/tuxbox/neutrino/icons/logo
+	${SILENT}install -d $(RELEASE_DIR)/usr/share/lua/5.2
 	${SILENT}ln -sf /usr/share/tuxbox/neutrino/icons/logo $(RELEASE_DIR)/logos
 	${SILENT}ln -sf /usr/share $(RELEASE_DIR)/share
-	${SILENT}install -d $(RELEASE_DIR)/var/{bin,boot,emu,etc,epg,httpd,keys,lib,net,tuxbox,update}
+	${SILENT}install -d $(RELEASE_DIR)/var/{bin,boot,emu,etc,epg,httpd,keys,lib,logos,net,tuxbox,update}
 	${SILENT}install -d $(RELEASE_DIR)/var/lib/{nfs,modules}
 	${SILENT}install -d $(RELEASE_DIR)/var/net/epg
 	${SILENT}install -d $(RELEASE_DIR)/var/tuxbox/{config,locale,plugins,themes}
@@ -489,7 +503,7 @@ neutrino_release_base:
 	${SILENT}cp -a $(TARGET_DIR)/usr/sbin/* $(RELEASE_DIR)/usr/sbin/
 	${SILENT}cp -dp $(TARGET_DIR)/var/etc/.version $(RELEASE_DIR)/
 	${SILENT}ln -sf /.version $(RELEASE_DIR)/var/etc/.version
-	${SILENT}cp $(TARGET_DIR)/boot/uImage $(RELEASE_DIR)/boot/
+	${SILENT}cp $(TARGET_DIR)/boot/$(KERNELNAME) $(RELEASE_DIR)/boot/
 	${SILENT}ln -sf /proc/mounts $(RELEASE_DIR)/etc/mtab
 	${SILENT}cp -dp $(SKEL_ROOT)/sbin/MAKEDEV $(RELEASE_DIR)/sbin/
 	${SILENT}ln -sf ../sbin/MAKEDEV $(RELEASE_DIR)/dev/MAKEDEV
@@ -511,6 +525,11 @@ ifeq ($(BOXTYPE), $(filter $(BOXTYPE), atevio7500 fortis_hdbox octagon1008 ufs91
 	${SILENT}cp $(SKEL_ROOT)/release/fw_env.config_$(BOXTYPE) $(RELEASE_DIR)/etc/fw_env.config
 endif
 	${SILENT}install -m 0755 $(SKEL_ROOT)/release/rcS_neutrino_$(BOXTYPE) $(RELEASE_DIR)/etc/init.d/rcS
+#
+#
+#
+ifeq ($(BOXARCH), sh4)
+
 #
 # player
 #
@@ -562,6 +581,10 @@ endif
 ifneq ($(BOXTYPE), $(filter $(BOXTYPE), vip2_v1 spark spark7162))
 	${SILENT}cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/cic/*.ko $(RELEASE_DIR)/lib/modules/
 endif
+#
+# Boxtype sh4
+#
+endif
 	${SILENT}[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/button/button.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/button/button.ko $(RELEASE_DIR)/lib/modules/ || true
 	${SILENT}[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/cec/cec.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/cec/cec.ko $(RELEASE_DIR)/lib/modules/ || true
 	${SILENT}[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/cpu_frequ/cpu_frequ.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/cpu_frequ/cpu_frequ.ko $(RELEASE_DIR)/lib/modules/ || true
@@ -607,12 +630,12 @@ endif
 # lib usr/lib
 #
 	${SILENT}cp -R $(TARGET_DIR)/lib/* $(RELEASE_DIR)/lib/
-	${SILENT}rm  -f $(RELEASE_DIR)/lib/*.{a,o,la}
+	${SILENT}rm -f $(RELEASE_DIR)/lib/*.{a,o,la}
 	${SILENT}chmod 755 $(RELEASE_DIR)/lib/*
 	${SILENT}ln -s /var/tuxbox/plugins/libfx2.so $(RELEASE_DIR)/lib/libfx2.so
 	${SILENT}cp -R $(TARGET_DIR)/usr/lib/* $(RELEASE_DIR)/usr/lib/
-	${SILENT}rm  -rf $(RELEASE_DIR)/usr/lib/{engines,enigma2,gconv,libxslt-plugins,pkgconfig,python$(PYTHON_VER),sigc++-2.0}
-	${SILENT}rm  -f $(RELEASE_DIR)/usr/lib/*.{a,o,la}
+	${SILENT}rm -rf $(RELEASE_DIR)/usr/lib/{engines,enigma2,gconv,libxslt-plugins,pkgconfig,python$(PYTHON_VER),sigc++-2.0}
+	${SILENT}rm -f $(RELEASE_DIR)/usr/lib/*.{a,o,la}
 	${SILENT}chmod 755 $(RELEASE_DIR)/usr/lib/*
 #
 # fonts
@@ -670,8 +693,8 @@ ifeq ($(NEUTRINO_VARIANT), $(filter $(NEUTRINO_VARIANT), mp-tangos, mp-tangos + 
 	${SILENT}cp -aR $(SKEL_ROOT)/root_neutrino/var_tangos/* $(RELEASE_DIR)/var/
 endif
 ifneq ($(BOXTYPE), $(filter $(BOXTYPE), atevio7500 spark7162 cuberevo_mini2 cuberevo_3000hd))
-	${SILENT}rm  -f $(RELEASE_DIR)/var/tuxbox/config/cables.xml
-	${SILENT}rm  -f $(RELEASE_DIR)/var/tuxbox/config/terrestrial.xml
+	${SILENT}rm -f $(RELEASE_DIR)/var/tuxbox/config/cables.xml
+	${SILENT}rm -f $(RELEASE_DIR)/var/tuxbox/config/terrestrial.xml
 endif
 #
 # iso-codes
@@ -716,6 +739,9 @@ endif
 #
 	${SILENT}if [ -d $(TARGET_DIR)/var/tuxbox/plugins ]; then \
 		cp -af $(TARGET_DIR)/var/tuxbox/plugins $(RELEASE_DIR)/var/tuxbox/; \
+	fi
+	${SILENT}if [ -d $(TARGET_DIR)/lib/tuxbox/plugins ]; then \
+		cp -af $(TARGET_DIR)/lib/tuxbox/plugins $(RELEASE_DIR)/lib/tuxbox/; \
 	fi
 	${SILENT}if [ -e $(RELEASE_DIR)/var/tuxbox/plugins/tuxwetter.so ]; then \
 		cp -rf $(TARGET_DIR)/var/tuxbox/config/tuxwetter $(RELEASE_DIR)/var/tuxbox/config; \
@@ -853,5 +879,5 @@ endif
 # release-clean
 #
 neutrino-release-clean:
-	rm  -f $(D)/neutrino_release
+	rm -f $(D)/neutrino_release
 
