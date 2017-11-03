@@ -146,6 +146,10 @@ MAKEFLAGS            += --silent
 endif
 export SILENT
 
+# certificates
+CA_BUNDLE             = ca-certificates.crt
+CA_BUNDLE_DIR         = /etc/ssl/certs
+
 # helper-"functions":
 REWRITE_LIBTOOL       = $(SILENT)sed -i "s,^libdir=.*,libdir='$(TARGET_DIR)/usr/lib'," $(TARGET_DIR)/usr/lib
 REWRITE_LIBTOOL_NQ    = sed -i "s,^libdir=.*,libdir='$(TARGET_DIR)/usr/lib'," $(TARGET_DIR)/usr/lib
