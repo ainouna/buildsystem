@@ -1602,3 +1602,21 @@ $(D)/usb_modeswitch: $(D)/bootstrap $(D)/libusb $(D)/usb_modeswitch_data $(ARCHI
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
 	$(REMOVE)/usb-modeswitch-$(USB_MODESWITCH_VER)
 	$(TOUCH)
+
+#
+# ofgwrite
+#
+$(D)/ofgwrite: $(D)/bootstrap
+	$(START_BUILD)
+	$(REMOVE)/ofgwrite
+	$(SET) -e; cd $(BUILD_TMP); \
+	git clone -q git://github.com/oe-alliance/ofgwrite.git ofgwrite; \
+	cd ofgwrite; \
+		$(BUILDENV) \
+		$(MAKE) && \
+	install -m 755 $(BUILD_TMP)/ofgwrite/ofgwrite_bin $(TARGET_DIR)/bin
+	install -m 755 $(BUILD_TMP)/ofgwrite/ofgwrite $(TARGET_DIR)/bin
+	sed -i "s,/usr/bin/,/bin/," $(TARGET_DIR)/bin/ofgwrite
+	$(REMOVE)/ofgwrite
+	$(TOUCH)
+
