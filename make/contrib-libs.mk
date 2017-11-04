@@ -18,7 +18,8 @@ $(D)/ncurses: $(D)/bootstrap $(ARCHIVE)/$(NCURSES_SOURCE)
 			--target=$(TARGET) \
 			--prefix=/usr \
 			--with-terminfo-dirs=/usr/share/terminfo \
-			--with-pkg-config=/usr/lib/pkgconfig \
+			--with-pkg-config \
+			--with-pkg-config-libdir=/usr/lib/pkgconfig \
 			--with-shared \
 			--without-cxx \
 			--without-cxx-binding \
@@ -2668,7 +2669,6 @@ $(D)/gnutls: $(D)/bootstrap $(D)/nettle $(ARCHIVE)/$(GNUTLS_SOURCE)
 			--with-included-libtasn1 \
 			--enable-local-libopts \
 			--with-libpthread-prefix=$(TARGET_DIR)/usr \
-			--with-libz-prefix=$(TARGET_DIR)/usr \
 			--with-included-unistring \
 			--with-default-trust-store-dir=$(CA_BUNDLE_DIR)/ \
 			--disable-guile \
