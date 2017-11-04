@@ -533,7 +533,7 @@ $(D)/util_linux: $(D)/bootstrap $(D)/zlib $(ARCHIVE)/$(UTIL_LINUX_SOURCE)
 #
 # mc
 #
-MC_VER = 4.8.14
+MC_VER = 4.8.19
 MC_SOURCE = mc-$(MC_VER).tar.xz
 
 $(ARCHIVE)/$(MC_SOURCE):
@@ -551,13 +551,14 @@ $(D)/mc: $(D)/bootstrap $(D)/ncurses $(D)/libglib2 $(ARCHIVE)/$(MC_SOURCE)
 			--host=$(TARGET) \
 			--prefix=/usr \
 			--mandir=/.remove \
+			--sysconfdir=/etc \
+			--with-homedir=/var/tuxbox/config/mc \
 			--without-gpm-mouse \
 			--disable-doxygen-doc \
 			--disable-doxygen-dot \
+			--disable-doxygen-html \
 			--enable-charset \
 			--with-screen=ncurses \
-			--sysconfdir=/etc \
-			--with-homedir=/var/tuxbox/config/mc \
 			--without-x \
 		; \
 		$(MAKE) all; \
