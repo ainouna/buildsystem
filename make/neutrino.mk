@@ -28,6 +28,7 @@ endif
 
 ifeq ($(BOXARCH), arm)
 NEUTRINO_DEPS += $(D)/gst_plugins_dvbmediasink
+NEUTRINO_DEPS += $(D)/ntfs_3g
 endif
 
 ifeq ($(IMAGE), neutrino-wlandriver)
@@ -69,6 +70,7 @@ N_CONFIG_OPTS += --enable-giflib
 N_CONFIG_OPTS += --enable-ffmpegdec
 #N_CONFIG_OPTS += --enable-pip
 #N_CONFIG_OPTS += --disable-webif
+#N_CONFIG_OPTS += --disable-tangos
 N_CONFIG_OPTS += --enable-pugixml
 ifeq ($(BOXARCH), arm)
 N_CONFIG_OPTS += --enable-reschange
@@ -89,9 +91,9 @@ $(D)/libstb-hal-cst-next.do_prepare:
 	rm -rf $(SOURCE_DIR)/libstb-hal-cst-next.org
 	rm -rf $(LH_OBJDIR)
 	[ -d "$(ARCHIVE)/libstb-hal-cst-next.git" ] && \
-	(cd $(ARCHIVE)/libstb-hal-cst-next.git; git pull; cd "$(BUILD_TMP)";); \
+	(cd $(ARCHIVE)/libstb-hal-cst-next.git; git pull-q ; cd "$(BUILD_TMP)";); \
 	[ -d "$(ARCHIVE)/libstb-hal-cst-next.git" ] || \
-	git clone https://github.com/Duckbox-Developers/libstb-hal-cst-next.git $(ARCHIVE)/libstb-hal-cst-next.git; \
+	git clone -q https://github.com/Duckbox-Developers/libstb-hal-cst-next.git $(ARCHIVE)/libstb-hal-cst-next.git; \
 	cp -ra $(ARCHIVE)/libstb-hal-cst-next.git $(SOURCE_DIR)/libstb-hal-cst-next;\
 	cp -ra $(SOURCE_DIR)/libstb-hal-cst-next $(SOURCE_DIR)/libstb-hal-cst-next.org
 	$(SET) -e; cd $(SOURCE_DIR)/libstb-hal-cst-next; \
@@ -169,9 +171,9 @@ $(D)/neutrino-mp-cst-next.do_prepare: | $(NEUTRINO_DEPS) $(D)/libstb-hal-cst-nex
 	rm -rf $(SOURCE_DIR)/neutrino-mp-cst-next.org
 	rm -rf $(N_OBJDIR)
 	[ -d "$(ARCHIVE)/neutrino-mp-cst-next.git" ] && \
-	(cd $(ARCHIVE)/neutrino-mp-cst-next.git; git pull; cd "$(BUILD_TMP)";); \
+	(cd $(ARCHIVE)/neutrino-mp-cst-next.git; git pull -q; cd "$(BUILD_TMP)";); \
 	[ -d "$(ARCHIVE)/neutrino-mp-cst-next.git" ] || \
-	git clone https://github.com/Duckbox-Developers/neutrino-mp-cst-next.git $(ARCHIVE)/neutrino-mp-cst-next.git; \
+	git clone -q https://github.com/Duckbox-Developers/neutrino-mp-cst-next.git $(ARCHIVE)/neutrino-mp-cst-next.git; \
 	cp -ra $(ARCHIVE)/neutrino-mp-cst-next.git $(SOURCE_DIR)/neutrino-mp-cst-next; \
 	cp -ra $(SOURCE_DIR)/neutrino-mp-cst-next $(SOURCE_DIR)/neutrino-mp-cst-next.org
 	$(SET) -e; cd $(SOURCE_DIR)/neutrino-mp-cst-next; \
@@ -271,9 +273,9 @@ $(D)/libstb-hal-cst-next-ni.do_prepare:
 	rm -rf $(SOURCE_DIR)/libstb-hal-cst-next-ni.org
 	rm -rf $(LH_OBJDIR)
 	[ -d "$(ARCHIVE)/libstb-hal-cst-next-ni.git" ] && \
-	(cd $(ARCHIVE)/libstb-hal-cst-next-ni.git; git pull; cd "$(BUILD_TMP)";); \
+	(cd $(ARCHIVE)/libstb-hal-cst-next-ni.git; git pull -q; cd "$(BUILD_TMP)";); \
 	[ -d "$(ARCHIVE)/libstb-hal-cst-next-ni.git" ] || \
-	git clone https://bitbucket.org/neutrino-images/ni-libstb-hal-next.git $(ARCHIVE)/libstb-hal-cst-next-ni.git; \
+	git clone -q https://bitbucket.org/neutrino-images/ni-libstb-hal-next.git $(ARCHIVE)/libstb-hal-cst-next-ni.git; \
 	cp -ra $(ARCHIVE)/libstb-hal-cst-next-ni.git $(SOURCE_DIR)/libstb-hal-cst-next-ni;\
 	cp -ra $(SOURCE_DIR)/libstb-hal-cst-next-ni $(SOURCE_DIR)/libstb-hal-cst-next-ni.org
 	set -e; cd $(SOURCE_DIR)/libstb-hal-cst-next-ni; \
@@ -318,7 +320,7 @@ libstb-hal-cst-next-ni-distclean:
 #
 # neutrino-mp-cst-next-ni
 #
-yaud-neutrino-mp-cst-next-ni: $(D)/bootstrap yaud-none \
+yaud-neutrino-mp-cst-next-ni: yaud-none \
 		neutrino-mp-cst-next-ni $(D)/neutrino_release
 	$(TUXBOX_YAUD_CUSTOMIZE)
 	@echo "******************************************************************************"
@@ -328,7 +330,7 @@ yaud-neutrino-mp-cst-next-ni: $(D)/bootstrap yaud-none \
 	@echo "******************************************************************************"
 	@touch $(D)/build_complete
 
-yaud-neutrino-mp-cst-next-ni-plugins: $(D)/bootstrap yaud-none \
+yaud-neutrino-mp-cst-next-ni-plugins: yaud-none \
 		$(D)/neutrino-mp-cst-next-ni $(D)/neutrino-plugins $(D)/neutrino_release
 	$(TUXBOX_YAUD_CUSTOMIZE)
 	@echo "*******************************************************************************************"
@@ -345,7 +347,7 @@ $(D)/neutrino-mp-cst-next-ni.do_prepare: | $(NEUTRINO_DEPS) $(D)/libstb-hal-cst-
 	rm -rf $(SOURCE_DIR)/neutrino-mp-cst-next-ni.org
 	rm -rf $(N_OBJDIR)
 	[ -d "$(ARCHIVE)/neutrino-mp-cst-next-ni.git" ] && \
-	(cd $(ARCHIVE)/neutrino-mp-cst-next-ni.git; git pull; cd "$(BUILD_TMP)";); \
+	(cd $(ARCHIVE)/neutrino-mp-cst-next-ni.git; git pull -q; cd "$(BUILD_TMP)";); \
 	[ -d "$(ARCHIVE)/neutrino-mp-cst-next-ni.git" ] || \
 	git clone -b -q ni/mp/tuxbox https://bitbucket.org/neutrino-images/ni-neutrino-hd.git $(ARCHIVE)/neutrino-mp-cst-next-ni.git; \
 	cp -ra $(ARCHIVE)/neutrino-mp-cst-next-ni.git $(SOURCE_DIR)/neutrino-mp-cst-next-ni; \
@@ -501,9 +503,9 @@ $(D)/neutrino-hd2.do_prepare: | $(NEUTRINO_DEPS) $(NEUTRINO_DEPS2)
 	rm -rf $(SOURCE_DIR)/neutrino-hd2.org
 	rm -rf $(SOURCE_DIR)/neutrino-hd2.git
 	[ -d "$(ARCHIVE)/neutrino-hd2.git" ] && \
-	(cd $(ARCHIVE)/neutrino-hd2.git; git pull;); \
+	(cd $(ARCHIVE)/neutrino-hd2.git; git pull -q;); \
 	[ -d "$(ARCHIVE)/neutrino-hd2.git" ] || \
-	git clone https://github.com/mohousch/neutrinohd2.git $(ARCHIVE)/neutrino-hd2.git; \
+	git clone -q https://github.com/mohousch/neutrinohd2.git $(ARCHIVE)/neutrino-hd2.git; \
 	cp -ra $(ARCHIVE)/neutrino-hd2.git $(SOURCE_DIR)/neutrino-hd2.git; \
 	ln -s $(SOURCE_DIR)/neutrino-hd2.git/nhd2-exp $(SOURCE_DIR)/neutrino-hd2;\
 	cp -ra $(SOURCE_DIR)/neutrino-hd2.git/nhd2-exp $(SOURCE_DIR)/neutrino-hd2.org
@@ -570,9 +572,9 @@ $(D)/libstb-hal-cst-next-tangos.do_prepare:
 	rm -rf $(SOURCE_DIR)/libstb-hal-cst-next-tangos.org
 	rm -rf $(LH_OBJDIR)
 	[ -d "$(ARCHIVE)/libstb-hal-cst-next-tangos.git" ] && \
-	(cd $(ARCHIVE)/libstb-hal-cst-next-tangos.git; git pull; cd "$(BUILD_TMP)";); \
+	(cd $(ARCHIVE)/libstb-hal-cst-next-tangos.git; git pull -q; cd "$(BUILD_TMP)";); \
 	[ -d "$(ARCHIVE)/libstb-hal-cst-next-tangos.git" ] || \
-	git clone https://github.com/TangoCash/libstb-hal-cst-next.git $(ARCHIVE)/libstb-hal-cst-next-tangos.git; \
+	git clone -q https://github.com/TangoCash/libstb-hal-cst-next.git $(ARCHIVE)/libstb-hal-cst-next-tangos.git; \
 	cp -ra $(ARCHIVE)/libstb-hal-cst-next-tangos.git $(SOURCE_DIR)/libstb-hal-cst-next-tangos;\
 	cp -ra $(SOURCE_DIR)/libstb-hal-cst-next-tangos $(SOURCE_DIR)/libstb-hal-cst-next-tangos.org
 	$(SET) -e; cd $(SOURCE_DIR)/libstb-hal-cst-next-tangos; \
@@ -619,7 +621,7 @@ libstb-hal-cst-next-tangos-distclean:
 #
 # yaud-neutrino-mp-tangos
 #
-yaud-neutrino-mp-tangos: $(D)/bootstrap yaud-none \
+yaud-neutrino-mp-tangos: yaud-none \
 		$(D)/neutrino-mp-tangos $(D)/neutrino_release
 	$(TUXBOX_YAUD_CUSTOMIZE)
 	@echo "***************************************************************************"
@@ -629,7 +631,7 @@ yaud-neutrino-mp-tangos: $(D)/bootstrap yaud-none \
 	@echo "***************************************************************************"
 	@touch $(D)/build_complete
 
-yaud-neutrino-mp-tangos-plugins: $(D)/bootstrap yaud-none \
+yaud-neutrino-mp-tangos-plugins: yaud-none \
 		$(D)/neutrino-mp-tangos $(D)/neutrino-plugins $(D)/neutrino_release
 	$(TUXBOX_YAUD_CUSTOMIZE)
 	@echo "***************************************************************************************"
@@ -639,7 +641,7 @@ yaud-neutrino-mp-tangos-plugins: $(D)/bootstrap yaud-none \
 	@echo "***************************************************************************************"
 	@touch $(D)/build_complete
 
-yaud-neutrino-mp-tangos-all: $(D)/bootstrap yaud-none \
+yaud-neutrino-mp-tangos-all: yaud-none \
 		$(D)/neutrino-mp-tangos $(D)/neutrino-plugins $(D)/shairport $(D)/neutrino_release
 	$(TUXBOX_YAUD_CUSTOMIZE)
 
@@ -654,9 +656,9 @@ $(D)/neutrino-mp-tangos.do_prepare: | $(NEUTRINO_DEPS) $(D)/libstb-hal-cst-next-
 	rm -rf $(SOURCE_DIR)/neutrino-mp-tangos.org
 	rm -rf $(N_OBJDIR)
 	[ -d "$(ARCHIVE)/neutrino-mp-tangos.git" ] && \
-	(cd $(ARCHIVE)/neutrino-mp-tangos.git; git pull; cd "$(BUILD_TMP)";); \
+	(cd $(ARCHIVE)/neutrino-mp-tangos.git; git pull -q; cd "$(BUILD_TMP)";); \
 	[ -d "$(ARCHIVE)/neutrino-mp-tangos.git" ] || \
-	git clone https://github.com/TangoCash/neutrino-mp-cst-next.git $(ARCHIVE)/neutrino-mp-tangos.git; \
+	git clone -q https://github.com/TangoCash/neutrino-mp-cst-next.git $(ARCHIVE)/neutrino-mp-tangos.git; \
 	cp -ra $(ARCHIVE)/neutrino-mp-tangos.git $(SOURCE_DIR)/neutrino-mp-tangos; \
 	cp -ra $(SOURCE_DIR)/neutrino-mp-tangos $(SOURCE_DIR)/neutrino-mp-tangos.org
 	$(SET) -e; cd $(SOURCE_DIR)/neutrino-mp-tangos; \
