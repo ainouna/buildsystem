@@ -1,7 +1,9 @@
 #
 # diff helper
 #
-%-patch:
+enigma%-patch \
+neutrino%-patch \
+libstb-hal%-patch:
 	cd $(SOURCE_DIR) && diff -Nur --exclude-from=$(SCRIPTS_DIR)/diff-exclude $(subst -patch,,$@).org $(subst -patch,,$@) > $(BASE_DIR)/$(subst -patch,.patch,$@) ; [ $$? -eq 1 ]
 
 # keeping all patches together in one file
@@ -18,7 +20,7 @@ NEUTRINO_MP_CST_NEXT_PATCHES += $(PATCHES)/neutrino-mp-cst-next.patch
 NEUTRINO_MP_CST_NEXT_NI_PATCHES += $(PATCHES)/neutrino-mp-cst-next_ni.patch
 
 # LIB-STB-Hal for MP Tango
-NEUTRINO_MP_LIBSTB_CST_NEXT_TANGOS_PATCHES += $(PATCHES)/libstb-hal-cst-next.patch
+NEUTRINO_MP_LIBSTB_CST_NEXT_TANGOS_PATCHES += $(PATCHES)/libstb-hal-cst-next-tangos.patch
 
 # Neutrino MP Tango
 NEUTRINO_MP_TANGOS_PATCHES += $(PATCHES)/neutrino-mp-tangos.patch

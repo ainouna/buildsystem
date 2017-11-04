@@ -1,5 +1,5 @@
---- libstb-hal-cst-next.org/include/cs_frontpanel.h
-+++ libstb-hal-cst-next/include/cs_frontpanel.h
+--- libstb-hal-cst-next-tangos.org/include/cs_frontpanel.h
++++ libstb-hal-cst-next-tangos/include/cs_frontpanel.h
 @@ -28,7 +28,7 @@
  
  typedef enum {
@@ -234,10 +234,11 @@
  	FP_ICON_USB = ICON_USB,
  	FP_ICON_REC = ICON_REC,
  	FP_ICON_CAM1 = ICON_REC,
-@@ -138,8 +276,84 @@
+@@ -138,8 +276,87 @@
  	FP_ICON_TV = ICON_TV,
  	FP_ICON_MUSIC = ICON_RADIO,
  	FP_ICON_MAX = ICON_MAX
+-#elif defined(BOXMODEL_UFS910) || defined(BOXMODEL_UFS922) || defined(BOXMODEL_UFS912) || defined(BOXMODEL_UFS913)
 +#elif defined(BOXMODEL_TF7700)
 +	ICON_CD1 = 32,
 +	ICON_CD2,
@@ -313,13 +314,26 @@
 +	FP_ICON_DOWNLOAD = 0,
 +	FP_ICON_TIMESHIFT = ICON_TIMESHIFT,
 +	FP_ICON_MAX = ICON_MAX
- #elif defined(BOXMODEL_UFS910) || defined(BOXMODEL_UFS922) || defined(BOXMODEL_UFS912) || defined(BOXMODEL_UFS913)
++#elif defined(BOXMODEL_UFS910) \
++ || defined(BOXMODEL_UFS922) \
++ || defined(BOXMODEL_UFS912) \
++ || defined(BOXMODEL_UFS913)
  	FP_ICON_USB = 0x10,
 +	FP_ICON_MIN= FP_ICON_USB,
  	FP_ICON_HD,
  	FP_ICON_HDD,
  	FP_ICON_LOCK,
-@@ -218,9 +431,9 @@
+@@ -162,7 +379,8 @@
+ 	FP_ICON_RECORD = FP_ICON_REC,
+ 	FP_ICON_DOWNLOAD = 0,
+ 	FP_ICON_TIMESHIFT = 0
+-#elif defined(BOXMODEL_IPBOX9900) || defined(BOXMODEL_IPBOX99)
++#elif defined(BOXMODEL_IPBOX9900) \
++   || defined(BOXMODEL_IPBOX99)
+ 	ICON_STANDBY,
+ 	ICON_SAT,
+ 	ICON_REC,
+@@ -218,9 +436,9 @@
  	FP_ICON_TV = 0,
  	FP_ICON_MAIL = 0,
  	FP_ICON_BT = 0,
@@ -330,29 +344,25 @@
  	FP_ICON_HD,
  	FP_ICON_HDD,
  	FP_ICON_LOCK,
-@@ -242,8 +456,23 @@
+@@ -242,8 +460,20 @@
  	FP_ICON_RECORD = FP_ICON_REC,
  	FP_ICON_DOWNLOAD,
  	FP_ICON_TIMESHIFT,
--#endif
--#if !defined(BOXMODEL_UFS910) && !defined(BOXMODEL_UFS922) && !defined(BOXMODEL_UFS912) && !defined(BOXMODEL_UFS913) && !defined(BOXMODEL_FORTIS_HDBOX)
 +#if 0
-+//#endif
-+//#if !defined(BOXMODEL_TF7700) \
-+// && !defined(BOXMODEL_UFS910) \
-+// && !defined(BOXMODEL_UFS922) \
-+// && !defined(BOXMODEL_UFS912) \
-+// && !defined(BOXMODEL_UFS913) \
-+// && !defined(BOXMODEL_FORTIS_HDBOX) \
-+// && !defined(BOXMODEL_OCTAGON1008) \
-+// && !defined(BOXMODEL_ATEVIO7500) \
-+// && !defined(BOXMODEL_HS7110) \
-+// && !defined(BOXMODEL_HS7420) \
-+// && !defined(BOXMODEL_HS7810A) \
-+// && !defined(BOXMODEL_HS7119) \
-+// && !defined(BOXMODEL_HS7429) \
-+// && !defined(BOXMODEL_HS7819)
-+#endif
++ if !defined(BOXMODEL_UFS910)
++ && !defined(BOXMODEL_UFS922)
++ && !defined(BOXMODEL_UFS912)
++ && !defined(BOXMODEL_UFS913)
++ && !defined(BOXMODEL_FORTIS_HDBOX)
++ && !defined(BOXMODEL_TF7700)
++ && !defined(BOXMODEL_UFS910)
++ && !defined(BOXMODEL_UFS922)
++ && !defined(BOXMODEL_UFS912)
++ && !defined(BOXMODEL_UFS913)
++ && !defined(BOXMODEL_IPBOX9900)
++ && !defined(BOXMODEL_IPBOX99)
+ #endif
+-#if !defined(BOXMODEL_UFS910) && !defined(BOXMODEL_UFS922) && !defined(BOXMODEL_UFS912) && !defined(BOXMODEL_UFS913) && !defined(BOXMODEL_FORTIS_HDBOX)
  	FP_ICON_MAX
  #endif
  } fp_icon;
@@ -439,8 +449,8 @@
  	fp_display_type_t	display_type;
  	unsigned short		xres, yres;
  	unsigned int		segment_count;
---- libstb-hal-cst-next.org/libduckbox/hardware_caps.c
-+++ libstb-hal-cst-next/libduckbox/hardware_caps.c
+--- libstb-hal-cst-next-tangos.org/libduckbox/hardware_caps.c
++++ libstb-hal-cst-next-tangos/libduckbox/hardware_caps.c
 @@ -118,6 +118,15 @@
  			caps.can_cec = 1;
  			caps.has_fan = 0;
@@ -473,8 +483,8 @@
  			strcpy(caps.boxvendor, "DUCKBOX");
  			strcpy(caps.boxname, buf);
  			caps.can_shutdown = 1;
---- libstb-hal-cst-next/tools/spark_fp.c.org
-+++ libstb-hal-cst-next/tools/spark_fp.c
+--- libstb-hal-cst-next-tangos/tools/spark_fp.c.org
++++ libstb-hal-cst-next-tangos/tools/spark_fp.c
 @@ -30,6 +30,10 @@
  #include <time.h>
  #include <unistd.h>
@@ -524,8 +534,8 @@
  				}
  				break;
  // Reminder to myself, here's a semi-sane default for Pingulux boxes:
---- libstb-hal-cst-next/libspark/hardware_caps.c.org
-+++ libstb-hal-cst-next/libspark/hardware_caps.c
+--- libstb-hal-cst-next-tangos/libspark/hardware_caps.c.org
++++ libstb-hal-cst-next-tangos/libspark/hardware_caps.c
 @@ -14,6 +14,10 @@
  #include <string.h>
  #include <unistd.h>

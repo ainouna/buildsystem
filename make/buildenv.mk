@@ -28,11 +28,13 @@ CCACHE_DIR            = $(HOME)/.ccache-bs-sh4
 export CCACHE_DIR
 TARGET               ?= sh4-linux
 BOXARCH              ?= sh4
+KERNELNAME            = uImage
 else
 CCACHE_DIR            = $(HOME)/.ccache-bs-arm
 export CCACHE_DIR
 TARGET               ?= arm-cortex-linux-gnueabihf
 BOXARCH              ?= arm
+KERNELNAME            = zImage
 endif
 
 GIT_PROTOCOL         ?= http
@@ -150,14 +152,12 @@ export SILENT
 CA_BUNDLE             = ca-certificates.crt
 CA_BUNDLE_DIR         = /etc/ssl/certs
 
-# helper-"functions":
+# helper-"functions"
 REWRITE_LIBTOOL       = $(SILENT)sed -i "s,^libdir=.*,libdir='$(TARGET_DIR)/usr/lib'," $(TARGET_DIR)/usr/lib
 REWRITE_LIBTOOL_NQ    = sed -i "s,^libdir=.*,libdir='$(TARGET_DIR)/usr/lib'," $(TARGET_DIR)/usr/lib
 REWRITE_LIBTOOLDEP    = $(SILENT)sed -i -e "s,\(^dependency_libs='\| \|-L\|^dependency_libs='\)/usr/lib,\ $(TARGET_DIR)/usr/lib,g" $(TARGET_DIR)/usr/lib
 REWRITE_PKGCONF       = $(SILENT)sed -i "s,^prefix=.*,prefix='$(TARGET_DIR)/usr',"
 REWRITE_PKGCONF_NQ    = sed -i "s,^prefix=.*,prefix='$(TARGET_DIR)/usr',"
-
-export RM=$(shell which rm) -f
 
 # unpack tarballs, clean up
 UNTAR                 = $(SILENT)tar -C $(BUILD_TMP) -xf $(ARCHIVE)
