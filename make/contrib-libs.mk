@@ -2617,7 +2617,7 @@ $(D)/libao: $(D)/bootstrap $(D)/alsa-lib $(ARCHIVE)/$(LIBAO_SOURCE)
 #
 # nettle
 #
-NETTLE_VER = 3.1
+NETTLE_VER = 3.3
 NETTLE_SOURCE = nettle-$(NETTLE_VER).tar.gz
 NETTLE_PATCH = nettle-$(NETTLE_VER).patch
 
