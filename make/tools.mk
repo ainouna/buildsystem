@@ -3,12 +3,12 @@
 #
 tools-clean:
 	rm -f $(D)/tools-*
-	-$(MAKE) -C $(APPS_DIR)/tools/aio-grab-$(BOXARCH) distclean
+	-$(MAKE) -C $(APPS_DIR)/tools/minimon distclean
 	-$(MAKE) -C $(APPS_DIR)/tools/satfind distclean
 	-$(MAKE) -C $(APPS_DIR)/tools/showiframe-$(BOXARCH) distclean
-	-$(MAKE) -C $(APPS_DIR)/tools/minimon distclean
 	-$(MAKE) -C $(APPS_DIR)/tools/spf_tool distclean
 ifeq ($(BOXARCH), sh4)
+	-$(MAKE) -C $(APPS_DIR)/tools/aio-grab distclean
 	-$(MAKE) -C $(APPS_DIR)/tools/devinit distclean
 	-$(MAKE) -C $(APPS_DIR)/tools/eplayer3 distclean
 	-$(MAKE) -C $(APPS_DIR)/tools/evremote2 distclean
@@ -186,7 +186,7 @@ $(D)/tools-satfind: $(D)/bootstrap
 #
 $(D)/tools-showiframe: $(D)/bootstrap
 	$(START_BUILD)
-	$(SET) -e; cd $(APPS_DIR)/tools/showiframe; \
+	$(SET) -e; cd $(APPS_DIR)/tools/showiframe-$(BOXARCH); \
 		$(CONFIGURE_TOOLS) \
 			--prefix= \
 		; \
@@ -328,11 +328,11 @@ $(D)/tools-own-tools: $(D)/bootstrap $(D)/libcurl
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
 	$(TOUCH)
 
-TOOLS  = $(D)/tools-aio-grab
 TOOLS += $(D)/tools-satfind
 TOOLS += $(D)/tools-showiframe
 #TOOLS += $(D)/tools-minimon
 ifeq ($(BOXARCH), sh4)
+TOOLS  = $(D)/tools-aio-grab
 TOOLS += $(D)/tools-devinit
 TOOLS += $(D)/tools-evremote2
 TOOLS += $(D)/tools-fp_control
