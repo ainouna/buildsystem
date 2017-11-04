@@ -167,8 +167,7 @@ $(D)/host_mksquashfs: directories $(ARCHIVE)/$(LZMA_SOURCE) $(ARCHIVE)/$(HOST_MK
 #
 #
 $(HOST_DIR)/bin/unpack%.sh \
-$(HOST_DIR)/bin/get%.sh \
-$(HOST_DIR)/bin/opkg%sh: | directories
+$(HOST_DIR)/bin/get%sh: | directories
 	$(SILENT)ln -sf $(SCRIPTS_DIR)/$(shell basename $@) $(HOST_DIR)/bin
 
 #
@@ -208,10 +207,11 @@ SYSTEM_TOOLS += $(D)/vsftpd
 SYSTEM_TOOLS += $(D)/autofs
 SYSTEM_TOOLS += $(D)/udpxy
 SYSTEM_TOOLS += $(D)/dvbsnoop
+SYSTEM_TOOLS += $(D)/fbshot
 ifeq ($(BOXARCH), sh4)
-#SYSTEM_TOOLS += $(D)/fbshot
-SYSTEM_TOOLS += $(D)/driver
+SYSTEM_TOOLS += $(D)/ofgwrite
 endif
+SYSTEM_TOOLS += $(D)/driver
 
 $(D)/system-tools: $(SYSTEM_TOOLS) $(TOOLS)
 	$(TOUCH)
