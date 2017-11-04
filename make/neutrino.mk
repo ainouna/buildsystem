@@ -91,7 +91,7 @@ $(D)/libstb-hal-cst-next.do_prepare:
 	rm -rf $(SOURCE_DIR)/libstb-hal-cst-next.org
 	rm -rf $(LH_OBJDIR)
 	[ -d "$(ARCHIVE)/libstb-hal-cst-next.git" ] && \
-	(cd $(ARCHIVE)/libstb-hal-cst-next.git; git pull-q ; cd "$(BUILD_TMP)";); \
+	(cd $(ARCHIVE)/libstb-hal-cst-next.git; git pull -q ; cd "$(BUILD_TMP)";); \
 	[ -d "$(ARCHIVE)/libstb-hal-cst-next.git" ] || \
 	git clone -q https://github.com/Duckbox-Developers/libstb-hal-cst-next.git $(ARCHIVE)/libstb-hal-cst-next.git; \
 	cp -ra $(ARCHIVE)/libstb-hal-cst-next.git $(SOURCE_DIR)/libstb-hal-cst-next;\
