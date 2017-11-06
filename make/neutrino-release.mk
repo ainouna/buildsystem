@@ -464,8 +464,8 @@ neutrino_release_base:
 	${SILENT}rm -rf $(RELEASE_DIR) || true
 	$(SILENT)echo -n "Copying image to release directory..."
 	${SILENT}install -d $(RELEASE_DIR)
-	${SILENT}install -d $(RELEASE_DIR)/{autofs,bin,boot,dev,dev.static,etc,hdd,lib,media,mnt,proc,ram,root,sbin,swap,sys,tmp,usr,var}
-	${SILENT}install -d $(RELEASE_DIR)/etc/{init.d,network,mdev,pem,ssl}
+	${SILENT}install -d $(RELEASE_DIR)/{autofs,bin,boot,dev,dev.static,etc,hdd,home,lib,media,mnt,proc,ram,root,sbin,swap,sys,tmp,usr,var}
+	${SILENT}install -d $(RELEASE_DIR)/etc/{init.d,network,mdev,ssl}
 	${SILENT}install -d $(RELEASE_DIR)/etc/network/if-{post-{up,down},pre-{up,down},up,down}.d
 	${SILENT}install -d $(RELEASE_DIR)/lib/{modules,udev,firmware,tuxbox}
 	${SILENT}install -d $(RELEASE_DIR)/lib/tuxbox/plugins
@@ -779,6 +779,7 @@ ifeq ($(BOXTYPE), $(filter $(BOXTYPE), ufs910 ufs922))
 	${SILENT}rm -f $(RELEASE_DIR)/sbin/jfs_mkfs
 	${SILENT}rm -f $(RELEASE_DIR)/sbin/mkfs.jfs
 	${SILENT}rm -f $(RELEASE_DIR)/sbin/jfs_tune
+	${SILENT}rm -f $(RELEASE_DIR)/etc/ssl/certs/ca-certificates.crt
 endif
 	${SILENT}rm -f $(RELEASE_DIR)/usr/lib/lua/5.2/*.la
 	${SILENT}rm -rf $(RELEASE_DIR)/lib/autofs
@@ -861,6 +862,10 @@ $(D)/%neutrino_release: neutrino_release_base neutrino_release_$(BOXTYPE)
 	${SILENT}rm -f $(RELEASE_DIR)/bin/pic2m2v
 	${SILENT}rm -f $(RELEASE_DIR)/usr/lib/*.py
 	${SILENT}rm -f $(RELEASE_DIR)/usr/share/tuxbox/neutrino/httpd/images/rc_cst_v?.*
+ifneq ($(BOXTYPE), $(filter $(BOXTYPE), hd51))
+	${SILENT}rm -f $(RELEASE_DIR)/usr/share/tuxbox/neutrino/httpd/images/rc_ax_hd51.png
+	${SILENT}rm -f $(RELEASE_DIR)/usr/share/tuxbox/neutrino/httpd/images/rc_mutant_hd51.png
+endif
 ifneq ($(BOXTYPE), $(filter $(BOXTYPE), spark spark7162))
 	${SILENT}rm -f $(RELEASE_DIR)/usr/share/tuxbox/neutrino/httpd/images/rc_spark_new.jpg
 	${SILENT}rm -f $(RELEASE_DIR)/usr/share/tuxbox/neutrino/httpd/images/rc_spark_old.jpg
