@@ -78,6 +78,7 @@ $(D)/neutrino-mp-plugins.do_prepare:
 ifeq ($(BOXARCH), arm)
 	$(SILENT)sed -i -e 's#shellexec fx2#shellexec stb-startup#g' $(SOURCE_DIR)/neutrino-mp-plugins/Makefile.am
 endif
+	cp -ra $(SOURCE_DIR)/neutrino-mp-plugins $(SOURCE_DIR)/neutrino-mp-plugins.org
 	@touch $@
 
 $(SOURCE_DIR)/neutrino-mp-plugins/config.status: $(D)/bootstrap
