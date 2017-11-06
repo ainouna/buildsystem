@@ -60,30 +60,36 @@ endif
 $(D)/neutrino-plugins: $(NEUTRINO_PLUGINS)
 	@touch $@
 
+OBJDIR = $(BUILD_TMP)
+NP_OBJDIR = $(OBJDIR)/neutrino-mp-plugins
+
 #
 # neutrino-mp-plugins
 #
 $(D)/neutrino-mp-plugins.do_prepare:
 	$(START_BUILD)
 	$(SILENT)rm -rf $(SOURCE_DIR)/neutrino-mp-plugins
+	$(SILENT)rm -rf $(SOURCE_DIR)/neutrino-mp-plugins.org
 	$(SET) -e; if [ -d $(ARCHIVE)/neutrino-mp-plugins.git ]; \
 		then cd $(ARCHIVE)/neutrino-mp-plugins.git; git pull; \
 		else cd $(ARCHIVE); git clone https://github.com/Duckbox-Developers/neutrino-mp-plugins.git neutrino-mp-plugins.git; \
 		fi
 	$(SILENT)cp -ra $(ARCHIVE)/neutrino-mp-plugins.git $(SOURCE_DIR)/neutrino-mp-plugins
 ifeq ($(BOXARCH), arm)
-	$(SILENT)sed -i -e 's#shellexec fx2#shellexec#g' $(SOURCE_DIR)/neutrino-mp-plugins/Makefile.am
+	$(SILENT)sed -i -e 's#shellexec fx2#shellexec stb-startup#g' $(SOURCE_DIR)/neutrino-mp-plugins/Makefile.am
 endif
 	@touch $@
 
 $(SOURCE_DIR)/neutrino-mp-plugins/config.status: $(D)/bootstrap
-	$(SILENT)cd $(SOURCE_DIR)/neutrino-mp-plugins; \
-		./autogen.sh && automake --add-missing; \
+	$(SILENT)rm -rf $(NP_OBJDIR)
+	$(SILENT)test -d $(NP_OBJDIR) || mkdir -p $(NP_OBJDIR)
+	cd $(NP_OBJDIR); \
 		$(BUILDENV) \
 		./configure $(SILENT_OPT) \
 			--host=$(TARGET) \
 			--build=$(BUILD) \
 			--prefix= \
+			--enable-silent-rules \
 			--with-target=cdk \
 			--oldinclude=$(TARGET_DIR)/include \
 			--enable-maintainer-mode \
@@ -94,28 +100,27 @@ $(SOURCE_DIR)/neutrino-mp-plugins/config.status: $(D)/bootstrap
 			--with-fontdir=/usr/share/fonts \
 			PKG_CONFIG=$(PKG_CONFIG) \
 			PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) \
-			CPPFLAGS="$(N_CPPFLAGS) -DMARTII -DNEW_LIBCURL" \
-			LDFLAGS="$(TARGET_LDFLAGS) -L$(SOURCE_DIR)/neutrino-mp-plugins/fx2/lib/.libs"
+			CPPFLAGS="$(N_CPPFLAGS) $(EXTRA_CPPFLAGS_MP_PLUGINS) -DNEW_LIBCURL" \
+			LDFLAGS="$(TARGET_LDFLAGS) -L$(NP_OBJDIR)/fx2/lib/.libs"
 
 $(D)/neutrino-mp-plugins.do_compile: $(SOURCE_DIR)/neutrino-mp-plugins/config.status
-	$(SILENT)cd $(SOURCE_DIR)/neutrino-mp-plugins; \
-		$(MAKE)
+	cd $(SOURCE_DIR)/neutrino-mp-plugins; \
+		$(MAKE) -C $(NP_OBJDIR)
 	@touch $@
 
 $(D)/neutrino-mp-plugins: $(D)/neutrino-mp-plugins.do_prepare $(D)/neutrino-mp-plugins.do_compile
 	$(START_BUILD)
-	$(MAKE) -C $(SOURCE_DIR)/neutrino-mp-plugins install DESTDIR=$(TARGET_DIR)
+	$(MAKE) -C $(NP_OBJDIR) install DESTDIR=$(TARGET_DIR)
 	$(TOUCH)
 
 neutrino-mp-plugins-clean:
 	$(SILENT)rm -f $(D)/neutrino-mp-plugins
-	$(SILENT)cd $(SOURCE_DIR)/neutrino-mp-plugins; \
-		$(MAKE) clean
+	$(SILENT)cd $(NP_OBJDIR); \
+		$(MAKE) -C $(NP_OBJDIR) clean
 
 neutrino-mp-plugins-distclean:
-	rm -f $(D)/neutrino-mp-plugins.do_prepare
-	rm -f $(D)/neutrino-mp-plugins.do_compile
-	rm -f $(D)/neutrino-mp-plugins.config.status
+	$(SILENT)rm -rf $(NP_OBJDIR)
+	$(SILENT)rm -f $(D)/neutrino-mp-plugins*
 
 #
 # xupnpd
