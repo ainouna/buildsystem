@@ -46,13 +46,9 @@ $(D)/host_pkgconfig: directories $(ARCHIVE)/$(HOST_PKGCONFIG_SOURCE)
 #
 # host_module_init_tools
 #
-HOST_MODULE_INIT_TOOLS_VER = 3.16
-HOST_MODULE_INIT_TOOLS_SOURCE = module-init-tools-$(HOST_MODULE_INIT_TOOLS_VER).tar.bz2
+HOST_MODULE_INIT_TOOLS_VER = $(MODULE_INIT_TOOLS_VER)
+HOST_MODULE_INIT_TOOLS_SOURCE = $(MODULE_INIT_TOOLS_SOURCE)
 HOST_MODULE_INIT_TOOLS_PATCH = module-init-tools-$(HOST_MODULE_INIT_TOOLS_VER).patch
-HOST_MODULE_INIT_TOOLS_HOST_PATCH = module-init-tools-$(HOST_MODULE_INIT_TOOLS_VER).patch
-
-$(ARCHIVE)/$(HOST_MODULE_INIT_TOOLS_SOURCE):
-	$(WGET) ftp.europeonline.com/pub/linux/utils/kernel/module-init-tools/$(HOST_MODULE_INIT_TOOLS_SOURCE)
 
 $(D)/host_module_init_tools: $(ARCHIVE)/$(HOST_MODULE_INIT_TOOLS_SOURCE)
 	$(START_BUILD)
@@ -73,12 +69,9 @@ $(D)/host_module_init_tools: $(ARCHIVE)/$(HOST_MODULE_INIT_TOOLS_SOURCE)
 #
 # host_mtd_utils
 #
-HOST_MTD_UTILS_VER = 1.5.2
-HOST_MTD_UTILS_SOURCE = mtd-utils-$(HOST_MTD_UTILS_VER).tar.bz2
+HOST_MTD_UTILS_VER = $(MTD_UTILS_VER)
+HOST_MTD_UTILS_SOURCE = $(MTD_UTILS_SOURCE)
 HOST_MTD_UTILS_PATCH = host-mtd-utils-$(HOST_MTD_UTILS_VER).patch
-
-$(ARCHIVE)/$(HOST_MTD_UTILS_SOURCE):
-	$(WGET) ftp://ftp.infradead.org/pub/mtd-utils/$(HOST_MTD_UTILS_SOURCE)
 
 $(D)/host_mtd_utils: directories $(ARCHIVE)/$(HOST_MTD_UTILS_SOURCE)
 	$(START_BUILD)
@@ -164,10 +157,36 @@ $(D)/host_mksquashfs: directories $(ARCHIVE)/$(LZMA_SOURCE) $(ARCHIVE)/$(HOST_MK
 	$(TOUCH)
 
 #
+# host_resize2fs
+#
+HOST_E2FSPROGS_VER = $(E2FSPROGS_VER)
+HOST_E2FSPROGS_SOURCE = $(E2FSPROGS_SOURCE)
+
+$(D)/host_resize2fs: $(ARCHIVE)/$(HOST_E2FSPROGS_SOURCE)
+	$(START_BUILD)
+	$(UNTAR)/$(HOST_E2FSPROGS_SOURCE)
+	set -e; cd $(BUILD_TMP)/e2fsprogs-$(HOST_E2FSPROGS_VER); \
+		./configure; \
+		$(MAKE)
+	install -D -m 0755 $(BUILD_TMP)/e2fsprogs-$(HOST_E2FSPROGS_VER)/resize/resize2fs $(HOST_DIR)/bin/
+	install -D -m 0755 $(BUILD_TMP)/e2fsprogs-$(HOST_E2FSPROGS_VER)/misc/mke2fs $(HOST_DIR)/bin/
+	ln -sf mke2fs $(HOST_DIR)/bin/mkfs.ext2
+	ln -sf mke2fs $(HOST_DIR)/bin/mkfs.ext3
+	ln -sf mke2fs $(HOST_DIR)/bin/mkfs.ext4
+	ln -sf mke2fs $(HOST_DIR)/bin/mkfs.ext4dev
+	install -D -m 0755 $(BUILD_TMP)/e2fsprogs-$(HOST_E2FSPROGS_VER)/e2fsck/e2fsck $(HOST_DIR)/bin/
+	ln -sf e2fsck $(HOST_DIR)/bin/fsck.ext2
+	ln -sf e2fsck $(HOST_DIR)/bin/fsck.ext3
+	ln -sf e2fsck $(HOST_DIR)/bin/fsck.ext4
+	ln -sf e2fsck $(HOST_DIR)/bin/fsck.ext4dev
+	$(REMOVE)/e2fsprogs-$(HOST_E2FSPROGS_VER)
+	$(TOUCH)
+
+#
 #
 #
 $(HOST_DIR)/bin/unpack%.sh \
-$(HOST_DIR)/bin/get%sh: | directories
+$(HOST_DIR)/bin/get%.sh: | directories
 	$(SILENT)ln -sf $(SCRIPTS_DIR)/$(shell basename $@) $(HOST_DIR)/bin
 
 #
@@ -183,6 +202,9 @@ BOOTSTRAP += $(D)/host_module_init_tools
 BOOTSTRAP += $(D)/host_mtd_utils
 BOOTSTRAP += $(D)/host_mkcramfs
 BOOTSTRAP += $(D)/host_mksquashfs
+ifeq ($(BOXARCH), arm)
+BOOTSTRAP += $(D)/host_resize2fs
+endif
 
 $(D)/bootstrap: $(BOOTSTRAP)
 	@touch $@
@@ -193,9 +215,7 @@ $(D)/bootstrap: $(BOOTSTRAP)
 SYSTEM_TOOLS  = $(D)/busybox
 SYSTEM_TOOLS += $(D)/zlib
 SYSTEM_TOOLS += $(D)/sysvinit
-ifeq ($(BOXARCH), sh4)
 SYSTEM_TOOLS += $(D)/diverse-tools
-endif
 SYSTEM_TOOLS += $(D)/e2fsprogs
 SYSTEM_TOOLS += $(D)/jfsutils
 SYSTEM_TOOLS += $(D)/hdidle
@@ -208,7 +228,7 @@ SYSTEM_TOOLS += $(D)/autofs
 SYSTEM_TOOLS += $(D)/udpxy
 SYSTEM_TOOLS += $(D)/dvbsnoop
 SYSTEM_TOOLS += $(D)/fbshot
-ifeq ($(BOXARCH), sh4)
+ifeq ($(BOXARCH), arm)
 SYSTEM_TOOLS += $(D)/ofgwrite
 endif
 SYSTEM_TOOLS += $(D)/driver
