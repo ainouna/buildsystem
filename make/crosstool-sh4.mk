@@ -107,7 +107,7 @@ HOST_U_BOOT_TOOLS_VER = 1.3.1_stm24-9
 host_u_boot_tools: \
 $(STL_ARCHIVE)/stlinux24-host-u-boot-tools-$(HOST_U_BOOT_TOOLS_VER).i386.rpm
 	$(START_BUILD)
-	$(SILENT)unpack-rpm.sh $(BUILD_TMP) $(STM_RELOCATE)/host/bin $(HOST_DIR)/bin \
+	$(SILENT)$(SCRIPTS_DIR)unpack-rpm.sh $(BUILD_TMP) $(STM_RELOCATE)/host/bin $(HOST_DIR)/bin \
 		$^
 	$(SILENT)touch $(D)/$(notdir $@)
 	@echo "--------------------------------------------------------------"
