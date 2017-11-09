@@ -1,0 +1,12 @@
+--- a/gst/gstbufferpool.c
++++ b/gst/gstbufferpool.c
+@@ -218,7 +218,7 @@
+ {
+   GstBufferPool *result;
+ 
+-  result = g_object_newv (GST_TYPE_BUFFER_POOL, 0, NULL);
++  result = g_object_new_with_properties(GST_TYPE_BUFFER_POOL, 0, NULL, 0);
+   GST_DEBUG_OBJECT (result, "created new buffer pool");
+ 
+   return result;
+
