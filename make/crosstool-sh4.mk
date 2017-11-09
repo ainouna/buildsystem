@@ -62,7 +62,7 @@ $(STL_ARCHIVE)/stlinux24-sh4-libstdc++-dev-$(LIBGCC_VER).sh4.rpm
 
 CROSSTOOL = crosstool
 crosstool: directories driver-symlink \
-$(HOST_DIR)/bin/unpack-rpm.sh \
+$(SCRIPTS_DIR)/unpack-rpm.sh \
 crosstool-rpminstall
 	@touch $(D)/$(notdir $@)
 	@echo "--------------------------------------------------------------"
