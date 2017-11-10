@@ -112,7 +112,7 @@ PACKAGES="\
 	${UBUNTU:+libltdl-dev}                                       ${FEDORA:+libtool-ltdl-devel}                    \
 	                                                             ${FEDORA:+byacc}                                 \
 	${UBUNTU:+libssl-dev}           ${SUSE:+libopenssl-devel}    ${FEDORA:+openssl-devel}                         \
-	${UBUNTU:+libmount-dev}                                                                                       \
+	${UBUNTU:+libmount-dev}                                      ${FEDORA:+help2man}                              \
 	${UBUNTU:+mtools}                                                                                             \
 ";
 
