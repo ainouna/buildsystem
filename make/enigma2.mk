@@ -120,7 +120,7 @@ $(D)/enigma2.do_prepare: | $(ENIGMA2_DEPS)
 	REPO_0=$(REPO_OPENPLI); \
 	REPO_1=$(REPO_REPLY_1); \
 	REVISION=$(E2_REVISION); \
-	HEAD_0="release"; \
+	HEAD_0="develop"; \
 	HEAD_1="master"; \
 	DIFF=$(E2_DIFF); \
 	rm -rf $(SOURCE_DIR)/enigma2; \
