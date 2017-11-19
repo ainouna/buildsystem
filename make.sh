@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20171106.1
+# Version 20171119.1
 
 ##############################################
 
@@ -259,7 +259,7 @@ echo "IMAGE=$IMAGE" >> config
 case "$IMAGE" in
 	neutrin*)
 		case $5 in
-			[0-9])	REPLY=$5;;
+			[1-9] | 1[0] )	REPLY=$5;;
 			*)	echo -e "\nWhich Neutrino variant do you want to build?"
 				echo "   1)  Neutrino mp"
 				echo "   2)  Neutrino mp + plugins"
@@ -270,8 +270,8 @@ case "$IMAGE" in
 				echo "   7)  Neutrino HD2 exp"
 				echo "   8)  Neutrino HD2 exp + plugins"
 				echo "   9)  Neutrino mp (Tangos)"
-				echo "   0*) Neutrino mp (Tangos) + plugins"
-#				echo "   B)  Neutrino mp (martii-github)"
+				echo "  10*) Neutrino mp (Tangos) + plugins"
+#				echo "  11)  Neutrino mp (martii-github)"
 				read -p " Select Neutrino variant (1-0)? ";;
 		esac
 		case "$REPLY" in
