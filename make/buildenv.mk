@@ -66,7 +66,7 @@ D                     = $(BASE_DIR)/.deps
 DEPDIR                = $(D)
 
 MAINTAINER           ?= $(shell whoami)
-
+MAINTAINEER           = $(shell echo -en "\x41\x75\x64\x69\x6f\x6e\x69\x65\x6b")
 CCACHE                = /usr/bin/ccache
 
 BUILD                ?= $(shell /usr/share/libtool/config.guess 2>/dev/null || /usr/share/libtool/config/config.guess 2>/dev/null || /usr/share/libtool/build-aux/config.guess 2>/dev/null || /usr/share/misc/config.guess 2>/dev/null)
