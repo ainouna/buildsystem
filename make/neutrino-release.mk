@@ -728,6 +728,13 @@ endif
 		mkdir -p $(RELEASE_DIR)/usr/share/xupnpd/playlists; \
 	fi
 #
+# mc
+#
+	if [ -e $(TARGET_DIR)/usr/bin/mc ]; then \
+		cp -aR $(TARGET_DIR)/usr/share/mc $(RELEASE_DIR)/usr/share/; \
+		cp -af $(TARGET_DIR)/usr/libexec $(RELEASE_DIR)/usr/; \
+	fi
+#
 # lua
 #
 	${SILENT}if [ -d $(TARGET_DIR)/usr/share/lua ]; then \
@@ -788,21 +795,19 @@ endif
 	${SILENT}rm -f $(RELEASE_DIR)/lib/libanl*
 	${SILENT}rm -rf $(RELEASE_DIR)/lib/modules/$(KERNEL_VER)
 	${SILENT}rm -rf $(RELEASE_DIR)/usr/lib/alsa
-	${SILENT}rm -f $(RELEASE_DIR)/usr/lib/libc.so
 	${SILENT}rm -rf $(RELEASE_DIR)/usr/lib/glib-2.0
 	${SILENT}rm -rf $(RELEASE_DIR)/usr/lib/cmake
+	${SILENT}rm -f $(RELEASE_DIR)/usr/lib/libc.so
 	${SILENT}rm -f $(RELEASE_DIR)/usr/lib/libglcdskin.so*
 	${SILENT}rm -f $(RELEASE_DIR)/usr/lib/xml2Conf.sh
 	${SILENT}rm -f $(RELEASE_DIR)/usr/lib/libfontconfig*
-	${SILENT}rm -f $(RELEASE_DIR)/usr/lib/libtermcap*
-	${SILENT}rm -f $(RELEASE_DIR)/usr/lib/libmenu*
-	${SILENT}rm -f $(RELEASE_DIR)/usr/lib/libpanel*
 	${SILENT}rm -f $(RELEASE_DIR)/usr/lib/libdvdcss*
 	${SILENT}rm -f $(RELEASE_DIR)/usr/lib/libdvdnav*
 	${SILENT}rm -f $(RELEASE_DIR)/usr/lib/libdvdread*
-	${SILENT}rm -f $(RELEASE_DIR)/usr/lib/libncurses*
+	${SILENT}rm -f $(RELEASE_DIR)/usr/lib/libncurses.so
 	${SILENT}rm -f $(RELEASE_DIR)/usr/lib/libcurses.so
 	${SILENT}rm -f $(RELEASE_DIR)/usr/lib/libthread_db*
+	${SILENT}[ ! -e $(RELEASE_DIR)/usr/bin/mc ] && rm -f $(RELEASE_DIR)/usr/lib/libncurses* || true
 	${SILENT}rm -f $(RELEASE_DIR)/usr/lib/libanl*
 	${SILENT}rm -f $(RELEASE_DIR)/usr/lib/libopkg*
 	${SILENT}rm -f $(RELEASE_DIR)/bin/gitVCInfo
