@@ -193,7 +193,6 @@ $(D)/neutrino-mp-cst-next.config.status:
 			$(N_CONFIG_OPTS) \
 			--with-boxtype=$(BOXTYPE) \
 			--enable-upnp \
-			--enable-ffmpegdec \
 			--enable-giflib \
 			--with-tremor \
 			--with-libdir=/usr/lib \
@@ -370,7 +369,6 @@ $(D)/neutrino-mp-cst-next-ni.config.status:
 			--with-boxtype=armbox \
 			--with-boxmodel=$(BOXTYPE) \
 			--enable-upnp \
-			--enable-ffmpegdec \
 			--enable-giflib \
 			--with-tremor \
 			--with-libdir=/usr/lib \
