@@ -1,6 +1,6 @@
 --- neutrino-mp-tangos.org/acinclude.m4
 +++ neutrino-mp-tangos/acinclude.m4
-@@ -384,7 +384,7 @@
+@@ -381,7 +381,7 @@
  AC_ARG_WITH(boxmodel,
  	[  --with-boxmodel         valid for coolstream: hd1, hd2
                            valid for generic: raspi
@@ -9,7 +9,7 @@
                            valid for spark: spark, spark7162
                            valid for armbox: hd51, vusolo4k],
  	[case "${withval}" in
-@@ -471,8 +471,10 @@
+@@ -468,8 +468,10 @@
  AM_CONDITIONAL(BOXMODEL_FORTIS_HDBOX,test "$BOXMODEL" = "fortis_hdbox")
  AM_CONDITIONAL(BOXMODEL_OCTAGON1008,test "$BOXMODEL" = "octagon1008")
  AM_CONDITIONAL(BOXMODEL_HS7110,test "$BOXMODEL" = "hs7110")
@@ -20,7 +20,7 @@
  AM_CONDITIONAL(BOXMODEL_HS7819,test "$BOXMODEL" = "hs7819")
  AM_CONDITIONAL(BOXMODEL_DP7000,test "$BOXMODEL" = "dp7000")
  
-@@ -538,10 +540,14 @@
+@@ -535,10 +537,14 @@
  	AC_DEFINE(BOXMODEL_OCTAGON1008, 1, [octagon1008])
  elif test "$BOXMODEL" = "hs7110"; then
  	AC_DEFINE(BOXMODEL_HS7110, 1, [hs7110])
@@ -48,7 +48,7 @@
  NEUTRINO_CPP  SglobalInfo	g_info;
 --- neutrino-mp-tangos.org/src/neutrino.cpp
 +++ neutrino-mp-tangos/src/neutrino.cpp
-@@ -4540,6 +4540,9 @@
+@@ -4599,6 +4599,9 @@
  			CVFD::getInstance()->Clear();
  			CVFD::getInstance()->setMode(CVFD::MODE_STANDBY);
  		}
@@ -58,7 +58,7 @@
  		CVFD::getInstance()->setBacklight(g_settings.backlight_standby);
  
  		InfoClock->enableInfoClock(false);
-@@ -4571,7 +4574,11 @@
+@@ -4630,7 +4633,11 @@
  		// Active standby off
  		powerManager->SetStandby(false, false);
  		CVFD::getInstance()->setMode(CVFD::MODE_TVRADIO);
@@ -73,7 +73,7 @@
  		CEpgScan::getInstance()->Stop();
 --- neutrino-mp-tangos/src/driver/simple_display.cpp.org
 +++ neutrino-mp-tangos/src/driver/simple_display.cpp
-@@ -37,6 +37,9 @@
+@@ -39,6 +39,9 @@
  #include <sys/stat.h>
  
  #if HAVE_SPARK_HARDWARE
@@ -881,7 +881,7 @@
  }
 --- neutrino-mp-tangos.org/src/gui/movieplayer.cpp
 +++ neutrino-mp-tangos/src/gui/movieplayer.cpp
-@@ -513,8 +513,10 @@
+@@ -525,8 +525,10 @@
   && !defined(BOXMODEL_FORTIS_HDBOX) \
   && !defined(BOXMODEL_OCTAGON1008) \
   && !defined(BOXMODEL_HS7110) \
@@ -892,7 +892,7 @@
   && !defined(BOXMODEL_HS7819) \
   && !defined(BOXMODEL_IPBOX9900) \
   && !defined(BOXMODEL_IPBOX99) \
-@@ -535,8 +537,10 @@
+@@ -547,8 +549,10 @@
   && !defined(BOXMODEL_UFS922) \
   && !defined(BOXMODEL_OCTAGON1008) \
   && !defined(BOXMODEL_HS7110) \
@@ -903,7 +903,7 @@
   && !defined(BOXMODEL_HS7819) \
   && !defined(BOXMODEL_IPBOX9900) \
   && !defined(BOXMODEL_IPBOX99) \
-@@ -566,8 +570,10 @@
+@@ -578,8 +582,10 @@
   && !defined(BOXMODEL_FORTIS_HDBOX) \
   && !defined(BOXMODEL_OCTAGON1008) \
   && !defined(BOXMODEL_HS7110) \
@@ -914,7 +914,7 @@
   && !defined(BOXMODEL_HS7819) \
   && !defined(BOXMODEL_CUBEREVO_MINI2) \
   && !defined(BOXMODEL_IPBOX9900) \
-@@ -1644,7 +1650,15 @@
+@@ -1662,7 +1668,15 @@
  					ss -= hh * 3600;
  					mm = ss/60;
  					ss -= mm * 60;
