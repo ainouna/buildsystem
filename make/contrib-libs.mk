@@ -17,7 +17,6 @@ $(D)/ncurses: $(D)/bootstrap $(ARCHIVE)/$(NCURSES_SOURCE)
 		$(CONFIGURE) \
 			--target=$(TARGET) \
 			--prefix=/usr \
-			--with-terminfo-dirs=/usr/share/terminfo \
 			--with-pkg-config \
 			--with-pkg-config-libdir=/usr/lib/pkgconfig \
 			--with-shared \
@@ -26,8 +25,9 @@ $(D)/ncurses: $(D)/bootstrap $(ARCHIVE)/$(NCURSES_SOURCE)
 			--without-ada \
 			--without-progs \
 			--without-tests \
-			--disable-big-core \
 			--without-profile \
+			--without-debug \
+			--disable-big-core \
 			--disable-rpath \
 			--disable-rpath-hack \
 			--enable-echo \
@@ -42,13 +42,12 @@ $(D)/ncurses: $(D)/bootstrap $(ARCHIVE)/$(NCURSES_SOURCE)
 			HOSTCCFLAGS="$(CFLAGS) -DHAVE_CONFIG_H -I../ncurses -DNDEBUG -D_GNU_SOURCE -I../include" \
 			HOSTLDFLAGS="$(LDFLAGS)"; \
 		$(MAKE) install.libs DESTDIR=$(TARGET_DIR); \
-		install -D -m 0755 misc/ncurses-config $(HOST_DIR)/bin/ncurses6-config; \
-		rm -f $(TARGET_DIR)/usr/bin/ncurses6-config
+		install -D -m 0755 misc/ncurses-config $(HOST_DIR)/bin/ncurses6-config
+	$(SILENT)rm -f $(TARGET_DIR)/usr/bin/ncurses6-config
+	$(SILENT)rm -f $(addprefix $(TARGET_LIB_DIR)/,libform* libmenu* libpanel*)
+	$(SILENT)rm -f $(addprefix $(PKG_CONFIG_PATH)/,form.pc menu.pc panel.pc)
 	$(REWRITE_PKGCONF) $(HOST_DIR)/bin/ncurses6-config
-	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/form.pc
-	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/menu.pc
 	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/ncurses.pc
-	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/panel.pc
 	$(REMOVE)/ncurses-$(NCURSES_VER)
 	$(TOUCH)
 
@@ -130,11 +129,11 @@ $(D)/libffi: $(D)/bootstrap $(ARCHIVE)/$(LIBFFI_SOURCE)
 # host_libglib2_genmarshal
 #
 LIBGLIB2_VER_MAJOR = 2
-LIBGLIB2_VER_MINOR = 52
+LIBGLIB2_VER_MINOR = 54
 LIBGLIB2_VER_MICRO = 0
 LIBGLIB2_VER = $(LIBGLIB2_VER_MAJOR).$(LIBGLIB2_VER_MINOR).$(LIBGLIB2_VER_MICRO)
 LIBGLIB2_SOURCE = glib-$(LIBGLIB2_VER).tar.xz
-#LIBGLIB2_HOST_PATCH = libglib2-host-$(LIBGLIB2_VER)-gdate-suppress-string-format-literal-warning.patch
+#LIBGLIB2_HOST_PATCH = 
 LIBGLIB2_PATCH = libglib2-$(LIBGLIB2_VER)-disable-tests.patch
 
 $(ARCHIVE)/$(LIBGLIB2_SOURCE):
