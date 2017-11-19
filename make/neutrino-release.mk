@@ -866,15 +866,6 @@ $(D)/%neutrino_release: neutrino_release_base neutrino_release_$(BOXTYPE)
 #
 	${SILENT}rm -f $(RELEASE_DIR)/bin/pic2m2v
 	${SILENT}rm -f $(RELEASE_DIR)/usr/lib/*.py
-	${SILENT}rm -f $(RELEASE_DIR)/usr/share/tuxbox/neutrino/httpd/images/rc_cst_v?.*
-ifneq ($(BOXTYPE), $(filter $(BOXTYPE), hd51))
-	${SILENT}rm -f $(RELEASE_DIR)/usr/share/tuxbox/neutrino/httpd/images/rc_ax_hd51.png
-	${SILENT}rm -f $(RELEASE_DIR)/usr/share/tuxbox/neutrino/httpd/images/rc_mutant_hd51.png
-endif
-ifneq ($(BOXTYPE), $(filter $(BOXTYPE), spark spark7162))
-	${SILENT}rm -f $(RELEASE_DIR)/usr/share/tuxbox/neutrino/httpd/images/rc_spark_new.jpg
-	${SILENT}rm -f $(RELEASE_DIR)/usr/share/tuxbox/neutrino/httpd/images/rc_spark_old.jpg
-endif
 #
 # sh4-linux-strip all
 #
