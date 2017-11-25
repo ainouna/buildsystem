@@ -68,14 +68,41 @@ N_CONFIG_OPTS  = $(LOCAL_NEUTRINO_BUILD_OPTIONS)
 N_CONFIG_OPTS += --enable-freesatepg
 N_CONFIG_OPTS += --enable-lua
 N_CONFIG_OPTS += --enable-giflib
+N_CONFIG_OPTS += --with-tremor
 N_CONFIG_OPTS += --enable-ffmpegdec
 #N_CONFIG_OPTS += --enable-pip
 #N_CONFIG_OPTS += --disable-webif
+#N_CONFIG_OPTS += --disable-upnp
 #N_CONFIG_OPTS += --disable-tangos
 N_CONFIG_OPTS += --enable-pugixml
 ifeq ($(BOXARCH), arm)
 N_CONFIG_OPTS += --enable-reschange
 endif
+
+N_CONFIG_OPTS += \
+	--with-boxtype=$(BOXTYPE) \
+	--with-libdir=/usr/lib \
+	--with-datadir=/usr/share/tuxbox \
+	--with-fontdir=/usr/share/fonts \
+	--with-configdir=/var/tuxbox/config \
+	--with-gamesdir=/var/tuxbox/games \
+	--with-iconsdir=/usr/share/tuxbox/neutrino/icons \
+	--with-iconsdir_var=/var/tuxbox/icons \
+	--with-luaplugindir=/var/tuxbox/plugins \
+	--with-localedir=/usr/share/tuxbox/neutrino/locale \
+	--with-localedir_var=/var/tuxbox/locale \
+	--with-plugindir=/var/tuxbox/plugins \
+	--with-plugindir_var=/var/tuxbox/plugins \
+	--with-private_httpddir=/usr/share/tuxbox/neutrino/httpd \
+	--with-public_httpddir=/var/tuxbox/httpd \
+	--with-themesdir=/usr/share/tuxbox/neutrino/themes \
+	--with-themesdir_var=/var/tuxbox/themes \
+	--with-webtvdir=/share/tuxbox/neutrino/webtv \
+	--with-webtvdir_var=/var/tuxbox/plugins/webtv \
+	PKG_CONFIG=$(PKG_CONFIG) \
+	PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) \
+	CFLAGS="$(N_CFLAGS)" CXXFLAGS="$(N_CFLAGS)" CPPFLAGS="$(N_CPPFLAGS)"
+
 
 OBJDIR = $(BUILD_TMP)
 N_OBJDIR = $(OBJDIR)/neutrino-mp
@@ -107,7 +134,7 @@ $(D)/libstb-hal-cst-next.config.status: | $(NEUTRINO_DEPS)
 	cd $(LH_OBJDIR); \
 		$(SOURCE_DIR)/libstb-hal-cst-next/autogen.sh; \
 		$(BUILDENV) \
-		$(SOURCE_DIR)/libstb-hal-cst-next/configure $(SILENT_OPT) --enable-silent-rules \
+		$(SOURCE_DIR)/libstb-hal-cst-next/configure  $(SILENT_CONFIGURE) --enable-silent-rules \
 			--host=$(TARGET) \
 			--build=$(BUILD) \
 			--prefix= \
@@ -145,7 +172,7 @@ libstb-hal-cst-next-distclean:
 # neutrino-mp-cst-next
 #
 yaud-neutrino-mp-cst-next: yaud-none \
-		neutrino-mp-cst-next $(D)/neutrino_release
+		$(D)/neutrino-mp-cst-next $(D)/neutrino_release
 	$(TUXBOX_YAUD_CUSTOMIZE)
 	@echo "***************************************************************************"
 	@echo -e "$(TERM_GREEN_BOLD)"
@@ -168,10 +195,10 @@ yaud-neutrino-mp-cst-next-plugins: yaud-none \
 NEUTRINO_MP_CST_NEXT_PATCHES =
 
 $(D)/neutrino-mp-cst-next.do_prepare: | $(NEUTRINO_DEPS) $(D)/libstb-hal-cst-next
-	rm -rf $(SOURCE_DIR)/neutrino-mp-cst-next
-	rm -rf $(SOURCE_DIR)/neutrino-mp-cst-next.org
-	rm -rf $(N_OBJDIR)
-	[ -d "$(ARCHIVE)/neutrino-mp-cst-next.git" ] && \
+	@rm -rf $(SOURCE_DIR)/neutrino-mp-cst-next
+	@rm -rf $(SOURCE_DIR)/neutrino-mp-cst-next.org
+	@rm -rf $(N_OBJDIR)
+	@[ -d "$(ARCHIVE)/neutrino-mp-cst-next.git" ] && \
 	(cd $(ARCHIVE)/neutrino-mp-cst-next.git; git pull -q; cd "$(BUILD_TMP)";); \
 	[ -d "$(ARCHIVE)/neutrino-mp-cst-next.git" ] || \
 	git clone -q https://github.com/Duckbox-Developers/neutrino-mp-cst-next.git $(ARCHIVE)/neutrino-mp-cst-next.git; \
@@ -182,39 +209,17 @@ $(D)/neutrino-mp-cst-next.do_prepare: | $(NEUTRINO_DEPS) $(D)/libstb-hal-cst-nex
 	@touch $@
 
 $(D)/neutrino-mp-cst-next.config.status:
-	rm -rf $(N_OBJDIR)
-	test -d $(N_OBJDIR) || mkdir -p $(N_OBJDIR); \
+	@rm -rf $(N_OBJDIR)
+	@test -d $(N_OBJDIR) || mkdir -p $(N_OBJDIR); \
 	cd $(N_OBJDIR); \
-		$(SOURCE_DIR)/neutrino-mp-cst-next/autogen.sh; \
+		$(SOURCE_DIR)/neutrino-mp-cst-next/autogen.sh $(SILENT_OPT); \
 		$(BUILDENV) \
-		$(SOURCE_DIR)/neutrino-mp-cst-next/configure $(SILENT_OPT) --enable-silent-rules \
+		$(SOURCE_DIR)/neutrino-mp-cst-next/configure $(SILENT_CONFIGURE) --enable-silent-rules \
 			--build=$(BUILD) \
 			--host=$(TARGET) \
 			$(N_CONFIG_OPTS) \
-			--with-boxtype=$(BOXTYPE) \
-			--enable-upnp \
-			--enable-giflib \
-			--with-tremor \
-			--with-libdir=/usr/lib \
-			--with-datadir=/usr/share/tuxbox \
-			--with-fontdir=/usr/share/fonts \
-			--with-configdir=/var/tuxbox/config \
-			--with-gamesdir=/var/tuxbox/games \
-			--with-iconsdir=/usr/share/tuxbox/neutrino/icons \
-			--with-iconsdir_var=/var/tuxbox/icons \
-			--with-luaplugindir=/var/tuxbox/plugins \
-			--with-localedir=/usr/share/tuxbox/neutrino/locale \
-			--with-localedir_var=/var/tuxbox/locale \
-			--with-plugindir=/var/tuxbox/plugins \
-			--with-plugindir_var=/var/tuxbox/plugins \
-			--with-private_httpddir=/usr/share/tuxbox/neutrino/httpd \
-			--with-themesdir=/usr/share/tuxbox/neutrino/themes \
-			--with-themesdir_var=/var/tuxbox/themes \
 			--with-stb-hal-includes=$(SOURCE_DIR)/libstb-hal-cst-next/include \
-			--with-stb-hal-build=$(LH_OBJDIR) \
-			PKG_CONFIG=$(PKG_CONFIG) \
-			PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) \
-			CFLAGS="$(N_CFLAGS)" CXXFLAGS="$(N_CFLAGS)" CPPFLAGS="$(N_CPPFLAGS)"
+			--with-stb-hal-build=$(LH_OBJDIR)
 	@touch $@
 
 $(SOURCE_DIR)/neutrino-mp-cst-next/src/gui/version.h:
@@ -260,7 +265,7 @@ neutrino-mp-cst-next-distclean: neutrino-cdkroot-clean
 	rm -f $(D)/neutrino-mp-cst-next*
 
 ################################################################################
-ifeq ($(BOXARCH), arm)
+#ifeq ($(BOXARCH), arm)
 ################################################################################
 #
 # libstb-hal-cst-next-ni
@@ -273,22 +278,22 @@ $(D)/libstb-hal-cst-next-ni.do_prepare:
 	rm -rf $(SOURCE_DIR)/libstb-hal-cst-next-ni.org
 	rm -rf $(LH_OBJDIR)
 	[ -d "$(ARCHIVE)/libstb-hal-cst-next-ni.git" ] && \
-	(cd $(ARCHIVE)/libstb-hal-cst-next-ni.git; git pull -q; cd "$(BUILD_TMP)";); \
+	(cd $(ARCHIVE)/libstb-hal-cst-next-ni.git; git pull -q; cd "$(BUILD_TMP)";)
 	[ -d "$(ARCHIVE)/libstb-hal-cst-next-ni.git" ] || \
-	git clone -q https://bitbucket.org/neutrino-images/ni-libstb-hal-next.git $(ARCHIVE)/libstb-hal-cst-next-ni.git; \
-	cp -ra $(ARCHIVE)/libstb-hal-cst-next-ni.git $(SOURCE_DIR)/libstb-hal-cst-next-ni;\
+	git clone -q https://bitbucket.org/neutrino-images/ni-libstb-hal-next.git $(ARCHIVE)/libstb-hal-cst-next-ni.git
+	cp -ra $(ARCHIVE)/libstb-hal-cst-next-ni.git $(SOURCE_DIR)/libstb-hal-cst-next-ni
 	cp -ra $(SOURCE_DIR)/libstb-hal-cst-next-ni $(SOURCE_DIR)/libstb-hal-cst-next-ni.org
-	set -e; cd $(SOURCE_DIR)/libstb-hal-cst-next-ni; \
+	$(SET) -e; cd $(SOURCE_DIR)/libstb-hal-cst-next-ni; \
 		$(call post_patch,$(NEUTRINO_MP_LIBSTB_CST_NEXT_NI_PATCHES))
 	@touch $@
 
 $(D)/libstb-hal-cst-next-ni.config.status: | $(NEUTRINO_DEPS)
-	rm -rf $(LH_OBJDIR); \
-	test -d $(LH_OBJDIR) || mkdir -p $(LH_OBJDIR); \
+	rm -rf $(LH_OBJDIR)
+	test -d $(LH_OBJDIR) || mkdir -p $(LH_OBJDIR)
 	cd $(LH_OBJDIR); \
 		$(SOURCE_DIR)/libstb-hal-cst-next-ni/autogen.sh; \
 		$(BUILDENV) \
-		$(SOURCE_DIR)/libstb-hal-cst-next-ni/configure --enable-silent-rules \
+		$(SOURCE_DIR)/libstb-hal-cst-next-ni/configure $(SILENT_CONFIGURE) --enable-silent-rules \
 			--host=$(TARGET) \
 			--build=$(BUILD) \
 			--prefix= \
@@ -297,13 +302,16 @@ $(D)/libstb-hal-cst-next-ni.config.status: | $(NEUTRINO_DEPS)
 			PKG_CONFIG=$(PKG_CONFIG) \
 			PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) \
 			CFLAGS="$(N_CFLAGS)" CXXFLAGS="$(N_CFLAGS)" CPPFLAGS="$(N_CPPFLAGS)"
-
-$(D)/libstb-hal-cst-next-ni.do_compile: $(D)/libstb-hal-cst-next-ni.config.status
-	cd $(SOURCE_DIR)/libstb-hal-cst-next-ni; \
-		$(MAKE) -C $(LH_OBJDIR) all DESTDIR=$(TARGET_DIR)
 	@touch $@
 
+$(D)/libstb-hal-cst-next-ni.do_compile: $(D)/libstb-hal-cst-next-ni.config.status
+	$(START_BUILD)
+	cd $(SOURCE_DIR)/libstb-hal-cst-next-ni; \
+		$(MAKE) -C $(LH_OBJDIR) all DESTDIR=$(TARGET_DIR)
+	$(TOUCH)
+
 $(D)/libstb-hal-cst-next-ni: $(D)/libstb-hal-cst-next-ni.do_prepare $(D)/libstb-hal-cst-next-ni.do_compile
+	$(START_BUILD)
 	$(MAKE) -C $(LH_OBJDIR) install DESTDIR=$(TARGET_DIR)
 	$(TOUCH)
 
@@ -339,17 +347,16 @@ yaud-neutrino-mp-cst-next-ni-plugins: yaud-none \
 	@echo -e "$(TERM_NORMAL)"
 	@echo "*******************************************************************************************"
 	@touch $(D)/build_complete
-
 NEUTRINO_MP_CST_NEXT_NI_PATCHES =
 
 $(D)/neutrino-mp-cst-next-ni.do_prepare: | $(NEUTRINO_DEPS) $(D)/libstb-hal-cst-next-ni
-	rm -rf $(SOURCE_DIR)/neutrino-mp-cst-next-ni
-	rm -rf $(SOURCE_DIR)/neutrino-mp-cst-next-ni.org
-	rm -rf $(N_OBJDIR)
-	[ -d "$(ARCHIVE)/neutrino-mp-cst-next-ni.git" ] && \
+	@rm -rf $(SOURCE_DIR)/neutrino-mp-cst-next-ni
+	@rm -rf $(SOURCE_DIR)/neutrino-mp-cst-next-ni.org
+	@rm -rf $(N_OBJDIR)
+	@[ -d "$(ARCHIVE)/neutrino-mp-cst-next-ni.git" ] && \
 	(cd $(ARCHIVE)/neutrino-mp-cst-next-ni.git; git pull -q; cd "$(BUILD_TMP)";); \
 	[ -d "$(ARCHIVE)/neutrino-mp-cst-next-ni.git" ] || \
-	git clone -b -q ni/mp/tuxbox https://bitbucket.org/neutrino-images/ni-neutrino-hd.git $(ARCHIVE)/neutrino-mp-cst-next-ni.git; \
+	(echo -n "Cloning git..."; git clone -q -b ni/mp/tuxbox https://bitbucket.org/neutrino-images/ni-neutrino-hd.git $(ARCHIVE)/neutrino-mp-cst-next-ni.git; echo " done.";); \
 	cp -ra $(ARCHIVE)/neutrino-mp-cst-next-ni.git $(SOURCE_DIR)/neutrino-mp-cst-next-ni; \
 	cp -ra $(SOURCE_DIR)/neutrino-mp-cst-next-ni $(SOURCE_DIR)/neutrino-mp-cst-next-ni.org
 	$(SET) -e; cd $(SOURCE_DIR)/neutrino-mp-cst-next-ni; \
@@ -362,35 +369,13 @@ $(D)/neutrino-mp-cst-next-ni.config.status:
 	cd $(N_OBJDIR); \
 		$(SOURCE_DIR)/neutrino-mp-cst-next-ni/autogen.sh; \
 		$(BUILDENV) \
-		$(SOURCE_DIR)/neutrino-mp-cst-next-ni/configure --enable-silent-rules \
+		$(SOURCE_DIR)/neutrino-mp-cst-next-ni/configure $(SILENT_CONFIGURE) --enable-silent-rules \
 			--build=$(BUILD) \
 			--host=$(TARGET) \
 			$(N_CONFIG_OPTS) \
 			--with-boxtype=armbox \
-			--with-boxmodel=$(BOXTYPE) \
-			--enable-upnp \
-			--enable-giflib \
-			--with-tremor \
-			--with-libdir=/usr/lib \
-			--with-datadir=/usr/share/tuxbox \
-			--with-fontdir=/usr/share/fonts \
-			--with-configdir=/var/tuxbox/config \
-			--with-gamesdir=/var/tuxbox/games \
-			--with-iconsdir=/usr/share/tuxbox/neutrino/icons \
-			--with-iconsdir_var=/var/tuxbox/icons \
-			--with-luaplugindir=/var/tuxbox/plugins \
-			--with-localedir=/usr/share/tuxbox/neutrino/locale \
-			--with-localedir_var=/var/tuxbox/locale \
-			--with-plugindir=/var/tuxbox/plugins \
-			--with-plugindir_var=/var/tuxbox/plugins \
-			--with-private_httpddir=/usr/share/tuxbox/neutrino/httpd \
-			--with-themesdir=/usr/share/tuxbox/neutrino/themes \
-			--with-themesdir_var=/var/tuxbox/themes \
 			--with-stb-hal-includes=$(SOURCE_DIR)/libstb-hal-cst-next-ni/include \
 			--with-stb-hal-build=$(LH_OBJDIR) \
-			PKG_CONFIG=$(PKG_CONFIG) \
-			PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) \
-			CFLAGS="$(N_CFLAGS)" CXXFLAGS="$(N_CFLAGS)" CPPFLAGS="$(N_CPPFLAGS)"
 	@touch $@
 
 $(SOURCE_DIR)/neutrino-mp-cst-next-ni/src/gui/version.h:
@@ -432,9 +417,8 @@ neutrino-mp-cst-next-ni-clean: neutrino-cdkroot-clean
 neutrino-mp-cst-next-ni-distclean: neutrino-cdkroot-clean
 	rm -rf $(N_OBJDIR)
 	rm -f $(D)/neutrino-mp-cst-next-ni*
-
 ################################################################################
-endif
+#endif
 ################################################################################
 neutrino-cdkroot-clean:
 	[ -e $(TARGET_DIR)/usr/local/bin ] && cd $(TARGET_DIR)/usr/local/bin && find -name '*' -delete || true
@@ -586,7 +570,7 @@ $(D)/libstb-hal-cst-next-tangos.config.status: | $(NEUTRINO_DEPS)
 	cd $(LH_OBJDIR); \
 		$(SOURCE_DIR)/libstb-hal-cst-next-tangos/autogen.sh; \
 		$(BUILDENV) \
-		$(SOURCE_DIR)/libstb-hal-cst-next-tangos/configure $(SILENT_OPT) --enable-silent-rules \
+		$(SOURCE_DIR)/libstb-hal-cst-next-tangos/configure  $(SILENT_CONFIGURE) --enable-silent-rules \
 			--host=$(TARGET) \
 			--build=$(BUILD) \
 			--prefix= \
@@ -670,33 +654,12 @@ $(D)/neutrino-mp-tangos.config.status:
 	cd $(N_OBJDIR); \
 		$(SOURCE_DIR)/neutrino-mp-tangos/autogen.sh; \
 		$(BUILDENV) \
-		$(SOURCE_DIR)/neutrino-mp-tangos/configure $(SILENT_OPT) --enable-silent-rules \
+		$(SOURCE_DIR)/neutrino-mp-tangos/configure  $(SILENT_CONFIGURE) --enable-silent-rules \
 			--build=$(BUILD) \
 			--host=$(TARGET) \
 			$(N_CONFIG_OPTS) \
-			--disable-upnp \
-			--with-boxtype=$(BOXTYPE) \
-			--with-tremor \
-			--with-libdir=/usr/lib \
-			--with-datadir=/usr/share/tuxbox \
-			--with-fontdir=/usr/share/fonts \
-			--with-configdir=/var/tuxbox/config \
-			--with-gamesdir=/var/tuxbox/games \
-			--with-iconsdir=/usr/share/tuxbox/neutrino/icons \
-			--with-iconsdir_var=/var/tuxbox/icons \
-			--with-luaplugindir=/var/tuxbox/plugins \
-			--with-localedir=/usr/share/tuxbox/neutrino/locale \
-			--with-localedir_var=/var/tuxbox/locale \
-			--with-plugindir=/var/tuxbox/plugins \
-			--with-plugindir_var=/var/tuxbox/plugins \
-			--with-private_httpddir=/usr/share/tuxbox/neutrino/httpd \
-			--with-themesdir=/usr/share/tuxbox/neutrino/themes \
-			--with-themesdir_var=/var/tuxbox/themes \
 			--with-stb-hal-includes=$(SOURCE_DIR)/libstb-hal-cst-next-tangos/include \
-			--with-stb-hal-build=$(LH_OBJDIR) \
-			PKG_CONFIG=$(PKG_CONFIG) \
-			PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) \
-			CFLAGS="$(N_CFLAGS)" CXXFLAGS="$(N_CFLAGS)" CPPFLAGS="$(N_CPPFLAGS)"
+			--with-stb-hal-build=$(LH_OBJDIR)
 
 $(SOURCE_DIR)/neutrino-mp-tangos/src/gui/version.h:
 	@rm -f $@; \
@@ -766,7 +729,7 @@ $(D)/libstb-hal-max.config.status: | $(NEUTRINO_DEPS)
 		export PKG_CONFIG=$(PKG_CONFIG); \
 		export PKG_CONFIG_PATH=$(PKG_CONFIG_PATH); \
 		$(BUILDENV) \
-		$(SOURCE_DIR)/libstb-hal-max/configure $(SILENT_OPT) --enable-silent-rules \
+		$(SOURCE_DIR)/libstb-hal-max/configure  $(SILENT_CONFIGURE) --enable-silent-rules \
 			--host=$(TARGET) \
 			--build=$(BUILD) \
 			--prefix= \
@@ -824,10 +787,10 @@ yaud-neutrino-mp-plugins: yaud-none \
 
 $(D)/neutrino-mp.do_prepare: | $(NEUTRINO_DEPS) $(D)/libstb-hal-max
 	$(START_BUILD)
-	rm -rf $(SOURCE_DIR)/neutrino-mp
-	rm -rf $(SOURCE_DIR)/neutrino-mp.org
-	rm -rf $(N_OBJDIR)
-	[ -d "$(ARCHIVE)/gui-neutrino-mp.git" ] && \
+	@rm -rf $(SOURCE_DIR)/neutrino-mp
+	@rm -rf $(SOURCE_DIR)/neutrino-mp.org
+	@rm -rf $(N_OBJDIR)
+	@[ -d "$(ARCHIVE)/gui-neutrino-mp.git" ] && \
 	(cd $(ARCHIVE)/gui-neutrino-mp.git; git pull -q; cd "$(BUILD_TMP)";); \
 	[ -d "$(ARCHIVE)/gui-neutrino-mp.git" ] || \
 	git clone -q https://bitbucket.org/max_10/gui-neutrino-mp.git $(ARCHIVE)/gui-neutrino-mp.git; \
@@ -838,39 +801,17 @@ $(D)/neutrino-mp.do_prepare: | $(NEUTRINO_DEPS) $(D)/libstb-hal-max
 	@touch $@
 
 $(D)/neutrino-mp.config.status:
-	rm -rf $(N_OBJDIR)
-	test -d $(N_OBJDIR) || mkdir -p $(N_OBJDIR); \
+	@rm -rf $(N_OBJDIR)
+	@test -d $(N_OBJDIR) || mkdir -p $(N_OBJDIR); \
 	cd $(N_OBJDIR); \
 		$(SOURCE_DIR)/neutrino-mp/autogen.sh; \
 		$(BUILDENV) \
-		$(SOURCE_DIR)/neutrino-mp/configure $(SILENT_OPT) --enable-silent-rules \
+		$(SOURCE_DIR)/neutrino-mp/configure  $(SILENT_CONFIGURE) --enable-silent-rules \
 			--build=$(BUILD) \
 			--host=$(TARGET) \
 			$(N_CONFIG_OPTS) \
-			--with-boxtype=$(BOXTYPE) \
-			--enable-upnp \
-			--with-tremor \
-			--enable-reschange \
-			--with-libdir=/usr/lib \
-			--with-datadir=/usr/share/tuxbox \
-			--with-fontdir=/usr/share/fonts \
-			--with-configdir=/var/tuxbox/config \
-			--with-gamesdir=/var/tuxbox/games \
-			--with-iconsdir=/usr/share/tuxbox/neutrino/icons \
-			--with-iconsdir_var=/var/tuxbox/icons \
-			--with-luaplugindir=/var/tuxbox/plugins \
-			--with-localedir=/usr/share/tuxbox/neutrino/locale \
-			--with-localedir_var=/var/tuxbox/locale \
-			--with-plugindir=/var/tuxbox/plugins \
-			--with-plugindir_var=/var/tuxbox/plugins \
-			--with-private_httpddir=/usr/share/tuxbox/neutrino/httpd \
-			--with-themesdir=/usr/share/tuxbox/neutrino/themes \
-			--with-themesdir_var=/var/tuxbox/themes \
 			--with-stb-hal-includes=$(SOURCE_DIR)/libstb-hal-max/include \
-			--with-stb-hal-build=$(LH_OBJDIR) \
-			PKG_CONFIG=$(PKG_CONFIG) \
-			PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) \
-			CFLAGS="$(N_CFLAGS)" CXXFLAGS="$(N_CFLAGS)" CPPFLAGS="$(N_CPPFLAGS)"
+			--with-stb-hal-build=$(LH_OBJDIR)
 		@touch $@
 
 $(SOURCE_DIR)/neutrino-mp/src/gui/version.h:
@@ -911,3 +852,4 @@ neutrino-mp-distclean:
 	rm -f $(D)/neutrino-mp.do_prepare
 	rm -f $(D)/neutrino-mp.do_compile
 	rm -f $(D)/neutrino-mp
+

@@ -319,7 +319,7 @@
  	FP_ICON_HD,
  	FP_ICON_HDD,
  	FP_ICON_LOCK,
-@@ -218,9 +431,9 @@
+@@ -218,9 +432,9 @@
  	FP_ICON_TV = 0,
  	FP_ICON_MAIL = 0,
  	FP_ICON_BT = 0,
@@ -330,115 +330,31 @@
  	FP_ICON_HD,
  	FP_ICON_HDD,
  	FP_ICON_LOCK,
-@@ -242,8 +456,23 @@
+@@ -242,8 +456,22 @@
  	FP_ICON_RECORD = FP_ICON_REC,
  	FP_ICON_DOWNLOAD,
  	FP_ICON_TIMESHIFT,
 -#endif
 -#if !defined(BOXMODEL_UFS910) && !defined(BOXMODEL_UFS922) && !defined(BOXMODEL_UFS912) && !defined(BOXMODEL_UFS913) && !defined(BOXMODEL_FORTIS_HDBOX)
-+#if 0
-+//#endif
-+//#if !defined(BOXMODEL_TF7700) \
-+// && !defined(BOXMODEL_UFS910) \
-+// && !defined(BOXMODEL_UFS922) \
-+// && !defined(BOXMODEL_UFS912) \
-+// && !defined(BOXMODEL_UFS913) \
-+// && !defined(BOXMODEL_FORTIS_HDBOX) \
-+// && !defined(BOXMODEL_OCTAGON1008) \
-+// && !defined(BOXMODEL_ATEVIO7500) \
-+// && !defined(BOXMODEL_HS7110) \
-+// && !defined(BOXMODEL_HS7420) \
-+// && !defined(BOXMODEL_HS7810A) \
-+// && !defined(BOXMODEL_HS7119) \
-+// && !defined(BOXMODEL_HS7429) \
++/*#endif
++#if !defined(BOXMODEL_TF7700) \
++ && !defined(BOXMODEL_UFS910) \
++ && !defined(BOXMODEL_UFS922) \
++ && !defined(BOXMODEL_UFS912) \
++ && !defined(BOXMODEL_UFS913) \
++ && !defined(BOXMODEL_FORTIS_HDBOX) \
++ && !defined(BOXMODEL_OCTAGON1008) \
++ && !defined(BOXMODEL_ATEVIO7500) \
++ && !defined(BOXMODEL_HS7110) \
++ && !defined(BOXMODEL_HS7420) \
++ && !defined(BOXMODEL_HS7810A) \
++ && !defined(BOXMODEL_HS7119) \
++ && !defined(BOXMODEL_HS7429) \
 +// && !defined(BOXMODEL_HS7819)
-+#endif
++*/
  	FP_ICON_MAX
  #endif
  } fp_icon;
- 
--typedef enum {
-+typedef enum
-+{
- 	FP_FLAG_NONE			= 0x00,
- 	FP_FLAG_SCROLL_ON		= 0x01,	/* switch scrolling on */
--	FP_FLAG_SCROLL_LTR		= 0x02,	/* scroll from left to rightinstead of default right to left direction (i.e. for arabic text) */
-+	FP_FLAG_SCROLL_LTR		= 0x02,	/* scroll from left to right instead of default right to left direction (i.e. for arabic text) */
- 	FP_FLAG_SCROLL_SIO		= 0x04,	/* start/stop scrolling with empty screen (scroll in/out) */
- 	FP_FLAG_SCROLL_DELAY		= 0x08,	/* delayed scroll start */
- 	FP_FLAG_ALIGN_LEFT		= 0x10,	/* align the text in display from the left (default) */
-@@ -259,7 +475,8 @@
- 	FP_FLAG_UPDATE_SCROLL_POS	= 0x40,	/* update the current position for scrolling */
- } fp_flag;
- 
--typedef struct {
-+typedef struct
-+{
- 	unsigned char		brightness;
- 	unsigned char		flags;
- 	unsigned char		current_hour;
-@@ -268,7 +485,8 @@
- 	unsigned char		timer_minutes_lo;
- } fp_standby_data_t;
- 
--typedef enum {
-+typedef enum
-+{
- 	FP_LED_1_ON		= 0x81,
- 	FP_LED_2_ON		= 0x82,
- 	FP_LED_3_ON		= 0x83,
-@@ -277,13 +495,15 @@
- 	FP_LED_3_OFF		= 0x03,
- } fp_led_ctrl_t;
- 
--typedef struct {
-+typedef struct
-+{
- 	unsigned char		source;
- 	unsigned char		time_minutes_hi;
- 	unsigned char		time_minutes_lo;
- } fp_wakeup_data_t;
- 
--typedef enum {
-+typedef enum
-+{
- 	FP_WAKEUP_SOURCE_TIMER  = 0x01,
- 	FP_WAKEUP_SOURCE_BUTTON = 0x02,
- 	FP_WAKEUP_SOURCE_REMOTE = 0x04,
-@@ -291,25 +511,29 @@
- 	FP_WAKEUP_SOURCE_POWER  = 0xFF
- } fp_wakeup_source;
- 
--typedef struct {
-+typedef struct
-+{
- 	unsigned short		addr;
- 	unsigned short		cmd;
- } fp_standby_cmd_data_t;
- 
--typedef enum {
-+typedef enum
-+{
- 	FP_DISPLAY_TEXT_NONE	= 0,
- 	FP_DISPLAY_TEXT_LIMITED,
- 	FP_DISPLAY_TEXT_ALL,
- } fp_display_text_type_t;
- 
--typedef enum {
-+typedef enum
-+{
- 	FP_DISPLAY_TYPE_NONE	= 0,
- 	FP_DISPLAY_TYPE_VFD,
- 	FP_DISPLAY_TYPE_OLED,
- 	FP_DISPLAY_TYPE_LED_SEGMENT
- } fp_display_type_t;
- 
--typedef struct {
-+typedef struct
-+{
- 	fp_display_type_t	display_type;
- 	unsigned short		xres, yres;
- 	unsigned int		segment_count;
 --- libstb-hal-cst-next.org/libduckbox/hardware_caps.c
 +++ libstb-hal-cst-next/libduckbox/hardware_caps.c
 @@ -118,6 +118,15 @@

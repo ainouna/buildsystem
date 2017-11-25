@@ -71,8 +71,8 @@ $(D)/neutrino-mp-plugins.do_prepare:
 	$(SILENT)rm -rf $(SOURCE_DIR)/neutrino-mp-plugins
 	$(SILENT)rm -rf $(SOURCE_DIR)/neutrino-mp-plugins.org
 	$(SET) -e; if [ -d $(ARCHIVE)/neutrino-mp-plugins.git ]; \
-		then cd $(ARCHIVE)/neutrino-mp-plugins.git; git pull; \
-		else cd $(ARCHIVE); git clone https://github.com/Duckbox-Developers/neutrino-mp-plugins.git neutrino-mp-plugins.git; \
+		then cd $(ARCHIVE)/neutrino-mp-plugins.git; git pull -q; \
+		else cd $(ARCHIVE); git clone -q https://github.com/Duckbox-Developers/neutrino-mp-plugins.git neutrino-mp-plugins.git; \
 		fi
 	$(SILENT)cp -ra $(ARCHIVE)/neutrino-mp-plugins.git $(SOURCE_DIR)/neutrino-mp-plugins
 ifeq ($(BOXARCH), arm)
@@ -83,10 +83,11 @@ endif
 
 $(SOURCE_DIR)/neutrino-mp-plugins/config.status: $(D)/bootstrap
 	$(SILENT)rm -rf $(NP_OBJDIR)
-	$(SILENT)test -d $(NP_OBJDIR) || mkdir -p $(NP_OBJDIR)
+	test -d $(NP_OBJDIR) || mkdir -p $(NP_OBJDIR)
 	cd $(NP_OBJDIR); \
+		$(SOURCE_DIR)/neutrino-mp-plugins/autogen.sh && automake --add-missing; \
 		$(BUILDENV) \
-		./configure $(SILENT_OPT) \
+		$(SOURCE_DIR)/neutrino-mp-plugins/configure $(SILENT_OPT) \
 			--host=$(TARGET) \
 			--build=$(BUILD) \
 			--prefix= \
@@ -103,6 +104,7 @@ $(SOURCE_DIR)/neutrino-mp-plugins/config.status: $(D)/bootstrap
 			PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) \
 			CPPFLAGS="$(N_CPPFLAGS) $(EXTRA_CPPFLAGS_MP_PLUGINS) -DNEW_LIBCURL" \
 			LDFLAGS="$(TARGET_LDFLAGS) -L$(NP_OBJDIR)/fx2/lib/.libs"
+	@touch $@
 
 $(D)/neutrino-mp-plugins.do_compile: $(SOURCE_DIR)/neutrino-mp-plugins/config.status
 	cd $(SOURCE_DIR)/neutrino-mp-plugins; \
@@ -218,6 +220,7 @@ $(SOURCE_DIR)/neutrino-hd2-plugins/config.status: $(D)/bootstrap neutrino-hd2
 			PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) \
 			CPPFLAGS="$(CPPFLAGS) -I$(driverdir) -I$(KERNEL_DIR)/include -I$(TARGET_DIR)/include" \
 			LDFLAGS="$(TARGET_LDFLAGS)"
+	@touch $@
 
 $(D)/neutrino-hd2-plugins.do_compile: $(SOURCE_DIR)/neutrino-hd2-plugins/config.status
 	$(SILENT)cd $(SOURCE_DIR)/neutrino-hd2-plugins

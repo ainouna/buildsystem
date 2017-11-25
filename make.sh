@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20171119.1
+# Version 20171125.1
 
 ##############################################
 
@@ -279,7 +279,7 @@ case "$IMAGE" in
 				NEUTRINO_VAR=mp;;
 			2)	echo "make yaud-neutrino-mp-plugins" > $CURDIR/build
 				NEUTRINO_VAR="mp + plugins";;
-			3)	echo "make yaud-neutrino-next" > $CURDIR/build
+			3)	echo "make yaud-neutrino-mp-cst-next" > $CURDIR/build
 				NEUTRINO_VAR=mp-cst-next;;
 			4)	echo "make yaud-neutrino-mp-cst-next-plugins" > $CURDIR/build
 				NEUTRINO_VAR="mp-cst-next + plugins";;
