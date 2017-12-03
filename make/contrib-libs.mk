@@ -812,7 +812,7 @@ $(D)/jpeg: $(D)/bootstrap $(ARCHIVE)/$(JPEG_SOURCE)
 #
 # jpeg_turbo
 #
-JPEG_TURBO_VER = 1.5.1
+JPEG_TURBO_VER = 1.5.2
 JPEG_TURBO_SOURCE = libjpeg-turbo-$(JPEG_TURBO_VER).tar.gz
 
 $(ARCHIVE)/$(JPEG_TURBO_SOURCE):
