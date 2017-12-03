@@ -20,7 +20,7 @@ toolcheck: $(TOOLCHECK) preqs
 #
 # host_pkgconfig
 #
-HOST_PKGCONFIG_VER = 0.29.1
+HOST_PKGCONFIG_VER = 0.29.2
 HOST_PKGCONFIG_SOURCE = pkg-config-$(HOST_PKGCONFIG_VER).tar.gz
 
 $(ARCHIVE)/$(HOST_PKGCONFIG_SOURCE):
