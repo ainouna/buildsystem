@@ -97,7 +97,7 @@ help:
 	@echo "* make bootstrap           - prepares for building"
 	@echo "* make print-targets       - print out all available targets"
 	@echo ""
-	@echo "later, you might find those useful:"
+	@echo "later, you might find these useful:"
 	@echo "* make update-self         - update the build system"
 	@echo "* make update              - update the build system, apps, driver and flash"
 	@echo ""
@@ -112,8 +112,8 @@ include make/contrib-apps.mk
 ifeq ($(BOXARCH), sh4)
 include make/linux-kernel-sh4.mk
 include make/crosstool-sh4.mk
-include make/driver.mk
-include make/gstreamer.mk
+include make/driver-sh4.mk
+include make/gstreamer-sh4.mk
 else
 include make/linux-kernel-arm.mk
 include make/crosstool-arm.mk
@@ -194,7 +194,7 @@ update:
 	@echo;
 
 all:
-	@echo "'make all' is not a valid target. Please read the documentation."
+	@echo "'make all' is not a valid target. Please execute 'make print-targets' to display the alternatives."
 
 # target for testing only. not useful otherwise
 everything: $(shell sed -n 's/^\$$.D.\/\(.*\):.*/\1/p' make/*.mk)
