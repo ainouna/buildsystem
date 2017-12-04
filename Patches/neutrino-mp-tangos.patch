@@ -48,7 +48,7 @@
  NEUTRINO_CPP  SglobalInfo	g_info;
 --- neutrino-mp-tangos.org/src/neutrino.cpp
 +++ neutrino-mp-tangos/src/neutrino.cpp
-@@ -4599,6 +4599,9 @@
+@@ -4613,6 +4613,9 @@
  			CVFD::getInstance()->Clear();
  			CVFD::getInstance()->setMode(CVFD::MODE_STANDBY);
  		}
@@ -58,7 +58,7 @@
  		CVFD::getInstance()->setBacklight(g_settings.backlight_standby);
  
  		InfoClock->enableInfoClock(false);
-@@ -4630,7 +4633,11 @@
+@@ -4644,7 +4647,11 @@
  		// Active standby off
  		powerManager->SetStandby(false, false);
  		CVFD::getInstance()->setMode(CVFD::MODE_TVRADIO);
@@ -881,6 +881,20 @@
  }
 --- neutrino-mp-tangos.org/src/gui/movieplayer.cpp
 +++ neutrino-mp-tangos/src/gui/movieplayer.cpp
+@@ -82,10 +82,10 @@
+ #include <iconv.h>
+ #include <libdvbsub/dvbsub.h>
+ #include <audio.h>
+-#ifdef ENABLE_GRAPHLCD
+-#include <driver/nglcd.h>
++//#ifdef ENABLE_GRAPHLCD
++//#include <driver/nglcd.h>
+ bool glcd_play = false;
+-#endif
++//#endif
+ #include <gui/widget/stringinput_ext.h>
+ #include <gui/screensetup.h>
+ #include <gui/widget/msgbox.h>
 @@ -525,8 +525,10 @@
   && !defined(BOXMODEL_FORTIS_HDBOX) \
   && !defined(BOXMODEL_OCTAGON1008) \
@@ -914,7 +928,55 @@
   && !defined(BOXMODEL_HS7819) \
   && !defined(BOXMODEL_CUBEREVO_MINI2) \
   && !defined(BOXMODEL_IPBOX9900) \
-@@ -1662,7 +1668,15 @@
+@@ -1404,15 +1410,15 @@
+ #if HAVE_SH4_HARDWARE
+ 	old3dmode = frameBuffer->get3DMode();
+ #endif
+-#ifdef ENABLE_GRAPHLCD
+-	nGLCD::MirrorOSD(false);
+-	if (p_movie_info)
+-		nGLCD::lockChannel(p_movie_info->channelName, p_movie_info->epgTitle);
+-	else {
+-		glcd_play = true;
+-		nGLCD::lockChannel(g_Locale->getText(LOCALE_MOVIEPLAYER_HEAD), file_name.c_str(), file_prozent);
+-	}
+-#endif
++//#ifdef ENABLE_GRAPHLCD
++//	nGLCD::MirrorOSD(false);
++//	if (p_movie_info)
++//		nGLCD::lockChannel(p_movie_info->channelName, p_movie_info->epgTitle);
++//	else {
++//		glcd_play = true;
++//		nGLCD::lockChannel(g_Locale->getText(LOCALE_MOVIEPLAYER_HEAD), file_name.c_str(), file_prozent);
++//	}
++//#endif
+ 	pthread_t thrStartHint = 0;
+ 	if (is_file_player) {
+ 		showStartingHint = true;
+@@ -1620,14 +1626,14 @@
+ 
+ 	while (playstate >= CMoviePlayerGui::PLAY)
+ 	{
+-#ifdef ENABLE_GRAPHLCD
+-		if (p_movie_info)
+-			nGLCD::lockChannel(p_movie_info->channelName, p_movie_info->epgTitle, duration ? (100 * position / duration) : 0);
+-		else {
+-			glcd_play = true;
+-			nGLCD::lockChannel(g_Locale->getText(LOCALE_MOVIEPLAYER_HEAD), file_name.c_str(), file_prozent);
+-		}
+-#endif
++//#ifdef ENABLE_GRAPHLCD
++//		if (p_movie_info)
++//			nGLCD::lockChannel(p_movie_info->channelName, p_movie_info->epgTitle, duration ? (100 * position / duration) : 0);
++//		else {
++//			glcd_play = true;
++//			nGLCD::lockChannel(g_Locale->getText(LOCALE_MOVIEPLAYER_HEAD), file_name.c_str(), file_prozent);
++//		}
++//#endif
+ 		if (update_lcd) {
+ 			update_lcd = false;
+ 			updateLcd();
+@@ -1660,7 +1666,15 @@
  					ss -= hh * 3600;
  					mm = ss/60;
  					ss -= mm * 60;
@@ -931,4 +993,98 @@
  					CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8);
  					CVFD::getInstance()->showMenuText(0, Value.c_str(), -1, true);
  				}
+@@ -2199,12 +2213,12 @@
+ 	CScreenSetup cSS;
+ 	cSS.showBorder(CZapit::getInstance()->GetCurrentChannelID());
+ #endif
+-#ifdef ENABLE_GRAPHLCD
+-	if (p_movie_info || glcd_play == true) {
+-		glcd_play = false;
+-		nGLCD::unlockChannel();
+-	}
+-#endif
++//#ifdef ENABLE_GRAPHLCD
++//	if (p_movie_info || glcd_play == true) {
++//		glcd_play = false;
++//		nGLCD::unlockChannel();
++//	}
++//#endif
+ 	if (iso_file) {
+ 		iso_file = false;
+ 		if (umount2(ISO_MOUNT_POINT, MNT_FORCE))
+@@ -2282,10 +2296,10 @@
+ 		}
+ 		if (!movie_info.channelName.empty() || !movie_info.epgTitle.empty())
+ 			p_movie_info = &movie_info;
+-#ifdef ENABLE_GRAPHLCD
+-		if (p_movie_info)
+-			nGLCD::lockChannel(p_movie_info->channelName, p_movie_info->epgTitle);
+-#endif
++//#ifdef ENABLE_GRAPHLCD
++//		if (p_movie_info)
++//			nGLCD::lockChannel(p_movie_info->channelName, p_movie_info->epgTitle);
++//#endif
+ 	}
+ 
+ 	if (p_movie_info) {
+@@ -2809,10 +2823,10 @@
+ 		tuxtx_pause_subtitle(true);
+ 		frameBuffer->paintBackground();
+ 	}
+-#ifdef ENABLE_GRAPHLCD
+-	if (enable_glcd_mirroring)
+-		nGLCD::MirrorOSD(g_settings.glcd_mirror_osd);
+-#endif
++//#ifdef ENABLE_GRAPHLCD
++//	if (enable_glcd_mirroring)
++//		nGLCD::MirrorOSD(g_settings.glcd_mirror_osd);
++//#endif
+ #endif
+ }
+ 
+@@ -2850,9 +2864,9 @@
+ {
+ #if HAVE_SH4_HARDWARE
+ 	printf("[CMoviePlayerGui] %s: %s\n", __FUNCTION__, show ? "Show" : "Not show");
+-#ifdef ENABLE_GRAPHLCD
+-	nGLCD::MirrorOSD(false);
+-#endif
++//#ifdef ENABLE_GRAPHLCD
++//	nGLCD::MirrorOSD(false);
++//#endif
+ 
+ 	if(!show)
+ 		return;
+--- neutrino-mp-tangos/src/gui/vfd_setup.cpp
++++ neutrino-mp-tangos/src/gui/vfd_setup.cpp
+@@ -35,9 +35,9 @@
+ 
+ 
+ #include "vfd_setup.h"
+-#ifdef ENABLE_GRAPHLCD
+-#include <gui/glcdsetup.h>
+-#endif
++//#ifdef ENABLE_GRAPHLCD
++//#include <gui/glcdsetup.h>
++//#endif
+ 
+ #include <global.h>
+ #include <neutrino.h>
+@@ -205,11 +205,11 @@
+ 		oj->setHint("", LOCALE_MENU_HINT_VFD_NOTIFY_RCLOCK);
+ 		vfds->addItem(oj);
+ 	}
+-#ifdef ENABLE_GRAPHLCD
+-	vfds->addItem(GenericMenuSeparatorLine);
+-	GLCD_Menu glcdMenu;
+-	vfds->addItem(new CMenuForwarder(LOCALE_GLCD_HEAD, true, NULL, &glcdMenu, NULL, CRCInput::RC_blue));
+-#endif
++//#ifdef ENABLE_GRAPHLCD
++//	vfds->addItem(GenericMenuSeparatorLine);
++//	GLCD_Menu glcdMenu;
++//	vfds->addItem(new CMenuForwarder(LOCALE_GLCD_HEAD, true, NULL, &glcdMenu, NULL, CRCInput::RC_blue));
++//#endif
+ 
+ 	int res = vfds->exec(NULL, "");
+ 
 

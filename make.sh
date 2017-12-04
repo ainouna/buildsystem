@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20171125.1
+# Version 20171203.2
 
 ##############################################
 
@@ -258,46 +258,71 @@ echo "IMAGE=$IMAGE" >> config
 
 case "$IMAGE" in
 	neutrin*)
-		case $5 in
-			[1-9] | 1[0] )	REPLY=$5;;
-			*)	echo -e "\nWhich Neutrino variant do you want to build?"
-				echo "   1)  Neutrino mp"
-				echo "   2)  Neutrino mp + plugins"
-				echo "   3)  Neutrino mp (cst-next)"
-				echo "   4)  Neutrino mp (cst-next) + plugins"
-				echo "   5)  Neutrino mp (cst-next-ni)"
-				echo "   6)  Neutrino mp (cst-next-ni) + plugins"
-				echo "   7)  Neutrino HD2 exp"
-				echo "   8)  Neutrino HD2 exp + plugins"
-				echo "   9)  Neutrino mp (Tangos)"
-				echo "  10*) Neutrino mp (Tangos) + plugins"
-#				echo "  11)  Neutrino mp (martii-github)"
-				read -p " Select Neutrino variant (1-0)? ";;
-		esac
-		case "$REPLY" in
-			1)	echo "make yaud-neutrino-mp" > $CURDIR/build
-				NEUTRINO_VAR=mp;;
-			2)	echo "make yaud-neutrino-mp-plugins" > $CURDIR/build
-				NEUTRINO_VAR="mp + plugins";;
-			3)	echo "make yaud-neutrino-mp-cst-next" > $CURDIR/build
-				NEUTRINO_VAR=mp-cst-next;;
-			4)	echo "make yaud-neutrino-mp-cst-next-plugins" > $CURDIR/build
-				NEUTRINO_VAR="mp-cst-next + plugins";;
-			5)	echo "make yaud-neutrino-mp-cst-next-ni" > $CURDIR/build
-				NEUTRINO_VAR="mp-cst-next-ni";;
-			6)	echo "make yaud-neutrino-mp-cst-next-ni-plugins" > $CURDIR/build
-				NEUTRINO_VAR="mp-cst-next-ni + plugins";;
-			7)	echo "make yaud-neutrino-hd2" > $CURDIR/build
-				NEUTRINO_VAR="neutrino-hd2";;
-			8)	echo "make yaud-neutrino-hd2-plugins" > $CURDIR/build
-				NEUTRINO_VAR="neutrino-hd2 + plugins";;
-			9)	echo "make yaud-neutrino-mp-tangos" > $CURDIR/build
-				NEUTRINO_VAR=mp-tangos;;
-			*)	echo "make yaud-neutrino-mp-tangos-plugins" > $CURDIR/build
-				NEUTRINO_VAR="mp-tangos + plugins";;
-		esac
-		echo "NEUTRINO_VARIANT=$NEUTRINO_VAR" >> config
-		MEDIAFW="buildinplayer"
+		if [ $BOXARCH == "sh4" ]; then
+			case $5 in
+				[1-9] ) REPLY=$5;;
+				*)	echo -e "\nWhich Neutrino variant do you want to build?"
+					echo "   1)  Neutrino mp (max)"
+					echo "   2)  Neutrino mp (max) + plugins"
+					echo "   3)  Neutrino mp (ddt)"
+					echo "   4)  Neutrino mp (ddt) + plugins"
+					echo "   5)  Neutrino HD2 exp"
+					echo "   6)  Neutrino HD2 exp + plugins"
+					echo "   7)  Neutrino mp (Tangos)"
+					echo "   8*) Neutrino mp (Tangos) + plugins"
+					echo "   9)  Neutrino mp (Tangos) + plugins + shairport"
+#					echo "  10)  Neutrino mp (martii-github)"
+					read -p " Select Neutrino variant (1-9)? ";;
+			esac
+			case "$REPLY" in
+				1)	echo "make neutrino-mp-max" > $CURDIR/build
+					NEUTRINO_VAR="mp-max";;
+				2)	echo "make neutrino-mp-max-plugins" > $CURDIR/build
+					NEUTRINO_VAR="mp-max + plugins";;
+				3)	echo "make neutrino-mp-ddt" > $CURDIR/build
+					NEUTRINO_VAR="mp-ddt";;
+				4)	echo "make neutrino-mp-ddt-plugins" > $CURDIR/build
+					NEUTRINO_VAR="mp-ddt + plugins";;
+				5)	echo "make neutrino-hd2" > $CURDIR/build
+					NEUTRINO_VAR="neutrino-hd2";;
+				6)	echo "make neutrino-hd2-plugin" > $CURDIR/build
+					NEUTRINO_VAR="neutrino-hd2 + plugins";;
+				7)	echo "make neutrino-mp-tangos" > $CURDIR/build
+					NEUTRINO_VAR="mp-tangos";;
+#				8)	echo "make neutrino-mp-tangos-plugins" > $CURDIR/build
+#					NEUTRINO_VAR="mp-tangos + plugins";;
+				9)	echo "make neutrino-mp-tangos-all" > $CURDIR/build
+					NEUTRINO_VAR="mp-tangos + plugins + shairport";;
+				*)	echo "make neutrino-mp-tangos-plugins" > $CURDIR/build
+					NEUTRINO_VAR="mp-tangos + plugins";;
+			esac
+			echo "NEUTRINO_VARIANT=$NEUTRINO_VAR" >> config
+			MEDIAFW="buildinplayer"
+		else
+			case $5 in
+				[1-4] ) REPLY=$5;;
+				*)	echo -e "\nWhich Neutrino variant do you want to build?"
+					echo "   1)  Neutrino mp (max)"
+					echo "   2*) Neutrino mp (max) + plugins"
+					echo "   3)  Neutrino mp (ni)"
+					echo "   4)  Neutrino mp (ni) + plugins"
+					read -p " Select Neutrino variant (1-4)? ";;
+			esac
+			case "$REPLY" in
+				1)	echo "make neutrino-mp-max" > $CURDIR/build
+					NEUTRINO_VAR="mp-max";;
+#				2)	echo "make neutrino-mp-max-plugins" > $CURDIR/build
+#					NEUTRINO_VAR="mp-max + plugins";;
+				3)	echo "make neutrino-mp-ni" > $CURDIR/build
+					NEUTRINO_VAR="mp-ni";;
+				4)	echo "make neutrino-mp-ni-plugins" > $CURDIR/build
+					NEUTRINO_VAR="mp-ni + plugins";;
+				*)	echo "make neutrino-mp-max-plugins" > $CURDIR/build
+					NEUTRINO_VAR="mp-max + plugins";;
+			esac
+			echo "NEUTRINO_VARIANT=$NEUTRINO_VAR" >> config
+			MEDIAFW="buildinplayer"
+		fi
 
 		if [ "$LASTIMAGE1" ] || [ "$LASTIMAGE3" ] || [ ! "$LASTBOX" == "$BOXTYPE" ]; then
 			if [ -e ./.deps/ ]; then
