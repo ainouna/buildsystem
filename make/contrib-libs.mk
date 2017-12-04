@@ -1841,7 +1841,13 @@ LIBXML2_PATCH = libxml2-$(LIBXML2_VER).patch
 $(ARCHIVE)/$(LIBXML2_SOURCE):
 	$(WGET) ftp://xmlsoft.org/libxml2/$(LIBXML2_SOURCE)
 
-ifeq ($(BOXARCH), sh4)
+ifeq ($(IMAGE), $(filter $(IMAGE), enigma2 enigma2-wlandriver))
+LIBXML2_CONF_OPTS  = --with-python=$(HOST_DIR)
+LIBXML2_CONF_OPTS += --with-python-install-dir=/$(PYTHON_DIR)/site-packages
+endif
+
+ifeq ($(IMAGE), $(filter $(IMAGE), neutrino neutrino-wlandriver))
+LIBXML2_CONF_OPTS  = --without-python
 LIBXML2_CONF_OPTS += --without-iconv
 LIBXML2_CONF_OPTS += --with-minimum
 endif
@@ -1859,15 +1865,10 @@ $(D)/libxml2: $(D)/bootstrap $(D)/zlib $(ARCHIVE)/$(LIBXML2_SOURCE)
 			--datarootdir=/.remove \
 			--enable-shared \
 			--disable-static \
-			--without-python \
-			--without-catalog \
-			--without-debug \
 			--without-c14n \
-			--without-legacy \
+			--without-debug \
 			--without-docbook \
 			--without-mem-debug \
-			--without-lzma \
-			--without-schematron \
 			$(LIBXML2_CONF_OPTS) \
 		; \
 		$(MAKE) all; \
@@ -1910,6 +1911,7 @@ $(D)/libxslt: $(D)/bootstrap $(D)/libxml2 $(ARCHIVE)/$(LIBXSLT_SOURCE)
 			--without-crypto \
 			--without-debug \
 			--without-mem-debug \
+			--without-debugger \
 		; \
 		$(MAKE) all; \
 		sed -e "s,^prefix=,prefix=$(TARGET_DIR)," < xslt-config > $(HOST_DIR)/bin/xslt-config; \
