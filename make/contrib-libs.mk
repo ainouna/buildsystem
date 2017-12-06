@@ -1847,9 +1847,11 @@ LIBXML2_CONF_OPTS += --with-python-install-dir=/$(PYTHON_DIR)/site-packages
 endif
 
 ifeq ($(IMAGE), $(filter $(IMAGE), neutrino neutrino-wlandriver))
-LIBXML2_CONF_OPTS  = --without-python
+LIBXML2_CONF_OPTS  = --without-python --without-catalog
+ifeq ($(BOXARCH), sh4)
 LIBXML2_CONF_OPTS += --without-iconv
 LIBXML2_CONF_OPTS += --with-minimum
+endif
 endif
 
 $(D)/libxml2: $(D)/bootstrap $(D)/zlib $(ARCHIVE)/$(LIBXML2_SOURCE)
