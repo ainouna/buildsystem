@@ -26,7 +26,7 @@ PYTHON_INSTALL = \
 # host_python
 #
 PYTHON_VER_MAJOR = 2.7
-PYTHON_VER_MINOR = 12
+PYTHON_VER_MINOR = 13
 PYTHON_VER = $(PYTHON_VER_MAJOR).$(PYTHON_VER_MINOR)
 PYTHON_SOURCE = Python-$(PYTHON_VER).tar.xz
 HOST_PYTHON_PATCH = python-$(PYTHON_VER).patch
@@ -201,11 +201,12 @@ $(D)/python_lxml: $(D)/bootstrap $(D)/python $(D)/libxslt $(D)/python_setuptools
 #
 # python_twisted
 #
-PYTHON_TWISTED_VER = 16.0.0
+PYTHON_TWISTED_VER = 16.4.0
 PYTHON_TWISTED_SOURCE = Twisted-$(PYTHON_TWISTED_VER).tar.bz2
 
 $(ARCHIVE)/$(PYTHON_TWISTED_SOURCE):
-	$(WGET) https://pypi.python.org/packages/source/T/Twisted/$(PYTHON_TWISTED_SOURCE)
+#	$(WGET) https://pypi.python.org/packages/source/T/Twisted/$(PYTHON_TWISTED_SOURCE)
+	$(WGET) https://twistedmatrix.com/Releases/Twisted/16.4/$(PYTHON_TWISTED_SOURCE)
 
 $(D)/python_twisted: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(D)/python_zope_interface $(D)/python_pyopenssl $(D)/python_service_identity $(ARCHIVE)/$(PYTHON_TWISTED_SOURCE)
 	$(START_BUILD)
@@ -287,11 +288,12 @@ $(D)/python_pyusb: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(ARCHIVE)/
 #
 # python_ipaddress
 #
-PYTHON_IPADDRESS_VER = 1.0.17
+PYTHON_IPADDRESS_VER = 1.0.18
 PYTHON_IPADDRESS_SOURCE = ipaddress-$(PYTHON_IPADDRESS_VER).tar.gz
 
 $(ARCHIVE)/$(PYTHON_IPADDRESS_SOURCE):
-	$(WGET) https://distfiles.macports.org/py-ipaddress/$(PYTHON_IPADDRESS_SOURCE)
+#	$(WGET) https://distfiles.macports.org/py-ipaddress/$(PYTHON_IPADDRESS_SOURCE)
+	$(WGET) https://files.pythonhosted.org/packages/source/i/ipaddress/$(PYTHON_IPADDRESS_SOURCE)
 
 $(D)/python_ipaddress: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(ARCHIVE)/$(PYTHON_IPADDRESS_SOURCE)
 	$(START_BUILD)
