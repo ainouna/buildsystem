@@ -679,17 +679,20 @@ endif
 # copy root_neutrino
 #
 	$(SILENT)cp -aR $(SKEL_ROOT)/root_neutrino/etc/* $(RELEASE_DIR)/etc/
-ifeq ($(NEUTRINO_VARIANT), $(filter $(NEUTRINO_VARIANT), mp-cst-next, mp-cst-next + plugins))
-	$(SILENT)cp -aR $(SKEL_ROOT)/root_neutrino/var_cst_next/* $(RELEASE_DIR)/var/
+ifeq ($(NEUTRINO_VARIANT), $(filter $(NEUTRINO_VARIANT), mp-ddt, mp-ddt + plugins))
+	$(SILENT)cp -aR $(SKEL_ROOT)/root_neutrino/var_ddt/* $(RELEASE_DIR)/var/
 endif
-ifeq ($(NEUTRINO_VARIANT), $(filter $(NEUTRINO_VARIANT), mp-cst-next-ni, mp-cst-next-ni + plugins))
-	$(SILENT)cp -aR $(SKEL_ROOT)/root_neutrino/var_cst_next_ni/* $(RELEASE_DIR)/var/
+ifeq ($(NEUTRINO_VARIANT), $(filter $(NEUTRINO_VARIANT), mp-ni, mp-ni + plugins))
+	$(SILENT)cp -aR $(SKEL_ROOT)/root_neutrino/var_ni/* $(RELEASE_DIR)/var/
 endif
 ifeq ($(NEUTRINO_VARIANT), $(filter $(NEUTRINO_VARIANT), neutrino-hd2, neutrino-hd2 + plugins))
 	$(SILENT)cp -aR $(SKEL_ROOT)/root_neutrino/var_hd2/* $(RELEASE_DIR)/var/
 endif
-ifeq ($(NEUTRINO_VARIANT), $(filter $(NEUTRINO_VARIANT), mp-tangos, mp-tangos + plugins))
+ifeq ($(NEUTRINO_VARIANT), $(filter $(NEUTRINO_VARIANT), mp-tangos, mp-tangos + plugins, mp-tangos + plugins + shairport))
 	$(SILENT)cp -aR $(SKEL_ROOT)/root_neutrino/var_tangos/* $(RELEASE_DIR)/var/
+endif
+ifeq ($(NEUTRINO_VARIANT), $(filter $(NEUTRINO_VARIANT), mp-max, mp-max + plugins))
+	$(SILENT)cp -aR $(SKEL_ROOT)/root_neutrino/var_max/* $(RELEASE_DIR)/var/
 endif
 ifneq ($(BOXTYPE), $(filter $(BOXTYPE), atevio7500 spark7162 cuberevo_mini2 cuberevo_3000hd))
 	$(SILENT)rm -f $(RELEASE_DIR)/var/tuxbox/config/cables.xml
