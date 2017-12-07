@@ -4,7 +4,7 @@
 ENIGMA2_DEPS  = $(D)/bootstrap $(D)/opkg $(D)/ncurses $(LIRC) $(D)/libcurl $(D)/libid3tag $(D)/libmad
 ENIGMA2_DEPS += $(D)/libpng $(D)/libjpeg $(D)/giflib $(D)/freetype
 ENIGMA2_DEPS += $(D)/alsa_utils $(D)/ffmpeg
-ENIGMA2_DEPS += $(D)/libfribidi $(D)/libsigc_e2 $(D)/expat $(D)/libdvbsi $(D)/libusb
+ENIGMA2_DEPS += $(D)/libfribidi $(D)/expat $(D)/libdvbsi $(D)/libusb
 ENIGMA2_DEPS += $(D)/sdparm $(D)/minidlna $(D)/ethtool
 ENIGMA2_DEPS += python-all
 ENIGMA2_DEPS += $(D)/libdreamdvd $(D)/enigma2_tuxtxt32bpp $(D)/enigma2_hotplug_e2_helper $(D)/parted
@@ -19,7 +19,13 @@ ENIGMA2_DEPS += $(D)/busybox_usb
 E_CONFIG_OPTS += --enable-run_from_usb
 endif
 
-ifeq ($(E2_DIFF), $(filter $(E2_DIFF), 0 2))
+ifeq ($(E2_DIFF), $(filter $(E2_DIFF), 0))
+ENIGMA2_DEPS  += $(D)/libsigc
+else
+ENIGMA2_DEPS  += $(D)/libsigc_e2 
+endif
+
+ifeq ($(E2_DIFF), $(filter $(E2_DIFF), 0 2 3))
 ENIGMA2_DEPS  += $(D)/avahi
 endif
 
@@ -123,48 +129,61 @@ $(D)/enigma2.do_prepare: | $(ENIGMA2_DEPS)
 	HEAD_0="develop"; \
 	HEAD_1="master"; \
 	DIFF=$(E2_DIFF); \
+	B_ARCH=$(BOXARCH); \
 	rm -rf $(SOURCE_DIR)/enigma2; \
 	rm -rf $(SOURCE_DIR)/enigma2.org; \
 	clear; \
 	echo "Starting OpenPLi Enigma2 build"; \
 	echo "=============================="; \
 	echo; \
-	if [ "$$DIFF" != "1" ]; then \
-		echo "Repository : "$$REPO_0; \
-		echo "Revision   : "$$REVISION; \
-		echo "Diff       : "$$DIFF; \
+	if [ "$$B_ARCH" == "sh4" ]; then \
+		if [ "$$DIFF" != "1" ]; then \
+			echo "Repository : "$$REPO_0; \
+			echo "Revision   : "$$REVISION; \
+			echo "Diff       : "$$DIFF; \
+		else \
+			echo "Repository : "$$REPO_1; \
+		fi; \
+		echo; \
+		if [ "$$DIFF" != "1" ]; then \
+			[ -d "$(ARCHIVE)/enigma2-pli-nightly.git" ] && \
+			(cd $(ARCHIVE)/enigma2-pli-nightly.git; echo -n "Updating archived OpenPLi git..."; git pull -q; echo -e -n " done.\nChecking out HEAD..."; git checkout -q HEAD; echo " done."; cd "$(BUILD_TMP)";); \
+			[ -d "$(ARCHIVE)/enigma2-pli-nightly.git" ] || \
+			(echo -n "Cloning remote OpenPLi git..."; git clone -q -b $$HEAD_0 $$REPO_0 $(ARCHIVE)/enigma2-pli-nightly.git; echo " done."); \
+			echo -n "Copying local git content to build environment..."; cp -ra $(ARCHIVE)/enigma2-pli-nightly.git $(SOURCE_DIR)/enigma2; echo " done."; \
+			if [ "$$REVISION" != "newest" ]; then \
+				cd $(SOURCE_DIR)/enigma2; pwd; echo -n "Checking out revision $$REVISION..."; git checkout -q "$$REVISION"; echo " done."; \
+			fi; \
+			cp -ra $(SOURCE_DIR)/enigma2 $(SOURCE_DIR)/enigma2.org; \
+			echo "Applying diff-$$DIFF patch..."; \
+			set -e; cd $(SOURCE_DIR)/enigma2 && patch -p1 $(SILENT_PATCH) < "$(PATCHES)/enigma2-pli-nightly.$$DIFF.diff"; \
+			if [ "$(MEDIAFW)" == "eplayer3" ]; then \
+				set -e; cd $(SOURCE_DIR)/enigma2 && patch -p1 $(SILENT_PATCH) < "$(PATCHES)/eplayer3.$$DIFF.patch"; \
+			fi; \
+			echo "Patching to diff-$$DIFF completed."; \
+			cd $(SOURCE_DIR)/enigma2; \
+			echo -n "Building VFD-drivers..."; \
+			patch -p1 -s -i "$(PATCHES)/vfd-drivers.patch"; echo " done."; \
+			rm -rf $(TARGET_DIR)/usr/local/share/enigma2/rc_models; \
+			echo; \
+			echo -n "Patching remote control files..."; \
+			patch -p1 -s -i "$(PATCHES)/rc-models.patch"; \
+			echo -e " done.\nBuild preparation for OpenPLi complete."; echo; \
+		else \
+			[ -d "$(SOURCE_DIR)/enigma2" ] ; \
+			echo "Cloning local git content to build environment..."; \
+			git clone -b $$HEAD_1 $$REPO_1 $(SOURCE_DIR)/enigma2; \
+		fi; \
 	else \
-		echo "Repository : "$$REPO_1; \
-	fi; \
-	echo ""; \
-	if [ "$$DIFF" != "1" ]; then \
+		echo "Repository : "$$REPO_0; \
+		echo "Revision   : newest"; \
+		echo; \
 		[ -d "$(ARCHIVE)/enigma2-pli-nightly.git" ] && \
 		(cd $(ARCHIVE)/enigma2-pli-nightly.git; echo -n "Updating archived OpenPLi git..."; git pull -q; echo -e -n " done.\nChecking out HEAD..."; git checkout -q HEAD; echo " done."; cd "$(BUILD_TMP)";); \
 		[ -d "$(ARCHIVE)/enigma2-pli-nightly.git" ] || \
 		(echo -n "Cloning remote OpenPLi git..."; git clone -q -b $$HEAD_0 $$REPO_0 $(ARCHIVE)/enigma2-pli-nightly.git; echo " done."); \
 		echo -n "Copying local git content to build environment..."; cp -ra $(ARCHIVE)/enigma2-pli-nightly.git $(SOURCE_DIR)/enigma2; echo " done."; \
-		if [ "$$REVISION" != "newest" ]; then \
-			cd $(SOURCE_DIR)/enigma2; pwd; echo -n "Checking out revision $$REVISION..."; git checkout -q "$$REVISION"; echo " done."; \
-		fi; \
 		cp -ra $(SOURCE_DIR)/enigma2 $(SOURCE_DIR)/enigma2.org; \
-		echo "Applying diff-$$DIFF patch..."; \
-		set -e; cd $(SOURCE_DIR)/enigma2 && patch -p1 $(SILENT_PATCH) < "$(PATCHES)/enigma2-pli-nightly.$$DIFF.diff"; \
-		if [ "$(MEDIAFW)" == "eplayer3" ]; then \
-			set -e; cd $(SOURCE_DIR)/enigma2 && patch -p1 $(SILENT_PATCH) < "$(PATCHES)/eplayer3.$$DIFF.patch"; \
-		fi; \
-		echo "Patching to diff-$$DIFF completed."; \
-		cd $(SOURCE_DIR)/enigma2; \
-		echo -n "Building VFD-drivers..."; \
-		patch -p1 -s -i "$(PATCHES)/vfd-drivers.patch"; echo " done."; \
-		rm -rf $(TARGET_DIR)/usr/local/share/enigma2/rc_models; \
-		echo; \
-		echo -n "Patching remote control files..."; \
-		patch -p1 -s -i "$(PATCHES)/rc-models.patch"; \
-		echo -e " done.\nBuild preparation for OpenPLi complete."; echo; \
-	else \
-		[ -d "$(SOURCE_DIR)/enigma2" ] ; \
-		echo "Cloning local git content to build environment..."; \
-		git clone -b $$HEAD_1 $$REPO_1 $(SOURCE_DIR)/enigma2; \
 	fi
 	@touch $@
 

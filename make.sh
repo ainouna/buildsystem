@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20171203.2
+# Version 20171207.1
 
 ##############################################
 
@@ -112,14 +112,16 @@ case $1 in
 		echo "   27)  Spark           29)  AM520"
 		echo "   28)  Spark7162       30)  AM530"
 		echo
-		echo "  Various"
+		echo "  Various sh4-based receivers"
 		echo "   31)  Edision Argus VIP1 v1 [ single tuner + 2 CI + 2 USB ]"
 		echo "   32)  SpiderBox HL-101"
 		echo "   33)  B4Team ADB 5800S"
 		echo "   34)  Vitamin HD5000"
 		echo "   35)  SagemCom 88 series"
 		echo "   36)  Ferguson Ariva @Link 200"
-		echo "   37)  Mutant HD51"
+		echo
+		echo "  arm-based receivers"
+		echo "   37)  Mut@nt HD51"
 		echo "   38)  VU Solo 4k"
 		echo
 		read -p "Select target (1-38)? ";;
@@ -390,44 +392,55 @@ case "$IMAGE" in
 				*) MEDIAFW="gst-eplayer3";;
 			esac
 		else
-				MEDIAFW="gstreamer"
+			echo
+			echo "Please note that you have chosen a configuration that is directly"
+			echo "supported by OpenPLi and yields an image that is close to"
+			echo "the image offered by OpenPLI on an almost daily basis."
+			echo "If this is intentional, reply Yes or press Enter on the last question,"
+			echo "otherwise reply No."
+			MEDIAFW="gstreamer"
 		fi
 
 		# Determine the OpenPLi diff-level
-		case $5 in
-			[0-5])	REPLY=$5;;
-			*)	echo
-				echo "Please select one of the following Enigma2 revisions (default = 2):"
-				echo "=================================================================================================="
-				echo " 0)  Newest                 - E2 OpenPLi  any framework (CAUTION: may fail due to outdated patch)"
-				echo "=================================================================================================="
-				echo " 1)  Use your own Enigma2 git dir without patchfile"
-				echo "=================================================================================================="
-				echo " 2*) Fri, 24 Feb 2017 18:23 - E2 OpenPLi  any framework  ff98b15d49fa629c1b4e98698008602e5b4233be"
-				echo " 3)  Mon, 17 May 2016 22:46 - E2 OpenPLi  any framework  577fa5ab7d5f0f83f18d625b547d148e93cf27d3"
-				echo " 4)  Thu, 31 Mar 2016 21:52 - E2 OpenPLi  any framework  7d63bf16e99741f0a5798b84a3688759317eecb3"
-				echo " 5)  Mon, 17 Aug 2015 07:08 - E2 OpenPLi  any framework  cd5505a4b8aba823334032bb6fd7901557575455"
-				echo "=================================================================================================="
-				echo "Media Framework         : $MEDIAFW"
-				read -p "Select Enigma2 revision : ";;
-		esac
-
-		case "$REPLY" in
-			1)	DIFF="1"
-				REVISION="local";;
-			3)	DIFF="3"
-				REVISION="577fa5ab7d5f0f83f18d625b547d148e93cf27d3";;
-			4)	DIFF="4"
-				REVISION="7d63bf16e99741f0a5798b84a3688759317eecb3";;
-			5)	DIFF="5"
-				REVISION="cd5505a4b8aba823334032bb6fd7901557575455";;
-			0)	DIFF="0"
-				REVISION="newest";;
-			*)	DIFF="2"
-				REVISION="ff98b15d49fa629c1b4e98698008602e5b4233be";;
-		esac
-		echo "E2_DIFF=$DIFF" >> config
-		echo "E2_REVISION=$REVISION" >> config
+		if [ $BOXARCH == "sh4" ]; then
+	 		case $5 in
+				[0-5])	REPLY=$5;;
+				*)	echo
+					echo "Please select one of the following Enigma2 revisions (default = 2):"
+					echo "=================================================================================================="
+					echo " 0)  Newest                 - E2 OpenPLi  any framework (CAUTION: may fail due to outdated patch)"
+					echo "=================================================================================================="
+					echo " 1)  Use your own Enigma2 git dir without patchfile"
+					echo "=================================================================================================="
+					echo " 2*) Fri, 11 Apr 2017 17:45 - E2 OpenPLi  any framework  e45a15d8f494f70c9285e1532c6b6460328f6b89"
+					echo " 3)  Fri, 24 Feb 2017 18:23 - E2 OpenPLi  any framework  ff98b15d49fa629c1b4e98698008602e5b4233be"
+					echo " 4)  Mon, 17 May 2016 22:46 - E2 OpenPLi  any framework  577fa5ab7d5f0f83f18d625b547d148e93cf27d3"
+					echo " 5)  Thu, 31 Mar 2016 21:52 - E2 OpenPLi  any framework  7d63bf16e99741f0a5798b84a3688759317eecb3"
+					echo "=================================================================================================="
+					echo "Media Framework         : $MEDIAFW"
+					read -p "Select Enigma2 revision : ";;
+			esac
+	
+			case "$REPLY" in
+				1)	DIFF="1"
+					REVISION="local";;
+				3)	DIFF="3"
+					REVISION="ff98b15d49fa629c1b4e98698008602e5b4233be";;
+				4)	DIFF="4"
+					REVISION="577fa5ab7d5f0f83f18d625b547d148e93cf27d3";;
+				5)	DIFF="5"
+					REVISION="7d63bf16e99741f0a5798b84a3688759317eecb3";;
+				0)	DIFF="0"
+					REVISION="newest";;
+				*)	DIFF="2"
+					REVISION="e45a15d8f494f70c9285e1532c6b6460328f6b89";;
+			esac
+			echo "E2_DIFF=$DIFF" >> config
+			echo "E2_REVISION=$REVISION" >> config
+		else
+			echo "E2_DIFF=0" >> config
+			echo "E2_REVISION=newest" >> config
+		fi
 
 		echo "make yaud-enigma2" > $CURDIR/build
 
