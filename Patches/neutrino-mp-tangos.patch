@@ -46,9 +46,20 @@
  
  NEUTRINO_CPP  SNeutrinoSettings	g_settings;
  NEUTRINO_CPP  SglobalInfo	g_info;
+--- neutrino-mp-tangos.org/src/global.h
++++ neutrino-mp-tangos/src/global.h
+@@ -56,7 +56,7 @@
+ #define LOGODIR		ICONSDIR "/logo"
+ #define LOGODIR_VAR	ICONSDIR_VAR "/logo"
+ 
+-//#define FLAGDIR		CONFIGDIR
++#define FLAGDIR		CONFIGDIR
+ 
+ NEUTRINO_CPP  SNeutrinoSettings	g_settings;
+ NEUTRINO_CPP  SglobalInfo	g_info;
 --- neutrino-mp-tangos.org/src/neutrino.cpp
 +++ neutrino-mp-tangos/src/neutrino.cpp
-@@ -4613,6 +4613,9 @@
+@@ -4617,6 +4617,9 @@
  			CVFD::getInstance()->Clear();
  			CVFD::getInstance()->setMode(CVFD::MODE_STANDBY);
  		}
@@ -58,7 +69,7 @@
  		CVFD::getInstance()->setBacklight(g_settings.backlight_standby);
  
  		InfoClock->enableInfoClock(false);
-@@ -4644,7 +4647,11 @@
+@@ -4648,7 +4651,11 @@
  		// Active standby off
  		powerManager->SetStandby(false, false);
  		CVFD::getInstance()->setMode(CVFD::MODE_TVRADIO);

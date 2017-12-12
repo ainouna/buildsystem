@@ -574,7 +574,7 @@ $(D)/neutrino-mp-tangos.config.status:
 			--host=$(TARGET) \
 			$(N_CONFIG_OPTS) \
 			--enable-freesatepg \
-			--disable-graphlcd \
+			--enable-fastscan \
 			--with-stb-hal-includes=$(SOURCE_DIR)/libstb-hal-tangos/include \
 			--with-stb-hal-build=$(LH_OBJDIR)
 
@@ -635,7 +635,7 @@ neutrino-mp-tangos-all: yaud-none $(D)/neutrino-mp-tangos.do_prepare $(D)/neutri
 	@touch $(D)/build_complete
 
 neutrino-mp-tangos-plugins: yaud-none $(D)/neutrino-mp-tangos.do_prepare $(D)/neutrino-mp-tangos.do_compile
-	$(MAKE) -C $(N_OBJDIR) install DESTDIR=$(TARGET_DIR); \
+	$(MAKE) -C $(N_OBJDIR) install DESTDIR=$(TARGET_DIR)
 	$(SILENT)rm -f $(TARGET_DIR)/var/etc/.version
 	$(MAKE) $(TARGET_DIR)/var/etc/.version
 	$(SILENT)touch $(D)/$(notdir $@)
