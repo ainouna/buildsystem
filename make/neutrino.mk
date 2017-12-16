@@ -436,7 +436,7 @@ neutrino-mp-ni: yaud-none $(D)/neutrino-mp-ni.do_prepare $(D)/neutrino-mp-ni.do_
 	@touch $(D)/build_complete
 
 neutrino-mp-ni-plugins: yaud-none $(D)/neutrino-mp-ni.do_prepare $(D)/neutrino-mp-ni.do_compile
-	$(MAKE) -C $(N_OBJDIR) install DESTDIR=$(TARGET_DIR); \
+	$(MAKE) -C $(N_OBJDIR) install DESTDIR=$(TARGET_DIR)
 	$(SILENT)make $(TARGET_DIR)/var/etc/.version
 	$(SILENT)touch $(D)/$(notdir $@)
 #	$(TOUCH)
@@ -603,7 +603,7 @@ $(D)/neutrino-mp-tangos.do_compile: $(D)/neutrino-mp-tangos.config.status $(SOUR
 # neutrino-mp-tangos
 #
 neutrino-mp-tangos: yaud-none $(D)/neutrino-mp-tangos.do_prepare $(D)/neutrino-mp-tangos.do_compile
-	$(MAKE) -C $(N_OBJDIR) install DESTDIR=$(TARGET_DIR); \
+	$(MAKE) -C $(N_OBJDIR) install DESTDIR=$(TARGET_DIR)
 	$(SILENT)rm -f $(TARGET_DIR)/var/etc/.version
 	$(SILENT)make $(TARGET_DIR)/var/etc/.version
 	$(SILENT)touch $(D)/$(notdir $@)
@@ -618,7 +618,7 @@ neutrino-mp-tangos: yaud-none $(D)/neutrino-mp-tangos.do_prepare $(D)/neutrino-m
 	@touch $(D)/build_complete
 
 neutrino-mp-tangos-all: yaud-none $(D)/neutrino-mp-tangos.do_prepare $(D)/neutrino-mp-tangos.do_compile
-	$(MAKE) -C $(N_OBJDIR) install DESTDIR=$(TARGET_DIR); \
+	$(MAKE) -C $(N_OBJDIR) install DESTDIR=$(TARGET_DIR)
 	$(SILENT)rm -f $(TARGET_DIR)/var/etc/.version
 	$(SILENT)make $(TARGET_DIR)/var/etc/.version
 	$(SILENT)touch $(D)/$(notdir $@)
