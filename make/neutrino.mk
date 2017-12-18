@@ -243,7 +243,7 @@ neutrino-mp-ddt: yaud-none $(D)/neutrino-mp-ddt.do_prepare $(D)/neutrino-mp-ddt.
 	$(SILENT)make $(TARGET_DIR)/var/etc/.version
 	$(SILENT)touch $(D)/$(notdir $@)
 #	$(TOUCH)
-	$(SILENT)make neutrino_release
+	$(SILENT)make neutrino-release
 	$(TUXBOX_CUSTOMIZE)
 	@echo "***************************************************************************"
 	@echo -e "$(TERM_GREEN_BOLD)"
@@ -260,7 +260,7 @@ neutrino-mp-ddt-plugins: yaud-none $(D)/neutrino-mp-ddt.do_prepare $(D)/neutrino
 	$(SILENT)touch $(D)/$(notdir $@)
 #	$(TOUCH)
 	$(SILENT)make neutrino-plugins
-	$(SILENT)make neutrino_release
+	$(SILENT)make neutrino-release
 	$(TUXBOX_CUSTOMIZE)
 	@echo "*****************************************************************************************"
 	@echo -e "$(TERM_GREEN_BOLD)"
@@ -419,7 +419,7 @@ neutrino-mp-ni: yaud-none $(D)/neutrino-mp-ni.do_prepare $(D)/neutrino-mp-ni.do_
 	$(SILENT)make $(TARGET_DIR)/var/etc/.version
 	$(SILENT)touch $(D)/$(notdir $@)
 #	$(TOUCH)
-	$(SILENT)make neutrino_release
+	$(SILENT)make neutrino-release
 	$(TUXBOX_CUSTOMIZE)
 	@echo "******************************************************************************"
 	@echo -e "$(TERM_GREEN_BOLD)"
@@ -434,7 +434,7 @@ neutrino-mp-ni-plugins: yaud-none $(D)/neutrino-mp-ni.do_prepare $(D)/neutrino-m
 	$(SILENT)touch $(D)/$(notdir $@)
 #	$(TOUCH)
 	$(SILENT)make neutrino-plugins
-	$(SILENT)make neutrino_release
+	$(SILENT)make neutrino-release
 	$(TUXBOX_CUSTOMIZE)
 	@echo "*******************************************************************************************"
 	@echo -e "$(TERM_GREEN_BOLD)"
@@ -597,7 +597,7 @@ neutrino-mp-tangos: yaud-none $(D)/neutrino-mp-tangos.do_prepare $(D)/neutrino-m
 	$(SILENT)make $(TARGET_DIR)/var/etc/.version
 	$(SILENT)touch $(D)/$(notdir $@)
 #	$(TOUCH)
-	$(SILENT)make neutrino_release
+	$(SILENT)make neutrino-release
 	$(TUXBOX_CUSTOMIZE)
 	@echo "***************************************************************************"
 	@echo -e "$(TERM_GREEN_BOLD)"
@@ -614,7 +614,7 @@ neutrino-mp-tangos-all: yaud-none $(D)/neutrino-mp-tangos.do_prepare $(D)/neutri
 #	$(TOUCH)
 	$(SILENT)make shairport
 	$(SILENT)make neutrino-plugins
-	$(SILENT)make neutrino_release
+	$(SILENT)make neutrino-release
 	$(TUXBOX_CUSTOMIZE)
 	@echo "***************************************************************************"
 	@echo -e "$(TERM_GREEN_BOLD)"
@@ -629,7 +629,7 @@ neutrino-mp-tangos-plugins: yaud-none $(D)/neutrino-mp-tangos.do_prepare $(D)/ne
 	$(MAKE) $(TARGET_DIR)/var/etc/.version
 	$(SILENT)touch $(D)/$(notdir $@)
 	$(SILENT)make neutrino-plugins
-	$(SILENT)make neutrino_release
+	$(SILENT)make neutrino-release
 	$(TUXBOX_CUSTOMIZE)
 	@echo "***************************************************************************************"
 	@echo -e "$(TERM_GREEN_BOLD)"
@@ -782,7 +782,7 @@ neutrino-mp-max: yaud-none $(D)/neutrino-mp-max.do_prepare $(D)/neutrino-mp-max.
 	$(MAKE) $(TARGET_DIR)/var/etc/.version
 	$(SILENT)touch $(D)/$(notdir $@)
 #	$(TOUCH)
-	$(SILENT)make neutrino_release
+	$(SILENT)make neutrino-release
 	$(TUXBOX_CUSTOMIZE)
 	@echo "***************************************************************************"
 	@echo -e "$(TERM_GREEN_BOLD)"
@@ -798,7 +798,7 @@ neutrino-mp-max-plugins: yaud-none $(D)/neutrino-mp-max.do_prepare $(D)/neutrino
 	$(SILENT)touch $(D)/$(notdir $@)
 #	$(TOUCH)
 	$(SILENT)make neutrino-plugins
-	$(SILENT)make neutrino_release
+	$(SILENT)make neutrino-release
 	$(TUXBOX_CUSTOMIZE)
 	@echo "***************************************************************************"
 	@echo -e "$(TERM_GREEN_BOLD)"
@@ -888,7 +888,7 @@ neutrino-hd2: yaud-none $(D)/neutrino-hd2.do_prepare $(D)/neutrino-hd2.do_compil
 	$(SILENT)make $(TARGET_DIR)/var/etc/.version
 	$(SILENT)touch $(D)/$(notdir $@)
 #	$(TOUCH)
-	$(SILENT)make neutrino_release
+	$(SILENT)make neutrino-release
 	$(TUXBOX_CUSTOMIZE)
 	@echo "*********************************************************************"
 	@echo -e "$(TERM_GREEN_BOLD)"
@@ -906,7 +906,7 @@ neutrino-hd2-plugin: yaud-none  $(D)/neutrino-hd2.do_prepare $(D)/neutrino-hd2.d
 	$(SILENT)touch $(D)/$(notdir $@)
 #	$(TOUCH)
 	$(SILENT)make neutrino-hd2-plugins.build
-	$(SILENT)make neutrino_release
+	$(SILENT)make neutrino-release
 	$(TUXBOX_CUSTOMIZE)
 	@echo "********************************************************************************"
 	@echo -e "$(TERM_GREEN_BOLD)"
