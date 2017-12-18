@@ -875,7 +875,7 @@ $(D)/neutrino-hd2.do_prepare: | $(NEUTRINO_DEPS) $(NEUTRINO_DEPS2)
 		$(call post_patch,$(NEUTRINO_HD2_PATCHES))
 	@touch $@
 
-$(SOURCE_DIR)/neutrino-hd2/config.status:
+$(D)/neutrino-hd2.config.status:
 	cd $(SOURCE_DIR)/neutrino-hd2; \
 		./autogen.sh; \
 		$(BUILDENV) \
@@ -893,7 +893,7 @@ $(SOURCE_DIR)/neutrino-hd2/config.status:
 			CPPFLAGS="$(N_CPPFLAGS)" LDFLAGS="$(TARGET_LDFLAGS)"
 	@touch $@
 
-$(D)/neutrino-hd2.do_compile: $(SOURCE_DIR)/neutrino-hd2/config.status
+$(D)/neutrino-hd2.do_compile: $(D)/neutrino-hd2.config.status
 	$(SILENT)cd $(SOURCE_DIR)/neutrino-hd2; \
 		$(MAKE) all
 	@touch $@
@@ -922,7 +922,7 @@ neutrino-hd2-plugin: yaud-none  $(D)/neutrino-hd2.do_prepare $(D)/neutrino-hd2.d
 	$(MAKE) $(TARGET_DIR)/var/etc/.version
 	$(SILENT)touch $(D)/$(notdir $@)
 #	$(TOUCH)
-	$(SILENT)make neutrino-hd2-plugin
+	$(SILENT)make neutrino-hd2-plugins.build
 	$(SILENT)make neutrino_release
 	$(TUXBOX_CUSTOMIZE)
 	@echo "********************************************************************************"
@@ -935,6 +935,7 @@ neutrino-hd2-plugin: yaud-none  $(D)/neutrino-hd2.do_prepare $(D)/neutrino-hd2.d
 nhd2-clean \
 neutrino-hd2-clean: neutrino-cdkroot-clean
 	$(SILENT)rm -f $(D)/neutrino-hd2
+	$(SILENT)rm -f $(D)/neutrino-hd2.config.status
 	cd $(SOURCE_DIR)/neutrino-hd2; \
 		$(MAKE) clean
 
