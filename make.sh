@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20171207.1
+# Version 20171218.1
 
 ##############################################
 
@@ -23,7 +23,7 @@ if [ "$1" == -h ] || [ "$1" == --help ]; then
 	echo "Parameter 3     : optimization (1-4)"
 	echo "Parameter 4     : image (Enigma=1/2 Neutrino=3/4 Tvheadend=5 (1-5)"
 	echo "Parameter 5     : Neutrino variant (1-0) or Enigma2/Tvheadend diff (0-5)"
-	echo "Parameter 6     : media Framework (1-3, Enigma2 only))"
+	echo "Parameter 6     : media Framework (1-3, (Enigma2), 1-2, (Neutrino))"
 	echo "Parameter 7     : destination (1-2, 1=flash, 2=USB)"
 	exit
 fi
@@ -323,8 +323,21 @@ case "$IMAGE" in
 					NEUTRINO_VAR="mp-max + plugins";;
 			esac
 			echo "NEUTRINO_VARIANT=$NEUTRINO_VAR" >> config
-			MEDIAFW="buildinplayer"
 		fi
+
+		case $6 in
+			[1-2]) REPLY=$6;;
+			*)	echo -e "\nMedia Framework:"
+				echo "   1*) integrated libeplayer3"
+				echo "   2)  gstreamer"
+				read -p "Select media framework (1-2)? ";;
+		esac
+
+		case "$REPLY" in
+#			1) MEDIAFW="buildinplayer";;
+			2) MEDIAFW="gstreamer";;
+			*) MEDIAFW="buildinplayer";;
+		esac
 
 		if [ "$LASTIMAGE1" ] || [ "$LASTIMAGE3" ] || [ ! "$LASTBOX" == "$BOXTYPE" ]; then
 			if [ -e ./.deps/ ]; then

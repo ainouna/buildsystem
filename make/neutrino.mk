@@ -28,7 +28,6 @@ endif
 endif
 
 ifeq ($(BOXARCH), arm)
-NEUTRINO_DEPS += $(D)/gst_plugins_dvbmediasink
 NEUTRINO_DEPS += $(D)/ntfs_3g
 NEUTRINO_DEPS += $(D)/mc
 endif
@@ -48,11 +47,16 @@ N_CFLAGS      += -fno-strict-aliasing -funsigned-char -ffunction-sections -fdata
 N_CFLAGS      += $(LOCAL_NEUTRINO_CFLAGS)
 
 N_CPPFLAGS     = -I$(TARGET_DIR)/usr/include
-ifeq ($(BOXARCH), arm)
+ifeq ($(MEDIAFW), gstreamer)
+NEUTRINO_DEPS += $(D)/gst_plugins_dvbmediasink
 N_CPPFLAGS    += $(shell $(PKG_CONFIG) --cflags --libs gstreamer-1.0)
 N_CPPFLAGS    += $(shell $(PKG_CONFIG) --cflags --libs gstreamer-audio-1.0)
 N_CPPFLAGS    += $(shell $(PKG_CONFIG) --cflags --libs gstreamer-video-1.0)
 N_CPPFLAGS    += $(shell $(PKG_CONFIG) --cflags --libs glib-2.0)
+ifeq ($(BOXARCH), arm)
+LH_CONFIG_OPTS  = --enable-gstreamer_10=yes
+endif
+
 N_CPPFLAGS    += -I$(CROSS_BASE)/$(TARGET)/sys-root/usr/include
 endif
 ifeq ($(BOXARCH), sh4)
@@ -150,6 +154,7 @@ $(D)/libstb-hal-ddt.config.status: | $(NEUTRINO_DEPS)
 			--prefix= \
 			--with-target=cdk \
 			--with-boxtype=$(BOXTYPE) \
+			$(LH_CONFIG_OPTS) \
 			PKG_CONFIG=$(PKG_CONFIG) \
 			PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) \
 			CFLAGS="$(N_CFLAGS)" CXXFLAGS="$(N_CFLAGS)" CPPFLAGS="$(N_CPPFLAGS)"
@@ -326,6 +331,7 @@ $(D)/libstb-hal-ni.config.status: | $(NEUTRINO_DEPS)
 			--prefix= \
 			--with-target=cdk \
 			--with-boxtype=$(BOXTYPE) \
+			$(LH_CONFIG_OPTS) \
 			PKG_CONFIG=$(PKG_CONFIG) \
 			PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) \
 			CFLAGS="$(N_CFLAGS)" CXXFLAGS="$(N_CFLAGS)" CPPFLAGS="$(N_CPPFLAGS)"
@@ -500,6 +506,7 @@ $(D)/libstb-hal-tangos.config.status: | $(NEUTRINO_DEPS)
 			--prefix= \
 			--with-target=cdk \
 			--with-boxtype=$(BOXTYPE) \
+			$(LH_CONFIG_OPTS) \
 			PKG_CONFIG=$(PKG_CONFIG) \
 			PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) \
 			CFLAGS="$(N_CFLAGS)" CXXFLAGS="$(N_CFLAGS)" CPPFLAGS="$(N_CPPFLAGS)"
@@ -681,8 +688,6 @@ $(D)/libstb-hal-max.config.status: | $(NEUTRINO_DEPS)
 	$(SILENT)cd $(LH_OBJDIR); \
 		test -d $(SOURCE_DIR)/libstb-hal-max/m4 || mkdir -p $(SOURCE_DIR)/libstb-hal-max/m4; \
 		$(SOURCE_DIR)/libstb-hal-max/autogen.sh; \
-		export PKG_CONFIG=$(PKG_CONFIG); \
-		export PKG_CONFIG_PATH=$(PKG_CONFIG_PATH); \
 		$(BUILDENV) \
 		$(SOURCE_DIR)/libstb-hal-max/configure  $(SILENT_CONFIGURE) \
 			--enable-silent-rules \
@@ -691,6 +696,9 @@ $(D)/libstb-hal-max.config.status: | $(NEUTRINO_DEPS)
 			--prefix= \
 			--with-target=cdk \
 			--with-boxtype=$(BOXTYPE) \
+			$(LH_CONFIG_OPTS) \
+			PKG_CONFIG=$(PKG_CONFIG) \
+			PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) \
 			CFLAGS="$(N_CFLAGS)" CXXFLAGS="$(N_CFLAGS)" CPPFLAGS="$(N_CPPFLAGS)"
 	@touch $@
 
