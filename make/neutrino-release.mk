@@ -700,6 +700,7 @@ endif
 # iso-codes
 #
 	$(SILENT)[ -e $(TARGET_DIR)/usr/local/share/iso-codes ] && cp -aR $(TARGET_DIR)/usr/local/share/iso-codes $(RELEASE_DIR)/usr/share/ || true
+	$(SILENT)[ -e $(TARGET_DIR)/usr/share/tuxbox/iso-codes ] && cp -aR $(TARGET_DIR)/usr/share/tuxbox/iso-codes $(RELEASE_DIR)/usr/share/ || true
 #
 # httpd/icons/locale/themes
 #
