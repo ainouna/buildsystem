@@ -1443,6 +1443,7 @@ $(D)/libdreamdvd: $(D)/bootstrap $(D)/libdvdnav
 #
 # ffmpeg
 #
+ifeq ($(BOXARCH), sh4)
 FFMPEG_VER = 2.8.10
 FFMPEG_SOURCE = ffmpeg-$(FFMPEG_VER).tar.xz
 FFMPEG_PATCH  = ffmpeg-$(FFMPEG_VER)-buffer-size.patch
@@ -1450,23 +1451,29 @@ FFMPEG_PATCH += ffmpeg-$(FFMPEG_VER)-hds-libroxml.patch
 FFMPEG_PATCH += ffmpeg-$(FFMPEG_VER)-aac.patch
 FFMPEG_PATCH += ffmpeg-$(FFMPEG_VER)-kodi.patch
 
+FFMPEG_DEPS =
+FFMPEG_CONF_OPTS  = --disable-neon
+FFMPEG_CONF_OPTS += --enable-demuxer=hds
+FFMPRG_EXTRA_CFLAGS =
+else
+FFMPEG_VER = 3.2.2
+FFMPEG_SOURCE = ffmpeg-$(FFMPEG_VER).tar.xz
+FFMPEG_PATCH  = ffmpeg-$(FFMPEG_VER)-buffer-size.patch
+FFMPEG_PATCH += ffmpeg-$(FFMPEG_VER)-add-dash-demux.patch
+FFMPEG_PATCH += ffmpeg-$(FFMPEG_VER)-fix-mpegts.patch
+FFMPEG_PATCH += ffmpeg-$(FFMPEG_VER)-allow-to-choose-rtmp-impl-at-runtime.patch
+
+FFMPEG_DEPS = $(D)/libxml2 $(D)/librtmpdump
+FFMPEG_CONF_OPTS  = --enable-librtmp
+FFMPEG_CONF_OPTS += --enable-demuxer=dash
+FFMPEG_CONF_OPTS += --cpu=cortex-a15
+FFMPRG_EXTRA_CFLAGS =  -mfpu=neon-vfpv4 -mfloat-abi=hard
+endif
+
 $(ARCHIVE)/$(FFMPEG_SOURCE):
 	$(WGET) http://www.ffmpeg.org/releases/$(FFMPEG_SOURCE)
 
-ifeq ($(IMAGE), enigma2 enigma2-wlandriver)
-FFMPEG_CONF_OPTS  = --enable-librtmp
-LIBRTMPDUMP = $(D)/librtmpdump
-endif
-
-ifeq ($(IMAGE), neutrino neutrino-wlandriver)
-FFMPEG_CONF_OPTS = --disable-iconv
-endif
-
-ifeq ($(BOXARCH), sh4)
-FFMPEG_CONF_OPTS += --disable-armv5te --disable-armv6 --disable-armv6t2
-endif
-
-$(D)/ffmpeg: $(D)/bootstrap $(D)/openssl $(D)/bzip2 $(D)/libass $(D)/libroxml $(LIBRTMPDUMP) $(ARCHIVE)/$(FFMPEG_SOURCE)
+$(D)/ffmpeg: $(D)/bootstrap $(D)/openssl $(D)/bzip2 $(D)/libass $(D)/libroxml $(FFMPEG_DEPS) $(ARCHIVE)/$(FFMPEG_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/ffmpeg-$(FFMPEG_VER)
 	$(UNTAR)/$(FFMPEG_SOURCE)
@@ -1497,13 +1504,15 @@ $(D)/ffmpeg: $(D)/bootstrap $(D)/openssl $(D)/bzip2 $(D)/libass $(D)/libroxml $(
 			--disable-avx \
 			--disable-fma4 \
 			--disable-vfp \
-			--disable-neon \
 			--disable-inline-asm \
 			--disable-yasm \
 			--disable-mips32r2 \
 			--disable-mipsdspr2 \
 			--disable-mipsfpu \
 			--disable-fast-unaligned \
+			--disable-armv5te \
+			--disable-armv6 \
+			--disable-armv6t2 \
 			\
 			--disable-dxva2 \
 			--disable-vaapi \
@@ -1590,7 +1599,6 @@ $(D)/ffmpeg: $(D)/bootstrap $(D)/openssl $(D)/bzip2 $(D)/libass $(D)/libroxml $(
 			--enable-demuxer=dts \
 			--enable-demuxer=flac \
 			--enable-demuxer=flv \
-			--enable-demuxer=hds \
 			--enable-demuxer=hls \
 			--enable-demuxer=image2 \
 			--enable-demuxer=image2pipe \
@@ -1632,27 +1640,33 @@ $(D)/ffmpeg: $(D)/bootstrap $(D)/openssl $(D)/bzip2 $(D)/libass $(D)/libroxml $(
 			--disable-filters \
 			--enable-filter=scale \
 			\
+			--disable-indevs \
+			\
+			--disable-outdevs \
+			\
+			$(FFMPEG_CONF_OPTS) \
+			\
+			--disable-iconv \
 			--disable-xlib \
 			--disable-libxcb \
 			--disable-postproc \
+			--disable-static \
+			--disable-debug \
+			--disable-runtime-cpudetect \
+			\
 			--enable-bsfs \
-			--disable-indevs \
-			--disable-outdevs \
 			--enable-bzlib \
 			--enable-zlib \
-			$(FFMPEG_CONF_OPTS) \
-			--disable-static \
 			--enable-libass \
 			--enable-openssl \
 			--enable-network \
 			--enable-shared \
 			--enable-small \
 			--enable-stripping \
-			--disable-debug \
-			--disable-runtime-cpudetect \
+			\
 			--enable-cross-compile \
 			--cross-prefix=$(TARGET)- \
-			--extra-cflags="$(TARGET_CFFLAGS)" \
+			--extra-cflags="$(TARGET_CFLAGS) $(FFMPRG_EXTRA_CFLAGS)" \
 			--extra-ldflags="$(TARGET_LDFLAGS) -lrt" \
 			--target-os=linux \
 			--arch=$(BOXARCH) \
