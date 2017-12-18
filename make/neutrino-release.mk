@@ -823,8 +823,8 @@ endif
 # The main target depends on the model.
 # IMPORTANT: it is assumed that only one variable is set. Otherwise the target name won't be resolved.
 #
-$(D)/neutrino_release: \
-$(D)/%neutrino_release: neutrino-release-base neutrino-release-$(BOXTYPE)
+$(D)/neutrino-release: \
+$(D)/%neutrino-release: neutrino-release-base neutrino-release-$(BOXTYPE)
 	$(TUXBOX_CUSTOMIZE)
 	@touch $@
 #
