@@ -1863,6 +1863,9 @@ endif
 
 ifeq ($(IMAGE), $(filter $(IMAGE), neutrino neutrino-wlandriver))
 LIBXML2_CONF_OPTS  = --without-python --without-catalog
+ifeq ($(MEDIAFW), gstreamer)
+LIBXML2_CONF_OPTS += --with-tree --with-output --with-sax1
+endif
 ifeq ($(BOXARCH), sh4)
 LIBXML2_CONF_OPTS += --without-iconv
 LIBXML2_CONF_OPTS += --with-minimum
@@ -1901,7 +1904,7 @@ $(D)/libxml2: $(D)/bootstrap $(D)/zlib $(ARCHIVE)/$(LIBXML2_SOURCE)
 	sed -e "/^XML2_INCLUDEDIR/ s,/usr/include,$(TARGET_DIR)/usr/include,g" -i $(TARGET_DIR)/usr/lib/xml2Conf.sh
 	$(REWRITE_LIBTOOL)/libxml2.la
 	rm -f $(addprefix $(TARGET_DIR)/usr/bin/,xmlcatalog xmllint)
-	$(REMOVE)/libxml2-$(LIBXML2_VER)
+#	$(REMOVE)/libxml2-$(LIBXML2_VER)
 	$(TOUCH)
 
 #
