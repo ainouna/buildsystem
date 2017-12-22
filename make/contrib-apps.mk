@@ -927,7 +927,6 @@ $(D)/shairport-sync: $(D)/bootstrap $(D)/libdaemon $(D)/libpopt $(D)/libconfig $
 	$(START_BUILD)
 	$(REMOVE)/shairport-sync
 	$(SET) -e; if [ -d $(ARCHIVE)/shairport-sync.git ]; \
-		then cd $(ARCHIVE)/shairport-sync.git; git pull; \
 		else cd $(ARCHIVE); git clone https://github.com/mikebrady/shairport-sync.git shairport-sync.git; \
 		fi
 	cp -ra $(ARCHIVE)/shairport-sync.git $(BUILD_TMP)/shairport-sync
@@ -1493,8 +1492,8 @@ UDPXY_SOURCE = udpxy-src.tar.gz
 UDPXY_PATCH = udpxy-$(UDPXY_VER).patch
 
 $(ARCHIVE)/$(UDPXY_SOURCE):
-#	$(WGET) http://www.udpxy.com/download/1_23/$(UDPXY_SOURCE)
-	$(WGET) https://fossies.org/linux/www/$(UDPXY_SOURCE)
+	$(WGET) http://www.udpxy.com/download/udpxy/$(UDPXY_SOURCE)
+#	$(WGET) https://fossies.org/linux/www/$(UDPXY_SOURCE)
 
 $(D)/udpxy: $(D)/bootstrap $(ARCHIVE)/$(UDPXY_SOURCE)
 	$(START_BUILD)
