@@ -731,7 +731,7 @@ $(D)/hddtemp: $(D)/bootstrap $(ARCHIVE)/$(HDDTEMP_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/hddtemp-$(HDDTEMP_VER)
 	$(UNTAR)/$(HDDTEMP_SOURCE)
-	$(SET) -e; cd $(BUILD_TMP)/hddtemp-$(HDDTEMP_VER);
+	$(SET) -e; cd $(BUILD_TMP)/hddtemp-$(HDDTEMP_VER); \
 		$(CONFIGURE) \
 			--prefix= \
 			--mandir=/.remove \
@@ -1132,7 +1132,7 @@ $(D)/smartmontools: $(D)/bootstrap $(ARCHIVE)/$(SMARTMONTOOLS_SOURCE)
 #
 # nfs_utils
 #
-NFS_UTILS_VER = 2.2.1
+NFS_UTILS_VER = 2.3.1
 NFS_UTILS_SOURCE = nfs-utils-$(NFS_UTILS_VER).tar.bz2
 NFS_UTILS_PATCH = nfs-utils-$(NFS_UTILS_VER).patch
 
@@ -1488,8 +1488,8 @@ $(D)/dvbsnoop: $(D)/bootstrap $(ARCHIVE)/$(DVBSNOOP_SOURCE)
 #
 # udpxy
 #
-UDPXY_VER = 1.0.23-9
-UDPXY_SOURCE = udpxy.$(UDPXY_VER)-prod.tar.gz
+UDPXY_VER = 1.0.23-10
+UDPXY_SOURCE = udpxy-src.tar.gz
 UDPXY_PATCH = udpxy-$(UDPXY_VER).patch
 
 $(ARCHIVE)/$(UDPXY_SOURCE):

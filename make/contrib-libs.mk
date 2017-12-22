@@ -133,7 +133,7 @@ LIBGLIB2_VER_MINOR = 54
 LIBGLIB2_VER_MICRO = 0
 LIBGLIB2_VER = $(LIBGLIB2_VER_MAJOR).$(LIBGLIB2_VER_MINOR).$(LIBGLIB2_VER_MICRO)
 LIBGLIB2_SOURCE = glib-$(LIBGLIB2_VER).tar.xz
-#LIBGLIB2_HOST_PATCH = 
+LIBGLIB2_HOST_PATCH =
 LIBGLIB2_PATCH = libglib2-$(LIBGLIB2_VER)-disable-tests.patch
 
 $(ARCHIVE)/$(LIBGLIB2_SOURCE):
@@ -341,7 +341,7 @@ OPENSSL_PATCH += openssl-$(OPENSSL_VER)-makefile-dirs.patch
 OPENSSL_PATCH += openssl-$(OPENSSL_VER)-disable_doc_tests.patch
 OPENSSL_PATCH += openssl-$(OPENSSL_VER)-fix-parallel-building.patch
 OPENSSL_PATCH += openssl-$(OPENSSL_VER)-compat_versioned_symbols-1.patch
- 
+
 ifeq ($(BOXARCH), sh4)
 OPENSSL_SED_PATCH = sed -i 's|MAKEDEPPROG=makedepend|MAKEDEPPROG=$(CROSS_DIR)/bin/$$(CC) -M|' Makefile
 else
@@ -1862,7 +1862,7 @@ LIBXML2_CONF_OPTS += --with-python-install-dir=/$(PYTHON_DIR)/site-packages
 endif
 
 ifeq ($(IMAGE), $(filter $(IMAGE), neutrino neutrino-wlandriver))
-LIBXML2_CONF_OPTS  = --without-python --without-catalog
+LIBXML2_CONF_OPTS  = --without-python --without-catalog --without-lzma --without-schematron --without-legacy
 ifeq ($(MEDIAFW), gstreamer)
 LIBXML2_CONF_OPTS += --with-tree --with-output --with-sax1
 endif
@@ -1904,7 +1904,7 @@ $(D)/libxml2: $(D)/bootstrap $(D)/zlib $(ARCHIVE)/$(LIBXML2_SOURCE)
 	sed -e "/^XML2_INCLUDEDIR/ s,/usr/include,$(TARGET_DIR)/usr/include,g" -i $(TARGET_DIR)/usr/lib/xml2Conf.sh
 	$(REWRITE_LIBTOOL)/libxml2.la
 	rm -f $(addprefix $(TARGET_DIR)/usr/bin/,xmlcatalog xmllint)
-#	$(REMOVE)/libxml2-$(LIBXML2_VER)
+	$(REMOVE)/libxml2-$(LIBXML2_VER)
 	$(TOUCH)
 
 #
@@ -2706,6 +2706,7 @@ $(D)/gnutls: $(D)/bootstrap $(D)/nettle $(ARCHIVE)/$(GNUTLS_SOURCE)
 			--with-included-libtasn1 \
 			--enable-local-libopts \
 			--with-libpthread-prefix=$(TARGET_DIR)/usr \
+			--with-libz-prefix=$(TARGET_DIR)/usr \
 			--with-included-unistring \
 			--with-default-trust-store-dir=$(CA_BUNDLE_DIR)/ \
 			--disable-guile \
