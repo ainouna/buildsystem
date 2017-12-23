@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20171218.1
+# Version 20171223.1
 
 ##############################################
 
@@ -356,10 +356,8 @@ case "$IMAGE" in
 				echo "=================================================================================================="
 				echo " 0)  Newest                 - Tvheadend  built-in player (CAUTION: may fail due to outdated patch)"
 				echo "=================================================================================================="
-				echo " 1*) Fri, 24 Feb 2017 18:23 - Tvheadend  built-in player  4931c0544885371b85146efad4eacd9683ba3dad"
-#				echo " 2)  Mon, 17 May 2016 22:46 - Tvheadend  built-in player  577fa5ab7d5f0f83f18d625b547d148e93cf27d3"
-#				echo " 3)  Thu, 31 Mar 2016 21:52 - Tvheadend  built-in player  7d63bf16e99741f0a5798b84a3688759317eecb3"
-#				echo " 4)  Mon, 17 Aug 2015 07:08 - Tvheadend  built-in player  cd5505a4b8aba823334032bb6fd7901557575455"
+				echo " 1*) Wed, 13 Dec 2017 22:23 - Tvheadend  built-in player  3b232b66e02fc46f1e7e97efb5ef48c6968cf779"
+				echo " 2)  Fri, 24 Feb 2017 18:23 - Tvheadend  built-in player  4931c0544885371b85146efad4eacd9683ba3dad"
 				echo "=================================================================================================="
 				echo "Media Framework         : $MEDIAFW"
 				read -p "Select Tvheadend revision : ";;
