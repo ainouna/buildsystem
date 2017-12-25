@@ -10,7 +10,7 @@ export LD_LIBRARY_PATH
 
 BASE_DIR             := $(shell pwd)
 
-ARCHIVE               = $(HOME)/Archive
+ARCHIVE               = $(BASE_DIR)/Archive
 APPS_DIR              = $(BASE_DIR)/apps
 BUILD_TMP             = $(BASE_DIR)/build_tmp
 DRIVER_DIR            = $(BASE_DIR)/driver
@@ -24,13 +24,13 @@ SOURCE_DIR            = $(BASE_DIR)/source
 
 # default platform...
 ifeq ($(BOXARCH), sh4)
-CCACHE_DIR            = $(HOME)/.ccache-bs-sh4
+CCACHE_DIR            = $(BASE_DIR)/.ccache-bs-sh4
 export CCACHE_DIR
 TARGET               ?= sh4-linux
 BOXARCH              ?= sh4
 KERNELNAME            = uImage
 else
-CCACHE_DIR            = $(HOME)/.ccache-bs-arm
+CCACHE_DIR            = $(BASE_DIR)/.ccache-bs-arm
 export CCACHE_DIR
 TARGET               ?= arm-cortex-linux-gnueabihf
 BOXARCH              ?= arm
@@ -529,4 +529,3 @@ PLATFORM_CPPFLAGS += -DPLATFORM_ARIVALINK200
 DRIVER_PLATFORM   += ARIVALINK200=arivalink200
 E_CONFIG_OPTS     += --enable-arivalink200
 endif
-

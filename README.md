@@ -9,12 +9,11 @@ Instructions
    with superuser rights.
 
 2. Create a directory in which you want to have your build environment.
-   From here on this directory will be referred to as X. 
+   From here on this directory will be referred to as X.
 
 3. In directory X, open a terminal.
 
-4. Execute: "git clone https://github.com/Audioniek/buildsystem ." Note
-   the period at the end.
+4. Execute: "git clone https://github.com/Audioniek/buildsystem.git ."
 
 5. The remaining repositories that are needed will cloned automatically
    during the first build (see point 8).
@@ -45,4 +44,3 @@ Instructions
 To update your build environment, execute "make update" in
 directory X. To update one repository, go to the corresponding directory
 X/apps, X/driver, X/flash or X itself and execute a "git pull".
-

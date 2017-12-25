@@ -87,12 +87,11 @@ $(SOURCE_DIR)/tvheadend/config.status:
 			--disable-uriparser \
 			--disable-pcre \
 			--disable-pcre2 \
-			--disable-dvben50221 \
 			--disable-dbus_1 \
-                        --disable-timeshift \
-                        --disable-libopus \
-                        --disable-libopus_static \
-                        --enable-pngquant \
+			--disable-timeshift \
+			--disable-libopus \
+			--disable-libopus_static \
+			--enable-pngquant \
 			--with-boxtype=$(BOXTYPE) \
 			PKG_CONFIG=$(PKG_CONFIG) \
 			PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) \
@@ -130,4 +129,3 @@ tvheadend-distclean:
 	rm -f $(D)/tvheadend.do_prepare
 	rm -rf $(SOURCE_DIR)/tvheadend
 	rm -rf $(SOURCE_DIR)/tvheadend.org
-
