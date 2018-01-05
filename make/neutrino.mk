@@ -662,6 +662,7 @@ neutrino-mp-tangos-distclean:
 #
 # libstb-hal-max
 #
+GIT_BRANCH_LIBSTB_MAX ?= master
 NEUTRINO_LIBSTB_MAX_PATCHES =
 
 $(D)/libstb-hal-max.do_prepare:
@@ -680,6 +681,7 @@ $(D)/libstb-hal-max.do_prepare:
 		echo " done."; \
 	fi
 	$(SILENT)cp -ra $(ARCHIVE)/libstb-hal-max.git $(SOURCE_DIR)/libstb-hal-max
+	(cd $(SOURCE_DIR)/libstb-hal-max; git -q checkout $(GIT_BRANCH_LIBSTB_MAX);)
 	$(SILENT)cp -ra $(SOURCE_DIR)/libstb-hal-max $(SOURCE_DIR)/libstb-hal-max.org
 	$(SET) -e; cd $(SOURCE_DIR)/libstb-hal-max; \
 		$(call post_patch,$(NEUTRINO_LIBSTB_MAX_PATCHES))
@@ -727,6 +729,7 @@ libstb-hal-max-distclean:
 #
 # neutrino-mp-max
 #
+GIT_BRANCH_NMP_MAX ?= master
 NEUTRINO_MP_MAX_PATCHES =
 
 $(D)/neutrino-mp-max.do_prepare: | $(NEUTRINO_DEPS) $(D)/libstb-hal-max
@@ -746,6 +749,7 @@ $(D)/neutrino-mp-max.do_prepare: | $(NEUTRINO_DEPS) $(D)/libstb-hal-max
 		echo " done."; \
 	fi
 	$(SILENT)cp -ra $(ARCHIVE)/neutrino-mp-max.git $(SOURCE_DIR)/neutrino-mp-max
+	(cd $(SOURCE_DIR)/neutrino-mp-max; git checkout $(GIT_BRANCH_NMP_MAX);)
 	$(SILENT)cp -ra $(SOURCE_DIR)/neutrino-mp-max $(SOURCE_DIR)/neutrino-mp-max.org
 	$(SET) -e; cd $(SOURCE_DIR)/neutrino-mp-max; \
 		$(call post_patch,$(NEUTRINO_MP_MAX_PATCHES))
