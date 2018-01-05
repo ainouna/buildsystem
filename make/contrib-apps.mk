@@ -1659,14 +1659,17 @@ $(D)/usb_modeswitch: $(D)/bootstrap $(D)/libusb $(D)/usb_modeswitch_data $(ARCHI
 $(D)/ofgwrite: $(D)/bootstrap
 	$(START_BUILD)
 	$(REMOVE)/ofgwrite
-	$(SET) -e; cd $(BUILD_TMP); \
-	git clone -q git://github.com/oe-alliance/ofgwrite.git ofgwrite; \
-	cd ofgwrite; \
+	$(SET) -e; if [ -d $(ARCHIVE)/ofgwrite-ddt.git ]; \
+		then cd $(ARCHIVE)/ofgwrite-ddt.git; git pull; \
+		else cd $(ARCHIVE); echo -n "Cloning git..."; git -q clone https://github.com/Duckbox-Developers/ofgwrite-ddt.git ofgwrite-ddt.git; echo " done."; \
+		fi
+	@cp -ra $(ARCHIVE)/ofgwrite-ddt.git $(BUILD_TMP)/ofgwrite
+	$(SET) -e; cd $(BUILD_TMP)/ofgwrite; \
 		$(BUILDENV) \
 		$(MAKE) && \
-	install -m 755 $(BUILD_TMP)/ofgwrite/ofgwrite_bin $(TARGET_DIR)/bin
-	install -m 755 $(BUILD_TMP)/ofgwrite/ofgwrite $(TARGET_DIR)/bin
-	sed -i "s,/usr/bin/,/bin/," $(TARGET_DIR)/bin/ofgwrite
+	$(SILENT)install -m 755 $(BUILD_TMP)/ofgwrite/ofgwrite_bin $(TARGET_DIR)/bin
+	$(SILENT)install -m 755 $(BUILD_TMP)/ofgwrite/ofgwrite $(TARGET_DIR)/bin
+	$(SILENT)sed -i "s,/usr/bin/,/bin/," $(TARGET_DIR)/bin/ofgwrite
 	$(REMOVE)/ofgwrite
 	$(TOUCH)
 
