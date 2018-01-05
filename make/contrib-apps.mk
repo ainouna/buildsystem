@@ -1610,6 +1610,51 @@ $(D)/dropbear: $(D)/bootstrap $(D)/zlib $(ARCHIVE)/$(DROPBEAR_SOURCE)
 	$(TOUCH)
 
 #
+# dropbear multi
+#
+$(D)/dropbearmulti: $(D)/bootstrap
+	$(START_BUILD)
+	$(REMOVE)/dropbearmulti
+	$(SET) -e; if [ -d $(ARCHIVE)/dropbearmulti.git ]; \
+		then cd $(ARCHIVE)/dropbearmulti.git; echo -n "Updating local git..."; git pull -q; echo " done."; \
+		else cd $(ARCHIVE); echo -n "Cloning git..."; git clone -q --recursive git://github.com/mkj/dropbear.git $(ARCHIVE)/dropbearmulti.git; echo " done."; \
+		fi
+	@cp -ra $(ARCHIVE)/dropbearmulti.git $(BUILD_TMP)/dropbearmulti
+	$(SET) -e; cd $(BUILD_TMP)/dropbearmulti; \
+		$(BUILDENV) \
+		autoreconf -fi -I $(TARGET_DIR)/usr/share/aclocal; \
+		$(CONFIGURE) \
+			--build=$(BUILD) \
+			--host=$(TARGET) \
+			--prefix=/usr \
+			--disable-syslog \
+			--disable-lastlog \
+			--infodir=/.remove \
+			--localedir=/.remove \
+			--mandir=/.remove \
+			--docdir=/.remove \
+			--htmldir=/.remove \
+			--dvidir=/.remove \
+			--pdfdir=/.remove \
+			--psdir=/.remove \
+			--disable-shadow \
+			--disable-zlib \
+			--disable-utmp \
+			--disable-utmpx \
+			--disable-wtmp \
+			--disable-wtmpx \
+			--disable-loginfunc \
+			--disable-pututline \
+			--disable-pututxline \
+		; \
+		$(MAKE) PROGRAMS="dropbear scp" MULTI=1 install DESTDIR=$(TARGET_DIR)
+	$(SILENT)cd $(TARGET_DIR)/usr/bin && ln -s /usr/bin/dropbearmulti dropbear
+	$(SILENT)install -m 755 $(SKEL_ROOT)/etc/init.d/dropbear $(TARGET_DIR)/etc/init.d/
+	$(SILENT)install -d -m 0755 $(TARGET_DIR)/etc/dropbear
+	$(REMOVE)/dropbearmulti
+	$(TOUCH)
+
+#
 # usb_modeswitch_data
 #
 USB_MODESWITCH_DATA_VER = 20160112
