@@ -1506,7 +1506,8 @@ ifeq ($(BOXARCH), sh4)
 DVBSNOOP_CONF_OPTS = --with-dvbincludes=$(KERNEL_DIR)/include
 endif
 
-+$(D)/dvbsnoop: $(D)/bootstrap $(D)/kernel $(ARCHIVE)/$(DVBSNOOP_SOURCE)	$(START_BUILD)
+$(D)/dvbsnoop: $(D)/bootstrap $(D)/kernel $(ARCHIVE)/$(DVBSNOOP_SOURCE)
+	$(START_BUILD)
 	$(REMOVE)/dvbsnoop-$(DVBSNOOP_VER)
 	$(UNTAR)/$(DVBSNOOP_SOURCE)
 	$(SET) -e; cd $(BUILD_TMP)/dvbsnoop-$(DVBSNOOP_VER); \
