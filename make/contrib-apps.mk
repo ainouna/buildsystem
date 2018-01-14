@@ -1750,7 +1750,7 @@ $(D)/ofgwrite: $(D)/bootstrap
 	$(SET) -e; cd $(BUILD_TMP)/ofgwrite; \
 		$(BUILDENV) \
 		$(MAKE) && \
-	$(SILENT)install -m 755 $(BUILD_TMP)/ofgwrite/ofgwrite_bin $(TARGET_DIR)/bin
+	install -m 755 $(BUILD_TMP)/ofgwrite/ofgwrite_bin $(TARGET_DIR)/bin
 	$(SILENT)install -m 755 $(BUILD_TMP)/ofgwrite/ofgwrite $(TARGET_DIR)/bin
 	$(SILENT)sed -i "s,/usr/bin/,/bin/," $(TARGET_DIR)/bin/ofgwrite
 	$(REMOVE)/ofgwrite
