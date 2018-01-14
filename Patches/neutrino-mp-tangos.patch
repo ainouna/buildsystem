@@ -1,24 +1,24 @@
 --- neutrino-mp-tangos.org/acinclude.m4
 +++ neutrino-mp-tangos/acinclude.m4
-@@ -381,7 +381,7 @@
+@@ -380,7 +380,7 @@
+ 
  AC_ARG_WITH(boxmodel,
- 	[  --with-boxmodel         valid for coolstream: hd1, hd2
-                           valid for generic: raspi
--                          valid for duckbox: ufs910, ufs912, ufs913, ufs922, atevio7500, fortis_hdbox, octagon1008, hs7110, hs7810a, hs7119, hs7819, dp7000, cuberevo, cuberevo_mini, cuberevo_mini2, cuberevo_250hd, cuberevo_2000hd, cuberevo_3000hd, ipbox9900, ipbox99, ipbox55, arivalink200, tf7700, hl101
-+                          valid for duckbox: ufs910, ufs912, ufs913, ufs922, atevio7500, fortis_hdbox, octagon1008, hs7110, hs7420, hs7810a, hs7119, hs7429, hs7819, cuberevo, cuberevo_mini, cuberevo_mini2, cuberevo_250hd, cuberevo_2000hd, cuberevo_3000hd, ipbox9900, ipbox99, ipbox55, arivalink200, tf7700, hl101
-                           valid for spark: spark, spark7162
-                           valid for armbox: hd51, vusolo4k],
- 	[case "${withval}" in
+ 	AS_HELP_STRING([--with-boxmodel], [valid for coolstream: hd1, hd2])
+-AS_HELP_STRING([], [valid for duckbox: ufs910, ufs912, ufs913, ufs922, atevio7500, fortis_hdbox, octagon1008, hs7110, hs7810a, hs7119, hs7819, dp7000, cuberevo, cuberevo_mini, cuberevo_mini2, cuberevo_250hd, cuberevo_2000hd, cuberevo_3000hd, ipbox9900, ipbox99, ipbox55, arivalink200, tf7700, hl101])
++AS_HELP_STRING([], [valid for duckbox: ufs910, ufs912, ufs913, ufs922, atevio7500, fortis_hdbox, octagon1008, hs7110, hs7420, hs7810a, hs7119, hs7429, hs7819, cuberevo, cuberevo_mini, cuberevo_mini2, cuberevo_250hd, cuberevo_2000hd, cuberevo_3000hd, ipbox9900, ipbox99, ipbox55, arivalink200, tf7700, hl101])
+ AS_HELP_STRING([], [valid for spark: spark, spark7162])
+ AS_HELP_STRING([], [valid for armbox: hd51])
+ AS_HELP_STRING([], [valid for generic: raspi]),
 @@ -468,8 +468,10 @@
- AM_CONDITIONAL(BOXMODEL_FORTIS_HDBOX,test "$BOXMODEL" = "fortis_hdbox")
- AM_CONDITIONAL(BOXMODEL_OCTAGON1008,test "$BOXMODEL" = "octagon1008")
- AM_CONDITIONAL(BOXMODEL_HS7110,test "$BOXMODEL" = "hs7110")
+ AM_CONDITIONAL(BOXMODEL_FORTIS_HDBOX, test "$BOXMODEL" = "fortis_hdbox")
+ AM_CONDITIONAL(BOXMODEL_OCTAGON1008, test "$BOXMODEL" = "octagon1008")
+ AM_CONDITIONAL(BOXMODEL_HS7110, test "$BOXMODEL" = "hs7110")
 +AM_CONDITIONAL(BOXMODEL_HS7420,test "$BOXMODEL" = "hs7420")
- AM_CONDITIONAL(BOXMODEL_HS7810A,test "$BOXMODEL" = "hs7810a")
- AM_CONDITIONAL(BOXMODEL_HS7119,test "$BOXMODEL" = "hs7119")
+ AM_CONDITIONAL(BOXMODEL_HS7810A, test "$BOXMODEL" = "hs7810a")
+ AM_CONDITIONAL(BOXMODEL_HS7119, test "$BOXMODEL" = "hs7119")
 +AM_CONDITIONAL(BOXMODEL_HS7429,test "$BOXMODEL" = "hs7429")
- AM_CONDITIONAL(BOXMODEL_HS7819,test "$BOXMODEL" = "hs7819")
- AM_CONDITIONAL(BOXMODEL_DP7000,test "$BOXMODEL" = "dp7000")
+ AM_CONDITIONAL(BOXMODEL_HS7819, test "$BOXMODEL" = "hs7819")
+ AM_CONDITIONAL(BOXMODEL_DP7000, test "$BOXMODEL" = "dp7000")
  
 @@ -535,10 +537,14 @@
  	AC_DEFINE(BOXMODEL_OCTAGON1008, 1, [octagon1008])
@@ -59,7 +59,7 @@
  NEUTRINO_CPP  SglobalInfo	g_info;
 --- neutrino-mp-tangos.org/src/neutrino.cpp
 +++ neutrino-mp-tangos/src/neutrino.cpp
-@@ -4617,6 +4617,9 @@
+@@ -4614,6 +4614,9 @@
  			CVFD::getInstance()->Clear();
  			CVFD::getInstance()->setMode(CVFD::MODE_STANDBY);
  		}
@@ -69,7 +69,7 @@
  		CVFD::getInstance()->setBacklight(g_settings.backlight_standby);
  
  		InfoClock->enableInfoClock(false);
-@@ -4648,7 +4651,11 @@
+@@ -4645,7 +4648,11 @@
  		// Active standby off
  		powerManager->SetStandby(false, false);
  		CVFD::getInstance()->setMode(CVFD::MODE_TVRADIO);
@@ -917,29 +917,7 @@
   && !defined(BOXMODEL_HS7819) \
   && !defined(BOXMODEL_IPBOX9900) \
   && !defined(BOXMODEL_IPBOX99) \
-@@ -547,8 +549,10 @@
-  && !defined(BOXMODEL_UFS922) \
-  && !defined(BOXMODEL_OCTAGON1008) \
-  && !defined(BOXMODEL_HS7110) \
-+ && !defined(BOXMODEL_HS7420) \
-  && !defined(BOXMODEL_HS7810A) \
-  && !defined(BOXMODEL_HS7119) \
-+ && !defined(BOXMODEL_HS7429) \
-  && !defined(BOXMODEL_HS7819) \
-  && !defined(BOXMODEL_IPBOX9900) \
-  && !defined(BOXMODEL_IPBOX99) \
-@@ -578,8 +582,10 @@
-  && !defined(BOXMODEL_FORTIS_HDBOX) \
-  && !defined(BOXMODEL_OCTAGON1008) \
-  && !defined(BOXMODEL_HS7110) \
-+ && !defined(BOXMODEL_HS7420) \
-  && !defined(BOXMODEL_HS7810A) \
-  && !defined(BOXMODEL_HS7119) \
-+ && !defined(BOXMODEL_HS7429) \
-  && !defined(BOXMODEL_HS7819) \
-  && !defined(BOXMODEL_CUBEREVO_MINI2) \
-  && !defined(BOXMODEL_IPBOX9900) \
-@@ -1404,15 +1410,15 @@
+@@ -1408,15 +1414,15 @@
  #if HAVE_SH4_HARDWARE
  	old3dmode = frameBuffer->get3DMode();
  #endif
@@ -964,7 +942,7 @@
  	pthread_t thrStartHint = 0;
  	if (is_file_player) {
  		showStartingHint = true;
-@@ -1620,14 +1626,14 @@
+@@ -1624,14 +1630,14 @@
  
  	while (playstate >= CMoviePlayerGui::PLAY)
  	{
@@ -987,7 +965,7 @@
  		if (update_lcd) {
  			update_lcd = false;
  			updateLcd();
-@@ -1660,7 +1666,15 @@
+@@ -1668,7 +1670,15 @@
  					ss -= hh * 3600;
  					mm = ss/60;
  					ss -= mm * 60;
@@ -1004,7 +982,7 @@
  					CVFD::getInstance()->setMode(CVFD::MODE_MENU_UTF8);
  					CVFD::getInstance()->showMenuText(0, Value.c_str(), -1, true);
  				}
-@@ -2199,12 +2213,12 @@
+@@ -2206,12 +2216,12 @@
  	CScreenSetup cSS;
  	cSS.showBorder(CZapit::getInstance()->GetCurrentChannelID());
  #endif
@@ -1023,7 +1001,7 @@
  	if (iso_file) {
  		iso_file = false;
  		if (umount2(ISO_MOUNT_POINT, MNT_FORCE))
-@@ -2282,10 +2296,10 @@
+@@ -2289,10 +2299,10 @@
  		}
  		if (!movie_info.channelName.empty() || !movie_info.epgTitle.empty())
  			p_movie_info = &movie_info;
@@ -1038,7 +1016,7 @@
  	}
  
  	if (p_movie_info) {
-@@ -2809,10 +2823,10 @@
+@@ -2816,10 +2826,10 @@
  		tuxtx_pause_subtitle(true);
  		frameBuffer->paintBackground();
  	}
@@ -1053,7 +1031,7 @@
  #endif
  }
  
-@@ -2850,9 +2864,9 @@
+@@ -2857,9 +2867,9 @@
  {
  #if HAVE_SH4_HARDWARE
  	printf("[CMoviePlayerGui] %s: %s\n", __FUNCTION__, show ? "Show" : "Not show");
