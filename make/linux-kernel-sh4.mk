@@ -443,10 +443,58 @@ kernel-clean:
 	$(SILENT)rm -f $(D)/kernel
 	$(SILENT)rm -f $(D)/kernel.do_compile
 
+#
+# TF7700 installer
+#
+TFINSTALLER_DIR := $(BASE_DIR)/tfinstaller
+
+tfinstaller: $(D)/bootstrap $(TFINSTALLER_DIR)/u-boot.ftfd $(D)/kernel
+	$(START_BUILD)
+	$(MAKE) $(MAKE_OPTS) -C $(TFINSTALLER_DIR) HOST_DIR=$(HOST_DIR) BASE_DIR=$(BASE_DIR) KERNEL_DIR=$(KERNEL_DIR)
+	$(TOUCH)
+
+$(TFINSTALLER_DIR)/u-boot.ftfd: $(D)/uboot $(TFINSTALLER_DIR)/tfpacker
+#	$(START_BUILD)
+	@echo -e "Start build of $(TERM_GREEN_BOLD)u-boot.ftfd & Enigma_Installer.tfd$(TERM_NORMAL)."
+	$(SILENT)$(TFINSTALLER_DIR)/tfpacker $(BUILD_TMP)/u-boot-$(UBOOT_VER)/u-boot.bin $(TFINSTALLER_DIR)/u-boot.ftfd
+	$(SILENT)$(TFINSTALLER_DIR)/tfpacker -t $(BUILD_TMP)/u-boot-$(UBOOT_VER)/u-boot.bin $(TFINSTALLER_DIR)/Enigma_Installer.tfd
+	$(REMOVE)/u-boot-$(UBOOT_VER)
+#	$(TOUCH)
+	@echo -e "Build of $(TERM_GREEN_BOLD)u-boot.ftfd & Enigma_Installer.tfd$(TERM_NORMAL) completed."
+	@touch $@
+
+$(TFINSTALLER_DIR)/tfpacker:
+	$(START_BUILD)
+	$(MAKE) -C $(TFINSTALLER_DIR) tfpacker
+	$(TOUCH)
+
 $(D)/tfkernel:
 	$(START_BUILD)
 	$(SILENT)cd $(KERNEL_DIR); \
 		$(MAKE) $(if $(TF7700),TF7700=y) ARCH=sh CROSS_COMPILE=$(TARGET)- uImage
+	$(TOUCH)
+
+#
+# u-boot
+#
+UBOOT_VER = 1.3.1
+UBOOT_PATCH  =  u-boot-$(UBOOT_VER).patch
+ifeq ($(BOXTYPE), tf7700)
+UBOOT_PATCH += u-boot-$(UBOOT_VER)-tf7700.patch
+endif
+
+$(ARCHIVE)/u-boot-$(UBOOT_VER).tar.bz2:
+	$(WGET) ftp://ftp.denx.de/pub/u-boot/u-boot-$(UBOOT_VER).tar.bz2
+
+$(D)/uboot: bootstrap $(ARCHIVE)/u-boot-$(UBOOT_VER).tar.bz2
+	$(START_BUILD)
+	$(REMOVE)/u-boot-$(UBOOT_VER)
+	$(UNTAR)/u-boot-$(UBOOT_VER).tar.bz2
+	$(SET) -e; cd $(BUILD_TMP)/u-boot-$(UBOOT_VER); \
+		$(call post_patch,$(UBOOT_PATCH)); \
+		$(MAKE) $(BOXTYPE)_config; \
+		$(MAKE)
+#	$(REMOVE)/u-boot-$(UBOOT_VER)
 	$(TOUCH)
 
 #
