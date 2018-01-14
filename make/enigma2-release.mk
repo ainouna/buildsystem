@@ -502,7 +502,7 @@ enigma2_release_tf7700:
 	$(SILENT)rm -f $(RELEASE_DIR)/bin/vdstandby
 	$(SILENT)cp -f $(SKEL_ROOT)/release/rc_tf7700.png $(RELEASE_DIR)/usr/local/share/enigma2/skin_default/rc.png
 	$(SILENT)cp -f $(SKEL_ROOT)/root_enigma2/usr/local/share/enigma2/keymap_tf7700.xml $(RELEASE_DIR)/usr/local/share/enigma2/keymap.xml
-	$(MAKE) tfinstaller
+	$(MAKE) $(D)/tfinstaller
 
 #
 # vitamin_hd5000

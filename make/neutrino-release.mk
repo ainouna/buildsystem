@@ -397,7 +397,7 @@ neutrino-release-tf7700:
 	$(SILENT)cp $(SKEL_ROOT)/boot/audio_7109.elf $(RELEASE_DIR)/lib/firmware/audio.elf
 	$(SILENT)cp $(SKEL_ROOT)/firmware/dvb-fe-cx24116.fw $(RELEASE_DIR)/lib/firmware/
 	$(SILENT)cp -f $(SKEL_ROOT)/release/fstab_tf7700 $(RELEASE_DIR)/etc/fstab
-	$(MAKE) tfinstaller
+	$(MAKE) $(D)/tfinstaller
 
 #
 # vitamin_hd5000
@@ -876,7 +876,11 @@ ifneq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), kerneldebug debug))
 	$(SILENT)find $(RELEASE_DIR)/ -name '*' -exec $(TARGET)-strip --strip-unneeded {} &>/dev/null \;
 	@echo -e " done.\n";
 endif
+#ifeq ($(BOXTYPE), tf7700)
+#	$(MAKE) $(D)/tfinstaller
+#endif
 
+#
 #
 # neutrino-release-clean
 #

@@ -448,7 +448,7 @@ kernel-clean:
 #
 TFINSTALLER_DIR := $(BASE_DIR)/tfinstaller
 
-tfinstaller: $(D)/bootstrap $(TFINSTALLER_DIR)/u-boot.ftfd $(D)/kernel
+$(D)/tfinstaller: $(D)/bootstrap $(TFINSTALLER_DIR)/u-boot.ftfd $(D)/kernel
 	$(START_BUILD)
 	$(MAKE) $(MAKE_OPTS) -C $(TFINSTALLER_DIR) HOST_DIR=$(HOST_DIR) BASE_DIR=$(BASE_DIR) KERNEL_DIR=$(KERNEL_DIR)
 	$(TOUCH)

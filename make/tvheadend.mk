@@ -5,10 +5,6 @@
 TVHEADEND_DEPS  = $(D)/bootstrap $(D)/openssl $(D)/zlib
 TVHEADEND_DEPS += $(LOCAL_TVHEADEND_DEPS)
 
-ifeq ($(BOXTYPE), tf7700)
-TVHEADEND_DEPS += $(D)/uboot_tf7700 $(D)/u-boot.ftfd $(D)/tfinstaller
-endif
-
 TVHEADEND_CONFIG_OPTS +=$(LOCAL_TVHEADEND_BUILD_OPTIONS)
 
 #
