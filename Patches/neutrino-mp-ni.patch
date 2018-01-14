@@ -1,29 +1,31 @@
 --- neutrino-mp-cst-next_ni/acinclude.m4
 +++ neutrino-mp-cst-next_ni/acinclude.m4
-@@ -316,9 +316,9 @@
+@@ -311,9 +311,9 @@
  
- AC_DEFUN([TUXBOX_BOXTYPE],[
+ AC_DEFUN([TUXBOX_BOXTYPE], [
  AC_ARG_WITH(boxtype,
--	[  --with-boxtype          valid values: tripledragon,coolstream,spark,azbox,generic,armbox],
-+	[  --with-boxtype          valid values: tripledragon,coolstream,spark,azbox,generic,armbox,duckbox],
+-	AS_HELP_STRING([--with-boxtype], [valid values: tripledragon, coolstream, spark, azbox, generic, armbox]),
++	AS_HELP_STRING([--with-boxtype], [valid values: tripledragon, coolstream, spark, azbox, generic, armbox,duckbox]),
  	[case "${withval}" in
 -		tripledragon|coolstream|spark|azbox|generic|armbox)
 +		tripledragon|coolstream|spark|azbox|generic|armbox|duckbox)
  			BOXTYPE="$withval"
- 			;;
+ 		;;
  		*)
-@@ -329,6 +329,7 @@
- 	[  --with-boxmodel         valid for coolstream: hd1, hd2
-                           valid for armbox: hd51
-                           valid for generic: raspi],
-+                          valid for duckbox: ufs910, ufs912, ufs913, ufs922, atevio7500, fortis_hdbox, octagon1008, hs7110, hs7420, hs7810a, hs7119, hs7429, hs7819, cuberevo, cuberevo_mini, cuberevo_mini2, cuberevo_250hd, cuberevo_2000hd, cuberevo_3000hd, ipbox9900, ipbox99, ipbox55, arivalink200, tf7700, hl101
+@@ -325,7 +325,8 @@
+ AC_ARG_WITH(boxmodel,
+ 	AS_HELP_STRING([--with-boxmodel], [valid for coolstream: hd1, hd2])
+ AS_HELP_STRING([], [valid for armbox: hd51])
+-AS_HELP_STRING([], [valid for generic: raspi]),
++	AS_HELP_STRING([], [valid for generic: raspi])
++	AS_HELP_STRING([], [valid for duckbox: ufs910, ufs912, ufs913, ufs922, atevio7500, fortis_hdbox, octagon1008, hs7110, hs7420, hs7810a, hs7119, hs7429, hs7819, cuberevo, cuberevo_mini, cuberevo_mini2, cuberevo_250hd, cuberevo_2000hd, cuberevo_3000hd, ipbox9900, ipbox99, ipbox55, arivalink200, tf7700, hl101])
  	[case "${withval}" in
  		hd1|hd2)
  			if test "$BOXTYPE" = "coolstream"; then
-@@ -363,6 +364,76 @@
+@@ -360,6 +361,76 @@
  				AC_MSG_ERROR([unknown model $withval for boxtype $BOXTYPE])
  			fi
- 			;;
+ 		;;
 +		ufs*)
 +			if test "$BOXTYPE" = "duckbox"; then
 +				BOXMODEL="$withval"
@@ -96,11 +98,11 @@
 +			;;
  		*)
  			AC_MSG_ERROR([unsupported value $withval for --with-boxmodel])
- 			;;
-@@ -383,6 +454,33 @@
- AM_CONDITIONAL(BOXMODEL_CS_HD2,test "$BOXMODEL" = "hd2")
+ 		;;
+@@ -379,6 +450,33 @@
+ AM_CONDITIONAL(BOXMODEL_CS_HD2, test "$BOXMODEL" = "hd2")
  
- AM_CONDITIONAL(BOXMODEL_RASPI,test "$BOXMODEL" = "raspi")
+ AM_CONDITIONAL(BOXMODEL_RASPI, test "$BOXMODEL" = "raspi")
 +
 +AM_CONDITIONAL(BOXTYPE_UFS910, test "$BOXTYPE" = "ufs910")
 +AM_CONDITIONAL(BOXTYPE_UFS912, test "$BOXTYPE" = "ufs912")
@@ -131,21 +133,19 @@
  
  if test "$BOXTYPE" = "azbox"; then
  	AC_DEFINE(HAVE_AZBOX_HARDWARE, 1, [building for an azbox])
-@@ -394,8 +492,8 @@
- 	AC_DEFINE(HAVE_SPARK_HARDWARE, 1, [building for a goldenmedia 990 or edision pingulux])
- elif test "$BOXTYPE" = "generic"; then
+@@ -392,6 +487,8 @@
  	AC_DEFINE(HAVE_GENERIC_HARDWARE, 1, [building for a generic device like a standard PC])
--elif test "$BOXTYPE" = "armbox"; then
--	AC_DEFINE(HAVE_ARM_HARDWARE, 1, [building for an armbox])
+ elif test "$BOXTYPE" = "armbox"; then
+ 	AC_DEFINE(HAVE_ARM_HARDWARE, 1, [building for an armbox])
 +elif test "$BOXTYPE" = "duckbox"; then
 +	AC_DEFINE(HAVE_DUCKBOX_HARDWARE, 1, [building for a duckbox])
  fi
  
  # TODO: do we need more defines?
-@@ -408,6 +506,58 @@
- 	AC_DEFINE(ENABLE_CHANGE_OSD_RESOLUTION,1,[enable change the osd resolution])
+@@ -404,6 +501,58 @@
+ 	AC_DEFINE(ENABLE_CHANGE_OSD_RESOLUTION, 1, [enable change the osd resolution])
  elif test "$BOXMODEL" = "raspi"; then
- 	AC_DEFINE(BOXMODEL_RASPI, 1, [Raspberry pi])
+ 	AC_DEFINE(BOXMODEL_RASPI, 1, [raspberry pi])
 +elif test "$BOXMODEL" = "ufs910"; then
 +	AC_DEFINE(BOXMODEL_UFS910, 1, [ufs910])
 +elif test "$BOXMODEL" = "ufs912"; then
@@ -1828,7 +1828,7 @@
  	mn_widget->addItem(nc);
 --- neutrino-mp-cst-next_ni.org/src/gui/movieplayer.cpp
 +++ neutrino-mp-cst-next_ni/src/gui/movieplayer.cpp
-@@ -1654,7 +1654,15 @@
+@@ -1540,7 +1540,15 @@
  					ss -= hh * 3600;
  					mm = ss/60;
  					ss -= mm * 60;
