@@ -165,20 +165,20 @@ HOST_E2FSPROGS_SOURCE = $(E2FSPROGS_SOURCE)
 $(D)/host_resize2fs: $(ARCHIVE)/$(HOST_E2FSPROGS_SOURCE)
 	$(START_BUILD)
 	$(UNTAR)/$(HOST_E2FSPROGS_SOURCE)
-	set -e; cd $(BUILD_TMP)/e2fsprogs-$(HOST_E2FSPROGS_VER); \
-		./configure; \
+	$(SET) -e; cd $(BUILD_TMP)/e2fsprogs-$(HOST_E2FSPROGS_VER); \
+		./configure $(SILENT_CONFIGURE) $(SILENT_OPT); \
 		$(MAKE)
-	install -D -m 0755 $(BUILD_TMP)/e2fsprogs-$(HOST_E2FSPROGS_VER)/resize/resize2fs $(HOST_DIR)/bin/
-	install -D -m 0755 $(BUILD_TMP)/e2fsprogs-$(HOST_E2FSPROGS_VER)/misc/mke2fs $(HOST_DIR)/bin/
-	ln -sf mke2fs $(HOST_DIR)/bin/mkfs.ext2
-	ln -sf mke2fs $(HOST_DIR)/bin/mkfs.ext3
-	ln -sf mke2fs $(HOST_DIR)/bin/mkfs.ext4
-	ln -sf mke2fs $(HOST_DIR)/bin/mkfs.ext4dev
-	install -D -m 0755 $(BUILD_TMP)/e2fsprogs-$(HOST_E2FSPROGS_VER)/e2fsck/e2fsck $(HOST_DIR)/bin/
-	ln -sf e2fsck $(HOST_DIR)/bin/fsck.ext2
-	ln -sf e2fsck $(HOST_DIR)/bin/fsck.ext3
-	ln -sf e2fsck $(HOST_DIR)/bin/fsck.ext4
-	ln -sf e2fsck $(HOST_DIR)/bin/fsck.ext4dev
+	$(SILENT)install -D -m 0755 $(BUILD_TMP)/e2fsprogs-$(HOST_E2FSPROGS_VER)/resize/resize2fs $(HOST_DIR)/bin/
+	$(SILENT)install -D -m 0755 $(BUILD_TMP)/e2fsprogs-$(HOST_E2FSPROGS_VER)/misc/mke2fs $(HOST_DIR)/bin/
+	$(SILENT)ln -sf mke2fs $(HOST_DIR)/bin/mkfs.ext2
+	$(SILENT)ln -sf mke2fs $(HOST_DIR)/bin/mkfs.ext3
+	$(SILENT)ln -sf mke2fs $(HOST_DIR)/bin/mkfs.ext4
+	$(SILENT)ln -sf mke2fs $(HOST_DIR)/bin/mkfs.ext4dev
+	$(SILENT)install -D -m 0755 $(BUILD_TMP)/e2fsprogs-$(HOST_E2FSPROGS_VER)/e2fsck/e2fsck $(HOST_DIR)/bin/
+	$(SILENT)ln -sf e2fsck $(HOST_DIR)/bin/fsck.ext2
+	$(SILENT)ln -sf e2fsck $(HOST_DIR)/bin/fsck.ext3
+	$(SILENT)ln -sf e2fsck $(HOST_DIR)/bin/fsck.ext4
+	$(SILENT)ln -sf e2fsck $(HOST_DIR)/bin/fsck.ext4dev
 	$(REMOVE)/e2fsprogs-$(HOST_E2FSPROGS_VER)
 	$(TOUCH)
 
