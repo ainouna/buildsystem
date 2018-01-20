@@ -59,17 +59,17 @@
  NEUTRINO_CPP  SglobalInfo	g_info;
 --- neutrino-mp-tangos.org/src/neutrino.cpp
 +++ neutrino-mp-tangos/src/neutrino.cpp
-@@ -4614,6 +4614,9 @@
- 			CVFD::getInstance()->Clear();
- 			CVFD::getInstance()->setMode(CVFD::MODE_STANDBY);
- 		}
+@@ -4612,6 +4612,9 @@
+ 
+ 		CVFD::getInstance()->Clear();
+ 		CVFD::getInstance()->setMode(CVFD::MODE_STANDBY);
 +#if defined (FORTIS_HDBOX) || defined (TF7700)
 +		CVFD::getInstance()->setlcdparameter(g_settings.lcd_setting[SNeutrinoSettings::LCD_STANDBY_BRIGHTNESS], 0);
 +#endif
  		CVFD::getInstance()->setBacklight(g_settings.backlight_standby);
  
  		InfoClock->enableInfoClock(false);
-@@ -4645,7 +4648,11 @@
+@@ -4643,7 +4646,11 @@
  		// Active standby off
  		powerManager->SetStandby(false, false);
  		CVFD::getInstance()->setMode(CVFD::MODE_TVRADIO);
