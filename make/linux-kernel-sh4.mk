@@ -491,7 +491,7 @@ $(D)/uboot: bootstrap $(ARCHIVE)/u-boot-$(UBOOT_VER).tar.bz2
 	$(REMOVE)/u-boot-$(UBOOT_VER)
 	$(UNTAR)/u-boot-$(UBOOT_VER).tar.bz2
 	$(SET) -e; cd $(BUILD_TMP)/u-boot-$(UBOOT_VER); \
-		$(call post_patch,$(UBOOT_PATCH)); \
+		$(call apply_patches,$(UBOOT_PATCH)); \
 		$(MAKE) $(BOXTYPE)_config; \
 		$(MAKE)
 #	$(REMOVE)/u-boot-$(UBOOT_VER)

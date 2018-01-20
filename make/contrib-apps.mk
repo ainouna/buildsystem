@@ -25,7 +25,7 @@ $(D)/busybox: $(D)/bootstrap $(ARCHIVE)/$(BUSYBOX_SOURCE) $(PATCHES)/$(BUSYBOX_C
 	$(REMOVE)/busybox-$(BUSYBOX_VER)
 	$(UNTAR)/$(BUSYBOX_SOURCE)
 	$(SET) -e; cd $(BUILD_TMP)/busybox-$(BUSYBOX_VER); \
-		$(call post_patch,$(BUSYBOX_PATCH)); \
+		$(call apply_patches,$(BUSYBOX_PATCH)); \
 		install -m 0644 $(lastword $^) .config; \
 		sed -i -e 's#^CONFIG_PREFIX.*#CONFIG_PREFIX="$(TARGET_DIR)"#' .config; \
 		$(BUILDENV) $(MAKE) busybox CROSS_COMPILE=$(TARGET)- CFLAGS_EXTRA="$(TARGET_CFLAGS)"; \
@@ -50,7 +50,7 @@ $(D)/busybox_usb: $(D)/bootstrap $(ARCHIVE)/$(BUSYBOX_SOURCE) $(PATCHES)/$(BUSYB
 	@mkdir $(BUILD_TMP)/busybox_usb-$(BUSYBOX_USB_VER)
 	@tar -C $(BUILD_TMP)/busybox_usb-$(BUSYBOX_USB_VER) -xf $(ARCHIVE)/busybox-$(BUSYBOX_USB_VER).tar.bz2 --strip-components=1
 	$(SET) -e; cd $(BUILD_TMP)/busybox_usb-$(BUSYBOX_USB_VER); \
-		$(call post_patch,$(BUSYBOX_PATCH)); \
+		$(call apply_patches,$(BUSYBOX_PATCH)); \
 		install -m 0644 $(lastword $^) .config; \
 		sed -i -e 's#^CONFIG_PREFIX.*#CONFIG_PREFIX="$(TARGET_DIR)"#' .config; \
 		$(BUILDENV) $(MAKE) busybox CROSS_COMPILE=$(TARGET)- CFLAGS_EXTRA="$(TARGET_CFLAGS)"; \
@@ -96,7 +96,7 @@ $(D)/module_init_tools: $(D)/bootstrap $(D)/lsb $(ARCHIVE)/$(MODULE_INIT_TOOLS_S
 	$(REMOVE)/module-init-tools-$(MODULE_INIT_TOOLS_VER)
 	$(UNTAR)/$(MODULE_INIT_TOOLS_SOURCE)
 	$(SET) -e; cd $(BUILD_TMP)/module-init-tools-$(MODULE_INIT_TOOLS_VER); \
-		$(call post_patch,$(MODULE_INIT_TOOLS_PATCH)); \
+		$(call apply_patches,$(MODULE_INIT_TOOLS_PATCH)); \
 		autoreconf -fi $(SILENT_OPT); \
 		$(CONFIGURE) \
 			--target=$(TARGET) \
@@ -178,7 +178,7 @@ $(D)/gdb: $(D)/bootstrap $(D)/ncurses $(D)/zlib $(ARCHIVE)/$(GDB_SOURCE)
 	$(REMOVE)/gdb-$(GDB_VER)
 	$(UNTAR)/$(GDB_SOURCE)
 	$(SET) -e; cd $(BUILD_TMP)/gdb-$(GDB_VER); \
-		$(call post_patch,$(GDB_PATCH)); \
+		$(call apply_patches,$(GDB_PATCH)); \
 		./configure $(SILENT_CONFIGURE) $(SILENT_OPT) \
 			--host=$(BUILD) \
 			--build=$(BUILD) \
@@ -237,7 +237,7 @@ $(D)/host_opkg: directories $(D)/host_libarchive $(ARCHIVE)/$(OPKG_SOURCE)
 	$(REMOVE)/opkg-$(OPKG_VER)
 	$(UNTAR)/$(OPKG_SOURCE)
 	$(SET) -e; cd $(BUILD_TMP)/opkg-$(OPKG_VER); \
-		$(call post_patch,$(OPKG_HOST_PATCH)); \
+		$(call apply_patches,$(OPKG_HOST_PATCH)); \
 		./autogen.sh $(SILENT_OPT); \
 		CFLAGS="-I$(HOST_DIR)/include" \
 		LDFLAGS="-L$(HOST_DIR)/lib" \
@@ -260,7 +260,7 @@ $(D)/opkg: $(D)/bootstrap $(D)/host_opkg $(D)/libarchive $(ARCHIVE)/$(OPKG_SOURC
 	$(REMOVE)/opkg-$(OPKG_VER)
 	$(UNTAR)/$(OPKG_SOURCE)
 	$(SET) -e; cd $(BUILD_TMP)/opkg-$(OPKG_VER); \
-		$(call post_patch,$(OPKG_PATCH)); \
+		$(call apply_patches,$(OPKG_PATCH)); \
 		LIBARCHIVE_LIBS="-L$(TARGET_DIR)/usr/lib -larchive" \
 		LIBARCHIVE_CFLAGS="-I$(TARGET_DIR)/usr/include" \
 		$(CONFIGURE) \
@@ -320,7 +320,7 @@ $(D)/portmap: $(D)/bootstrap $(D)/lsb $(ARCHIVE)/$(PORTMAP_SOURCE) $(ARCHIVE)/po
 		gunzip -cd $(lastword $^) | cat > debian.patch; \
 		patch -p1 $(SILENT_PATCH) <debian.patch && \
 		sed -e 's/### BEGIN INIT INFO/# chkconfig: S 41 10\n### BEGIN INIT INFO/g' -i debian/init.d; \
-		$(call post_patch,$(PORTMAP_PATCH)); \
+		$(call apply_patches,$(PORTMAP_PATCH)); \
 		$(BUILDENV) $(MAKE) NO_TCP_WRAPPER=1 DAEMON_UID=65534 DAEMON_GID=65535 CC="$(TARGET)-gcc"; \
 		install -m 0755 portmap $(TARGET_DIR)/sbin; \
 		install -m 0755 pmap_dump $(TARGET_DIR)/sbin; \
@@ -344,7 +344,7 @@ $(D)/e2fsprogs: $(D)/bootstrap $(D)/util_linux $(ARCHIVE)/$(E2FSPROGS_SOURCE)
 	$(REMOVE)/e2fsprogs-$(E2FSPROGS_VER)
 	$(UNTAR)/$(E2FSPROGS_SOURCE)
 	$(SET) -e; cd $(BUILD_TMP)/e2fsprogs-$(E2FSPROGS_VER); \
-		$(call post_patch,$(E2FSPROGS_PATCH)); \
+		$(call apply_patches,$(E2FSPROGS_PATCH)); \
 		PATH=$(BUILD_TMP)/e2fsprogs-$(E2FSPROGS_VER):$(PATH) \
 		autoreconf -fi && \
 		$(CONFIGURE) \
@@ -434,7 +434,7 @@ $(D)/jfsutils: $(D)/bootstrap $(D)/e2fsprogs $(ARCHIVE)/$(JFSUTILS_SOURCE)
 	$(REMOVE)/jfsutils-$(JFSUTILS_VER)
 	$(UNTAR)/$(JFSUTILS_SOURCE)
 	$(SET) -e; cd $(BUILD_TMP)/jfsutils-$(JFSUTILS_VER); \
-		$(call post_patch,$(JFSUTILS_PATCH)); \
+		$(call apply_patches,$(JFSUTILS_PATCH)); \
 		sed "s@<unistd.h>@&\n#include <sys/types.h>@g" -i fscklog/extract.c; \
 		autoreconf -fi $(SILENT_OPT); \
 		$(CONFIGURE) \
@@ -593,7 +593,7 @@ $(D)/mc: $(D)/bootstrap $(D)/ncurses $(D)/libglib2 $(ARCHIVE)/$(MC_SOURCE)
 	$(REMOVE)/mc-$(MC_VER)
 	$(UNTAR)/$(MC_SOURCE)
 	$(SET) -e; cd $(BUILD_TMP)/mc-$(MC_VER); \
-		$(call post_patch,$(MC_PATCH)); \
+		$(call apply_patches,$(MC_PATCH)); \
 		autoreconf -fi; \
 		$(CONFIGURE) \
 			--prefix=/usr \
@@ -711,7 +711,7 @@ $(D)/curlftpfs: $(D)/bootstrap $(D)/libcurl $(D)/fuse $(D)/libglib2 $(ARCHIVE)/$
 	$(REMOVE)/curlftpfs-$(CURLFTPFS_VER)
 	$(UNTAR)/$(CURLFTPFS_SOURCE)
 	$(SET) -e; cd $(BUILD_TMP)/curlftpfs-$(CURLFTPFS_VER); \
-		$(call post_patch,$(CURLFTPFS_PATCH)); \
+		$(call apply_patches,$(CURLFTPFS_PATCH)); \
 		export ac_cv_func_malloc_0_nonnull=yes && \
 		export ac_cv_func_realloc_0_nonnull=yes && \
 		$(CONFIGURE) \
@@ -835,7 +835,7 @@ $(TARGET_DIR)/bin/fbshot: $(D)/bootstrap $(D)/libpng $(ARCHIVE)/$(FBSHOT_SOURCE)
 	$(REMOVE)/fbshot-$(FBSHOT_VER)
 	$(UNTAR)/$(FBSHOT_SOURCE)
 	$(SET) -e; cd $(BUILD_TMP)/fbshot-$(FBSHOT_VER); \
-		$(call post_patch,$(FBSHOT_PATCH)); \
+		$(call apply_patches,$(FBSHOT_PATCH)); \
 		$(TARGET)-gcc $(TARGET_CFLAGS) $(TARGET_LDFLAGS) fbshot.c -lpng -lz -o $@
 	$(REMOVE)/fbshot-$(FBSHOT_VER)
 	@touch $@
@@ -855,7 +855,7 @@ $(D)/parted: $(D)/bootstrap $(D)/e2fsprogs $(ARCHIVE)/$(PARTED_SOURCE)
 	$(REMOVE)/parted-$(PARTED_VER)
 	$(UNTAR)/$(PARTED_SOURCE)
 	$(SET) -e; cd $(BUILD_TMP)/parted-$(PARTED_VER); \
-		$(call post_patch,$(PARTED_PATCH)); \
+		$(call apply_patches,$(PARTED_PATCH)); \
 		$(CONFIGURE) \
 			--target=$(TARGET) \
 			--prefix=/usr \
@@ -914,7 +914,7 @@ $(D)/autofs: $(D)/bootstrap $(D)/e2fsprogs $(ARCHIVE)/$(AUTOFS_SOURCE)
 	$(REMOVE)/autofs-$(AUTOFS_VER)
 	$(UNTAR)/$(AUTOFS_SOURCE)
 	$(SET) -e; cd $(BUILD_TMP)/autofs-$(AUTOFS_VER); \
-		$(call post_patch,$(AUTOFS_PATCH)); \
+		$(call apply_patches,$(AUTOFS_PATCH)); \
 		cp aclocal.m4 acinclude.m4; \
 		autoconf; \
 		$(CONFIGURE) \
@@ -1126,7 +1126,7 @@ $(D)/coreutils: $(D)/bootstrap $(D)/openssl $(ARCHIVE)/$(COREUTILS_SOURCE)
 	$(REMOVE)/coreutils-$(COREUTILS_VER)
 	$(UNTAR)/$(COREUTILS_SOURCE)
 	$(SET) -e; cd $(BUILD_TMP)/coreutils-$(COREUTILS_VER); \
-		$(call post_patch,$(COREUTILS_PATCH)); \
+		$(call apply_patches,$(COREUTILS_PATCH)); \
 		export fu_cv_sys_stat_statfs2_bsize=yes; \
 		$(CONFIGURE) \
 			--prefix=/usr \
@@ -1174,7 +1174,7 @@ $(D)/nfs_utils: $(D)/bootstrap $(D)/e2fsprogs $(ARCHIVE)/$(NFS_UTILS_SOURCE)
 	$(REMOVE)/nfs-utils-$(NFS_UTILS_VER)
 	$(UNTAR)/$(NFS_UTILS_SOURCE)
 	$(SET) -e; cd $(BUILD_TMP)/nfs-utils-$(NFS_UTILS_VER); \
-		$(call post_patch,$(NFS_UTILS_PATCH)); \
+		$(call apply_patches,$(NFS_UTILS_PATCH)); \
 		$(CONFIGURE) \
 			CC_FOR_BUILD=$(TARGET)-gcc \
 			--prefix=/usr \
@@ -1266,7 +1266,7 @@ $(D)/vsftpd: $(D)/bootstrap $(ARCHIVE)/$(VSFTPD_SOURCE)
 	$(REMOVE)/vsftpd-$(VSFTPD_VER)
 	$(UNTAR)/$(VSFTPD_SOURCE)
 	$(SET) -e; cd $(BUILD_TMP)/vsftpd-$(VSFTPD_VER); \
-		$(call post_patch,$(VSFTPD_PATCH)); \
+		$(call apply_patches,$(VSFTPD_PATCH)); \
 		$(MAKE) clean; \
 		$(MAKE) $(BUILDENV); \
 		$(MAKE) install PREFIX=$(TARGET_DIR)
@@ -1314,7 +1314,7 @@ $(D)/samba: $(D)/bootstrap $(ARCHIVE)/$(SAMBA_SOURCE)
 	$(REMOVE)/samba-$(SAMBA_VER)
 	$(UNTAR)/$(SAMBA_SOURCE)
 	$(SET) -e; cd $(BUILD_TMP)/samba-$(SAMBA_VER); \
-		$(call post_patch,$(SAMBA_PATCH)); \
+		$(call apply_patches,$(SAMBA_PATCH)); \
 		cd source3; \
 		./autogen.sh; \
 		$(BUILDENV) \
@@ -1392,7 +1392,7 @@ $(D)/ntp: $(D)/bootstrap $(ARCHIVE)/$(NTP_SOURCE)
 	$(REMOVE)/ntp-$(NTP_VER)
 	$(UNTAR)/$(NTP_SOURCE)
 	$(SET) -e; cd $(BUILD_TMP)/ntp-$(NTP_VER); \
-		$(call post_patch,$(NTP_PATCH)); \
+		$(call apply_patches,$(NTP_PATCH)); \
 		$(CONFIGURE) \
 			--target=$(TARGET) \
 			--prefix=/usr \
@@ -1423,7 +1423,7 @@ $(D)/wireless_tools: $(D)/bootstrap $(ARCHIVE)/$(WIRELESS_TOOLS_SOURCE)
 	$(REMOVE)/wireless_tools.$(WIRELESS_TOOLS_VER)
 	$(UNTAR)/$(WIRELESS_TOOLS_SOURCE)
 	$(SET) -e; cd $(BUILD_TMP)/wireless_tools.$(WIRELESS_TOOLS_VER); \
-		$(call post_patch,$(WIRELESS_TOOLS_PATCH)); \
+		$(call apply_patches,$(WIRELESS_TOOLS_PATCH)); \
 		$(MAKE) CC="$(TARGET)-gcc" CFLAGS="$(TARGET_CFLAGS) -I."; \
 		$(MAKE) install PREFIX=$(TARGET_DIR)/usr INSTALL_MAN=$(TARGET_DIR)/.remove
 	$(REMOVE)/wireless_tools.$(WIRELESS_TOOLS_VER)
@@ -1538,7 +1538,7 @@ $(D)/udpxy: $(D)/bootstrap $(ARCHIVE)/$(UDPXY_SOURCE)
 	$(REMOVE)/udpxy-$(UDPXY_VER)
 	$(UNTAR)/$(UDPXY_SOURCE)
 	$(SET) -e; cd $(BUILD_TMP)/udpxy-$(UDPXY_VER); \
-		$(call post_patch,$(UDPXY_PATCH)); \
+		$(call apply_patches,$(UDPXY_PATCH)); \
 		$(BUILDENV) \
 		$(MAKE) CC=$(TARGET)-gcc CCKIND=gcc; \
 		$(MAKE) install INSTALLROOT=$(TARGET_DIR)/usr MANPAGE_DIR=$(TARGET_DIR)/.remove
@@ -1707,7 +1707,7 @@ $(D)/usb_modeswitch_data: $(D)/bootstrap $(ARCHIVE)/$(USB_MODESWITCH_DATA_SOURCE
 	$(REMOVE)/usb-modeswitch-data-$(USB_MODESWITCH_DATA_VER)
 	$(UNTAR)/$(USB_MODESWITCH_DATA_SOURCE)
 	$(SET) -e; cd $(BUILD_TMP)/usb-modeswitch-data-$(USB_MODESWITCH_DATA_VER); \
-		$(call post_patch,$(USB_MODESWITCH_DATA_PATCH)); \
+		$(call apply_patches,$(USB_MODESWITCH_DATA_PATCH)); \
 		$(MAKE); \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
 	$(REMOVE)/usb-modeswitch-data-$(USB_MODESWITCH_DATA_VER)
@@ -1728,7 +1728,7 @@ $(D)/usb_modeswitch: $(D)/bootstrap $(D)/libusb $(D)/usb_modeswitch_data $(ARCHI
 	$(REMOVE)/usb-modeswitch-$(USB_MODESWITCH_VER)
 	$(UNTAR)/$(USB_MODESWITCH_SOURCE)
 	$(SET) -e; cd $(BUILD_TMP)/usb-modeswitch-$(USB_MODESWITCH_VER); \
-		$(call post_patch,$(USB_MODESWITCH_PATCH)); \
+		$(call apply_patches,$(USB_MODESWITCH_PATCH)); \
 		sed -i -e "s/= gcc/= $(TARGET)-gcc/" -e "s/-l usb/-lusb -lusb-1.0 -lpthread -lrt/" -e "s/install -D -s/install -D --strip-program=$(TARGET)-strip -s/" Makefile; \
 		sed -i -e "s/@CC@/$(TARGET)-gcc/g" jim/Makefile.in; \
 		$(BUILDENV) $(MAKE) DESTDIR=$(TARGET_DIR); \

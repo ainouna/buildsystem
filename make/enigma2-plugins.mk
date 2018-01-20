@@ -12,7 +12,7 @@ $(D)/enigma2_hotplug_e2_helper: $(D)/bootstrap
 		fi
 	$(SILENT)cp -ra $(ARCHIVE)/hotplug-e2-helper.git $(BUILD_TMP)/hotplug-e2-helper
 	$(SET) -e; cd $(BUILD_TMP)/hotplug-e2-helper; \
-		$(call post_patch,$(HOTPLUG_E2_PATCH)); \
+		$(call apply_patches,$(HOTPLUG_E2_PATCH)); \
 		$(CONFIGURE) \
 			--prefix=/usr \
 		; \
@@ -35,7 +35,7 @@ $(D)/enigma2_tuxtxtlib: $(D)/bootstrap
 		fi
 	$(SILENT)cp -ra $(ARCHIVE)/tuxtxt.git/libtuxtxt $(BUILD_TMP)/tuxtxtlib
 	$(SILENT)cd $(BUILD_TMP)/tuxtxtlib; \
-		$(call post_patch,$(TUXTXTLIB_PATCH)); \
+		$(call apply_patches,$(TUXTXTLIB_PATCH)); \
 		aclocal; \
 		autoheader; \
 		autoconf; \
@@ -68,7 +68,7 @@ $(D)/enigma2_tuxtxt32bpp: $(D)/bootstrap $(D)/enigma2_tuxtxtlib
 	$(REMOVE)/tuxtxt
 	$(SILENT)cp -ra $(ARCHIVE)/tuxtxt.git/tuxtxt $(BUILD_TMP)/tuxtxt
 	$(SET) -e; cd $(BUILD_TMP)/tuxtxt; \
-		$(call post_patch,$(TUXTXT32BPP_PATCH)); \
+		$(call apply_patches,$(TUXTXT32BPP_PATCH)); \
 		aclocal; \
 		autoheader; \
 		autoconf; \
@@ -140,7 +140,7 @@ $(D)/enigma2_networkbrowser: $(D)/bootstrap $(D)/python
 		fi
 	$(SILENT)cp -ra $(ARCHIVE)/enigma2-plugins.git/networkbrowser/ $(BUILD_TMP)/enigma2-networkbrowser
 	$(SET) -e; cd $(BUILD_TMP)/enigma2-networkbrowser; \
-		$(call post_patch,$(ENIGMA2_NETWORBROWSER_PATCH))
+		$(call apply_patches,$(ENIGMA2_NETWORBROWSER_PATCH))
 	$(SET) -e; cd $(BUILD_TMP)/enigma2-networkbrowser/src/lib; \
 		$(BUILDENV) \
 		sh4-linux-gcc -shared -o netscan.so \
