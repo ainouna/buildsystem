@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20171223.1
+# Version 20180121.1
 
 ##############################################
 
@@ -105,7 +105,7 @@ case $1 in
 		echo "   19)  9000HD          22)  250HD"
 		echo "   20)  900HD           23)  9500HD / 7000HD"
 		echo "   21)  910HD           24)  2000HD"
-		echo "   13)  91HD            25)  mini_fta / 200HD"
+		echo "   22)  91HD            25)  mini_fta / 200HD"
 		echo "                        26)  3000HD / Xsarius Alpha"
 		echo
 		echo "  Fulan                Atemio"
@@ -509,4 +509,4 @@ case "$REPLY" in
   	*)	$CURDIR/build;;
 esac
 echo
-
+# vim:ts=4
