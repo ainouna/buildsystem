@@ -533,6 +533,7 @@ enigma2_release_arivalink200:
 	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/frontends/*.ko $(RELEASE_DIR)/lib/modules/
 	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/frontcontroller/front_ArivaLink200/vfd.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/frontcontroller/front_ArivaLink200/vfd.ko $(RELEASE_DIR)/lib/modules/ || true
 	$(SILENT)cp $(SKEL_ROOT)/boot/video_7109.elf $(RELEASE_DIR)/boot/video.elf
+	$(SILENT)cp $(SKEL_ROOT)/boot/audio_7109.elf $(RELEASE_DIR)/boot/audio.elf
 	$(SILENT)cp $(SKEL_ROOT)/firmware/dvb-fe-avl6222.fw $(RELEASE_DIR)/lib/firmware/
 	$(SILENT)cp $(SKEL_ROOT)/firmware/dvb-fe-cx24116.fw $(RELEASE_DIR)/lib/firmware/
 	$(SILENT)mkdir -p $(RELEASE_DIR)/var/run/lirc
@@ -581,7 +582,6 @@ enigma2_release_base:
 	$(SILENT)cp -a $(TARGET_DIR)/usr/sbin/* $(RELEASE_DIR)/usr/sbin/
 	$(SILENT)cp $(SKEL_ROOT)/etc/image-version $(RELEASE_DIR)/etc/
 	$(SILENT)cp $(TARGET_DIR)/boot/uImage $(RELEASE_DIR)/boot/
-	$(SILENT)cp $(SKEL_ROOT)/boot/audio.elf $(RELEASE_DIR)/boot/
 	$(SILENT)ln -sf /proc/mounts $(RELEASE_DIR)/etc/mtab
 	$(SILENT)cp -dp $(SKEL_ROOT)/sbin/MAKEDEV $(RELEASE_DIR)/sbin/
 	$(SILENT)ln -sf ../sbin/MAKEDEV $(RELEASE_DIR)/dev/MAKEDEV
