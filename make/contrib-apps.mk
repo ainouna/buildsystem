@@ -1557,19 +1557,18 @@ $(D)/dvbsnoop: $(D)/bootstrap $(D)/kernel $(ARCHIVE)/$(DVBSNOOP_SOURCE)
 #
 # udpxy
 #
-UDPXY_VER = 1.0.23-10
-UDPXY_SOURCE = udpxy-src.tar.gz
-UDPXY_PATCH = udpxy-$(UDPXY_VER).patch
+UDPXY_VER = 612d227
+UDPXY_SOURCE = udpxy-$(UDPXY_VER).tar.bz2
+UDPXY_URL = https://github.com/pcherenkov/udpxy.gitUDPXY_PATCH = udpxy-$(UDPXY_VER).patch
 
 $(ARCHIVE)/$(UDPXY_SOURCE):
-	$(WGET) http://www.udpxy.com/download/udpxy/$(UDPXY_SOURCE)
-#	$(WGET) https://fossies.org/linux/www/$(UDPXY_SOURCE)
+	$(SCRIPTS_DIR)/get-git-archive.sh $(UDPXY_URL) $(UDPXY_VER) $(notdir $@) $(ARCHIVE)
 
 $(D)/udpxy: $(D)/bootstrap $(ARCHIVE)/$(UDPXY_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/udpxy-$(UDPXY_VER)
 	$(UNTAR)/$(UDPXY_SOURCE)
-	$(SET) -e; cd $(BUILD_TMP)/udpxy-$(UDPXY_VER); \
+	$(SET) -e; cd $(BUILD_TMP)/udpxy-$(UDPXY_VER)/chipmunk; \
 		$(call apply_patches,$(UDPXY_PATCH)); \
 		$(BUILDENV) \
 		$(MAKE) CC=$(TARGET)-gcc CCKIND=gcc; \
