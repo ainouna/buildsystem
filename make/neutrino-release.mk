@@ -227,7 +227,7 @@ neutrino-release-atevio7500:
 	$(SILENT)cp $(SKEL_ROOT)/firmware/component_7105_pdk7105.fw $(RELEASE_DIR)/lib/firmware/component.fw
 	$(SILENT)cp $(SKEL_ROOT)/firmware/dvb-fe-avl2108.fw $(RELEASE_DIR)/lib/firmware/
 	$(SILENT)cp $(SKEL_ROOT)/firmware/dvb-fe-stv6306.fw $(RELEASE_DIR)/lib/firmware/
-	$(SILENT)rm  -f $(RELEASE_DIR)/lib/modules/boxtype.ko
+	$(SILENT)rm -f $(RELEASE_DIR)/lib/modules/boxtype.ko
 	$(SILENT)rm  -f $(RELEASE_DIR)/lib/modules/mpeg2hw.ko
 
 #
@@ -473,18 +473,18 @@ neutrino-release-base:
 	$(SILENT)ln -sf /hdd $(RELEASE_DIR)/media/hdd
 	$(SILENT)install -d $(RELEASE_DIR)/mnt/{hdd,nfs,usb}
 	$(SILENT)install -d $(RELEASE_DIR)/mnt/mnt{0..7}
-	$(SILENT)install -d $(RELEASE_DIR)/usr/{bin,lib,local,sbin,share}
+	$(SILENT)install -d $(RELEASE_DIR)/usr/{bin,lib,local,sbin}
 	$(SILENT)install -d $(RELEASE_DIR)/usr/local/{bin,sbin}
-	$(SILENT)install -d $(RELEASE_DIR)/usr/share/{fonts,tuxbox,udhcpc,zoneinfo,lua}
-	$(SILENT)install -d $(RELEASE_DIR)/usr/share/tuxbox/neutrino
-	$(SILENT)install -d $(RELEASE_DIR)/usr/share/tuxbox/neutrino/icons/logo
-	$(SILENT)install -d $(RELEASE_DIR)/usr/share/lua/5.2
-	$(SILENT)ln -sf /usr/share/tuxbox/neutrino/icons/logo $(RELEASE_DIR)/logos
-	$(SILENT)ln -sf /usr/share $(RELEASE_DIR)/share
+	$(SILENT)install -d $(RELEASE_DIR)/share/{fonts,tuxbox,udhcpc,zoneinfo,lua}
+	$(SILENT)install -d $(RELEASE_DIR)/share/tuxbox/neutrino
+	$(SILENT)install -d $(RELEASE_DIR)/share/tuxbox/neutrino/icons/logo
+	$(SILENT)install -d $(RELEASE_DIR)/share/lua/5.2
+	$(SILENT)ln -sf /share/tuxbox/neutrino/icons/logo $(RELEASE_DIR)/logos
+	$(SILENT)ln -sf /share $(RELEASE_DIR)/usr
 	$(SILENT)install -d $(RELEASE_DIR)/var/{bin,boot,emu,etc,epg,httpd,keys,lib,logos,net,tuxbox,update}
 	$(SILENT)install -d $(RELEASE_DIR)/var/lib/{nfs,modules}
 	$(SILENT)install -d $(RELEASE_DIR)/var/net/epg
-	$(SILENT)install -d $(RELEASE_DIR)/var/tuxbox/{config,locale,plugins,themes}
+	$(SILENT)install -d $(RELEASE_DIR)/var/tuxbox/{config,fonts,locale,plugins,themes}
 	$(SILENT)install -d $(RELEASE_DIR)/var/tuxbox/plugins/webtv
 	$(SILENT)install -d $(RELEASE_DIR)/var/tuxbox/config/{webtv,zapit}
 	$(SILENT)mkdir -p $(RELEASE_DIR)/etc/rc.d/rc0.d
@@ -495,7 +495,7 @@ neutrino-release-base:
 	$(SILENT)ln -s ../init.d/sendsigs $(RELEASE_DIR)/etc/rc.d/rc6.d/S20sendsigs
 	$(SILENT)ln -s ../init.d/umountfs $(RELEASE_DIR)/etc/rc.d/rc6.d/S40umountfs
 	$(SILENT)ln -s ../init.d/reboot $(RELEASE_DIR)/etc/rc.d/rc6.d/S90reboot
-	$(SILENT)ln -sf /usr/share/tuxbox/neutrino/icons/logo $(RELEASE_DIR)/var/httpd/logos
+	$(SILENT)ln -sf /share/tuxbox/neutrino/icons/logo $(RELEASE_DIR)/var/httpd/logos
 	$(SILENT)touch $(RELEASE_DIR)/var/etc/.firstboot
 	$(SILENT)cp -a $(TARGET_DIR)/bin/* $(RELEASE_DIR)/bin/
 	$(SILENT)cp -a $(TARGET_DIR)/usr/bin/* $(RELEASE_DIR)/usr/bin/
@@ -510,8 +510,8 @@ neutrino-release-base:
 	$(SILENT)ln -sf ../../sbin/MAKEDEV $(RELEASE_DIR)/lib/udev/MAKEDEV
 	$(SILENT)cp -aR $(SKEL_ROOT)/etc/mdev/* $(RELEASE_DIR)/etc/mdev/
 	$(SILENT)cp -aR $(SKEL_ROOT)/etc/mdev.conf $(RELEASE_DIR)/etc/mdev.conf
-	$(SILENT)cp -aR $(SKEL_ROOT)/usr/share/udhcpc/* $(RELEASE_DIR)/usr/share/udhcpc/
-	$(SILENT)cp -aR $(SKEL_ROOT)/usr/share/zoneinfo/* $(RELEASE_DIR)/usr/share/zoneinfo/
+	$(SILENT)cp -aR $(SKEL_ROOT)/usr/share/udhcpc/* $(RELEASE_DIR)/share/udhcpc/
+	$(SILENT)cp -aR $(SKEL_ROOT)/usr/share/zoneinfo/* $(RELEASE_DIR)/share/zoneinfo/
 	$(SILENT)cp $(SKEL_ROOT)/bin/autologin $(RELEASE_DIR)/bin/
 	$(SILENT)cp $(SKEL_ROOT)/bin/vdstandby $(RELEASE_DIR)/bin/
 	$(SILENT)cp $(SKEL_ROOT)/usr/sbin/fw_printenv $(RELEASE_DIR)/usr/sbin/
@@ -527,8 +527,9 @@ endif
 	$(SILENT)install -m 0755 $(SKEL_ROOT)/release/rcS_neutrino_$(BOXTYPE) $(RELEASE_DIR)/etc/init.d/rcS
 #
 #
-#
+################################################################################
 ifeq ($(BOXARCH), sh4)
+################################################################################
 #
 # player
 #
@@ -567,7 +568,7 @@ ifeq ($(BOXARCH), sh4)
 	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/e2_proc/e2_proc.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/e2_proc/e2_proc.ko $(RELEASE_DIR)/lib/modules/ || true
 	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/net/ipv6/ipv6.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/net/ipv6/ipv6.ko $(RELEASE_DIR)/lib/modules/ || true
 #
-# multicom 324
+# multicom
 #
 	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/multicom/embxshell/embxshell.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/multicom/embxshell/embxshell.ko $(RELEASE_DIR)/lib/modules/ || true
 	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/multicom/embxmailbox/embxmailbox.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/multicom/embxmailbox/embxmailbox.ko $(RELEASE_DIR)/lib/modules/ || true
@@ -580,10 +581,6 @@ ifeq ($(BOXARCH), sh4)
 ifneq ($(BOXTYPE), $(filter $(BOXTYPE), vip2_v1 spark spark7162))
 	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/cic/*.ko $(RELEASE_DIR)/lib/modules/
 endif
-#
-# Boxtype sh4
-#
-endif
 	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/button/button.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/button/button.ko $(RELEASE_DIR)/lib/modules/ || true
 	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/cec/cec.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/cec/cec.ko $(RELEASE_DIR)/lib/modules/ || true
 	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/cpu_frequ/cpu_frequ.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/cpu_frequ/cpu_frequ.ko $(RELEASE_DIR)/lib/modules/ || true
@@ -591,11 +588,10 @@ endif
 	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/pti/pti.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/pti/pti.ko $(RELEASE_DIR)/lib/modules/ || true
 	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/pti_np/pti.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/pti_np/pti.ko $(RELEASE_DIR)/lib/modules/ || true
 	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/smartcard/smartcard.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/smartcard/smartcard.ko $(RELEASE_DIR)/lib/modules/ || true
+	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/sata_switch/sata.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/sata_switch/sata.ko $(RELEASE_DIR)/lib/modules/ || true
+	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/fs/mini_fo/mini_fo.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/fs/mini_fo/mini_fo.ko $(RELEASE_DIR)/lib/modules/ || true
 	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/fs/autofs4/autofs4.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/fs/autofs4/autofs4.ko $(RELEASE_DIR)/lib/modules/ || true
 	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/drivers/net/tun.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/drivers/net/tun.ko $(RELEASE_DIR)/lib/modules/ || true
-	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/drivers/usb/serial/ftdi_sio.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/drivers/usb/serial/ftdi_sio.ko $(RELEASE_DIR)/lib/modules/ftdi_sio.ko || true
-	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/drivers/usb/serial/pl2303.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/drivers/usb/serial/pl2303.ko $(RELEASE_DIR)/lib/modules/ || true
-	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/drivers/usb/serial/usbserial.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/drivers/usb/serial/usbserial.ko $(RELEASE_DIR)/lib/modules/ || true
 	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/fs/fuse/fuse.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/fs/fuse/fuse.ko $(RELEASE_DIR)/lib/modules/ || true
 	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/fs/ntfs/ntfs.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/fs/ntfs/ntfs.ko $(RELEASE_DIR)/lib/modules/ || true
 	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/fs/cifs/cifs.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/fs/cifs/cifs.ko $(RELEASE_DIR)/lib/modules/ || true
@@ -604,8 +600,9 @@ endif
 	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/fs/exportfs/exportfs.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/fs/exportfs/exportfs.ko $(RELEASE_DIR)/lib/modules/ || true
 	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/fs/nfs_common/nfs_acl.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/fs/nfs_common/nfs_acl.ko $(RELEASE_DIR)/lib/modules/ || true
 	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/fs/nfs/nfs.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/fs/nfs/nfs.ko $(RELEASE_DIR)/lib/modules/ || true
-	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/sata_switch/sata.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/sata_switch/sata.ko $(RELEASE_DIR)/lib/modules/ || true
-	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/fs/mini_fo/mini_fo.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/fs/mini_fo/mini_fo.ko $(RELEASE_DIR)/lib/modules/ || true
+	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/drivers/usb/serial/usbserial.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/drivers/usb/serial/usbserial.ko $(RELEASE_DIR)/lib/modules/ || true
+	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/drivers/usb/serial/ftdi_sio.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/drivers/usb/serial/ftdi_sio.ko $(RELEASE_DIR)/lib/modules/ftdi_sio.ko || true
+	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/drivers/usb/serial/pl2303.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/drivers/usb/serial/pl2303.ko $(RELEASE_DIR)/lib/modules/ || true
 #
 # wlan
 #
@@ -617,12 +614,52 @@ endif
 	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/wireless/rtl8188eu/8188eu.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/wireless/rtl8188eu/8188eu.ko $(RELEASE_DIR)/lib/modules/ || true
 	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/wireless/rtl8192cu/8192cu.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/wireless/rtl8192cu/8192cu.ko $(RELEASE_DIR)/lib/modules/ || true
 	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/wireless/rtl8192du/8192du.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/wireless/rtl8192du/8192du.ko $(RELEASE_DIR)/lib/modules/ || true
-ifeq ($(IMAGE), $(filter $(IMAGE), enigma2-wlandriver neutrino-wlandriver))
-	$(SILENT)install -d $(RELEASE_DIR)/etc/Wireless
-	$(SILENT)cp -aR $(SKEL_ROOT)/firmware/Wireless/* $(RELEASE_DIR)/etc/Wireless/
-	$(SILENT)cp -aR $(SKEL_ROOT)/firmware/rtlwifi $(RELEASE_DIR)/lib/firmware/
-	$(SILENT)cp -aR $(SKEL_ROOT)/firmware/*.bin $(RELEASE_DIR)/lib/firmware/
+	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/wireless/rtl8192eu/8192eu.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/wireless/rtl8192eu/8192eu.ko $(RELEASE_DIR)/lib/modules/ || true
 endif
+#
+#
+################################################################################
+ifeq ($(BOXARCH), arm)
+################################################################################
+#
+#
+#
+	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/drivers/usb/serial/usbserial.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/drivers/usb/serial/usbserial.ko $(RELEASE_DIR)/lib/modules/ || true
+	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/drivers/usb/serial/ftdi_sio.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/drivers/usb/serial/ftdi_sio.ko $(RELEASE_DIR)/lib/modules/ftdi_sio.ko || true
+	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/drivers/usb/serial/pl2303.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/drivers/usb/serial/pl2303.ko $(RELEASE_DIR)/lib/modules/ || true
+#
+# wlan
+#
+	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/drivers/staging/rtl8188eu/r8188eu.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/drivers/staging/rtl8188eu/r8188eu.ko $(RELEASE_DIR)/lib/modules/ || true
+	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/net/wireless/cfg80211.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/net/wireless/cfg80211.ko $(RELEASE_DIR)/lib/modules/ || true
+	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/net/rfkill/rfkill.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/net/rfkill/rfkill.ko $(RELEASE_DIR)/lib/modules/ || true
+	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/net/mac80211/mac80211.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/net/mac80211/mac80211.ko $(RELEASE_DIR)/lib/modules/ || true
+	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/drivers/net/wireless/realtek/rtlwifi/rtlwifi.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/drivers/net/wireless/realtek/rtlwifi/rtlwifi.ko $(RELEASE_DIR)/lib/modules/ || true
+	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/drivers/net/wireless/realtek/rtlwifi/rtl_usb.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/drivers/net/wireless/realtek/rtlwifi/rtl_usb.ko $(RELEASE_DIR)/lib/modules/ || true
+	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/drivers/net/wireless/realtek/rtlwifi/rtl8192c/rtl8192c-common.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/drivers/net/wireless/realtek/rtlwifi/rtl8192c/rtl8192c-common.ko $(RELEASE_DIR)/lib/modules/ || true
+	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/drivers/net/wireless/realtek/rtlwifi/rtl8192cu/rtl8192cu.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/drivers/net/wireless/realtek/rtlwifi/rtl8192cu/rtl8192cu.ko $(RELEASE_DIR)/lib/modules/ || true
+	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/drivers/staging/rtl8712/r8712u.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/drivers/staging/rtl8712/r8712u.ko $(RELEASE_DIR)/lib/modules/ || true
+	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/drivers/net/wireless/mediatek/mt7601u/mt7601u.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/drivers/net/wireless/mediatek/mt7601u/mt7601u.ko $(RELEASE_DIR)/lib/modules/ || true
+	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/drivers/staging/rtl8712/r8712u.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/drivers/staging/rtl8712/r8712u.ko $(RELEASE_DIR)/lib/modules/ || true
+	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/drivers/staging/rtl8192u/r8192u_usb.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/drivers/staging/rtl8192u/r8192u_usb.ko $(RELEASE_DIR)/lib/modules/ || true
+	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu.ko $(RELEASE_DIR)/lib/modules/ || true
+endif
+#
+#
+################################################################################
+#
+# wlan firmware
+#
+	$(SILENT)if [ -e $(RELEASE_DIR)/lib/modules/r8188eu.ko ]; then \
+		install -d $(RELEASE_DIR)/etc/Wireless; \
+		cp -aR $(SKEL_ROOT)/firmware/Wireless/* $(RELEASE_DIR)/etc/Wireless/ ;\
+		cp -aR $(SKEL_ROOT)/firmware/rtlwifi $(RELEASE_DIR)/lib/firmware/ ; \
+		cp -aR $(SKEL_ROOT)/firmware/*.bin $(RELEASE_DIR)/lib/firmware/ ; \
+	fi
+#
+# modules.available
+#
+	$(SILENT)cp -aR $(SKEL_ROOT)/release/modules.available_$(BOXARCH) $(RELEASE_DIR)/etc/modules.available
 #
 # lib usr/lib
 #
@@ -631,29 +668,30 @@ endif
 	$(SILENT)chmod 755 $(RELEASE_DIR)/lib/*
 	$(SILENT)ln -s /var/tuxbox/plugins/libfx2.so $(RELEASE_DIR)/lib/libfx2.so
 	$(SILENT)cp -R $(TARGET_DIR)/usr/lib/* $(RELEASE_DIR)/usr/lib/
-	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/{engines,enigma2,gconv,libxslt-plugins,pkgconfig,python$(PYTHON_VER),sigc++-2.0}
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/{engines,gconv,libxslt-plugins,pkgconfig,python$(PYTHON_VER),sigc++-2.0}
 	$(SILENT)rm -f $(RELEASE_DIR)/usr/lib/*.{a,o,la}
 	$(SILENT)chmod 755 $(RELEASE_DIR)/usr/lib/*
 #
 # fonts
 #
-	$(SILENT)if [ -e $(TARGET_DIR)/usr/share/fonts/ubuntu-l-webfont.ttf ]; then \
-		cp -aR $(TARGET_DIR)/usr/share/fonts $(RELEASE_DIR)/usr/share/; \
+	$(SILENT)if [ -e $(TARGET_DIR)/share/fonts/ubuntu-l-webfont.ttf ]; then \
+		cp -aR $(TARGET_DIR)/share/fonts $(RELEASE_DIR)/share/; \
 	else \
-		if [ -e $(TARGET_DIR)/usr/share/fonts/neutrino.ttf ]; then \
-			cp -aR $(TARGET_DIR)/usr/share/fonts/neutrino.ttf $(RELEASE_DIR)/usr/share/fonts; \
+		if [ -e $(TARGET_DIR)/share/fonts/neutrino.ttf ]; then \
+			cp -aR $(TARGET_DIR)/share/fonts/neutrino.ttf $(RELEASE_DIR)/share/fonts; \
 		fi; \
-		if [ -e $(TARGET_DIR)/usr/share/fonts/micron.ttf ]; then \
-			cp -aR $(TARGET_DIR)/usr/share/fonts/micron.ttf $(RELEASE_DIR)/usr/share/fonts; \
+		if [ -e $(TARGET_DIR)/share/fonts/micron.ttf ]; then \
+			cp -aR $(TARGET_DIR)/share/fonts/micron.ttf $(RELEASE_DIR)/share/fonts; \
 		fi; \
-		if [ -e $(TARGET_DIR)/usr/share/fonts/DejaVuLGCSansMono-Bold.ttf ]; then \
-			cp -aR $(TARGET_DIR)/usr/share/fonts/DejaVuLGCSansMono-Bold.ttf $(RELEASE_DIR)/usr/share/fonts; \
-			ln -s /usr/share/fonts/DejaVuLGCSansMono-Bold.ttf $(RELEASE_DIR)/usr/share/fonts/tuxtxt.ttf; \
+		if [ -e $(TARGET_DIR)/share/fonts/DejaVuLGCSansMono-Bold.ttf ]; then \
+			cp -aR $(TARGET_DIR)/share/fonts/DejaVuLGCSansMono-Bold.ttf $(RELEASE_DIR)/share/fonts; \
+			ln -s /share/fonts/DejaVuLGCSansMono-Bold.ttf $(RELEASE_DIR)/share/fonts/tuxtxt.ttf; \
 		fi; \
+	fi
 #
 # neutrino
 #
-	$(SILENT)ln -sf /usr/share $(RELEASE_DIR)/usr/local/share
+	$(SILENT)ln -sf r/share $(RELEASE_DIR)/usr/local/share
 	$(SILENT)cp $(TARGET_DIR)/usr/local/bin/neutrino $(RELEASE_DIR)/usr/local/bin/
 	$(SILENT)cp $(TARGET_DIR)/usr/local/bin/pzapit $(RELEASE_DIR)/usr/local/bin/
 	$(SILENT)cp $(TARGET_DIR)/usr/local/bin/sectionsdcontrol $(RELEASE_DIR)/usr/local/bin/
@@ -702,12 +740,12 @@ endif
 #
 # iso-codes
 #
-	$(SILENT)[ -e $(TARGET_DIR)/usr/local/share/iso-codes ] && cp -aR $(TARGET_DIR)/usr/local/share/iso-codes $(RELEASE_DIR)/usr/share/ || true
-	$(SILENT)[ -e $(TARGET_DIR)/usr/share/tuxbox/iso-codes ] && cp -aR $(TARGET_DIR)/usr/share/tuxbox/iso-codes $(RELEASE_DIR)/usr/share/ || true
+	$(SILENT)[ -e $(TARGET_DIR)/usr/local/share/iso-codes ] && cp -aR $(TARGET_DIR)/usr/local/share/iso-codes $(RELEASE_DIR)/share/ || true
+	$(SILENT)[ -e $(TARGET_DIR)/share/tuxbox/iso-codes ] && cp -aR $(TARGET_DIR)/share/tuxbox/iso-codes $(RELEASE_DIR)/share/tuxbox || true
 #
 # httpd/icons/locale/themes
 #
-	$(SILENT)cp -aR $(TARGET_DIR)/usr/share/tuxbox/neutrino/* $(RELEASE_DIR)/usr/share/tuxbox/neutrino
+	$(SILENT)cp -aR $(TARGET_DIR)/share/tuxbox/neutrino/* $(RELEASE_DIR)/share/tuxbox/neutrino
 #
 # backup/restore NMP
 #
@@ -717,33 +755,33 @@ endif
 # alsa
 #
 	$(SILENT)if [ -e $(TARGET_DIR)/usr/share/alsa ]; then \
-		mkdir -p $(RELEASE_DIR)/usr/share/alsa/; \
-		mkdir $(RELEASE_DIR)/usr/share/alsa/cards/; \
-		mkdir $(RELEASE_DIR)/usr/share/alsa/pcm/; \
-		cp -dp $(TARGET_DIR)/usr/share/alsa/alsa.conf $(RELEASE_DIR)/usr/share/alsa/alsa.conf; \
-		cp $(TARGET_DIR)/usr/share/alsa/cards/aliases.conf $(RELEASE_DIR)/usr/share/alsa/cards/; \
-		cp $(TARGET_DIR)/usr/share/alsa/pcm/default.conf $(RELEASE_DIR)/usr/share/alsa/pcm/; \
-		cp $(TARGET_DIR)/usr/share/alsa/pcm/dmix.conf $(RELEASE_DIR)/usr/share/alsa/pcm/; \
+		mkdir -p $(RELEASE_DIR)/share/alsa/; \
+		mkdir $(RELEASE_DIR)/share/alsa/cards/; \
+		mkdir $(RELEASE_DIR)/share/alsa/pcm/; \
+		cp -dp $(TARGET_DIR)/usr/share/alsa/alsa.conf $(RELEASE_DIR)/share/alsa/alsa.conf; \
+		cp $(TARGET_DIR)/usr/share/alsa/cards/aliases.conf $(RELEASE_DIR)/share/alsa/cards/; \
+		cp $(TARGET_DIR)/usr/share/alsa/pcm/default.conf $(RELEASE_DIR)/share/alsa/pcm/; \
+		cp $(TARGET_DIR)/usr/share/alsa/pcm/dmix.conf $(RELEASE_DIR)/share/alsa/pcm/; \
 	fi
 #
 # xupnpd
 #
 	$(SILENT)if [ -e $(TARGET_DIR)/usr/bin/xupnpd ]; then \
-		cp -aR $(TARGET_DIR)/usr/share/xupnpd $(RELEASE_DIR)/usr/share; \
-		mkdir -p $(RELEASE_DIR)/usr/share/xupnpd/playlists; \
+		cp -aR $(TARGET_DIR)/share/xupnpd $(RELEASE_DIR)/share; \
+		mkdir -p $(RELEASE_DIR)/share/xupnpd/playlists; \
 	fi
 #
 # mc
 #
 	$(SILENT)if [ -e $(TARGET_DIR)/usr/bin/mc ]; then \
-		cp -aR $(TARGET_DIR)/usr/share/mc $(RELEASE_DIR)/usr/share/; \
+		cp -aR $(TARGET_DIR)/usr/share/mc $(RELEASE_DIR)/share/; \
 		cp -af $(TARGET_DIR)/usr/libexec $(RELEASE_DIR)/usr/; \
 	fi
 #
 # lua
 #
-	$(SILENT)if [ -d $(TARGET_DIR)/usr/share/lua ]; then \
-		cp -aR $(TARGET_DIR)/usr/share/lua $(RELEASE_DIR)/usr/share; \
+	$(SILENT)if [ -d $(TARGET_DIR)/share/lua ]; then \
+		cp -aR $(TARGET_DIR)/share/lua $(RELEASE_DIR)/share; \
 	fi
 #
 # plugins
@@ -758,8 +796,8 @@ endif
 		cp -rf $(TARGET_DIR)/var/tuxbox/config/tuxwetter $(RELEASE_DIR)/var/tuxbox/config; \
 	fi
 	$(SILENT)if [ -e $(RELEASE_DIR)/var/tuxbox/plugins/sokoban.so ]; then \
-		cp -rf $(TARGET_DIR)/usr/share/tuxbox/sokoban $(RELEASE_DIR)/var/tuxbox/plugins; \
-		ln -s /var/tuxbox/plugins/sokoban $(RELEASE_DIR)/usr/share/tuxbox/sokoban; \
+		cp -rf $(TARGET_DIR)/share/tuxbox/sokoban $(RELEASE_DIR)/var/tuxbox/plugins; \
+		ln -s /var/tuxbox/plugins/sokoban $(RELEASE_DIR)/share/tuxbox/sokoban; \
 	fi
 #
 # shairport
@@ -796,6 +834,7 @@ endif
 	$(SILENT)rm -f $(RELEASE_DIR)/usr/lib/lua/5.2/*.la
 	$(SILENT)rm -rf $(RELEASE_DIR)/lib/autofs
 	$(SILENT)rm -f $(RELEASE_DIR)/lib/libSegFault*
+	$(SILENT)rm -f $(RELEASE_DIR)/lib/libstdc++.*-gdb.py
 	$(SILENT)rm -f $(RELEASE_DIR)/lib/libthread_db*
 	$(SILENT)rm -f $(RELEASE_DIR)/lib/libanl*
 	$(SILENT)rm -rf $(RELEASE_DIR)/lib/modules/$(KERNEL_VER)
@@ -809,10 +848,9 @@ endif
 	$(SILENT)rm -f $(RELEASE_DIR)/usr/lib/libdvdcss*
 	$(SILENT)rm -f $(RELEASE_DIR)/usr/lib/libdvdnav*
 	$(SILENT)rm -f $(RELEASE_DIR)/usr/lib/libdvdread*
-	$(SILENT)rm -f $(RELEASE_DIR)/usr/lib/libncurses.so
 	$(SILENT)rm -f $(RELEASE_DIR)/usr/lib/libcurses.so
-	$(SILENT)rm -f $(RELEASE_DIR)/usr/lib/libthread_db*
 	$(SILENT)[ ! -e $(RELEASE_DIR)/usr/bin/mc ] && rm -f $(RELEASE_DIR)/usr/lib/libncurses* || true
+	$(SILENT)rm -f $(RELEASE_DIR)/usr/lib/libthread_db*
 	$(SILENT)rm -f $(RELEASE_DIR)/usr/lib/libanl*
 	$(SILENT)rm -f $(RELEASE_DIR)/usr/lib/libopkg*
 	$(SILENT)rm -f $(RELEASE_DIR)/bin/gitVCInfo
@@ -821,6 +859,11 @@ endif
 	$(SILENT)rm -f $(RELEASE_DIR)/bin/streamproxy
 	$(SILENT)rm -f $(RELEASE_DIR)/bin/libstb-hal-test
 	$(SILENT)rm -f $(RELEASE_DIR)/sbin/ldconfig
+ifeq ($(BOXARCH), arm)
+	$(SILENT)rm -rf $(RELEASE_DIR)/dev.static
+	$(SILENT)rm -rf $(RELEASE_DIR)/ram
+	$(SILENT)rm -rf $(RELEASE_DIR)/root
+endif
 	$(SILENT)echo " done."
 #
 # The main target depends on the model.
@@ -857,17 +900,17 @@ $(D)/%neutrino-release: neutrino-release-base neutrino-release-$(BOXTYPE)
 	$(SILENT)ln -s /tmp $(RELEASE_DIR)/var/run
 	$(SILENT)ln -s /tmp $(RELEASE_DIR)/var/tmp
 #
-	$(SILENT)mv -f $(RELEASE_DIR)/usr/share/tuxbox/neutrino/icons/scan.jpg $(RELEASE_DIR)/var/boot/
-	$(SILENT)ln -s /var/boot/scan.jpg $(RELEASE_DIR)/usr/share/tuxbox/neutrino/icons/
-	$(SILENT)mv -f $(RELEASE_DIR)/usr/share/tuxbox/neutrino/icons/mp3.jpg $(RELEASE_DIR)/var/boot/
-	$(SILENT)ln -s /var/boot/mp3.jpg $(RELEASE_DIR)/usr/share/tuxbox/neutrino/icons/
-	$(SILENT)rm -f $(RELEASE_DIR)/usr/share/tuxbox/neutrino/icons/mp3-?.jpg
-	$(SILENT)mv -f $(RELEASE_DIR)/usr/share/tuxbox/neutrino/icons/shutdown.jpg $(RELEASE_DIR)/var/boot/
-	$(SILENT)ln -s /var/boot/shutdown.jpg $(RELEASE_DIR)/usr/share/tuxbox/neutrino/icons/
-	$(SILENT)mv -f $(RELEASE_DIR)/usr/share/tuxbox/neutrino/icons/radiomode.jpg $(RELEASE_DIR)/var/boot/
-	$(SILENT)ln -s /var/boot/radiomode.jpg $(RELEASE_DIR)/usr/share/tuxbox/neutrino/icons/
-	$(SILENT)mv -f $(RELEASE_DIR)/usr/share/tuxbox/neutrino/icons/start.jpg $(RELEASE_DIR)/var/boot/
-	$(SILENT)ln -s /var/boot/start.jpg $(RELEASE_DIR)/usr/share/tuxbox/neutrino/icons/
+	$(SILENT)mv -f $(RELEASE_DIR)/share/tuxbox/neutrino/icons/scan.jpg $(RELEASE_DIR)/var/boot/
+	$(SILENT)ln -s /var/boot/scan.jpg $(RELEASE_DIR)/share/tuxbox/neutrino/icons/
+	$(SILENT)mv -f $(RELEASE_DIR)/share/tuxbox/neutrino/icons/mp3.jpg $(RELEASE_DIR)/var/boot/
+	$(SILENT)ln -s /var/boot/mp3.jpg $(RELEASE_DIR)/share/tuxbox/neutrino/icons/
+	$(SILENT)rm -f $(RELEASE_DIR)/share/tuxbox/neutrino/icons/mp3-?.jpg
+	$(SILENT)mv -f $(RELEASE_DIR)/share/tuxbox/neutrino/icons/shutdown.jpg $(RELEASE_DIR)/var/boot/
+	$(SILENT)ln -s /var/boot/shutdown.jpg $(RELEASE_DIR)/share/tuxbox/neutrino/icons/
+	$(SILENT)mv -f $(RELEASE_DIR)/share/tuxbox/neutrino/icons/radiomode.jpg $(RELEASE_DIR)/var/boot/
+	$(SILENT)ln -s /var/boot/radiomode.jpg $(RELEASE_DIR)/share/tuxbox/neutrino/icons/
+	$(SILENT)mv -f $(RELEASE_DIR)/share/tuxbox/neutrino/icons/start.jpg $(RELEASE_DIR)/var/boot/
+	$(SILENT)ln -s /var/boot/start.jpg $(RELEASE_DIR)/share/tuxbox/neutrino/icons/
 #
 	$(SILENT)rm -f $(RELEASE_DIR)/bin/pic2m2v
 	$(SILENT)rm -f $(RELEASE_DIR)/usr/lib/*.py
@@ -888,5 +931,5 @@ endif
 # neutrino-release-clean
 #
 neutrino-release-clean:
-	rm -f $(D)/neutrino_release
+	rm -f $(D)/neutrino-release
 
