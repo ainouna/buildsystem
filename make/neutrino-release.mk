@@ -480,7 +480,7 @@ neutrino-release-base:
 	$(SILENT)install -d $(RELEASE_DIR)/share/tuxbox/neutrino/icons/logo
 	$(SILENT)install -d $(RELEASE_DIR)/share/lua/5.2
 	$(SILENT)ln -sf /share/tuxbox/neutrino/icons/logo $(RELEASE_DIR)/logos
-	$(SILENT)ln -sf /share $(RELEASE_DIR)/usr
+	$(SILENT)ln -sf ../share $(RELEASE_DIR)/usr
 	$(SILENT)install -d $(RELEASE_DIR)/var/{bin,boot,emu,etc,epg,httpd,keys,lib,logos,net,tuxbox,update}
 	$(SILENT)install -d $(RELEASE_DIR)/var/lib/{nfs,modules}
 	$(SILENT)install -d $(RELEASE_DIR)/var/net/epg
@@ -510,8 +510,8 @@ neutrino-release-base:
 	$(SILENT)ln -sf ../../sbin/MAKEDEV $(RELEASE_DIR)/lib/udev/MAKEDEV
 	$(SILENT)cp -aR $(SKEL_ROOT)/etc/mdev/* $(RELEASE_DIR)/etc/mdev/
 	$(SILENT)cp -aR $(SKEL_ROOT)/etc/mdev.conf $(RELEASE_DIR)/etc/mdev.conf
-	$(SILENT)cp -aR $(SKEL_ROOT)/usr/share/udhcpc/* $(RELEASE_DIR)/share/udhcpc/
-	$(SILENT)cp -aR $(SKEL_ROOT)/usr/share/zoneinfo/* $(RELEASE_DIR)/share/zoneinfo/
+	$(SILENT)cp -aR $(SKEL_ROOT)/share/udhcpc/* $(RELEASE_DIR)/share/udhcpc/
+	$(SILENT)cp -aR $(SKEL_ROOT)/share/zoneinfo/* $(RELEASE_DIR)/share/zoneinfo/
 	$(SILENT)cp $(SKEL_ROOT)/bin/autologin $(RELEASE_DIR)/bin/
 	$(SILENT)cp $(SKEL_ROOT)/bin/vdstandby $(RELEASE_DIR)/bin/
 	$(SILENT)cp $(SKEL_ROOT)/usr/sbin/fw_printenv $(RELEASE_DIR)/usr/sbin/
@@ -691,7 +691,7 @@ endif
 #
 # neutrino
 #
-	$(SILENT)ln -sf r/share $(RELEASE_DIR)/usr/local/share
+	$(SILENT)ln -sf ../../share $(RELEASE_DIR)/usr/local/share
 	$(SILENT)cp $(TARGET_DIR)/usr/local/bin/neutrino $(RELEASE_DIR)/usr/local/bin/
 	$(SILENT)cp $(TARGET_DIR)/usr/local/bin/pzapit $(RELEASE_DIR)/usr/local/bin/
 	$(SILENT)cp $(TARGET_DIR)/usr/local/bin/sectionsdcontrol $(RELEASE_DIR)/usr/local/bin/
