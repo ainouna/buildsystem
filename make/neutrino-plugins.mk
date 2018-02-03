@@ -83,8 +83,8 @@ endif
 
 $(SOURCE_DIR)/neutrino-mp-plugins/config.status: $(D)/bootstrap
 	$(SILENT)rm -rf $(NP_OBJDIR)
-	test -d $(NP_OBJDIR) || mkdir -p $(NP_OBJDIR)
-	cd $(NP_OBJDIR); \
+	$(SILENT)test -d $(NP_OBJDIR) || mkdir -p $(NP_OBJDIR)
+	$(SILENT)cd $(NP_OBJDIR); \
 		$(SOURCE_DIR)/neutrino-mp-plugins/autogen.sh && automake --add-missing; \
 		$(BUILDENV) \
 		$(SOURCE_DIR)/neutrino-mp-plugins/configure $(SILENT_OPT) \
