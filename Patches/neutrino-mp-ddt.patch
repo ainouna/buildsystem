@@ -1,17 +1,15 @@
 --- neutrino-mp-cst-next/acinclude.m4
 +++ neutrino-mp-cst-next/acinclude.m4
-@@ -349,6 +349,10 @@
- 			BOXTYPE="duckbox"
- 			BOXMODEL="$withval"
- 			;;
-+		hs7*)
-+			BOXTYPE="duckbox"
-+			BOXMODEL="$withval"
-+			;;
- 		cuberevo*)
- 			BOXTYPE="duckbox"
- 			BOXMODEL="$withval"
-@@ -384,7 +388,7 @@
+@@ -383,7 +383,7 @@
+ 
+ AC_ARG_WITH(boxmodel,
+ 	AS_HELP_STRING([--with-boxmodel], [valid for coolstream: hd1, hd2])
+-AS_HELP_STRING([], [valid for duckbox: ufs910, ufs912, ufs913, ufs922, atevio7500, fortis_hdbox, octagon1008, hs7110, hs7810a, hs7119, hs7819, dp7000, cuberevo, cuberevo_mini, cuberevo_mini2, cuberevo_250hd, cuberevo_2000hd, cuberevo_3000hd, ipbox9900, ipbox99, ipbox55, arivalink200, tf7700, hl101])
++AS_HELP_STRING([], [valid for duckbox: ufs910, ufs912, ufs913, ufs922, atevio7500, fortis_hdbox, octagon1008, hs7110, hs7420, hs7810a, hs7119, hs7429, hs7819, cuberevo, cuberevo_mini, cuberevo_mini2, cuberevo_250hd, cuberevo_2000hd, cuberevo_3000hd, ipbox9900, ipbox99, ipbox55, arivalink200, tf7700, hl101])
+ AS_HELP_STRING([], [valid for spark: spark, spark7162])
+ AS_HELP_STRING([], [valid for armbox: hd51])
+ AS_HELP_STRING([], [valid for generic: raspi]),
+-------------------------------
  AC_ARG_WITH(boxmodel,
  	[  --with-boxmodel         valid for coolstream: hd1, hd2
                            valid for generic: raspi
@@ -20,7 +18,7 @@
                            valid for spark: spark, spark7162
                            valid for armbox: hd51, vusolo4k],
  	[case "${withval}" in
-@@ -407,7 +411,7 @@
+@@ -407,7 +407,7 @@
  				AC_MSG_ERROR([unknown model $withval for boxtype $BOXTYPE])
  			fi
  			;;
@@ -29,7 +27,7 @@
  			if test "$BOXTYPE" = "duckbox"; then
  				BOXMODEL="$withval"
  			else
-@@ -471,8 +475,10 @@
+@@ -471,8 +471,10 @@
  AM_CONDITIONAL(BOXMODEL_FORTIS_HDBOX,test "$BOXMODEL" = "fortis_hdbox")
  AM_CONDITIONAL(BOXMODEL_OCTAGON1008,test "$BOXMODEL" = "octagon1008")
  AM_CONDITIONAL(BOXMODEL_HS7110,test "$BOXMODEL" = "hs7110")
@@ -355,7 +353,7 @@
  	mn_widget->addItem(nc);
 --- neutrino-mp-cst-next.org/src/gui/movieplayer.cpp
 +++ neutrino-mp-cst-next/src/gui/movieplayer.cpp
-@@ -500,8 +500,10 @@
+@@ -532,8 +532,10 @@
   && !defined(BOXMODEL_FORTIS_HDBOX) \
   && !defined(BOXMODEL_OCTAGON1008) \
   && !defined(BOXMODEL_HS7110) \
@@ -366,29 +364,29 @@
   && !defined(BOXMODEL_HS7819) \
   && !defined(BOXMODEL_IPBOX9900) \
   && !defined(BOXMODEL_IPBOX99) \
-@@ -522,8 +524,10 @@
-  && !defined(BOXMODEL_UFS922) \
-  && !defined(BOXMODEL_OCTAGON1008) \
-  && !defined(BOXMODEL_HS7110) \
-+ && !defined(BOXMODEL_HS7420) \
-  && !defined(BOXMODEL_HS7810A) \
-  && !defined(BOXMODEL_HS7119) \
-+ && !defined(BOXMODEL_HS7429) \
-  && !defined(BOXMODEL_HS7819) \
-  && !defined(BOXMODEL_IPBOX9900) \
-  && !defined(BOXMODEL_IPBOX99) \
-@@ -553,8 +557,10 @@
-  && !defined(BOXMODEL_FORTIS_HDBOX) \
-  && !defined(BOXMODEL_OCTAGON1008) \
-  && !defined(BOXMODEL_HS7110) \
-+ && !defined(BOXMODEL_HS7420) \
-  && !defined(BOXMODEL_HS7810A) \
-  && !defined(BOXMODEL_HS7119) \
-+ && !defined(BOXMODEL_HS7429) \
-  && !defined(BOXMODEL_HS7819) \
-  && !defined(BOXMODEL_CUBEREVO_MINI2) \
-  && !defined(BOXMODEL_IPBOX9900) \
-@@ -1618,7 +1624,15 @@
+#@@ -554,8 +556,10 @@
+#  && !defined(BOXMODEL_UFS922) \
+#  && !defined(BOXMODEL_OCTAGON1008) \
+#  && !defined(BOXMODEL_HS7110) \
+#+ && !defined(BOXMODEL_HS7420) \
+#  && !defined(BOXMODEL_HS7810A) \
+#  && !defined(BOXMODEL_HS7119) \
+#+ && !defined(BOXMODEL_HS7429) \
+#  && !defined(BOXMODEL_HS7819) \
+#  && !defined(BOXMODEL_IPBOX9900) \
+#  && !defined(BOXMODEL_IPBOX99) \
+#@@ -585,8 +589,10 @@
+#  && !defined(BOXMODEL_FORTIS_HDBOX) \
+#  && !defined(BOXMODEL_OCTAGON1008) \
+#  && !defined(BOXMODEL_HS7110) \
+#+ && !defined(BOXMODEL_HS7420) \
+#  && !defined(BOXMODEL_HS7810A) \
+#  && !defined(BOXMODEL_HS7119) \
+#+ && !defined(BOXMODEL_HS7429) \
+#  && !defined(BOXMODEL_HS7819) \
+#  && !defined(BOXMODEL_CUBEREVO_MINI2) \
+#  && !defined(BOXMODEL_IPBOX9900) \
+@@ -1684,7 +1686,15 @@
  					ss -= hh * 3600;
  					mm = ss/60;
  					ss -= mm * 60;
