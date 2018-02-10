@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20180121.1
+# Version 20180210.1
 
 ##############################################
 
@@ -14,7 +14,7 @@ fi
 ##############################################
 
 if [ "$1" == -h ] || [ "$1" == --help ]; then
-	echo "Usage: $0 [-v | --verbose | -q | --quiet] [Parameter1 Parameter2 ... Parameter9]"
+	echo "Usage: $0 [-v | --verbose | -q | --quiet] [Parameter1 Parameter2 ... Parameter7]"
 	echo
 	echo "-v or --verbose : verbose build (very noisy!)"
 	echo "-q or --quiet   : quiet build, fastest, almost silent"
@@ -22,9 +22,9 @@ if [ "$1" == -h ] || [ "$1" == --help ]; then
 	echo "Parameter 2     : kernel (1-2)"
 	echo "Parameter 3     : optimization (1-4)"
 	echo "Parameter 4     : image (Enigma=1/2 Neutrino=3/4 Tvheadend=5 (1-5)"
-	echo "Parameter 5     : Neutrino variant (1-0) or Enigma2/Tvheadend diff (0-5)"
-	echo "Parameter 6     : media Framework (1-3, (Enigma2), 1-2, (Neutrino))"
-	echo "Parameter 7     : destination (1-2, 1=flash, 2=USB)"
+	echo "Parameter 5     : Neutrino variant (1-6) or Enigma2/Tvheadend diff (0-5)"
+	echo "Parameter 6     : media Framework (Enigma2: 1-3, Neutrino: 1-2, Tvheadend: ignored)"
+	echo "Parameter 7     : destination (1-2, 1=flash, 2=USB, Fortis HS711X, HS742X & HS781XX, ignored otherwise)"
 	exit
 fi
 
@@ -173,6 +173,44 @@ echo "BOXTYPE=$BOXTYPE" >> config
 
 ##############################################
 
+if [ $BOXTYPE == 'hd51' ]; then
+
+		echo -e "\n*** boxmode=1 (Standard) ***"
+		echo -e "+++ Features +++"
+		echo -e "3840x2160p60 10-bit HEVC, 3840x2160p60 8-bit VP9, 1920x1080p60 8-bit AVC,\nMAIN only (no PIP), Limited display usages, UHD only (no SD),\nNo multi-PIP, No transcoding"
+		echo -e "--- Restrictions ---"
+		echo -e "Decoder 0: 3840x2160p60 10-bit HEVC, 3840x2160p60 8-bit VP9, 1920x1080p60 8-bit AVC"
+		echo -e "OSD Grafic 0: 1080p60 32 bit ARGB"
+		echo -e "Display 0 Encode Restrictions: 3840x2160p60 12-bit 4:2:0 (HDMI),\n3840x2160p60 12-bit 4:2:2 (HDMI), 3840x2160p60 8-bit 4:4:4 (HDMI),\n1920x1080p60 (component), Only one display format at a time"
+		echo -e "\n*** boxmode=12 (Experimental) ***"
+		echo -e "+++ Features +++"
+		echo -e "3840x2160p50 10-bit decode for MAIN, 1080p25/50i PIP support,\n UHD display only, No SD display, No transcoding"
+		echo -e "--- Restrictions ---"
+		echo -e "Decoder 0: 3840x2160p50 10-bit HEVC, 3840x2160p50 8-bit VP9,\n1920x1080p50 8-bit AVC/MPEG"
+		echo -e "Decoder 1: 1920x1080p25/50i 10-bit HEVC, 1920x1080p25/50i 8-bit VP9/AVC/MPEG2, 3840x2160p50"
+		echo -e "OSD Graphic 0 (UHD): 1080p50 32-bit ARGB"
+		echo -e "Window 0 (MAIN/UHD): Limited display capabilities, 1080i50 10-bit de-interlacing"
+		echo -e "Window 1 (PIP/UHD): Up to 1/2 x 1/2 screen display, 576i50 de-interlacing"
+		echo -e "Display 0 (UHD) Encode Restrictions: 3840x2160p50"
+
+case $2 in
+	[1-2]) REPLY=$2;;
+	*)	echo -e "\nBoxmode:"
+		echo "   1)   1     (default)"
+		echo "   2)  12 PIP (PIP not supported by neutrino yet)"
+		read -p "Select mode (1-2)? ";;
+esac
+
+case "$REPLY" in
+	1)  HD51_BOXMODE="1";;
+	2)  HD51_BOXMODE="12";;
+	*)  HD51_BOXMODE="1";;
+esac
+echo "HD51_BOXMODE=$HD51_BOXMODE" >> config
+fi
+
+##############################################
+
 if [ $BOXARCH == "sh4" ]; then
 	echo -ne "\nChecking the .elf files in $CURDIR/root/boot..."
 	set='audio_7100 audio_7105 audio_7109 audio_7111 video_7100 video_7105 video_7109 video_7111'
@@ -262,73 +300,65 @@ case "$IMAGE" in
 	neutrin*)
 		if [ $BOXARCH == "sh4" ]; then
 			case $5 in
-				[1-9] ) REPLY=$5;;
+				[1-6] ) REPLY=$5;;
 				*)	echo -e "\nWhich Neutrino variant do you want to build?"
-					echo "   1)  Neutrino mp (max)"
-					echo "   2)  Neutrino mp (max) + plugins"
-					echo "   3)  Neutrino mp (ddt)"
-					echo "   4)  Neutrino mp (ddt) + plugins"
-					echo "   5)  Neutrino HD2 exp"
-					echo "   6)  Neutrino HD2 exp + plugins"
-					echo "   7)  Neutrino mp (Tangos)"
-					echo "   8*) Neutrino mp (Tangos) + plugins"
-					echo "   9)  Neutrino mp (Tangos) + plugins + shairport"
-#					echo "  10)  Neutrino mp (martii-github)"
-					read -p " Select Neutrino variant (1-9)? ";;
+					echo "   1)  neutrino-mp-ddt"
+					echo "   2)  neutrino-mp-ddt + plugins"
+					echo "   3)  neutrino-mp-tangos"
+					echo "   4)  neutrino-mp-tangos + plugins"
+					echo "   5)  neutrino-hd2"
+					echo "   6)  neutrino-hd2 + plugins"
+					read -p "Select Neutrino variant to build (1-6)? ";;
 			esac
+
 			case "$REPLY" in
-				1)	echo "make neutrino-mp-max" > $CURDIR/build
-					NEUTRINO_VAR="mp-max";;
-				2)	echo "make neutrino-mp-max-plugins" > $CURDIR/build
-					NEUTRINO_VAR="mp-max + plugins";;
-				3)	echo "make neutrino-mp-ddt" > $CURDIR/build
-					NEUTRINO_VAR="mp-ddt";;
-				4)	echo "make neutrino-mp-ddt-plugins" > $CURDIR/build
-					NEUTRINO_VAR="mp-ddt + plugins";;
-				5)	echo "make neutrino-hd2" > $CURDIR/build
-					NEUTRINO_VAR="neutrino-hd2";;
-				6)	echo "make neutrino-hd2-plugin" > $CURDIR/build
-					NEUTRINO_VAR="neutrino-hd2 + plugins";;
-				7)	echo "make neutrino-mp-tangos" > $CURDIR/build
-					NEUTRINO_VAR="mp-tangos";;
-#				8)	echo "make neutrino-mp-tangos-plugins" > $CURDIR/build
-#					NEUTRINO_VAR="mp-tangos + plugins";;
-				9)	echo "make neutrino-mp-tangos-all" > $CURDIR/build
-					NEUTRINO_VAR="mp-tangos + plugins + shairport";;
-				*)	echo "make neutrino-mp-tangos-plugins" > $CURDIR/build
-					NEUTRINO_VAR="mp-tangos + plugins";;
+				[1-2]) FLAVOUR="neutrino-mp-ddt";;
+#				[3-4]) FLAVOUR="neutrino-mp-tangos";;
+				[5-6]) FLAVOUR="neutrino-hd2";;
+				*) FLAVOUR="neutrino-mp-tangos";;
 			esac
-			echo "NEUTRINO_VARIANT=$NEUTRINO_VAR" >> config
+
+			case "$REPLY" in
+				[2,4,6]) PLUGINS_NEUTRINO="Yes";;
+				*) PLUGINS_NEUTRINO="No";;
+			esac
 			MEDIAFW="buildinplayer"
 		else
 			case $5 in
-				[1-4] ) REPLY=$5;;
-				*)	echo -e "\nWhich Neutrino variant do you want to build?"
-					echo "   1)  Neutrino mp (max)"
-					echo "   2*) Neutrino mp (max) + plugins"
-					echo "   3)  Neutrino mp (ni)"
-					echo "   4)  Neutrino mp (ni) + plugins"
-					read -p " Select Neutrino variant (1-4)? ";;
+				[1-5]) REPLY=$5;;
+				*)	echo -e "\nWhich Neutrino variant do you want to build?:"
+					echo "   1)  neutrino-mp-ddt"
+					echo "   2)  neutrino-mp-ddt + plugins"
+					echo "   3)  neutrino-mp-max"
+					echo "   4)  neutrino-mp-max + plugins"
+					echo "   5)  neutrino-mp-ni"
+					echo "   6)  neutrino-mp-ni + plugins"
+					echo "   7)  neutrino-mp-tangos"
+					echo "   8)  neutrino-mp-tangos + plugins"
+					echo "   9)  neutrino-hd2"
+					echo "   0)  neutrino-hd2 + plugins"
+					read -p "Select Neutrino variant to build (1-0)? ";;
 			esac
+
 			case "$REPLY" in
-				1)	echo "make neutrino-mp-max" > $CURDIR/build
-					NEUTRINO_VAR="mp-max";;
-#				2)	echo "make neutrino-mp-max-plugins" > $CURDIR/build
-#					NEUTRINO_VAR="mp-max + plugins";;
-				3)	echo "make neutrino-mp-ni" > $CURDIR/build
-					NEUTRINO_VAR="mp-ni";;
-				4)	echo "make neutrino-mp-ni-plugins" > $CURDIR/build
-					NEUTRINO_VAR="mp-ni + plugins";;
-				*)	echo "make neutrino-mp-max-plugins" > $CURDIR/build
-					NEUTRINO_VAR="mp-max + plugins";;
+				[1-2]) FLAVOUR="neutrino-mp-ddt";;
+				[3-4]) FLAVOUR="neutrino-mp-max";;
+				[5-6]) FLAVOUR="neutrino-mp-ni";;
+#				[7-8]) FLAVOUR="neutrino-mp-tangos";;
+				[9,0]) FLAVOUR="neutrino-hd2";;
+				*) FLAVOUR="neutrino-mp-tangos";;
 			esac
-			echo "NEUTRINO_VARIANT=$NEUTRINO_VAR" >> config
+
+			case "$REPLY" in
+				[2,4,6,8,0]) PLUGINS_NEUTRINO="Yes";;
+				*) PLUGINS_NEUTRINO="No";;
+			esac
 		fi
 
 		case $6 in
 			[1-2]) REPLY=$6;;
 			*)	echo -e "\nMedia Framework:"
-				echo "   1*) integrated libeplayer3"
+				echo "   1*) libeplayer3 (integrated)"
 				echo "   2)  gstreamer"
 				read -p "Select media framework (1-2)? ";;
 		esac
@@ -337,6 +367,23 @@ case "$IMAGE" in
 #			1) MEDIAFW="buildinplayer";;
 			2) MEDIAFW="gstreamer";;
 			*) MEDIAFW="buildinplayer";;
+		esac
+
+		echo "FLAVOUR=$FLAVOUR" >> config
+		echo "PLUGINS_NEUTRINO=$PLUGINS_NEUTRINO" >> config
+		case "$FLAVOUR" in
+			neutrino-mp*)
+				if [ $PLUGINS_NEUTRINO == "No" ]; then
+					echo "make neutrino-mp" > $CURDIR/build
+				else
+					echo "make neutrino-mp-plugins" > $CURDIR/build
+				fi;;
+			neutrino-hd2*)
+				if [ $PLUGINS_NEUTRINO == "No" ]; then
+					echo "  make neutrino-hd2" > $CURDIR/build
+				else
+					echo "  make neutrino-hd2-plugins" > $CURDIR/build
+				fi;;
 		esac
 
 		if [ "$LASTIMAGE1" ] || [ "$LASTIMAGE3" ] || [ ! "$LASTBOX" == "$BOXTYPE" ]; then
