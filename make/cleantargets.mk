@@ -9,7 +9,8 @@ clean: depsclean
 	@-rm -rf $(BASE_DIR)/tufsbox
 	@-rm -rf $(D)/kernel
 	@-rm -rf $(D)/kernel.do_compile
-	@printf " $(TERM_YELLOW)done.\n$(TERM_NORMAL)"
+	@-rm -rf $(D)/*.config.status
+	@printf " $(TERM_GREEN)done.\n$(TERM_NORMAL)"
 
 distclean:
 	@printf "$(TERM_YELLOW)Cleaning system build directories and files...$(TERM_NORMAL)"
