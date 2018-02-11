@@ -1689,7 +1689,8 @@ $(D)/dropbearmulti: $(D)/bootstrap
 		then cd $(ARCHIVE)/dropbearmulti.git; echo -n "Updating local git..."; git pull -q; echo " done."; \
 		else cd $(ARCHIVE); echo -n "Cloning git..."; git clone -q --recursive git://github.com/mkj/dropbear.git $(ARCHIVE)/dropbearmulti.git; echo " done."; \
 		fi
-	@cp -ra $(ARCHIVE)/dropbearmulti.git $(BUILD_TMP)/dropbearmulti
+	$(SILENT)cp -ra $(ARCHIVE)/dropbearmulti.git $(BUILD_TMP)/dropbearmulti
+	$(SILENT)cd $(BUILD_TMP)/dropbearmulti && git checkout -q fa3b0dd3ca62309c7d786df849da31426348c0bf
 	$(SET) -e; cd $(BUILD_TMP)/dropbearmulti; \
 		$(BUILDENV) \
 		autoreconf -fi; \
