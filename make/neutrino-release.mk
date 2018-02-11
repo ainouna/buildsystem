@@ -485,7 +485,7 @@ neutrino-release-base:
 	$(SILENT)install -d $(RELEASE_DIR)/var/lib/{nfs,modules}
 	$(SILENT)install -d $(RELEASE_DIR)/var/net/epg
 	$(SILENT)install -d $(RELEASE_DIR)/var/tuxbox/{config,fonts,locale,plugins,themes}
-	$(SILENT)install -d $(RELEASE_DIR)/var/tuxbox/plugins/webtv
+	$(SILENT)install -d $(RELEASE_DIR)/var/tuxbox/webtv
 	$(SILENT)install -d $(RELEASE_DIR)/var/tuxbox/config/{webtv,zapit}
 	$(SILENT)mkdir -p $(RELEASE_DIR)/etc/rc.d/rc0.d
 	$(SILENT)ln -s ../init.d/sendsigs $(RELEASE_DIR)/etc/rc.d/rc0.d/S20sendsigs
