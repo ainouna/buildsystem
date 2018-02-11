@@ -1,7 +1,7 @@
 #
 # Makefile to build NEUTRINO
 #
-$(TARGET_DIR)/var/etc/.version:
+$(TARGET_DIR)/.version:
 	$(SILENT)echo "imagename=Neutrino MP" > $@
 	$(SILENT)echo "homepage=https://github.com/Audioniek" >> $@
 	$(SILENT)echo "creator=$(MAINTAINER)" >> $@
@@ -137,6 +137,7 @@ $(D)/libstb-hal.do_prepare:
 	$(SILENT)rm -rf $(SOURCE_DIR)/$(LIBSTB_HAL)
 	$(SILENT)rm -rf $(SOURCE_DIR)/$(LIBSTB_HAL).org
 	$(SILENT)rm -rf $(LH_OBJDIR)
+	$(SILENT)test -d $(SOURCE_DIR) || mkdir -p $(SOURCE_DIR)
 	$(SILENT)if [ -d "$(ARCHIVE)/$(LIBSTB_HAL).git" ]; then \
 		echo -n "Update local git..."; \
 		cd $(ARCHIVE)/$(LIBSTB_HAL).git; \
@@ -303,7 +304,7 @@ mp \
 neutrino-mp: $(D)/neutrino-mp.do_prepare $(D)/neutrino-mp.config.status $(D)/neutrino-mp.do_compile
 	PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) \
 	$(MAKE) -C $(N_OBJDIR) install DESTDIR=$(TARGET_DIR)
-	$(SILENT)make $(TARGET_DIR)/var/etc/.version
+	$(SILENT)make $(TARGET_DIR)/.version
 	$(SILENT)touch $(D)/$(notdir $@)
 #	$(TOUCH)
 	$(SILENT)make neutrino-release
@@ -333,7 +334,7 @@ neutrino-mp-plugins: $(D)/neutrino-mp-plugins.do_prepare $(D)/neutrino-mp-plugin
 	PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) \
 	$(MAKE) -C $(N_OBJDIR) install DESTDIR=$(TARGET_DIR)
 	$(SILENT)rm -f $(TARGET_DIR)/var/etc/.version
-	$(MAKE) $(TARGET_DIR)/var/etc/.version
+	$(MAKE) $(TARGET_DIR)/.version
 	make $(NEUTRINO_PLUGINS)
 	$(SILENT)touch $(D)/$(notdir $@)
 #	$(TOUCH)

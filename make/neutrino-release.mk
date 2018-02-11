@@ -501,7 +501,7 @@ neutrino-release-base:
 	$(SILENT)cp -a $(TARGET_DIR)/usr/bin/* $(RELEASE_DIR)/usr/bin/
 	$(SILENT)cp -a $(TARGET_DIR)/sbin/* $(RELEASE_DIR)/sbin/
 	$(SILENT)cp -a $(TARGET_DIR)/usr/sbin/* $(RELEASE_DIR)/usr/sbin/
-	$(SILENT)cp -dp $(TARGET_DIR)/var/etc/.version $(RELEASE_DIR)/
+	$(SILENT)cp -dp $(TARGET_DIR)/.version $(RELEASE_DIR)/
 	$(SILENT)ln -sf /.version $(RELEASE_DIR)/var/etc/.version
 	$(SILENT)cp $(TARGET_DIR)/boot/$(KERNELNAME) $(RELEASE_DIR)/boot/
 	$(SILENT)ln -sf /proc/mounts $(RELEASE_DIR)/etc/mtab
