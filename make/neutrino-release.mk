@@ -841,6 +841,7 @@ endif
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/alsa
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/glib-2.0
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/cmake
+	$(SILENT)rm -f $(RELEASE_DIR)/usr/lib/*.py
 	$(SILENT)rm -f $(RELEASE_DIR)/usr/lib/libc.so
 	$(SILENT)rm -f $(RELEASE_DIR)/usr/lib/libglcdskin.so*
 	$(SILENT)rm -f $(RELEASE_DIR)/usr/lib/xml2Conf.sh
@@ -859,6 +860,7 @@ endif
 	$(SILENT)rm -f $(RELEASE_DIR)/bin/streamproxy
 	$(SILENT)rm -f $(RELEASE_DIR)/bin/libstb-hal-test
 	$(SILENT)rm -f $(RELEASE_DIR)/sbin/ldconfig
+	$(SILENT)rm -f $(RELEASE_DIR)/usr/bin/pic2m2v
 ifeq ($(BOXARCH), arm)
 	$(SILENT)rm -rf $(RELEASE_DIR)/dev.static
 	$(SILENT)rm -rf $(RELEASE_DIR)/ram
@@ -911,9 +913,6 @@ $(D)/%neutrino-release: neutrino-release-base neutrino-release-$(BOXTYPE)
 	$(SILENT)ln -s /var/boot/radiomode.jpg $(RELEASE_DIR)/share/tuxbox/neutrino/icons/
 	$(SILENT)mv -f $(RELEASE_DIR)/share/tuxbox/neutrino/icons/start.jpg $(RELEASE_DIR)/var/boot/
 	$(SILENT)ln -s /var/boot/start.jpg $(RELEASE_DIR)/share/tuxbox/neutrino/icons/
-#
-	$(SILENT)rm -f $(RELEASE_DIR)/bin/pic2m2v
-	$(SILENT)rm -f $(RELEASE_DIR)/usr/lib/*.py
 #
 # linux-strip all
 #
