@@ -2392,9 +2392,10 @@ $(D)/graphlcd: $(D)/bootstrap $(D)/freetype $(D)/libusb $(ARCHIVE)/$(GRAPHLCD_SO
 	$(SET) -e; cd $(BUILD_TMP)/graphlcd-$(GRAPHLCD_VER); \
 		$(call apply_patches,$(GRAPHLCD_PATCH)); \
 		export TARGET=$(TARGET)-; \
-		$(BUILDENV) \
-		$(MAKE) DESTDIR=$(TARGET_DIR); \
-		$(MAKE) install DESTDIR=$(TARGET_DIR)
+		$(MAKE) -C glcdgraphics all TARGET=$(TARGET)- DESTDIR=$(TARGET_DIR); \
+		$(MAKE) -C glcddrivers all TARGET=$(TARGET)- ; \
+		$(MAKE) -C glcdgraphics install DESTDIR=$(TARGET_DIR); \
+		$(MAKE) -C glcddrivers install DESTDIR=$(TARGET_DIR)
 	rm -f $(addprefix $(TARGET_DIR)/usr/bin/,convpic crtfont genfont showpic showtext lcdtestpattern skintest)
 	$(REMOVE)/graphlcd-$(GRAPHLCD_VER)
 	$(TOUCH)
