@@ -123,16 +123,6 @@ ifeq ($(BOXTYPE), vusolo4k)
 	$(TOUCH)
 endif
 
-$(D)/kernel-headers: $(D)/kernel.do_prepare
-	$(START_BUILD)
-	$(SILENT)cd $(KERNEL_DIR); \
-		install -d $(TARGET_DIR)/usr/include; \
-		cp -a include/linux $(TARGET_DIR)/usr/include; \
-		cp -a include/asm-arm $(TARGET_DIR)/usr/include/asm; \
-		cp -a include/asm-generic $(TARGET_DIR)/usr/include; \
-		cp -a include/mtd $(TARGET_DIR)/usr/include
-	$(TOUCH)
-
 kernel-distclean:
 	$(SILENT)rm -f $(D)/kernel
 	$(SILENT)rm -f $(D)/kernel.do_compile
