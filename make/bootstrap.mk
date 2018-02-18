@@ -183,6 +183,36 @@ $(D)/host_resize2fs: $(ARCHIVE)/$(HOST_E2FSPROGS_SOURCE)
 	$(TOUCH)
 
 #
+# cortex-strings
+#
+CORTEX_STRINGS_VER = 48fd30c
+CORTEX_STRINGS_SOURCE = cortex-strings-$(CORTEX_STRINGS_VER).tar.bz2
+CORTEX_STRINGS_URL = http://git.linaro.org/git-ro/toolchain/cortex-strings.git
+
+$(ARCHIVE)/cortex-strings-$(CORTEX_STRINGS_VER).tar.bz2:
+	$(SCRIPTS_DIR)/get-git-archive.sh $(CORTEX_STRINGS_URL) $(CORTEX_STRINGS_VER) $(notdir $@) $(ARCHIVE)
+
+$(D)/cortex-strings: $(ARCHIVE)/cortex-strings-$(CORTEX_STRINGS_VER).tar.bz2 directories
+	$(START_BUILD)
+	$(REMOVE)/cortex-strings-$(CORTEX_STRINGS_VER)
+	$(UNTAR)/$(CORTEX_STRINGS_SOURCE)
+	set -e; cd $(BUILD_TMP)/cortex-strings-$(CORTEX_STRINGS_VER); \
+		./autogen.sh; \
+		$(MAKE_OPTS) \
+		./configure \
+			--build=$(BUILD) \
+			--host=$(TARGET) \
+			--prefix=/usr \
+			--disable-shared \
+			--enable-static \
+		; \
+		$(MAKE); \
+		$(MAKE) install DESTDIR=$(TARGET_DIR)
+	$(REWRITE_LIBTOOL)/libcortex-strings.la
+	$(REMOVE)/cortex-strings-$(CORTEX_STRINGS_VER)
+	$(TOUCH)
+
+#
 #
 #
 BOOTSTRAP  = directories
@@ -196,13 +226,14 @@ BOOTSTRAP += $(D)/host_mkcramfs
 BOOTSTRAP += $(D)/host_mksquashfs
 ifeq ($(BOXARCH), arm)
 BOOTSTRAP += $(D)/host_resize2fs
+BOOTSTRAP += $(D)/cortex-strings
 endif
 
 $(D)/bootstrap: $(BOOTSTRAP)
 	@touch $@
 
 #
-#
+# system-tools
 #
 SYSTEM_TOOLS  = $(D)/busybox
 SYSTEM_TOOLS += $(D)/zlib
@@ -241,7 +272,7 @@ yaud-none: $(YAUD_NONE)
 	@echo -e "Build of $(TERM_GREEN_BOLD)$@$(TERM_NORMAL) completed."; echo
 
 #
-#
+# preqs
 #
 $(DRIVER_DIR):
 	@echo '===================================================================='
