@@ -221,6 +221,7 @@ $(D)/valgrind: $(D)/bootstrap $(ARCHIVE)/$(VALGRIND_SOURCE)
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
 	$(SILENT)rm -f $(addprefix $(TARGET_DIR)/usr/lib/valgrind/,*.a *.xml)
 	$(SILENT)rm -f $(addprefix $(TARGET_DIR)/usr/bin/,cg_* callgrind_* ms_print)
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/valgrind.pc
 	$(REMOVE)/valgrind-$(VALGRIND_VER)
 	$(TOUCH)
 
