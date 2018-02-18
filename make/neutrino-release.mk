@@ -480,7 +480,7 @@ neutrino-release-base:
 	$(SILENT)install -d $(RELEASE_DIR)/share/tuxbox/neutrino/icons/logo
 	$(SILENT)install -d $(RELEASE_DIR)/share/lua/5.2
 	$(SILENT)ln -sf /share/tuxbox/neutrino/icons/logo $(RELEASE_DIR)/logos
-	$(SILENT)ln -sf /share $(RELEASE_DIR)/usr
+	$(SILENT)ln -sf ../share $(RELEASE_DIR)/usr
 	$(SILENT)install -d $(RELEASE_DIR)/var/{bin,boot,emu,etc,epg,httpd,keys,lib,logos,net,tuxbox,update}
 	$(SILENT)install -d $(RELEASE_DIR)/var/lib/{nfs,modules}
 	$(SILENT)install -d $(RELEASE_DIR)/var/net/epg
@@ -495,7 +495,7 @@ neutrino-release-base:
 	$(SILENT)ln -s ../init.d/sendsigs $(RELEASE_DIR)/etc/rc.d/rc6.d/S20sendsigs
 	$(SILENT)ln -s ../init.d/umountfs $(RELEASE_DIR)/etc/rc.d/rc6.d/S40umountfs
 	$(SILENT)ln -s ../init.d/reboot $(RELEASE_DIR)/etc/rc.d/rc6.d/S90reboot
-	$(SILENT)ln -sf /share/tuxbox/neutrino/icons/logo $(RELEASE_DIR)/var/httpd/logos
+	$(SILENT)ln -sf /usr/share/tuxbox/neutrino/icons/logo $(RELEASE_DIR)/var/httpd/logos
 	$(SILENT)touch $(RELEASE_DIR)/var/etc/.firstboot
 	$(SILENT)cp -a $(TARGET_DIR)/bin/* $(RELEASE_DIR)/bin/
 	$(SILENT)cp -a $(TARGET_DIR)/usr/bin/* $(RELEASE_DIR)/usr/bin/
@@ -691,7 +691,7 @@ endif
 #
 # neutrino
 #
-	$(SILENT)ln -sf /share $(RELEASE_DIR)/usr/local/share
+	$(SILENT)ln -sf ../../share $(RELEASE_DIR)/usr/local/share
 	$(SILENT)cp $(TARGET_DIR)/usr/local/bin/neutrino $(RELEASE_DIR)/usr/local/bin/
 	$(SILENT)cp $(TARGET_DIR)/usr/local/bin/pzapit $(RELEASE_DIR)/usr/local/bin/
 	$(SILENT)cp $(TARGET_DIR)/usr/local/bin/sectionsdcontrol $(RELEASE_DIR)/usr/local/bin/
@@ -781,7 +781,7 @@ endif
 # lua
 #
 	$(SILENT)if [ -d $(TARGET_DIR)/usr/share/lua ]; then \
-		cp -aR $(TARGET_DIR)/usr/share/lua $(RELEASE_DIR)/share; \
+		cp -aR $(TARGET_DIR)/usr/share/lua $(RELEASE_DIR)/usr/share; \
 	fi
 #
 # plugins
@@ -797,7 +797,7 @@ endif
 	fi
 	$(SILENT)if [ -e $(RELEASE_DIR)/var/tuxbox/plugins/sokoban.so ]; then \
 		cp -rf $(TARGET_DIR)/usr/share/tuxbox/sokoban $(RELEASE_DIR)/var/tuxbox/plugins; \
-		ln -s /var/tuxbox/plugins/sokoban $(RELEASE_DIR)/share/tuxbox/sokoban; \
+		ln -s /var/tuxbox/plugins/sokoban $(RELEASE_DIR)/usr/share/tuxbox/sokoban; \
 	fi
 #
 # shairport
