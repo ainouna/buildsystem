@@ -1,6 +1,6 @@
 --- a/drivers/media/dvb-frontends/stv090x.c
 +++ b/drivers/media/dvb-frontends/stv090x.c
-@@ -41,6 +41,18 @@
+@@ -38,6 +38,18 @@
  static unsigned int verbose;
  module_param(verbose, int, 0644);
  
@@ -19,7 +19,7 @@
  /* internal params node */
  struct stv090x_dev {
  	/* pointer for internal params, one for each pair of demods */
-@@ -3680,7 +3692,10 @@
+@@ -3670,7 +3682,10 @@
  		str = 0;
  	else if (agc < stv090x_rf_tab[ARRAY_SIZE(stv090x_rf_tab) - 1].read)
  		str = -100;
@@ -31,7 +31,7 @@
  
  	return 0;
  }
-@@ -3691,8 +3706,7 @@
+@@ -3681,8 +3696,7 @@
  	u32 reg_0, reg_1, reg, i;
  	s32 val_0, val_1, val = 0;
  	u8 lock_f;
@@ -41,7 +41,7 @@
  
  	switch (state->delsys) {
  	case STV090x_DVBS2:
-@@ -3709,10 +3723,14 @@
+@@ -3699,10 +3713,14 @@
  				msleep(1);
  			}
  			val /= 16;
@@ -60,7 +60,7 @@
  		}
  		break;
  
-@@ -3731,10 +3749,14 @@
+@@ -3721,10 +3739,14 @@
  				msleep(1);
  			}
  			val /= 16;
