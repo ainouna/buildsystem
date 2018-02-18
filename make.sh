@@ -83,7 +83,7 @@ echo "KBUILD_VERBOSE=$KBUILD_VERBOSE" > config
 CURDIR=`pwd`
 
 case $1 in
-	[1-9] | 1[0-9] | 2[0-9] | 3[0-7]) | 5[0-1]) REPLY=$1;;
+	[1-9] | 1[0-9] | 2[0-9] | 3[0-7] | 5[0-1]) REPLY=$1;;
 	*)
 		echo "Target receivers:"
 		echo
