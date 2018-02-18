@@ -395,7 +395,7 @@ $(D)/gst_gmediarender: $(D)/bootstrap $(D)/gst_plugins_dvbmediasink $(D)/libupnp
 		then cd $(ARCHIVE)/gmrender-resurrect.git; git pull; \
 		else cd $(ARCHIVE); git clone https://github.com/hzeller/gmrender-resurrect.git gmrender-resurrect.git; \
 		fi
-	cp -ra $(ARCHIVE)/gmrender-resurrect.git $(BUILD_TMP)/gmrender-resurrect
+	$(SILENT)cp -ra $(ARCHIVE)/gmrender-resurrect.git $(BUILD_TMP)/gmrender-resurrect
 	$(SET) -e; cd $(BUILD_TMP)/gmrender-resurrect; \
 		$(call apply_patches,$(GST_GMEDIARENDER_PATCH)); \
 		$(CONFIGURE) \
