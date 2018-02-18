@@ -320,16 +320,16 @@ directories:
 	$(SILENT)install -d $(BOOT_DIR)
 	$(SILENT)install -d $(HOST_DIR)
 	$(SILENT)install -d $(HOST_DIR)/{bin,lib,share}
-	$(SILENT)install -d $(TARGET_DIR)/{bin,boot,etc,lib,sbin,share,usr,var}
+	$(SILENT)install -d $(TARGET_DIR)/{bin,boot,etc,lib,sbin,usr,var}
 	$(SILENT)install -d $(TARGET_DIR)/etc/{init.d,mdev,network,rc.d}
 	$(SILENT)install -d $(TARGET_DIR)/etc/rc.d/{rc0.d,rc6.d}
 	$(SILENT)ln -sf ../init.d $(TARGET_DIR)/etc/rc.d/init.d
 	$(SILENT)install -d $(TARGET_DIR)/lib/{lsb,firmware}
-	$(SILENT)install -d $(TARGET_DIR)/usr/{bin,lib,local,sbin,share}
+	$(SILENT)install -d $(TARGET_DIR)/usr/{bin,lib,sbin,share}
 	$(SILENT)install -d $(TARGET_DIR)/usr/lib/pkgconfig
 	$(SILENT)install -d $(TARGET_DIR)/usr/include/linux
 	$(SILENT)install -d $(TARGET_DIR)/usr/include/linux/dvb
-	$(SILENT)install -d $(TARGET_DIR)/usr/local/{bin,sbin,share}
+#	$(SILENT)install -d $(TARGET_DIR)/usr/local/{bin,sbin,share}
 	$(SILENT)install -d $(TARGET_DIR)/var/{etc,lib,run}
 	$(SILENT)install -d $(TARGET_DIR)/var/lib/{misc,nfs}
 	$(SILENT)install -d $(TARGET_DIR)/var/bin

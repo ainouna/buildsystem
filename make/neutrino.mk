@@ -241,6 +241,7 @@ $(D)/neutrino-mp-plugins.config.status:
 			--build=$(BUILD) \
 			--host=$(TARGET) \
 			--build=$(BUILD) \
+			--prefix=/usr \
 			--enable-maintainer-mode \
 			--enable-silent-rules \
 			\
@@ -251,25 +252,8 @@ $(D)/neutrino-mp-plugins.config.status:
 			$(N_CONFIG_OPTS) \
 			\
 			--with-tremor \
-			--with-libdir=/usr/lib/tuxbox \
-			--with-datadir=/share/tuxbox \
-			--with-fontdir=/share/fonts \
-			--with-fontdir_var=/var/tuxbox/fonts \
-			--with-configdir=/var/tuxbox/config \
-			--with-gamesdir=/var/tuxbox/games \
-			--with-iconsdir=/share/tuxbox/neutrino/icons \
-			--with-iconsdir_var=/var/tuxbox/icons \
-			--with-localedir=/share/tuxbox/neutrino/locale \
-			--with-localedir_var=/var/tuxbox/locale \
-			--with-plugindir=/var/tuxbox/plugins \
-			--with-plugindir_var=/var/tuxbox/plugins \
-			--with-luaplugindir=/var/tuxbox/plugins \
-			--with-private_httpddir=/share/tuxbox/neutrino/httpd \
-			--with-public_httpddir=/var/tuxbox/httpd \
-			--with-themesdir=/share/tuxbox/neutrino/themes \
-			--with-themesdir_var=/var/tuxbox/themes \
-			--with-webtvdir=/share/tuxbox/neutrino/webtv \
-			--with-webtvdir_var=/var/tuxbox/webtv \
+			--with-target=cdk \
+			--with-targetprefix=/usr \
 			--with-stb-hal-includes=$(SOURCE_DIR)/$(LIBSTB_HAL)/include \
 			--with-stb-hal-build=$(LH_OBJDIR) \
 			PKG_CONFIG=$(PKG_CONFIG) \
@@ -412,7 +396,8 @@ $(D)/neutrino-hd2.config.status:
 			--host=$(TARGET) \
 			--enable-silent-rules \
 			--with-boxtype=$(BOXTYPE) \
-			--with-datadir=/share/tuxbox \
+			--with-datadir=/usr/share/tuxbox \
+			--with-fontdir=/usr/share/fonts \
 			--with-configdir=/var/tuxbox/config \
 			--with-plugindir=/var/tuxbox/plugins \
 			$(NHD2_OPTS) \
