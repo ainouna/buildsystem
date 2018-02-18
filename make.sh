@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20180210.1
+# Version 20180218.1
 
 ##############################################
 
@@ -83,7 +83,7 @@ echo "KBUILD_VERBOSE=$KBUILD_VERBOSE" > config
 CURDIR=`pwd`
 
 case $1 in
-	[1-9] | 1[0-9] | 2[0-9] | 3[0-8]) REPLY=$1;;
+	[1-9] | 1[0-9] | 2[0-9] | 3[0-7]) | 5[0-1]) REPLY=$1;;
 	*)
 		echo "Target receivers:"
 		echo
@@ -119,12 +119,13 @@ case $1 in
 		echo "   34)  Vitamin HD5000"
 		echo "   35)  SagemCom 88 series"
 		echo "   36)  Ferguson Ariva @Link 200"
+#		echo "   37)  Pace HDS-7241 (stm 217 only)"
 		echo
 		echo "  arm-based receivers"
-		echo "   37)  Mut@nt HD51"
-		echo "   38)  VU Solo 4k"
+		echo "   50)  Mut@nt HD51"
+		echo "   51)  VU Solo 4k"
 		echo
-		read -p "Select target (1-38)? ";;
+		read -p "Select target (1-51)? ";;
 esac
 
 case "$REPLY" in
@@ -164,8 +165,9 @@ case "$REPLY" in
 	34) BOXARCH="sh4";BOXTYPE="vitamin_hd5000";;
 	35) BOXARCH="sh4";BOXTYPE="sagemcom88";;
 	36) BOXARCH="sh4";BOXTYPE="arivalink200";;
-	37) BOXARCH="arm";BOXTYPE="hd51";;
-	38) BOXARCH="arm";BOXTYPE="vusolo4k";;
+	37) BOXARCH="sh4";BOXTYPE="pace7241";;
+	50) BOXARCH="arm";BOXTYPE="hd51";;
+	51) BOXARCH="arm";BOXTYPE="vusolo4k";;
 	 *) BOXARCH="sh4";BOXTYPE="atevio7500";;
 esac
 echo "BOXARCH=$BOXARCH" >> config
