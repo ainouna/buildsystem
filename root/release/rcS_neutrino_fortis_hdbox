@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 160525.1
+#Version 180218.1
 
 echo "[rcS] Start"
 echo "Fortis FS9000/9200 Neutrino"
@@ -111,10 +111,10 @@ insmod $MODDIR/stmalloc.ko
 insmod $MODDIR/platform.ko
 insmod $MODDIR/bpamem.ko
 
-#if [ -e /boot/neutrinologo.mvi ]; then
-#   showiframe -p /boot/neutrinologo.mvi &
-#fi
-#stfbcontrol a 0
+if [ -e /boot/neutrinologo.mvi ]; then
+   showiframe -p /boot/neutrinologo.mvi &
+fi
+stfbcontrol a 0
 
 if [ -e $MODDIR/exportfs.ko ]; then
    insmod $MODDIR/exportfs.ko
@@ -194,8 +194,9 @@ echo "Loading Neutrino" > /dev/vfd
 
 until false
 do
+   killall -9 showiframe
    echo "[rcS] Starting neutrino ->"
-   /usr/local/bin/neutrino
+   /usr/bin/neutrino
    rtv=$?
    echo "[rcS] Neutrino ended <- return value: " $rtv
    case "$rtv" in

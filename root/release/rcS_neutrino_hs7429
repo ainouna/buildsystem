@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 170516.1
+#Version 180218.1
 
 echo "[rcS] Start"
 echo "Fortis HS7429 Neutrino"
@@ -113,9 +113,9 @@ if [ -e $MODDIR/cec.ko ]; then
    insmod $MODDIR/cec.ko activemode=1
 fi
 
-#if [ -e /boot/neutrinologo.mvi ]; then
-#   showiframe -p /boot/neutrinologo.mvi &
-#fi
+if [ -e /boot/neutrinologo.mvi ]; then
+   showiframe -p /boot/neutrinologo.mvi &
+fi
 
 if [ -e $MODDIR/exportfs.ko ]; then
    insmod $MODDIR/exportfs.ko
@@ -193,8 +193,9 @@ echo "Load Neutrino" > /dev/vfd
 
 until false
 do
+   killall -9 showiframe
    echo "[rcS] Starting neutrino ->"
-   /usr/local/bin/neutrino
+   /usr/bin/neutrino
    rtv=$?
    echo "[rcS] Neutrino ended <- return value: " $rtv
    case "$rtv" in
