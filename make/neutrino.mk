@@ -82,10 +82,12 @@ N_CONFIG_OPTS += --with-boxmodel=hd51
 else
 N_CONFIG_OPTS += --with-boxtype=$(BOXTYPE)
 endif
+N_CONFIG_OPTS += --enable-freesatepg
 #N_CONFIG_OPTS += --enable-pip
 #N_CONFIG_OPTS += --disable-webif
 #N_CONFIG_OPTS += --disable-upnp
 #N_CONFIG_OPTS += --disable-tangos
+
 ifeq ($(BOXARCH), arm)
 N_CONFIG_OPTS += --enable-reschange
 endif
@@ -149,7 +151,8 @@ $(D)/libstb-hal.do_prepare:
 		git clone -q $(GIT_URL)/$(LIBSTB_HAL).git $(ARCHIVE)/libstb-hal-ddt.git; \
 		echo " done."; \
 	fi
-	$(SILENT)cp -ra $(ARCHIVE)/libstb-hal-ddt.git $(SOURCE_DIR)/$(LIBSTB_HAL)
+	$(SILENT)cp -ra $(ARCHIVE)/$(LIBSTB_HAL).git $(SOURCE_DIR)/$(LIBSTB_HAL)
+	$(SILENT)(cd $(SOURCE_DIR)/$(LIBSTB_HAL); git checkout -q $(HAL_BRANCH);)
 	$(SILENT)cp -ra $(SOURCE_DIR)/$(LIBSTB_HAL) $(SOURCE_DIR)/$(LIBSTB_HAL).org
 	$(SET) -e; cd $(SOURCE_DIR)/$(LIBSTB_HAL); \
 		$(call apply_patches,$(HAL_PATCHES))
