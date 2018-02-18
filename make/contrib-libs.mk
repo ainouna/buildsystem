@@ -1694,7 +1694,7 @@ FFMPEG_PATCH += ffmpeg-$(FFMPEG_VER)-hls-replace-key-uri.patch
 FFMPEG_PATCH += ffmpeg-$(FFMPEG_VER)-chunked_transfer_fix_eof.patch
 FFMPEG_DEPS = $(D)/libxml2 $(D)/librtmpdump
 FFMPEG_CONF_OPTS  = --enable-librtmp
-FFMPRG_EXTRA_CFLAGS = -I$(TARGET_DIR)/usr/include/libxml2 -mfpu=neon-vfpv4 -mfloat-abi=hard
+FFMPRG_EXTRA_CFLAGS = -I$(TARGET_DIR)/usr/include/libxml2
 
 $(ARCHIVE)/$(FFMPEG_SOURCE):
 	$(WGET) http://www.ffmpeg.org/releases/$(FFMPEG_SOURCE)
