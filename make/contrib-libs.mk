@@ -2413,6 +2413,32 @@ $(D)/graphlcd: $(D)/bootstrap $(D)/freetype $(D)/libusb $(ARCHIVE)/$(GRAPHLCD_SO
 	$(TOUCH)
 
 #
+# libdpf
+#
+LIBPDF_VER = 62c8fd0
+LIBPDF_SOURCE = dpf-ax-git-$(LIBPDF_VER).tar.bz2
+LIBPDF_URL = https://github.com/MaxWiesel/dpf-ax.git
+LIBPDF_PATCH = libdpf-crossbuild.patch
+
+$(ARCHIVE)/$(LIBPDF_SOURCE):
+	$(SCRIPTS_DIR)/get-git-archive.sh $(LIBPDF_URL) $(LIBPDF_VER) $(notdir $@) $(ARCHIVE)
+
+$(D)/libdpf: $(D)/bootstrap $(D)/libusb_compat $(ARCHIVE)/$(LIBPDF_SOURCE)
+	$(START_BUILD)
+	$(REMOVE)/dpf-ax-git-$(LIBPDF_VER)
+	$(UNTAR)/$(LIBPDF_SOURCE)
+	$(SET) -e; cd $(BUILD_TMP)/dpf-ax-git-$(LIBPDF_VER)/dpflib; \
+		$(call apply_patches,$(LIBPDF_PATCH)); \
+		make libdpf.a CC=$(TARGET)-gcc PREFIX=$(TARGET_DIR)/usr; \
+		mkdir -p $(TARGET_INCLUDE_DIR)/libdpf; \
+		cp dpf.h $(TARGET_INCLUDE_DIR)/libdpf/libdpf.h; \
+		cp ../include/spiflash.h $(TARGET_INCLUDE_DIR)/libdpf/; \
+		cp ../include/usbuser.h $(TARGET_INCLUDE_DIR)/libdpf/; \
+		cp libdpf.a $(TARGET_LIB_DIR)/
+	$(REMOVE)/dpf-ax-git-$(LIBPDF_VER)
+	$(TOUCH)
+
+#
 # lcd4linux
 #
 $(D)/lcd4linux: $(D)/bootstrap $(D)/libusb_compat $(D)/gd $(D)/libusb
