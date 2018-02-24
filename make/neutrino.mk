@@ -418,8 +418,8 @@ $(D)/neutrino-hd2.do_compile: $(D)/neutrino-hd2.config.status
 neutrino-hd2: $(D)/neutrino-hd2.do_prepare $(D)/neutrino-hd2.do_compile
 	$(START_BUILD)
 	$(SILENT)make -C $(SOURCE_DIR)/neutrino-hd2 install DESTDIR=$(TARGET_DIR)
-	$(SILENT)rm -f $(TARGET_DIR)/var/etc/.version
-	$(SILENT)make $(TARGET_DIR)/var/etc/.version
+	$(SILENT)rm -f $(TARGET_DIR)/.version
+	$(SILENT)make $(TARGET_DIR)/.version
 	$(SILENT)touch $(D)/$(notdir $@)
 #	$(TOUCH)
 	$(SILENT)make neutrino-release
@@ -435,8 +435,8 @@ nhd2 \
 neutrino-hd2-plugins: $(D)/neutrino-hd2.do_prepare $(D)/neutrino-hd2.do_compile
 	$(START_BUILD)
 	$(MAKE) -C $(SOURCE_DIR)/neutrino-hd2 install DESTDIR=$(TARGET_DIR)
-	$(SILENT)rm -f $(TARGET_DIR)/var/etc/.version
-	$(MAKE) $(TARGET_DIR)/var/etc/.version
+	$(SILENT)rm -f $(TARGET_DIR)/.version
+	$(MAKE) $(TARGET_DIR)/.version
 	$(SILENT)touch $(D)/$(notdir $@)
 #	$(TOUCH)
 	$(SILENT)make neutrino-hd2-plugins.build
