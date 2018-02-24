@@ -1698,6 +1698,7 @@ FFMPEG_PATCH += ffmpeg-$(FFMPEG_VER)-fix_mpegts.patch
 FFMPEG_PATCH += ffmpeg-$(FFMPEG_VER)-allow_to_choose_rtmp_impl_at_runtime.patch
 ifeq ($(FFMPEG_EXPERIMENTAL), 1)
 FFMPEG_PATCH += ffmpeg-$(FFMPEG_VER)-dashdec_improvements.patch
+FFMPEG_PATCH += ffmpeg-$(FFMPEG_VER)-fix-dash-build.patch
 else
 FFMPEG_PATCH += ffmpeg-$(FFMPEG_VER)-add_dash_demux.patch
 endif
@@ -1705,6 +1706,9 @@ FFMPEG_PATCH += ffmpeg-$(FFMPEG_VER)-hls_replace_key_uri.patch
 FFMPEG_PATCH += ffmpeg-$(FFMPEG_VER)-chunked_transfer_fix_eof.patch
 FFMPEG_DEPS = $(D)/libxml2 $(D)/librtmpdump
 FFMPEG_CONF_OPTS  = --enable-librtmp
+ifeq ($(FFMPEG_EXPERIMENTAL), 1)
+FFMPEG_CONF_OPTS  += --enable-libxml2
+endif
 FFMPRG_EXTRA_CFLAGS = -I$(TARGET_DIR)/usr/include/libxml2
 
 $(ARCHIVE)/$(FFMPEG_SOURCE):
