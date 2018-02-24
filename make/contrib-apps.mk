@@ -1693,7 +1693,7 @@ $(D)/dropbearmulti: $(D)/bootstrap
 	$(REMOVE)/dropbearmulti
 	$(SET) -e; if [ -d $(ARCHIVE)/dropbearmulti.git ]; \
 		then cd $(ARCHIVE)/dropbearmulti.git; echo -n "Updating local git..."; git pull -q; echo " done."; \
-		else cd $(ARCHIVE); echo -n "Cloning git..."; git clone -q --recursive git://github.com/mkj/dropbear.git $(ARCHIVE)/dropbearmulti.git; echo " done."; \
+		else cd $(ARCHIVE); echo -n "Cloning git..."; git clone -q git://github.com/mkj/dropbear.git $(ARCHIVE)/dropbearmulti.git; echo " done."; \
 		fi
 	$(SILENT)cp -ra $(ARCHIVE)/dropbearmulti.git $(BUILD_TMP)/dropbearmulti
 	$(SET) -e; cd $(BUILD_TMP)/dropbearmulti; \
@@ -1723,8 +1723,9 @@ $(D)/dropbearmulti: $(D)/bootstrap
 			--disable-pututline \
 			--disable-pututxline \
 		; \
+		$(MAKE) PROGRAMS="dropbear scp" MULTI=1; \
 		$(MAKE) PROGRAMS="dropbear scp" MULTI=1 install DESTDIR=$(TARGET_DIR)
-	$(SILENT)cd $(TARGET_DIR)/usr/bin && ln -s /usr/bin/dropbearmulti dropbear
+	$(SILENT)cd $(TARGET_DIR)/usr/bin && ln -sf /usr/bin/dropbearmulti dropbear
 	$(SILENT)install -m 755 $(SKEL_ROOT)/etc/init.d/dropbear $(TARGET_DIR)/etc/init.d/
 	$(SILENT)install -d -m 0755 $(TARGET_DIR)/etc/dropbear
 	$(REMOVE)/dropbearmulti
