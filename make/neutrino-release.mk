@@ -745,11 +745,6 @@ endif
 #
 	$(SILENT)cp -aR $(TARGET_DIR)/usr/share/tuxbox/neutrino/* $(RELEASE_DIR)/usr/share/tuxbox/neutrino
 #
-# backup/restore NMP
-#
-	$(SILENT)[ -e $(TARGET_DIR)/usr/local/bin/backup.sh ] && cp -aR $(TARGET_DIR)/usr/local/bin/backup.sh $(RELEASE_DIR)/bin || true
-	$(SILENT)[ -e $(TARGET_DIR)/usr/local/bin/restore.sh ] && cp -aR $(TARGET_DIR)/usr/local/bin/restore.sh $(RELEASE_DIR)/bin || true
-#
 # alsa
 #
 	$(SILENT)if [ -e $(TARGET_DIR)/usr/share/alsa ]; then \
