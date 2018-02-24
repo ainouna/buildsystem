@@ -1680,24 +1680,26 @@ $(D)/dropbear: $(D)/bootstrap $(D)/zlib $(ARCHIVE)/$(DROPBEAR_SOURCE)
 		sed -i 's:^#define DROPBEAR_SMALL_CODE::' options.h; \
 		$(MAKE) PROGRAMS="dropbear dbclient dropbearkey scp" SCPPROGRESS=1; \
 		$(MAKE) PROGRAMS="dropbear dbclient dropbearkey scp" install DESTDIR=$(TARGET_DIR)
-	install -m 755 $(SKEL_ROOT)/etc/init.d/dropbear $(TARGET_DIR)/etc/init.d/
-	install -d -m 0755 $(TARGET_DIR)/etc/dropbear
+	$(SILENT)install -m 755 $(SKEL_ROOT)/etc/init.d/dropbear $(TARGET_DIR)/etc/init.d/
+	$(SILENT)install -d -m 0755 $(TARGET_DIR)/etc/dropbear
 	$(REMOVE)/dropbear-$(DROPBEAR_VER)
 	$(TOUCH)
 
 #
-# dropbear multi
+# dropbearmulti
 #
-$(D)/dropbearmulti: $(D)/bootstrap
+DROPBEARMULTI_VER = c8d852c
+DROPBEARMULTI_SOURCE = dropbearmulti-git-$(DROPBEARMULTI_VER).tar.bz2
+DROPBEARMULTI_URL = https://github.com/mkj/dropbear.git
+
+$(ARCHIVE)/$(DROPBEARMULTI_SOURCE):
+	$(SCRIPTS_DIR)/get-git-archive.sh $(DROPBEARMULTI_URL) $(DROPBEARMULTI_VER) $(notdir $@) $(ARCHIVE)
+
+$(D)/dropbearmulti: $(D)/bootstrap $(ARCHIVE)/$(DROPBEARMULTI_SOURCE)
 	$(START_BUILD)
-	$(REMOVE)/dropbearmulti
-	$(SET) -e; if [ -d $(ARCHIVE)/dropbearmulti.git ]; \
-		then cd $(ARCHIVE)/dropbearmulti.git; echo -n "Updating local git..."; git pull -q; echo " done."; \
-		else cd $(ARCHIVE); echo -n "Cloning git..."; git clone -q git://github.com/mkj/dropbear.git $(ARCHIVE)/dropbearmulti.git; echo " done."; \
-		fi
-	$(SILENT)cp -ra $(ARCHIVE)/dropbearmulti.git $(BUILD_TMP)/dropbearmulti
-	$(SET) -e; cd $(BUILD_TMP)/dropbearmulti; \
-		git checkout -q c8d852caf646d060babd4be9d074caee51c5aead; \
+	$(REMOVE)/dropbearmulti-git-$(DROPBEARMULTI_VER)
+	$(UNTAR)/$(DROPBEARMULTI_SOURCE)
+	$(SET) -e; cd $(BUILD_TMP)/dropbearmulti-git-$(DROPBEARMULTI_VER); \
 		$(BUILDENV) \
 		autoreconf -fi; \
 		$(CONFIGURE) \
@@ -1729,7 +1731,7 @@ $(D)/dropbearmulti: $(D)/bootstrap
 	$(SILENT)cd $(TARGET_DIR)/usr/bin && ln -sf /usr/bin/dropbearmulti dropbear
 	$(SILENT)install -m 755 $(SKEL_ROOT)/etc/init.d/dropbear $(TARGET_DIR)/etc/init.d/
 	$(SILENT)install -d -m 0755 $(TARGET_DIR)/etc/dropbear
-	$(REMOVE)/dropbearmulti
+	$(REMOVE)/dropbearmulti-git-$(DROPBEARMULTI_VER)
 	$(TOUCH)
 
 #
