@@ -836,7 +836,6 @@ endif
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/cmake
 	$(SILENT)rm -f $(RELEASE_DIR)/usr/lib/*.py
 	$(SILENT)rm -f $(RELEASE_DIR)/usr/lib/libc.so
-	$(SILENT)rm -f $(RELEASE_DIR)/usr/lib/libglcdskin.so*
 	$(SILENT)rm -f $(RELEASE_DIR)/usr/lib/xml2Conf.sh
 	$(SILENT)rm -f $(RELEASE_DIR)/usr/lib/libfontconfig*
 	$(SILENT)rm -f $(RELEASE_DIR)/usr/lib/libdvdcss*
