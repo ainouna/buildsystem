@@ -1682,17 +1682,26 @@ endif
 ################################################################################
 
 ifeq ($(BOXARCH), arm)
+
+ifeq ($(FFMPEG_EXPERIMENTAL), 1)
+FFMPEG_VER = 3.4.2
+else
 FFMPEG_VER = 3.3
+endif
 FFMPEG_SOURCE = ffmpeg-$(FFMPEG_VER).tar.xz
 FFMPEG_PATCH  = ffmpeg-$(FFMPEG_VER)-fix-hls.patch
 FFMPEG_PATCH += ffmpeg-$(FFMPEG_VER)-buffer-size.patch
 FFMPEG_PATCH += ffmpeg-$(FFMPEG_VER)-aac.patch
 FFMPEG_PATCH += ffmpeg-$(FFMPEG_VER)-fix-edit-list-parsing.patch
 # ffmpeg exteplayer3 patches
-FFMPEG_PATCH += ffmpeg-$(FFMPEG_VER)-fix-mpegts.patch
-FFMPEG_PATCH += ffmpeg-$(FFMPEG_VER)-allow-to-choose-rtmp-impl-at-runtime.patch
-FFMPEG_PATCH += ffmpeg-$(FFMPEG_VER)-add-dash-demux.patch
-FFMPEG_PATCH += ffmpeg-$(FFMPEG_VER)-hls-replace-key-uri.patch
+FFMPEG_PATCH += ffmpeg-$(FFMPEG_VER)-fix_mpegts.patch
+FFMPEG_PATCH += ffmpeg-$(FFMPEG_VER)-allow_to_choose_rtmp_impl_at_runtime.patch
+ifeq ($(FFMPEG_EXPERIMENTAL), 1)
+FFMPEG_PATCH += ffmpeg-$(FFMPEG_VER)-dashdec_improvements.patch
+else
+FFMPEG_PATCH += ffmpeg-$(FFMPEG_VER)-add_dash_demux.patch
+endif
+FFMPEG_PATCH += ffmpeg-$(FFMPEG_VER)-hls_replace_key_uri.patch
 FFMPEG_PATCH += ffmpeg-$(FFMPEG_VER)-chunked_transfer_fix_eof.patch
 FFMPEG_DEPS = $(D)/libxml2 $(D)/librtmpdump
 FFMPEG_CONF_OPTS  = --enable-librtmp
@@ -1894,9 +1903,9 @@ $(D)/ffmpeg: $(D)/bootstrap $(D)/openssl $(D)/bzip2 $(D)/freetype $(D)/alsa_lib 
 			--enable-decoder=pcm_zork \
 			--enable-decoder=pgssub \
 			--enable-decoder=png \
- 			--enable-decoder=ra_144 \
- 			--enable-decoder=ra_288 \
- 			--enable-decoder=ralf \
+			--enable-decoder=ra_144 \
+			--enable-decoder=ra_288 \
+			--enable-decoder=ralf \
 			--enable-decoder=qcelp \
 			--enable-decoder=qdm2 \
 			--enable-decoder=ra_144 \
@@ -1966,7 +1975,7 @@ $(D)/ffmpeg: $(D)/bootstrap $(D)/openssl $(D)/bzip2 $(D)/freetype $(D)/alsa_lib 
 			--enable-demuxer=vc1 \
 			--enable-demuxer=wav \
 			--enable-demuxer=webm_dash_manifest \
- 			\
+			\
 			--disable-filters \
 			--enable-filter=scale \
 			--enable-filter=drawtext \
