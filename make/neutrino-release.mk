@@ -478,7 +478,8 @@ neutrino-release-base:
 	$(SILENT)ln -sf /hdd $(RELEASE_DIR)/media/hdd
 	$(SILENT)install -d $(RELEASE_DIR)/mnt/{hdd,nfs,usb}
 	$(SILENT)install -d $(RELEASE_DIR)/mnt/mnt{0..7}
-	$(SILENT)install -d $(RELEASE_DIR)/usr/{bin,lib,sbin,share}
+	$(SILENT)install -d $(RELEASE_DIR)/usr/{bin,lib,sbin,share,tuxbox}
+	$(SILENT)install -d $(RELEASE_DIR)/usr/lib/tuxbox/{luaplugins,plugins}
 	$(SILENT)install -d $(RELEASE_DIR)/usr/share/{fonts,tuxbox,udhcpc,zoneinfo,lua}
 	$(SILENT)install -d $(RELEASE_DIR)/usr/share/tuxbox/neutrino
 	$(SILENT)install -d $(RELEASE_DIR)/usr/share/tuxbox/neutrino/icons/logo
@@ -498,6 +499,7 @@ neutrino-release-base:
 	$(SILENT)ln -s ../init.d/sendsigs $(RELEASE_DIR)/etc/rc.d/rc6.d/S20sendsigs
 	$(SILENT)ln -s ../init.d/umountfs $(RELEASE_DIR)/etc/rc.d/rc6.d/S40umountfs
 	$(SILENT)ln -s ../init.d/reboot $(RELEASE_DIR)/etc/rc.d/rc6.d/S90reboot
+	$(SILENT)ln -sf /usr/share/tuxbox/neutrino/icons/logo $(RELEASE_DIR)/logos
 	$(SILENT)ln -sf /usr/share/tuxbox/neutrino/icons/logo $(RELEASE_DIR)/var/httpd/logos
 	$(SILENT)touch $(RELEASE_DIR)/var/etc/.firstboot
 	$(SILENT)cp -a $(TARGET_DIR)/bin/* $(RELEASE_DIR)/bin/
