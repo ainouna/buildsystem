@@ -478,7 +478,7 @@ neutrino-release-base:
 	$(SILENT)ln -sf /hdd $(RELEASE_DIR)/media/hdd
 	$(SILENT)install -d $(RELEASE_DIR)/mnt/{hdd,nfs,usb}
 	$(SILENT)install -d $(RELEASE_DIR)/mnt/mnt{0..7}
-	$(SILENT)install -d $(RELEASE_DIR)/usr/{bin,lib,sbin,share,tuxbox}
+	$(SILENT)install -d $(RELEASE_DIR)/usr/{bin,lib,sbin,share}
 	$(SILENT)install -d $(RELEASE_DIR)/usr/lib/tuxbox/{luaplugins,plugins}
 	$(SILENT)install -d $(RELEASE_DIR)/usr/share/{fonts,tuxbox,udhcpc,zoneinfo,lua}
 	$(SILENT)install -d $(RELEASE_DIR)/usr/share/tuxbox/neutrino
@@ -655,12 +655,13 @@ endif
 #
 # wlan firmware
 #
-	$(SILENT)if [ -e $(RELEASE_DIR)/lib/modules/r8188eu.ko ]; then \
-		install -d $(RELEASE_DIR)/etc/Wireless; \
-		cp -aR $(SKEL_ROOT)/firmware/Wireless/* $(RELEASE_DIR)/etc/Wireless/ ;\
-		cp -aR $(SKEL_ROOT)/firmware/rtlwifi $(RELEASE_DIR)/lib/firmware/ ; \
-		cp -aR $(SKEL_ROOT)/firmware/*.bin $(RELEASE_DIR)/lib/firmware/ ; \
-	fi
+ifeq ($(IMAGE), neutrino-wlandriver)
+	$(SILENT)install -d $(RELEASE_DIR)/etc/Wireless; \
+	$(SILENT)cp -aR $(SKEL_ROOT)/firmware/Wireless/* $(RELEASE_DIR)/etc/Wireless/ ;\
+	$(SILENT)cp -aR $(SKEL_ROOT)/firmware/rtlwifi $(RELEASE_DIR)/lib/firmware/ ; \
+	$(SILENT)cp -aR $(SKEL_ROOT)/firmware/*.bin $(RELEASE_DIR)/lib/firmware/ ; \
+endif
+
 #
 # modules.available
 #
