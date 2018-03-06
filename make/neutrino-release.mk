@@ -448,10 +448,15 @@ neutrino-release-hd51:
 	$(SILENT)install -m 0755 $(SKEL_ROOT)/release/halt_hd51 $(RELEASE_DIR)/etc/init.d/halt
 	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/*.ko $(RELEASE_DIR)/lib/modules/
 	$(SILENT)cp $(TARGET_DIR)/boot/zImage.dtb $(RELEASE_DIR)/boot/
-	$(SILENT)install -m 0644 $(SKEL_ROOT)/release/mdev_hd51.conf $(RELEASE_DIR)/etc/mdev.conf
-	$(SILENT)find $(RELEASE_DIR)/usr/lib/ -name '*.a' -exec rm -f {} \;
-	$(SILENT)find $(RELEASE_DIR)/usr/lib/ -name '*.o' -exec rm -f {} \;
-	$(SILENT)find $(RELEASE_DIR)/usr/lib/ -name '*.la' -exec rm -f {} \;
+
+#
+# vusolo4k
+#
+neutrino-release-vusolo4k:
+	$(SILENT)install -m 0755 $(SKEL_ROOT)/release/halt_vusolo4k $(RELEASE_DIR)/etc/init.d/halt
+	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/*.ko $(RELEASE_DIR)/lib/modules/
+	$(SILENT)cp $(TARGET_DIR)/boot/vmlinuz-initrd-7366c0 $(RELEASE_DIR)/boot/
+	$(SILENT)cp $(TARGET_DIR)/boot/zImage $(RELEASE_DIR)/boot/
 
 #
 # neutrino-release-base
