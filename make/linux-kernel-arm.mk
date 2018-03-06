@@ -10,6 +10,7 @@ KERNEL_URL             = http://source.mynonpublic.com/gfutures
 KERNEL_CONFIG          = hd51_defconfig
 KERNEL_DIR             = $(BUILD_TMP)/linux-$(KERNEL_VER)
 KERNEL_PATCHES_ARM     = $(HD51_PATCHES)
+KERNEL_DTB_VER         = bcm7445-bcm97445svmb.dtb
 endif
 
 ifeq ($(BOXTYPE), vusolo4k)
@@ -44,6 +45,7 @@ HD51_PATCHES = \
 		armbox/hd51_reserve_dvb_adapter_0.patch \
 		armbox/hd51_blacklist_mmc0.patch \
 		armbox/hd51_export_pmpoweroffprepare.patch
+
 VUSOLO4K_PATCHES = \
 		armbox/vusolo4k_bcm_genet_disable_warn.patch \
 		armbox/vusolo4k_linux_dvb-core.patch \
@@ -55,7 +57,15 @@ VUSOLO4K_PATCHES = \
 		armbox/vusolo4k_0001-STV-Add-SNR-Signal-report-parameters.patch \
 		armbox/vusolo4k_0001-stv090x-optimized-TS-sync-control.patch \
 		armbox/vusolo4k_linux_dvb_adapter.patch \
-		armbox/vusolo4k_kernel-gcc6.patch
+		armbox/vusolo4k_kernel-gcc6.patch \
+		armbox/vusolo4k_genksyms_fix_typeof_handling.patch \
+		armbox/vusolo4k_0001-tuners-tda18273-silicon-tuner-driver.patch \
+		armbox/vusolo4k_01-10-si2157-Silicon-Labs-Si2157-silicon-tuner-driver.patch \
+		armbox/vusolo4k_02-10-si2168-Silicon-Labs-Si2168-DVB-T-T2-C-demod-driver.patch \
+		armbox/vusolo4k_0003-cxusb-Geniatech-T230-support.patch \
+		armbox/vusolo4k_CONFIG_DVB_SP2.patch \
+		armbox/vusolo4k_dvbsky.patch \
+		armbox/vusolo4k_rtl2832u-2.patch
 
 #
 # KERNEL
@@ -82,7 +92,7 @@ ifeq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), kerneldebug debug))
 	$(SILENT)grep -v "CONFIG_PRINTK" "$(KERNEL_DIR)/.config" > $(KERNEL_DIR)/.config.tmp
 	$(SILENT)cp $(KERNEL_DIR)/.config.tmp $(KERNEL_DIR)/.config
 	$(SILENT)echo "CONFIG_PRINTK=y" >> $(KERNEL_DIR)/.config
-	$(SILENT)echo "# CONFIG_PRINTK_TIME is not set" >> $(KERNEL_DIR)/.config
+	$(SILENT)echo "CONFIG_PRINTK_TIME=y" >> $(KERNEL_DIR)/.config
 endif
 	@touch $@
 
@@ -90,7 +100,7 @@ $(D)/kernel.do_compile: $(D)/kernel.do_prepare
 ifeq ($(BOXTYPE), hd51)
 	$(SET) -e; cd $(KERNEL_DIR); \
 		$(MAKE) -C $(KERNEL_DIR) ARCH=arm oldconfig
-		$(MAKE) -C $(KERNEL_DIR) ARCH=arm CROSS_COMPILE=$(TARGET)- zImage modules
+		$(MAKE) -C $(KERNEL_DIR) ARCH=arm CROSS_COMPILE=$(TARGET)- $(KERNEL_DTB_VER) zImage modules
 		$(MAKE) -C $(KERNEL_DIR) ARCH=arm CROSS_COMPILE=$(TARGET)- DEPMOD=$(DEPMOD) INSTALL_MOD_PATH=$(TARGET_DIR) modules_install
 	@touch $@
 endif
@@ -109,6 +119,7 @@ ifeq ($(BOXTYPE), hd51)
 	$(SILENT)install -m 644 $(KERNEL_DIR)/vmlinux $(TARGET_DIR)/boot/vmlinux-arm-$(KERNEL_VER)
 	$(SILENT)install -m 644 $(KERNEL_DIR)/System.map $(TARGET_DIR)/boot/System.map-arm-$(KERNEL_VER)
 	$(SILENT)cp $(KERNEL_DIR)/arch/arm/boot/zImage $(TARGET_DIR)/boot/
+	$(SILENT)cat $(KERNEL_DIR)/arch/arm/boot/zImage $(KERNEL_DIR)/arch/arm/boot/dts/$(KERNEL_DTB_VER) > $(TARGET_DIR)/boot/zImage.dtb
 	$(SILENT)rm $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/build || true
 	$(SILENT)rm $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/source || true
 	$(TOUCH)
