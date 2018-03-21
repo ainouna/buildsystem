@@ -442,6 +442,20 @@ neutrino-release-arivalink200:
 	$(SILENT)cp -dp $(SKEL_ROOT)/release/lircd_arivalink200.conf $(RELEASE_DIR)/etc/lircd.conf
 
 #
+# pace7241
+#
+neutrino-release-pace7241:
+	$(SILENT)install -m 0755 $(SKEL_ROOT)/release/halt_ufs912 $(RELEASE_DIR)/etc/init.d/halt
+	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/stgfb/stmfb/stmcore-display-sti7105.ko $(RELEASE_DIR)/lib/modules/
+	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/frontcontroller/front_vfd/front_vfd.ko $(RELEASE_DIR)/lib/modules/
+	$(SILENT)[ -e $(SKEL_ROOT)/release/fe_core_pace7241$(KERNEL_STM_LABEL).ko ] && cp $(SKEL_ROOT)/release/fe_core_space7241$(KERNEL_STM_LABEL).ko $(RELEASE_DIR)/lib/modules/fe_core.ko || true
+	$(SILENT)cp $(SKEL_ROOT)/boot/video_7105.elf $(RELEASE_DIR)/lib/firmware/video.elf
+	$(SILENT)cp $(SKEL_ROOT)/boot/audio_7105.elf $(RELEASE_DIR)/lib/firmware/audio.elf
+	$(SILENT)cp $(SKEL_ROOT)/firmware/dvb-fe-avl6222.fw $(RELEASE_DIR)/lib/firmware/
+	$(SILENT)cp $(SKEL_ROOT)/firmware/component_7105_pdk7105.fw $(RELEASE_DIR)/lib/firmware/component.fw
+	$(SILENT)cp -dp $(SKEL_ROOT)/release/lircd_pace7241.conf $(RELEASE_DIR)/etc/lircd.conf
+
+#
 # Mutant HD51
 #
 neutrino-release-hd51:
@@ -484,7 +498,6 @@ neutrino-release-base:
 	$(SILENT)install -d $(RELEASE_DIR)/usr/share/tuxbox/neutrino
 	$(SILENT)install -d $(RELEASE_DIR)/usr/share/tuxbox/neutrino/icons/logo
 	$(SILENT)install -d $(RELEASE_DIR)/usr/share/lua/5.2
-	$(SILENT)ln -sf /usr/share/tuxbox/neutrino/icons/logo $(RELEASE_DIR)/logos
 	$(SILENT)install -d $(RELEASE_DIR)/var/{bin,boot,emu,etc,epg,httpd,keys,lib,logos,net,tuxbox,update}
 	$(SILENT)install -d $(RELEASE_DIR)/var/lib/{nfs,modules}
 	$(SILENT)install -d $(RELEASE_DIR)/var/net/epg
@@ -656,12 +669,11 @@ endif
 # wlan firmware
 #
 ifeq ($(IMAGE), neutrino-wlandriver)
-	$(SILENT)install -d $(RELEASE_DIR)/etc/Wireless; \
-	$(SILENT)cp -aR $(SKEL_ROOT)/firmware/Wireless/* $(RELEASE_DIR)/etc/Wireless/ ;\
-	$(SILENT)cp -aR $(SKEL_ROOT)/firmware/rtlwifi $(RELEASE_DIR)/lib/firmware/ ; \
-	$(SILENT)cp -aR $(SKEL_ROOT)/firmware/*.bin $(RELEASE_DIR)/lib/firmware/ ; \
+	$(SILENT)install -d $(RELEASE_DIR)/etc/Wireless
+	$(SILENT)cp -aR $(SKEL_ROOT)/firmware/Wireless/* $(RELEASE_DIR)/etc/Wireless/
+	$(SILENT)cp -aR $(SKEL_ROOT)/firmware/rtlwifi $(RELEASE_DIR)/lib/firmware/
+	$(SILENT)cp -aR $(SKEL_ROOT)/firmware/*.bin $(RELEASE_DIR)/lib/firmware/
 endif
-
 #
 # modules.available
 #
@@ -723,7 +735,7 @@ endif
 #
 # copy root_neutrino
 #
-	$(SILENT)cp -aR $(SKEL_ROOT)/root_neutrino/etc/* $(RELEASE_DIR)/etc/
+	$(SILENT)cp -aR $(SKEL_ROOT)/root_neutrino/* $(RELEASE_DIR)/
 ifeq ($(NEUTRINO_VARIANT), $(filter $(NEUTRINO_VARIANT), mp-ddt, mp-ddt + plugins))
 	$(SILENT)cp -aR $(SKEL_ROOT)/root_neutrino/var_ddt/* $(RELEASE_DIR)/var/
 endif
