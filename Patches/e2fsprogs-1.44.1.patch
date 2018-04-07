@@ -24,19 +24,6 @@
  
  Name: uuid
  Description: Universally unique id library
---- a/configure.ac
-+++ b/configure.ac
-@@ -1450,10 +1450,8 @@
- dnl
- dnl Build CFLAGS
- dnl
--if test $cross_compiling = no; then
-    BUILD_CFLAGS="$CFLAGS $CPPFLAGS $INCLUDES -DHAVE_CONFIG_H"
-    BUILD_LDFLAGS="$LDFLAGS"
--fi
- AC_SUBST(BUILD_CFLAGS)
- AC_SUBST(BUILD_LDFLAGS)
- dnl
 --- a/lib/Makefile.elf-lib
 +++ b/lib/Makefile.elf-lib
 @@ -50,8 +50,6 @@ install-shlibs install:: $(ELF_LIB) installdirs-elf-lib $(DEP_INSTALL_SYMLINK)
@@ -71,9 +58,9 @@
  
  tune2fs: $(TUNE2FS_OBJS) $(DEPLIBS) $(DEPLIBS_E2P) $(DEPLIBBLKID) \
  		$(DEPLIBUUID) $(LIBEXT2FS)
-@@ -329,10 +329,10 @@
- 		$(PROFILED_LIBE2P) $(PROFILED_LIBUUID) $(LIBINTL) $(SYSLIBS) \
- 		$(PROFILED_LIBBLKID) $(LIBMAGIC)
+@@ -341,10 +341,10 @@
+ 		$(STATIC_LIBS) $(STATIC_LIBE2P) $(STATIC_LIBUUID) \
+ 		$(LIBINTL) $(SYSLIBS) $(STATIC_LIBBLKID) $(LIBMAGIC)
  
 -fsck: $(FSCK_OBJS) $(DEPLIBBLKID)
 +fsck: $(FSCK_OBJS) $(DEPLIBBLKID) $(DEPLIBUUID)
