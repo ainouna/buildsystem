@@ -727,7 +727,7 @@ $(D)/freetype: $(D)/bootstrap $(D)/zlib $(D)/libpng $(ARCHIVE)/$(FREETYPE_SOURCE
 #
 # lirc
 #
-ifeq ($(BOXTYPE), $(filter $(BOXTYPE),adb_box arivalink200 ipbox55 ipbox99 ipbox9900 cuberevo cuberevo_mini cuberevo_mini2 cuberevo_250hd cuberevo_2000hd cuberevo_3000hd hl101 sagemcom88 spark spark7162 ufs910 vitamin_hd5000))
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE),adb_box arivalink200 ipbox55 ipbox99 ipbox9900 cuberevo cuberevo_mini cuberevo_mini2 cuberevo_250hd cuberevo_2000hd cuberevo_3000hd hl101 pace7241 sagemcom88 spark spark7162 ufs910 vitamin_hd5000))
 
 LIRC_VER = 0.9.0
 LIRC_SOURCE = lirc-$(LIRC_VER).tar.bz2
@@ -967,7 +967,7 @@ $(D)/libconfig: $(D)/bootstrap $(ARCHIVE)/$(LIBCONFIG_SOURCE)
 #
 # libcurl
 #
-LIBCURL_VER = 7.58.0
+LIBCURL_VER = 7.59.0
 LIBCURL_SOURCE = curl-$(LIBCURL_VER).tar.bz2
 LIBCURL_PATCH = libcurl-$(LIBCURL_VER).patch
 
@@ -1003,6 +1003,8 @@ $(D)/libcurl: $(D)/bootstrap $(D)/zlib $(D)/openssl $(D)/ca-bundle $(ARCHIVE)/$(
 			--enable-shared \
 			--disable-ldap \
 			--without-libidn \
+			--without-libidn2 \
+			--without-winidn \
 			--without-libpsl \
 			--with-ca-bundle=$(CA_BUNDLE_DIR)/$(CA_BUNDLE) \
 			--with-random=/dev/urandom \
