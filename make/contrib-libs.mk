@@ -2127,7 +2127,7 @@ $(D)/libsoup: $(D)/bootstrap $(D)/sqlite $(D)/libxml2 $(D)/libglib2 $(ARCHIVE)/$
 #
 # libogg
 #
-LIBOGG_VER = 1.3.2
+LIBOGG_VER = 1.3.3
 LIBOGG_SOURCE = libogg-$(LIBOGG_VER).tar.gz
 
 $(ARCHIVE)/$(LIBOGG_SOURCE):
