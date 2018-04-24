@@ -1282,6 +1282,65 @@ $(D)/vsftpd: $(D)/bootstrap $(ARCHIVE)/$(VSFTPD_SOURCE)
 	$(TOUCH)
 
 #
+# procps_ng
+#
+PROCPS_NG_VER = 3.3.12
+PROCPS_NG_SOURCE = procps-ng-$(PROCPS_NG_VER).tar.xz
+
+$(ARCHIVE)/$(PROCPS_NG_SOURCE):
+	$(WGET) http://sourceforge.net/projects/procps-ng/files/Production/$(PROCPS_NG_SOURCE)
+
+$(D)/procps_ng: $(D)/bootstrap $(D)/ncurses $(ARCHIVE)/$(PROCPS_NG_SOURCE)
+	$(START_BUILD)
+	$(REMOVE)/procps-ng-$(PROCPS_NG_VER)
+	$(UNTAR)/$(PROCPS_NG_SOURCE)
+	($SILENT)cd $(BUILD_TMP)/procps-ng-$(PROCPS_NG_VER); \
+		export ac_cv_func_malloc_0_nonnull=yes; \
+		export ac_cv_func_realloc_0_nonnull=yes; \
+		$(CONFIGURE) \
+			--target=$(TARGET) \
+			--prefix= \
+		; \
+		$(MAKE); \
+		install -D -m 755 top/.libs/top $(TARGET_DIR)/bin/top; \
+		install -D -m 755 ps/.libs/pscommand $(TARGET_DIR)/bin/ps; \
+		cp -a proc/.libs/libprocps.so* $(TARGET_LIB_DIR)
+	$(REMOVE)/procps-ng-$(PROCPS_NG_VER)
+	$(TOUCH)
+
+#
+# htop
+#
+HTOP_VER = 2.1.0
+HTOP_SOURCE = htop-$(HTOP_VER).tar.gz
+HTOP_PATCH = htop-$(HTOP_VER).patch
+
+$(ARCHIVE)/$(HTOP_SOURCE):
+	$(WGET) http://hisham.hm/htop/releases/$(HTOP_VER)/$(HTOP_SOURCE)
+
+$(D)/htop: $(D)/bootstrap $(D)/ncurses $(ARCHIVE)/$(HTOP_SOURCE)
+	$(START_BUILD)
+	$(REMOVE)/htop-$(HTOP_VER)
+	$(UNTAR)/$(HTOP_SOURCE)
+	cd $(BUILD_TMP)/htop-$(HTOP_VER); \
+		$(call apply_patches,$(HTOP_PATCH)); \
+		$(CONFIGURE) \
+			--prefix=/usr \
+			--mandir=/.remove \
+			--sysconfdir=/etc \
+			--disable-unicode \
+			ac_cv_func_malloc_0_nonnull=yes \
+			ac_cv_func_realloc_0_nonnull=yes \
+			ac_cv_file__proc_stat=yes \
+			ac_cv_file__proc_meminfo=yes \
+		; \
+		$(MAKE) all; \
+		$(MAKE) install DESTDIR=$(TARGET_DIR)
+	rm -rf $(addprefix $(TARGET_DIR)/usr/share/,pixmaps applications)
+	$(REMOVE)/htop-$(HTOP_VER)
+	$(TOUCH)
+
+#
 # ethtool
 #
 ETHTOOL_VER = 4.15
