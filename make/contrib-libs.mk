@@ -2154,7 +2154,7 @@ $(D)/libogg: $(D)/bootstrap $(ARCHIVE)/$(LIBOGG_SOURCE)
 #
 # flac
 #
-FLAC_VER = 1.3.1
+FLAC_VER = 1.3.2
 FLAC_SOURCE = flac-$(FLAC_VER).tar.xz
 FLAC_PATCH = flac-$(FLAC_VER).patch
 
