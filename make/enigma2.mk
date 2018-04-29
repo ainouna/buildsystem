@@ -215,7 +215,14 @@ $(D)/enigma2.do_compile: $(SOURCE_DIR)/enigma2/config.status
 
 PLI_SKIN_PATCH = PLi-HD_skin.patch
 REPO_PLIHD="https://github.com/littlesat/skin-PLiHD.git"
-
+HEAD=master
+REVISION_HD=8c9e43bd5b5fbec2d0e0e86d8e9d69a94f139054
+REPO_0=$(REPO_PLIHD)
+#f54647d20358cbc540859441855a7aa45bbfaef0 0
+#901a5f2c6f148478e0c8d8662c6dcde8fb40daba 1
+#429728d6c18c804bc81ed45b3eda69727898141f 2
+#4ed2a9655859624a77383d2be9aab7e1fb616bb6 3
+#8c9e43bd5b5fbec2d0e0e86d8e9d69a94f139054 4 Jan 15, 2018
 $(D)/enigma2: $(D)/enigma2.do_prepare $(D)/enigma2.do_compile
 	$(MAKE) -C $(SOURCE_DIR)/enigma2 install DESTDIR=$(TARGET_DIR)
 	@echo -n "Stripping..."
@@ -227,23 +234,14 @@ $(D)/enigma2: $(D)/enigma2.do_prepare $(D)/enigma2.do_compile
 	fi
 	@echo " done."
 	@echo
-	@echo "Adding PLi-HD skin"; \
-	HEAD="master"; \
-	REPO_0=$(REPO_PLIHD); \
-	if [ -d $(ARCHIVE)/PLi-HD_skin.git ]; then \
-		cd $(ARCHIVE)/PLi-HD_skin.git; \
-		echo -n "Updating archived PLi-HD skin git..."; \
-		git pull -q; git checkout -q $$HEAD; \
-		echo " done."; \
-	else \
-		echo -n "Cloning PLi-HD skin git..."; \
-		git clone -q -b $$HEAD $$REPO_0 $(ARCHIVE)/PLi-HD_skin.git; \
-		echo " done."; \
+	@echo "Adding PLi-HD skin"
+	$(SILENT)if [ ! -d $(ARCHIVE)/PLi-HD_skin.git ]; then \
+		(echo -n "Cloning PLi-HD skin git..."; git clone -q -b $(HEAD) $(REPO_0) $(ARCHIVE)/PLi-HD_skin.git; echo " done."); \
 	fi
+	$(SILENT)(cd $(ARCHIVE)/PLi-HD_skin.git; echo -n "Checkout commit $(REVISION_HD)..."; git checkout -q $(REVISION_HD); echo " done.")
 	$(SILENT)cp -ra $(ARCHIVE)/PLi-HD_skin.git/usr/share/enigma2/* $(TARGET_DIR)/usr/local/share/enigma2
-#	$(call apply_patches,$(PLI_SKIN_PATCH))
 	@echo -e "$(TERM_RED)Applying Patch:$(TERM_NORMAL) $(PLI_SKIN_PATCH)"; $(PATCH)/$(PLI_SKIN_PATCH)
-	@echo -e "Patching $(TERM_GREEN_BOLD)PLi-HD skin$(TERM_NORMAL) completed.";
+	@echo -e "Patching $(TERM_GREEN_BOLD)PLi-HD skin$(TERM_NORMAL) completed."
 	$(SILENT)rm -rf $(TARGET_DIR)/usr/local/share/enigma2/PLi-FullHD
 	$(SILENT)rm -rf $(TARGET_DIR)/usr/local/share/enigma2/PLi-FullNightHD
 	$(TOUCH)
