@@ -16,15 +16,15 @@ Instructions
 4. Execute: "git clone https://github.com/Audioniek/buildsystem ." Note
    the period at the end.
 
-5. The remaining repositories that are needed will cloned automatically
+5. The remaining repositories that are needed will be cloned automatically
    during the first build (see point 8).
 
 6. If not done previously, execute sudo ./prepare-for-bs.sh. This will install
    the missing packages, depending on your Linux distribution.
 
-7. Download and extract a ready built image for the receiver you want
-   to build for and extract the files audio.elf and video.elf from its
-   /boot directory. Copy the files to the directory X/root/boot
+7. Only for SH4-based receivers: Download and extract a ready built image for the
+   receiver you want to build for and extract the files audio.elf and video.elf
+   from its /boot directory. Copy the files to the directory X/root/boot
    using the following names (so 4 copies each):
    audio.elf to audio_7100.elf, audio_7105.elf, audio_7109.elf and audio_7111.elf,
    video.elf to video_7100.elf, video_7105.elf, video_7109.elf and video_7111.elf.

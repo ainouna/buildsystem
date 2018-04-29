@@ -401,7 +401,6 @@ $(D)/neutrino-hd2.config.status:
 			--enable-silent-rules \
 			--with-boxtype=$(BOXTYPE) \
 			--with-datadir=/usr/share/tuxbox \
-			--with-fontdir=/usr/share/fonts \
 			--with-configdir=/var/tuxbox/config \
 			--with-plugindir=/var/tuxbox/plugins \
 			$(NHD2_OPTS) \

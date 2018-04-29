@@ -442,7 +442,7 @@ $(D)/lua: $(D)/bootstrap $(D)/ncurses $(ARCHIVE)/$(LUAPOSIX_SOURCE) $(ARCHIVE)/$
 		$(call apply_patches,$(LUAPOSIX_PATCH)); \
 		tar xf $(ARCHIVE)/$(LUAPOSIX_SOURCE); \
 		cd luaposix-git-$(LUAPOSIX_VER)/ext; cp posix/posix.c include/lua52compat.h ../../src/; cd ../..; \
-		cd luaposix--git-$(LUAPOSIX_VER)/lib; cp *.lua $(TARGET_DIR)/usr/share/lua/$(LUA_VER_SHORT); cd ../..; \
+		cd luaposix-git-$(LUAPOSIX_VER)/lib; cp *.lua $(TARGET_DIR)/usr/share/lua/$(LUA_VER_SHORT); cd ../..; \
 		sed -i 's/<config.h>/"config.h"/' src/posix.c; \
 		sed -i '/^#define/d' src/lua52compat.h; \
 		sed -i 's|man/man1|/.remove|' Makefile; \
@@ -682,7 +682,7 @@ $(D)/timezone: $(D)/bootstrap find-zic $(ARCHIVE)/$(TZDATA_SOURCE)
 #
 # freetype
 #
-FREETYPE_VER = 2.8.1
+FREETYPE_VER = 2.9
 FREETYPE_SOURCE = freetype-$(FREETYPE_VER).tar.bz2
 FREETYPE_PATCH = freetype-$(FREETYPE_VER).patch
 
@@ -820,7 +820,7 @@ endif
 #
 # libjpeg_turbo
 #
-LIBJPEG_TURBO_VER = 1.5.2
+LIBJPEG_TURBO_VER = 1.5.3
 LIBJPEG_TURBO_SOURCE = libjpeg-turbo-$(LIBJPEG_TURBO_VER).tar.gz
 
 $(ARCHIVE)/$(LIBJPEG_TURBO_SOURCE):
@@ -1183,7 +1183,7 @@ $(D)/libid3tag: $(D)/bootstrap $(D)/zlib $(ARCHIVE)/$(LIBID3TAG_SOURCE)
 #
 # libvorbis
 #
-LIBVORBIS_VER = 1.3.5
+LIBVORBIS_VER = 1.3.6
 LIBVORBIS_SOURCE = libvorbis-$(LIBVORBIS_VER).tar.xz
 
 $(ARCHIVE)/$(LIBVORBIS_SOURCE):
@@ -2127,7 +2127,7 @@ $(D)/libsoup: $(D)/bootstrap $(D)/sqlite $(D)/libxml2 $(D)/libglib2 $(ARCHIVE)/$
 #
 # libogg
 #
-LIBOGG_VER = 1.3.2
+LIBOGG_VER = 1.3.3
 LIBOGG_SOURCE = libogg-$(LIBOGG_VER).tar.gz
 
 $(ARCHIVE)/$(LIBOGG_SOURCE):
@@ -2154,7 +2154,7 @@ $(D)/libogg: $(D)/bootstrap $(ARCHIVE)/$(LIBOGG_SOURCE)
 #
 # flac
 #
-FLAC_VER = 1.3.1
+FLAC_VER = 1.3.2
 FLAC_SOURCE = flac-$(FLAC_VER).tar.xz
 FLAC_PATCH = flac-$(FLAC_VER).patch
 
@@ -2196,7 +2196,7 @@ $(D)/flac: $(D)/bootstrap $(ARCHIVE)/$(FLAC_SOURCE)
 #
 # libxml2
 #
-LIBXML2_VER = 2.9.7
+LIBXML2_VER = 2.9.8
 LIBXML2_SOURCE = libxml2-$(LIBXML2_VER).tar.gz
 LIBXML2_PATCH = libxml2-$(LIBXML2_VER).patch
 
@@ -2209,7 +2209,11 @@ LIBXML2_CONF_OPTS += --with-python-install-dir=/$(PYTHON_DIR)/site-packages
 endif
 
 ifeq ($(IMAGE), $(filter $(IMAGE), neutrino neutrino-wlandriver))
-LIBXML2_CONF_OPTS  = --without-python --without-catalog --without-lzma --without-schematron --without-legacy
+LIBXML2_CONF_OPTS  = --without-python
+LIBXML2_CONF_OPTS += --without-catalog
+LIBXML2_CONF_OPTS += --without-lzma
+LIBXML2_CONF_OPTS += --without-schematron
+LIBXML2_CONF_OPTS += --without-legacy
 ifeq ($(MEDIAFW), gstreamer)
 LIBXML2_CONF_OPTS += --with-tree --with-output --with-sax1
 endif
@@ -2243,19 +2247,14 @@ $(D)/libxml2: $(D)/bootstrap $(D)/zlib $(ARCHIVE)/$(LIBXML2_SOURCE)
 		$(MAKE) install DESTDIR=$(TARGET_DIR); \
 		if [ -d $(TARGET_DIR)/usr/include/libxml2/libxml ] ; then \
 			ln -sf ./libxml2/libxml $(TARGET_DIR)/usr/include/libxml; \
-		fi; \
-		mv $(TARGET_DIR)/usr/bin/xml2-config $(HOST_DIR)/bin
-	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libxml-2.0.pc $(HOST_DIR)/bin/xml2-config
-	$(SILENT)sed -i 's/^\(Libs:.*\)/\1 -lz/' $(PKG_CONFIG_PATH)/libxml-2.0.pc
-	$(SILENT)if [ -e "$(TARGET_DIR)/$(PYTHON_DIR)/site-packages/libxml2mod.la" ]; then \
-		sed -e "/^dependency_libs/ s,/usr/lib/libxml2.la,$(TARGET_DIR)/usr/lib/libxml2.la,g" -i $(TARGET_DIR)/$(PYTHON_DIR)/site-packages/libxml2mod.la; \
-		sed -e "/^libdir/ s,$(PYTHON_DIR)/site-packages,$(TARGET_DIR)/$(PYTHON_DIR)/site-packages,g" -i $(TARGET_DIR)/$(PYTHON_DIR)/site-packages/libxml2mod.la; \
-	fi
-	$(SILENT)sed -e "/^XML2_LIBDIR/ s,/usr/lib,$(TARGET_DIR)/usr/lib,g" -i $(TARGET_DIR)/usr/lib/xml2Conf.sh
-	$(SILENT)sed -e "/^XML2_INCLUDEDIR/ s,/usr/include,$(TARGET_DIR)/usr/include,g" -i $(TARGET_DIR)/usr/lib/xml2Conf.sh
-	$(SILENT)chmod 755 $(TARGET_DIR)/usr/lib/xml2Conf.sh
+		fi;
+	$(SILENT)mv $(TARGET_DIR)/usr/bin/xml2-config $(HOST_DIR)/bin
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libxml-2.0.pc
+	$(REWRITE_PKGCONF) $(HOST_DIR)/bin/xml2-config
 	$(REWRITE_LIBTOOL)/libxml2.la
-	rm -f $(addprefix $(TARGET_DIR)/usr/bin/,xmlcatalog xmllint)
+	$(SILENT)rm -f $(addprefix $(TARGET_DIR)/usr/bin/,xmlcatalog xmllint)
+	$(SILENT)rm -rf $(TARGET_LIB_DIR)/xml2Conf.sh
+	$(SILENT)rm -rf $(TARGET_LIB_DIR)/cmake
 	$(REMOVE)/libxml2-$(LIBXML2_VER)
 	$(TOUCH)
 
@@ -2286,24 +2285,18 @@ $(D)/libxslt: $(D)/bootstrap $(D)/libxml2 $(ARCHIVE)/$(LIBXSLT_SOURCE)
 			--without-debugger \
 		; \
 		$(MAKE) all; \
-		sed -e "s,^prefix=,prefix=$(TARGET_DIR)," < xslt-config > $(HOST_DIR)/bin/xslt-config; \
-		chmod 755 $(HOST_DIR)/bin/xslt-config; \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
-		if [ -e "$(TARGET_DIR)/$(PYTHON_DIR)/site-packages/libxsltmod.la" ]; then \
-			sed -e "/^dependency_libs/ s,/usr/lib/libexslt.la,$(TARGET_DIR)/usr/lib/libexslt.la,g" -i $(TARGET_DIR)/$(PYTHON_DIR)/site-packages/libxsltmod.la; \
-			sed -e "/^dependency_libs/ s,/usr/lib/libxslt.la,$(TARGET_DIR)/usr/lib/libxslt.la,g" -i $(TARGET_DIR)/$(PYTHON_DIR)/site-packages/libxsltmod.la; \
-			sed -e "/^libdir/ s,$(PYTHON_DIR)/site-packages,$(TARGET_DIR)/$(PYTHON_DIR)/site-packages,g" -i $(TARGET_DIR)/$(PYTHON_DIR)/site-packages/libxsltmod.la; \
-		fi; \
-		sed -e "/^XSLT_LIBDIR/ s,/usr/lib,$(TARGET_DIR)/usr/lib,g" -i $(TARGET_DIR)/usr/lib/xsltConf.sh; \
-		sed -e "/^XSLT_INCLUDEDIR/ s,/usr/include,$(TARGET_DIR)/usr/include,g" -i $(TARGET_DIR)/usr/lib/xsltConf.sh
-	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libexslt.pc $(HOST_DIR)/bin/xslt-config
+	mv $(TARGET_DIR)/usr/bin/xslt-config $(HOST_DIR)/bin
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libexslt.pc
 	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libxslt.pc
+	$(REWRITE_PKGCONF) $(HOST_DIR)/bin/xslt-config
 	$(REWRITE_LIBTOOL)/libexslt.la
 	$(REWRITE_LIBTOOL)/libxslt.la
 	$(REWRITE_LIBTOOLDEP)/libexslt.la
 ifeq ($(BOXARCH), sh4)
-	rm -f $(addprefix $(TARGET_DIR)/usr/bin/,xsltproc xslt-config)
+	$(SILENT)rm -f $(addprefix $(TARGET_DIR)/usr/bin/,xsltproc xslt-config)
 endif
+	$(SILENT)rm -rf $(TARGETLIB)/libxslt-plugins/
 	$(REMOVE)/libxslt-$(LIBXSLT_VER)
 	$(TOUCH)
 
@@ -2418,27 +2411,27 @@ $(D)/graphlcd: $(D)/bootstrap $(D)/freetype $(D)/libusb $(ARCHIVE)/$(GRAPHLCD_SO
 #
 # libdpf
 #
-LIBPDF_VER = 62c8fd0
-LIBPDF_SOURCE = dpf-ax-git-$(LIBPDF_VER).tar.bz2
-LIBPDF_URL = https://github.com/MaxWiesel/dpf-ax.git
-LIBPDF_PATCH = libdpf-crossbuild.patch
+LIBDPF_VER = 62c8fd0
+LIBDPF_SOURCE = dpf-ax-git-$(LIBDPF_VER).tar.bz2
+LIBDPF_URL = https://github.com/MaxWiesel/dpf-ax.git
+LIBDPF_PATCH = libdpf-crossbuild.patch
 
-$(ARCHIVE)/$(LIBPDF_SOURCE):
-	$(SCRIPTS_DIR)/get-git-archive.sh $(LIBPDF_URL) $(LIBPDF_VER) $(notdir $@) $(ARCHIVE)
+$(ARCHIVE)/$(LIBDPF_SOURCE):
+	$(SCRIPTS_DIR)/get-git-archive.sh $(LIBDPF_URL) $(LIBDPF_VER) $(notdir $@) $(ARCHIVE)
 
-$(D)/libdpf: $(D)/bootstrap $(D)/libusb_compat $(ARCHIVE)/$(LIBPDF_SOURCE)
+$(D)/libdpf: $(D)/bootstrap $(D)/libusb_compat $(ARCHIVE)/$(LIBDPF_SOURCE)
 	$(START_BUILD)
-	$(REMOVE)/dpf-ax-git-$(LIBPDF_VER)
-	$(UNTAR)/$(LIBPDF_SOURCE)
-	$(SET) -e; cd $(BUILD_TMP)/dpf-ax-git-$(LIBPDF_VER)/dpflib; \
-		$(call apply_patches,$(LIBPDF_PATCH)); \
+	$(REMOVE)/dpf-ax-git-$(LIBDPF_VER)
+	$(UNTAR)/$(LIBDPF_SOURCE)
+	$(SET) -e; cd $(BUILD_TMP)/dpf-ax-git-$(LIBDPF_VER)/dpflib; \
+		$(call apply_patches,$(LIBDPF_PATCH)); \
 		make libdpf.a CC=$(TARGET)-gcc PREFIX=$(TARGET_DIR)/usr; \
 		mkdir -p $(TARGET_INCLUDE_DIR)/libdpf; \
 		cp dpf.h $(TARGET_INCLUDE_DIR)/libdpf/libdpf.h; \
 		cp ../include/spiflash.h $(TARGET_INCLUDE_DIR)/libdpf/; \
 		cp ../include/usbuser.h $(TARGET_INCLUDE_DIR)/libdpf/; \
 		cp libdpf.a $(TARGET_LIB_DIR)/
-	$(REMOVE)/dpf-ax-git-$(LIBPDF_VER)
+	$(REMOVE)/dpf-ax-git-$(LIBDPF_VER)
 	$(TOUCH)
 
 #
@@ -2559,7 +2552,7 @@ $(D)/libusb_compat: $(D)/bootstrap $(D)/libusb $(ARCHIVE)/$(LIBUSB_COMPAT_SOURCE
 	$(TOUCH)
 
 #
-# alsa_lib
+# alsa-lib
 #
 ALSA_LIB_VER = 1.1.5
 ALSA_LIB_SOURCE = alsa-lib-$(ALSA_LIB_VER).tar.bz2
@@ -2617,7 +2610,7 @@ $(D)/alsa_utils: $(D)/bootstrap $(D)/alsa_lib $(ARCHIVE)/$(ALSA_UTILS_SOURCE)
 		$(CONFIGURE) \
 			--prefix=/usr \
 			--mandir=/.remove \
-			--with-curses=ncursesw \
+			--with-curses=ncurses \
 			--disable-bat \
 			--disable-nls \
 			--disable-alsatest \
@@ -2700,7 +2693,7 @@ $(D)/librtmpdump: $(D)/bootstrap $(D)/zlib $(D)/openssl $(ARCHIVE)/$(LIBRTMPDUMP
 LIBDVBSI_VER = ff57e58
 LIBDVBSI_SOURCE = libdvbsi-git-$(LIBDVBSI_VER).tar.bz2
 LIBDVBSI_URL = git://git.opendreambox.org/git/obi/libdvbsi++.git
-LIBDVBSI_PATCH = libdvbsi-git.patch
+LIBDVBSI_PATCH = libdvbsi-git-$(LIBDVBSI_VER).patch
 
 $(ARCHIVE)/$(LIBDVBSI_SOURCE):
 	$(SCRIPTS_DIR)/get-git-archive.sh $(LIBDVBSI_URL) $(LIBDVBSI_VER) $(notdir $@) $(ARCHIVE)
