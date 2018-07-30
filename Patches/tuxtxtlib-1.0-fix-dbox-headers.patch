@@ -69,7 +69,7 @@
  const char *ObjectSource[] =
  {
  	"(illegal)",
-@@ -4830,8 +4892,10 @@
+@@ -4863,8 +4925,10 @@
  			renderinfo->var_screeninfo.yoffset = 0;
  		else
  			renderinfo->var_screeninfo.yoffset = renderinfo->var_screeninfo.yres;
@@ -80,7 +80,7 @@
  #ifdef HAVE_TRIPLEDRAGON
  		tdfb_attr();
  #endif
-@@ -5364,6 +5428,9 @@
+@@ -5397,6 +5461,9 @@
  
  		tuxtxt_cache.pageupdate=0;
  	}
@@ -90,7 +90,7 @@
  }
  /******************************************************************************
   * MyFaceRequester
-@@ -5533,6 +5600,15 @@
+@@ -5566,6 +5633,15 @@
  		return 0;
  	}
  
@@ -106,7 +106,7 @@
  	/* change to PAL resolution */
  	if (renderinfo->var_screeninfo.xres != 720) 
  	{
-@@ -5552,6 +5628,7 @@
+@@ -5585,6 +5661,7 @@
  		FT_Done_FreeType(renderinfo->library);
  		return 0;
  	}
@@ -114,7 +114,7 @@
  
  	/* get fixed screeninfo */
  	if (ioctl(renderinfo->fb, FBIOGET_FSCREENINFO, &renderinfo->fix_screeninfo) == -1)
-@@ -5577,8 +5654,17 @@
+@@ -5610,8 +5687,17 @@
  	renderinfo->var_screeninfo.yoffset);
  #endif
  		/* map framebuffer into memory */
@@ -132,7 +132,7 @@
  	/* set new colormap */
  	tuxtxt_setcolors(renderinfo,(unsigned short *)tuxtxt_defaultcolors, 0, tuxtxt_color_SIZECOLTABLE);
  
-@@ -5621,8 +5707,10 @@
+@@ -5654,8 +5740,10 @@
  	{
  		renderinfo->var_screeninfo.yoffset = 0;
  
