@@ -2892,10 +2892,10 @@ $(D)/rarfs: $(D)/bootstrap $(D)/fuse $(ARCHIVE)/$(RARFS_SOURCE)
 	$(SET) -e; cd $(BUILD_TMP)/rarfs-$(RARFS_VER); \
 		export PKG_CONFIG_PATH=$(PKG_CONFIG_PATH); \
 		$(CONFIGURE) \
-		CFLAGS="$(TARGET_CFLAGS) -D_FILE_OFFSET_BITS=64" \
+			CFLAGS="$(TARGET_CFLAGS) -D_FILE_OFFSET_BITS=64" \
++			--prefix=/usr \
 			--disable-option-checking \
 			--includedir=/usr/include/fuse \
-			--prefix=/usr \
 		; \
 		$(MAKE) all; \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
