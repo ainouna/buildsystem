@@ -352,7 +352,7 @@ $(D)/e2fsprogs: $(D)/bootstrap $(D)/util_linux $(ARCHIVE)/$(E2FSPROGS_SOURCE)
 	$(SET) -e; cd $(BUILD_TMP)/e2fsprogs-$(E2FSPROGS_VER); \
 		$(call apply_patches,$(E2FSPROGS_PATCH)); \
 		PATH=$(BUILD_TMP)/e2fsprogs-$(E2FSPROGS_VER):$(PATH) \
-		autoreconf -fi && \
+		autoreconf -fi $(SILENT_OPT) \
 		$(CONFIGURE) \
 			--prefix=/usr \
 			--libdir=/usr/lib \
@@ -600,7 +600,7 @@ $(D)/mc: $(D)/bootstrap $(D)/ncurses $(D)/libglib2 $(ARCHIVE)/$(MC_SOURCE)
 	$(UNTAR)/$(MC_SOURCE)
 	$(SET) -e; cd $(BUILD_TMP)/mc-$(MC_VER); \
 		$(call apply_patches,$(MC_PATCH)); \
-		autoreconf -fi; \
+		autoreconf -fi  $(SILENT_OPT); \
 		$(CONFIGURE) \
 			--prefix=/usr \
 			--mandir=/.remove \
@@ -973,7 +973,7 @@ $(D)/shairport-sync: $(D)/bootstrap $(D)/libdaemon $(D)/libpopt $(D)/libconfig $
 		autoreconf -fi; \
 		PKG_CONFIG=$(PKG_CONFIG) \
 		$(BUILDENV) \
-		$(CONFIGURE) \
+		$(CONFIGURE)  $(SILENT_OPT) \
 			--prefix=/usr \
 			--with-alsa \
 			--with-ssl=openssl \
@@ -1763,7 +1763,7 @@ $(D)/dropbearmulti: $(D)/bootstrap $(ARCHIVE)/$(DROPBEARMULTI_SOURCE)
 	$(UNTAR)/$(DROPBEARMULTI_SOURCE)
 	$(SET) -e; cd $(BUILD_TMP)/dropbearmulti-git-$(DROPBEARMULTI_VER); \
 		$(BUILDENV) \
-		autoreconf -fi; \
+		autoreconf -fi $(SILENT_OPT); \
 		$(CONFIGURE) \
 			--build=$(BUILD) \
 			--host=$(TARGET) \

@@ -107,7 +107,7 @@ $(D)/libffi: $(D)/bootstrap $(ARCHIVE)/$(LIBFFI_SOURCE)
 	$(UNTAR)/$(LIBFFI_SOURCE)
 	$(SET) -e; cd $(BUILD_TMP)/libffi-$(LIBFFI_VER); \
 		$(call apply_patches,$(LIBFFI_PATCH)); \
-		$(CONFIGURE) \
+		$(CONFIGURE) $(SILENT_OPT) \
 			--target=$(TARGET) \
 			--prefix=/usr \
 			--mandir=/.remove \
@@ -130,8 +130,7 @@ LIBGLIB2_VER_MINOR = 54
 LIBGLIB2_VER_MICRO = 0
 LIBGLIB2_VER = $(LIBGLIB2_VER_MAJOR).$(LIBGLIB2_VER_MINOR).$(LIBGLIB2_VER_MICRO)
 LIBGLIB2_SOURCE = glib-$(LIBGLIB2_VER).tar.xz
-LIBGLIB2_HOST_PATCH =
-LIBGLIB2_PATCH = libglib2-$(LIBGLIB2_VER)-disable-tests.patch
+#LIBGLIB2_HOST_PATCH =
 
 $(ARCHIVE)/$(LIBGLIB2_SOURCE):
 	$(WGET) https://ftp.gnome.org/pub/gnome/sources/glib/$(LIBGLIB2_VER_MAJOR).$(LIBGLIB2_VER_MINOR)/$(LIBGLIB2_SOURCE)
@@ -160,6 +159,8 @@ $(D)/host_libglib2_genmarshal: $(D)/bootstrap $(D)/host_libffi $(ARCHIVE)/$(LIBG
 #
 # libglib2
 #
+LIBGLIB2_PATCH = libglib2-$(LIBGLIB2_VER)-disable-tests.patch
+
 $(D)/libglib2: $(D)/bootstrap $(D)/host_libglib2_genmarshal $(D)/zlib $(D)/libffi $(ARCHIVE)/$(LIBGLIB2_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/glib-$(LIBGLIB2_VER)
@@ -277,7 +278,7 @@ $(D)/libarchive: $(D)/bootstrap $(ARCHIVE)/$(LIBARCHIVE_SOURCE)
 	$(REMOVE)/libarchive-$(LIBARCHIVE_VER)
 	$(UNTAR)/$(LIBARCHIVE_SOURCE)
 	$(SET) -e; cd $(BUILD_TMP)/libarchive-$(LIBARCHIVE_VER); \
-		$(CONFIGURE) \
+		$(CONFIGURE) $(SILENT_OPT) \
 			--prefix=/usr \
 			--mandir=/.remove \
 			--enable-static=no \
@@ -1238,7 +1239,12 @@ $(D)/libvorbisidec: $(D)/bootstrap $(D)/libogg $(ARCHIVE)/$(LIBVORBISIDEC_SOURCE
 	$(SET) -e; cd $(BUILD_TMP)/libvorbisidec-$(LIBVORBISIDEC_VER); \
 		$(call apply_patches,$(LIBVORBISIDEC_PATCH)); \
 		ACLOCAL_FLAGS="-I . -I $(TARGET_DIR)/usr/share/aclocal" \
-		$(BUILDENV) ./autogen.sh $(CONFIGURE_OPTS) --prefix=/usr; \
+		$(BUILDENV) \
+		./autogen.sh $(SILENT_OPT) \
+			--host=$(TARGET) \
+			--build=$(BUILD) \
+			--prefix=/usr \
+		; \
 		$(MAKE) all; \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
 	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/vorbisidec.pc
@@ -2454,8 +2460,8 @@ $(D)/lcd4linux: $(D)/bootstrap $(D)/libusb_compat $(D)/gd $(D)/libusb $(D)/libdp
 	$(REMOVE)/lcd4linux-git-$(LCD4LINUX_VER)
 	$(UNTAR)/$(LCD4LINUX_SOURCE)
 	$(SET) -e; cd $(BUILD_TMP)/lcd4linux-git-$(LCD4LINUX_VER); \
-		$(BUILDENV) ./bootstrap; \
-		$(BUILDENV) ./configure $(SILENT_OPT) $(CONFIGURE_OPTS) \
+		$(BUILDENV) ./bootstrap $(SILENT_OPT); \
+		$(BUILDENV) ./configure $(CONFIGURE_OPTS) $(SILENT_OPT) \
 			--prefix=/usr \
 			--with-drivers='DPF,SamsungSPF' \
 			--with-plugins='all,!apm,!asterisk,!dbus,!dvb,!gps,!hddtemp,!huawei,!imon,!isdn,!kvv,!mpd,!mpris_dbus,!mysql,!pop3,!ppp,!python,!qnaplog,!raspi,!sample,!seti,!w1retap,!wireless,!xmms' \
@@ -2785,7 +2791,7 @@ $(D)/minidlna: $(D)/bootstrap $(D)/zlib $(D)/sqlite $(D)/libexif $(D)/libjpeg $(
 	$(UNTAR)/$(MINIDLNA_SOURCE)
 	$(SET) -e; cd $(BUILD_TMP)/minidlna-$(MINIDLNA_VER); \
 		$(call apply_patches,$(MINIDLNA_PATCH)); \
-		autoreconf -fi; \
+		autoreconf -fi $(SILENT_OPT); \
 		$(CONFIGURE) \
 			--prefix=/usr \
 		; \
@@ -2841,7 +2847,7 @@ $(D)/djmount: $(D)/bootstrap $(D)/fuse $(ARCHIVE)/$(DJMOUNT_SOURCE)
 	$(SET) -e; cd $(BUILD_TMP)/djmount-$(DJMOUNT_VER); \
 		touch libupnp/config.aux/config.rpath; \
 		$(call apply_patches,$(DJMOUNT_PATCH)); \
-		autoreconf -fi; \
+		autoreconf -fi $(SILENT_OPT); \
 		$(CONFIGURE) -C \
 			--prefix=/usr \
 			--disable-debug \
