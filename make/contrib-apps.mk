@@ -352,7 +352,7 @@ $(D)/e2fsprogs: $(D)/bootstrap $(D)/util_linux $(ARCHIVE)/$(E2FSPROGS_SOURCE)
 	$(SET) -e; cd $(BUILD_TMP)/e2fsprogs-$(E2FSPROGS_VER); \
 		$(call apply_patches,$(E2FSPROGS_PATCH)); \
 		PATH=$(BUILD_TMP)/e2fsprogs-$(E2FSPROGS_VER):$(PATH) \
-		autoreconf -fi $(SILENT_OPT) \
+		autoreconf -fi $(SILENT_OPT); \
 		$(CONFIGURE) \
 			--prefix=/usr \
 			--libdir=/usr/lib \
@@ -1057,7 +1057,6 @@ $(D)/avahi: $(D)/bootstrap $(D)/expat $(D)/libdaemon $(D)/dbus $(ARCHIVE)/$(AVAH
 			--disable-dbm \
 			--disable-gdbm \
 			--disable-python \
-			--disable-pygtk \
 			--disable-python-dbus \
 			--disable-mono \
 			--disable-monodoc \

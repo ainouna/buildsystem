@@ -1051,8 +1051,6 @@ $(D)/libfribidi: $(D)/bootstrap $(ARCHIVE)/$(LIBFRIBIDI_SOURCE)
 			--enable-static \
 			--disable-debug \
 			--disable-deprecated \
-			--enable-charsets \
-			--with-glib=no \
 		; \
 		$(MAKE); \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
