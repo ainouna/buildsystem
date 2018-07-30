@@ -978,6 +978,7 @@ $(ARCHIVE)/cacert.pem:
 	$(WGET) https://curl.haxx.se/ca/cacert.pem
 
 $(D)/ca-bundle: $(ARCHIVE)/cacert.pem
+	$(START_BUILD)
 	$(SILENT)install -D -m 644 $(ARCHIVE)/cacert.pem $(TARGET_DIR)/$(CA_BUNDLE_DIR)/$(CA_BUNDLE)
 	$(TOUCH)
 
