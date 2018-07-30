@@ -1,6 +1,25 @@
+--- a/configure.ac
++++ b/configure.ac
+@@ -3,6 +3,7 @@
+ 
+ AC_INIT([libdreamdvd],[0.0.1],[enigma2-devel@lists.elitedvb.net])
+ AM_INIT_AUTOMAKE([dist-bzip2 foreign])
++AC_CONFIG_MACRO_DIRS([m4])
+ AC_CONFIG_SRCDIR([main.c])
+ AC_CONFIG_HEADERS([libdreamdvd_config.h])
+ 
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -1,4 +1,5 @@
+-AM_CFLAGS = @DVDNAV_CFLAGS@
++AM_CFLAGS = @DVDNAV_CFLAGS@ -std=c99
++ACLOCAL_AMFLAGS = -I m4
+ 
+ lib_LTLIBRARIES = libdreamdvd.la
+ 
 --- a/main.c
 +++ b/main.c
-@@ -141,7 +141,11 @@
+@@ -142,7 +142,11 @@
  	// defaults
  	ddvd_set_ac3thru(pconfig, 0);
  	ddvd_set_language(pconfig, "en");
@@ -12,7 +31,7 @@
  	ddvd_set_video(pconfig, DDVD_4_3, DDVD_LETTERBOX, DDVD_PAL);
  	ddvd_set_lfb(pconfig, NULL, 720, 576, 1, 720);
  	struct ddvd_resume resume_info;
-@@ -630,8 +634,11 @@
+@@ -628,8 +632,11 @@
  	unsigned char *p_lfb = playerconfig->lfb;
  	enum ddvd_result res = DDVD_OK;
  	int msg;
@@ -26,7 +45,7 @@
  	int audio_lock = 0;
  	int spu_lock = 0;
  
-@@ -759,7 +766,11 @@
+@@ -757,7 +764,11 @@
  		Perror("AUDIO_PLAY");
  
  #elif CONFIG_API_VERSION == 3
@@ -38,7 +57,7 @@
  	if (ddvd_fdvideo == -1) {
  		Perror("/dev/dvb/adapter0/video0");
  		res = DDVD_BUSY;
-@@ -801,8 +812,11 @@
+@@ -799,8 +810,11 @@
  		safe_write(ddvd_output_fd, ddvd_startup_logo, sizeof(ddvd_startup_logo));
  # else
  	unsigned char pes_header[] = { 0x00, 0x00, 0x01, 0xE0, 0x00, 0x00, 0x80, 0x00, 0x00 };
@@ -50,7 +69,7 @@
  # endif
  #endif
  
-@@ -826,10 +840,13 @@
+@@ -824,10 +838,13 @@
  	ddvd_mpa_init(48000, 192000);	//init MPA Encoder with 48kHz and 192k Bitrate
  
  	int ac3thru = 1;
@@ -64,7 +83,7 @@
  
  	char osdtext[512];
  	osdtext[0] = 0;
-@@ -910,7 +927,11 @@
+@@ -908,7 +925,11 @@
  	}
  
  	/* set read ahead cache usage to no */
@@ -76,7 +95,7 @@
  		Debug(1, "Error on dvdnav_set_readahead_flag: %s\n", dvdnav_err_to_string(dvdnav));
  		res = DDVD_FAIL_PREFS;
  		goto err_dvdnav;
-@@ -1018,6 +1039,11 @@
+@@ -1016,6 +1037,11 @@
  				ddvd_spu_play = ddvd_spu_ind; // skip remaining subtitles
  			}
  
@@ -88,7 +107,7 @@
  			result = dvdnav_get_next_block(dvdnav, buf, &event, &len);
  			if (result == DVDNAV_STATUS_ERR) {
  				Debug(1, "Error getting next block: %s\n", dvdnav_err_to_string(dvdnav));
-@@ -1107,7 +1133,13 @@
+@@ -1105,7 +1131,13 @@
  						safe_write(ddvd_output_fd, last_iframe, ddvd_last_iframe_len);
  #else
  					safe_write(ddvd_output_fd, last_iframe, ddvd_last_iframe_len);
@@ -102,7 +121,7 @@
  #endif
  					//Debug(1, "Show iframe with size: %d\n",ddvd_last_iframe_len);
  					ddvd_last_iframe_len = 0;
-@@ -1272,10 +1304,22 @@
+@@ -1270,10 +1302,22 @@
  					else if ((buf[14 + 3]) == 0xC0 + audio_id) {	// mpeg audio
  						if (audio_type != DDVD_MPEG) {
  							//Debug(1, "Switch to MPEG Audio\n");
@@ -125,7 +144,7 @@
  							audio_type = DDVD_MPEG;
  						}
  
-@@ -1302,10 +1346,22 @@
+@@ -1300,10 +1344,22 @@
  
  						if (audio_type != DDVD_LPCM) {
  							//Debug(1, "Switch to LPCM Audio\n");
@@ -148,7 +167,7 @@
  							audio_type = DDVD_LPCM;
  							ddvd_lpcm_count = 0;
  						}
-@@ -1370,6 +1426,13 @@
+@@ -1368,6 +1424,13 @@
  					else if ((buf[14 + 3]) == 0xBD && (buf[14 + buf[14 + 8] + 9]) == 0x88 + audio_id) {	// dts audio
  						if (audio_type != DDVD_DTS) {
  							//Debug(1, "Switch to DTS Audio (thru)\n");
@@ -162,7 +181,7 @@
  							if (ioctl(ddvd_fdaudio, AUDIO_SET_AV_SYNC, 1) < 0)
  								Perror("AUDIO_SET_AV_SYNC");
  #ifdef CONVERT_TO_DVB_COMPLIANT_DTS
-@@ -1378,6 +1441,11 @@
+@@ -1376,6 +1439,11 @@
  							if (ioctl(ddvd_fdaudio, AUDIO_SET_BYPASS_MODE, 5) < 0)	// DTS VOB
  #endif
  								Perror("AUDIO_SET_BYPASS_MODE");
@@ -174,7 +193,7 @@
  							audio_type = DDVD_DTS;
  						}
  
-@@ -1407,7 +1475,11 @@
+@@ -1405,7 +1473,11 @@
  						if (audio_type != DDVD_AC3) {
  							//Debug(1, "Switch to AC3 Audio\n");
  							int bypassmode;
@@ -186,7 +205,7 @@
  #ifdef CONVERT_TO_DVB_COMPLIANT_AC3
  								bypassmode = 0;
  #else
-@@ -1415,10 +1487,22 @@
+@@ -1413,10 +1485,22 @@
  #endif
  							else
  								bypassmode = 1;
@@ -209,7 +228,7 @@
  							audio_type = DDVD_AC3;
  						}
  
-@@ -1432,7 +1516,14 @@
+@@ -1430,7 +1514,14 @@
  							//Debug(1, "APTS=%X\n",(int)apts);
  						}
  
@@ -224,7 +243,7 @@
  #ifdef CONVERT_TO_DVB_COMPLIANT_AC3
  							unsigned short pes_len = (buf[14 + 4] << 8 | buf[14 + 5]);
  							pes_len -= 4;	// strip first 4 bytes of pes payload
-@@ -1444,6 +1535,7 @@
+@@ -1442,6 +1533,7 @@
  #else
  							safe_write(ddvd_ac3_fd, buf + 14, buf[19] + (buf[18] << 8) + 6);
  #endif
@@ -232,7 +251,7 @@
  							//fwrite(buf + buf[22] + 27, 1, ((buf[18] << 8) | buf[19]) - buf[22] - 7, fac3); //debugwrite
  						}
  						else {
-@@ -1806,8 +1898,9 @@
+@@ -1804,8 +1896,9 @@
  				/* A NAV packet provides PTS discontinuity information, angle linking information and
  				 * button definitions for DVD menus. We have to handle some stilframes here */
  				// Debug(3, "DVDNAV_NAV_PACKJET vpts=%llu pts=%llu highlight=%d\n", vpts, pts, have_highlight);
@@ -243,7 +262,7 @@
  
  				dsi = dvdnav_get_current_nav_dsi(dvdnav);
  				if (dsi->vobu_sri.next_video == 0xbfffffff)
-@@ -2728,10 +2821,13 @@
+@@ -2726,10 +2819,13 @@
  	close(ddvd_output_fd);
  err_open_output_fd:
  
