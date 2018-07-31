@@ -852,19 +852,17 @@ $(D)/fbshot: $(D)/bootstrap $(D)/libpng $(ARCHIVE)/$(FBSHOT_SOURCE)
 #
 # gptfdisk
 #
-GPTFDISK_VER = 1.0.3
+GPTFDISK_VER = 1.0.4
 GPTFDISK_SOURCE = gptfdisk-$(GPTFDISK_VER).tar.gz
-GPTFDISK_PATCH = gptfdisk-1.0.3.patch
 
 $(ARCHIVE)/$(GPTFDISK_SOURCE):
 	$(WGET) https://sourceforge.net/projects/gptfdisk/files/gptfdisk/$(GPTFDISK_VER)/$(GPTFDISK_SOURCE)
 
-$(D)/gptfdisk: $(D)/bootstrap $(D)/util_linux $(D)/ncurses $(D)/libpopt $(ARCHIVE)/$(GPTFDISK_SOURCE)
+$(D)/gptfdisk: $(D)/bootstrap $(D)/e2fsprogs $(D)/ncurses $(D)/libpopt $(ARCHIVE)/$(GPTFDISK_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/gptfdisk-$(GPTFDISK_VER)
 	$(UNTAR)/$(GPTFDISK_SOURCE)
 	set -e; cd $(BUILD_TMP)/gptfdisk-$(GPTFDISK_VER); \
-		$(call apply_patches,$(GPTFDISK_PATCH)); \
 		$(BUILDENV) \
 		$(MAKE) sgdisk; \
 		install -m755 sgdisk $(TARGET_DIR)/usr/sbin/sgdisk
