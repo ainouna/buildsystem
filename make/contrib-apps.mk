@@ -1312,7 +1312,7 @@ $(D)/procps_ng: $(D)/bootstrap $(D)/ncurses $(ARCHIVE)/$(PROCPS_NG_SOURCE)
 #
 # htop
 #
-HTOP_VER = 2.1.0
+HTOP_VER = 2.2.0
 HTOP_SOURCE = htop-$(HTOP_VER).tar.gz
 HTOP_PATCH = htop-$(HTOP_VER).patch
 
