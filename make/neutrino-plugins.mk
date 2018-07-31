@@ -75,7 +75,7 @@ $(D)/neutrino-mp-plugin.config.status: $(D)/bootstrap
 	$(SILENT)rm -rf $(NP_OBJDIR)
 	$(SILENT)test -d $(NP_OBJDIR) || mkdir -p $(NP_OBJDIR)
 	$(SILENT)cd $(NP_OBJDIR); \
-		$(SOURCE_DIR)/neutrino-mp-plugins/autogen.sh && automake --add-missing; \
+		$(SOURCE_DIR)/neutrino-mp-plugins/autogen.sh $(SILENT_OPT) && automake --add-missing $(SILENT_OPT); \
 		$(BUILDENV) \
 		$(SOURCE_DIR)/neutrino-mp-plugins/configure $(SILENT_OPT) \
 			--host=$(TARGET) \
