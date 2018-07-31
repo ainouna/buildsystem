@@ -1720,6 +1720,9 @@ FFMPEG_DEPS = $(D)/libxml2 $(D)/librtmpdump
 FFMPEG_CONF_OPTS  = --enable-librtmp
 ifeq ($(FFMPEG_EXPERIMENTAL), 1)
 FFMPEG_CONF_OPTS  += --enable-libxml2
+FFMPEG_CONF_OPTS  += --disable-x86asm
+else
+FFMPEG_CONF_OPTS  += --disable-yasm
 endif
 FFMPRG_EXTRA_CFLAGS = -I$(TARGET_DIR)/usr/include/libxml2
 
@@ -1764,7 +1767,6 @@ $(D)/ffmpeg: $(D)/bootstrap $(D)/openssl $(D)/bzip2 $(D)/freetype $(D)/alsa_lib 
 			--disable-armv6t2 \
 			--disable-vfp \
 			--disable-inline-asm \
-			--disable-yasm \
 			--disable-mips32r2 \
 			--disable-mipsdsp \
 			--disable-mipsdspr2 \
