@@ -1031,7 +1031,6 @@ $(D)/dbus: $(D)/bootstrap $(D)/expat $(ARCHIVE)/$(DBUS_SOURCE)
 			--localstatedir=/var \
 			--with-console-auth-dir=/run/console/ \
 			--without-systemdsystemunitdir \
-			--enable-abstract-sockets \
 			--disable-systemd \
 			--disable-static \
 		; \
@@ -1100,6 +1099,7 @@ $(D)/avahi: $(D)/bootstrap $(D)/expat $(D)/libdaemon $(D)/dbus $(ARCHIVE)/$(AVAH
 		; \
 		$(MAKE) all; \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
+	$(SILENT)cp $(BUILD_TMP)/avahi-$(AVAHI_VER)/avahi-daemon/avahi-daemon $(TARGET_DIR)/etc/init.d
 	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/avahi-core.pc
 	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/avahi-client.pc
 	$(REWRITE_LIBTOOL)/libavahi-common.la
