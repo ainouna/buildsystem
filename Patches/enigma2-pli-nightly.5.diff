@@ -4329,6 +4329,62 @@ diff -Nur '--exclude-from=diff-exclude' enigma2.org/lib/python/Components/Harddi
  		if 'Writing inode tables:' in data:
  			self.fsck_state = 'inode'
  		elif 'Creating journal' in data:
+--- enigma2.org/lib/python/Components/Network.py
++++ enigma2/lib/python/Components/Network.py
+@@ -63,7 +63,7 @@
+ 	def getAddrInet(self, iface, callback):
+ 		if not self.Console:
+ 			self.Console = Console()
+-		cmd = "ip -o addr show dev " + iface
++		cmd = "ip addr show dev " + iface
+ 		self.Console.ePopen(cmd, self.IPaddrFinished, [iface,callback])
+ 
+ 	def IPaddrFinished(self, result, retval, extra_args):
+@@ -77,10 +77,10 @@
+ 		ipPattern = re.compile(ipRegexp)
+ 		netmaskLinePattern = re.compile('/' + netRegexp)
+ 		netmaskPattern = re.compile(netRegexp)
+-		bcastLinePattern = re.compile(' brd ' + ipRegexp)
++		bcastLinePattern = re.compile('brd ' + ipRegexp)
+ 		upPattern = re.compile('UP')
+ 		macPattern = re.compile(macRegexp)
+-		macLinePattern = re.compile('link/ether ' + macRegexp)
++		macLinePattern = re.compile(macRegexp)
+ 
+ 		for line in result.splitlines():
+ 			split = line.strip().split(' ',2)
+@@ -91,19 +91,20 @@
+ 					data['up'] = True
+ 					if iface is not 'lo':
+ 						self.configuredInterfaces.append(iface)
++			if (split[0] == 'link/ether'):
++				mac = self.regExpMatch(macPattern, self.regExpMatch(macLinePattern, split[1]))
+ 				if mac is not None:
+ 					data['mac'] = mac
+-			if (split[1] == iface):
+-				if re.search(globalIPpattern, split[2]):
+-					ip = self.regExpMatch(ipPattern, self.regExpMatch(ipLinePattern, split[2]))
+-					netmask = self.calc_netmask(self.regExpMatch(netmaskPattern, self.regExpMatch(netmaskLinePattern, split[2])))
+-					bcast = self.regExpMatch(ipPattern, self.regExpMatch(bcastLinePattern, split[2]))
+-					if ip is not None:
+-						data['ip'] = self.convertIP(ip)
+-					if netmask is not None:
+-						data['netmask'] = self.convertIP(netmask)
+-					if bcast is not None:
+-						data['bcast'] = self.convertIP(bcast)
++			if (split[0] == 'inet'):
++				ip = self.regExpMatch(ipPattern, self.regExpMatch(ipLinePattern, split[1]))
++				netmask = self.calc_netmask(self.regExpMatch(netmaskPattern, self.regExpMatch(netmaskLinePattern, split[1])))
++				bcast = self.regExpMatch(ipPattern, self.regExpMatch(bcastLinePattern, split[2]))
++				if ip is not None:
++					data['ip'] = self.convertIP(ip)
++				if netmask is not None:
++					data['netmask'] = self.convertIP(netmask)
++				if bcast is not None:
++					data['bcast'] = self.convertIP(bcast)
+ 
+ 		if not data.has_key('ip'):
+ 			data['dhcp'] = True
 diff -Nur '--exclude-from=diff-exclude' enigma2.org/lib/python/Components/NimManager.py enigma2/lib/python/Components/NimManager.py
 --- enigma2.org/lib/python/Components/NimManager.py	2015-08-07 17:31:49.773972686 +0200
 +++ enigma2/lib/python/Components/NimManager.py	2015-08-19 23:14:08.347487371 +0200
