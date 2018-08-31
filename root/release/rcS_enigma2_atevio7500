@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 170422.1
+#Version 180831.1
 
 echo "Fortis HS8200 Enigma2"
 
@@ -19,7 +19,7 @@ if [ -e /var/etc/.firstboot ]; then
    touch /dev/.devfsd
 else
    echo "LOAD 10" > /dev/vfd
-   echo "[rcS] LOAD 10"
+   echo "[rcS] Start (LOAD 10)"
 fi
 
 /etc/init.d/mountvirtfs start
@@ -115,7 +115,8 @@ insmod $MODDIR/avl2108.ko
 echo "[rcS] Init CI & cardreader"
 insmod $MODDIR/starci.ko
 insmod $MODDIR/pti.ko waitMS=20 videoMem=4096
-if [ $?=='2' ]; then
+if [ ! $?=='2' ]; then
+   rmmod $MODDIR/pti.ko
    insmod $MODDIR/pti.ko
    echo "[rcS] Simple pti"
 else
