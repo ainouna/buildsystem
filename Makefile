@@ -164,6 +164,11 @@ update:
 		else \
 			git pull; \
 		fi; \
+		if test -d ~/pti_np; then \
+			mkdir pti_np; \
+			cp -rf ~/pti_np/* ./pti_np; \
+			cd ..; \
+		fi; \
 	fi
 	@echo;
 	@if test -d $(APPS_DIR); then \
