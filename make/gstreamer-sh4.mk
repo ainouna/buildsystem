@@ -1,11 +1,11 @@
 #
 # gstreamer
 #
-GSTREAMER_VER = 1.11.1
+GSTREAMER_VER = 1.14.2
 GSTREAMER_SOURCE = gstreamer-$(GSTREAMER_VER).tar.xz
 GSTREAMER_PATCH  = gstreamer-$(GSTREAMER_VER)-fix-crash-with-gst-inspect.patch
 GSTREAMER_PATCH += gstreamer-$(GSTREAMER_VER)-revert-use-new-gst-adapter-get-buffer.patch
-GSTREAMER_PATCH += gstreamer-$(GSTREAMER_VER)-Don-t-use-deprecated-g_object_new.patch
+#GSTREAMER_PATCH += gstreamer-$(GSTREAMER_VER)-Don-t-use-deprecated-g_object_new.patch
 
 $(ARCHIVE)/$(GSTREAMER_SOURCE):
 	$(WGET) https://gstreamer.freedesktop.org/src/gstreamer/$(GSTREAMER_SOURCE)
@@ -199,7 +199,6 @@ $(D)/gst_plugins_bad: $(D)/bootstrap $(D)/gstreamer $(D)/gst_plugins_base $(ARCH
 			--disable-apple_media \
 			--disable-avc \
 			--disable-chromaprint \
-			--disable-cocoa \
 			--disable-daala \
 			--disable-dc1394 \
 			--disable-direct3d \
@@ -241,7 +240,6 @@ $(D)/gst_plugins_bad: $(D)/bootstrap $(D)/gstreamer $(D)/gst_plugins_base $(ARCH
 		$(REWRITE_LIBTOOL_NQ)/gstreamer-1.0/$$i; done
 	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gstreamer-codecparsers-1.0.pc
 	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gstreamer-bad-audio-1.0.pc
-	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gstreamer-bad-base-1.0.pc
 	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gstreamer-bad-video-1.0.pc
 	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gstreamer-insertbin-1.0.pc
 	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gstreamer-mpegts-1.0.pc
@@ -251,7 +249,6 @@ $(D)/gst_plugins_bad: $(D)/bootstrap $(D)/gstreamer $(D)/gst_plugins_base $(ARCH
 	$(REWRITE_LIBTOOL)/libgstcodecparsers-1.0.la
 	$(REWRITE_LIBTOOL)/libgstphotography-1.0.la
 	$(REWRITE_LIBTOOL)/libgstadaptivedemux-1.0.la
-	$(REWRITE_LIBTOOL)/libgstbadbase-1.0.la
 	$(REWRITE_LIBTOOL)/libgstbadaudio-1.0.la
 	$(REWRITE_LIBTOOL)/libgstbadvideo-1.0.la
 	$(REWRITE_LIBTOOL)/libgstinsertbin-1.0.la
@@ -287,7 +284,6 @@ $(D)/gst_plugins_ugly: $(D)/bootstrap $(D)/gstreamer $(D)/gst_plugins_base $(ARC
 			--disable-amrnb \
 			--disable-amrwb \
 			--disable-sidplay \
-			--disable-twolame \
 			--disable-debug \
 			--disable-gtk-doc \
 			--disable-gtk-doc-html \
@@ -393,7 +389,7 @@ $(D)/gst_gmediarender: $(D)/bootstrap $(D)/gst_plugins_dvbmediasink $(D)/libupnp
 #
 # orc
 #
-ORC_VER = 0.4.24
+ORC_VER = 0.4.28
 ORC_SOURCE = orc-$(ORC_VER).tar.xz
 ORC_PATCH =
 
@@ -423,7 +419,7 @@ $(D)/orc: $(D)/bootstrap $(ARCHIVE)/$(ORC_SOURCE)
 #
 # libdca
 #
-LIBDCA_VER = 0.0.5
+LIBDCA_VER = 0.0.6
 LIBDCA_SOURCE = libdca-$(LIBDCA_VER).tar.bz2
 LIBDCA_PATCH =
 
@@ -462,7 +458,7 @@ $(D)/gst_plugin_subsink: $(D)/bootstrap $(D)/gstreamer $(D)/gst_plugins_base $(D
 		then cd $(ARCHIVE)/gstreamer$(GST_PLUGIN_SUBSINK_VER)-plugin-subsink.git; git pull; \
 		else cd $(ARCHIVE); git clone git://github.com/christophecvr/gstreamer$(GST_PLUGIN_SUBSINK_VER)-plugin-subsink.git gstreamer$(GST_PLUGIN_SUBSINK_VER)-plugin-subsink.git; \
 		fi
-	cp -ra $(ARCHIVE)/gstreamer$(GST_PLUGIN_SUBSINK_VER)-plugin-subsink.git $(BUILD_TMP)/gstreamer$(GST_PLUGIN_SUBSINK_VER)-plugin-subsink
+	$(SILENT)cp -ra $(ARCHIVE)/gstreamer$(GST_PLUGIN_SUBSINK_VER)-plugin-subsink.git $(BUILD_TMP)/gstreamer$(GST_PLUGIN_SUBSINK_VER)-plugin-subsink
 	$(SET) -e; cd $(BUILD_TMP)/gstreamer$(GST_PLUGIN_SUBSINK_VER)-plugin-subsink; \
 		$(call apply_patches,$(GST_PLUGIN_SUBSINK_PATCH)); \
 		aclocal --force -I m4; \
@@ -493,7 +489,7 @@ $(D)/gst_plugins_dvbmediasink: $(D)/bootstrap $(D)/gstreamer $(D)/gst_plugins_ba
 		then cd $(ARCHIVE)/gstreamer$(GST_PLUGINS_DVBMEDIASINK_VER)-plugin-multibox-dvbmediasink.git; git pull; \
 		else cd $(ARCHIVE); git clone -b experimental git://github.com/christophecvr/gstreamer$(GST_PLUGINS_DVBMEDIASINK_VER)-plugin-multibox-dvbmediasink.git gstreamer$(GST_PLUGINS_DVBMEDIASINK_VER)-plugin-multibox-dvbmediasink.git; \
 		fi
-	cp -ra $(ARCHIVE)/gstreamer$(GST_PLUGINS_DVBMEDIASINK_VER)-plugin-multibox-dvbmediasink.git $(BUILD_TMP)/gstreamer$(GST_PLUGINS_DVBMEDIASINK_VER)-plugin-multibox-dvbmediasink
+	$(SILENT)cp -ra $(ARCHIVE)/gstreamer$(GST_PLUGINS_DVBMEDIASINK_VER)-plugin-multibox-dvbmediasink.git $(BUILD_TMP)/gstreamer$(GST_PLUGINS_DVBMEDIASINK_VER)-plugin-multibox-dvbmediasink
 	$(SET) -e; cd $(BUILD_TMP)/gstreamer$(GST_PLUGINS_DVBMEDIASINK_VER)-plugin-multibox-dvbmediasink; \
 		$(call apply_patches,$(GST_PLUGINS_DVBMEDIASINK_PATCH)); \
 		aclocal --force -I m4; \

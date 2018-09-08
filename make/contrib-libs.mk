@@ -2106,7 +2106,7 @@ $(D)/sqlite: $(D)/bootstrap $(ARCHIVE)/$(SQLITE_SOURCE)
 #
 # libsoup
 #
-LIBSOUP_VER_MAJOR = 2.50
+LIBSOUP_VER_MAJOR = 2.64
 LIBSOUP_VER_MINOR = 0
 LIBSOUP_VER = $(LIBSOUP_VER_MAJOR).$(LIBSOUP_VER_MINOR)
 LIBSOUP_SOURCE = libsoup-$(LIBSOUP_VER).tar.xz
@@ -2114,7 +2114,7 @@ LIBSOUP_SOURCE = libsoup-$(LIBSOUP_VER).tar.xz
 $(ARCHIVE)/$(LIBSOUP_SOURCE):
 	$(WGET) https://download.gnome.org/sources/libsoup/$(LIBSOUP_VER_MAJOR)/$(LIBSOUP_SOURCE)
 
-$(D)/libsoup: $(D)/bootstrap $(D)/sqlite $(D)/libxml2 $(D)/libglib2 $(ARCHIVE)/$(LIBSOUP_SOURCE)
+$(D)/libsoup: $(D)/bootstrap $(D)/sqlite $(D)/libxml2 $(D)/libglib2 $(D)/libpsl $(ARCHIVE)/$(LIBSOUP_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/libsoup-$(LIBSOUP_VER)
 	$(UNTAR)/$(LIBSOUP_SOURCE)
@@ -2133,6 +2133,38 @@ $(D)/libsoup: $(D)/bootstrap $(D)/sqlite $(D)/libxml2 $(D)/libglib2 $(ARCHIVE)/$
 	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libsoup-2.4.pc
 	$(REWRITE_LIBTOOL)/libsoup-2.4.la
 	$(REMOVE)/libsoup-$(LIBSOUP_VER)
+	$(TOUCH)
+
+#
+# libpsl
+#
+LIBPSL_VER_MAJOR = 0.20
+LIBPSL_VER_MINOR = 2
+LIBPSL_VER = $(LIBPSL_VER_MAJOR).$(LIBPSL_VER_MINOR)
+LIBPSL_PATCH =
+
+$(D)/libpsl: $(D)/bootstrap $(D)/host_python
+	$(START_BUILD)
+	$(REMOVE)/libpsl
+	$(SET) -e; if [ -d $(ARCHIVE)/libpsl.git ]; \
+		then cd $(ARCHIVE)/libpsl.git; git pull; \
+		else cd $(ARCHIVE); git clone git://github.com/rockdaboot/libpsl.git libpsl.git; \
+		fi
+	$(SILENT)cp -ra $(ARCHIVE)/libpsl.git $(BUILD_TMP)/libpsl
+	$(SET) -e; cd $(BUILD_TMP)/libpsl; \
+		$(call apply_patches,$(LIBPSL_PATCH)); \
+		$(BUILDENV) \
+		$(CONFIGURE) \
+			--build=$(BUILD) \
+			--host=$(TARGET) \
+			--prefix=/usr \
+			--enable-man=no \
+		; \
+		$(MAKE) all; \
+		$(MAKE) install DESTDIR=$(TARGET_DIR)
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libpsl.pc
+	$(REWRITE_LIBTOOL)/libpsl.la
+	$(REMOVE)/libpsl
 	$(TOUCH)
 
 #
