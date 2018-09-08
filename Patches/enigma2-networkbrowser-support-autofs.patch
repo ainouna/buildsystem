@@ -63,22 +63,22 @@
  
  def rm_rf(d): # only for removing the ipkg stuff from /media/hdd subdirs
  	try:
-@@ -24,14 +24,9 @@
+@@ -24,14 +24,11 @@
  	"""Manages Mounts declared in a XML-Document."""
  	def __init__(self):
  		self.automounts = {}
 -		self.restartConsole = Console()
--		self.MountConsole = Console()
+ 		self.MountConsole = Console()
 -		self.removeConsole = Console()
  		self.activeMountsCounter = 0
  		# Initialize Timer
  		self.callback = None
--		self.timer = eTimer()
+		self.timer = eTimer()
 -		self.timer.callback.append(self.mountTimeout)
  
  		self.getAutoMountPoints()
  
-@@ -45,7 +40,7 @@
+@@ -45,7 +42,7 @@
  			return
  
  		try:
@@ -87,7 +87,7 @@
  		except Exception, e:
  			print "[MountManager] Error reading /etc/enigma2/automounts.xml:", e
  			try:
-@@ -61,54 +56,67 @@
+@@ -61,54 +58,67 @@
  			Len = len(definitions)
  			return Len > 0 and definitions[Len-1].text or default
  		# Config is stored in "mountmanager" element
@@ -190,7 +190,7 @@
  
  	def sanitizeOptions(self, origOptions, cifs=False):
  		options = origOptions.strip()
-@@ -127,75 +135,18 @@
+@@ -127,75 +137,18 @@
  
  	def CheckMountPoint(self, item, callback):
  		data = self.automounts[item]
@@ -273,7 +273,7 @@
  		if self.checkList:
  			# Go to next item in list...
  			self.CheckMountPoint(self.checkList.pop(), callback)
-@@ -226,13 +177,6 @@
+@@ -226,13 +179,6 @@
  			except Exception, ex:
  				print "[AutoMount.py] Failed to create ", movie, "Error:", ex
  
@@ -287,7 +287,7 @@
  
  	def getMountsList(self):
  		return self.automounts
-@@ -249,30 +193,31 @@
+@@ -249,30 +195,31 @@
  
  	def writeMountsConfig(self):
  		# Generate List in RAM
@@ -340,7 +340,7 @@
  
  		# Try Saving to Flash
  		try:
-@@ -280,9 +225,6 @@
+@@ -280,9 +227,6 @@
  		except Exception, e:
  			print "[AutoMount.py] Error Saving Mounts List:", e
  
@@ -350,7 +350,7 @@
  
  	def removeMount(self, mountpoint, callback = None):
  		print "[AutoMount.py] removing mount: ",mountpoint
-@@ -292,28 +234,6 @@
+@@ -292,28 +238,6 @@
  				self.newautomounts[sharename] = sharedata
  		self.automounts.clear()
  		self.automounts = self.newautomounts
