@@ -223,7 +223,7 @@ BOOTSTRAP += $(D)/host_pkgconfig
 BOOTSTRAP += $(D)/host_module_init_tools
 BOOTSTRAP += $(D)/host_mtd_utils
 BOOTSTRAP += $(D)/host_mkcramfs
-BOOTSTRAP += $(D)/host_mksquashfs
+#BOOTSTRAP += $(D)/host_mksquashfs
 ifeq ($(BOXARCH), arm)
 BOOTSTRAP += $(D)/host_resize2fs
 BOOTSTRAP += $(D)/cortex_strings
@@ -278,15 +278,20 @@ $(DRIVER_DIR):
 	@echo '===================================================================='
 	@echo '      Cloning $(GIT_NAME_DRIVER)-driver git repository'
 	@echo '===================================================================='
-	if [ ! -e $(DRIVER_DIR)/.git ]; then \
+	@if [ ! -e $(DRIVER_DIR)/.git ]; then \
 		git clone $(SILENT_CONFIGURE) $(GITHUB)/$(GIT_NAME_DRIVER)/driver.git driver; \
+	fi; \
+	if test -d ~/pti_np; then \
+		mkdir pti_np; \
+		cp -rf ~/pti_np/* ./pti_np; \
+		cd ..; \
 	fi
-
+	
 $(APPS_DIR):
 	@echo '===================================================================='
 	@echo '      Cloning $(GIT_NAME_APPS)-apps git repository'
 	@echo '===================================================================='
-	if [ ! -e $(APPS_DIR)/.git ]; then \
+	@if [ ! -e $(APPS_DIR)/.git ]; then \
 		git clone $(SILENT_CONFIGURE) $(GITHUB)/$(GIT_NAME_APPS)/apps.git apps; \
 	fi
 
@@ -294,7 +299,7 @@ $(FLASH_DIR):
 	@echo '===================================================================='
 	@echo '      Cloning $(GIT_NAME_FLASH)-flash git repository'
 	@echo '===================================================================='
-	if [ ! -e $(FLASH_DIR)/.git ]; then \
+	@if [ ! -e $(FLASH_DIR)/.git ]; then \
 		git clone $(SILENT_CONFIGURE) $(GITHUB)/$(GIT_NAME_FLASH)/flash.git flash; \
 	fi
 	@echo ''

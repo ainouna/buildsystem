@@ -213,10 +213,12 @@ define apply_patches
             fi; \
         fi; \
     done; \
-    if [ $(PKG_VER_HELPER) == "AA" ]; then \
-        echo -e "Patching $(TERM_GREEN_BOLD)$(PKG_NAME)$(TERM_NORMAL) completed."; \
-    else \
-        echo -e "Patching $(TERM_GREEN_BOLD)$(PKG_NAME) $(PKG_VER)$(TERM_NORMAL) completed."; \
+    if [ '$(1)' ]; then \
+        if [ $(PKG_VER_HELPER) == "AA" ]; then \
+            echo -e "Patching $(TERM_GREEN_BOLD)$(PKG_NAME)$(TERM_NORMAL) completed."; \
+        else \
+            echo -e "Patching $(TERM_GREEN_BOLD)$(PKG_NAME) $(PKG_VER)$(TERM_NORMAL) completed."; \
+        fi; \
     fi; \
     echo
 endef
