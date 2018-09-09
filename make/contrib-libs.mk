@@ -2124,6 +2124,7 @@ $(D)/libsoup: $(D)/bootstrap $(D)/sqlite $(D)/libxml2 $(D)/libglib2 $(D)/libpsl 
 			--datarootdir=/.remove \
 			--disable-more-warnings \
 			--without-gnome \
+			--without-gssapi \
 			--disable-gtk-doc \
 			--disable-gtk-doc-html \
 			--disable-gtk-doc-pdf \
