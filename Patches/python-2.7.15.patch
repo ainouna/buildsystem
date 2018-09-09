@@ -11,7 +11,7 @@
  AC_INIT(python, PYTHON_VERSION, https://bugs.python.org/)
 --- a/configure
 +++ b/configure
-@@ -14927,7 +14927,7 @@
+@@ -15189,7 +15189,7 @@
  $as_echo "$ac_cv_have_long_long_format" >&6; }
  fi
  
@@ -180,7 +180,7 @@
 +    __enableReadlineSupport()
 --- a/Modules/_ctypes/_ctypes.c
 +++ b/Modules/_ctypes/_ctypes.c
-@@ -651,7 +651,13 @@
+@@ -722,7 +722,13 @@
                       "symbol '%s' not found",
                       name);
  #else
@@ -195,7 +195,7 @@
  #endif
          return NULL;
      }
-@@ -3410,7 +3416,13 @@
+@@ -3508,7 +3514,13 @@
                       "function '%s' not found",
                       name);
  #else
@@ -500,7 +500,7 @@
          else:
              missing.append('bsddb185')
  
-@@ -1547,7 +1610,7 @@
+@@ -1542,7 +1605,7 @@
                  missing.append('_codecs_%s' % loc)
  
          # Dynamic loading module
@@ -509,7 +509,7 @@
              # This requires sizeof(int) == sizeof(long) == sizeof(char*)
              dl_inc = find_file('dlfcn.h', [], inc_dirs)
              if (dl_inc is not None) and (host_platform not in ['atheos']):
-@@ -1634,8 +1697,9 @@
+@@ -1629,8 +1692,9 @@
          if host_platform == 'sunos5':
              # SunOS specific modules
              exts.append( Extension('sunaudiodev', ['sunaudiodev.c']) )
@@ -521,7 +521,7 @@
  
          if host_platform == 'darwin':
              # _scproxy
-@@ -1748,8 +1812,10 @@
+@@ -1743,8 +1807,10 @@
          # Call the method for detecting whether _tkinter can be compiled
          self.detect_tkinter(inc_dirs, lib_dirs)
  
@@ -534,7 +534,7 @@
  
  ##         # Uncomment these lines if you want to play with xxmodule.c
  ##         ext = Extension('xx', ['xxmodule.c'])
-@@ -1935,22 +2001,6 @@
+@@ -1930,22 +1996,6 @@
              if dir not in include_dirs:
                  include_dirs.append(dir)
  
@@ -557,7 +557,7 @@
          # If Cygwin, then verify that X is installed before proceeding
          if host_platform == 'cygwin':
              x11_inc = find_file('X11/Xlib.h', [], include_dirs)
-@@ -2048,8 +2098,15 @@
+@@ -2043,8 +2093,15 @@
  
                  # Pass empty CFLAGS because we'll just append the resulting
                  # CFLAGS to Python's; -g or -O2 is to be avoided.
