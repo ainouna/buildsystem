@@ -282,9 +282,8 @@ $(DRIVER_DIR):
 		git clone $(SILENT_CONFIGURE) $(GITHUB)/$(GIT_NAME_DRIVER)/driver.git driver; \
 	fi; \
 	if test -d ~/pti_np; then \
-		mkdir pti_np; \
-		cp -rf ~/pti_np/* ./pti_np; \
-		cd ..; \
+		mkdir $(DRIVER_DIR)/pti_np; \
+		cp -rf ~/pti_np/* $(DRIVER_DIR)/pti_np; \
 	fi
 	
 $(APPS_DIR):
