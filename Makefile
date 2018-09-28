@@ -164,7 +164,8 @@ update:
 		else \
 			git pull; \
 		fi; \
-		if test -d ~/pti_np; then \
+		if [ -d ~/pti_np ] && [ ! -d ./pti_np ]; then \
+			echo "Installing pti_np"; \
 			mkdir pti_np; \
 			cp -rf ~/pti_np/* ./pti_np; \
 			cd ..; \
