@@ -1436,7 +1436,7 @@ $(D)/libdreamdvd: $(D)/bootstrap $(D)/libdvdnav
 		then cd $(ARCHIVE)/libdreamdvd.git; git pull; \
 		else cd $(ARCHIVE); git clone git://github.com/mirakels/libdreamdvd.git libdreamdvd.git; \
 		fi
-	cp -ra $(ARCHIVE)/libdreamdvd.git $(BUILD_TMP)/libdreamdvd
+	$(SILENT)cp -ra $(ARCHIVE)/libdreamdvd.git $(BUILD_TMP)/libdreamdvd
 	$(SET) -e; cd $(BUILD_TMP)/libdreamdvd; \
 		$(call apply_patches,$(LIBDREAMDVD_PATCH)); \
 		$(BUILDENV) \
