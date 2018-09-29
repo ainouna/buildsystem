@@ -1007,6 +1007,8 @@ $(D)/libcurl: $(D)/bootstrap $(D)/zlib $(D)/openssl $(D)/ca-bundle $(ARCHIVE)/$(
 			--disable-pop3 \
 			--disable-smtp \
 			--enable-shared \
+			--enable-optimize \
+			--disable-verbose \
 			--disable-ldap \
 			--without-libidn \
 			--without-libidn2 \
