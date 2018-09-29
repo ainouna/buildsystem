@@ -873,7 +873,7 @@ endif
 	$(SILENT)rm -f $(RELEASE_DIR)/bin/libstb-hal-test
 	$(SILENT)rm -f $(RELEASE_DIR)/sbin/ldconfig
 	$(SILENT)rm -f $(RELEASE_DIR)/usr/bin/pic2m2v
-	rm -f $(RELEASE_DIR)/usr/bin/{gdbus-codegen,glib-*,gtester-report}
+	$(SILENT)rm -f $(RELEASE_DIR)/usr/bin/{gdbus-codegen,glib-*,gtester-report}
 ifeq ($(BOXARCH), arm)
 	$(SILENT)rm -rf $(RELEASE_DIR)/dev.static
 	$(SILENT)rm -rf $(RELEASE_DIR)/ram

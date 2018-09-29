@@ -265,24 +265,24 @@
  		};
  		
  		void ExitRun(int retcode = SHUTDOWN);
---- neutrino-hd2.org/src/neutrino.cpp
-+++ neutrino-hd2.git/nhd2-exp/src/neutrino.cpp
-@@ -464,11 +464,11 @@
- 	}
- 
- 	// video
--#ifdef __sh__	
--	g_settings.video_Mode = configfile.getInt32("video_Mode", VIDEO_STD_PAL);
--#else
-+//#ifdef __sh__	
-+//	g_settings.video_Mode = configfile.getInt32("video_Mode", VIDEO_STD_PAL);
-+//#else
- 	g_settings.video_Mode = configfile.getInt32("video_Mode", VIDEO_STD_720P50);
--#endif
-+//#endif
- 	prev_video_Mode = g_settings.video_Mode;
- 	
- 	//analog mode
+#--- neutrino-hd2.org/src/neutrino.cpp
+#+++ neutrino-hd2.git/nhd2-exp/src/neutrino.cpp
+#@@ -464,11 +464,11 @@
+# 	}
+# 
+# 	// video
+#-#ifdef __sh__	
+#-	g_settings.video_Mode = configfile.getInt32("video_Mode", VIDEO_STD_PAL);
+#-#else
+#+//#ifdef __sh__	
+#+//	g_settings.video_Mode = configfile.getInt32("video_Mode", VIDEO_STD_PAL);
+#+//#else
+# 	g_settings.video_Mode = configfile.getInt32("video_Mode", VIDEO_STD_720P50);
+#-#endif
+#+//#endif
+# 	prev_video_Mode = g_settings.video_Mode;
+# 	
+# 	//analog mode
 --- nhd2-exp.org/lib/libeplayer3/container/container_ffmpeg.c
 +++ nhd2-exp/lib/libeplayer3/container/container_ffmpeg.c
 @@ -146,75 +146,75 @@

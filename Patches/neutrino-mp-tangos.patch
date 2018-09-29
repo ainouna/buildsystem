@@ -7,7 +7,7 @@
 -AS_HELP_STRING([], [valid for duckbox: ufs910, ufs912, ufs913, ufs922, atevio7500, fortis_hdbox, octagon1008, hs7110, hs7810a, hs7119, hs7819, dp7000, cuberevo, cuberevo_mini, cuberevo_mini2, cuberevo_250hd, cuberevo_2000hd, cuberevo_3000hd, ipbox9900, ipbox99, ipbox55, arivalink200, tf7700, hl101])
 +AS_HELP_STRING([], [valid for duckbox: ufs910, ufs912, ufs913, ufs922, atevio7500, fortis_hdbox, octagon1008, hs7110, hs7420, hs7810a, hs7119, hs7429, hs7819, cuberevo, cuberevo_mini, cuberevo_mini2, cuberevo_250hd, cuberevo_2000hd, cuberevo_3000hd, ipbox9900, ipbox99, ipbox55, arivalink200, tf7700, hl101])
  AS_HELP_STRING([], [valid for spark: spark, spark7162])
- AS_HELP_STRING([], [valid for armbox: hd51])
+ AS_HELP_STRING([], [valid for armbox: hd51, vusolo4k])
  AS_HELP_STRING([], [valid for generic: raspi]),
 @@ -563,8 +563,10 @@
  AM_CONDITIONAL(BOXMODEL_FORTIS_HDBOX, test "$BOXMODEL" = "fortis_hdbox")
@@ -35,31 +35,20 @@
  elif test "$BOXMODEL" = "hs7819"; then
  	AC_DEFINE(BOXMODEL_HS7819, 1, [hs7819])
  elif test "$BOXMODEL" = "dp7000"; then
---- neutrino-mp-tangos.org/src/global.h
-+++ neutrino-mp-tangos/src/global.h
-@@ -56,7 +56,7 @@
- #define LOGODIR		ICONSDIR "/logo"
- #define LOGODIR_VAR	ICONSDIR_VAR "/logo"
- 
--#define FLAGDIR		CONFIGDIR
-+//#define FLAGDIR		CONFIGDIR
- 
- NEUTRINO_CPP  SNeutrinoSettings	g_settings;
- NEUTRINO_CPP  SglobalInfo	g_info;
---- neutrino-mp-tangos.org/src/global.h
-+++ neutrino-mp-tangos/src/global.h
-@@ -56,7 +56,7 @@
- #define LOGODIR		ICONSDIR "/logo"
- #define LOGODIR_VAR	ICONSDIR_VAR "/logo"
- 
--//#define FLAGDIR		CONFIGDIR
-+#define FLAGDIR		CONFIGDIR
- 
- NEUTRINO_CPP  SNeutrinoSettings	g_settings;
- NEUTRINO_CPP  SglobalInfo	g_info;
+#--- neutrino-mp-tangos.org/src/global.h
+#+++ neutrino-mp-tangos/src/global.h
+#@@ -57,7 +57,7 @@
+# #define LOGODIR		ICONSDIR "/logo"
+# #define LOGODIR_VAR	ICONSDIR_VAR "/logo"
+# 
+#-#define FLAGDIR		CONFIGDIR
+#+//#define FLAGDIR		CONFIGDIR
+# 
+# NEUTRINO_CPP  SNeutrinoSettings	g_settings;
+# NEUTRINO_CPP  SglobalInfo	g_info;
 --- neutrino-mp-tangos.org/src/neutrino.cpp
 +++ neutrino-mp-tangos/src/neutrino.cpp
-@@ -4656,6 +4656,9 @@
+@@ -4698,6 +4698,9 @@
  
  		CVFD::getInstance()->Clear();
  		CVFD::getInstance()->setMode(CVFD::MODE_STANDBY);
@@ -69,7 +58,7 @@
  		CVFD::getInstance()->setBacklight(g_settings.backlight_standby);
  
  		InfoClock->enableInfoClock(false);
-@@ -4692,7 +4695,11 @@
+@@ -4734,7 +4737,11 @@
  		// Active standby off
  		powerManager->SetStandby(false, false);
  		CVFD::getInstance()->setMode(CVFD::MODE_TVRADIO);
@@ -913,7 +902,7 @@
  #include <gui/widget/stringinput_ext.h>
  #include <gui/screensetup.h>
  #include <gui/widget/msgbox.h>
-@@ -1410,15 +1410,15 @@
+@@ -1428,15 +1428,15 @@
  #if HAVE_SH4_HARDWARE
  	old3dmode = frameBuffer->get3DMode();
  #endif
@@ -938,7 +927,7 @@
  	pthread_t thrStartHint = 0;
  	if (is_file_player) {
  		showStartingHint = true;
-@@ -1625,14 +1625,14 @@
+@@ -1654,14 +1654,14 @@
  
  	while (playstate >= CMoviePlayerGui::PLAY)
  	{
@@ -961,7 +950,7 @@
  		if (update_lcd || g_settings.movieplayer_display_playtime) {
  			update_lcd = false;
  			updateLcd(g_settings.movieplayer_display_playtime);
-@@ -2214,12 +2214,12 @@
+@@ -2231,12 +2231,12 @@
  	CScreenSetup cSS;
  	cSS.showBorder(CZapit::getInstance()->GetCurrentChannelID());
  #endif
@@ -980,7 +969,7 @@
  	if (iso_file) {
  		iso_file = false;
  		if (umount2(ISO_MOUNT_POINT, MNT_FORCE))
-@@ -2298,10 +2298,10 @@
+@@ -2356,10 +2356,10 @@
  		}
  		if (!movie_info.channelName.empty() || !movie_info.epgTitle.empty())
  			p_movie_info = &movie_info;
@@ -995,7 +984,7 @@
  	}
  
  	if (p_movie_info) {
-@@ -2825,10 +2825,10 @@
+@@ -2879,10 +2879,10 @@
  		tuxtx_pause_subtitle(true);
  		frameBuffer->paintBackground();
  	}
@@ -1010,7 +999,7 @@
  #endif
  }
  
-@@ -2866,9 +2866,9 @@
+@@ -2920,9 +2920,9 @@
  {
  #if HAVE_SH4_HARDWARE
  	printf("[CMoviePlayerGui] %s: %s\n", __FUNCTION__, show ? "Show" : "Not show");
