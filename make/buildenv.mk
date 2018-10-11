@@ -36,7 +36,7 @@ GIT_NAME_APPS        ?= Audioniek
 GIT_NAME_FLASH       ?= Audioniek
 
 TUFSBOX_DIR           = $(BASE_DIR)/tufsbox
-CROSS_BASE            = $(BASE_DIR)/cross/$(BOXARCH)/$(BOXTYPE)
+CROSS_BASE            = $(BASE_DIR)/cross/$(BOXTYPE)
 TARGET_DIR            = $(TUFSBOX_DIR)/cdkroot
 BOOT_DIR              = $(TUFSBOX_DIR)/cdkroot-tftpboot
 CROSS_DIR             = $(TUFSBOX_DIR)/cross
@@ -58,23 +58,13 @@ CCACHE                = /usr/bin/ccache
 
 BUILD                ?= $(shell /usr/share/libtool/config.guess 2>/dev/null || /usr/share/libtool/config/config.guess 2>/dev/null || /usr/share/libtool/build-aux/config.guess 2>/dev/null || /usr/share/misc/config.guess 2>/dev/null)
 
-ifeq ($(BOXARCH), sh4)
 CCACHE_DIR            = $(HOME)/.ccache-bs-sh4
 export CCACHE_DIR
 TARGET               ?= sh4-linux
-BOXARCH              ?= sh4
+#BOXARCH              ?= sh4
 KERNELNAME            = uImage
 TARGET_MARCH_CFLAGS   =
 CORTEX_STRINGS        =
-else
-CCACHE_DIR            = $(HOME)/.ccache-bs-arm
-export CCACHE_DIR
-TARGET               ?= arm-cortex-linux-gnueabihf
-BOXARCH              ?= arm
-KERNELNAME            = zImage
-TARGET_MARCH_CFLAGS   = -march=armv7ve -mtune=cortex-a15 -mfpu=neon-vfpv4 -mfloat-abi=hard
-CORTEX_STRINGS        = -lcortex-strings
-endif
 
 OPTIMIZATIONS        ?= size
 ifeq ($(OPTIMIZATIONS), size)

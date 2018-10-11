@@ -58,9 +58,7 @@ NEUTRINO_PLUGINS += $(D)/neutrino-mp-plugin-xupnpd
 
 NP_OBJDIR = $(BUILD_TMP)/neutrino-mp-plugins
 
-ifeq ($(BOXARCH), sh4)
 EXTRA_CPPFLAGS_MP_PLUGINS = -DMARTII
-endif
 
 $(D)/neutrino-mp-plugin.do_prepare:
 	$(SILENT)rm -rf $(SOURCE_DIR)/neutrino-mp-plugins
@@ -70,9 +68,6 @@ $(D)/neutrino-mp-plugin.do_prepare:
 		else cd $(ARCHIVE); git clone -q https://github.com/Duckbox-Developers/neutrino-mp-plugins.git neutrino-mp-plugins.git; \
 		fi
 	$(SILENT)cp -ra $(ARCHIVE)/neutrino-mp-plugins.git $(SOURCE_DIR)/neutrino-mp-plugins
-ifeq ($(BOXARCH), arm)
-	$(SILENT)sed -i -e 's#shellexec fx2#shellexec stb-startup#g' $(SOURCE_DIR)/neutrino-mp-plugins/Makefile.am
-endif
 	cp -ra $(SOURCE_DIR)/neutrino-mp-plugins $(SOURCE_DIR)/neutrino-mp-plugins.org
 	@touch $@
 

@@ -16,7 +16,6 @@ include make/buildenv.mk
 PARALLEL_JOBS := $(shell echo $$((1 + `getconf _NPROCESSORS_ONLN 2>/dev/null || echo 1`)))
 override MAKE = make $(if $(findstring j,$(filter-out --%,$(MAKEFLAGS))),,-j$(PARALLEL_JOBS)) $(SILENT_OPT)
 
-
 ############################################################################
 #  A print out of environment variables
 #
@@ -40,7 +39,6 @@ printenv:
 	@echo "TARGET_DIR       : $(TARGET_DIR)"
 	@echo "KERNEL_DIR       : $(KERNEL_DIR)"
 	@echo "MAINTAINER       : $(MAINTAINER)"
-	@echo "BOXARCH          : $(BOXARCH)"
 	@echo "BUILD            : $(BUILD)"
 	@echo "TARGET           : $(TARGET)"
 	@echo "BOXTYPE          : $(BOXTYPE)"
@@ -109,17 +107,10 @@ help:
 # define package versions first...
 include make/contrib-libs.mk
 include make/contrib-apps.mk
-ifeq ($(BOXARCH), sh4)
-include make/linux-kernel-sh4.mk
-include make/crosstool-sh4.mk
-include make/driver-sh4.mk
-include make/gstreamer-sh4.mk
-else
-include make/linux-kernel-arm.mk
-include make/crosstool-arm.mk
-include make/driver-arm.mk
-include make/gstreamer-arm.mk
-endif
+include make/linux-kernel.mk
+include make/crosstool.mk
+include make/driver.mk
+include make/gstreamer.mk
 include make/root-etc.mk
 include make/python.mk
 include make/tools.mk

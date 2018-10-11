@@ -3,12 +3,11 @@
 #
 tools-clean:
 	rm -f $(D)/tools-*
-	-$(MAKE) -C $(APPS_DIR)/tools/aio-grab-$(BOXARCH) distclean
+	-$(MAKE) -C $(APPS_DIR)/tools/aio-grab distclean
 	-$(MAKE) -C $(APPS_DIR)/tools/satfind distclean
-	-$(MAKE) -C $(APPS_DIR)/tools/showiframe-$(BOXARCH) distclean
+	-$(MAKE) -C $(APPS_DIR)/tools/showiframe distclean
 	-$(MAKE) -C $(APPS_DIR)/tools/minimon distclean
 	-$(MAKE) -C $(APPS_DIR)/tools/spf_tool distclean
-ifeq ($(BOXARCH), sh4)
 	-$(MAKE) -C $(APPS_DIR)/tools/devinit distclean
 	-$(MAKE) -C $(APPS_DIR)/tools/eplayer3 distclean
 	-$(MAKE) -C $(APPS_DIR)/tools/evremote2 distclean
@@ -33,7 +32,6 @@ endif
 	-$(MAKE) -C $(APPS_DIR)/tools/ustslave distclean
 	-$(MAKE) -C $(APPS_DIR)/tools/vfdctl distclean
 	-$(MAKE) -C $(APPS_DIR)/tools/wait4button distclean
-endif
 ifneq ($(wildcard $(APPS_DIR)/tools/own-tools),)
 	-$(MAKE) -C $(APPS_DIR)/tools/own-tools distclean
 endif
@@ -43,7 +41,7 @@ endif
 #
 $(D)/tools-aio-grab: $(D)/bootstrap $(D)/libpng $(D)/libjpeg
 	$(START_BUILD)
-	$(SET) -e; cd $(APPS_DIR)/tools/aio-grab-$(BOXARCH); \
+	$(SET) -e; cd $(APPS_DIR)/tools/aio-grab; \
 		$(CONFIGURE_TOOLS) CPPFLAGS="$(CPPFLAGS) -I$(DRIVER_DIR)/bpamem" \
 			--prefix= \
 		; \
@@ -186,7 +184,7 @@ $(D)/tools-satfind: $(D)/bootstrap
 #
 $(D)/tools-showiframe: $(D)/bootstrap
 	$(START_BUILD)
-	$(SET) -e; cd $(APPS_DIR)/tools/showiframe-$(BOXARCH); \
+	$(SET) -e; cd $(APPS_DIR)/tools/showiframe; \
 		$(CONFIGURE_TOOLS) \
 			--prefix= \
 		; \
@@ -332,7 +330,6 @@ TOOLS  = $(D)/tools-aio-grab
 TOOLS += $(D)/tools-satfind
 TOOLS += $(D)/tools-showiframe
 #TOOLS += $(D)/tools-minimon
-ifeq ($(BOXARCH), sh4)
 TOOLS += $(D)/tools-devinit
 TOOLS += $(D)/tools-evremote2
 TOOLS += $(D)/tools-fp_control
@@ -358,7 +355,6 @@ TOOLS += $(D)/tools-libeplayer3
 endif
 ifeq ($(MEDIAFW), $(filter $(MEDIAFW), eplayer3))
 TOOLS += $(D)/tools-eplayer3
-endif
 endif
 ifneq ($(wildcard $(APPS_DIR)/tools/own-tools),)
 TOOLS += $(D)/tools-own-tools

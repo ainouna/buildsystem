@@ -32,12 +32,6 @@ endif
 #NEUTRINO_DEPS +=  $(D)/minidlna
 endif
 
-ifeq ($(BOXARCH), arm)
-NEUTRINO_DEPS += $(D)/ntfs_3g
-NEUTRINO_DEPS += $(D)/gptfdisk
-NEUTRINO_DEPS += $(D)/mc
-endif
-
 ifeq ($(IMAGE), neutrino-wlandriver)
 NEUTRINO_DEPS += $(D)/wpa_supplicant $(D)/wireless_tools
 endif
@@ -55,14 +49,8 @@ N_CFLAGS      += $(LOCAL_NEUTRINO_CFLAGS)
 N_CPPFLAGS     = -I$(TARGET_DIR)/usr/include
 N_CPPFLAGS    += -ffunction-sections -fdata-sections
 
-ifeq ($(BOXARCH), arm)
-N_CPPFLAGS    += -I$(CROSS_BASE)/$(TARGET)/sys-root/usr/include
-endif
-
-ifeq ($(BOXARCH), sh4)
 N_CPPFLAGS    += -I$(DRIVER_DIR)/bpamem
 N_CPPFLAGS    += -I$(KERNEL_DIR)/include
-endif
 
 ifeq ($(BOXTYPE), $(filter $(BOXTYPE), spark spark7162))
 N_CPPFLAGS += -I$(DRIVER_DIR)/frontcontroller/aotom_spark
@@ -90,10 +78,6 @@ N_CONFIG_OPTS += --enable-freesatepg
 #N_CONFIG_OPTS += --disable-webif
 #N_CONFIG_OPTS += --disable-upnp
 #N_CONFIG_OPTS += --disable-tangos
-
-ifeq ($(BOXARCH), arm)
-N_CONFIG_OPTS += --enable-reschange
-endif
 
 ifeq ($(FLAVOUR), neutrino-mp-max)
 GIT_URL      = https://bitbucket.org/max_10

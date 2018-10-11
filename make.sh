@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20180218.1
+# Version 20181010.1
 
 ##############################################
 
@@ -83,7 +83,7 @@ echo "KBUILD_VERBOSE=$KBUILD_VERBOSE" > config
 CURDIR=`pwd`
 
 case $1 in
-	[1-9] | 1[0-9] | 2[0-9] | 3[0-7] | 5[0-1]) REPLY=$1;;
+	[1-9] | 1[0-9] | 2[0-9] | 3[0-7]) REPLY=$1;;
 	*)
 		echo "Target receivers:"
 		echo
@@ -121,11 +121,7 @@ case $1 in
 		echo "   36)  Ferguson Ariva @Link 200"
 #		echo "   37)  Pace HDS-7241 (stm 217 only)"
 		echo
-		echo "  arm-based receivers"
-		echo "   50)  Mut@nt HD51"
-		echo "   51)  VU Solo 4k"
-		echo
-		read -p "Select target (1-51)? ";;
+		read -p "Select target (1-36)? ";;
 esac
 
 case "$REPLY" in
@@ -166,8 +162,6 @@ case "$REPLY" in
 	35) BOXARCH="sh4";BOXTYPE="sagemcom88";;
 	36) BOXARCH="sh4";BOXTYPE="arivalink200";;
 	37) BOXARCH="sh4";BOXTYPE="pace7241";;
-	50) BOXARCH="arm";BOXTYPE="hd51";;
-	51) BOXARCH="arm";BOXTYPE="vusolo4k";;
 	 *) BOXARCH="sh4";BOXTYPE="atevio7500";;
 esac
 echo "BOXARCH=$BOXARCH" >> config
@@ -175,65 +169,26 @@ echo "BOXTYPE=$BOXTYPE" >> config
 
 ##############################################
 
-if [ $BOXTYPE == 'hd51' ]; then
-
-		echo -e "\n*** boxmode=1 (Standard) ***"
-		echo -e "+++ Features +++"
-		echo -e "3840x2160p60 10-bit HEVC, 3840x2160p60 8-bit VP9, 1920x1080p60 8-bit AVC,\nMAIN only (no PIP), Limited display usages, UHD only (no SD),\nNo multi-PIP, No transcoding"
-		echo -e "--- Restrictions ---"
-		echo -e "Decoder 0: 3840x2160p60 10-bit HEVC, 3840x2160p60 8-bit VP9, 1920x1080p60 8-bit AVC"
-		echo -e "OSD Grafic 0: 1080p60 32 bit ARGB"
-		echo -e "Display 0 Encode Restrictions: 3840x2160p60 12-bit 4:2:0 (HDMI),\n3840x2160p60 12-bit 4:2:2 (HDMI), 3840x2160p60 8-bit 4:4:4 (HDMI),\n1920x1080p60 (component), Only one display format at a time"
-		echo -e "\n*** boxmode=12 (Experimental) ***"
-		echo -e "+++ Features +++"
-		echo -e "3840x2160p50 10-bit decode for MAIN, 1080p25/50i PIP support,\n UHD display only, No SD display, No transcoding"
-		echo -e "--- Restrictions ---"
-		echo -e "Decoder 0: 3840x2160p50 10-bit HEVC, 3840x2160p50 8-bit VP9,\n1920x1080p50 8-bit AVC/MPEG"
-		echo -e "Decoder 1: 1920x1080p25/50i 10-bit HEVC, 1920x1080p25/50i 8-bit VP9/AVC/MPEG2, 3840x2160p50"
-		echo -e "OSD Graphic 0 (UHD): 1080p50 32-bit ARGB"
-		echo -e "Window 0 (MAIN/UHD): Limited display capabilities, 1080i50 10-bit de-interlacing"
-		echo -e "Window 1 (PIP/UHD): Up to 1/2 x 1/2 screen display, 576i50 de-interlacing"
-		echo -e "Display 0 (UHD) Encode Restrictions: 3840x2160p50"
-
-case $2 in
-	[1-2]) REPLY=$2;;
-	*)	echo -e "\nBoxmode:"
-		echo "   1)   1     (default)"
-		echo "   2)  12 PIP (PIP not supported by neutrino yet)"
-		read -p "Select mode (1-2)? ";;
-esac
-
-case "$REPLY" in
-	1)  HD51_BOXMODE="1";;
-	2)  HD51_BOXMODE="12";;
-	*)  HD51_BOXMODE="1";;
-esac
-echo "HD51_BOXMODE=$HD51_BOXMODE" >> config
+echo -ne "\nChecking the .elf files in $CURDIR/root/boot..."
+set='audio_7100 audio_7105 audio_7109 audio_7111 video_7100 video_7105 video_7109 video_7111'
+ELFMISSING=0
+for i in $set;
+do
+	if [ ! -e $CURDIR/root/boot/$i.elf ]; then
+		echo -e -n "\n\033[31mERROR\033[0m: file $i.elf is missing in ./root/boot"
+		ELFMISSING=1
+	fi
+done
+if [ "$ELFMISSING" == "1" ]; then
+	echo -e "\n"
+	echo "Correct this and retry."
+	echo
+	exit
 fi
-
-##############################################
-
-if [ $BOXARCH == "sh4" ]; then
-	echo -ne "\nChecking the .elf files in $CURDIR/root/boot..."
-	set='audio_7100 audio_7105 audio_7109 audio_7111 video_7100 video_7105 video_7109 video_7111'
-	ELFMISSING=0
-	for i in $set;
-	do
-		if [ ! -e $CURDIR/root/boot/$i.elf ]; then
-			echo -e -n "\n\033[31mERROR\033[0m: file $i.elf is missing in ./root/boot"
-			ELFMISSING=1
-		fi
-	done
-	if [ "$ELFMISSING" == "1" ]; then
-		echo -e "\n"
-		echo "Correct this and retry."
-		echo
-		exit
-	fi
-	echo " [OK]"
-	if [ -e $CURDIR/root/boot/put_your_elf_files_here ]; then
-		rm $CURDIR/root/boot/put_your_elf_files_here
-	fi
+echo " [OK]"
+if [ -e $CURDIR/root/boot/put_your_elf_files_here ]; then
+	rm $CURDIR/root/boot/put_your_elf_files_here
+fi
 
 ##############################################
 	case $2 in
@@ -252,7 +207,6 @@ if [ $BOXARCH == "sh4" ]; then
 		*)  KERNEL_STM="p0217";;
 	esac
 	echo "KERNEL_STM=$KERNEL_STM" >> config
-fi
 
 ##############################################
 
@@ -300,7 +254,6 @@ echo "IMAGE=$IMAGE" >> config
 
 case "$IMAGE" in
 	neutrin*)
-		if [ $BOXARCH == "sh4" ]; then
 			case $5 in
 				[1-6] ) REPLY=$5;;
 				*)	echo -e "\nWhich Neutrino variant do you want to build?"
@@ -325,37 +278,6 @@ case "$IMAGE" in
 				*) PLUGINS_NEUTRINO="No";;
 			esac
 			MEDIAFW="buildinplayer"
-		else
-			case $5 in
-				[1-5]) REPLY=$5;;
-				*)	echo -e "\nWhich Neutrino variant do you want to build?:"
-					echo "   1)  neutrino-mp-ddt"
-					echo "   2)  neutrino-mp-ddt + plugins"
-					echo "   3)  neutrino-mp-max"
-					echo "   4)  neutrino-mp-max + plugins"
-					echo "   5)  neutrino-mp-ni"
-					echo "   6)  neutrino-mp-ni + plugins"
-					echo "   7)  neutrino-mp-tangos"
-					echo "   8)  neutrino-mp-tangos + plugins"
-					echo "   9)  neutrino-hd2"
-					echo "   0)  neutrino-hd2 + plugins"
-					read -p "Select Neutrino variant to build (1-0)? ";;
-			esac
-
-			case "$REPLY" in
-				[1-2]) FLAVOUR="neutrino-mp-ddt";;
-				[3-4]) FLAVOUR="neutrino-mp-max";;
-				[5-6]) FLAVOUR="neutrino-mp-ni";;
-#				[7-8]) FLAVOUR="neutrino-mp-tangos";;
-				[9,0]) FLAVOUR="neutrino-hd2";;
-				*) FLAVOUR="neutrino-mp-tangos";;
-			esac
-
-			case "$REPLY" in
-				[2,4,6,8,0]) PLUGINS_NEUTRINO="Yes";;
-				*) PLUGINS_NEUTRINO="No";;
-			esac
-		fi
 
 		case $6 in
 			[1-2]) REPLY=$6;;

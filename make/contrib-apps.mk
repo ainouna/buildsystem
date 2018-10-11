@@ -12,9 +12,7 @@ BUSYBOX_PATCH += busybox-$(BUSYBOX_VER)-flashcp-small-output.patch
 $(ARCHIVE)/$(BUSYBOX_SOURCE):
 	$(WGET) https://busybox.net/downloads/$(BUSYBOX_SOURCE)
 
-ifeq ($(BOXARCH), $(filter $(BOXARCH), arm))
-BUSYBOX_CONFIG = busybox-$(BUSYBOX_VER).config_arm
-else ifeq ($(BOXTYPE), $(filter $(BOXTYPE), spark spark7162 ufs912 ufs913))
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE), spark spark7162 ufs912 ufs913))
 BUSYBOX_CONFIG = busybox-$(BUSYBOX_VER).config_nandwrite
 else
 BUSYBOX_CONFIG = busybox-$(BUSYBOX_VER).config
@@ -29,8 +27,8 @@ $(D)/busybox: $(D)/bootstrap $(ARCHIVE)/$(BUSYBOX_SOURCE) $(PATCHES)/$(BUSYBOX_C
 		install -m 0644 $(lastword $^) .config; \
 		sed -i -e 's#^CONFIG_PREFIX.*#CONFIG_PREFIX="$(TARGET_DIR)"#' .config; \
 		$(BUILDENV) \
-		$(MAKE) busybox ARCH=$(BOXARCH) CROSS_COMPILE=$(TARGET)- CFLAGS_EXTRA="$(TARGET_CFLAGS)"; \
-		$(MAKE) install ARCH=$(BOXARCH) CROSS_COMPILE=$(TARGET)- CFLAGS_EXTRA="$(TARGET_CFLAGS)" CONFIG_PREFIX=$(TARGET_DIR)
+		$(MAKE) busybox ARCH=sh4 CROSS_COMPILE=$(TARGET)- CFLAGS_EXTRA="$(TARGET_CFLAGS)"; \
+		$(MAKE) install ARCH=sh4 CROSS_COMPILE=$(TARGET)- CFLAGS_EXTRA="$(TARGET_CFLAGS)" CONFIG_PREFIX=$(TARGET_DIR)
 	$(REMOVE)/busybox-$(BUSYBOX_VER)
 	$(TOUCH)
 
@@ -55,8 +53,8 @@ $(D)/busybox_usb: $(D)/bootstrap $(ARCHIVE)/$(BUSYBOX_SOURCE) $(PATCHES)/$(BUSYB
 		install -m 0644 $(lastword $^) .config; \
 		sed -i -e 's#^CONFIG_PREFIX.*#CONFIG_PREFIX="$(TARGET_DIR)"#' .config; \
 		$(BUILDENV) \
-		$(MAKE) busybox ARCH=$(BOXARCH) CROSS_COMPILE=$(TARGET)- CFLAGS_EXTRA="$(TARGET_CFLAGS)"; \
-		$(MAKE) install ARCH=$(BOXARCH) CROSS_COMPILE=$(TARGET)- CFLAGS_EXTRA="$(TARGET_CFLAGS)" CONFIG_PREFIX=$(TARGET_DIR)
+		$(MAKE) busybox ARCH=sh4 CROSS_COMPILE=$(TARGET)- CFLAGS_EXTRA="$(TARGET_CFLAGS)"; \
+		$(MAKE) install ARCH=sh4 CROSS_COMPILE=$(TARGET)- CFLAGS_EXTRA="$(TARGET_CFLAGS)" CONFIG_PREFIX=$(TARGET_DIR)
 		cp -f $(BUILD_TMP)/busybox_usb-$(BUSYBOX_USB_VER)/busybox $(APPS_DIR)/tools/USB_boot
 #	$(REMOVE)/busybox_usb-$(BUSYBOX_USB_VER)
 	$(TOUCH)
@@ -829,7 +827,7 @@ $(D)/hdidle: $(D)/bootstrap $(ARCHIVE)/$(HDIDLE_SOURCE)
 #
 FBSHOT_VER = 0.3
 FBSHOT_SOURCE = fbshot-$(FBSHOT_VER).tar.gz
-FBSHOT_PATCH = fbshot-$(FBSHOT_VER)-$(BOXARCH).patch
+FBSHOT_PATCH = fbshot-$(FBSHOT_VER).patch
 
 $(ARCHIVE)/$(FBSHOT_SOURCE):
 	$(WGET) http://distro.ibiblio.org/amigolinux/download/Utils/fbshot/$(FBSHOT_SOURCE)
@@ -1624,9 +1622,7 @@ DVBSNOOP_URL = https://github.com/Duckbox-Developers/dvbsnoop.git
 $(ARCHIVE)/$(DVBSNOOP_SOURCE):
 	$(SCRIPTS_DIR)/get-git-archive.sh $(DVBSNOOP_URL) $(DVBSNOOP_VER) $(notdir $@) $(ARCHIVE)
 
-ifeq ($(BOXARCH), sh4)
 DVBSNOOP_CONF_OPTS = --with-dvbincludes=$(KERNEL_DIR)/include
-endif
 
 $(D)/dvbsnoop: $(D)/bootstrap $(D)/kernel $(ARCHIVE)/$(DVBSNOOP_SOURCE)
 	$(START_BUILD)
