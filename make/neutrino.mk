@@ -87,14 +87,6 @@ NMP_BRANCH  ?= master
 HAL_BRANCH  ?= master
 NMP_PATCHES  = $(NEUTRINO_MP_MAX_PATCHES)
 HAL_PATCHES  = $(NEUTRINO_MP_LIBSTB_MAX_PATCHES)
-else ifeq  ($(FLAVOUR), neutrino-mp-ni)
-GIT_URL      = https://bitbucket.org/neutrino-images
-NEUTRINO_MP  = ni-neutrino-hd
-LIBSTB_HAL   = ni-libstb-hal-next
-NMP_BRANCH  ?= ni/mp/tuxbox
-HAL_BRANCH  ?= master
-NMP_PATCHES  = $(NEUTRINO_MP_NI_PATCHES)
-HAL_PATCHES  = $(NEUTRINO_MP_LIBSTB_NI_PATCHES)
 else ifeq  ($(FLAVOUR), neutrino-mp-tangos)
 GIT_URL      = https://github.com/TangoCash
 NEUTRINO_MP  = neutrino-mp-tangos

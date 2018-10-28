@@ -61,10 +61,8 @@ BUILD                ?= $(shell /usr/share/libtool/config.guess 2>/dev/null || /
 CCACHE_DIR            = $(HOME)/.ccache-bs-sh4
 export CCACHE_DIR
 TARGET               ?= sh4-linux
-#BOXARCH              ?= sh4
 KERNELNAME            = uImage
 TARGET_MARCH_CFLAGS   =
-CORTEX_STRINGS        =
 
 OPTIMIZATIONS        ?= size
 ifeq ($(OPTIMIZATIONS), size)

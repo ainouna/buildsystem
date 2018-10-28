@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20181010.1
+# Version 20181028.1
 
 ##############################################
 
@@ -125,44 +125,44 @@ case $1 in
 esac
 
 case "$REPLY" in
-	 1) BOXARCH="sh4";BOXTYPE="ufs910";;
-	 2) BOXARCH="sh4";BOXTYPE="ufs912";;
-	 3) BOXARCH="sh4";BOXTYPE="ufs913";;
-	 4) BOXARCH="sh4";BOXTYPE="ufs922";;
-	 5) BOXARCH="sh4";BOXTYPE="ufc960";;
-	 6) BOXARCH="sh4";BOXTYPE="tf7700";;
-	 7) BOXARCH="sh4";BOXTYPE="fortis_hdbox";;
-	 8) BOXARCH="sh4";BOXTYPE="octagon1008";;
-#	 9) BOXARCH="sh4";BOXTYPE="atevio7500";;
-	10) BOXARCH="sh4";BOXTYPE="hs7110";;
-	11) BOXARCH="sh4";BOXTYPE="hs7119";;
-	12) BOXARCH="sh4";BOXTYPE="hs7420";;
-	13) BOXARCH="sh4";BOXTYPE="hs7429";;
-	14) BOXARCH="sh4";BOXTYPE="hs7810a";;
-	15) BOXARCH="sh4";BOXTYPE="hs7819";;
-	16) BOXARCH="sh4";BOXTYPE="ipbox55";;
-	17) BOXARCH="sh4";BOXTYPE="ipbox99";;
-	18) BOXARCH="sh4";BOXTYPE="ipbox9900";;
-	19) BOXARCH="sh4";BOXTYPE="cuberevo";;
-	20) BOXARCH="sh4";BOXTYPE="cuberevo_mini";;
-	21) BOXARCH="sh4";BOXTYPE="cuberevo_mini2";;
-	22) BOXARCH="sh4";BOXTYPE="cuberevo_250hd";;
-	23) BOXARCH="sh4";BOXTYPE="cuberevo_9500hd";;
-	24) BOXARCH="sh4";BOXTYPE="cuberevo_2000hd";;
-	25) BOXARCH="sh4";BOXTYPE="cuberevo_mini_fta";;
-	26) BOXARCH="sh4";BOXTYPE="cuberevo_3000hd";;
-	27) BOXARCH="sh4";BOXTYPE="spark";;
-	28) BOXARCH="sh4";BOXTYPE="spark7162";;
-	29) BOXARCH="sh4";BOXTYPE="atemio520";;
-	30) BOXARCH="sh4";BOXTYPE="atemio530";;
-	31) BOXARCH="sh4";BOXTYPE="hl101";;
-	32) BOXARCH="sh4";BOXTYPE="hl101";;
-	33) BOXARCH="sh4";BOXTYPE="adb_box";;
-	34) BOXARCH="sh4";BOXTYPE="vitamin_hd5000";;
-	35) BOXARCH="sh4";BOXTYPE="sagemcom88";;
-	36) BOXARCH="sh4";BOXTYPE="arivalink200";;
-	37) BOXARCH="sh4";BOXTYPE="pace7241";;
-	 *) BOXARCH="sh4";BOXTYPE="atevio7500";;
+	 1) BOXTYPE="ufs910";;
+	 2) BOXTYPE="ufs912";;
+	 3) BOXTYPE="ufs913";;
+	 4) BOXTYPE="ufs922";;
+	 5) BOXTYPE="ufc960";;
+	 6) BOXTYPE="tf7700";;
+	 7) BOXTYPE="fortis_hdbox";;
+	 8) BOXTYPE="octagon1008";;
+#	 9) BOXTYPE="atevio7500";;
+	10) BOXTYPE="hs7110";;
+	11) BOXTYPE="hs7119";;
+	12) BOXTYPE="hs7420";;
+	13) BOXTYPE="hs7429";;
+	14) BOXTYPE="hs7810a";;
+	15) BOXTYPE="hs7819";;
+	16) BOXTYPE="ipbox55";;
+	17) BOXTYPE="ipbox99";;
+	18) BOXTYPE="ipbox9900";;
+	19) BOXTYPE="cuberevo";;
+	20) BOXTYPE="cuberevo_mini";;
+	21) BOXTYPE="cuberevo_mini2";;
+	22) BOXTYPE="cuberevo_250hd";;
+	23) BOXTYPE="cuberevo_9500hd";;
+	24) BOXTYPE="cuberevo_2000hd";;
+	25) BOXTYPE="cuberevo_mini_fta";;
+	26) BOXTYPE="cuberevo_3000hd";;
+	27) BOXTYPE="spark";;
+	28) BOXTYPE="spark7162";;
+	29) BOXTYPE="atemio520";;
+	30) BOXTYPE="atemio530";;
+	31) BOXTYPE="hl101";;
+	32) BOXTYPE="hl101";;
+	33) BOXTYPE="adb_box";;
+	34) BOXTYPE="vitamin_hd5000";;
+	35) BOXTYPE="sagemcom88";;
+	36) BOXTYPE="arivalink200";;
+	37) BOXTYPE="pace7241";;
+	 *) BOXTYPE="atevio7500";;
 esac
 echo "BOXARCH=$BOXARCH" >> config
 echo "BOXTYPE=$BOXTYPE" >> config
@@ -191,22 +191,22 @@ if [ -e $CURDIR/root/boot/put_your_elf_files_here ]; then
 fi
 
 ##############################################
-	case $2 in
-		[1-2]) REPLY=$2;;
-		*)	echo -e "\nKernel:"
-			echo "   1)  STM 24 P0209 [2.6.32.46]"
-#			echo "   2)  STM 24 P0217 [2.6.32.61]"
-			echo "   2*) STM 24 P0217 [2.6.32.71]"
-			read -p "Select kernel (1-2)? ";;
-	esac
+case $2 in
+	[1-2]) REPLY=$2;;
+	*)	echo -e "\nKernel:"
+		echo "   1)  STM 24 P0209 [2.6.32.46]"
+#		echo "   2)  STM 24 P0217 [2.6.32.61]"
+		echo "   2*) STM 24 P0217 [2.6.32.71]"
+		read -p "Select kernel (1-2)? ";;
+esac
 
-	case "$REPLY" in
-		1)  KERNEL_STM="p0209";;
-	#	2)  KERNEL_STM="p0217_61";;
-	#	3)  KERNEL_STM="p0217";;
-		*)  KERNEL_STM="p0217";;
-	esac
-	echo "KERNEL_STM=$KERNEL_STM" >> config
+case "$REPLY" in
+	1)  KERNEL_STM="p0209";;
+#	2)  KERNEL_STM="p0217_61";;
+#	3)  KERNEL_STM="p0217";;
+	*)  KERNEL_STM="p0217";;
+esac
+echo "KERNEL_STM=$KERNEL_STM" >> config
 
 ##############################################
 
@@ -254,61 +254,33 @@ echo "IMAGE=$IMAGE" >> config
 
 case "$IMAGE" in
 	neutrin*)
-			case $5 in
-				[1-6] ) REPLY=$5;;
-				*)	echo -e "\nWhich Neutrino variant do you want to build?"
-					echo "   1)  neutrino-mp-ddt"
-					echo "   2)  neutrino-mp-ddt + plugins"
-					echo "   3)  neutrino-mp-tangos"
-					echo "   4)  neutrino-mp-tangos + plugins"
-					echo "   5)  neutrino-hd2"
-					echo "   6)  neutrino-hd2 + plugins"
-					read -p "Select Neutrino variant to build (1-6)? ";;
-			esac
-
-			case "$REPLY" in
-				[1-2]) FLAVOUR="neutrino-mp-ddt";;
-#				[3-4]) FLAVOUR="neutrino-mp-tangos";;
-				[5-6]) FLAVOUR="neutrino-hd2";;
-				*) FLAVOUR="neutrino-mp-tangos";;
-			esac
-
-			case "$REPLY" in
-				[2,4,6]) PLUGINS_NEUTRINO="Yes";;
-				*) PLUGINS_NEUTRINO="No";;
-			esac
-			MEDIAFW="buildinplayer"
-
-		case $6 in
-			[1-2]) REPLY=$6;;
-			*)	echo -e "\nMedia Framework:"
-				echo "   1*) libeplayer3 (integrated)"
-				echo "   2)  gstreamer"
-				read -p "Select media framework (1-2)? ";;
+		case $5 in
+			[1-6] ) REPLY=$5;;
+			*)	echo -e "\nWhich Neutrino variant do you want to build?"
+				echo "   1)  neutrino-mp-ddt"
+				echo "   2)  neutrino-mp-ddt + plugins"
+				echo "   3)  neutrino-mp-tangos"
+				echo "   4)  neutrino-mp-tangos + plugins"
+				echo "   5)  neutrino-hd2"
+				echo "   6)  neutrino-hd2 + plugins"
+				read -p "Select Neutrino variant to build (1-6)? ";;
 		esac
 
 		case "$REPLY" in
-#			1) MEDIAFW="buildinplayer";;
-			2) MEDIAFW="gstreamer";;
-			*) MEDIAFW="buildinplayer";;
+			[1-2]) FLAVOUR="neutrino-mp-ddt";;
+#			[3-4]) FLAVOUR="neutrino-mp-tangos";;
+			[5-6]) FLAVOUR="neutrino-hd2";;
+			*) FLAVOUR="neutrino-mp-tangos";;
 		esac
 
 		echo "FLAVOUR=$FLAVOUR" >> config
-		echo "PLUGINS_NEUTRINO=$PLUGINS_NEUTRINO" >> config
-		case "$FLAVOUR" in
-			neutrino-mp*)
-				if [ $PLUGINS_NEUTRINO == "No" ]; then
-					echo "make neutrino-mp" > $CURDIR/build
-				else
-					echo "make neutrino-mp-plugins" > $CURDIR/build
-				fi;;
-			neutrino-hd2*)
-				if [ $PLUGINS_NEUTRINO == "No" ]; then
-					echo "  make neutrino-hd2" > $CURDIR/build
-				else
-					echo "  make neutrino-hd2-plugins" > $CURDIR/build
-				fi;;
+
+		case "$REPLY" in
+			[2,4,6]) PLUGINS_NEUTRINO="Yes";;
+			*) PLUGINS_NEUTRINO="No";;
 		esac
+		echo "PLUGINS_NEUTRINO=$PLUGINS_NEUTRINO" >> config
+		MEDIAFW="buildinplayer"
 
 		if [ "$LASTIMAGE1" ] || [ "$LASTIMAGE3" ] || [ ! "$LASTBOX" == "$BOXTYPE" ]; then
 			if [ -e ./.deps/ ]; then
@@ -357,72 +329,57 @@ case "$IMAGE" in
 		fi;;
 #	enigma*)
 	*)
-		if [ $BOXARCH == "sh4" ]; then
-			case $6 in
-				[1-3]) REPLY=$6;;
-				*)	echo -e "\nMedia Framework:"
-					echo "   1)  eplayer3"
-					echo "   2)  gstreamer"
-					echo "   3*) gstreamer+eplayer3 (recommended)"
-					read -p "Select media framework (1-3)? ";;
-			esac
+		case $6 in
+			[1-3]) REPLY=$6;;
+			*)	echo -e "\nMedia Framework:"
+				echo "   1)  eplayer3"
+				echo "   2)  gstreamer"
+				echo "   3*) gstreamer+eplayer3 (recommended)"
+				read -p "Select media framework (1-3)? ";;
+		esac
 
-			case "$REPLY" in
-				1) MEDIAFW="eplayer3";;
-				2) MEDIAFW="gstreamer";;
-			#	3) MEDIAFW="gst-eplayer3";;
-				*) MEDIAFW="gst-eplayer3";;
-			esac
-		else
-			echo
-			echo "Please note that you have chosen a configuration that is directly"
-			echo "supported by OpenPLi and yields an image that is close to"
-			echo "the image offered by OpenPLI on an almost daily basis."
-			echo "If this is intentional, reply Yes or press Enter on the last question,"
-			echo "otherwise reply No."
-			MEDIAFW="gstreamer"
-		fi
+		case "$REPLY" in
+			1) MEDIAFW="eplayer3";;
+			2) MEDIAFW="gstreamer";;
+#			3) MEDIAFW="gst-eplayer3";;
+			*) MEDIAFW="gst-eplayer3";;
+		esac
 
 		# Determine the OpenPLi diff-level
-		if [ $BOXARCH == "sh4" ]; then
-	 		case $5 in
-				[0-5])	REPLY=$5;;
-				*)	echo
-					echo "Please select one of the following Enigma2 revisions (default = 2):"
-					echo "=================================================================================================="
-					echo " 0)  Newest                 - E2 OpenPLi  any framework (CAUTION: may fail due to outdated patch)"
-					echo "=================================================================================================="
-					echo " 1)  Use your own Enigma2 git dir without patchfile"
-					echo "=================================================================================================="
-					echo " 2*) Fri, 11 Apr 2017 17:45 - E2 OpenPLi  any framework  e45a15d8f494f70c9285e1532c6b6460328f6b89"
-					echo " 3)  Fri, 24 Feb 2017 18:23 - E2 OpenPLi  any framework  ff98b15d49fa629c1b4e98698008602e5b4233be"
-					echo " 4)  Mon, 17 May 2016 22:46 - E2 OpenPLi  any framework  577fa5ab7d5f0f83f18d625b547d148e93cf27d3"
-					echo " 5)  Thu, 31 Mar 2016 21:52 - E2 OpenPLi  any framework  7d63bf16e99741f0a5798b84a3688759317eecb3"
-					echo "=================================================================================================="
-					echo "Media Framework         : $MEDIAFW"
-					read -p "Select Enigma2 revision : ";;
-			esac
-	
-			case "$REPLY" in
-				1)	DIFF="1"
-					REVISION="local";;
-				3)	DIFF="3"
-					REVISION="ff98b15d49fa629c1b4e98698008602e5b4233be";;
-				4)	DIFF="4"
-					REVISION="577fa5ab7d5f0f83f18d625b547d148e93cf27d3";;
-				5)	DIFF="5"
-					REVISION="7d63bf16e99741f0a5798b84a3688759317eecb3";;
-				0)	DIFF="0"
-					REVISION="newest";;
-				*)	DIFF="2"
-					REVISION="e45a15d8f494f70c9285e1532c6b6460328f6b89";;
-			esac
-			echo "E2_DIFF=$DIFF" >> config
-			echo "E2_REVISION=$REVISION" >> config
-		else
-			echo "E2_DIFF=0" >> config
-			echo "E2_REVISION=newest" >> config
-		fi
+ 		case $5 in
+			[0-5])	REPLY=$5;;
+			*)	echo
+				echo "Please select one of the following Enigma2 revisions (default = 2):"
+				echo "=================================================================================================="
+				echo " 0)  Newest                 - E2 OpenPLi  any framework (CAUTION: may fail due to outdated patch)"
+				echo "=================================================================================================="
+				echo " 1)  Use your own Enigma2 git dir without patchfile"
+				echo "=================================================================================================="
+				echo " 2*) Fri, 11 Apr 2017 17:45 - E2 OpenPLi  any framework  e45a15d8f494f70c9285e1532c6b6460328f6b89"
+				echo " 3)  Fri, 24 Feb 2017 18:23 - E2 OpenPLi  any framework  ff98b15d49fa629c1b4e98698008602e5b4233be"
+				echo " 4)  Mon, 17 May 2016 22:46 - E2 OpenPLi  any framework  577fa5ab7d5f0f83f18d625b547d148e93cf27d3"
+				echo " 5)  Thu, 31 Mar 2016 21:52 - E2 OpenPLi  any framework  7d63bf16e99741f0a5798b84a3688759317eecb3"
+				echo "=================================================================================================="
+				echo "Media Framework         : $MEDIAFW"
+				read -p "Select Enigma2 revision : ";;
+		esac
+
+		case "$REPLY" in
+			1)	DIFF="1"
+				REVISION="local";;
+			3)	DIFF="3"
+				REVISION="ff98b15d49fa629c1b4e98698008602e5b4233be";;
+			4)	DIFF="4"
+				REVISION="577fa5ab7d5f0f83f18d625b547d148e93cf27d3";;
+			5)	DIFF="5"
+				REVISION="7d63bf16e99741f0a5798b84a3688759317eecb3";;
+			0)	DIFF="0"
+				REVISION="newest";;
+			*)	DIFF="2"
+				REVISION="e45a15d8f494f70c9285e1532c6b6460328f6b89";;
+		esac
+		echo "E2_DIFF=$DIFF" >> config
+		echo "E2_REVISION=$REVISION" >> config
 
 		echo "make yaud-enigma2" > $CURDIR/build
 

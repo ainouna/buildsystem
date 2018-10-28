@@ -139,11 +139,7 @@ $(D)/enigma2.do_prepare: | $(ENIGMA2_DEPS)
 		echo "Repository : "$$REPO_0; \
 		echo "Revision   : "$$REVISION; \
 		echo "Diff       : "$$DIFF; \
-	else \
-		echo "Repository : "$$REPO_1; \
-	fi; \
-	echo; \
-	if [ "$$DIFF" != "1" ]; then \
+		echo; \
 		[ -d "$(ARCHIVE)/enigma2-pli-nightly.git" ] && \
 		(cd $(ARCHIVE)/enigma2-pli-nightly.git; echo -n "Updating archived OpenPLi git..."; git pull -q; echo -e -n " done.\nChecking out HEAD..."; git checkout -q HEAD; echo " done."; cd "$(BUILD_TMP)";); \
 		[ -d "$(ARCHIVE)/enigma2-pli-nightly.git" ] || \
@@ -168,6 +164,8 @@ $(D)/enigma2.do_prepare: | $(ENIGMA2_DEPS)
 		patch -p1 -s -i "$(PATCHES)/rc-models.patch"; \
 		echo -e " done.\nBuild preparation for OpenPLi complete."; echo; \
 	else \
+		echo "Repository : "$$REPO_1; \
+		echo; \
 		[ -d "$(SOURCE_DIR)/enigma2" ] ; \
 		echo "Cloning local git content to build environment..."; \
 		git clone -b $$HEAD_1 $$REPO_1 $(SOURCE_DIR)/enigma2; \
@@ -205,11 +203,6 @@ REPO_PLIHD="https://github.com/littlesat/skin-PLiHD.git"
 HEAD=master
 REVISION_HD=8c9e43bd5b5fbec2d0e0e86d8e9d69a94f139054
 REPO_0=$(REPO_PLIHD)
-#f54647d20358cbc540859441855a7aa45bbfaef0 0
-#901a5f2c6f148478e0c8d8662c6dcde8fb40daba 1
-#429728d6c18c804bc81ed45b3eda69727898141f 2
-#4ed2a9655859624a77383d2be9aab7e1fb616bb6 3
-#8c9e43bd5b5fbec2d0e0e86d8e9d69a94f139054 4 Jan 15, 2018
 $(D)/enigma2: $(D)/enigma2.do_prepare $(D)/enigma2.do_compile
 	$(MAKE) -C $(SOURCE_DIR)/enigma2 install DESTDIR=$(TARGET_DIR)
 	@echo -n "Stripping..."

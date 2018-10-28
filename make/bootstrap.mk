@@ -157,62 +157,6 @@ $(D)/host_mksquashfs: directories $(ARCHIVE)/$(LZMA_SOURCE) $(ARCHIVE)/$(HOST_MK
 	$(TOUCH)
 
 #
-# host_resize2fs
-#
-HOST_E2FSPROGS_VER = $(E2FSPROGS_VER)
-HOST_E2FSPROGS_SOURCE = $(E2FSPROGS_SOURCE)
-
-$(D)/host_resize2fs: $(ARCHIVE)/$(HOST_E2FSPROGS_SOURCE)
-	$(START_BUILD)
-	$(UNTAR)/$(HOST_E2FSPROGS_SOURCE)
-	$(SET) -e; cd $(BUILD_TMP)/e2fsprogs-$(HOST_E2FSPROGS_VER); \
-		./configure $(SILENT_CONFIGURE) $(SILENT_OPT); \
-		$(MAKE)
-	$(SILENT)install -D -m 0755 $(BUILD_TMP)/e2fsprogs-$(HOST_E2FSPROGS_VER)/resize/resize2fs $(HOST_DIR)/bin/
-	$(SILENT)install -D -m 0755 $(BUILD_TMP)/e2fsprogs-$(HOST_E2FSPROGS_VER)/misc/mke2fs $(HOST_DIR)/bin/
-	$(SILENT)ln -sf mke2fs $(HOST_DIR)/bin/mkfs.ext2
-	$(SILENT)ln -sf mke2fs $(HOST_DIR)/bin/mkfs.ext3
-	$(SILENT)ln -sf mke2fs $(HOST_DIR)/bin/mkfs.ext4
-	$(SILENT)ln -sf mke2fs $(HOST_DIR)/bin/mkfs.ext4dev
-	$(SILENT)install -D -m 0755 $(BUILD_TMP)/e2fsprogs-$(HOST_E2FSPROGS_VER)/e2fsck/e2fsck $(HOST_DIR)/bin/
-	$(SILENT)ln -sf e2fsck $(HOST_DIR)/bin/fsck.ext2
-	$(SILENT)ln -sf e2fsck $(HOST_DIR)/bin/fsck.ext3
-	$(SILENT)ln -sf e2fsck $(HOST_DIR)/bin/fsck.ext4
-	$(SILENT)ln -sf e2fsck $(HOST_DIR)/bin/fsck.ext4dev
-	$(REMOVE)/e2fsprogs-$(HOST_E2FSPROGS_VER)
-	$(TOUCH)
-
-#
-# cortex-strings
-#
-CORTEX_STRINGS_VER = 48fd30c
-CORTEX_STRINGS_SOURCE = cortex-strings-git-$(CORTEX_STRINGS_VER).tar.bz2
-CORTEX_STRINGS_URL = http://git.linaro.org/git-ro/toolchain/cortex-strings.git
-
-$$(ARCHIVE)/$(CORTEX_STRINGS_SOURCE):
-	$(SCRIPTS_DIR)/get-git-archive.sh $(CORTEX_STRINGS_URL) $(CORTEX_STRINGS_VER) $(notdir $@) $(ARCHIVE)
-
-$(D)/cortex_strings: $(ARCHIVE)/$(CORTEX_STRINGS_SOURCE) directories
-	$(START_BUILD)
-	$(REMOVE)/cortex-strings-git-$(CORTEX_STRINGS_VER)
-	$(UNTAR)/$(CORTEX_STRINGS_SOURCE)
-	$(SILENT)set -e; cd $(BUILD_TMP)/cortex-strings-git-$(CORTEX_STRINGS_VER); \
-		./autogen.sh  $(SILENT_OPT); \
-		$(MAKE_OPTS) \
-		./configure $(SILENT_OPT) \
-			--build=$(BUILD) \
-			--host=$(TARGET) \
-			--prefix=/usr \
-			--disable-shared \
-			--enable-static \
-		; \
-		$(MAKE); \
-		$(MAKE) install DESTDIR=$(TARGET_DIR)
-	$(REWRITE_LIBTOOL)/libcortex-strings.la
-	$(REMOVE)/cortex-strings-git-$(CORTEX_STRINGS_VER)
-	$(TOUCH)
-
-#
 #
 #
 BOOTSTRAP  = directories
