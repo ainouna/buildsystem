@@ -213,6 +213,7 @@ REPO_PLIHD="https://github.com/littlesat/skin-PLiHD.git"
 HEAD=master
 REVISION_HD=8c9e43bd5b5fbec2d0e0e86d8e9d69a94f139054
 REPO_0=$(REPO_PLIHD)
+FW=$(MEDIAFW)
 DIFF=$(E2_DIFF)
 $(D)/enigma2: $(D)/enigma2.do_prepare $(D)/enigma2.do_compile
 	$(MAKE) -C $(SOURCE_DIR)/enigma2 install DESTDIR=$(TARGET_DIR)
@@ -236,11 +237,13 @@ $(D)/enigma2: $(D)/enigma2.do_prepare $(D)/enigma2.do_compile
 	$(SILENT)rm -rf $(TARGET_DIR)/usr/local/share/enigma2/PLi-FullHD
 	$(SILENT)rm -rf $(TARGET_DIR)/usr/local/share/enigma2/PLi-FullNightHD
 	$(TOUCH)
-	$(SILENT)if [ "$(DIFF)" == "0" -o "$(DIFF)" == "2" ]; then \
-		(echo; \
-		echo "Adding servicemp3 plugin"; \
-		make enigma2_servicemp3; \
-		); \
+	$(SILENT)if [  "$(FW)" != "buildinplayer" ]; then \
+			if [ "$(DIFF)" == "0" -o "$(DIFF)" == "2" ]; then \
+			(echo; \
+			echo "Adding servicemp3 plugin"; \
+			make enigma2_servicemp3; \
+			); \
+		fi; \
 	fi
 
 enigma2-clean:

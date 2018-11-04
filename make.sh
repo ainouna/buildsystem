@@ -381,7 +381,7 @@ case "$IMAGE" in
 		echo "E2_DIFF=$DIFF" >> config
 		echo "E2_REVISION=$REVISION" >> config
 
-		if [ $DIFF == 0  ] && [ ! "$MEDIAFW" == "buildinplayer" ]; then
+		if [ $DIFF == 0 -o $DIFF == 2 ] && [ ! "$MEDIAFW" == "buildinplayer" ]; then
 			MEDIAFW="buildinplayer"
 			echo "NOTE: Media framework has been set to built-in (DIFF = 0 or 2)."
 		fi
