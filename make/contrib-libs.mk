@@ -1127,6 +1127,7 @@ LIBSIGC_VER_MINOR = 4
 LIBSIGC_VER_MICRO = 1
 LIBSIGC_VER = $(LIBSIGC_VER_MAJOR).$(LIBSIGC_VER_MINOR).$(LIBSIGC_VER_MICRO)
 LIBSIGC_SOURCE = libsigc++-$(LIBSIGC_VER).tar.xz
+#LIBSIGC_PATCH = libsigc++-$(LIBSIGC_VER).patch
 
 $(ARCHIVE)/$(LIBSIGC_SOURCE):
 	$(WGET) https://ftp.gnome.org/pub/GNOME/sources/libsigc++/$(LIBSIGC_VER_MAJOR).$(LIBSIGC_VER_MINOR)/$(LIBSIGC_SOURCE)
@@ -2843,5 +2844,41 @@ $(D)/glib_networking: $(D)/bootstrap $(D)/gnutls $(D)/libglib2 $(ARCHIVE)/$(GLIB
 		$(MAKE); \
 		$(MAKE) install prefix=$(TARGET_DIR) giomoduledir=$(TARGET_DIR)/usr/lib/gio/modules itlocaledir=$(TARGET_DIR)/.remove
 	$(REMOVE)/glib-networking-$(GLIB_NETWORKING_VER)
+	$(TOUCH)
+
+#
+# libudfread
+#
+LIBUDFREAD_VER_MAJOR = 1
+LIBUDFREAD_VER_MINOR = 0
+LIBUDFREAD_VER_MICRO = 0
+LIBUDFREAD_VER = $(LIBUDFREAD_VER_MAJOR).$(LIBUDFREAD_VER_MINOR).$(LIBUDFREAD_VER_MICRO)
+LIBUDFREAD_URL = https://git.videolan.org/git/libudfread.git
+#LIBUDFREAD_SOURCE = libudfread-git-$(LIBUDFREAD_VER).tar.xz
+LIBUDFREAD_PATCH =
+
+$(D)/libudfread: $(D)/bootstrap
+	$(START_BUILD)
+	$(REMOVE)/libudfread
+	$(SET) -e; if [ -d $(ARCHIVE)/libudfread.git ]; \
+		then cd $(ARCHIVE)/libudfread.git; git pull; \
+		else cd $(ARCHIVE); git clone $(LIBUDFREAD_URL) libudfread.git; \
+		fi
+	$(SILENT)cp -ra $(ARCHIVE)/libudfread.git $(BUILD_TMP)/libudfread
+	$(SET) -e; cd $(BUILD_TMP)/gnutls-$(LIBUDFREAD_VER); \
+		$(call apply_patches,$(LIBUDFREAD_PATCH)); \
+		$(CONFIGURE) \
+			--prefix=/usr \
+			--mandir=/.remove \
+			--infodir=/.remove \
+			--datarootdir=/.remove \
+		; \
+		$(MAKE); \
+		$(MAKE) install DESTDIR=$(TARGET_DIR)
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libudfread.pc
+	$(REWRITE_LIBTOOL)/libudfread.la
+	$(REWRITE_LIBTOOLDEP)/libudfread.la
+#	rm -f $(addprefix $(TARGET_DIR)/usr/bin/,psktool gnutls-cli-debug certtool srptool ocsptool gnutls-serv gnutls-cli)
+#	$(REMOVE)/libudfread-$(LIBUDFREAD_VER)
 	$(TOUCH)
 

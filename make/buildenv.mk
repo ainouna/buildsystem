@@ -65,25 +65,35 @@ KERNELNAME            = uImage
 TARGET_MARCH_CFLAGS   =
 
 OPTIMIZATIONS        ?= size
+ifeq ($(OPTIMIZATIONS), small)
+TARGET_O_CFLAGS       = -Os
+TARGET_EXTRA_CFLAGS   = -ffunction-sections -fdata-sections
+TARGET_EXTRA_LDFLAGS  = -Wl,--gc-sections
+ENIGMA_OPT_OPTION     = --without-debug
+endif
 ifeq ($(OPTIMIZATIONS), size)
 TARGET_O_CFLAGS       = -Os
 TARGET_EXTRA_CFLAGS   = -ffunction-sections -fdata-sections
 TARGET_EXTRA_LDFLAGS  = -Wl,--gc-sections
+ENIGMA_OPT_OPTION     =
 endif
 ifeq ($(OPTIMIZATIONS), normal)
 TARGET_O_CFLAGS       = -O2
 TARGET_EXTRA_CFLAGS   =
 TARGET_EXTRA_LDFLAGS  =
+ENIGMA_OPT_OPTION     =
 endif
 ifeq ($(OPTIMIZATIONS), kerneldebug)
 TARGET_O_CFLAGS       = -O2
 TARGET_EXTRA_CFLAGS   =
 TARGET_EXTRA_LDFLAGS  =
+ENIGMA_OPT_OPTION     =
 endif
 ifeq ($(OPTIMIZATIONS), debug)
 TARGET_O_CFLAGS       = -O0 -g
 TARGET_EXTRA_CFLAGS   =
 TARGET_EXTRA_LDFLAGS  =
+ENIGMA_OPT_OPTION     =
 endif
 
 TARGET_LIB_DIR        = $(TARGET_DIR)/usr/lib

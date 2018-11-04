@@ -70,6 +70,7 @@ PYTHON_PATCH  = python-$(PYTHON_VER).patch
 PYTHON_PATCH += python-$(PYTHON_VER)-xcompile.patch
 PYTHON_PATCH += python-$(PYTHON_VER)-revert_use_of_sysconfigdata.patch
 PYTHON_PATCH += python-$(PYTHON_VER)-pgettext.patch
+#PYTHON_PATCH += python-$(PYTHON_VER)-fix_modsupport.patch
 
 $(D)/python: $(D)/bootstrap $(D)/host_python $(D)/ncurses $(D)/zlib $(D)/openssl $(D)/libffi $(D)/bzip2 $(D)/readline $(D)/sqlite $(ARCHIVE)/$(PYTHON_SOURCE)
 	$(START_BUILD)

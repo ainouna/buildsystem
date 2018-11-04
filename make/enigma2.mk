@@ -1,14 +1,24 @@
 #
 # enigma2
 #
-ENIGMA2_DEPS  = $(D)/bootstrap $(D)/opkg $(D)/ncurses $(LIRC) $(D)/libcurl $(D)/libid3tag $(D)/libmad
-ENIGMA2_DEPS += $(D)/libpng $(D)/libjpeg $(D)/giflib $(D)/freetype
-ENIGMA2_DEPS += $(D)/alsa_utils $(D)/ffmpeg
-ENIGMA2_DEPS += $(D)/libfribidi $(D)/expat $(D)/libdvbsi $(D)/libusb
-ENIGMA2_DEPS += $(D)/sdparm $(D)/minidlna $(D)/ethtool
-ENIGMA2_DEPS += python-all
-ENIGMA2_DEPS += $(D)/libdreamdvd $(D)/enigma2_tuxtxt32bpp $(D)/enigma2_hotplug_e2_helper $(D)/parted
-ENIGMA2_DEPS += $(LOCAL_ENIGMA2_DEPS)
+#ENIGMA2_DEPS  = $(D)/bootstrap $(D)/opkg $(D)/ncurses $(LIRC) $(D)/libcurl $(D)/libid3tag $(D)/libmad
+#ENIGMA2_DEPS += $(D)/libpng $(D)/libjpeg $(D)/giflib $(D)/freetype
+#ENIGMA2_DEPS += $(D)/alsa_utils $(D)/ffmpeg
+#ENIGMA2_DEPS += $(D)/libfribidi $(D)/expat $(D)/libdvbsi $(D)/libusb
+#ENIGMA2_DEPS += $(D)/sdparm $(D)/minidlna $(D)/ethtool
+#ENIGMA2_DEPS += python-all
+#ENIGMA2_DEPS += $(D)/libdreamdvd $(D)/enigma2_tuxtxt32bpp $(D)/enigma2_hotplug_e2_helper $(D)/parted
+#ENIGMA2_DEPS += $(LOCAL_ENIGMA2_DEPS)
+
+ENIGMA2_DEPS  = $(D)/bootstrap $(D)/opkg $(D)/ncurses $(LIRC) $(D)/libcurl $(D)/libmad
+ENIGMA2_DEPS += $(D)/libpng $(D)/libjpeg $(D)/giflib $(D)/freetype $(D)/libfribidi $(D)/libglib2 $(D)/libdvbsi $(D)/libxml2
+ENIGMA2_DEPS += $(D)/openssl $(D)/enigma2_tuxtxt32bpp $(D)/enigma2_hotplug_e2_helper $(D)/parted
+ENIGMA2_DEPS += python-all $(D)/alsa_utils
+#following seems to be needed for diff 3 and higher
+#ENIGMA2_DEPS += $(D)/ffmpeg $(D)/libid3tag
+#ENIGMA2_DEPS += $(D)/expat $(D)/libusb
+#ENIGMA2_DEPS += $(D)/sdparm $(D)/minidlna $(D)/ethtool
+#ENIGMA2_DEPS += $(D)/libdreamdvd
 
 ifeq ($(IMAGE), enigma2-wlandriver)
 ENIGMA2_DEPS += $(D)/wpa_supplicant $(D)/wireless_tools
@@ -19,16 +29,14 @@ ENIGMA2_DEPS += $(D)/busybox_usb
 E_CONFIG_OPTS += --enable-run_from_usb
 endif
 
-ifeq ($(E2_DIFF), $(filter $(E2_DIFF), 0))
-ENIGMA2_DEPS  += $(D)/libsigc
-else
-ENIGMA2_DEPS  += $(D)/libsigc_e2 
-endif
-
-ifeq ($(E2_DIFF), $(filter $(E2_DIFF), 0 2 3))
+ifeq ($(E2_DIFF), $(filter $(E2_DIFF), 0 2 3 4))
 ENIGMA2_DEPS  += $(D)/avahi
 endif
 
+ifeq ($(E2_DIFF), $(filter $(E2_DIFF), 0 2))
+ENIGMA2_DEPS  += $(D)/libsigc
+else
+ENIGMA2_DEPS  += $(D)/libsigc_e2 
 ifeq ($(MEDIAFW), eplayer3)
 ENIGMA2_DEPS  += $(D)/tools-eplayer3
 E_CONFIG_OPTS += --enable-libeplayer3
@@ -43,6 +51,7 @@ ifeq ($(MEDIAFW), gst-eplayer3)
 ENIGMA2_DEPS  += $(D)/tools-libeplayer3
 ENIGMA2_DEPS  += $(D)/gst_plugins_dvbmediasink
 E_CONFIG_OPTS += --with-gstversion=1.0 --enable-libeplayer3 --enable-mediafwgstreamer
+endif
 endif
 
 ifeq ($(BOXTYPE),spark)
@@ -188,6 +197,7 @@ $(SOURCE_DIR)/enigma2/config.status:
 			--prefix=/usr \
 			--sysconfdir=/etc \
 			--with-boxtype=none \
+			$(ENIGMA_OPT_OPTION) \
 			PKG_CONFIG=$(PKG_CONFIG) \
 			PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) \
 			PY_PATH=$(TARGET_DIR)/usr \
@@ -203,6 +213,7 @@ REPO_PLIHD="https://github.com/littlesat/skin-PLiHD.git"
 HEAD=master
 REVISION_HD=8c9e43bd5b5fbec2d0e0e86d8e9d69a94f139054
 REPO_0=$(REPO_PLIHD)
+DIFF=$(E2_DIFF)
 $(D)/enigma2: $(D)/enigma2.do_prepare $(D)/enigma2.do_compile
 	$(MAKE) -C $(SOURCE_DIR)/enigma2 install DESTDIR=$(TARGET_DIR)
 	@echo -n "Stripping..."
@@ -212,9 +223,9 @@ $(D)/enigma2: $(D)/enigma2.do_prepare $(D)/enigma2.do_compile
 	$(SILENT)if [ -e $(TARGET_DIR)/usr/local/bin/enigma2 ]; then \
 		$(TARGET)-strip $(TARGET_DIR)/usr/local/bin/enigma2; \
 	fi
-	@echo " done."
-	@echo
-	@echo "Adding PLi-HD skin"
+	$(SILENT)echo " done."
+	$(SILENT)echo
+	$(SILENT)echo "Adding PLi-HD skin"
 	$(SILENT)if [ ! -d $(ARCHIVE)/PLi-HD_skin.git ]; then \
 		(echo -n "Cloning PLi-HD skin git..."; git clone -q -b $(HEAD) $(REPO_0) $(ARCHIVE)/PLi-HD_skin.git; echo " done."); \
 	fi
@@ -225,6 +236,12 @@ $(D)/enigma2: $(D)/enigma2.do_prepare $(D)/enigma2.do_compile
 	$(SILENT)rm -rf $(TARGET_DIR)/usr/local/share/enigma2/PLi-FullHD
 	$(SILENT)rm -rf $(TARGET_DIR)/usr/local/share/enigma2/PLi-FullNightHD
 	$(TOUCH)
+	$(SILENT)if [ "$(DIFF)" == "0" -o "$(DIFF)" == "2" ]; then \
+		(echo; \
+		echo "Adding servicemp3 plugin"; \
+		make enigma2_servicemp3; \
+		); \
+	fi
 
 enigma2-clean:
 	rm -f $(D)/enigma2

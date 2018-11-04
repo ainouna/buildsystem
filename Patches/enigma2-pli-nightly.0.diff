@@ -1,4 +1,4 @@
-# revision b63f32d61c82e092f54a691cc8ee03249d34f818 07/12/2017 17:45
+# revision 3e63f640c6b31c5c15c150f67c6cbac6b89bcb20 29/10/2018 12:45
 --- enigma2.org/configure.ac
 +++ enigma2/configure.ac
 @@ -18,6 +18,7 @@
@@ -9,162 +9,273 @@
  AX_PYTHON_DEVEL
  AX_PKG_SWIG
  AX_SWIG_ENABLE_CXX
-@@ -34,11 +35,152 @@
- 	AS_HELP_STRING([--with-gstversion],[use gstreamer version (major.minor)]),
- 	[GST_MAJORMINOR=$withval],[GST_MAJORMINOR=0.10])
- 
--PKG_CHECK_MODULES(GSTREAMER, gstreamer-$GST_MAJORMINOR gstreamer-pbutils-$GST_MAJORMINOR)
-+PKG_CHECK_MODULES(BASE, [freetype2 fribidi gstreamer-$GST_MAJORMINOR gstreamer-pbutils-$GST_MAJORMINOR libdvbsi++ libpng libxml-2.0 libssl libcrypto])
--PKG_CHECK_MODULES(BASE, [freetype2 fribidi gstreamer-$GST_MAJORMINOR gstreamer-pbutils-$GST_MAJORMINOR libdvbsi++ libpng libxml-2.0 sigc++-2.0 libssl libcrypto])
+@@ -35,6 +36,265 @@
  PKG_CHECK_MODULES(LIBDDVD, libdreamdvd, HAVE_LIBDDVD="yes", HAVE_LIBDDVD="no")
  AM_CONDITIONAL(HAVE_LIBDDVD, test "$HAVE_LIBDDVD" = "yes")
  PKG_CHECK_MODULES(AVAHI, avahi-client)
 +
-+AC_ARG_ENABLE(libeplayer3,
-+	[  --enable-libeplayer3          enable TDT libeplayer3 as player engine support],
-+	[AC_DEFINE(ENABLE_LIBEPLAYER3,1,[enable TDT libeplayer3 as player engine support])])
++AC_ARG_ENABLE(run_from_usb,
++	[  --enable-run_from_usb          enable run_from_usb stuff],
++	[AC_DEFINE(ENABLE_RUN_FROM_USB, 1, [enable run_from_usb stuff])])
 +
-+AM_CONDITIONAL(ENABLE_LIBEPLAYER3,test "$enable_libeplayer3" = "yes")
-+if test "$enable_libeplayer3" = "yes"; then
-+	AC_DEFINE(ENABLE_LIBEPLAYER3,1,[include TDT libeplayer3 as player engine support])
++AM_CONDITIONAL(ENABLE_RUN_FROM_USB, test "$enable_run_from_usb" = "yes")
++if test "$run_from_usb" = "yes"; then
++	AC_DEFINE(ENABLE_RUN_FROM_USB, 1, [enable run_from_usb stuff])
 +fi
 +
-+AC_ARG_ENABLE(mediafwgstreamer,
-+	[  --enable-mediafwgstreamer      enable gstreamer as player engine support],
-+	[AC_DEFINE(ENABLE_MEDIAFWGSTREAMER,1,[enable gstreamer as player engine support])])
++#AC_ARG_ENABLE(libeplayer3,
++#	[  --enable-libeplayer3          enable TDT libeplayer3 as player engine support],
++#	[AC_DEFINE(ENABLE_LIBEPLAYER3,1,[enable TDT libeplayer3 as player engine support])])
++#
++#AM_CONDITIONAL(ENABLE_LIBEPLAYER3,test "$enable_libeplayer3" = "yes")
++#if test "$enable_libeplayer3" = "yes"; then
++#	AC_DEFINE(ENABLE_LIBEPLAYER3,1,[include TDT libeplayer3 as player engine support])
++#fi
++#
++#AC_ARG_ENABLE(mediafwgstreamer,
++#	[  --enable-mediafwgstreamer      enable gstreamer as player engine support],
++#	[AC_DEFINE(ENABLE_MEDIAFWGSTREAMER,1,[enable gstreamer as player engine support])])
++#
++#AM_CONDITIONAL(ENABLE_MEDIAFWGSTREAMER,test "$enable_mediafwgstreamer" = "yes")
++#if test "$enable_mediafwgstreamer" = "yes"; then
++#	AC_DEFINE(ENABLE_MEDIAFWGSTREAMER,1,[include gstreamer as player engine support])
++#fi
++#
++#if test "$enable_mediafwgstreamer" = "yes"; then
++#	PKG_CHECK_MODULES(GSTREAMER, gstreamer-$GST_MAJORMINOR gstreamer-pbutils-$GST_MAJORMINOR)
++#	PKG_CHECK_MODULES(BASE, [freetype2 fribidi gstreamer-$GST_MAJORMINOR gstreamer-pbutils-$GST_MAJORMINOR libdvbsi++ libpng libxml-2.0 sigc++-1.2 libssl libcrypto])
++#else
++#	PKG_CHECK_MODULES(BASE, [freetype2 fribidi libdvbsi++ libpng libxml-2.0 sigc++-1.2 libssl libcrypto])
++#fi
++#
++AC_ARG_ENABLE(tf7700,
++	[  --enable-tf7700         enable tf7700 stuff],
++	[AC_DEFINE(ENABLE_TF7700, 1, [enable tf7700 stuff])])
 +
-+AM_CONDITIONAL(ENABLE_MEDIAFWGSTREAMER,test "$enable_mediafwgstreamer" = "yes")
-+if test "$enable_mediafwgstreamer" = "yes"; then
-+	AC_DEFINE(ENABLE_MEDIAFWGSTREAMER,1,[include gstreamer as player engine support])
++AM_CONDITIONAL(ENABLE_TF7700, test "$enable_tf7700" = "yes")
++if test "$enable_tf7700" = "yes"; then
++	AC_DEFINE(ENABLE_TF7700, 1, [enable tf7700 stuff])
 +fi
 +
-+if test "$enable_mediafwgstreamer" = "yes"; then
-+	PKG_CHECK_MODULES(GSTREAMER, gstreamer-$GST_MAJORMINOR gstreamer-pbutils-$GST_MAJORMINOR)
-+	PKG_CHECK_MODULES(BASE, [freetype2 fribidi gstreamer-$GST_MAJORMINOR gstreamer-pbutils-$GST_MAJORMINOR libdvbsi++ libpng libxml-2.0 sigc++-1.2 libssl libcrypto])
-+else
-+	PKG_CHECK_MODULES(BASE, [freetype2 fribidi libdvbsi++ libpng libxml-2.0 sigc++-1.2 libssl libcrypto])
++AC_ARG_ENABLE(cuberevo,
++	[  --enable-cuberevo       enable cuberevo stuff],
++	[AC_DEFINE(ENABLE_CUBEREVO, 1, [enable cuberevo stuff])])
++
++AM_CONDITIONAL(ENABLE_CUBEREVO, test "$enable_cuberevo" = "yes")
++if test "$enable_cuberevo" = "yes"; then
++	AC_DEFINE(ENABLE_CUBEREVO, 1, [enable cuberevo stuff])
 +fi
 +
-+AC_ARG_ENABLE([tf7700],
-+	[AS_HELP_STRING(--enable-tf7700,    enable topfield tf7700 stuff)],
-+	[case "${enableval}" in
-+		yes) enable_tf7700=true ;;
-+		no) enable_tf7700=false ;;
-+		*) AC_MSG_ERROR([bad value ${enableval} for --enable-tf7700]) ;;
-+	esac])
-+AM_CONDITIONAL([ENABLE_TF7700], [test x$enable_tf7700 = xtrue])
++AC_ARG_ENABLE(cuberevo_250hd,
++	[  --enable-cuberevo_250hd enable cuberevo_250d stuff],
++	[AC_DEFINE(ENABLE_CUBEREVO_250HD, 1, [enable cuberevo_250hd stuff])])
 +
-+AC_ARG_ENABLE([cuberevo],
-+	[AS_HELP_STRING(--enable-cuberevo,    enable cuberevo stuff)],
-+	[case "${enableval}" in
-+		yes) enable_cuberevo=true ;;
-+		no) enable_cuberevo=false ;;
-+		*) AC_MSG_ERROR([bad value ${enableval} for --enable-cuberevo]) ;;
-+	esac])
-+AM_CONDITIONAL([ENABLE_CUBEREVO], [test x$enable_cuberevo = xtrue])
++AM_CONDITIONAL(ENABLE_CUBEREVO_250HD, test "$enable_cuberevo_250hd" = "yes")
++if test "$enable_cuberevo_250hd" = "yes"; then
++	AC_DEFINE(ENABLE_CUBEREVO_250HD, 1, [enable cuberevo_250hd stuff])
++fi
 +
-+AC_ARG_ENABLE([spark],
-+	[AS_HELP_STRING(--enable-spark,    enable Spark stuff)],
-+	[case "${enableval}" in
-+		yes) enable_spark=true ;;
-+		no) enable_spark=false ;;
-+		*) AC_MSG_ERROR([bad value ${enableval} for --enable-spark]) ;;
-+	esac])
-+AM_CONDITIONAL([ENABLE_SPARK], [test x$enable_spark = xtrue])
++AC_ARG_ENABLE(cuberevo_2000hd,
++	[  --enable-cuberevo_2000hd enable cuberevo_2000d stuff],
++	[AC_DEFINE(ENABLE_CUBEREVO_2000HD, 1, [enable cuberevo_2000hd stuff])])
 +
-+AC_ARG_ENABLE([spark7162],
-+	[AS_HELP_STRING(--enable-spark7162,    enable Spark 7162 stuff)],
-+	[case "${enableval}" in
-+		yes) enable_spark7162=true ;;
-+		no) enable_spark7162=false ;;
-+		*) AC_MSG_ERROR([bad value ${enableval} for --enable-spark7162]) ;;
-+	esac])
-+AM_CONDITIONAL([ENABLE_SPARK7162], [test x$enable_spark7162 = xtrue])
++AM_CONDITIONAL(ENABLE_CUBEREVO_2000HD, test "$enable_cuberevo_2000hd" = "yes")
++if test "$enable_cuberevo_2000hd" = "yes"; then
++	AC_DEFINE(ENABLE_CUBEREVO_2000HD, 1, [enable cuberevo_2000hd stuff])
++fi
 +
-+AC_ARG_ENABLE([octagon1008],
-+	[AS_HELP_STRING(--enable-octagon1008,    enable Fortis HS9510 stuff)],
-+	[case "${enableval}" in
-+		yes) enable_octagon1008=true ;;
-+		no) enable_octagon1008=false ;;
-+		*) AC_MSG_ERROR([bad value ${enableval} for --enable-octagon1008]) ;;
-+	esac])
-+AM_CONDITIONAL([ENABLE_OCTAGON1008], [test x$enable_octagon1008 = xtrue])
++AC_ARG_ENABLE(cuberevo_9500hd,
++	[  --enable-cuberevo_9500hd enable cuberevo_9500d stuff],
++	[AC_DEFINE(ENABLE_CUBEREVO_9500HD, 1, [enable cuberevo_9500hd stuff])])
 +
-+AC_ARG_ENABLE([atevio7500],
-+	[AS_HELP_STRING(--enable-atevio7500,   enable Fortis HS8200 stuff)],
-+	[case "${enableval}" in
-+		yes) enable_atevio7500=true ;;
-+		no) enable_atevio7500=false ;;
-+		*) AC_MSG_ERROR([bad value ${enableval} for --enable-atevio7500]) ;;
-+	esac])
-+AM_CONDITIONAL([ENABLE_ATEVIO7500], [test x$enable_atevio7500 = xtrue])
++AM_CONDITIONAL(ENABLE_CUBEREVO_9500HD, test "$enable_cuberevo_9500hd" = "yes")
++if test "$enable_cuberevo_9500hd" = "yes"; then
++	AC_DEFINE(ENABLE_CUBEREVO_9500HD, 1, [enable cuberevo_9500hd stuff])
++fi
 +
-+AC_ARG_ENABLE([fortis_hdbox],
-+	[AS_HELP_STRING(--enable-fortis_hdbox,    enable Fortis FS9000/9200 stuff)],
-+	[case "${enableval}" in
-+		yes) enable_fortis_hdbox=true ;;
-+		no) enable_fortis_hdbox=false ;;
-+		*) AC_MSG_ERROR([bad value ${enableval} for --enable-fortis_hdbox]) ;;
-+	esac])
-+AM_CONDITIONAL([ENABLE_FORTIS_HDBOX], [test x$enable_fortis_hdbox = xtrue])
++AC_ARG_ENABLE(cuberevo_mini,
++	[  --enable-cuberevo_mini  enable cuberevo_mini stuff],
++	[AC_DEFINE(ENABLE_CUBEREVO_MINI, 1, [enable cuberevo_mini stuff])])
 +
-+AC_ARG_ENABLE([hs7110],
-+	[AS_HELP_STRING(--enable-hs7110,    enable Fortis HS7110 stuff)],
-+	[case "${enableval}" in
-+		yes) enable_hs7110=true ;;
-+		no) enable_hs7110=false ;;
-+		*) AC_MSG_ERROR([bad value ${enableval} for --enable-hs7110]) ;;
-+	esac])
-+AM_CONDITIONAL([ENABLE_HS7110], [test x$enable_hs7110 = xtrue])
++AM_CONDITIONAL(ENABLE_CUBEREVO_MINI, test "$enable_cuberevo_mini" = "yes")
++if test "$enable_cuberevo_mini" = "yes"; then
++	AC_DEFINE(ENABLE_CUBEREVO_MINI, 1, [enable cuberevo_mini stuff])
++fi
 +
-+AC_ARG_ENABLE([hs7119],
-+	[AS_HELP_STRING(--enable-hs7119,    enable Fortis HS7119 stuff)],
-+	[case "${enableval}" in
-+		yes) enable_hs7119=true ;;
-+		no) enable_hs7119=false ;;
-+		*) AC_MSG_ERROR([bad value ${enableval} for --enable-hs7119]) ;;
-+	esac])
-+AM_CONDITIONAL([ENABLE_HS7119], [test x$enable_hs7119 = xtrue])
++AC_ARG_ENABLE(cuberevo_mini2,
++	[  --enable-cuberevo_mini2 enable cuberevo_mini2 stuff],
++	[AC_DEFINE(ENABLE_CUBEREVO_MINI2, 1, [enable cuberevo_mini2 stuff])])
 +
-+AC_ARG_ENABLE([hs7420],
-+	[AS_HELP_STRING(--enable-hs7420,    enable Fortis HS7420 stuff)],
-+	[case "${enableval}" in
-+		yes) enable_hs7420=true ;;
-+		no) enable_hs7420=false ;;
-+		*) AC_MSG_ERROR([bad value ${enableval} for --enable-hs7420]) ;;
-+	esac])
-+AM_CONDITIONAL([ENABLE_HS7420], [test x$enable_hs7420 = xtrue])
++AM_CONDITIONAL(ENABLE_CUBEREVO_MINI2, test "$enable_cuberevo_mini2" = "yes")
++if test "$enable_cuberevo_mini2" = "yes"; then
++	AC_DEFINE(ENABLE_CUBEREVO_MINI2, 1, [enable cuberevo_mini2 stuff])
++fi
 +
-+AC_ARG_ENABLE([hs7429],
-+	[AS_HELP_STRING(--enable-hs7429,    enable Fortis HS7429 stuff)],
-+	[case "${enableval}" in
-+		yes) enable_hs7429=true ;;
-+		no) enable_hs7429=false ;;
-+		*) AC_MSG_ERROR([bad value ${enableval} for --enable-hs7429]) ;;
-+	esac])
-+AM_CONDITIONAL([ENABLE_HS7429], [test x$enable_hs7429 = xtrue])
++AC_ARG_ENABLE(cuberevo_mini_fta,
++	[  --enable-cuberevo_mini_fta enable cuberevo_mini stuff],
++	[AC_DEFINE(ENABLE_CUBEREVO_MINI, 1, [enable cuberevo_mini_fta stuff])])
 +
-+AC_ARG_ENABLE([hs7810a],
-+	[AS_HELP_STRING(--enable-hs7810a,    enable Fortis HS7810A stuff)],
-+	[case "${enableval}" in
-+		yes) enable_hs7810a=true ;;
-+		no) enable_hs7810a=false ;;
-+		*) AC_MSG_ERROR([bad value ${enableval} for --enable-hs7810a]) ;;
-+	esac])
-+AM_CONDITIONAL([ENABLE_HS7810A], [test x$enable_hs7810a = xtrue])
++AM_CONDITIONAL(ENABLE_CUBEREVO_MINI_FTA, test "$enable_cuberevo_mini_fta" = "yes")
++if test "$enable_cuberevo_mini_fta" = "yes"; then
++	AC_DEFINE(ENABLE_CUBEREVO_MINI_FTA, 1, [enable cuberevo_mini_fta stuff])
++fi
 +
-+AC_ARG_ENABLE([hs7819],
-+	[AS_HELP_STRING(--enable-hs7819,    enable Fortis HS7819 stuff)],
-+	[case "${enableval}" in
-+		yes) enable_hs7819=true ;;
-+		no) enable_hs7819=false ;;
-+		*) AC_MSG_ERROR([bad value ${enableval} for --enable-hs7819]) ;;
-+	esac])
-+AM_CONDITIONAL([ENABLE_HS7819], [test x$enable_hs7819 = xtrue])
++AC_ARG_ENABLE(spark,
++	[  --enable-spark          enable spark stuff],
++	[AC_DEFINE(ENABLE_SPARK, 1, [enable spark stuff])])
++
++AM_CONDITIONAL(ENABLE_SPARK, test "$enable_spark" = "yes")
++if test "$enable_spark" = "yes"; then
++	AC_DEFINE(ENABLE_SPARK, 1, [enable spark stuff])
++fi
++
++AC_ARG_ENABLE(spark7162,
++	[  --enable-spark7162      enable spark7162 stuff],
++	[AC_DEFINE(ENABLE_SPARK7162, 1, [enable spark7162 stuff])])
++
++AM_CONDITIONAL(ENABLE_SPARK7162, test "$enable_spark7162" = "yes")
++if test "$enable_spark7162" = "yes"; then
++	AC_DEFINE(ENABLE_SPARK7162, 1, [enable spark stuff])
++fi
++
++AC_ARG_ENABLE(octagon1008,
++	[  --enable-octagon1008    enable octagon1008 stuff],
++	[AC_DEFINE(ENABLE_OCTAGON1008, 1, [enable octagon1008 stuff])])
++
++AM_CONDITIONAL(ENABLE_OCTAGON1008, test "$enable_octagon1008" = "yes")
++if test "$enable_octagon1008" = "yes"; then
++	AC_DEFINE(ENABLE_OCTAGON1008, 1, [enable octagon1008 stuff])
++fi
++
++AC_ARG_ENABLE(atevio7500,
++	[  --enable-atevio7500      enable atevio7500 stuff],
++	[AC_DEFINE(ENABLE_ATEVIO7500, 1, [enable atevio7500 stuff])])
++
++AM_CONDITIONAL(ENABLE_ATEVIO7500, test "$enable_atevio7500" = "yes")
++if test "$enable_atevio7500" = "yes"; then
++	AC_DEFINE(ENABLE_ATEVIO7500, 1, [enable atevio7500 stuff])
++fi
++
++AC_ARG_ENABLE(fortis_hdbox,
++	[  --enable-fortis_hdbox    enable fortis_hdbox stuff],
++	[AC_DEFINE(ENABLE_FORTIS_HDBOX, 1, [enable fortis_hdbox stuff])])
++
++AM_CONDITIONAL(ENABLE_FORTIS_HDBOX, test "$enable_fortis_hdbox" = "yes")
++if test "$enable_fortis_hdbox" = "yes"; then
++	AC_DEFINE(ENABLE_FORTIS_HDBOX, 1, [enable fortis_hdbox stuff])
++fi
++
++AC_ARG_ENABLE(hs7110,
++	[  --enable-hs7110          enable hs7110 stuff],
++	[AC_DEFINE(ENABLE_HS7110, 1, [enable hs7110 stuff])])
++
++AM_CONDITIONAL(ENABLE_HS7110, test "$enable_hs7110" = "yes")
++if test "$enable_hs7110" = "yes"; then
++	AC_DEFINE(ENABLE_HS7110, 1, [enable hs7110 stuff])
++fi
++
++AC_ARG_ENABLE(hs7119,
++	[  --enable-hs7119          enable hs7119 stuff],
++	[AC_DEFINE(ENABLE_HS7119, 1, [enable hs7119 stuff])])
++
++AM_CONDITIONAL(ENABLE_HS7119, test "$enable_hs7119" = "yes")
++if test "$enable_hs7119" = "yes"; then
++	AC_DEFINE(ENABLE_HS7119, 1, [enable hs7119 stuff])
++fi
++
++AC_ARG_ENABLE(hs7420,
++	[  --enable-hs7420          enable hs7420 stuff],
++	[AC_DEFINE(ENABLE_HS7420, 1, [enable hs7420 stuff])])
++
++AM_CONDITIONAL(ENABLE_HS7420, test "$enable_hs7420" = "yes")
++if test "$enable_hs7420" = "yes"; then
++	AC_DEFINE(ENABLE_HS7420, 1, [enable hs7420 stuff])
++fi
++
++AC_ARG_ENABLE(hs7429,
++	[  --enable-hs7429          enable hs7429 stuff],
++	[AC_DEFINE(ENABLE_HS7429, 1, [enable hs7429 stuff])])
++
++AM_CONDITIONAL(ENABLE_HS7429, test "$enable_hs7429" = "yes")
++if test "$enable_hs7429" = "yes"; then
++	AC_DEFINE(ENABLE_HS7429, 1, [enable hs7429 stuff])
++fi
++
++AC_ARG_ENABLE(hs7810a,
++	[  --enable-hs7810a         enable hs7810a stuff],
++	[AC_DEFINE(ENABLE_HS7810A, 1, [enable hs7810a stuff])])
++
++AM_CONDITIONAL(ENABLE_HS7810A, test "$enable_hs7810a" = "yes")
++if test "$enable_hs7810a" = "yes"; then
++	AC_DEFINE(ENABLE_HS7810A, 1, [enable hs7810a stuff])
++fi
++
++AC_ARG_ENABLE(hs7819,
++	[  --enable-hs7819          enable hs7819 stuff],
++	[AC_DEFINE(ENABLE_HS7819, 1, [enable hs7819 stuff])])
++
++AM_CONDITIONAL(ENABLE_HS7819, test "$enable_hs7819" = "yes")
++if test "$enable_hs7819" = "yes"; then
++	AC_DEFINE(ENABLE_HS7819, 1, [enable hs7819 stuff])
++fi
++
++AC_ARG_ENABLE(ufs910,
++	[  --enable-ufs910          enable ufs910 stuff],
++	[AC_DEFINE(ENABLE_UFS910, 1, [enable ufs910 stuff])])
++
++AM_CONDITIONAL(ENABLE_UFS910, test "$enable_ufs910" = "yes")
++if test "$enable_ufs910" = "yes"; then
++	AC_DEFINE(ENABLE_UFS910, 1, [enable ufs910 stuff])
++fi
++
++AC_ARG_ENABLE(ufs910,
++	[  --enable-ufs910          enable ufs910 stuff],
++	[AC_DEFINE(ENABLE_UFS910, 1, [enable ufs910 stuff])])
++
++AM_CONDITIONAL(ENABLE_UFS910, test "$enable_ufs910" = "yes")
++if test "$enable_ufs910" = "yes"; then
++	AC_DEFINE(ENABLE_UFS910, 1, [enable ufs910 stuff])
++fi
++
++AC_ARG_ENABLE(ufs912,
++	[  --enable-ufs912          enable ufs912 stuff],
++	[AC_DEFINE(ENABLE_UFS912, 1, [enable ufs912 stuff])])
++
++AM_CONDITIONAL(ENABLE_UFS912, test "$enable_ufs912" = "yes")
++if test "$enable_ufs912" = "yes"; then
++	AC_DEFINE(ENABLE_UFS912, 1, [enable ufs912 stuff])
++fi
++
++AC_ARG_ENABLE(ufs913,
++	[  --enable-ufs913          enable ufs913 stuff],
++	[AC_DEFINE(ENABLE_UFS913, 1, [enable ufs913 stuff])])
++
++AM_CONDITIONAL(ENABLE_UFS913, test "$enable_ufs913" = "yes")
++if test "$enable_ufs913" = "yes"; then
++	AC_DEFINE(ENABLE_UFS913, 1, [enable ufs913 stuff])
++fi
++
++AC_ARG_ENABLE(ufs922,
++	[  --enable-ufs922          enable ufs922 stuff],
++	[AC_DEFINE(ENABLE_UFS922, 1, [enable ufs922 stuff])])
++
++AM_CONDITIONAL(ENABLE_UFS922, test "$enable_ufs922" = "yes")
++if test "$enable_ufs922" = "yes"; then
++	AC_DEFINE(ENABLE_UFS922, 1, [enable ufs922 stuff])
++fi
++
++AC_ARG_ENABLE(ufc960,
++	[  --enable-ufc960          enable ufc960 stuff],
++	[AC_DEFINE(ENABLE_UFC960, 1, [enable ufc960 stuff])])
++
++AM_CONDITIONAL(ENABLE_UFC960, test "$enable_ufc960" = "yes")
++if test "$enable_ufc960" = "yes"; then
++	AC_DEFINE(ENABLE_UFC960, 1, [enable ufc960 stuff])
++fi
  
  AC_CHECK_LIB([udfread], [udfread_init])
  AC_CHECK_LIB([dl], [dlopen], [LIBDL_LIBS="-ldl"], [AC_MSG_ERROR([Could not find libdl])])
-@@ -56,7 +198,7 @@
+@@ -52,7 +312,7 @@
  
  AC_ARG_WITH(boxtype,
  	[  --with-boxtype=NAME box type [[none,dm7025,dm800...]]],
@@ -173,7 +284,7 @@
  AC_SUBST(BOXTYPE)
  AC_DEFINE_UNQUOTED(BOXTYPE,"$BOXTYPE",[box type])
  
-@@ -200,6 +342,23 @@
+@@ -197,6 +457,23 @@
  	PKG_CHECK_MODULES(AMADEC, libamadec)
  	PKG_CHECK_MODULES(DVBCSA, libdvbcsa)
  fi
@@ -188,16 +299,16 @@
 +fi
 +AM_CONDITIONAL(HAVE_GRAPHLCD, test x"$withgraphlcd" != xno)
 +
-+PKG_CHECK_MODULES([AVFORMAT], [libavformat >= 53.21.1])
-+PKG_CHECK_MODULES([AVCODEC], [libavcodec >= 54.28.0])
++#PKG_CHECK_MODULES([AVFORMAT], [libavformat >= 53.21.1])
++#PKG_CHECK_MODULES([AVCODEC], [libavcodec >= 54.28.0])
 +# do not know which version is exactly needed here...
-+PKG_CHECK_MODULES([AVUTIL], [libavutil])
-+PKG_CHECK_MODULES([SWSCALE], [libswscale])
-+PKG_CHECK_MODULES([SWRESAMPLE], [libswresample])
++#PKG_CHECK_MODULES([AVUTIL], [libavutil])
++#PKG_CHECK_MODULES([SWSCALE], [libswscale])
++#PKG_CHECK_MODULES([SWRESAMPLE], [libswresample])
  
- AC_CHECK_HEADERS([sys/klog.h])
- AC_CHECK_FUNCS([klogctl])
-@@ -264,8 +423,6 @@
+ AC_ARG_WITH(alphablendingacceleration,
+ 	AC_HELP_STRING([--with-alphablendingacceleration=never/always/auto], [alphablending acceleration strategy: never accelerate / always accelerate / automatically decide when to accelerate (default)]),
+@@ -313,8 +590,6 @@
  lib/python/Plugins/Extensions/TuxboxPlugins/Makefile
  lib/python/Plugins/Extensions/TuxboxPlugins/meta/Makefile
  lib/python/Plugins/PLi/Makefile
@@ -206,7 +317,7 @@
  lib/python/Plugins/SystemPlugins/DefaultServicesScanner/Makefile
  lib/python/Plugins/SystemPlugins/DefaultServicesScanner/meta/Makefile
  lib/python/Plugins/SystemPlugins/DiseqcTester/Makefile
-@@ -295,6 +452,50 @@
+@@ -344,6 +619,50 @@
  lib/python/Plugins/SystemPlugins/Videomode/meta/Makefile
  lib/python/Plugins/SystemPlugins/WirelessLan/Makefile
  lib/python/Plugins/SystemPlugins/WirelessLan/meta/Makefile
@@ -454,58 +565,6 @@
 +		<widget source="parent.selectedChoice" render="Label" position="bottom" size="*,44" font="FdLcD;44" halign="center" valign="center" />
  	</screen>
  </skin>
---- enigma2.org/lib/base/httpstream.cpp
-+++ enigma2/lib/base/httpstream.cpp
-@@ -1,4 +1,8 @@
- #include <cstdio>
-+
-+#if not defined ENABLE_MEDIAFWGSTREAMER
-+#include <openssl/evp.h>
-+#endif
- 
- #include <lib/base/httpstream.h>
- #include <lib/base/eerror.h>
-@@ -77,8 +81,28 @@
- 	int authenticationindex = hostname.find("@");
- 	if (authenticationindex > 0)
- 	{
-+#if defined ENABLE_MEDIAFWGSTREAMER
- 		authorizationData =  base64encode(hostname.substr(0, authenticationindex));
-+#else
-+		BIO *mbio, *b64bio, *bio;
-+		char *p = (char*)NULL;
-+		int length = 0;
-+		authorizationData = hostname.substr(0, authenticationindex);
- 		hostname = hostname.substr(authenticationindex + 1);
-+		mbio = BIO_new(BIO_s_mem());
-+		b64bio = BIO_new(BIO_f_base64());
-+		bio = BIO_push(b64bio, mbio);
-+		BIO_write(bio, authorizationData.c_str(), authorizationData.length());
-+		BIO_flush(bio);
-+		length = BIO_ctrl(mbio, BIO_CTRL_INFO, 0, (char*)&p);
-+		authorizationData = "";
-+		if (p && length > 0)
-+		{
-+			/* base64 output contains a linefeed, which we ignore */
-+			authorizationData.append(p, length - 1);
-+		}
-+		BIO_free_all(bio);
-+#endif
- 	}
- 	int customportindex = hostname.find(":");
- 	if (customportindex > 0)
-#--- enigma2.org/lib/base/ioprio.cpp
-#+++ enigma2/lib/base/ioprio.cpp
-#@@ -28,6 +28,9 @@
-# #elif defined(__mips__)
-# #define __NR_ioprio_set		4284
-# #define __NR_ioprio_get		4285
-#+#elif defined(__sh__) // the correct values for our kernel
-#+#define __NR_ioprio_set		288
-#+#define __NR_ioprio_get		289
-# #else
-# #error "Unsupported arch"
-# #endif
 --- enigma2.org/lib/base/Makefile.inc
 +++ enigma2/lib/base/Makefile.inc
 @@ -42,7 +42,7 @@
@@ -568,46 +627,6 @@
  };
  #endif
  
---- enigma2.org/lib/base/wrappers.cpp
-+++ enigma2/lib/base/wrappers.cpp
-@@ -4,8 +4,9 @@
- #include <sys/select.h>
- #include <arpa/inet.h>
- #include <netdb.h>
--#include <glib.h>
--
-+#if defined ENABLE_MEDIAFWGSTREAMER
-+#include <glib.h>
-+#endif
- #include <vector>
- #include <string>
- 
-@@ -261,6 +262,7 @@
- 	return handledcount;
- }
- 
-+#if defined ENABLE_MEDIAFWGSTREAMER
- std::string base64encode(const std::string str)
- {
- 	if(str.empty())
-@@ -310,3 +312,4 @@
- 	ssize_t size = ::readlink(link.c_str(), buf, sizeof(buf));
- 	return std::string(buf, (size > 0) ? size : 0);
- }
-+#endif
---- enigma2.org/lib/base/wrappers.h
-+++ enigma2/lib/base/wrappers.h
-@@ -7,8 +7,10 @@
- ssize_t writeAll(int fd, const void *buf, size_t count);
- int Select(int maxfd, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, struct timeval *timeout);
- int Connect(const char *hostname, int port, int timeoutsec);
-+#if defined ENABLE_MEDIAFWGSTREAMER
- std::string base64encode(const std::string str);
- std::string base64decode(const std::string hash);
- std::string readLink(const std::string &link);
-+#endif
- 
- #endif
 --- enigma2.org/lib/driver/Makefile.inc
 +++ enigma2/lib/driver/Makefile.inc
 @@ -9,7 +9,8 @@
@@ -644,7 +663,7 @@
  }
 --- enigma2.org/lib/driver/vfd.cpp
 +++ enigma2/lib/driver/vfd.cpp
-@@ -0,0 +1,808 @@
+@@ -0,0 +1,809 @@
 +/*
 + * vfd.cpp
 + *
@@ -703,7 +722,7 @@
 +#include <lib/base/eerror.h>
 +#include <lib/driver/vfd.h>
 +
-+#ifdef PLATFORM_TF7700
++#ifdef ENABLE_TF7700
 +#include "../../../apps/tools/tffpctl/frontpanel.h"
 +#endif
 +
@@ -739,21 +758,21 @@
 +	unsigned char length;
 +};
 +
-+#if defined PLATFORM_TF7700
++#if defined ENABLE_TF7700
 +	#define MAX_CHARS 8
 +	#define VFDLENGTH 8
-+#elif defined (PLATFORM_HS7810A) \
-+   || defined (PLATFORM_HS7819) \
-+   || defined (PLATFORM_HS7119) \
-+   || defined (PLATFORM_SPARK)
++#elif defined (ENABLE_HS7810A) \
++   || defined (ENABLE_HS7819) \
++   || defined (ENABLE_HS7119) \
++   || defined (ENABLE_SPARK)
 +	#define VFDLENGTH 4
-+#elif defined (PLATFORM_OCTAGON1008) \
-+   || defined(PLATFORM_HS7420) \
-+   || defined(PLATFORM_HS7429) \
-+   || defined (PLATFORM_SPARK7162)
++#elif defined (ENABLE_OCTAGON1008) \
++   || defined(ENABLE_HS7420) \
++   || defined(ENABLE_HS7429) \
++   || defined (ENABLE_SPARK7162)
 +	#define VFDLENGTH 8
-+#elif defined (PLATFORM_FORTIS_HDBOX) \
-+   || defined (PLATFORM_ATEVIO7500)
++#elif defined (ENABLE_FORTIS_HDBOX) \
++   || defined (ENABLE_ATEVIO7500)
 +	#define VFDLENGTH 12
 +#else
 +	#define VFDLENGTH 16
@@ -772,23 +791,24 @@
 +{
 +	file_vfd = 0;
 +	memset ( chars, ' ', 63 );
-+#if defined(PLATFORM_SPARK)
++#if defined(ENABLE_SPARK)
 +	vfd_type = 4;
-+#elif defined(PLATFORM_ATEVIO7500)
++#elif defined(ENABLE_ATEVIO7500)
 +	vfd_type = 5;
-+#elif defined(PLATFORM_FORTIS_HDBOX)
++#elif defined(ENABLE_FORTIS_HDBOX)
 +	vfd_type = 6;
-+#elif defined(PLATFORM_OCTAGON1008)
++#elif defined(ENABLE_OCTAGON1008)
 +	vfd_type = 7;
-+#elif defined(PLATFORM_SPARK7162)
++#elif defined(ENABLE_SPARK7162)
 +	vfd_type = 8;
-+#elif defined(PLATFORM_HS7810A) || defined(PLATFORM_HS7819) || defined(PLATFORM_HS7119)
++#warning "Building for a spark7162."
++#elif defined(ENABLE_HS7810A) || defined(ENABLE_HS7819) || defined(ENABLE_HS7119)
 +	vfd_type = 9;
-+#elif defined(PLATFORM_HS7110)
++#elif defined(ENABLE_HS7110)
 +	vfd_type = 10;
-+#elif defined(PLATFORM_HS7420) || defined(PLATFORM_HS7429)
++#elif defined(ENABLE_HS7420) || defined(ENABLE_HS7429)
 +	vfd_type = 11;
-+#elif defined(PLATFORM_UFS912) || defined(PLATFORM_UFS913)
++#elif defined(ENABLE_UFS912) || defined(ENABLE_UFS913)
 +	vfd_type = 12;
 +#else
 +	vfd_type = -1;
@@ -806,7 +826,7 @@
 +	//close (file_vfd);
 +}
 +
-+#ifdef PLATFORM_TF7700
++#ifdef ENABLE_TF7700
 +
 +char * getProgress()
 +{
@@ -924,31 +944,31 @@
 +{
 +	evfd vfd;
 +	blocked = true;
-+	#if defined PLATFORM_SPARK7162
++	#if defined ENABLE_SPARK7162
 +		char str[] = "SPARK7162 ENIGMA2";
-+	#elif defined PLATFORM_SPARK
++	#elif defined ENABLE_SPARK
 +		char str[] = "SPARK ENIGMA2";
-+	#elif defined PLATFORM_FORTIS_HDBOX
++	#elif defined ENABLE_FORTIS_HDBOX
 +		char str[] = "FS9000/9200 Enigma2";
-+	#elif defined PLATFORM_OCTAGON1008
++	#elif defined ENABLE_OCTAGON1008
 +		char str[] = "HS9510 Enigma2";
-+	#elif defined PLATFORM_ATEVIO7500
++	#elif defined ENABLE_ATEVIO7500
 +		char str[] = "HS8200 Enigma2";
-+	#elif defined PLATFORM_HS7119
++	#elif defined ENABLE_HS7119
 +		char str[] = "7119 Enigma2";
-+	#elif defined PLATFORM_HS7420
++	#elif defined ENABLE_HS7420
 +		char str[] = "HS7420 Enigma2";
-+	#elif defined PLATFORM_HS7810A
++	#elif defined ENABLE_HS7810A
 +		char str[] = "7810 Enigma2";
-+	#elif defined PLATFORM_HS7429
++	#elif defined ENABLE_HS7429
 +		char str[] = "HS7429 Enigma2";
-+	#elif defined PLATFORM_HS7819
++	#elif defined ENABLE_HS7819
 +		char str[] = "7819 Enigma2";
-+	#elif defined PLATFORM_UFS910
++	#elif defined ENABLE_UFS910
 +		char str[] = "UFS910 Enigma2";
-+	#elif defined PLATFORM_UFS912
++	#elif defined ENABLE_UFS912
 +		char str[] = "UFS912 Enigma2";
-+	#elif defined PLATFORM_UFS913
++	#elif defined ENABLE_UFS913
 +		char str[] = "UFS913 Enigma2";
 +	#else
 +		char str[] = "SH4 Git Enigma2";
@@ -958,24 +978,24 @@
 +	close(vfddev);
 +
 +	/*these boxes can control display brightness*/
-+	#if !defined(PLATFORM_FORTIS_HDBOX) \
-+	 && !defined(PLATFORM_OCTAGON1008) \
-+	 && !defined(PLATFORM_ATEVIO7500) \
-+	 && !defined(PLATFORM_CUBEREVO) \
-+	 && !defined(PLATFORM_CUBEREVO_MINI) \
-+	 && !defined(PLATFORM_CUBEREVO_MINI2) \
-+	 && !defined(PLATFORM_CUBEREVO_MINI_FTA) \
-+	 && !defined(PLATFORM_CUBEREVO_250HD) \
-+	 && !defined(PLATFORM_CUBEREVO_2000HD) \
-+	 && !defined(PLATFORM_CUBEREVO_9500HD) \
-+	 && !defined(PLATFORM_SPARK7162) \
-+	 && !defined PLATFORM_UFS912 \
-+	 && !defined PLATFORM_UFS913 \
-+	 && !defined(PLATFORM_HS7119) \
-+	 && !defined(PLATFORM_HS7420) \
-+	 && !defined(PLATFORM_HS7429) \
-+	 && !defined(PLATFORM_HS7810A) \
-+	 && !defined(PLATFORM_HS7819)
++	#if !defined(ENABLE_FORTIS_HDBOX) \
++	 && !defined(ENABLE_OCTAGON1008) \
++	 && !defined(ENABLE_ATEVIO7500) \
++	 && !defined(ENABLE_CUBEREVO) \
++	 && !defined(ENABLE_CUBEREVO_MINI) \
++	 && !defined(ENABLE_CUBEREVO_MINI2) \
++	 && !defined(ENABLE_CUBEREVO_MINI_FTA) \
++	 && !defined(ENABLE_CUBEREVO_250HD) \
++	 && !defined(ENABLE_CUBEREVO_2000HD) \
++	 && !defined(ENABLE_CUBEREVO_9500HD) \
++	 && !defined(ENABLE_SPARK7162) \
++	 && !defined ENABLE_UFS912 \
++	 && !defined ENABLE_UFS913 \
++	 && !defined(ENABLE_HS7119) \
++	 && !defined(ENABLE_HS7420) \
++	 && !defined(ENABLE_HS7429) \
++	 && !defined(ENABLE_HS7810A) \
++	 && !defined(ENABLE_HS7819)
 +	/* Others cycle their icons */
 +	for (int vloop = 0; vloop < 128; vloop++)
 +	{
@@ -1050,17 +1070,17 @@
 +	vfd.vfd_set_brightness(7); // set final brightness
 +	#endif
 +	vfd.vfd_clear_icons();
-+	#if !defined(PLATFORM_FORTIS_HDBOX) \
-+	 && !defined(PLATFORM_OCTAGON1008) \
-+	 && !defined(PLATFORM_ATEVIO7500) \
-+	 && !defined(PLATFORM_CUBEREVO) \
-+	 && !defined(PLATFORM_CUBEREVO_MINI) \
-+	 && !defined(PLATFORM_CUBEREVO_MINI2) \
-+	 && !defined(PLATFORM_CUBEREVO_MINI_FTA) \
-+	 && !defined(PLATFORM_CUBEREVO_250HD) \
-+	 && !defined(PLATFORM_CUBEREVO_2000HD) \
-+	 && !defined(PLATFORM_CUBEREVO_9500HD) \
-+	 && !defined(PLATFORM_SPARK7162)
++	#if !defined(ENABLE_FORTIS_HDBOX) \
++	 && !defined(ENABLE_OCTAGON1008) \
++	 && !defined(ENABLE_ATEVIO7500) \
++	 && !defined(ENABLE_CUBEREVO) \
++	 && !defined(ENABLE_CUBEREVO_MINI) \
++	 && !defined(ENABLE_CUBEREVO_MINI2) \
++	 && !defined(ENABLE_CUBEREVO_MINI_FTA) \
++	 && !defined(ENABLE_CUBEREVO_250HD) \
++	 && !defined(ENABLE_CUBEREVO_2000HD) \
++	 && !defined(ENABLE_CUBEREVO_9500HD) \
++	 && !defined(ENABLE_SPARK7162)
 +	//set all blocked icons
 +	for (int id = 0x10; id < 0x20; id++)
 +	{
@@ -1072,23 +1092,23 @@
 +}
 +#endif
 +
-+#if defined(PLATFORM_FORTIS_HDBOX) \
-+ || defined(PLATFORM_OCTAGON1008) \
-+ || defined(PLATFORM_ATEVIO7500) \
-+ || defined(PLATFORM_CUBEREVO) \
-+ || defined(PLATFORM_CUBEREVO_MINI) \
-+ || defined(PLATFORM_CUBEREVO_MINI2) \
-+ || defined(PLATFORM_CUBEREVO_MINI_FTA) \
-+ || defined(PLATFORM_CUBEREVO_250HD) \
-+ || defined(PLATFORM_CUBEREVO_2000HD) \
-+ || defined(PLATFORM_CUBEREVO_9500HD) \
-+ || defined(PLATFORM_SPARK) \
-+ || defined(PLATFORM_SPARK7162) \
-+ || defined(PLATFORM_HS7420) \
-+ || defined(PLATFORM_HS7429) \
-+ || defined(PLATFORM_HS7119) \
-+ || defined(PLATFORM_HS7810A) \
-+ || defined(PLATFORM_HS7819)
++#if defined(ENABLE_FORTIS_HDBOX) \
++ || defined(ENABLE_OCTAGON1008) \
++ || defined(ENABLE_ATEVIO7500) \
++ || defined(ENABLE_CUBEREVO) \
++ || defined(ENABLE_CUBEREVO_MINI) \
++ || defined(ENABLE_CUBEREVO_MINI2) \
++ || defined(ENABLE_CUBEREVO_MINI_FTA) \
++ || defined(ENABLE_CUBEREVO_250HD) \
++ || defined(ENABLE_CUBEREVO_2000HD) \
++ || defined(ENABLE_CUBEREVO_9500HD) \
++ || defined(ENABLE_SPARK) \
++ || defined(ENABLE_SPARK7162) \
++ || defined(ENABLE_HS7420) \
++ || defined(ENABLE_HS7429) \
++ || defined(ENABLE_HS7119) \
++ || defined(ENABLE_HS7810A) \
++ || defined(ENABLE_HS7819)
 +void evfd::vfd_write_string_scrollText(char* text)
 +{
 +	return;
@@ -1242,7 +1262,7 @@
 +	}
 +	memset (chars, ' ', 63);
 +	memcpy (chars, str, i);
-+#ifdef PLATFORM_TF7700
++#ifdef ENABLE_TF7700
 +	// request the display to cancel the start loop
 +	requested = true;
 +	while(blocked)
@@ -1355,15 +1375,15 @@
 +{
 +	int id;
 +
-+	#if defined PLATFORM_SPARK7162
++	#if defined ENABLE_SPARK7162
 +		for (id = 1; id < 46; id++)
 +	#elif defined FORTIS_HDBOX
 +		for (id = 1; id < 40; id++)
 +	#elif defined OCTAGON1008
 +		for (id = 1; id < 29; id++)
-+	#elif defined PLATFORM_ATEVIO7500
++	#elif defined ENABLE_ATEVIO7500
 +		for (id = 1; id < 23; id++);
-+	#elif defined PLATFORM_UFS912 || defined PLATFORM_UFS913
++	#elif defined ENABLE_UFS912 || defined ENABLE_UFS913
 +		for (id = 1; id < 16; id++)
 +	#else
 +		for (id = 0x10; id < 0x20; id++)
@@ -1411,13 +1431,13 @@
 +
 +void evfd::vfd_set_fan(bool onoff)
 +{
-+#if defined(PLATFORM_CUBEREVO) \
-+ || defined(PLATFORM_CUBEREVO_MINI) \
-+ || defined(PLATFORM_CUBEREVO_MINI2) \
-+ || defined(PLATFORM_CUBEREVO_MINI_FTA) \
-+ || defined(PLATFORM_CUBEREVO_250HD) \
-+ || defined(PLATFORM_CUBEREVO_2000HD) \
-+ || defined(PLATFORM_CUBEREVO_9500HD)
++#if defined(ENABLE_CUBEREVO) \
++ || defined(ENABLE_CUBEREVO_MINI) \
++ || defined(ENABLE_CUBEREVO_MINI2) \
++ || defined(ENABLE_CUBEREVO_MINI_FTA) \
++ || defined(ENABLE_CUBEREVO_250HD) \
++ || defined(ENABLE_CUBEREVO_2000HD) \
++ || defined(ENABLE_CUBEREVO_9500HD)
 +	struct vfd_ioctl_data data;
 +
 +	memset(&data, 0, sizeof(struct vfd_ioctl_data));
@@ -1464,7 +1484,7 @@
 +
 +/* Note: C++ handles the #if, #elif, #else and #endif well, but swig does not, always picking the first set.
 +   Do not use them here, making this file box dependent... */
-+#if !defined(PLATFORM_HDBOX)
++#if !defined(ENABLE_HDBOX)
 +typedef enum { USB = 0x10, HD, HDD, LOCK, BT, MP3, MUSIC, DD, MAIL, MUTE, PLAY, PAUSE, FF, FR, REC, CLOCK } tvfd_icon;
 +typedef enum { RED_LED = 0, GREEN_LED } tvfd_led;
 +#else
@@ -1586,7 +1606,7 @@
  		eDebugNoNewLineStart("[eDVBVideo%d] VIDEO_PLAY ", m_dev);
  		if (::ioctl(m_fd, VIDEO_PLAY) < 0)
  			eDebugNoNewLine("failed: %m\n");
-@@ -677,7 +693,11 @@
+@@ -707,7 +723,11 @@
  		pes.pes_type = DMX_PES_PCR3;
  		break;
  	}
@@ -1598,7 +1618,7 @@
  	eDebugNoNewLineStart("[eDVBPCR%d] DMX_SET_PES_FILTER pid=0x%04x ", m_dev, pid);
  	if (::ioctl(m_fd_demux, DMX_SET_PES_FILTER, &pes) < 0)
  	{
-@@ -685,6 +705,7 @@
+@@ -715,6 +735,7 @@
  		return -errno;
  	}
  	eDebugNoNewLine("ok\n");
@@ -1606,7 +1626,7 @@
  	eDebugNoNewLineStart("[eDVBPCR%d] DEMUX_START ", m_dev);
  	if (::ioctl(m_fd_demux, DMX_START) < 0)
  	{
-@@ -692,6 +713,7 @@
+@@ -722,6 +743,7 @@
  		return -errno;
  	}
  	eDebugNoNewLine("ok\n");
@@ -1614,7 +1634,7 @@
  	return 0;
  }
  
-@@ -747,7 +769,11 @@
+@@ -777,7 +799,11 @@
  		pes.pes_type = DMX_PES_TELETEXT3;
  		break;
  	}
@@ -1626,7 +1646,7 @@
  
  	eDebugNoNewLineStart("[eDVBText%d] DMX_SET_PES_FILTER pid=0x%04x ", m_dev, pid);
  	if (::ioctl(m_fd_demux, DMX_SET_PES_FILTER, &pes) < 0)
-@@ -756,6 +782,7 @@
+@@ -786,6 +812,7 @@
  		return -errno;
  	}
  	eDebugNoNewLine("ok\n");
@@ -1634,7 +1654,7 @@
  	eDebugNoNewLineStart("[eDVBText%d] DEMUX_START ", m_dev);
  	if (::ioctl(m_fd_demux, DMX_START) < 0)
  	{
-@@ -763,6 +790,7 @@
+@@ -793,6 +820,7 @@
  		return -errno;
  	}
  	eDebugNoNewLine("ok\n");
@@ -1642,7 +1662,7 @@
  	return 0;
  }
  
-@@ -899,12 +927,28 @@
+@@ -929,12 +957,28 @@
  		int *s = state_table[m_state];
  		if (changed & (changeState|changeVideo) && m_video)
  		{
@@ -1671,7 +1691,7 @@
  		}
  		if (changed & (changeState|changeAudio) && m_audio)
  		{
-@@ -1205,6 +1249,10 @@
+@@ -1235,6 +1279,10 @@
  		{
  			struct stat s;
  			fstat(f, &s);
@@ -1682,7 +1702,7 @@
  			if (m_video_clip_fd == -1)
  				m_video_clip_fd = open("/dev/dvb/adapter0/video0", O_WRONLY);
  			if (m_video_clip_fd >= 0)
-@@ -1225,8 +1273,10 @@
+@@ -1255,8 +1303,10 @@
  
  				if (ioctl(m_video_clip_fd, VIDEO_SELECT_SOURCE, VIDEO_SOURCE_MEMORY) < 0)
  					eDebug("[eTSMPEGDecoder] VIDEO_SELECT_SOURCE MEMORY failed: %m");
@@ -1693,7 +1713,7 @@
  				if (ioctl(m_video_clip_fd, VIDEO_PLAY) < 0)
  					eDebug("[eTSMPEGDecoder] VIDEO_PLAY failed: %m");
  				if (ioctl(m_video_clip_fd, VIDEO_CONTINUE) < 0)
-@@ -1243,7 +1293,9 @@
+@@ -1273,7 +1323,9 @@
  				if (!seq_end_avail)
  					write(m_video_clip_fd, seq_end, sizeof(seq_end));
  				writeAll(m_video_clip_fd, stuffing, 8192);
@@ -1735,7 +1755,7 @@
  	ioctl(vtunerFd, VTUNER_SET_HAS_OUTPUTS, "no");
  	ioctl(vtunerFd, VTUNER_SET_ADAPTER, nr);
  
-@@ -954,12 +938,13 @@
+@@ -959,12 +943,13 @@
  	if (i == m_demux.end())
  		return -1;
  
@@ -1752,7 +1772,7 @@
  	// find first unused demux which is on same adapter as frontend
  	while (i != m_demux.end())
  	{
-@@ -987,52 +972,49 @@
+@@ -992,52 +977,49 @@
  		}
  		i++;
  	}
@@ -1841,7 +1861,7 @@
  		}
  	}
  #endif
-@@ -1041,10 +1023,10 @@
+@@ -1046,10 +1028,10 @@
  	{
  		unused->m_demux->getCAAdapterID(a);
  		unused->m_demux->getCADemuxID(d);
@@ -1855,7 +1875,7 @@
  		else
  			demux->get().setSourcePVR(0);
  		return 0;
-@@ -1084,14 +1066,14 @@
+@@ -1089,14 +1071,14 @@
  	if (!simulate && m_cached_channel)
  	{
  		eDVBChannel *cache_chan = (eDVBChannel*)&(*m_cached_channel);
@@ -1872,7 +1892,7 @@
  		m_cached_channel_state_changed_conn.disconnect();
  		m_cached_channel=0;
  		m_releaseCachedChannelTimer->stop();
-@@ -2167,6 +2149,12 @@
+@@ -2172,6 +2154,12 @@
  
  	if (m_pvr_fd_dst < 0)
  	{
@@ -1885,7 +1905,7 @@
  		ePtr<eDVBAllocatedDemux> &demux = m_demux ? m_demux : m_decoder_demux;
  		if (demux)
  		{
-@@ -2182,6 +2170,7 @@
+@@ -2187,6 +2175,7 @@
  			eDebug("[eDVBChannel] no demux allocated yet.. so its not possible to open the dvr device!!");
  			return -ENODEV;
  		}
@@ -1905,8 +1925,8 @@
  
  	RESULT connectStateChange(const sigc::slot1<void,iDVBChannel*> &stateChange, ePtr<eConnection> &connection);
  	RESULT connectEvent(const sigc::slot2<void,iDVBChannel*,int> &eventChange, ePtr<eConnection> &connection);
---- enigma2/lib/dvb/frontend.cpp
-+++ enigma2.org/lib/dvb/frontend.cpp
+--- enigma2.org/lib/dvb/frontend.cpp
++++ enigma2/lib/dvb/frontend.cpp
 @@ -16,6 +16,10 @@
  
  #ifndef I2C_SLAVE_FORCE
@@ -1918,7 +1938,7 @@
  #endif
  
  #define eDebugNoSimulate(x...) \
-@@ -2954,10 +2958,10 @@
+@@ -3025,10 +3029,10 @@
  		case SYS_ISDBT:		ss << " ISDBT"; break;
  		case SYS_UNDEFINED:	ss << " UNDEFINED"; break;
  		case SYS_DVBC_ANNEX_A:	ss << " DVBC_ANNEX_A"; break;
@@ -1934,12 +1954,12 @@
  
 --- enigma2.org/lib/dvb/epgcache.cpp
 +++ enigma2/lib/dvb/epgcache.cpp
-@@ -2155,6 +2155,45 @@
+@@ -2159,6 +2159,45 @@
  {
  	int map;
  	iDVBSectionReader *reader = NULL;
 +#ifdef __sh__
-+/* Dagobert: this is still very hacky, but currently I cant find
++/* Dagobert: this is still very hacky, but currently I cannot find
 + * the origin of the readData call. I think the caller is
 + * responsible for the unaligned data pointer in this call.
 + * So we malloc our own memory here which _should_ be aligned.
@@ -1980,7 +2000,7 @@
  	switch (source)
  	{
  		case NOWNEXT:
-@@ -2279,6 +2318,10 @@
+@@ -2283,6 +2322,10 @@
  			cache->sectionRead(data, source, this);
  		}
  	}
@@ -1991,7 +2011,7 @@
  }
  
  #if ENABLE_FREESAT
---- enigma2.org/lib/base/filepush.cpp
+--- enigma2.org/lib/dvb/filepush.cpp
 +++ enigma2/lib/dvb/filepush.cpp
 @@ -4,6 +4,15 @@
  #include <fcntl.h>
@@ -2079,7 +2099,7 @@
  	sendEvent(evtStopped);
  
  	{ /* mutex lock scope */
---- enigma2.org/lib/base/filepush.h
+--- enigma2.org/lib/dvb/filepush.h
 +++ enigma2/lib/dvb/filepush.h
 @@ -13,6 +13,10 @@
  public:
@@ -2094,7 +2114,7 @@
  class eFilePushThread: public eThread, public sigc::trackable, public iObject
 --- enigma2.org/lib/dvb/pmt.cpp
 +++ enigma2/lib/dvb/pmt.cpp
-@@ -850,6 +850,11 @@
+@@ -852,6 +852,11 @@
  			eDVBCIInterfaces::getInstance()->addPMTHandler(this);
  	} else if (!simulate) // no simulation of playback services
  	{
@@ -2106,47 +2126,6 @@
  		if (!ref.getServiceID().get() /* incorrect sid in meta file or recordings.epl*/ )
  		{
  			eDVBTSTools tstools;
---- enigma2.org/lib/dvb/streamserver.cpp
-+++ enigma2/lib/dvb/streamserver.cpp
-@@ -1,6 +1,9 @@
- #include <sys/select.h>
- #include <unistd.h>
- #include <string.h>
-+#if not defined ENABLE_MEDIAFWGSTREAMER
-+#include <openssl/evp.h>
-+#endif
- #include <sys/types.h>
- #include <pwd.h>
- #include <shadow.h>
-@@ -93,7 +96,28 @@
- 				std::string hash = request.substr(pos + 21);
- 				pos = hash.find('\r');
- 				hash = hash.substr(0, pos);
-+#if defined ENABLE_MEDIAFWGSTREAMER
- 				authentication = base64decode(hash);
-+#else
-+				hash += "\n";
-+				{
-+					char *in, *out;
-+					in = strdup(hash.c_str());
-+					out = (char*)calloc(1, hash.size());
-+					if (in && out)
-+					{
-+						BIO *b64, *bmem;
-+						b64 = BIO_new(BIO_f_base64());
-+						bmem = BIO_new_mem_buf(in, hash.size());
-+						bmem = BIO_push(b64, bmem);
-+						BIO_read(bmem, out, hash.size());
-+						BIO_free_all(bmem);
-+						authentication.append(out, hash.size());
-+					}
-+					free(in);
-+					free(out);
-+				}
-+#endif
- 				pos = authentication.find(':');
- 				if (pos != std::string::npos)
- 				{
 --- enigma2.org/lib/dvb/streamserver.h
 +++ enigma2/lib/dvb/streamserver.h
 @@ -4,6 +4,8 @@
@@ -2158,6 +2137,35 @@
  
  #ifndef SWIG
  class eStreamServer;
+--- enigma2.org/lib/dvb/tstools.cpp
++++ enigma2/lib/dvb/tstools.cpp
+@@ -170,7 +170,7 @@
+ 			const unsigned char* match = (const unsigned char*)memchr(packet+1, 0x47, 188-1);
+ 			if (match != NULL)
+ 			{
+-				eDebug("[eDVBTSTools] getPTS resync %ld", match - packet);
++				eDebug("[eDVBTSTools] getPTS resync %ld", (long int)(match - packet));
+ 				offset += (match - packet) - 188;
+ 			}
+ 			else
+@@ -413,7 +413,7 @@
+ 					continue;
+ 				}
+ 
+-				eDebug("[eDVBTSTools] getOffset using: %lld:%lld -> %ld:%ld", l->first, u->first, l->second, u->second);
++				eDebug("[eDVBTSTools] getOffset using: %lld:%lld -> %ld:%ld", l->first, u->first, (long int)l->second, (long int)u->second);
+ 
+ 				int bitrate;
+ 
+@@ -690,7 +690,7 @@
+ 				if ((l->second > off) || (u->second < off))
+ 				{
+ 					eDebug("[eDVBTSTools] takeSample ignoring sample %ld %jd %ld (%llu %llu %llu)",
+-						l->second, (intmax_t)off, u->second, l->first, p, u->first);
++						(long int)l->second, (intmax_t)off, (long int)u->second, l->first, p, u->first);
+ 					return 1;
+ 				}
+ 			}
 --- enigma2.org/lib/dvb/volume.cpp
 +++ enigma2/lib/dvb/volume.cpp
 @@ -45,7 +45,9 @@
@@ -2733,9 +2741,9 @@
 +#define T_NEW_T_C           0x87	// new tc / reply to t_request  primitive   h-->m
 +#define T_T_C_ERROR         0x77	// error creating tc            primitive   h-->m
 +#define T_DATA_LAST         0xA0	// convey data from higher      constructed h<->m
-+				 // layers
++                                	// layers
 +#define T_DATA_MORE         0xA1	// convey data from higher      constructed h<->m
-+				 // layers
++                                	// layers
 +
 +typedef enum {eDataTimeout, eDataError, eDataReady, eDataWrite, eDataStatusChanged} eData;
 +
@@ -2832,7 +2840,7 @@
  #ifdef ATI_ACCEL
  extern int ati_accel_init(void);
  extern void ati_accel_close(void);
-@@ -53,6 +70,9 @@
+@@ -55,6 +72,9 @@
  {
  	instance = this;
  
@@ -2842,7 +2850,7 @@
  #ifdef ATI_ACCEL
  	ati_accel_init();
  #endif
-@@ -63,6 +83,9 @@
+@@ -65,6 +85,9 @@
  
  gAccel::~gAccel()
  {
@@ -2852,7 +2860,7 @@
  #ifdef ATI_ACCEL
  	ati_accel_close();
  #endif
-@@ -146,6 +169,69 @@
+@@ -148,6 +171,69 @@
  
  int gAccel::blit(gUnmanagedSurface *dst, gUnmanagedSurface *src, const eRect &p, const eRect &area, int flags)
  {
@@ -2922,7 +2930,7 @@
  #ifdef ATI_ACCEL
  	ati_accel_blit(
  		src->data_phys, src->x, src->y, src->stride,
-@@ -274,9 +360,9 @@
+@@ -298,9 +384,9 @@
  
  void gAccel::accelFree(gUnmanagedSurface* surface)
  {
@@ -2934,6 +2942,16 @@
  #ifdef ACCEL_DEBUG
  		eDebug("[gAccel] [%s] %p->%x %dx%d:%d", __func__, surface, surface->data_phys, surface->x, surface->y, surface->bpp);
  #endif
+--- enigma2.org/lib/gdi/epng.cpp
++++ enigma2/lib/gdi/epng.cpp
+@@ -11,6 +11,7 @@
+ #include <lib/base/elock.h>
+ 
+ extern "C" {
++#undef HAVE_STDLIB_H
+ #include <jpeglib.h>
+ }
+ 
 --- enigma2.org/lib/gdi/fb.cpp
 +++ enigma2/lib/gdi/fb.cpp
 @@ -8,6 +8,9 @@
@@ -3304,6 +3322,18 @@
  
  	int lock();
  	void unlock();
+--- enigma2.org/lib/gdi/font.cpp
++++ enigma2/lib/gdi/font.cpp
+@@ -26,6 +26,9 @@
+ #include <lib/base/init.h>
+ #include <lib/base/init_num.h>
+ 
++// undefine macro to fix build
++// against fribidi 0.19.7+
++#undef HAVE_CONFIG_H
+ #include <fribidi/fribidi.h>
+ 
+ #include <map>
 --- enigma2.org/lib/gdi/gfbdc.cpp
 +++ enigma2/lib/gdi/gfbdc.cpp
 @@ -25,8 +25,8 @@
@@ -3426,7 +3456,7 @@
  	gLCDDC();
 --- enigma2.org/lib/gdi/gpixmap.cpp
 +++ enigma2/lib/gdi/gpixmap.cpp
-@@ -152,11 +152,13 @@
+@@ -222,11 +222,13 @@
  	if (data)
  	{
  		delete [] (unsigned char*)data;
@@ -3440,7 +3470,7 @@
  	}
  }
  
-@@ -200,6 +202,9 @@
+@@ -270,6 +272,9 @@
  			if (surface->clut.data && color < surface->clut.colors)
  				col = surface->clut.data[color].argb();
  			else
@@ -3450,7 +3480,7 @@
  				col = 0x10101 * color;
  
  			col^=0xFF000000;
-@@ -234,6 +239,9 @@
+@@ -327,6 +332,9 @@
  			uint32_t col;
  
  			col = color.argb();
@@ -3460,7 +3490,7 @@
  			col^=0xFF000000;
  
  #ifdef GPIXMAP_DEBUG
-@@ -441,7 +449,8 @@
+@@ -590,7 +598,8 @@
  		Stopwatch s;
  #endif
  		if (accel) {
@@ -3469,8 +3499,8 @@
 +					(!gAccel::getInstance()->blit(surface, src.surface, area, srcarea, flag))) {
  #ifdef GPIXMAP_DEBUG
  				s.stop();
- 				eDebug("[gPixmap] [BLITBENCH] accel blit took %u us", s.elapsed_us());
-@@ -809,6 +818,7 @@
+ 				eDebug("[gPixmap] [BLITBENCH] accel blit (%d bytes) took %u us", srcarea.surface() * src.surface->bypp, s.elapsed_us());
+@@ -979,6 +988,7 @@
  	}
  
  	delete [] lookup;
@@ -3488,9 +3518,9 @@
  eDBoxLCD::eDBoxLCD()
  {
  	int xres = 132, yres = 64, bpp = 8;
-@@ -296,3 +297,128 @@
- 	}
- #endif
+@@ -301,3 +302,128 @@
+ {
+ 	return;
  }
 +#else
 +void eDBoxLCD::setFlipped(bool onoff)
@@ -3637,7 +3667,7 @@
  #define LCD_CONTRAST_MIN 0
  #define LCD_CONTRAST_MAX 63
  #define LCD_BRIGHTNESS_MIN 0
-@@ -58,6 +69,13 @@
+@@ -59,6 +70,13 @@
  {
  	unsigned char inverted;
  	bool flipped;
@@ -3683,7 +3713,7 @@
 +#include <lib/base/ebase.h>
 +
 +static int fb_fd;
-+static int exec_list(void);
++//static int exec_list(void);
 +
 +int stmfb_accel_init(void)
 +{
@@ -3741,27 +3771,6 @@
 +{
 +//	printf("unimplemented bcm_accel_fill\n");
 +}
---- enigma2.org/lib/Makefile.am
-+++ enigma2/lib/Makefile.am
-@@ -6,6 +6,18 @@
- 	-I$(top_srcdir)/include \
- 	-include Python.h \
- 	-include $(top_builddir)/enigma2_config.h
-+
-+if ENABLE_LIBEPLAYER3
-+if ENABLE_MEDIAFWGSTREAMER
-+AM_CPPFLAGS += \
-+	-I$(top_srcdir)/../../apps/tools/libeplayer3/include
-+else
-+AM_CPPFLAGS += \
-+	-D__STDC_CONSTANT_MACROS \
-+	-D__STDC_FORMAT_MACROS \
-+	-I$(top_srcdir)/../../apps/tools/eplayer3/include
-+endif
-+endif
- 
- # initialize these, to be filled with targets in the included files
- noinst_LIBRARIES=
 --- enigma2.org/lib/python/Components/Converter/RemainingToText.py
 +++ enigma2/lib/python/Components/Converter/RemainingToText.py
 @@ -8,6 +8,9 @@
@@ -3801,7 +3810,7 @@
  						prefix = "+"
 --- enigma2.org/lib/python/Components/Harddisk.py
 +++ enigma2/lib/python/Components/Harddisk.py
-@@ -46,6 +46,7 @@
+@@ -48,6 +48,7 @@
  class Harddisk:
  	def __init__(self, device, removable=False):
  		self.device = device
@@ -3809,15 +3818,15 @@
  
  		if os.access("/dev/.udev", 0):
  			self.type = DEVTYPE_UDEV
-@@ -53,7 +54,6 @@
- 			self.type = DEVTYPE_DEVFS
+@@ -56,7 +57,6 @@
  		else:
  			print "[Harddisk] Unable to determine structure of /dev"
+ 			self.type = -1
 -			self.card = False
  
  		self.max_idle_time = 0
  		self.idle_running = False
-@@ -82,25 +82,30 @@
+@@ -85,25 +85,30 @@
  			self.card = "sdhci" in self.phys_path
  
  		elif self.type == DEVTYPE_DEVFS:
@@ -3863,7 +3872,7 @@
  
  	def __lt__(self, ob):
  		return self.device < ob.device
-@@ -241,7 +246,9 @@
+@@ -247,7 +253,9 @@
  
  	def createPartition(self):
  		cmd = 'printf "8,\n;0,0\n;0,0\n;0,0\ny\n" | sfdisk -f -uS ' + self.disk_path
@@ -3873,7 +3882,7 @@
  		return (res >> 8)
  
  	def mkfs(self):
-@@ -284,6 +291,7 @@
+@@ -290,6 +298,7 @@
  		return 1
  
  	def killPartitionTable(self):
@@ -3881,7 +3890,7 @@
  		zero = 512 * '\0'
  		h = open(self.dev_path, 'wb')
  		# delete first 9 sectors, which will likely kill the first partition too
-@@ -300,25 +308,36 @@
+@@ -306,25 +315,30 @@
  		h.close()
  
  	def createInitializeJob(self):
@@ -3927,16 +3936,10 @@
 +			task.args.append(self.disk_path)
 +
 +			print "[Harddisk init] Wait for finish of deleting partition table on ", self.disk_path
-+			task = Task.ConditionTask(job, _("Waiting for delete of partition table"), timeoutCount=20)
-+			task.check = lambda: not os.path.exists(self.partitionPath("1"))
-+			task.weighting = 1
-+		else:
-+			self.disk_path = "/dev/" + self.device
-+			print "[Harddisk init] No partitions found on ", self.disk_path
  
  		if os.path.exists('/usr/sbin/parted'):
  			use_parted = True
-@@ -329,7 +348,9 @@
+@@ -335,7 +355,9 @@
  			else:
  				use_parted = False
  
@@ -3947,7 +3950,7 @@
  		task.weighting = 5
  		if use_parted:
  			task.setTool('parted')
-@@ -341,9 +362,17 @@
+@@ -347,9 +369,17 @@
  				alignment = 'opt'
  			if size > 2097151:
  				parttype = 'gpt'
@@ -3966,7 +3969,7 @@
  		else:
  			task.setTool('sfdisk')
  			task.args.append('-f')
-@@ -351,51 +380,102 @@
+@@ -357,51 +387,102 @@
  			task.args.append(self.disk_path)
  			if size > 128000:
  				# Start at sector 8 to better support 4k aligned disks
@@ -4096,16 +4099,7 @@
  		return job
  
  	def initialize(self):
-@@ -427,7 +507,7 @@
- 
- 	def createExt4ConversionJob(self):
- 		if not isFileSystemSupported('ext4'):
--			raise Exception, _("You system does not support ext4")
-+			raise Exception, _("Your system does not support ext4")
- 		job = Task.Job(_("Converting ext3 to ext4..."))
- 		if not os.path.exists('/sbin/tune2fs'):
- 			addInstallTask(job, 'e2fsprogs-tune2fs')
-@@ -683,16 +763,19 @@
+@@ -653,16 +734,19 @@
  				self.devices_scanned_on_init.append((blockdev, removable, is_cdrom, medium_found))
  
  	def getAutofsMountpoint(self, device):
@@ -4129,7 +4123,7 @@
  		return None
  
  	def addHotplugPartition(self, device, physdev = None):
-@@ -708,6 +791,10 @@
+@@ -678,6 +762,10 @@
  		error, blacklisted, removable, is_cdrom, partitions, medium_found = self.getBlockDevInfo(device)
  		if not blacklisted and medium_found:
  			description = self.getUserfriendlyDeviceName(device, physdev)
@@ -4140,7 +4134,7 @@
  			p = Partition(mountpoint = self.getMountpoint(device), description = description, force_mounted = True, device = device)
  			self.partitions.append(p)
  			if p.mountpoint: # Plugins won't expect unmounted devices
-@@ -800,7 +887,7 @@
+@@ -770,7 +858,7 @@
  		try:
  			description = readFile("/sys" + phys + "/model")
  		except IOError, s:
@@ -4149,7 +4143,7 @@
  		# not wholedisk and not partition 1
  		if part and part != 1:
  			description += _(" (Partition %d)") % part
-@@ -841,7 +928,7 @@
+@@ -811,7 +899,7 @@
  			dev = self.hdd.disk_path.split('/')[-1]
  			open('/dev/nomount.%s' % dev, "wb").close()
  		except Exception, e:
@@ -4158,7 +4152,7 @@
  		self.setTool('umount')
  		self.args.append('-f')
  		for dev in self.hdd.enumMountDevices():
-@@ -849,7 +936,7 @@
+@@ -819,7 +907,7 @@
  			self.postconditions.append(Task.ReturncodePostcondition())
  			self.mountpoints.append(dev)
  		if not self.mountpoints:
@@ -4167,7 +4161,7 @@
  			self.cmd = 'true'
  			self.args = [self.cmd]
  	def afterRun(self):
-@@ -857,7 +944,7 @@
+@@ -827,7 +915,7 @@
  			try:
  				os.rmdir(path)
  			except Exception, ex:
@@ -4176,7 +4170,7 @@
  
  class MountTask(Task.LoggingTask):
  	def __init__(self, job, hdd):
-@@ -868,7 +955,7 @@
+@@ -838,7 +926,7 @@
  			dev = self.hdd.disk_path.split('/')[-1]
  			os.unlink('/dev/nomount.%s' % dev)
  		except Exception, e:
@@ -4185,7 +4179,7 @@
  		# try mounting through fstab first
  		if self.hdd.mount_device is None:
  			dev = self.hdd.partitionPath("1")
-@@ -897,7 +984,7 @@
+@@ -867,7 +955,7 @@
  	def prepare(self):
  		self.fsck_state = None
  	def processOutput(self, data):
@@ -4281,7 +4275,7 @@
  		if x[0] == orbpos:
 --- enigma2-nightly.org/lib/python/Components/SystemInfo.py
 +++ enigma2-nightly/lib/python/Components/SystemInfo.py
-@@ -53,7 +53,7 @@
+@@ -61,7 +61,7 @@
  SystemInfo["3DZNorm"] = fileCheck("/proc/stb/fb/znorm") or fileCheck("/proc/stb/fb/primary/zoffset")
  SystemInfo["Blindscan_t2_available"] = fileCheck("/proc/stb/info/vumodel")
  SystemInfo["RcTypeChangable"] = not(HardwareInfo().get_device_model().startswith('et8500') or HardwareInfo().get_device_model().startswith('et7')) and pathExists('/proc/stb/ir/rc/type')
@@ -4290,14 +4284,35 @@
  SystemInfo["HasForceLNBOn"] = fileCheck("/proc/stb/frontend/fbc/force_lnbon")
  SystemInfo["HasForceToneburst"] = fileCheck("/proc/stb/frontend/fbc/force_toneburst")
  SystemInfo["HasBypassEdidChecking"] = fileCheck("/proc/stb/hdmi/bypass_edid_checking")
+@@ -75,15 +75,15 @@
+ SystemInfo["HasColordepth"] = fileCheck("/proc/stb/video/hdmi_colordepth")
+ SystemInfo["HasFrontDisplayPicon"] = HardwareInfo().get_device_model() in ("vusolo4k", "et8500")
+ SystemInfo["Has24hz"] = fileCheck("/proc/stb/video/videomode_24hz")
+-SystemInfo["Has2160p"] = fileHas("/proc/stb/video/videomode_preferred", "2160p50")
++SystemInfo["Has2160p"] = False
+ SystemInfo["HasHDMIpreemphasis"] = fileCheck("/proc/stb/hdmi/preemphasis")
+ SystemInfo["HasColorimetry"] = fileCheck("/proc/stb/video/hdmi_colorimetry")
+ SystemInfo["HasHdrType"] = fileCheck("/proc/stb/video/hdmi_hdrtype")
+ SystemInfo["HasHDMI-CEC"] = HardwareInfo().has_hdmi() and fileExists("/usr/lib/enigma2/python/Plugins/SystemPlugins/HdmiCEC/plugin.pyo")
+-SystemInfo["HasYPbPr"] = HardwareInfo().get_device_model() in ("dm8000", "et5000", "et6000", "et6500", "et9000", "et9200", "et9500", "et10000", "formuler1", "mbtwinplus", "spycat", "vusolo", "vuduo", "vuduo2", "vuultimo")
+-SystemInfo["HasScart"] = HardwareInfo().get_device_model() in ("dm8000", "et4000", "et6500", "et8000", "et9000", "et9200", "et9500", "et10000", "formuler1", "hd1100", "hd1200", "hd1265", "hd2400", "vusolo", "vusolo2", "vuduo", "vuduo2", "vuultimo", "vuuno", "xp1000")
+-SystemInfo["HasSVideo"] = HardwareInfo().get_device_model() in ("dm8000")
+-SystemInfo["HasComposite"] = HardwareInfo().get_device_model() not in ("i55", "gbquad4k", "gbue4k", "hd1500", "osnino", "osninoplus", "purehd", "purehdse", "revo4k", "vusolo4k", "vuzero4k")
++SystemInfo["HasYPbPr"] = HardwareInfo().get_device_model() in ("atevio7500", "fortis_hdbox", "hs7420", "hs7429")
++SystemInfo["HasScart"] = True
++SystemInfo["HasSVideo"] = False
++SystemInfo["HasComposite"] = True
+ SystemInfo["HasAutoVolume"] = fileExists("/proc/stb/audio/avl_choices") and fileCheck("/proc/stb/audio/avl")
+ SystemInfo["HasAutoVolumeLevel"] = fileExists("/proc/stb/audio/autovolumelevel_choices") and fileCheck("/proc/stb/audio/autovolumelevel")
+ SystemInfo["Has3DSurround"] = fileExists("/proc/stb/audio/3d_surround_choices") and fileCheck("/proc/stb/audio/3d_surround")
 --- enigma2.org/lib/python/Components/Renderer/Makefile.am
 +++ enigma2/lib/python/Components/Renderer/Makefile.am
 @@ -3,4 +3,4 @@
  install_PYTHON = \
  	__init__.py Label.py Progress.py Listbox.py Renderer.py Pixmap.py \
  	FixedLabel.py PositionGauge.py Canvas.py CiModuleControl.py Picon.py Pig.py \
--	FrontpanelLed.py ChannelNumber.py VideoSize.py NextEpgInfo.py
-+	FrontpanelLed.py ChannelNumber.py VideoSize.py NextEpgInfo.py SingleEpgList.py
+-	FrontpanelLed.py ChannelNumber.py VideoSize.py NextEpgInfo.py GaugeRender.py
++	FrontpanelLed.py ChannelNumber.py VideoSize.py NextEpgInfo.py GaugeRender.py SingleEpgList.py
 --- enigma2.org/lib/python/Components/Renderer/Progress.py
 +++ enigma2/lib/python/Components/Renderer/Progress.py
 @@ -13,23 +13,38 @@
@@ -4395,10 +4410,10 @@
 +		self.text = text
 --- enigma2.org/lib/python/Components/UsageConfig.py
 +++ enigma2/lib/python/Components/UsageConfig.py
-@@ -270,7 +270,7 @@
- 	SystemInfo["ATSC_priority_tuner_available"] = len(atsc_nims) > 3 and any(len(i) > 2 for i in (dvbs_nims, dvbc_nims, dvbt_nims))
+@@ -283,7 +283,7 @@
  
  	config.misc.disable_background_scan = ConfigYesNo(default = False)
+ 	config.misc.use_ci_assignment = ConfigYesNo(default = False)
 -	config.usage.show_event_progress_in_servicelist = ConfigSelection(default = 'barright', choices = [
 +	config.usage.show_event_progress_in_servicelist = ConfigSelection(default = 'barleft', choices = [
  		('barleft', _("Progress bar left")),
@@ -4436,7 +4451,7 @@
  		self.muteDialog.hide()
 --- enigma2.org/lib/python/enigma_python.i
 +++ enigma2/lib/python/enigma_python.i
-@@ -111,6 +111,7 @@
+@@ -112,6 +112,7 @@
  #include <lib/python/python.h>
  #include <lib/python/python_helpers.h>
  #include <lib/gdi/picload.h>
@@ -4444,7 +4459,7 @@
  %}
  
  %feature("ref")   iObject "$this->AddRef(); /* eDebug(\"AddRef (%s:%d)!\", __FILE__, __LINE__); */ "
-@@ -255,6 +256,7 @@
+@@ -257,6 +258,7 @@
  %include <lib/python/pythonconfig.h>
  %include <lib/gdi/picload.h>
  %include <lib/dvb/streamserver.h>
@@ -5290,7 +5305,7 @@
 +		PluginDescriptor(where = [PluginDescriptor.WHERE_SESSIONSTART, PluginDescriptor.WHERE_AUTOSTART], fnc = autostart) ]
 --- enigma2.org/lib/python/Plugins/SystemPlugins/HdmiCEC/plugin.py
 +++ enigma2/lib/python/Plugins/SystemPlugins/HdmiCEC/plugin.py
-@@ -146,7 +146,7 @@
+@@ -147,7 +147,7 @@
  
  def Plugins(**kwargs):
  	from os import path
@@ -5373,8 +5388,8 @@
 +		<name>VFD-Icons</name>
 +		<packagename>enigma2-plugin-systemplugins-vfd-icons</packagename>
 +		<packagetype>public</packagetype> <!-- internal/public , public is default, internal metas are not displayed inside plugin manager -->
-+		<shortdescription>Displays text on vfd</shortdescription>
-+		<description>Displays text on vfd.
++		<shortdescription>Displays text on VFD</shortdescription>
++		<description>Displays text on VFDvfd.
 +		</description>
 +	</info>
 +
@@ -5550,10 +5565,10 @@
  
  		port = config.av.videoport.value
  		if port not in config.av.videomode:
-@@ -91,6 +94,14 @@
- 
- #		if config.av.videoport.value == "DVI":
- #			self.list.append(getConfigListEntry(_("Allow Unsupported Modes"), config.av.edid_override))
+@@ -110,6 +113,14 @@
+ 					self.list.append(getConfigListEntry(_("Allow 12bit"), config.av.allow_12bit,_("This option allows you to enable or disable the 12 bit color mode")))
+ 					self.list.append(getConfigListEntry(_("Allow 10bit"), config.av.allow_10bit,_("This option allows you to enable or disable the 10 bit color mode")))
+ 					
 +#+++>
 +		if config.av.videoport.value == "Component":
 +			self.list.append(getConfigListEntry(_("Color Format"), config.av.colorformat_yuv))
@@ -5567,7 +5582,7 @@
  			if level >= 1:
 --- enigma2.org/lib/python/Plugins/SystemPlugins/Videomode/VideoHardware.py
 +++ enigma2/lib/python/Plugins/SystemPlugins/Videomode/VideoHardware.py
-@@ -13,67 +13,36 @@
+@@ -16,74 +16,43 @@
  
  	modes = { }  # a list of (high-level) modes for a certain port.
  
@@ -5590,7 +5605,7 @@
 -	rates["720p"] =			{ "50Hz": 	{ 50: "720p50" },
 -								"60Hz": 	{ 60: "720p" },
 -								"multi": 	{ 50: "720p50", 60: "720p" },
--								"multi (50/60/24p)": {50: "720p50", 60: "720p", 24: "720p24" } }
+-								"auto":		{ 50: "720p50", 60: "720p", 24: "720p24" } }
 +	rates["PAL"] =			{ "50Hz":	{ 50: "pal" } }
 +
 +	rates["576i"] =			{ "50Hz":	{ 50: "576i50" } }
@@ -5598,36 +5613,36 @@
 +	rates["576p"] =			{ "50Hz":	{ 50: "576p50" } }
 +
 +	rates["720p"] =			{ "50Hz":	{ 50: "720p50" },
-+								"60Hz":	{ 60: "720p60" } }
++					  "60Hz":	{ 60: "720p60" } }
  
  	rates["1080i"] =		{ "50Hz":	{ 50: "1080i50" },
 -								"60Hz":		{ 60: "1080i" },
 -								"multi":	{ 50: "1080i50", 60: "1080i" },
--								"multi (50/60/24p)": {50: "1080i50", 60: "1080i", 24: "1080p24" } }
+-								"auto": 	{ 50: "1080i50", 60: "1080i", 24: "1080p24" } }
 -
 -	rates["1080p"] =		{ "50Hz":	{ 50: "1080p50" },
 -								"60Hz":		{ 60: "1080p" },
 -								"multi":	{ 50: "1080p50", 60: "1080p" },
--								"multi (50/60/24p)": {50: "1080p50", 60: "1080p", 24: "1080p24" } }
+-								"auto":		{ 50: "1080p50", 60: "1080p", 24: "1080p24" } }
 -
 -	rates["2160p30"] =		{ "25Hz":	{ 50: "2160p25" },
 -								"30Hz":		{ 60: "2160p30" },
--								"multi": { 50: "2160p25", 60: "2160p30" },
--								"multi (25/30/24p)": { 50: "2160p25", 60: "2160p30", 24: "2160p24" } }
+-								"multi":	{ 50: "2160p25", 60: "2160p30" },
+-								"auto":		{ 50: "2160p25", 60: "2160p30", 24: "2160p24" } }
 -
 -	rates["2160p"] =		{ "50Hz":	{ 50: "2160p50" },
 -								"60Hz":		{ 60: "2160p" },
 -								"multi":	{ 50: "2160p50", 60: "2160p" }, 
--								"multi (50/60/24p)": {50: "2160p50", 60: "2160p", 24: "2160p24" }}
-+								"60Hz":	{ 60: "1080i60" } }
+-								"auto":		{ 50: "2160p50", 60: "2160p", 24: "2160p24" }}
++					  "60Hz":	{ 60: "1080i60" } }
 +
 +	rates["1080p"] =		{ "23Hz":	{ 50: "1080p23" },
-+								"24Hz":	{ 60: "1080p24" },
-+								"25Hz":	{ 60: "1080p25" },
-+								"29Hz":	{ 60: "1080p29" },
-+								"30Hz":	{ 60: "1080p30" },
-+								"50Hz":	{ 60: "1080p50" },
-+								"60Hz":	{ 60: "1080p60" } }
++					  "24Hz":	{ 60: "1080p24" },
++					  "25Hz":	{ 60: "1080p25" },
++					  "29Hz":	{ 60: "1080p29" },
++					  "30Hz":	{ 60: "1080p30" },
++					  "50Hz":	{ 60: "1080p50" },
++					  "60Hz":	{ 60: "1080p60" } }
  
  	rates["PC"] = {
 -		"1024x768": { 60: "1024x768" }, # not possible on DM7025
@@ -5648,27 +5663,39 @@
 +		"1600x1200" : { 60: "1600x1200_60" }, #60 66 76
  	}
  
--	modes["Scart"] = ["PAL", "NTSC", "Multi"]
--	modes["YPbPr"] = ["720p", "1080i", "576p", "480p", "576i", "480i"]
--	modes["DVI"] = ["720p", "1080p", "2160p", "2160p30", "1080i", "576p", "480p", "576i", "480i"]
+ 	if SystemInfo["HasScart"]:
+-		modes["Scart"] = ["PAL", "NTSC", "Multi"]
+-	elif SystemInfo["HasComposite"]:
+-		modes["RCA"] = ["576i", "PAL", "NTSC", "Multi"]
++		modes["Scart"] = ["PAL"]
++#	elif SystemInfo["HasComposite"]:
++#		modes["RCA"] = ["576i", "PAL", "NTSC", "Multi"]
+ 	if SystemInfo["HasYPbPr"]:
+-		modes["YPbPr"] = ["720p", "1080i", "576p", "480p", "576i", "480i"]
+-	if SystemInfo["Has2160p"]:
+-		modes["DVI"] = ["720p", "1080p", "2160p", "1080i", "576p", "480p", "576i", "480i"]
+-	else:
+-		modes["DVI"] = ["720p", "1080p", "2160p", "2160p30", "1080i", "576p", "480p", "576i", "480i"]
 -	modes["DVI-PC"] = ["PC"]
-+	modes["Scart"] = ["PAL"]
-+	modes["Component"] = ["720p", "1080p", "1080i", "576p", "576i"]
++		modes["Component"] = ["720p", "1080p", "1080i", "576p", "576i"]
++#	if SystemInfo["Has2160p"]:
++#		modes["DVI"] = ["720p", "1080p", "2160p", "1080i", "576p", "480p", "576i", "480i"]
++#	else:
 +	modes["HDMI"] = ["720p", "1080p", "1080i", "576p", "576i"]
 +	modes["HDMI-PC"] = ["PC"]
  
  	def getOutputAspect(self):
  		ret = (16,9)
-@@ -111,7 +80,7 @@
+@@ -121,7 +90,7 @@
  
  		self.readAvailableModes()
- 		self.is24hzAvailable()
+ 		self.readPreferredModes()
 -		self.widescreen_modes = set(["720p", "1080i", "1080p", "2160p", "2160p30"]).intersection(*[self.modes_available])
 +		self.widescreen_modes = set(["576i", "576p", "720p", "1080i", "1080p"]).intersection(*[self.modes_available])
  
  		if "DVI-PC" in self.modes and not self.getModeList("DVI-PC"):
  			print "[VideoHardware] remove DVI-PC because of not existing modes"
-@@ -130,6 +99,16 @@
+@@ -139,6 +108,16 @@
  		config.av.wss.notifiers = [ ]
  		AVSwitch.getOutputAspect = self.getOutputAspect
  
@@ -5685,16 +5712,19 @@
  		config.av.aspect.addNotifier(self.updateAspect)
  		config.av.wss.addNotifier(self.updateAspect)
  		config.av.policy_169.addNotifier(self.updateAspect)
-@@ -168,6 +147,8 @@
+@@ -175,9 +154,8 @@
  	def isModeAvailable(self, port, mode, rate):
  		rate = self.rates[mode][rate]
  		for mode in rate.values():
+-			if port == "DVI":
+-				if mode not in self.modes_preferred:
+-					return False
 +			if port == "HDMI-PC":
 +				return True
- 			if mode not in self.modes_available:
- 				return False
- 		return True
-@@ -215,8 +196,12 @@
+ 			else:
+ 				if mode not in self.modes_available:
+ 					return False
+@@ -226,8 +204,12 @@
  				open("/proc/stb/video/videomode_24hz", "w").write(mode_24)
  			except IOError:
  				print "[VideoHardware] cannot open /proc/stb/video/videomode_24hz"
@@ -5707,7 +5737,7 @@
  
  	def saveMode(self, port, mode, rate):
  		print "[VideoHardware] saveMode", port, mode, rate
-@@ -234,7 +219,8 @@
+@@ -245,7 +227,8 @@
  		return True
  
  	def isPortUsed(self, port):
@@ -5717,16 +5747,16 @@
  			self.readPreferredModes()
  			return len(self.modes_preferred) != 0
  		else:
-@@ -341,7 +327,7 @@
+@@ -352,7 +335,7 @@
  				aspect = "16:9"
  			else:
  				aspect = {"16_9": "16:9", "16_10": "16:10"}[config.av.aspect.value]
--			policy_choices = {"pillarbox": "panscan", "panscan": "letterbox", "nonlinear": "nonlinear", "scale": "bestfit", "auto": "bestfit"}
+-			policy_choices = {"pillarbox": "panscan", "panscan": "letterbox", "nonlinear": "nonlinear", "scale": "bestfit", "full": "full", "auto": "auto"}
 +			policy_choices = {"pillarbox": "letterbox", "panscan": "panscan", "nonlinear": "nonlinear", "scale": "bestfit", "auto": "bestfit"}
  			policy = policy_choices[config.av.policy_43.value]
- 			policy2_choices = {"letterbox": "letterbox", "panscan": "panscan", "scale": "bestfit", "auto": "bestfit"}
+ 			policy2_choices = {"letterbox": "letterbox", "panscan": "panscan", "scale": "bestfit", "full": "full", "auto": "auto"}
  			policy2 = policy2_choices[config.av.policy_169.value]
-@@ -369,6 +355,33 @@
+@@ -383,5 +366,32 @@
  		except IOError:
  			pass
  
@@ -5757,26 +5787,25 @@
 +			eAVSwitch.getInstance().setColorFormat(map[config.av.colorformat.value])
 +#+++<
 +
- config.av.edid_override = ConfigYesNo(default = False)
  video_hw = VideoHardware()
  video_hw.setConfiguredMode()
 --- enigma2.org/lib/python/Components/AVSwitch.py
 +++ enigma2/lib/python/Components/AVSwitch.py
-@@ -75,11 +75,11 @@
- 	config.av.colorformat = ConfigSelection(choices=colorformat_choices, default="rgb")
+@@ -79,11 +79,11 @@
+ 	config.av.colorformat = ConfigSelection(choices=colorformat_choices, default="cvbs")
  	config.av.aspectratio = ConfigSelection(choices={
  			"4_3_letterbox": _("4:3 Letterbox"),
 -			"4_3_panscan": _("4:3 PanScan"),
 +			"4_3_panscan": _("4:3 Zoom"),
  			"16_9": _("16:9"),
  			"16_9_always": _("16:9 always"),
-			"16_10_letterbox": _("16:10 Letterbox"),
+ 			"16_10_letterbox": _("16:10 Letterbox"),
 -			"16_10_panscan": _("16:10 PanScan"),
 +			"16_10_panscan": _("16:10 Zoom"),
  			"16_9_letterbox": _("16:9 Letterbox")},
  			default = "16_9")
  	config.av.aspect = ConfigSelection(choices={
-@@ -91,10 +91,10 @@
+@@ -95,10 +95,10 @@
  	policy2_choices = {
  	# TRANSLATORS: (aspect ratio policy: black bars on top/bottom) in doubt, keep english term.
  	"letterbox": _("Letterbox"),
@@ -5784,31 +5813,33 @@
 -	"panscan": _("Pan&scan"),
 +	# TRANSLATORS: (aspect ratio policy: cropped content on top/bottom) in doubt, keep english term
 +	"panscan": _("Zoom"),
- 	# TRANSLATORS: (aspect ratio policy: display as fullscreen, even if this breaks the aspect)
+ 	# TRANSLATORS: (aspect ratio policy: scale as close to fullscreen as possible)
 -	"scale": _("Just scale")}
 +	"scale": _("Stretch")}
  	try:
- 		if "auto" in open("/proc/stb/video/policy2_choices").read():
- 			# TRANSLATORS: (aspect ratio policy: always try to display as fullscreen, when there is no content (black bars) on left/right, even if this breaks the aspect.
-@@ -106,20 +106,20 @@
+ 		if "full" in open("/proc/stb/video/policy2_choices").read():
+ 			# TRANSLATORS: (aspect ratio policy: display as fullscreen, even if the content aspect ratio does not match the screen ratio)
+@@ -116,13 +116,13 @@
  	# TRANSLATORS: (aspect ratio policy: black bars on left/right) in doubt, keep english term.
  	"pillarbox": _("Pillarbox"),
  	# TRANSLATORS: (aspect ratio policy: cropped content on left/right) in doubt, keep english term
 -	"panscan": _("Pan&scan"),
 +	"panscan": _("Zoom"),
- 	# TRANSLATORS: (aspect ratio policy: display as fullscreen, with stretching the left/right)
--	"nonlinear": _("Nonlinear"),
-+	"nonlinear": _("Panoramic"),
- 	# TRANSLATORS: (aspect ratio policy: display as fullscreen, even if this breaks the aspect)
+ 	# TRANSLATORS: (aspect ratio policy: scale as close to fullscreen as possible)
 -	"scale": _("Just scale")}
-+	"scale": _("Stretch")}
++	"nonlinear": _("Stretch")}
  	try:
- 		if "auto" in open("/proc/stb/video/policy_choices").read():
- 			# TRANSLATORS: (aspect ratio policy: always try to display as fullscreen, when there is no content (black bars) on left/right, even if this breaks the aspect.
- 			policy_choices.update({"auto": _("Auto")})
+ 		if "nonlinear" in open("/proc/stb/video/policy_choices").read():
+ 			# TRANSLATORS: (aspect ratio policy: display as fullscreen, with stretching the left/right)
+-			policy_choices.update({"nonlinear": _("Nonlinear")})
++			policy_choices.update({"nonlinear": _("Panoramic")})
  	except:
  		pass
-	config.av.policy_43 = ConfigSelection(choices=policy_choices, default = "pillarbox")
+ 	try:
+@@ -138,8 +138,8 @@
+ 	except:
+ 		pass
+ 	config.av.policy_43 = ConfigSelection(choices=policy_choices, default = "pillarbox")
 -	config.av.tvsystem = ConfigSelection(choices = {"pal": _("PAL"), "ntsc": _("NTSC"), "multinorm": _("multinorm")}, default="pal")
 -	config.av.wss = ConfigEnableDisable(default = True)
 +	config.av.tvsystem = ConfigSelection(choices = {"pal": _("PAL"), "ntsc": _("NTSC"), "multinorm": _("Multinorm")}, default="multinorm")
@@ -5861,7 +5892,7 @@
 +								append_when_current_valid(current, menu, (_("Remove from parental protection"), boundFunction(self.removeParentalProtection, current)), level=0)
  						if self.parentalControl.blacklist and config.ParentalControl.hideBlacklist.value and not self.parentalControl.sessionPinCached and config.ParentalControl.storeservicepin.value != "never":
  							append_when_current_valid(current, menu, (_("Unhide parental control services"), self.unhideParentalServices), level=0, key="1")
- 					if SystemInfo["3DMode"] and  fileExists("/usr/lib/enigma2/python/Plugins/SystemPlugins/OSD3DSetup/plugin.py"):
+ 					if SystemInfo["3DMode"] and fileExists("/usr/lib/enigma2/python/Plugins/SystemPlugins/OSD3DSetup/plugin.pyo"):
 @@ -199,91 +204,91 @@
  						else:
  							bouquetCnt = len(bouquets)
@@ -5992,7 +6023,7 @@
  
  		menu.append(ChoiceEntryComponent("menu", (_("Configuration..."), self.openSetup)))
  		self["menu"] = ChoiceList(menu)
-@@ -857,6 +862,9 @@
+@@ -854,6 +859,9 @@
  		self.saved_title = None
  		self.saved_root = None
  		self.current_ref = None
@@ -6002,7 +6033,7 @@
  		self.editMode = False
  		self.confirmRemove = True
  
-@@ -964,7 +972,7 @@
+@@ -954,7 +962,7 @@
  				if mutableAlternatives:
  					mutableAlternatives.setListName(name)
  					if mutableAlternatives.addService(cur_service.ref):
@@ -6011,7 +6042,7 @@
  					mutableAlternatives.flushChanges()
  					self.servicelist.addService(new_ref.ref, True)
  					self.servicelist.removeCurrent()
-@@ -975,7 +983,7 @@
+@@ -965,7 +973,7 @@
  					if self.startServiceRef and cur_service.ref == self.startServiceRef:
  						self.startServiceRef = new_ref.ref
  				else:
@@ -6020,7 +6051,7 @@
  			else:
  				print "add", str, "to", cur_root.getServiceName(), "failed"
  		else:
-@@ -996,10 +1004,10 @@
+@@ -989,10 +997,10 @@
  					if services is not None:
  						for service in services:
  							if mutableBouquet.addService(service):
@@ -6033,7 +6064,7 @@
  				# do some voodoo to check if current_root is equal to bouquet_root
  				cur_root = self.getRoot()
  				str1 = cur_root and cur_root.toString()
-@@ -1009,9 +1017,9 @@
+@@ -1002,9 +1010,9 @@
  					self.servicelist.addService(new_bouquet_ref)
  					self.servicelist.resetRoot()
  			else:
@@ -6046,7 +6077,7 @@
  
  	def copyCurrentToBouquetList(self):
  		provider = ServiceReference(self.getCurrentSelection())
-@@ -1037,11 +1045,11 @@
+@@ -1030,11 +1038,11 @@
  					if self.startServiceRef and cur_service.ref == self.startServiceRef:
  						self.startServiceRef = first_in_alternative
  				else:
@@ -6063,7 +6094,7 @@
  		self.removeBouquet()
  		if not end:
  			self.servicelist.moveUp()
-@@ -1123,6 +1131,9 @@
+@@ -1116,6 +1124,9 @@
  			else:
  				new_title += ' ' + _("[favourite edit]")
  		self.setTitle(new_title)
@@ -6073,7 +6104,7 @@
  		self.__marked = self.servicelist.getRootServices()
  		for x in self.__marked:
  			self.servicelist.addMarked(eServiceReference(x))
-@@ -1150,6 +1161,9 @@
+@@ -1143,6 +1154,9 @@
  		self.bouquet_mark_edit = OFF
  		self.mutableList = None
  		self.setTitle(self.saved_title)
@@ -6083,7 +6114,7 @@
  		self.saved_title = None
  		# self.servicePath is just a reference to servicePathTv or Radio...
  		# so we never ever do use the asignment operator in self.servicePath
-@@ -1226,6 +1240,9 @@
+@@ -1219,6 +1233,9 @@
  			self.mutableList.flushChanges() # FIXME add check if changes was made
  			self.mutableList = None
  			self.setTitle(self.saved_title)
@@ -6093,7 +6124,7 @@
  			self.saved_title = None
  			self.servicelist.resetRoot()
  			self.servicelist.l.setHideNumberMarker(config.usage.hide_number_markers.value)
-@@ -1237,6 +1254,9 @@
+@@ -1230,6 +1247,9 @@
  			self.saved_title = self.getTitle()
  			pos = self.saved_title.find(')')
  			self.setTitle(self.saved_title[:pos+1] + ' ' + _("[move mode]") + self.saved_title[pos+1:])
@@ -6103,7 +6134,7 @@
  			self.servicelist.l.setHideNumberMarker(False)
  			self.setCurrentSelection(self.servicelist.getCurrent())
  		self["Service"].editmode = True
-@@ -1292,6 +1312,11 @@
+@@ -1285,6 +1305,11 @@
  
  		self["list"] = ServiceList(self)
  		self.servicelist = self["list"]
@@ -6115,7 +6146,7 @@
  
  		self.numericalTextInput = NumericalTextInput(handleTimeout=False)
  		self.numericalTextInput.setUseableChars(u'1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ')
-@@ -1385,6 +1410,9 @@
+@@ -1378,6 +1403,9 @@
  			title = title[:pos]
  		title += _(" (TV)")
  		self.setTitle(title)
@@ -6125,7 +6156,7 @@
  
  	def setRadioMode(self):
  		self.mode = MODE_RADIO
-@@ -1396,6 +1424,9 @@
+@@ -1389,6 +1417,9 @@
  			title = title[:pos]
  		title += _(" (Radio)")
  		self.setTitle(title)
@@ -6135,7 +6166,7 @@
  
  	def setRoot(self, root, justSet=False):
  		if self.startRoot is None:
-@@ -1450,6 +1481,9 @@
+@@ -1443,6 +1474,9 @@
  					end_ref = None
  				nameStr = self.getServiceName(base_ref)
  				titleStr += ' - ' + nameStr
@@ -6145,7 +6176,7 @@
  				if end_ref is not None:
  					if Len > 2:
  						titleStr += '/../'
-@@ -1457,7 +1491,13 @@
+@@ -1450,7 +1484,13 @@
  						titleStr += '/'
  					nameStr = self.getServiceName(end_ref)
  					titleStr += nameStr
@@ -6161,16 +6192,16 @@
  		self.servicelist.moveUp()
 --- enigma2.org/lib/python/Screens/InfoBarGenerics.py
 +++ enigma2/lib/python/Screens/InfoBarGenerics.py
-@@ -9,7 +9,7 @@
- from Components.PluginComponent import plugins
+@@ -10,7 +10,7 @@
  from Components.ServiceEventTracker import ServiceEventTracker
+ from Components.ServiceList import refreshServiceList
  from Components.Sources.Boolean import Boolean
 -from Components.config import config, ConfigBoolean, ConfigClock
 +from Components.config import config, ConfigBoolean, ConfigClock, ConfigSubsection, ConfigYesNo
  from Components.SystemInfo import SystemInfo
  from Components.UsageConfig import preferredInstantRecordPath, defaultMoviePath
  from Components.VolumeControl import VolumeControl
-@@ -37,6 +37,7 @@
+@@ -38,6 +38,7 @@
  
  from Tools import Notifications, ASCIItranslit
  from Tools.Directories import fileExists, getRecordingFilename, moveFiles
@@ -6178,7 +6209,7 @@
  
  from enigma import eTimer, eServiceCenter, eDVBServicePMTHandler, iServiceInformation, iPlayableService, eServiceReference, eEPGCache, eActionMap, getDesktop, eDVBDB
  
-@@ -104,7 +105,7 @@
+@@ -107,7 +108,7 @@
  	global resumePointCache, resumePointCacheLast
  	import cPickle
  	try:
@@ -6187,7 +6218,7 @@
  		cPickle.dump(resumePointCache, f, cPickle.HIGHEST_PROTOCOL)
  	except Exception, ex:
  		print "[InfoBar] Failed to write resumepoints:", ex
-@@ -113,7 +114,7 @@
+@@ -116,7 +117,7 @@
  def loadResumePoints():
  	import cPickle
  	try:
@@ -6196,15 +6227,15 @@
  	except Exception, ex:
  		print "[InfoBar] Failed to load resumepoints:", ex
  		return {}
-@@ -225,6 +226,7 @@
+@@ -234,6 +235,7 @@
  	STATE_HIDING = 1
  	STATE_SHOWING = 2
  	STATE_SHOWN = 3
 +	STATE_EPG = 4
- 	FLAG_HIDE_VBI = 512
  	FLAG_CENTER_DVB_SUBS = 2048
  
-@@ -364,6 +366,12 @@
+ 	def __init__(self):
+@@ -376,6 +378,12 @@
  		else:
  			self.toggleShow()
  
@@ -6217,7 +6248,7 @@
  	def toggleShow(self):
  		if self.__state == self.STATE_HIDDEN:
  			self.showFirstInfoBar()
-@@ -378,7 +386,9 @@
+@@ -390,7 +398,9 @@
  			self.show()
  			self.actualSecondInfoBarScreen.show()
  			self.startHideTimer()
@@ -6228,7 +6259,7 @@
  			self.hide()
  			self.hideTimer.stop()
  
-@@ -659,6 +669,20 @@
+@@ -686,6 +696,20 @@
  				"historyNext": (self.historyNext, _("Switch to next channel in history")),
  				"keyChannelUp": (self.keyChannelUpCheck, self.getKeyChannelUpHelptext),
  				"keyChannelDown": (self.keyChannelDownCheck, self.getKeyChannelDownHelptext),
@@ -6249,7 +6280,7 @@
  			})
  
  	def showTvChannelList(self, zap=False):
-@@ -823,6 +847,36 @@
+@@ -850,6 +874,36 @@
  			self.servicelist.moveUp()
  		self.servicelist.zap(enable_pipzap = True)
  
@@ -6286,7 +6317,7 @@
  	def zapDown(self):
  		if self.servicelist.inBouquet():
  			prev = self.servicelist.getCurrentSelection()
-@@ -857,7 +911,7 @@
+@@ -884,7 +938,7 @@
  	def __init__(self):
  		self["MenuActions"] = HelpableActionMap(self, "InfobarMenuActions",
  			{
@@ -6295,7 +6326,7 @@
  			})
  		self.session.infobar = None
  
-@@ -972,7 +1026,7 @@
+@@ -999,7 +1053,7 @@
  
  		self["EPGActions"] = HelpableActionMap(self, "InfobarEPGActions",
  			{
@@ -6304,7 +6335,7 @@
  				"showEventInfoSingleEPG": (self.showSingleEPG, _("Show single service EPG")),
  				"showEventInfoMultiEPG": (self.showMultiEPG, _("Show multi channel EPG")),
  				"showInfobarOrEpgWhenInfobarAlreadyVisible": self.showEventInfoWhenNotVisible,
-@@ -983,7 +1037,7 @@
+@@ -1010,7 +1064,7 @@
  				if 'selectedevent' not in p.__call__.func_code.co_varnames] or []
  		from Components.ServiceEventTracker import InfoBarCount
  		if getAll or InfoBarCount == 1:
@@ -6313,7 +6344,7 @@
  		pluginlist.append((_("Multi EPG"), self.openMultiServiceEPG, "multi_epg"))
  		pluginlist.append((_("Current event EPG"), self.openEventView, "event_epg"))
  		return pluginlist
-@@ -1137,7 +1191,7 @@
+@@ -1164,7 +1218,7 @@
  	def showEventInfoPlugins(self):
  		pluginlist = self.getEPGPluginList()
  		if pluginlist:
@@ -6322,7 +6353,7 @@
  		else:
  			self.openSingleServiceEPG()
  
-@@ -1210,7 +1264,7 @@
+@@ -1237,7 +1291,7 @@
  				self.eventView = self.session.openWithCallback(self.closed, EventViewEPGSelect, epglist[0], ServiceReference(ref), self.eventViewCallback, self.openSingleServiceEPG, self.openMultiServiceEPG, self.openSimilarList)
  				self.dlg_stack.append(self.eventView)
  		if not epglist:
@@ -6331,17 +6362,8 @@
  			self.openMultiServiceEPG(False)
  
  	def eventViewCallback(self, setEvent, setService, val): #used for now/next displaying
-@@ -1310,7 +1364,7 @@
- 
- 		self["SeekActions"] = InfoBarSeekActionMap(self, actionmap,
- 			{
--				"playpauseService": (self.playpauseService, _("Pauze/Continue playback")),
-+				"playpauseService": (self.playpauseService, _("Pause/Continue playback")),
- 				"pauseService": (self.pauseService, _("Pause playback")),
- 				"unPauseService": (self.unPauseService, _("Continue playback")),
- 				"okButton": (self.okButton, _("Continue playback")),
-@@ -2072,7 +2126,7 @@
- 		self.addExtension((lambda: _("Softcam Setup"), self.openSoftcamSetup, lambda: config.misc.softcam_setup.extension_menu.value and SystemInfo["HasSoftcamInstalled"]), "1")
+@@ -2140,7 +2194,7 @@
+ 		self.addExtension((lambda: _("Import channels from fallback tuner"), self.importChannels, lambda: config.usage.remote_fallback_extension_menu.value and config.usage.remote_fallback_import.value))
  		self["InstantExtensionsActions"] = HelpableActionMap(self, "InfobarExtensions",
  			{
 -				"extensions": (self.showExtensionSelection, _("Show extensions...")),
@@ -6349,7 +6371,7 @@
  			}, 1) # lower priority
  
  	def openSoftcamSetup(self):
-@@ -2098,7 +2152,7 @@
+@@ -2170,7 +2224,7 @@
  
  	def updateExtensions(self):
  		self.extensionsList = []
@@ -6358,7 +6380,7 @@
  		self.extensionKeys = {}
  		for x in self.list:
  			if x[0] == self.EXTENSION_SINGLE:
-@@ -2126,7 +2180,7 @@
+@@ -2198,7 +2252,7 @@
  					extensionsList.remove(extension)
  		list.extend([(x[0](), x) for x in extensionsList])
  		keys += [""] * len(extensionsList)
@@ -6367,7 +6389,7 @@
  
  	def extensionCallback(self, answer):
  		if answer is not None:
-@@ -2329,11 +2383,11 @@
+@@ -2401,11 +2455,11 @@
  
  class InfoBarInstantRecord:
  	"""Instant Record - handles the instantRecord action in order to
@@ -6381,7 +6403,7 @@
  			})
  		self.SelectedInstantServiceRef = None
  		if isStandardInfoBar(self):
-@@ -2416,7 +2470,7 @@
+@@ -2488,7 +2542,7 @@
  	def startInstantRecording(self, limitEvent = False):
  		begin = int(time())
  		end = begin + 3600      # dummy
@@ -6390,7 +6412,7 @@
  		info = { }
  
  		self.getProgramInfoAndEvent(info, name)
-@@ -2645,7 +2699,7 @@
+@@ -2717,7 +2771,7 @@
  	def __init__(self):
  		self["AudioSelectionAction"] = HelpableActionMap(self, "InfobarAudioSelectionActions",
  			{
@@ -6399,7 +6421,7 @@
  			})
  
  	def audioSelection(self):
-@@ -2659,7 +2713,7 @@
+@@ -2731,7 +2785,7 @@
  	def __init__(self):
  		self["SubserviceSelectionAction"] = HelpableActionMap(self, "InfobarSubserviceSelectionActions",
  			{
@@ -6408,7 +6430,7 @@
  			})
  
  		self["SubserviceQuickzapAction"] = HelpableActionMap(self, "InfobarSubserviceQuickzapActions",
-@@ -2743,18 +2797,18 @@
+@@ -2815,18 +2869,18 @@
  				idx += 1
  
  			if cnt_parent and self.bouquets and len(self.bouquets):
@@ -6634,9 +6656,9 @@
 +	def sleepTimer(self):
 +		from Screens.SleepTimerEdit import SleepTimerEdit
 +		self.session.open(SleepTimerEdit)
---- enigma2.org/lib/python/Screens/ScanSetup.py	2014-06-21 13:05:24.143088681 +0200
-+++ enigma2/lib/python/Screens/ScanSetup.py	2014-06-21 13:05:30.091088431 +0200
-@@ -1220,7 +1220,7 @@
+--- enigma2.org/lib/python/Screens/ScanSetup.py
++++ enigma2/lib/python/Screens/ScanSetup.py
+@@ -1229,7 +1229,7 @@
  		self.cable_toggle = {"single_transponder":"complete", "complete":"single_transponder"}
  		self.scan_typeterrestrial = ConfigSelection(default = defaultTerrSearchType, choices = [("single_transponder", _("User defined transponder")), ("predefined_transponder", _("Predefined transponder")), ("complete", _("Complete"))])
  		self.scan_type_atsc = ConfigSelection(default = defaultATSCSearchType, choices = [("single_transponder", _("User defined transponder")), ("predefined_transponder", _("Predefined transponder")), ("complete", _("Complete"))])
@@ -6647,7 +6669,7 @@
  		self.scan_onlyfree = ConfigYesNo(default = False)
 --- enigma2.org/lib/python/Screens/Standby.py
 +++ enigma2/lib/python/Screens/Standby.py
-@@ -14,11 +14,50 @@
+@@ -15,11 +15,50 @@
  from enigma import eDVBVolumecontrol, eTimer, eDVBLocalTimeHandler, eServiceReference
  from Tools.HardwareInfo import HardwareInfo
  
@@ -6698,7 +6720,7 @@
  		self.close(True)
  
  	def setMute(self):
-@@ -60,6 +99,40 @@
+@@ -61,6 +100,40 @@
  		self.timeHandler = None
  
  		self.setMute()
@@ -6739,7 +6761,7 @@
  
  		self.paused_service = self.paused_action = False
  
-@@ -90,6 +163,9 @@
+@@ -91,6 +164,9 @@
  			self.avswitch.setInput("SCART")
  		else:
  			self.avswitch.setInput("AUX")
@@ -6749,21 +6771,21 @@
  
  		gotoShutdownTime = int(config.usage.standby_to_shutdown_timer.value)
  		if gotoShutdownTime:
-@@ -202,6 +278,7 @@
- 			3: _("The user interface of your receiver is restarting"),
+@@ -206,6 +284,7 @@
  			4: _("Your frontprocessor will be upgraded\nPlease wait until your receiver reboots\nThis may take a few minutes"),
  			5: _("The user interface of your receiver is restarting\ndue to an error in mytest.py"),
+ 			6: _("The user interface of your receiver is restarting in debug mode"),
 +			10: _('Your receiver is rebooting to Spark now\nThis may take a while'),
  			42: _("Unattended upgrade in progress\nPlease wait until your receiver reboots\nThis may take a few minutes") }.get(retvalue)
  		self["text"] = Label(text)
  
-@@ -230,6 +307,7 @@
- 				2: _("Really reboot now?"),
+@@ -235,6 +312,7 @@
  				3: _("Really restart now?"),
  				4: _("Really upgrade the frontprocessor and reboot now?"),
+				6: _("Really restart in debug mode now?"),
 +				10: _('Really reboot to Spark now?'),
- 				42: _("Really upgrade your settop box and reboot now?") }.get(retvalue)
- 			if text:
+				42: _("Really upgrade your settop box and reboot now?") }.get(retvalue)
+			if text:
  				MessageBox.__init__(self, session, reason+text, type = MessageBox.TYPE_YESNO, timeout = timeout, default = default_yes)
 --- enigma2.org/lib/python/Screens/Wizard.py
 +++ enigma2/lib/python/Screens/Wizard.py
@@ -6787,7 +6809,7 @@
  		if print_now:
  			print "Now: " + str(self.currStep)
  
-@@ -444,6 +450,9 @@
+@@ -447,6 +453,9 @@
  			if "onselect" in self.wizard[self.currStep]:
  				self.selection = self["list"].current[-1]
  				print "self.selection:", self.selection
@@ -6826,14 +6848,14 @@
 +++ enigma2/lib/python/Tools/Makefile.am
 @@ -5,5 +5,5 @@
  	KeyBindings.py BoundFunction.py ISO639.py Notifications.py __init__.py \
- 	RedirectOutput.py StbHardware.py Import.py Event.py CList.py \
+ 	RedirectOutput.py StbHardware.py Import.py Event.py CList.py CIHelper.py \
  	LoadPixmap.py Profile.py HardwareInfo.py Transponder.py ASCIItranslit.py \
 -	Downloader.py Trashcan.py GetEcmInfo.py Alternatives.py TextBoundary.py \
 +	Downloader.py Trashcan.py GetEcmInfo.py Alternatives.py TextBoundary.py Command.py \
- 	camcontrol.py CountryCodes.py Multiboot.py
+ 	camcontrol.py CountryCodes.py Multiboot.py FallbackTimer.py
 --- enigma2.org/lib/service/listboxservice.cpp
 +++ enigma2/lib/service/listboxservice.cpp
-@@ -186,14 +186,14 @@
+@@ -189,14 +189,14 @@
  	{
  		--i;
  		--index;
@@ -6850,7 +6872,7 @@
  			break;
  	}
  	return cursorResolve(index);
-@@ -209,7 +209,7 @@
+@@ -212,7 +212,7 @@
  	{
  		++i;
  		++index;
@@ -6859,52 +6881,6 @@
  			break;
  	}
  	return cursorResolve(index);
---- enigma2.org/lib/service/Makefile.inc
-+++ enigma2/lib/service/Makefile.inc
-@@ -10,14 +10,23 @@
- 	service/servicedvb.cpp \
- 	service/servicedvbrecord.cpp \
- 	service/servicefs.cpp \
--	service/servicemp3.cpp \
--	service/servicemp3record.cpp \
- 	service/servicem2ts.cpp \
- 	service/servicedvbstream.cpp \
- 	service/servicehdmi.cpp \
- 	service/servicepeer.cpp \
- 	service/servicets.cpp \
- 	service/servicewebts.cpp
-+
-+if ENABLE_MEDIAFWGSTREAMER
-+service_libenigma_service_a_SOURCES += \
-+	service/servicemp3.cpp \
-+	service/servicemp3record.cpp
-+endif
-+
-+if ENABLE_LIBEPLAYER3 
-+service_libenigma_service_a_SOURCES += \
-+	service/serviceeplayer3.cpp
-+endif
- 
- serviceincludedir = $(pkgincludedir)/lib/service
- serviceinclude_HEADERS = \
-@@ -37,6 +46,17 @@
- 	service/servicets.h \
- 	service/servicewebts.h
- 
-+if ENABLE_MEDIAFWGSTREAMER
-+service_libenigma_service_a_SOURCES += \
-+	service/servicemp3.h \
-+	service/servicemp3record.h
-+endif
-+
-+if ENABLE_LIBEPLAYER3 
-+service_libenigma_service_a_SOURCES += \
-+	service/serviceeplayer3.h
-+endif
-+
- if HAVE_LIBXINE
- service_libenigma_service_a_SOURCES += \
- 	service/servicexine.cpp
 --- enigma2.org/lib/service/servicedvb.cpp
 +++ enigma2/lib/service/servicedvb.cpp
 @@ -646,6 +646,9 @@
@@ -6941,7 +6917,7 @@
  		eDebug("[eDVBServiceRecord] Recording to %s...", m_filename.c_str());
  		::remove(m_filename.c_str());
 +#if defined(__sh__)
-+		//we must creat a file for statfs
++		//we must create a file for statfs
  		int fd = ::open(m_filename.c_str(), O_WRONLY | O_CREAT | O_LARGEFILE | O_CLOEXEC, 0666);
 +		::close(fd);
 +		if (statfs(m_filename.c_str(), &sbuf) < 0)
@@ -6974,2919 +6950,8 @@
  		if (fd == -1)
  		{
  			eDebug("[eDVBServiceRecord] can't open recording file: %m");
-diff -Nur '--exclude-from=diff-exclude' enigma2.org/lib/service/serviceeplayer3.cpp enigma2/lib/service/serviceeplayer3.cpp
---- enigma2.org/lib/service/serviceeplayer3.cpp	1970-01-01 01:00:00.000000000 +0100
-+++ enigma2/lib/service/serviceeplayer3.cpp	2015-08-19 23:14:08.359487370 +0200
-@@ -0,0 +1,1303 @@
-+	/* note: this requires gstreamer 0.10.x and a big list of plugins. */
-+	/* it's currently hardcoded to use a big-endian alsasink as sink. */
-+#include <lib/base/ebase.h>
-+#include <lib/base/eerror.h>
-+#include <lib/base/init_num.h>
-+#include <lib/base/init.h>
-+#include <lib/base/nconfig.h>
-+#include <lib/base/object.h>
-+#include <lib/dvb/decoder.h>
-+#include <lib/components/file_eraser.h>
-+#include <lib/gui/esubtitle.h>
-+#include <lib/service/serviceeplayer3.h>
-+#include <lib/service/service.h>
-+#include <lib/gdi/gpixmap.h>
-+
-+#include <string>
-+#include <sys/stat.h>
-+
-+#if not defined ENABLE_MEDIAFWGSTREAMER
-+#include <player.h>
-+#endif 
-+
-+#define HTTP_TIMEOUT 60
-+
-+typedef enum
-+{
-+	GST_PLAY_FLAG_VIDEO         = 0x00000001,
-+	GST_PLAY_FLAG_AUDIO         = 0x00000002,
-+	GST_PLAY_FLAG_TEXT          = 0x00000004,
-+	GST_PLAY_FLAG_VIS           = 0x00000008,
-+	GST_PLAY_FLAG_SOFT_VOLUME   = 0x00000010,
-+	GST_PLAY_FLAG_NATIVE_AUDIO  = 0x00000020,
-+	GST_PLAY_FLAG_NATIVE_VIDEO  = 0x00000040,
-+	GST_PLAY_FLAG_DOWNLOAD      = 0x00000080,
-+	GST_PLAY_FLAG_BUFFERING     = 0x00000100
-+} GstPlayFlags;
-+
-+// eServiceFactoryEPlayer3
-+
-+/*
-+ * gstreamer suffers from a bug causing sparse streams to loose sync, after pause/resume / skip
-+ * see: https://bugzilla.gnome.org/show_bug.cgi?id=619434
-+ * As a workaround, we run the subsink in sync=false mode
-+ */
-+#define GSTREAMER_SUBTITLE_SYNC_MODE_BUG
-+/**/
-+
-+void ep3Blit(){
-+	fbClass *fb = fbClass::getInstance();
-+	fb->blit();
-+}
-+
-+
-+eServiceFactoryEPlayer3::eServiceFactoryEPlayer3()
-+{
-+	ePtr<eServiceCenter> sc;
-+
-+	eServiceCenter::getPrivInstance(sc);
-+	if (sc)
-+	{
-+		std::list<std::string> extensions;
-+		//extensions.push_back("dts");
-+		//extensions.push_back("mp2");
-+		//extensions.push_back("mp3");
-+		//extensions.push_back("ogg");
-+		//extensions.push_back("ogm");
-+		//extensions.push_back("ogv");
-+		extensions.push_back("mpg");
-+		extensions.push_back("vob");
-+		//extensions.push_back("wav");
-+		//extensions.push_back("wave");
-+		extensions.push_back("m4v");
-+		extensions.push_back("mkv");
-+		extensions.push_back("avi");
-+		extensions.push_back("divx");
-+		extensions.push_back("dat");
-+		//extensions.push_back("flac");
-+		//extensions.push_back("flv");
-+		extensions.push_back("mp4");
-+		extensions.push_back("mov");
-+		//extensions.push_back("m4a");
-+		//extensions.push_back("3gp");
-+		//extensions.push_back("3g2");
-+		//extensions.push_back("asf");
-+#if defined(__sh__)
-+		extensions.push_back("mpeg");
-+		extensions.push_back("m2ts");
-+		extensions.push_back("trp");
-+		extensions.push_back("vdr");
-+		extensions.push_back("mts");
-+		extensions.push_back("rar");
-+		extensions.push_back("img");
-+		extensions.push_back("iso");
-+		extensions.push_back("ifo");
-+		extensions.push_back("wmv");
-+#endif
-+		//extensions.push_back("wma");
-+		sc->addServiceFactory(eServiceFactoryEPlayer3::id, this, extensions);
-+	}
-+
-+	m_service_info = new eStaticServiceEPlayer3Info();
-+}
-+
-+eServiceFactoryEPlayer3::~eServiceFactoryEPlayer3()
-+{
-+	ePtr<eServiceCenter> sc;
-+
-+	eServiceCenter::getPrivInstance(sc);
-+	if (sc)
-+		sc->removeServiceFactory(eServiceFactoryEPlayer3::id);
-+}
-+
-+DEFINE_REF(eServiceFactoryEPlayer3)
-+
-+	// iServiceHandler
-+RESULT eServiceFactoryEPlayer3::play(const eServiceReference &ref, ePtr<iPlayableService> &ptr)
-+{
-+	// check resources...
-+	ptr = new eServiceEPlayer3(ref);
-+	return 0;
-+}
-+
-+RESULT eServiceFactoryEPlayer3::record(const eServiceReference &ref, ePtr<iRecordableService> &ptr)
-+{
-+	ptr=0;
-+	return -1;
-+}
-+
-+RESULT eServiceFactoryEPlayer3::list(const eServiceReference &, ePtr<iListableService> &ptr)
-+{
-+	ptr=0;
-+	return -1;
-+}
-+
-+RESULT eServiceFactoryEPlayer3::info(const eServiceReference &ref, ePtr<iStaticServiceInformation> &ptr)
-+{
-+	ptr = m_service_info;
-+	return 0;
-+}
-+
-+class eEPlayer3ServiceOfflineOperations: public iServiceOfflineOperations
-+{
-+	DECLARE_REF(eEPlayer3ServiceOfflineOperations);
-+	eServiceReference m_ref;
-+public:
-+	eEPlayer3ServiceOfflineOperations(const eServiceReference &ref);
-+
-+	RESULT deleteFromDisk(int simulate);
-+	RESULT getListOfFilenames(std::list<std::string> &);
-+	RESULT reindex();
-+};
-+
-+DEFINE_REF(eEPlayer3ServiceOfflineOperations);
-+
-+eEPlayer3ServiceOfflineOperations::eEPlayer3ServiceOfflineOperations(const eServiceReference &ref): m_ref((const eServiceReference&)ref)
-+{
-+}
-+
-+RESULT eEPlayer3ServiceOfflineOperations::deleteFromDisk(int simulate)
-+{
-+	if (!simulate)
-+	{
-+		std::list<std::string> res;
-+		if (getListOfFilenames(res))
-+			return -1;
-+
-+		eBackgroundFileEraser *eraser = eBackgroundFileEraser::getInstance();
-+		if (!eraser)
-+			eDebug("FATAL !! can't get background file eraser");
-+
-+		for (std::list<std::string>::iterator i(res.begin()); i != res.end(); ++i)
-+		{
-+			eDebug("Removing %s...", i->c_str());
-+			if (eraser)
-+				eraser->erase(i->c_str());
-+			else
-+				::unlink(i->c_str());
-+		}
-+	}
-+	return 0;
-+}
-+
-+RESULT eEPlayer3ServiceOfflineOperations::getListOfFilenames(std::list<std::string> &res)
-+{
-+	res.clear();
-+	res.push_back(m_ref.path);
-+	return 0;
-+}
-+
-+RESULT eEPlayer3ServiceOfflineOperations::reindex()
-+{
-+	return -1;
-+}
-+
-+
-+RESULT eServiceFactoryEPlayer3::offlineOperations(const eServiceReference &ref, ePtr<iServiceOfflineOperations> &ptr)
-+{
-+	ptr = new eEPlayer3ServiceOfflineOperations(ref);
-+	return 0;
-+}
-+
-+// eStaticServiceEPlayer3Info
-+
-+
-+// eStaticServiceEPlayer3Info is seperated from eServiceEPlayer3 to give information
-+// about unopened files.
-+
-+// probably eServiceEPlayer3 should use this class as well, and eStaticServiceEPlayer3Info
-+// should have a database backend where ID3-files etc. are cached.
-+// this would allow listing the mp3 database based on certain filters.
-+
-+DEFINE_REF(eStaticServiceEPlayer3Info)
-+
-+eStaticServiceEPlayer3Info::eStaticServiceEPlayer3Info()
-+{
-+}
-+
-+RESULT eStaticServiceEPlayer3Info::getName(const eServiceReference &ref, std::string &name)
-+{
-+	if ( ref.name.length() )
-+		name = ref.name;
-+	else
-+	{
-+		size_t last = ref.path.rfind('/');
-+		if (last != std::string::npos)
-+			name = ref.path.substr(last+1);
-+		else
-+			name = ref.path;
-+	}
-+	return 0;
-+}
-+
-+int eStaticServiceEPlayer3Info::getLength(const eServiceReference &ref)
-+{
-+	return -1;
-+}
-+
-+int eStaticServiceEPlayer3Info::getInfo(const eServiceReference &ref, int w)
-+{
-+	switch (w)
-+	{
-+	case iServiceInformation::sTimeCreate:
-+		{
-+			struct stat s;
-+			if (stat(ref.path.c_str(), &s) == 0)
-+			{
-+				return s.st_mtime;
-+			}
-+		}
-+		break;
-+	case iServiceInformation::sFileSize:
-+		{
-+			struct stat s;
-+			if (stat(ref.path.c_str(), &s) == 0)
-+			{
-+				return s.st_size;
-+			}
-+		}
-+		break;
-+	}
-+	return iServiceInformation::resNA;
-+}
-+
-+long long eStaticServiceEPlayer3Info::getFileSize(const eServiceReference &ref)
-+{
-+	struct stat s;
-+	if (stat(ref.path.c_str(), &s) == 0)
-+	{
-+		return s.st_size;
-+	}
-+	return 0;
-+}
-+
-+DEFINE_REF(eStreamBufferEPlayer3Info)
-+
-+eStreamBufferEPlayer3Info::eStreamBufferEPlayer3Info(int percentage, int inputrate, int outputrate, int space, int size)
-+: bufferPercentage(percentage),
-+	inputRate(inputrate),
-+	outputRate(outputrate),
-+	bufferSpace(space),
-+	bufferSize(size)
-+{
-+}
-+
-+int eStreamBufferEPlayer3Info::getBufferPercentage() const
-+{
-+	return bufferPercentage;
-+}
-+
-+int eStreamBufferEPlayer3Info::getAverageInputRate() const
-+{
-+	return inputRate;
-+}
-+
-+int eStreamBufferEPlayer3Info::getAverageOutputRate() const
-+{
-+	return outputRate;
-+}
-+
-+int eStreamBufferEPlayer3Info::getBufferSpace() const
-+{
-+	return bufferSpace;
-+}
-+
-+int eStreamBufferEPlayer3Info::getBufferSize() const
-+{
-+	return bufferSize;
-+}
-+
-+// eServiceEPlayer3
-+int eServiceEPlayer3::ac3_delay = 0,
-+    eServiceEPlayer3::pcm_delay = 0;
-+
-+eServiceEPlayer3::eServiceEPlayer3(eServiceReference ref)
-+	:m_ref(ref), m_pump(eApp, 1)
-+{
-+	m_subtitle_sync_timer = eTimer::create(eApp);
-+	m_streamingsrc_timeout = 0;
-+
-+	m_currentAudioStream = -1;
-+	m_currentSubtitleStream = -1;
-+	m_cachedSubtitleStream = 0; /* report the first subtitle stream to be 'cached'. TODO: use an actual cache. */
-+	m_subtitle_widget = 0;
-+	m_currentTrickRatio = 1.0;
-+	m_buffer_size = 8 * 1024 * 1024;
-+
-+	m_prev_decoder_time = -1;
-+	m_decoder_time_valid_state = 0;
-+	m_errorInfo.missing_codec = "";
-+
-+
-+	CONNECT(m_subtitle_sync_timer->timeout, eServiceEPlayer3::pushSubtitles);
-+
-+	m_aspect = m_width = m_height = m_framerate = m_progressive = -1;
-+
-+	m_state = stIdle;
-+	eDebug("eServiceEPlayer3::construct!");
-+
-+	const char *filename = m_ref.path.c_str();
-+	const char *ext = strrchr(filename, '.');
-+	if (!ext)
-+		ext = filename + strlen(filename);
-+
-+#if defined ENABLE_MEDIAFWGSTREAMER
-+	player = (Context_t*) malloc(sizeof(Context_t));
-+
-+	if (player)
-+	{
-+		player->playback  = &PlaybackHandler;
-+		player->output    = &OutputHandler;
-+		player->container = &ContainerHandler;
-+		player->manager   = &ManagerHandler;
-+		printf("%s\n", player->output->Name);
-+	}
-+
-+	//Registration of output devices
-+	if (player && player->output)
-+	{
-+		player->output->Command(player,OUTPUT_ADD, (void*)"audio");
-+		player->output->Command(player,OUTPUT_ADD, (void*)"video");
-+		player->output->Command(player,OUTPUT_ADD, (void*)"subtitle");
-+	}
-+#else
-+	player = new Player();
-+#endif
-+
-+#if defined ENABLE_MEDIAFWGSTREAMER
-+	if (player && player->output && player->output->subtitle)
-+	{
-+		fbClass *fb = fbClass::getInstance();
-+		SubtitleOutputDef_t out;
-+		out.screen_width = fb->getScreenResX();
-+		out.screen_height = fb->getScreenResY();
-+		out.shareFramebuffer = 1;
-+		out.framebufferFD = fb->getFD();
-+		out.destination = fb->getLFB_Direct();
-+		out.destStride = fb->Stride();
-+		out.framebufferBlit = ep3Blit;
-+		player->output->subtitle->Command(player, (OutputCmd_t)OUTPUT_SET_SUBTITLE_OUTPUT, (void*) &out);
-+	}
-+#endif
-+
-+	//create playback path
-+	char file[800] = {""};
-+
-+	if (!strncmp("http://", m_ref.path.c_str(), 7))
-+		;
-+	else if (!strncmp("rtsp://", m_ref.path.c_str(), 7))
-+		;
-+	else if (!strncmp("rtmp://", m_ref.path.c_str(), 7))
-+		;
-+	else if (!strncmp("rtmpe://", m_ref.path.c_str(), 8))
-+		;
-+	else if (!strncmp("rtmpt://", m_ref.path.c_str(), 8))
-+		;
-+	else if (!strncmp("rtmps://", m_ref.path.c_str(), 8))
-+		;
-+	else if (!strncmp("rtmpte://", m_ref.path.c_str(), 9))
-+		;
-+	else if (!strncmp("rtp://", m_ref.path.c_str(), 6))
-+		;
-+	else if (!strncmp("upnp://", m_ref.path.c_str(), 7))
-+		;
-+	else if (!strncmp("mms://", m_ref.path.c_str(), 6))
-+		;
-+	else if (!strncmp("file://", m_ref.path.c_str(), 7))
-+		;
-+	else
-+		strcat(file, "file://");
-+	strcat(file, m_ref.path.c_str());
-+
-+	//try to open file
-+#if defined ENABLE_MEDIAFWGSTREAMER
-+	if (player && player->playback && player->playback->Command(player, PLAYBACK_OPEN, file) >= 0)
-+#else
-+	if (player->Open(file))
-+#endif
-+	{
-+		//VIDEO
-+		//We dont have to register video tracks, or do we ?
-+		//AUDIO
-+#if defined ENABLE_MEDIAFWGSTREAMER
-+		if (player && player->manager && player->manager->audio)
-+		{
-+			char ** TrackList = NULL;
-+			player->manager->audio->Command(player, MANAGER_LIST, &TrackList);
-+
-+			if (TrackList != NULL)
-+			{
-+				printf("AudioTrack List\n");
-+				int i = 0;
-+				for (i = 0; TrackList[i] != NULL; i+=2)
-+				{
-+					printf("\t%s - %s\n", TrackList[i], TrackList[i+1]);
-+					audioStream audio;
-+					audio.language_code = TrackList[i];
-+
-+					// atUnknown, atMPEG, atMP3, atAC3, atDTS, atAAC, atPCM, atOGG, atFLAC
-+					if (    !strncmp("A_MPEG/L3",   TrackList[i+1], 9))
-+						audio.type = atMP3;
-+					else if (!strncmp("A_MP3",      TrackList[i+1], 5))
-+						audio.type = atMP3;
-+					else if (!strncmp("A_AC3",      TrackList[i+1], 5))
-+						audio.type = atAC3;
-+					else if (!strncmp("A_DTS",      TrackList[i+1], 5))
-+						audio.type = atDTS;
-+					else if (!strncmp("A_AAC",      TrackList[i+1], 5))
-+						audio.type = atAAC;
-+					else if (!strncmp("A_PCM",      TrackList[i+1], 5))
-+						audio.type = atPCM;
-+					else if (!strncmp("A_VORBIS",   TrackList[i+1], 8))
-+						audio.type = atOGG;
-+					else if (!strncmp("A_FLAC",     TrackList[i+1], 6))
-+						audio.type = atFLAC;
-+					else
-+						audio.type = atUnknown;
-+
-+					m_audioStreams.push_back(audio);
-+					free(TrackList[i]);
-+					free(TrackList[i+1]);
-+				}
-+				free(TrackList);
-+			}
-+		}
-+		//SUB
-+		if (player && player->manager && player->manager->subtitle)
-+		{
-+			char ** TrackList = NULL;
-+			player->manager->subtitle->Command(player, MANAGER_LIST, &TrackList);
-+			if (TrackList != NULL)
-+			{
-+				printf("SubtitleTrack List\n");
-+				int i = 0;
-+				for (i = 0; TrackList[i] != NULL; i+=2)
-+				{
-+					printf("\t%s - %s\n", TrackList[i], TrackList[i+1]);
-+					subtitleStream sub;
-+					sub.language_code = TrackList[i];
-+					//  stPlainText, stSSA, stSRT
-+					if (    !strncmp("S_TEXT/SSA",   TrackList[i+1], 10) ||
-+							!strncmp("S_SSA", TrackList[i+1], 5))
-+						sub.type = stSSA;
-+					else if (!strncmp("S_TEXT/ASS",   TrackList[i+1], 10) ||
-+							!strncmp("S_AAS", TrackList[i+1], 5))
-+						sub.type = stSSA;
-+					else if (!strncmp("S_TEXT/SRT",   TrackList[i+1], 10) ||
-+							!strncmp("S_SRT", TrackList[i+1], 5))
-+						sub.type = stSRT;
-+					else
-+						sub.type = stPlainText;
-+
-+					m_subtitleStreams.push_back(sub);
-+					free(TrackList[i]);
-+					free(TrackList[i+1]);
-+				}
-+				free(TrackList);
-+			}
-+		}
-+#else
-+		if (player)
-+		{
-+			std::vector<Track> tracks = player->manager.getAudioTracks();
-+		}
-+		m_state = stRunning;
-+#endif
-+		m_event(this, evStart);
-+	}
-+	else
-+	{
-+		//Creation failed, no playback support for insert file, so delete playback context
-+		//FIXME: How to tell e2 that we failed?
-+#if defined ENABLE_MEDIAFWGSTREAMER
-+		if (player && player->output)
-+		{
-+			player->output->Command(player,OUTPUT_DEL, (void*)"audio");
-+			player->output->Command(player,OUTPUT_DEL, (void*)"video");
-+			player->output->Command(player,OUTPUT_DEL, (void*)"subtitle");
-+		}
-+
-+		if (player && player->playback)
-+			player->playback->Command(player,PLAYBACK_CLOSE, NULL);
-+
-+		if (player)
-+			free(player);
-+		player = NULL;
-+#else
-+		player->Stop();
-+		player->output.Close();
-+		player->Close();
-+#endif
-+	}
-+	//m_state = stRunning;
-+	eDebug("eServiceEPlayer3-<\n");
-+}
-+
-+eServiceEPlayer3::~eServiceEPlayer3()
-+{
-+	if (m_subtitle_widget) m_subtitle_widget->destroy();
-+	m_subtitle_widget = 0;
-+
-+	if (m_state == stRunning)
-+		stop();
-+#if not defined ENABLE_MEDIAFWGSTREAMER
-+	delete player;
-+#endif
-+}
-+
-+DEFINE_REF(eServiceEPlayer3);
-+
-+RESULT eServiceEPlayer3::connectEvent(const Slot2<void,iPlayableService*,int> &event, ePtr<eConnection> &connection)
-+{
-+	connection = new eConnection((iPlayableService*)this, m_event.connect(event));
-+	m_event(this, evSeekableStatusChanged);
-+	return 0;
-+}
-+
-+RESULT eServiceEPlayer3::start()
-+{
-+	if (m_state != stIdle)
-+	{
-+		eDebug("eServiceEPlayer3::%s < m_state != stIdle", __func__);
-+		return -1;
-+	}
-+
-+	m_state = stRunning;
-+
-+#if defined ENABLE_MEDIAFWGSTREAMER
-+	if (player && player->output && player->playback)
-+	{
-+		player->output->Command(player, OUTPUT_OPEN, NULL);
-+		player->playback->Command(player, PLAYBACK_PLAY, NULL);
-+	}
-+#else
-+	if (player)
-+	{
-+		player->output.Open();
-+		player->Play();
-+ 	}
-+#endif
-+
-+	m_event(this, evStart);
-+
-+	return 0;
-+}
-+
-+void eServiceEPlayer3::sourceTimeout()
-+{
-+	eDebug("eServiceEPlayer3::http source timeout! issuing eof...");
-+	m_event((iPlayableService*)this, evEOF);
-+}
-+
-+RESULT eServiceEPlayer3::stop()
-+{
-+	if (m_state == stIdle)
-+	{
-+		eDebug("eServiceEPlayer3::%s < m_state == stIdle", __func__);
-+		return -1;
-+	}
-+
-+	if (m_state == stStopped)
-+		return -1;
-+
-+	eDebug("eServiceEPlayer3::stop %s", m_ref.path.c_str());
-+
-+#if defined ENABLE_MEDIAFWGSTREAMER
-+	if (player && player->playback && player->output)
-+	{
-+		player->playback->Command(player, PLAYBACK_STOP, NULL);
-+		player->output->Command(player, OUTPUT_CLOSE, NULL);
-+	}
-+
-+	if (player && player->output)
-+	{
-+		player->output->Command(player,OUTPUT_DEL, (void*)"audio");
-+		player->output->Command(player,OUTPUT_DEL, (void*)"video");
-+		player->output->Command(player,OUTPUT_DEL, (void*)"subtitle");
-+	}
-+
-+	if (player && player->playback)
-+		player->playback->Command(player,PLAYBACK_CLOSE, NULL);
-+
-+	if (player)
-+		free(player);
-+
-+	if (player != NULL)
-+		player = NULL;
-+
-+#else
-+	if (player)
-+	{
-+		player->Stop();
-+		player->output.Close();
-+		player->Close();
-+	}
-+#endif
-+
-+	m_state = stStopped;
-+
-+	return 0;
-+}
-+
-+RESULT eServiceEPlayer3::setTarget(int target, bool noaudio)
-+{
-+	return -1;
-+}
-+
-+RESULT eServiceEPlayer3::pause(ePtr<iPauseableService> &ptr)
-+{
-+	ptr=this;
-+	return 0;
-+}
-+
-+int speed_mapping[] =
-+{
-+ /* e2_ratio   speed */
-+	2,         1,
-+	4,         3,
-+	8,         7,
-+	16,        15,
-+	32,        31,
-+	64,        63,
-+	128,      127,
-+	-2,       -5,
-+	-4,      -10,
-+	-8,      -20,
-+	-16,      -40,
-+	-32,      -80,
-+	-64,     -160,
-+	-128,     -320,
-+	-1,       -1
-+};
-+
-+int getSpeed(int ratio)
-+{
-+	int i = 0;
-+	while (speed_mapping[i] != -1)
-+	{
-+		if (speed_mapping[i] == ratio)
-+			return speed_mapping[i+1];
-+		i += 2;
-+	}
-+	return -1;
-+}
-+
-+RESULT eServiceEPlayer3::setSlowMotion(int ratio)
-+{
-+// konfetti: in libeplayer3 we changed this because I dont like application specific stuff in a library
-+	int speed = getSpeed(ratio);
-+
-+#if defined ENABLE_MEDIAFWGSTREAMER
-+	if (player && player->playback && (speed != -1))
-+#else
-+	if (player && (speed != -1))
-+#endif
-+	{
-+		int result = 0;
-+		if (ratio > 1)
-+#if defined ENABLE_MEDIAFWGSTREAMER
-+			result = player->playback->Command(player, PLAYBACK_SLOWMOTION, (void*)&speed);
-+#else
-+			result = player->SlowMotion(speed);
-+#endif
-+
-+		if (result != 0)
-+			return -1;
-+	}
-+	return 0;
-+}
-+
-+RESULT eServiceEPlayer3::setFastForward(int ratio)
-+{
-+// konfetti: in libeplayer3 we changed this because I dont like application specific stuff in a library
-+	int speed = getSpeed(ratio);
-+#if defined ENABLE_MEDIAFWGSTREAMER
-+	if (player && player->playback && (speed != -1))
-+#else
-+	if (player && (speed != -1))
-+#endif
-+	{
-+		int result = 0;
-+		if (ratio > 1)
-+#if defined ENABLE_MEDIAFWGSTREAMER
-+			result = player->playback->Command(player, PLAYBACK_FASTFORWARD, (void*)&speed);
-+#else
-+			result = player->FastForward(speed);
-+#endif
-+		else if (ratio < -1)
-+		{
-+			//speed = speed * -1;
-+#if defined ENABLE_MEDIAFWGSTREAMER
-+			result = player->playback->Command(player, PLAYBACK_FASTBACKWARD, (void*)&speed);
-+#else
-+			result = player->FastBackward(speed);
-+#endif
-+		}
-+		else
-+#if defined ENABLE_MEDIAFWGSTREAMER
-+			result = player->playback->Command(player, PLAYBACK_CONTINUE, NULL);
-+#else
-+			result = player->Continue();
-+#endif
-+
-+		if (result != 0)
-+			return -1;
-+	}
-+	return 0;
-+}
-+
-+		// iPausableService
-+RESULT eServiceEPlayer3::pause()
-+{
-+#if defined ENABLE_MEDIAFWGSTREAMER
-+	if (player && player->playback)
-+		player->playback->Command(player, PLAYBACK_PAUSE, NULL);
-+#else
-+	if (player)
-+		player->Pause();
-+#endif
-+	return 0;
-+}
-+
-+RESULT eServiceEPlayer3::unpause()
-+{
-+#if defined ENABLE_MEDIAFWGSTREAMER
-+	if (player && player->playback)
-+		player->playback->Command(player, PLAYBACK_CONTINUE, NULL);
-+#else
-+	if (player)
-+		player->Continue();
-+#endif
-+
-+	return 0;
-+}
-+
-+	/* iSeekableService */
-+RESULT eServiceEPlayer3::seek(ePtr<iSeekableService> &ptr)
-+{
-+	ptr = this;
-+	return 0;
-+}
-+
-+RESULT eServiceEPlayer3::getLength(pts_t &pts)
-+{
-+#if defined ENABLE_MEDIAFWGSTREAMER
-+	double length = 0;
-+
-+	if (player && player->playback)
-+		player->playback->Command(player, PLAYBACK_LENGTH, &length);
-+#else
-+	int64_t length = 0;
-+
-+	if (player)
-+		player->GetDuration(length);
-+#endif
-+
-+	if (length <= 0)
-+		return -1;
-+
-+	pts = length * 90000;
-+	return 0;
-+}
-+
-+RESULT eServiceEPlayer3::seekToImpl(pts_t to)
-+{
-+	return 0;
-+}
-+
-+RESULT eServiceEPlayer3::seekTo(pts_t to)
-+{
-+	RESULT ret = -1;
-+
-+	float pos = (to/90000.0)-10;
-+#if defined ENABLE_MEDIAFWGSTREAMER
-+	if (player && player->playback)
-+		player->playback->Command(player, PLAYBACK_SEEK, (void*)&pos);
-+#else
-+	if (player)
-+		player->Seek(pos,true);
-+#endif
-+
-+	ret =0;
-+	return ret;
-+}
-+
-+RESULT eServiceEPlayer3::seekRelative(int direction, pts_t to)
-+{
-+	pts_t ppos;
-+	if (getPlayPosition(ppos) < 0) return -1;
-+	ppos += to * direction;
-+	if (ppos < 0)
-+		ppos = 0;
-+
-+	float pos = direction*(to/90000.0);
-+#if defined ENABLE_MEDIAFWGSTREAMER
-+	if (player && player->playback)
-+		player->playback->Command(player, PLAYBACK_SEEK, (void*)&pos);
-+#else
-+	if (player)
-+		player->Seek(pos,true);
-+#endif
-+
-+	return 0;
-+}
-+
-+RESULT eServiceEPlayer3::getPlayPosition(pts_t &pts)
-+{
-+#if defined ENABLE_MEDIAFWGSTREAMER
-+	if (player && player->playback && !player->playback->isPlaying)
-+#else
-+	if (player && !player->isPlaying)
-+#endif
-+	{
-+		eDebug("eServiceEPlayer3::%s !!!!EOF!!!! < -1", __func__);
-+		if(m_state == stRunning)
-+			m_event((iPlayableService*)this, evEOF);
-+		pts = 0;
-+		return -1;
-+	}
-+
-+#if defined ENABLE_MEDIAFWGSTREAMER
-+	unsigned long long int vpts = 0;
-+	if (player && player->playback)
-+		player->playback->Command(player, PLAYBACK_PTS, &vpts);
-+
-+	if (vpts<=0)
-+		return -1;
-+
-+	/* len is in nanoseconds. we have 90 000 pts per second. */
-+	pts = vpts>0?vpts:pts;;
-+#else
-+	if (player)
-+		player->GetPts((int64_t &) pts);
-+#endif
-+
-+	return 0;
-+}
-+
-+RESULT eServiceEPlayer3::setTrickmode(int trick)
-+{
-+		/* trickmode is not yet supported by our dvbmediasinks. */
-+	return -1;
-+}
-+
-+RESULT eServiceEPlayer3::isCurrentlySeekable()
-+{
-+	return 3;
-+}
-+
-+RESULT eServiceEPlayer3::info(ePtr<iServiceInformation>&i)
-+{
-+	i = this;
-+	return 0;
-+}
-+
-+RESULT eServiceEPlayer3::getName(std::string &name)
-+{
-+	std::string title = m_ref.getName();
-+	if (title.empty())
-+	{
-+		name = m_ref.path;
-+		size_t n = name.rfind('/');
-+		if (n != std::string::npos)
-+			name = name.substr(n + 1);
-+	}
-+	else
-+		name = title;
-+	return 0;
-+}
-+
-+int eServiceEPlayer3::getInfo(int w)
-+{
-+	switch (w)
-+	{
-+	case sServiceref: return m_ref;
-+	case sVideoHeight: return m_height;
-+	case sVideoWidth: return m_width;
-+	case sFrameRate: return m_framerate;
-+	case sProgressive: return m_progressive;
-+	case sAspect: return m_aspect;
-+	case sTagTitle:
-+	case sTagArtist:
-+	case sTagAlbum:
-+	case sTagTitleSortname:
-+	case sTagArtistSortname:
-+	case sTagAlbumSortname:
-+	case sTagDate:
-+	case sTagComposer:
-+	case sTagGenre:
-+	case sTagComment:
-+	case sTagExtendedComment:
-+	case sTagLocation:
-+	case sTagHomepage:
-+	case sTagDescription:
-+	case sTagVersion:
-+	case sTagISRC:
-+	case sTagOrganization:
-+	case sTagCopyright:
-+	case sTagCopyrightURI:
-+	case sTagContact:
-+	case sTagLicense:
-+	case sTagLicenseURI:
-+	case sTagCodec:
-+	case sTagAudioCodec:
-+	case sTagVideoCodec:
-+	case sTagEncoder:
-+	case sTagLanguageCode:
-+	case sTagKeywords:
-+	case sTagChannelMode:
-+	case sUser+12:
-+#if not defined(__sh__)
-+		return resIsString;
-+#endif
-+	case sTagTrackGain:
-+	case sTagTrackPeak:
-+	case sTagAlbumGain:
-+	case sTagAlbumPeak:
-+	case sTagReferenceLevel:
-+	case sTagBeatsPerMinute:
-+	case sTagImage:
-+	case sTagPreviewImage:
-+	case sTagAttachment:
-+		return resIsPyObject;
-+	default:
-+		return resNA;
-+	}
-+
-+	return 0;
-+}
-+
-+std::string eServiceEPlayer3::getInfoString(int w)
-+{
-+	char * tag = NULL;
-+#if defined ENABLE_MEDIAFWGSTREAMER
-+	char * res_str = NULL;
-+#else
-+	std::vector<std::string> keys, values;
-+	std::string res = "";
-+#endif
-+	switch (w)
-+	{
-+	case sTagTitle:
-+		tag = strdup("Title");
-+		break;
-+	case sTagArtist:
-+		tag = strdup("Artist");
-+		break;
-+	case sTagAlbum:
-+		tag = strdup("Album");
-+		break;
-+	case sTagComment:
-+		tag = strdup("Comment");
-+		break;
-+	case sTagTrackNumber:
-+		tag = strdup("Track");
-+		break;
-+	case sTagGenre:
-+		tag = strdup("Genre");
-+		break;
-+	case sTagDate:
-+		tag = strdup("Year");
-+		break;
-+	case sTagVideoCodec:
-+		tag = strdup("VideoType");
-+		break;
-+	case sTagAudioCodec:
-+		tag = strdup("AudioType");
-+		break;
-+	default:
-+		return "";
-+	}
-+
-+#if defined ENABLE_MEDIAFWGSTREAMER
-+	if (player && player->playback)
-+	{
-+		/*Hellmaster1024: we need to save the adress of tag to free the strduped mem
-+		  the command will retun a new adress for a new strduped string.
-+		  Both Strings need to be freed! */
-+		res_str = tag;
-+		player->playback->Command(player, PLAYBACK_INFO, &res_str);
-+		/* Hellmaster1024: in case something went wrong maybe no new adress is returned */
-+		if (tag != res_str)
-+		{
-+			std::string res = res_str;
-+			free(tag);
-+			free(res_str);
-+			return res;
-+		}
-+		else
-+		{
-+			free(tag);
-+			return "";
-+		}
-+	}
-+#else
-+	if (player)
-+		player->input.GetMetadata(keys, values);
-+
-+	for (int i = 0; i < keys.size(); i++)
-+	{
-+		if (tag == keys[i])
-+			res = values[i];
-+	}	
-+
-+#endif
-+	free(tag);
-+
-+#if defined ENABLE_MEDIAFWGSTREAMER
-+	return "";
-+#else
-+	return res;
-+#endif
-+}
-+
-+RESULT eServiceEPlayer3::audioChannel(ePtr<iAudioChannelSelection> &ptr)
-+{
-+	ptr = this;
-+	return 0;
-+}
-+
-+RESULT eServiceEPlayer3::audioTracks(ePtr<iAudioTrackSelection> &ptr)
-+{
-+	ptr = this;
-+	return 0;
-+}
-+
-+RESULT eServiceEPlayer3::subtitle(ePtr<iSubtitleOutput> &ptr)
-+{
-+	ptr = this;
-+	return 0;
-+}
-+
-+RESULT eServiceEPlayer3::audioDelay(ePtr<iAudioDelay> &ptr)
-+{
-+	ptr = this;
-+	return 0;
-+}
-+
-+int eServiceEPlayer3::getNumberOfTracks()
-+{
-+ 	return m_audioStreams.size();
-+}
-+
-+int eServiceEPlayer3::getCurrentTrack()
-+{
-+	return m_currentAudioStream;
-+}
-+
-+RESULT eServiceEPlayer3::selectTrack(unsigned int i)
-+{
-+	int ret = selectAudioStream(i);
-+
-+	return ret;
-+}
-+
-+int eServiceEPlayer3::selectAudioStream(int i)
-+{
-+	if (i != m_currentAudioStream)
-+	{
-+#if defined ENABLE_MEDIAFWGSTREAMER
-+		if (player && player->playback)
-+			player->playback->Command(player, PLAYBACK_SWITCH_AUDIO, (void*)&i);
-+#else
-+		if (player)
-+			player->SwitchAudio(i);
-+#endif
-+		m_currentAudioStream = i;
-+		return 0;
-+	}
-+	return -1;
-+}
-+
-+int eServiceEPlayer3::getCurrentChannel()
-+{
-+	return STEREO;
-+}
-+
-+RESULT eServiceEPlayer3::selectChannel(int i)
-+{
-+	eDebug("eServiceEPlayer3::selectChannel(%i)",i);
-+	return 0;
-+}
-+
-+RESULT eServiceEPlayer3::getTrackInfo(struct iAudioTrackInfo &info, unsigned int i)
-+{
-+ 	if (i >= m_audioStreams.size())
-+		return -2;
-+
-+	if (m_audioStreams[i].type == atMPEG)
-+		info.m_description = "MPEG";
-+	else if (m_audioStreams[i].type == atMP3)
-+		info.m_description = "MP3";
-+	else if (m_audioStreams[i].type == atAC3)
-+		info.m_description = "AC3";
-+	else if (m_audioStreams[i].type == atAAC)
-+		info.m_description = "AAC";
-+	else if (m_audioStreams[i].type == atDTS)
-+		info.m_description = "DTS";
-+	else if (m_audioStreams[i].type == atPCM)
-+		info.m_description = "PCM";
-+	else if (m_audioStreams[i].type == atOGG)
-+		info.m_description = "OGG";
-+
-+	if (info.m_language.empty())
-+		info.m_language = m_audioStreams[i].language_code;
-+	return 0;
-+}
-+
-+eAutoInitPtr<eServiceFactoryEPlayer3> init_eServiceFactoryEPlayer3(eAutoInitNumbers::service+1, "eServiceFactoryEPlayer3");
-+
-+void eServiceEPlayer3::eplayerCBsubtitleAvail(long int duration_ms, size_t len, char * buffer, void* user_data)
-+{
-+	eDebug("eServiceEPlayer3::%s >", __func__);
-+	unsigned char tmp[len+1];
-+	memcpy(tmp, buffer, len);
-+	tmp[len] = 0;
-+	eDebug("gstCBsubtitleAvail: %s", tmp);
-+	eServiceEPlayer3 *_this = (eServiceEPlayer3*)user_data;
-+	if ( _this->m_subtitle_widget )
-+	{
-+		ePangoSubtitlePage page;
-+		gRGB rgbcol(0xD0,0xD0,0xD0);
-+		page.m_elements.push_back(ePangoSubtitlePageElement(rgbcol, (const char*)tmp));
-+		page.m_timeout = duration_ms;
-+		(_this->m_subtitle_widget)->setPage(page);
-+	}
-+	eDebug("eServiceEPlayer3::%s <", __func__);
-+}
-+
-+void eServiceEPlayer3::pushSubtitles()
-+{
-+}
-+
-+RESULT eServiceEPlayer3::enableSubtitles(iSubtitleUser *user, struct SubtitleTrack &track)
-+{
-+	if (m_currentSubtitleStream != track.pid)
-+	{
-+		m_subtitle_sync_timer->stop();
-+		m_subtitle_pages.clear();
-+		m_prev_decoder_time = -1;
-+		m_decoder_time_valid_state = 0;
-+
-+		m_subtitle_widget = user;
-+
-+	}
-+
-+#if defined ENABLE_MEDIAFWGSTREAMER
-+	if (player && player->playback)
-+		player->playback->Command(player, PLAYBACK_SWITCH_SUBTITLE, (void*)&track.pid);
-+#else
-+	if (player)
-+		player->SwitchSubtitle(track.pid);
-+#endif
-+
-+	return 0;
-+}
-+
-+RESULT eServiceEPlayer3::disableSubtitles()
-+{
-+	eDebug("eServiceEPlayer3::disableSubtitles");
-+
-+	m_subtitle_sync_timer->stop();
-+	m_subtitle_pages.clear();
-+	m_prev_decoder_time = -1;
-+	m_decoder_time_valid_state = 0;
-+	if (m_subtitle_widget) m_subtitle_widget->destroy();
-+	m_subtitle_widget = 0;
-+
-+	int pid = -1;
-+#if defined ENABLE_MEDIAFWGSTREAMER
-+	if (player && player->playback)
-+		player->playback->Command(player, PLAYBACK_SWITCH_SUBTITLE, (void*)&pid);
-+#else
-+	if (player)
-+		player->SwitchSubtitle(pid);
-+#endif
-+
-+	return 0;
-+}
-+
-+RESULT eServiceEPlayer3::getCachedSubtitle(struct SubtitleTrack &track)
-+{
-+
-+	bool autoturnon = eConfigManager::getConfigBoolValue("config.subtitles.pango_autoturnon", true);
-+	if (!autoturnon)
-+		return -1;
-+
-+	if (m_cachedSubtitleStream >= 0 && m_cachedSubtitleStream < (int)m_subtitleStreams.size())
-+	{
-+		track.type = 2;
-+		track.pid = m_cachedSubtitleStream;
-+		track.page_number = int(m_subtitleStreams[m_cachedSubtitleStream].type);
-+		track.magazine_number = 0;
-+		return 0;
-+	}
-+	return -1;
-+}
-+
-+RESULT eServiceEPlayer3::getSubtitleList(std::vector<struct SubtitleTrack> &subtitlelist)
-+{
-+// 	eDebug("eServiceEPlayer3::getSubtitleList");
-+	int stream_idx = 0;
-+
-+	for (std::vector<subtitleStream>::iterator IterSubtitleStream(m_subtitleStreams.begin()); IterSubtitleStream != m_subtitleStreams.end(); ++IterSubtitleStream)
-+	{
-+		subtype_t type = IterSubtitleStream->type;
-+		switch(type)
-+		{
-+		case stUnknown:
-+		case stVOB:
-+		case stPGS:
-+			break;
-+		default:
-+		{
-+			struct SubtitleTrack track;
-+			track.type = 2;
-+			track.pid = stream_idx;
-+			track.page_number = int(type);
-+			track.magazine_number = 0;
-+			track.language_code = IterSubtitleStream->language_code;
-+			subtitlelist.push_back(track);
-+		}
-+		}
-+		stream_idx++;
-+	}
-+	eDebug("eServiceEPlayer3::getSubtitleList finished");
-+	return 0;
-+}
-+
-+RESULT eServiceEPlayer3::streamed(ePtr<iStreamedService> &ptr)
-+{
-+	ptr = this;
-+	return 0;
-+}
-+
-+ePtr<iStreamBufferInfo> eServiceEPlayer3::getBufferCharge()
-+{
-+	return new eStreamBufferEPlayer3Info(m_bufferInfo.bufferPercent, m_bufferInfo.avgInRate, m_bufferInfo.avgOutRate, m_bufferInfo.bufferingLeft, m_buffer_size);
-+}
-+
-+int eServiceEPlayer3::setBufferSize(int size)
-+{
-+	m_buffer_size = size;
-+	return 0;
-+}
-+
-+int eServiceEPlayer3::getAC3Delay()
-+{
-+	return ac3_delay;
-+}
-+
-+int eServiceEPlayer3::getPCMDelay()
-+{
-+	return pcm_delay;
-+}
-+
-+void eServiceEPlayer3::setAC3Delay(int delay)
-+{
-+
-+}
-+
-+void eServiceEPlayer3::setPCMDelay(int delay)
-+{
-+}
-diff -Nur '--exclude-from=diff-exclude' enigma2.org/lib/service/serviceeplayer3.h enigma2/lib/service/serviceeplayer3.h
---- enigma2.org/lib/service/serviceeplayer3.h	1970-01-01 01:00:00.000000000 +0100
-+++ enigma2/lib/service/serviceeplayer3.h	2015-08-19 23:14:08.359487370 +0200
-@@ -0,0 +1,313 @@
-+#ifndef __serviceeplayer3_h
-+#define __serviceeplayer3_h
-+
-+#include <lib/base/message.h>
-+#include <lib/service/iservice.h>
-+#include <lib/dvb/pmt.h>
-+#include <lib/dvb/subtitle.h>
-+#include <lib/dvb/teletext.h>
-+
-+#if defined ENABLE_MEDIAFWGSTREAMER
-+#include <common.h>
-+#include <subtitle.h>
-+#endif
-+#define gint int
-+#define gint64 int64_t
-+#if defined ENABLE_MEDIAFWGSTREAMER
-+extern OutputHandler_t		OutputHandler;
-+extern PlaybackHandler_t	PlaybackHandler;
-+extern ContainerHandler_t	ContainerHandler;
-+extern ManagerHandler_t	ManagerHandler;
-+#endif
-+
-+/* for subtitles */
-+#include <lib/gui/esubtitle.h>
-+
-+#if not defined ENABLE_MEDIAFWGSTREAMER
-+class Player;
-+#endif
-+class eStaticServiceEPlayer3Info;
-+
-+class eServiceFactoryEPlayer3: public iServiceHandler
-+{
-+	DECLARE_REF(eServiceFactoryEPlayer3);
-+public:
-+	eServiceFactoryEPlayer3();
-+	virtual ~eServiceFactoryEPlayer3();
-+	enum { id = 0x1003 };
-+
-+		// iServiceHandler
-+	RESULT play(const eServiceReference &, ePtr<iPlayableService> &ptr);
-+	RESULT record(const eServiceReference &, ePtr<iRecordableService> &ptr);
-+	RESULT list(const eServiceReference &, ePtr<iListableService> &ptr);
-+	RESULT info(const eServiceReference &, ePtr<iStaticServiceInformation> &ptr);
-+	RESULT offlineOperations(const eServiceReference &, ePtr<iServiceOfflineOperations> &ptr);
-+private:
-+	ePtr<eStaticServiceEPlayer3Info> m_service_info;
-+};
-+
-+class eStaticServiceEPlayer3Info: public iStaticServiceInformation
-+{
-+	DECLARE_REF(eStaticServiceEPlayer3Info);
-+	friend class eServiceFactoryEPlayer3;
-+	eStaticServiceEPlayer3Info();
-+public:
-+	RESULT getName(const eServiceReference &ref, std::string &name);
-+	int getLength(const eServiceReference &ref);
-+	int getInfo(const eServiceReference &ref, int w);
-+	int isPlayable(const eServiceReference &ref, const eServiceReference &ignore, bool simulate) { return 1; }
-+	long long getFileSize(const eServiceReference &ref);
-+};
-+
-+class eStreamBufferEPlayer3Info: public iStreamBufferInfo
-+{
-+	DECLARE_REF(eStreamBufferEPlayer3Info);
-+	int bufferPercentage;
-+	int inputRate;
-+	int outputRate;
-+	int bufferSpace;
-+	int bufferSize;
-+
-+public:
-+	eStreamBufferEPlayer3Info(int percentage, int inputrate, int outputrate, int space, int size);
-+
-+	int getBufferPercentage() const;
-+	int getAverageInputRate() const;
-+	int getAverageOutputRate() const;
-+	int getBufferSpace() const;
-+	int getBufferSize() const;
-+};
-+
-+class eServiceEPlayer3InfoContainer: public iServiceInfoContainer
-+{
-+	DECLARE_REF(eServiceEPlayer3InfoContainer);
-+
-+	double doubleValue;
-+
-+
-+	unsigned char *bufferData;
-+	unsigned int bufferSize;
-+
-+public:
-+	eServiceEPlayer3InfoContainer();
-+	~eServiceEPlayer3InfoContainer();
-+
-+	double getDouble(unsigned int index) const;
-+	unsigned char *getBuffer(unsigned int &size) const;
-+
-+	void setDouble(double value);
-+};
-+
-+typedef enum { atUnknown, atMPEG, atMP3, atAC3, atDTS, atAAC, atPCM, atOGG, atFLAC, atWMA } audiotype_t;
-+typedef enum { stUnknown, stPlainText, stSSA, stASS, stSRT, stVOB, stPGS } subtype_t;
-+typedef enum { ctNone, ctMPEGTS, ctMPEGPS, ctMKV, ctAVI, ctMP4, ctVCD, ctCDA, ctASF, ctOGG } containertype_t;
-+
-+class eServiceEPlayer3: public iPlayableService, public iPauseableService,
-+	public iServiceInformation, public iSeekableService, public iAudioTrackSelection, public iAudioChannelSelection, 
-+	public iSubtitleOutput, public iStreamedService, public iAudioDelay, public Object
-+{
-+	DECLARE_REF(eServiceEPlayer3);
-+public:
-+	virtual ~eServiceEPlayer3();
-+
-+		// iPlayableService
-+	RESULT connectEvent(const Slot2<void,iPlayableService*,int> &event, ePtr<eConnection> &connection);
-+	RESULT start();
-+	RESULT stop();
-+	RESULT setTarget(int target, bool noaudio);
-+	
-+	RESULT pause(ePtr<iPauseableService> &ptr);
-+	RESULT setSlowMotion(int ratio);
-+	RESULT setFastForward(int ratio);
-+
-+	RESULT seek(ePtr<iSeekableService> &ptr);
-+	RESULT audioTracks(ePtr<iAudioTrackSelection> &ptr);
-+	RESULT audioChannel(ePtr<iAudioChannelSelection> &ptr);
-+	RESULT subtitle(ePtr<iSubtitleOutput> &ptr);
-+	RESULT audioDelay(ePtr<iAudioDelay> &ptr);
-+
-+		// not implemented (yet)
-+	RESULT frontendInfo(ePtr<iFrontendInformation> &ptr) { ptr = 0; return -1; }
-+	RESULT subServices(ePtr<iSubserviceList> &ptr) { ptr = 0; return -1; }
-+	RESULT timeshift(ePtr<iTimeshiftService> &ptr) { ptr = 0; return -1; }
-+	RESULT cueSheet(ePtr<iCueSheet> &ptr) { ptr = 0; return -1; }
-+
-+	RESULT rdsDecoder(ePtr<iRdsDecoder> &ptr) { ptr = 0; return -1; }
-+	RESULT keys(ePtr<iServiceKeys> &ptr) { ptr = 0; return -1; }
-+	RESULT stream(ePtr<iStreamableService> &ptr) { ptr = 0; return -1; }
-+
-+		// iPausableService
-+	RESULT pause();
-+	RESULT unpause();
-+	
-+	RESULT info(ePtr<iServiceInformation>&);
-+	
-+		// iSeekableService
-+	RESULT getLength(pts_t &SWIG_OUTPUT);
-+	RESULT seekTo(pts_t to);
-+	RESULT seekRelative(int direction, pts_t to);
-+	RESULT getPlayPosition(pts_t &SWIG_OUTPUT);
-+	RESULT setTrickmode(int trick);
-+	RESULT isCurrentlySeekable();
-+
-+		// iServiceInformation
-+	RESULT getName(std::string &name);
-+	int getInfo(int w);
-+	std::string getInfoString(int w);
-+
-+		// iAudioTrackSelection	
-+	int getNumberOfTracks();
-+	RESULT selectTrack(unsigned int i);
-+	RESULT getTrackInfo(struct iAudioTrackInfo &, unsigned int n);
-+	int getCurrentTrack();
-+
-+		// iAudioChannelSelection	
-+	int getCurrentChannel();
-+	RESULT selectChannel(int i);
-+
-+		// iSubtitleOutput
-+	RESULT enableSubtitles(iSubtitleUser *user, SubtitleTrack &track);
-+	RESULT disableSubtitles();
-+	RESULT getSubtitleList(std::vector<SubtitleTrack> &sublist);
-+	RESULT getCachedSubtitle(SubtitleTrack &track);
-+
-+		// iStreamedService
-+	RESULT streamed(ePtr<iStreamedService> &ptr);
-+	ePtr<iStreamBufferInfo> getBufferCharge();
-+	int setBufferSize(int size);
-+
-+		// iAudioDelay
-+	int getAC3Delay();
-+	int getPCMDelay();
-+	void setAC3Delay(int);
-+	void setPCMDelay(int);
-+
-+	struct audioStream
-+	{
-+		audiotype_t type;
-+		std::string language_code; /* iso-639, if available. */
-+		std::string codec; /* clear text codec description */
-+		audioStream()
-+			:type(atUnknown)
-+		{
-+		}
-+	};
-+	struct subtitleStream
-+	{
-+		subtype_t type;
-+		std::string language_code; /* iso-639, if available. */
-+		int id;
-+		subtitleStream()
-+		{
-+		}
-+	};
-+	struct sourceStream
-+	{
-+		audiotype_t audiotype;
-+		containertype_t containertype;
-+		bool is_video;
-+		bool is_streaming;
-+		sourceStream()
-+			:audiotype(atUnknown), containertype(ctNone), is_video(false), is_streaming(false)
-+		{
-+		}
-+	};
-+
-+	struct bufferInfo
-+	{
-+		gint bufferPercent;
-+		gint avgInRate;
-+		gint avgOutRate;
-+		gint64 bufferingLeft;
-+		bufferInfo()
-+			:bufferPercent(0), avgInRate(0), avgOutRate(0), bufferingLeft(-1)
-+		{
-+		}
-+	};
-+	struct errorInfo
-+	{
-+		std::string error_message;
-+		std::string missing_codec;
-+	};
-+
-+private:
-+#if not defined ENABLE_MEDIAFWGSTREAMER
-+	Player *player;
-+#endif
-+	static int pcm_delay;
-+	static int ac3_delay;
-+	int m_currentAudioStream;
-+	int m_currentSubtitleStream;
-+	int m_cachedSubtitleStream;
-+	int selectAudioStream(int i);
-+	std::vector<audioStream> m_audioStreams;
-+	std::vector<subtitleStream> m_subtitleStreams;
-+	iSubtitleUser *m_subtitle_widget;
-+
-+	int m_currentTrickRatio;
-+
-+	friend class eServiceFactoryEPlayer3;
-+	eServiceReference m_ref;
-+	int m_buffer_size;
-+
-+	bufferInfo m_bufferInfo;
-+	errorInfo m_errorInfo;
-+	std::string m_download_buffer_path;
-+	eServiceEPlayer3(eServiceReference ref);
-+	Signal2<void,iPlayableService*,int> m_event;
-+	enum
-+	{
-+		stIdle, stRunning, stStopped,
-+	};
-+	int m_state;
-+
-+#if defined ENABLE_MEDIAFWGSTREAMER
-+	Context_t * player;
-+#endif
-+
-+	struct Message
-+	{
-+		Message()
-+			:type(-1)
-+		{}
-+		Message(int type)
-+			:type(type)
-+		{}
-+		int type;
-+	};
-+	eFixedMessagePump<Message> m_pump;
-+	static void eplayerCBsubtitleAvail(long int duration_ns, size_t len, char * buffer, void* user_data);
-+
-+	struct subtitle_page_t
-+	{
-+		uint32_t start_ms;
-+		uint32_t end_ms;
-+		std::string text;
-+
-+		subtitle_page_t(uint32_t start_ms_in, uint32_t end_ms_in, std::string text_in)
-+			: start_ms(start_ms_in), end_ms(end_ms_in), text(text_in)
-+		{
-+		}
-+	};
-+
-+	typedef std::map<uint32_t, subtitle_page_t> subtitle_pages_map_t;
-+	typedef std::pair<uint32_t, subtitle_page_t> subtitle_pages_map_pair_t;
-+	subtitle_pages_map_t m_subtitle_pages;
-+	ePtr<eTimer> m_subtitle_sync_timer;
-+	
-+	ePtr<eTimer> m_streamingsrc_timeout;
-+	pts_t m_prev_decoder_time;
-+	int m_decoder_time_valid_state;
-+
-+	void pushSubtitles();
-+
-+	void sourceTimeout();
-+	sourceStream m_sourceinfo;
-+
-+	RESULT seekToImpl(pts_t to);
-+
-+	gint m_aspect, m_width, m_height, m_framerate, m_progressive;
-+	std::string m_useragent;
-+};
-+
-+#endif
---- enigma2.org/lib/service/servicemp3.cpp
-+++ enigma2/lib/service/servicemp3.cpp
-@@ -17,11 +17,13 @@
- 
- #include <string>
- 
-+#ifdef ENABLE_MEDIAFWGSTREAMER
- #include <gst/gst.h>
- #include <gst/pbutils/missing-plugins.h>
-+#endif
- #include <sys/stat.h>
- 
--#define HTTP_TIMEOUT 30
-+#define HTTP_TIMEOUT 60
- 
- /*
-  * UNUSED variable from service reference is now used as buffer flag for gstreamer
-@@ -73,6 +75,11 @@
- #undef GSTREAMER_SUBTITLE_SYNC_MODE_BUG
- #endif
- /**/
-+
-+void mp3Blit(){
-+	fbClass *fb = fbClass::getInstance();
-+	fb->blit();
-+}
- 
- eServiceFactoryMP3::eServiceFactoryMP3()
- {
-@@ -98,20 +105,26 @@
- 		extensions.push_back("aac");
- 		extensions.push_back("ape");
- 		extensions.push_back("alac");
--		extensions.push_back("mpg");
--		extensions.push_back("vob");
-+		extensions.push_back("flv");
-+		extensions.push_back("m4a");
-+		extensions.push_back("3gp");
-+		extensions.push_back("3g2");
-+		extensions.push_back("asf");
-+#if defined(__sh__)
-+#if !defined(ENABLE_MEDIAFWGSTREAMER) || !defined(ENABLE_LIBEPLAYER3)
-+/* Hellmaster1024: if both gst and eplayer3 are enabled, this is the GST service!
-+ * We only select the audio extensions (above), and leave the Video extensions for
-+ * the ePlayer3 service located in serviceeplayer3
-+ * If only one of GST and ePlayer3 this service handles all extensions and switches between
-+ * GST and ePlayer3
-+*/
- 		extensions.push_back("m4v");
- 		extensions.push_back("mkv");
- 		extensions.push_back("avi");
- 		extensions.push_back("divx");
- 		extensions.push_back("dat");
--		extensions.push_back("flv");
- 		extensions.push_back("mp4");
- 		extensions.push_back("mov");
--		extensions.push_back("wmv");
--		extensions.push_back("asf");
--		extensions.push_back("3gp");
--		extensions.push_back("3g2");
- 		extensions.push_back("mpeg");
- 		extensions.push_back("mpe");
- 		extensions.push_back("rm");
-@@ -119,6 +132,24 @@
- 		extensions.push_back("ogm");
- 		extensions.push_back("ogv");
- 		extensions.push_back("m3u8");
-+		extensions.push_back("trp");
-+		extensions.push_back("vdr");
-+		extensions.push_back("mts");
-+		extensions.push_back("rar");
-+		extensions.push_back("img");
-+		extensions.push_back("iso");
-+		extensions.push_back("ifo");
-+		extensions.push_back("trp");
-+		extensions.push_back("vdr");
-+		extensions.push_back("mts");
-+		extensions.push_back("rar");
-+		extensions.push_back("img");
-+		extensions.push_back("iso");
-+		extensions.push_back("ifo");
-+ 		extensions.push_back("wmv");
-+#endif
-+#endif
-+ 		extensions.push_back("wma");
- 		extensions.push_back("stream");
- 		extensions.push_back("webm");
- 		sc->addServiceFactory(eServiceFactoryMP3::id, this, extensions);
-@@ -351,6 +382,7 @@
- 	return bufferSize;
- }
- 
-+#ifdef ENABLE_MEDIAFWGSTREAMER
- DEFINE_REF(eServiceMP3InfoContainer);
- 
- eServiceMP3InfoContainer::eServiceMP3InfoContainer()
-@@ -401,6 +433,7 @@
- 	bufferSize = map.size;
- #endif
- }
-+#endif
- 
- // eServiceMP3
- int eServiceMP3::ac3_delay = 0,
-@@ -414,13 +447,16 @@
- 	m_pump(eApp, 1)
- {
- 	m_subtitle_sync_timer = eTimer::create(eApp);
-+#ifdef ENABLE_MEDIAFWGSTREAMER
- 	m_stream_tags = 0;
-+#endif
- 	m_currentAudioStream = -1;
- 	m_currentSubtitleStream = -1;
- 	m_cachedSubtitleStream = -2; /* report subtitle stream to be 'cached'. TODO: use an actual cache. */
- 	m_subtitle_widget = 0;
- 	m_currentTrickRatio = 1.0;
- 	m_buffer_size = 5 * 1024 * 1024;
-+#ifdef ENABLE_MEDIAFWGSTREAMER
- 	m_ignore_buffering_messages = 0;
- 	m_is_live = false;
- 	m_use_prefillbuffer = false;
-@@ -434,13 +470,18 @@
- 	m_useragent = "Enigma2 HbbTV/1.1.1 (+PVR+RTSP+DL;OpenPLi;;;)";
- 	m_extra_headers = "";
- 	m_download_buffer_path = "";
-+#endif
- 	m_prev_decoder_time = -1;
- 	m_decoder_time_valid_state = 0;
- 	m_errorInfo.missing_codec = "";
-+#ifdef ENABLE_MEDIAFWGSTREAMER
- 	audioSink = videoSink = NULL;
-+#endif
- 
- 	CONNECT(m_subtitle_sync_timer->timeout, eServiceMP3::pushSubtitles);
-+#ifdef ENABLE_MEDIAFWGSTREAMER
- 	CONNECT(m_pump.recv_msg, eServiceMP3::gstPoll);
-+#endif
- 	CONNECT(m_nownext_timer->timeout, eServiceMP3::updateEpgCacheNowNext);
- 	m_aspect = m_width = m_height = m_framerate = m_progressive = -1;
- 
-@@ -473,6 +514,7 @@
- 	if (!ext)
- 		ext = filename + strlen(filename);
- 
-+#ifdef ENABLE_MEDIAFWGSTREAMER
- 	m_sourceinfo.is_video = FALSE;
- 	m_sourceinfo.audiotype = atUnknown;
- 	if ( (strcasecmp(ext, ".mpeg") && strcasecmp(ext, ".mpe") && strcasecmp(ext, ".mpg") && strcasecmp(ext, ".vob") && strcasecmp(ext, ".bin") && strcasecmp(ext, ".dat") ) == 0 )
-@@ -687,6 +729,204 @@
- 	g_free(uri);
- 	if (suburi != NULL)
- 		g_free(suburi);
-+#else
-+	player = (Context_t*) malloc(sizeof(Context_t));
-+
-+	if (player)
-+	{
-+		player->playback  = &PlaybackHandler;
-+		player->output    = &OutputHandler;
-+		player->container = &ContainerHandler;
-+		player->manager   = &ManagerHandler;
-+		printf("%s\n", player->output->Name);
-+	}
-+
-+	//Registration of output devices
-+	if (player && player->output)
-+	{
-+		player->output->Command(player,OUTPUT_ADD, (void*)"audio");
-+		player->output->Command(player,OUTPUT_ADD, (void*)"video");
-+		player->output->Command(player,OUTPUT_ADD, (void*)"subtitle");
-+	}
-+
-+	if (player && player->output && player->output->subtitle)
-+	{
-+		fbClass *fb = fbClass::getInstance();
-+		SubtitleOutputDef_t out;
-+		out.screen_width = fb->getScreenResX();
-+		out.screen_height = fb->getScreenResY();
-+		out.shareFramebuffer = 1;
-+		out.framebufferFD = fb->getFD();
-+		out.destination = fb->getLFB_Direct();
-+		out.destStride = fb->Stride();
-+		out.framebufferBlit = mp3Blit;
-+		player->output->subtitle->Command(player, (OutputCmd_t)OUTPUT_SET_SUBTITLE_OUTPUT, (void*) &out);
-+	}
-+
-+	//create playback path
-+	char file[800] = {""};
-+
-+	if (!strncmp("http://", m_ref.path.c_str(), 7))
-+		;
-+	else if (!strncmp("rtsp://", m_ref.path.c_str(), 7))
-+		;
-+	else if (!strncmp("rtmp://", m_ref.path.c_str(), 7))
-+		;
-+	else if (!strncmp("rtmpe://", m_ref.path.c_str(), 8))
-+		;
-+	else if (!strncmp("rtmpt://", m_ref.path.c_str(), 8))
-+		;
-+	else if (!strncmp("rtmps://", m_ref.path.c_str(), 8))
-+		;
-+	else if (!strncmp("rtmpte://", m_ref.path.c_str(), 9))
-+		;
-+	else if (!strncmp("rtp://", m_ref.path.c_str(), 6))
-+		;
-+	else if (!strncmp("upnp://", m_ref.path.c_str(), 7))
-+		;
-+	else if (!strncmp("mms://", m_ref.path.c_str(), 6))
-+		;
-+	else if (!strncmp("file://", m_ref.path.c_str(), 7))
-+		;
-+	else
-+	{
-+		strcat(file, "file://");
-+	}
-+	strcat(file, m_ref.path.c_str());
-+
-+	//try to open file
-+	if (player && player->playback && player->playback->Command(player, PLAYBACK_OPEN, file) >= 0)
-+	{
-+		//VIDEO
-+		//We do not have to register video tracks, or do we ?
-+		//AUDIO
-+		if (player && player->manager && player->manager->audio)
-+		{
-+			char ** TrackList = NULL;
-+			player->manager->audio->Command(player, MANAGER_LIST, &TrackList);
-+			if (TrackList != NULL)
-+			{
-+				printf("AudioTrack List\n");
-+				int i = 0;
-+				for (i = 0; TrackList[i] != NULL; i+=2)
-+				{
-+					printf("\t%s - %s\n", TrackList[i], TrackList[i+1]);
-+					audioStream audio;
-+					audio.language_code = TrackList[i];
-+
-+					// atUnknown, atMPEG, atMP3, atAC3, atDTS, atAAC, atPCM, atOGG, atFLAC
-+					if (    !strncmp("A_MPEG/L3", TrackList[i + 1], 9))
-+					{
-+						audio.type = atMP3;
-+					}
-+					else if (!strncmp("A_MP3", TrackList[i + 1], 5))
-+					{
-+						audio.type = atMP3;
-+					}
-+					else if (!strncmp("A_AC3", TrackList[i + 1], 5))
-+					{
-+						audio.type = atAC3;
-+					}
-+					else if (!strncmp("A_DTS", TrackList[i + 1], 5))
-+					{
-+						audio.type = atDTS;
-+					}
-+					else if (!strncmp("A_AAC", TrackList[i + 1], 5))
-+					{
-+						audio.type = atAAC;
-+					}
-+					else if (!strncmp("A_PCM", TrackList[i + 1], 5))
-+					{
-+						audio.type = atPCM;
-+					}
-+					else if (!strncmp("A_VORBIS", TrackList[i + 1], 8))
-+					{
-+						audio.type = atOGG;
-+					}
-+					else if (!strncmp("A_FLAC", TrackList[i + 1], 6))
-+					{
-+						audio.type = atFLAC;
-+					}
-+					else
-+					{
-+						audio.type = atUnknown;
-+					}
-+					m_audioStreams.push_back(audio);
-+					free(TrackList[i]);
-+					free(TrackList[i+1]);
-+				}
-+				free(TrackList);
-+			}
-+		}
-+		//SUB
-+		if (player && player->manager && player->manager->subtitle)
-+		{
-+			char ** TrackList = NULL;
-+			player->manager->subtitle->Command(player, MANAGER_LIST, &TrackList);
-+			if (TrackList != NULL)
-+			{
-+				printf("SubtitleTrack List\n");
-+				int i = 0;
-+				for (i = 0; TrackList[i] != NULL; i+=2)
-+				{
-+					printf("\t%s - %s\n", TrackList[i], TrackList[i+1]);
-+					subtitleStream sub;
-+					sub.language_code = TrackList[i];
-+					//  stPlainText, stSSA, stSRT
-+					if (!strncmp("S_TEXT/SSA", TrackList[i+1], 10)
-+					||  !strncmp("S_SSA", TrackList[i+1], 5))
-+					{
-+						sub.type = stSSA;
-+					}
-+					else if (!strncmp("S_TEXT/ASS", TrackList[i+1], 10)
-+					||       !strncmp("S_AAS", TrackList[i+1], 5))
-+					{
-+
-+						sub.type = stSSA;
-+					}
-+					else if (!strncmp("S_TEXT/SRT", TrackList[i+1], 10)
-+					||       !strncmp("S_SRT", TrackList[i+1], 5))
-+					{
-+						sub.type = stSRT;
-+					}
-+					else
-+					{
-+
-+						sub.type = stPlainText;
-+					}
-+					m_subtitleStreams.push_back(sub);
-+					free(TrackList[i]);
-+					free(TrackList[i+1]);
-+				}
-+				free(TrackList);
-+			}
-+		}
-+		m_event(this, evStart);
-+	}
-+	else
-+	{
-+		//Creation failed, no playback support for insert file, so delete playback context
-+		//FIXME: How to tell e2 that we failed?
-+		if (player && player->output)
-+		{
-+			player->output->Command(player,OUTPUT_DEL, (void*)"audio");
-+			player->output->Command(player,OUTPUT_DEL, (void*)"video");
-+			player->output->Command(player,OUTPUT_DEL, (void*)"subtitle");
-+		}
-+
-+		if (player && player->playback)
-+		{
-+			player->playback->Command(player,PLAYBACK_CLOSE, NULL);
-+		}
-+		if (player)
-+		{
-+			free(player);
-+		}
-+		player = NULL;
-+	}
-+	//m_state = stRunning;
-+	eDebug("eServiceMP3-<\n");
-+#endif
- }
- 
- eServiceMP3::~eServiceMP3()
-@@ -699,10 +939,12 @@
- 		g_signal_handler_disconnect (subsink, m_subs_to_pull_handler_id);
- 		gst_object_unref(subsink);
- 	}
-+#endif
- 
- 	if (m_subtitle_widget) m_subtitle_widget->destroy();
- 	m_subtitle_widget = 0;
- 
-+#ifdef ENABLE_MEDIAFWGSTREAMER
- 	if (m_gst_playbin)
- 	{
- 		// disconnect sync handler callback
-@@ -714,9 +956,11 @@
- #endif
- 		gst_object_unref(bus);
- 	}
-+#endif
- 
- 	stop();
- 
-+#ifdef ENABLE_MEDIAFWGSTREAMER
- 	if (m_stream_tags)
- 		gst_tag_list_free(m_stream_tags);
- 
-@@ -735,6 +979,7 @@
- 		gst_object_unref (GST_OBJECT (m_gst_playbin));
- 		eDebug("[eServiceMP3] destruct!");
- 	}
-+#endif
- }
- 
- void eServiceMP3::updateEpgCacheNowNext()
-@@ -784,18 +1029,33 @@
- 
- DEFINE_REF(eServiceMP3);
- 
-+#ifdef ENABLE_MEDIAFWGSTREAMER
- DEFINE_REF(GstMessageContainer);
-+#endif
- 
- RESULT eServiceMP3::connectEvent(const sigc::slot2<void,iPlayableService*,int> &event, ePtr<eConnection> &connection)
- {
- 	connection = new eConnection((iPlayableService*)this, m_event.connect(event));
-+#ifdef ENABLE_MEDIAFWGSTREAMER
-+#else
-+	m_event(this, evSeekableStatusChanged);
-+#endif
- 	return 0;
- }
- 
- RESULT eServiceMP3::start()
- {
-+#ifdef ENABLE_MEDIAFWGSTREAMER
- 	ASSERT(m_state == stIdle);
--
-+#else
-+	if (m_state != stIdle)
-+	{
-+		eDebug("eServiceMP3::%s < m_state != stIdle", __func__);
-+		return -1;
-+	}
-+#endif
-+
-+#ifdef ENABLE_MEDIAFWGSTREAMER
- 	if (m_gst_playbin)
- 	{
- 		eDebug("[eServiceMP3] starting pipeline");
-@@ -818,6 +1078,15 @@
- 			break;
- 		}
- 	}
-+#else
-+	if (player && player->output && player->playback)
-+	{
-+		player->output->Command(player, OUTPUT_OPEN, NULL);
-+		player->playback->Command(player, PLAYBACK_PLAY, NULL);
-+	}
-+#endif
-+
-+	m_event(this, evStart);
- 
- 	return 0;
- }
-@@ -855,41 +1124,123 @@
- 	return 0;
- }
- 
-+#ifdef ENABLE_MEDIAFWGSTREAMER
-+#else
-+int speed_mapping[] =
-+{
-+ /* e2_ratio   speed */
-+	2,         1,
-+	4,         3,
-+	8,         7,
-+	16,        15,
-+	32,        31,
-+	64,        63,
-+	128,      127,
-+	-2,       -5,
-+	-4,      -10,
-+	-8,      -20,
-+	-16,      -40,
-+	-32,      -80,
-+	-64,     -160,
-+	-128,     -320,
-+	-1,       -1
-+};
-+
-+int getSpeed(int ratio)
-+{
-+	int i = 0;
-+	while (speed_mapping[i] != -1)
-+	{
-+		if (speed_mapping[i] == ratio)
-+			return speed_mapping[i+1];
-+		i += 2;
-+	}
-+	return -1;
-+}
-+#endif
-+
- RESULT eServiceMP3::setSlowMotion(int ratio)
- {
-+#ifdef ENABLE_MEDIAFWGSTREAMER
- 	if (!ratio)
- 		return 0;
- 	eDebug("[eServiceMP3] setSlowMotion ratio=%f",1.0/(gdouble)ratio);
- 	return trickSeek(1.0/(gdouble)ratio);
-+#else
-+// konfetti: in libeplayer3 we changed this because I dont like application specific stuff in a library
-+	int speed = getSpeed(ratio);
-+	if (player && player->playback && (speed != -1))
-+	{
-+		int result = 0;
-+		if (ratio > 1)
-+			result = player->playback->Command(player, PLAYBACK_SLOWMOTION, (void*)&speed);
-+
-+		if (result != 0)
-+			return -1;
-+	}
-+	return 0;
-+#endif
- }
- 
- RESULT eServiceMP3::setFastForward(int ratio)
- {
--	eDebug("[eServiceMP3] setFastForward ratio=%i",ratio);
-+#ifdef ENABLE_MEDIAFWGSTREAMER
-+//	eDebug("[eServiceMP3] setFastForward ratio=%i",ratio);
- 	return trickSeek(ratio);
-+#else
-+// konfetti: in libeplayer3 we changed this because I dont like application specific stuff in a library
-+	int speed = getSpeed(ratio);
-+	if (player && player->playback && (speed != -1))
-+	{
-+		int result = 0;
-+		if (ratio > 1)
-+			result = player->playback->Command(player, PLAYBACK_FASTFORWARD, (void*)&speed);
-+		else if (ratio < -1)
-+		{
-+			//speed = speed * -1;
-+			result = player->playback->Command(player, PLAYBACK_FASTBACKWARD, (void*)&speed);
-+		}
-+		else
-+			result = player->playback->Command(player, PLAYBACK_CONTINUE, NULL);
-+
-+		if (result != 0)
-+			return -1;
-+	}
-+	return 0;
-+#endif
- }
- 
- 		// iPausableService
- RESULT eServiceMP3::pause()
- {
-+#ifdef ENABLE_MEDIAFWGSTREAMER
- 	if (!m_gst_playbin || m_state != stRunning)
- 		return -1;
- 
- 	eDebug("[eServiceMP3] pause");
- 	trickSeek(0.0);
-+#else
-+	if (player && player->playback)
-+		player->playback->Command(player, PLAYBACK_PAUSE, NULL);
-+#endif
- 
- 	return 0;
- }
- 
- RESULT eServiceMP3::unpause()
- {
-+#ifdef ENABLE_MEDIAFWGSTREAMER
- 	if (!m_gst_playbin || m_state != stRunning)
- 		return -1;
- 
--	/* no need to unpase if we are not paused already */
-+	/* no need to unpause if we are not paused already */
- 	if (m_currentTrickRatio == 1.0 && !m_paused)
- 	{
- 		eDebug("[eServiceMP3] trickSeek no need to unpause!");
-+#else
-+	if (player && player->playback)
-+		player->playback->Command(player, PLAYBACK_CONTINUE, NULL);
-+#endif
- 		return 0;
- 	}
- 
-@@ -908,6 +1259,7 @@
- 
- RESULT eServiceMP3::getLength(pts_t &pts)
- {
-+#ifdef ENABLE_MEDIAFWGSTREAMER
- 	if (!m_gst_playbin || m_state != stRunning)
- 		return -1;
- 
-@@ -922,11 +1274,23 @@
- 		/* len is in nanoseconds. we have 90 000 pts per second. */
- 
- 	pts = len / 11111LL;
-+#else
-+	double length = 0;
-+
-+	if (player && player->playback)
-+		player->playback->Command(player, PLAYBACK_LENGTH, &length);
-+
-+	if (length <= 0)
-+		return -1;
-+
-+	pts = length * 90000;
-+#endif
- 	return 0;
- }
- 
- RESULT eServiceMP3::seekToImpl(pts_t to)
- {
-+#ifdef ENABLE_MEDIAFWGSTREAMER
- 		/* convert pts to nanoseconds */
- #if GST_VERSION_MAJOR < 1
- 	gint64 time_nanoseconds = to * 11111LL;
-@@ -956,22 +1320,31 @@
- 
- 	return 0;
- }
-+#endif
- 
- RESULT eServiceMP3::seekTo(pts_t to)
- {
- 	RESULT ret = -1;
- 
-+#ifdef ENABLE_MEDIAFWGSTREAMER
- 	if (m_gst_playbin)
- 	{
- 		m_prev_decoder_time = -1;
- 		m_decoder_time_valid_state = 0;
- 		ret = seekToImpl(to);
- 	}
--
-+#else
-+	float pos = (to/90000.0)-10;
-+	if (player && player->playback)
-+		player->playback->Command(player, PLAYBACK_SEEK, (void*)&pos);
-+
-+	ret =0;
-+#endif
- 	return ret;
- }
- 
- 
-+#ifdef ENABLE_MEDIAFWGSTREAMER
- RESULT eServiceMP3::trickSeek(gdouble ratio)
- {
- 	if (!m_gst_playbin)
-@@ -1080,21 +1453,32 @@
- 	m_decoder_time_valid_state = 0;
- 	return 0;
- }
--
-+#endif
- 
- RESULT eServiceMP3::seekRelative(int direction, pts_t to)
- {
-+#ifdef ENABLE_MEDIAFWGSTREAMER
- 	if (!m_gst_playbin)
- 		return -1;
-+#endif
- 
- 	pts_t ppos;
- 	if (getPlayPosition(ppos) < 0) return -1;
- 	ppos += to * direction;
- 	if (ppos < 0)
- 		ppos = 0;
-+#ifdef ENABLE_MEDIAFWGSTREAMER
- 	return seekTo(ppos);
--}
--
-+#else
-+	float pos = direction*(to/90000.0);
-+	if (player && player->playback)
-+		player->playback->Command(player, PLAYBACK_SEEK, (void*)&pos);
-+
-+	return 0;
-+#endif
-+}
-+
-+#ifdef ENABLE_MEDIAFWGSTREAMER
- #if GST_VERSION_MAJOR < 1
- gint eServiceMP3::match_sinktype(GstElement *element, gpointer type)
- {
-@@ -1178,9 +1562,11 @@
- 	return value;
- }
- #endif
-+#endif
- 
- RESULT eServiceMP3::getPlayPosition(pts_t &pts)
- {
-+#ifdef ENABLE_MEDIAFWGSTREAMER
- 	gint64 pos;
- 	pts = 0;
- 
-@@ -1217,6 +1603,27 @@
- 
- 	/* pos is in nanoseconds. we have 90 000 pts per second. */
- 	pts = pos / 11111LL;
-+#else
-+	if (player && player->playback && !player->playback->isPlaying)
-+	{
-+		eDebug("eServiceMP3::%s !!!!EOF!!!! < -1", __func__);
-+		if(m_state == stRunning)
-+			m_event((iPlayableService*)this, evEOF);
-+		pts = 0;
-+		return -1;
-+	}
-+
-+	unsigned long long int vpts = 0;
-+	if (player && player->playback)
-+		player->playback->Command(player, PLAYBACK_PTS, &vpts);
-+
-+	if (vpts<=0)
-+		return -1;
-+
-+	/* len is in nanoseconds. we have 90 000 pts per second. */
-+	pts = vpts>0?vpts:pts;;
-+
-+#endif
- 	return 0;
- }
- 
-@@ -1228,12 +1635,16 @@
- 
- RESULT eServiceMP3::isCurrentlySeekable()
- {
-+#ifdef ENABLE_MEDIAFWGSTREAMER // Hellmaster1024: 1 for skipping 3 for skipping anf fast forward
- 	int ret = 3; /* just assume that seeking and fast/slow winding are possible */
- 
- 	if (!m_gst_playbin)
- 		return 0;
- 
- 	return ret;
-+#else
-+	return 3;
-+#endif
- }
- 
- RESULT eServiceMP3::info(ePtr<iServiceInformation>&i)
-@@ -1267,7 +1678,9 @@
- 
- int eServiceMP3::getInfo(int w)
- {
-+#ifdef ENABLE_MEDIAFWGSTREAMER
- 	const gchar *tag = 0;
-+#endif
- 
- 	switch (w)
- 	{
-@@ -1307,7 +1720,9 @@
- 	case sTagKeywords:
- 	case sTagChannelMode:
- 	case sUser+12:
-+#if not defined(__sh__)
- 		return resIsString;
-+#endif
- 	case sTagTrackGain:
- 	case sTagTrackPeak:
- 	case sTagAlbumGain:
-@@ -1318,6 +1733,7 @@
- 	case sTagPreviewImage:
- 	case sTagAttachment:
- 		return resIsPyObject;
-+#ifdef ENABLE_MEDIAFWGSTREAMER
- 	case sTagTrackNumber:
- 		tag = GST_TAG_TRACK_NUMBER;
- 		break;
-@@ -1351,17 +1767,20 @@
- 	case sTagCRC:
- 		tag = "has-crc";
- 		break;
-+#endif
- 	case sBuffer: return m_bufferInfo.bufferPercent;
- 	default:
- 		return resNA;
- 	}
- 
-+#ifdef ENABLE_MEDIAFWGSTREAMER
- 	if (!m_stream_tags || !tag)
- 		return 0;
- 
- 	guint value;
- 	if (gst_tag_list_get_uint(m_stream_tags, tag, &value))
- 		return (int) value;
-+#endif
- 
- 	return 0;
- }
-@@ -1386,6 +1805,7 @@
- 		}
- 	}
- 
-+#ifdef ENABLE_MEDIAFWGSTREAMER
- 	if ( !m_stream_tags && w < sUser && w > 26 )
- 		return "";
- 	const gchar *tag = 0;
-@@ -1513,9 +1933,69 @@
- 		g_free(value);
- 		return res;
- 	}
-+#else
-+	char * tag = NULL;
-+	char * res_str = NULL;
-+	switch (w)
-+	{
-+	case sTagTitle:
-+		tag = strdup("Title");
-+		break;
-+	case sTagArtist:
-+		tag = strdup("Artist");
-+		break;
-+	case sTagAlbum:
-+		tag = strdup("Album");
-+		break;
-+	case sTagComment:
-+		tag = strdup("Comment");
-+		break;
-+	case sTagTrackNumber:
-+		tag = strdup("Track");
-+		break;
-+	case sTagGenre:
-+		tag = strdup("Genre");
-+		break;
-+	case sTagDate:
-+		tag = strdup("Year");
-+		break;
-+	case sTagVideoCodec:
-+		tag = strdup("VideoType");
-+		break;
-+	case sTagAudioCodec:
-+		tag = strdup("AudioType");
-+		break;
-+	default:
-+		return "";
-+	}
-+
-+	if (player && player->playback)
-+	{
-+		/*Hellmaster1024: we need to save the adress of tag to free the strduped mem
-+		  the command will retun a new adress for a new strduped string.
-+		  Both Strings need to be freed! */
-+		res_str = tag;
-+		player->playback->Command(player, PLAYBACK_INFO, &res_str);
-+		/* Hellmaster1024: in case something went wrong maybe no new adress is returned */
-+		if (tag != res_str)
-+		{
-+			std::string res = res_str;
-+			free(tag);
-+			free(res_str);
-+			return res;
-+		}
-+		else
-+		{
-+			free(tag);
-+			return "";
-+		}
-+	}
-+	free(tag);
-+#endif
- 	return "";
- }
- 
-+#ifdef ENABLE_MEDIAFWGSTREAMER
- ePtr<iServiceInfoContainer> eServiceMP3::getInfoObject(int w)
- {
- 	eServiceMP3InfoContainer *container = new eServiceMP3InfoContainer;
-@@ -1579,6 +2059,7 @@
- 	}
- 	return retval;
- }
-+#endif
- 
- RESULT eServiceMP3::audioChannel(ePtr<iAudioChannelSelection> &ptr)
- {
-@@ -1617,13 +2098,16 @@
- 
- int eServiceMP3::getCurrentTrack()
- {
-+#ifdef ENABLE_MEDIAFWGSTREAMER
- 	if (m_currentAudioStream == -1)
- 		g_object_get (G_OBJECT (m_gst_playbin), "current-audio", &m_currentAudioStream, NULL);
-+#endif
- 	return m_currentAudioStream;
- }
- 
- RESULT eServiceMP3::selectTrack(unsigned int i)
- {
-+#ifdef ENABLE_MEDIAFWGSTREAMER
- 	bool validposition = false;
- 	pts_t ppos = 0;
- 	if (getPlayPosition(ppos) >= 0)
-@@ -1638,11 +2122,13 @@
- 		/* flush */
- 		seekTo(ppos);
- 	}
-+#endif
- 	return selectAudioStream(i);
- }
- 
- int eServiceMP3::selectAudioStream(int i)
- {
-+#ifdef ENABLE_MEDIAFWGSTREAMER
- 	int current_audio;
- 	g_object_set (G_OBJECT (m_gst_playbin), "current-audio", i, NULL);
- #if HAVE_AMLOGIC
-@@ -1657,6 +2143,16 @@
- 		return 0;
- 	}
- 	return -1;
-+#else
-+	if (i != m_currentAudioStream)
-+	{
-+		if (player && player->playback)
-+			player->playback->Command(player, PLAYBACK_SWITCH_AUDIO, (void*)&i);
-+		m_currentAudioStream = i;
-+		return 0;
-+	}
-+	return -1;
-+#endif
- }
- 
- int eServiceMP3::getCurrentChannel()
-@@ -1675,10 +2171,33 @@
- 	if (i >= m_audioStreams.size())
- 	{
- 		return -2;
-+#ifdef ENABLE_MEDIAFWGSTREAMER
-+		info.m_description = m_audioStreams[i].codec;
-+/*	if (m_audioStreams[i].type == atMPEG)
-+		info.m_description = "MPEG";
-+	else if (m_audioStreams[i].type == atMP3)
-+		info.m_description = "MP3";
-+	else if (m_audioStreams[i].type == atAC3)
-+		info.m_description = "AC3";
-+	else if (m_audioStreams[i].type == atAAC)
-+		info.m_description = "AAC";
-+	else if (m_audioStreams[i].type == atDTS)
-+		info.m_description = "DTS";
-+	else if (m_audioStreams[i].type == atPCM)
-+		info.m_description = "PCM";
-+	else if (m_audioStreams[i].type == atOGG)
-+		info.m_description = "OGG";
-+	else if (m_audioStreams[i].type == atFLAC)
-+		info.m_description = "FLAC";
-+	else
-+		info.m_description = "???";*/
-+	}
-+#else
- 	}
- 
- 	info.m_description = m_audioStreams[i].codec;
- 
-+#endif
- 	if (info.m_language.empty())
- 	{
- 		info.m_language = m_audioStreams[i].language_code;
-@@ -1687,6 +2206,7 @@
- 	return 0;
- }
- 
-+#ifdef ENABLE_MEDIAFWGSTREAMER
- subtype_t getSubtitleType(GstPad* pad, gchar *g_codec=NULL)
- {
- 	subtype_t type = stUnknown;
-@@ -2586,9 +3106,11 @@
- 		}
- 	}
- }
-+#endif
- 
- eAutoInitPtr<eServiceFactoryMP3> init_eServiceFactoryMP3(eAutoInitNumbers::service+1, "eServiceFactoryMP3");
- 
-+#ifdef ENABLE_MEDIAFWGSTREAMER
- void eServiceMP3::gstCBsubtitleAvail(GstElement *subsink, GstBuffer *buffer, gpointer user_data)
- {
- 	eServiceMP3 *_this = (eServiceMP3*)user_data;
-@@ -2721,9 +3243,30 @@
- #endif
- 	}
- }
-+#else
-+void eServiceMP3::eplayerCBsubtitleAvail(long int duration_ms, size_t len, char * buffer, void* user_data)
-+{
-+	eDebug("eServiceMP3::%s >", __func__);
-+	unsigned char tmp[len+1];
-+	memcpy(tmp, buffer, len);
-+	tmp[len] = 0;
-+	eDebug("gstCBsubtitleAvail: %s", tmp);
-+	eServiceMP3 *_this = (eServiceMP3*)user_data;
-+	if ( _this->m_subtitle_widget )
-+	{
-+		ePangoSubtitlePage page;
-+		gRGB rgbcol(0xD0,0xD0,0xD0);
-+		page.m_elements.push_back(ePangoSubtitlePageElement(rgbcol, (const char*)tmp));
-+		page.m_timeout = duration_ms;
-+		(_this->m_subtitle_widget)->setPage(page);
-+	}
-+	eDebug("eServiceMP3::%s <", __func__);
-+}
-+#endif
- 
- void eServiceMP3::pushSubtitles()
- {
-+#ifdef ENABLE_MEDIAFWGSTREAMER
- 	pts_t running_pts = 0;
- 	int32_t next_timer = 0, decoder_ms, start_ms, end_ms, diff_start_ms, diff_end_ms;
- 	subtitle_pages_map_t::iterator current;
-@@ -2824,24 +3367,30 @@
- 
- 	m_subtitle_sync_timer->start(next_timer, true);
- 
-+#endif
- }
- 
- RESULT eServiceMP3::enableSubtitles(iSubtitleUser *user, struct SubtitleTrack &track)
- {
- 	if (m_currentSubtitleStream != track.pid)
- 	{
-+#ifdef ENABLE_MEDIAFWGSTREAMER
- 		g_object_set (G_OBJECT (m_gst_playbin), "current-text", -1, NULL);
-+#endif
- 		m_subtitle_sync_timer->stop();
- 		m_subtitle_pages.clear();
- 		m_prev_decoder_time = -1;
- 		m_decoder_time_valid_state = 0;
-+#ifdef ENABLE_MEDIAFWGSTREAMER
- 		m_currentSubtitleStream = track.pid;
- 		m_cachedSubtitleStream = m_currentSubtitleStream;
- 		g_object_set (G_OBJECT (m_gst_playbin), "current-text", m_currentSubtitleStream, NULL);
-+#endif
- 
- 		m_subtitle_widget = user;
- 
--		eDebug ("[eServiceMP3] switched to subtitle stream %i", m_currentSubtitleStream);
-+#ifdef ENABLE_MEDIAFWGSTREAMER
-+//		eDebug ("[eServiceMP3] switched to subtitle stream %i", m_currentSubtitleStream);
- 
- #ifdef GSTREAMER_SUBTITLE_SYNC_MODE_BUG
- 		/*
-@@ -2850,23 +3399,37 @@
- 		 */
- 		seekRelative(-1, 90000);
- #endif
--	}
-+#endif
-+	}
-+#ifdef ENABLE_MEDIAFWGSTREAMER
-+#else
-+	if (player && player->playback)
-+		player->playback->Command(player, PLAYBACK_SWITCH_SUBTITLE, (void*)&track.pid);
-+#endif
- 
- 	return 0;
- }
- 
- RESULT eServiceMP3::disableSubtitles()
- {
-+#ifdef ENABLE_MEDIAFWGSTREAMER
- 	eDebug("[eServiceMP3] disableSubtitles");
- 	m_currentSubtitleStream = -1;
- 	m_cachedSubtitleStream = m_currentSubtitleStream;
- 	g_object_set (G_OBJECT (m_gst_playbin), "current-text", m_currentSubtitleStream, NULL);
-+#endif
- 	m_subtitle_sync_timer->stop();
- 	m_subtitle_pages.clear();
- 	m_prev_decoder_time = -1;
- 	m_decoder_time_valid_state = 0;
- 	if (m_subtitle_widget) m_subtitle_widget->destroy();
- 	m_subtitle_widget = 0;
-+#ifdef ENABLE_MEDIAFWGSTREAMER
-+#else
-+	int pid = -1;
-+	if (player && player->playback)
-+		player->playback->Command(player, PLAYBACK_SWITCH_SUBTITLE, (void*)&pid);
-+#endif
- 	return 0;
- }
- 
-@@ -3028,7 +3591,9 @@
- int eServiceMP3::setBufferSize(int size)
- {
- 	m_buffer_size = size;
-+#ifdef ENABLE_MEDIAFWGSTREAMER
- 	g_object_set (G_OBJECT (m_gst_playbin), "buffer-size", m_buffer_size, NULL);
-+#endif
- 	return 0;
- }
- 
-@@ -3044,6 +3609,7 @@
- 
- void eServiceMP3::setAC3Delay(int delay)
- {
-+#ifdef ENABLE_MEDIAFWGSTREAMER
- 	ac3_delay = delay;
- 	if (!m_gst_playbin || m_state != stRunning)
- 		return;
-@@ -3071,10 +3637,12 @@
- 			eTSMPEGDecoder::setHwAC3Delay(config_delay_int);
- 		}
- 	}
-+#endif
- }
- 
- void eServiceMP3::setPCMDelay(int delay)
- {
-+#ifdef ENABLE_MEDIAFWGSTREAMER
- 	pcm_delay = delay;
- 	if (!m_gst_playbin || m_state != stRunning)
- 		return;
-@@ -3102,6 +3670,7 @@
- 			eTSMPEGDecoder::setHwPCMDelay(config_delay_int);
- 		}
- 	}
-+#endif
- }
- /* cuesheet CVR */
- void eServiceMP3::loadCuesheet()
---- enigma2.org/lib/service/servicemp3.h
-+++ enigma2/lib/service/servicemp3.h
-@@ -6,7 +6,18 @@
- #include <lib/dvb/pmt.h>
- #include <lib/dvb/subtitle.h>
- #include <lib/dvb/teletext.h>
-+#ifdef ENABLE_MEDIAFWGSTREAMER
- #include <gst/gst.h>
-+#else
-+#include <common.h>
-+#include <subtitle.h>
-+#define gint int
-+#define gint64 int64_t
-+extern OutputHandler_t		OutputHandler;
-+extern PlaybackHandler_t	PlaybackHandler;
-+extern ContainerHandler_t	ContainerHandler;
-+extern ManagerHandler_t	ManagerHandler;
-+#endif
- /* for subtitles */
- #include <lib/gui/esubtitle.h>
- 
-@@ -68,7 +79,9 @@
- 	DECLARE_REF(eServiceMP3InfoContainer);
- 
- 	double doubleValue;
-+#ifdef ENABLE_MEDIAFWGSTREAMER
- 	GstBuffer *bufferValue;
-+#endif
- 
- 	unsigned char *bufferData;
- 	unsigned int bufferSize;
-@@ -83,9 +96,12 @@
- 	double getDouble(unsigned int index) const;
- 	unsigned char *getBuffer(unsigned int &size) const;
- 	void setDouble(double value);
-+#ifdef ENABLE_MEDIAFWGSTREAMER
- 	void setBuffer(GstBuffer *buffer);
--};
--
-+#endif
-+};
-+
-+#ifdef ENABLE_MEDIAFWGSTREAMER
- class GstMessageContainer: public iObject
- {
- 	DECLARE_REF(GstMessageContainer);
-@@ -115,6 +131,7 @@
- };
- 
- typedef struct _GstElement GstElement;
-+#endif
- 
- typedef enum { atUnknown, atMPEG, atMP3, atAC3, atDTS, atAAC, atPCM, atOGG, atFLAC, atWMA } audiotype_t;
- typedef enum { stUnknown, stPlainText, stSSA, stASS, stSRT, stVOB, stPGS } subtype_t;
-@@ -181,7 +198,9 @@
- 	RESULT getEvent(ePtr<eServiceEvent> &evt, int nownext);
- 	int getInfo(int w);
- 	std::string getInfoString(int w);
-+#ifdef ENABLE_MEDIAFWGSTREAMER
- 	ePtr<iServiceInfoContainer> getInfoObject(int w);
-+#endif
- 
- 		// iAudioTrackSelection
- 	int getNumberOfTracks();
-@@ -214,6 +233,8 @@
- 	void AmlSwitchAudio(int index);
- 	unsigned int get_pts_pcrscr(void);
- #endif
-+
-+#ifdef ENABLE_MEDIAFWGSTREAMER
- 	struct audioStream
- 	{
- 		GstPad* pad;
-@@ -247,6 +268,38 @@
- 		{
- 		}
- 	};
-+#else
-+	struct audioStream
-+	{
-+		audiotype_t type;
-+		std::string language_code; /* iso-639, if available. */
-+		std::string codec; /* clear text codec description */
-+		audioStream()
-+			:type(atUnknown)
-+		{
-+		}
-+	};
-+	struct subtitleStream
-+	{
-+		subtype_t type;
-+		std::string language_code; /* iso-639, if available. */
-+		int id;
-+		subtitleStream()
-+		{
-+		}
-+	};
-+	struct sourceStream
-+	{
-+		audiotype_t audiotype;
-+		containertype_t containertype;
-+		bool is_video;
-+		bool is_streaming;
-+		sourceStream()
-+			:audiotype(atUnknown), containertype(ctNone), is_video(false), is_streaming(false)
-+		{
-+		}
-+	};
-+#endif
- 	struct bufferInfo
- 	{
- 		gint bufferPercent;
-@@ -299,10 +352,15 @@
- 	std::vector<audioStream> m_audioStreams;
- 	std::vector<subtitleStream> m_subtitleStreams;
- 	iSubtitleUser *m_subtitle_widget;
-+#ifdef ENABLE_MEDIAFWGSTREAMER
- 	gdouble m_currentTrickRatio;
-+#else
-+	int m_currentTrickRatio;
-+#endif
- 	friend class eServiceFactoryMP3;
- 	eServiceReference m_ref;
- 	int m_buffer_size;
-+#ifdef ENABLE_MEDIAFWGSTREAMER
- 	int m_ignore_buffering_messages;
- 	bool m_is_live;
- 	bool m_use_prefillbuffer;
-@@ -326,6 +384,8 @@
- 		stIdle, stRunning, stStopped,
- 	};
- 	int m_state;
-+#endif
-+#ifdef ENABLE_MEDIAFWGSTREAMER
- 	GstElement *m_gst_playbin, *audioSink, *videoSink;
- 	GstTagList *m_stream_tags;
- 
-@@ -349,6 +409,22 @@
- 	static gint match_sinktype(const GValue *velement, const gchar *type);
- #endif
- 	static void handleElementAdded(GstBin *bin, GstElement *element, gpointer user_data);
-+#else
-+	Context_t * player;
-+
-+	struct Message
-+	{
-+		Message()
-+			:type(-1)
-+		{}
-+		Message(int type)
-+			:type(type)
-+		{}
-+		int type;
-+	};
-+	eFixedMessagePump<Message> m_pump;
-+	static void eplayerCBsubtitleAvail(long int duration_ns, size_t len, char * buffer, void* user_data);
-+#endif
- 
- 	struct subtitle_page_t
- 	{
-@@ -371,17 +447,23 @@
- 	int m_decoder_time_valid_state;
- 
- 	void pushSubtitles();
-+#ifdef ENABLE_MEDIAFWGSTREAMER
- 	void pullSubtitle(GstBuffer *buffer);
-+#endif
- 	void sourceTimeout();
- 	sourceStream m_sourceinfo;
-+#ifdef ENABLE_MEDIAFWGSTREAMER
- 	gulong m_subs_to_pull_handler_id;
-+#endif
- 
- 	RESULT seekToImpl(pts_t to);
- 
- 	gint m_aspect, m_width, m_height, m_framerate, m_progressive;
- 	std::string m_useragent;
-+#ifdef ENABLE_MEDIAFWGSTREAMER
- 	std::string m_extra_headers;
- 	RESULT trickSeek(gdouble ratio);
--};
--
--#endif
-+#endif
-+};
-+
-+#endif
-diff -Nur '--exclude-from=diff-exclude' enigma2.org/m4/ax_python_devel.m4 enigma2/m4/ax_python_devel.m4
---- enigma2.org/m4/ax_python_devel.m4	2015-08-07 17:31:49.849972682 +0200
-+++ enigma2/m4/ax_python_devel.m4	2015-08-19 23:14:08.363487370 +0200
+--- enigma2.org/m4/ax_python_devel.m4
++++ enigma2/m4/ax_python_devel.m4
 @@ -154,7 +154,7 @@
  		python_path=`$PYTHON -c "import distutils.sysconfig; \
  			print (distutils.sysconfig.get_python_inc ());"`
@@ -9918,8 +6983,8 @@ diff -Nur '--exclude-from=diff-exclude' enigma2.org/m4/ax_python_devel.m4 enigma
  	fi
  	AC_MSG_RESULT([$PYTHON_SITE_PKG])
  	AC_SUBST([PYTHON_SITE_PKG])
---- enigma2.org/main/bsod.cpp	2015-08-07 17:31:49.849972682 +0200
-+++ enigma2/main/bsod.cpp	2015-08-19 23:14:08.363487370 +0200
+--- enigma2.org/main/bsod.cpp
++++ enigma2/main/bsod.cpp
 @@ -198,7 +198,7 @@
  	gPainter p(my_dc);
  	p.resetOffset();
@@ -9960,40 +7025,19 @@ diff -Nur '--exclude-from=diff-exclude' enigma2.org/m4/ax_python_devel.m4 enigma
  
  	/*
  	 * When 'component' is NULL, we are called because of a python exception.
---- enigma2.org/main/enigma.cpp	2015-08-07 17:31:49.849972682 +0200
-+++ enigma2/main/enigma.cpp	2015-08-19 23:14:08.363487370 +0200
-@@ -32,10 +32,20 @@
+--- enigma2.org/main/enigma.cpp
++++ enigma2/main/enigma.cpp
+@@ -32,6 +32,9 @@
  #include <lib/python/pythonconfig.h>
  #include <lib/service/servicepeer.h>
  
-+#ifndef ENABLE_MEDIAFWGSTREAMER
-+#include <fstream>
-+#include <sstream>
-+#endif
-+
 +#if defined(__sh__) // vfd class
 +#include <lib/driver/vfd.h>
 +#endif
  #include "bsod.h"
  #include "version_info.h"
  
-+#ifdef ENABLE_MEDIAFWGSTREAMER
- #include <gst/gst.h>
-+#endif
- 
- #ifdef OBJECT_DEBUG
- int object_total_remaining;
-@@ -187,7 +197,9 @@
- 	atexit(object_dump);
- #endif
- 
-+#ifdef ENABLE_MEDIAFWGSTREAMER
- 	gst_init(&argc, &argv);
-+#endif
- 
- 	// set pythonpath if unset
- 	setenv("PYTHONPATH", eEnv::resolve("${libdir}/enigma2/python").c_str(), 0);
-@@ -195,7 +207,7 @@
+@@ -201,7 +204,7 @@
  	printf("DVB_API_VERSION %d DVB_API_VERSION_MINOR %d\n", DVB_API_VERSION, DVB_API_VERSION_MINOR);
  
  	// get enigma2 debug level settings
@@ -10002,7 +7046,7 @@ diff -Nur '--exclude-from=diff-exclude' enigma2.org/m4/ax_python_devel.m4 enigma
  	if (debugLvl < 0)
  		debugLvl = 0;
  	printf("ENIGMA_DEBUG_LVL=%d\n", debugLvl);
-@@ -226,6 +238,11 @@
+@@ -232,6 +235,11 @@
  	eWidgetDesktop dsk_lcd(my_lcd_dc->size());
  
  	dsk.setStyleID(0);
@@ -10014,15 +7058,12 @@ diff -Nur '--exclude-from=diff-exclude' enigma2.org/m4/ax_python_devel.m4 enigma
  	dsk_lcd.setStyleID(1);
  
  /*	if (double_buffer)
-@@ -266,19 +283,25 @@
- 				if (!i)
- 					eDebug("[MAIN] failed to load %s: %m", rfilename.c_str());
- 				else
--					eDebug("[MAIN] found %d spinner!\n", i);
-+					eDebug("[MAIN] found %d spinners!\n", i);
+@@ -276,16 +284,22 @@
  				break;
  			}
  		}
+-		eDebug("[MAIN] found %d spinner!", i);
++		eDebug("[MAIN] found %d spinners.", i);
  		if (i)
 -			my_dc->setSpinner(eRect(ePoint(100, 100), wait[0]->size()), wait, i);
 +			my_dc->setSpinner(eRect(ePoint(50, 50), wait[0]->size()), wait, i);
@@ -10043,20 +7084,8 @@ diff -Nur '--exclude-from=diff-exclude' enigma2.org/m4/ax_python_devel.m4 enigma
  
  	printf("[MAIN] executing main\n");
  
-@@ -343,7 +366,11 @@
- 
- const char *getGStreamerVersionString()
- {
-+#if defined ENABLE_MEDIAFWGSTREAMER
- 	return gst_version_string();
-+#else
-+	return "ePlayer3";
-+#endif
- }
- 
- #include <malloc.h>
---- enigma2.org/main/Makefile.am	2015-08-07 17:31:49.849972682 +0200
-+++ enigma2/main/Makefile.am	2015-08-19 23:14:08.363487370 +0200
+--- enigma2.org/main/Makefile.am
++++ enigma2/main/Makefile.am
 @@ -8,6 +8,8 @@
  	$(LIBSDL_CFLAGS)
  
@@ -10066,26 +7095,10 @@ diff -Nur '--exclude-from=diff-exclude' enigma2.org/m4/ax_python_devel.m4 enigma
  
  enigma2_SOURCES = \
  	bsod.cpp \
-@@ -48,6 +50,26 @@
- 	@AVAHI_LIBS@ \
- 	-ltuxtxt -ltuxtxt32bpp -lcrypt -lrt -ldl
+@@ -50,6 +52,10 @@
+ 	@LIBDL_LIBS@ \
+ 	-ltuxtxt32bpp
  
-+if ENABLE_LIBEPLAYER3
-+if ENABLE_MEDIAFWGSTREAMER
-+enigma2_LDADD += \
-+	-leplayer3
-+else
-+enigma2_LDADD_WHOLE += \
-+	$(top_builddir)/../../apps/tools/eplayer3/libeplayer3.a
-+enigma2_LDADD += \
-+	@AVFORMAT_LIBS@ \
-+	@AVUTIL_LIBS@ \
-+	@AVCODEC_LIBS@ \
-+	@SWSCALE_LIBS@ \
-+	@SWRESAMPLE_LIBS@
-+endif
-+endif
-+
 +if HAVE_GRAPHLCD
 +enigma2_LDADD += -lglcddrivers -lglcdgraphics -lglcdskin
 +endif
@@ -10093,10 +7106,9 @@ diff -Nur '--exclude-from=diff-exclude' enigma2.org/m4/ax_python_devel.m4 enigma
  enigma2_LDFLAGS = -Wl,--export-dynamic
  
  if HAVE_GIT_DIR
-diff -Nur '--exclude-from=diff-exclude' enigma2.org/mytest.py enigma2/mytest.py
---- enigma2.org/mytest.py	2015-08-07 17:31:49.849972682 +0200
-+++ enigma2/mytest.py	2015-08-19 23:14:08.363487370 +0200
-@@ -295,6 +295,10 @@
+--- enigma2.org/mytest.py
++++ enigma2/mytest.py
+@@ -297,6 +297,10 @@
  
  		self.pushCurrent()
  		dlg = self.current_dialog = self.instantiateDialog(screen, *arguments, **kwargs)
@@ -10107,7 +7119,7 @@ diff -Nur '--exclude-from=diff-exclude' enigma2.org/mytest.py enigma2/mytest.py
  		dlg.isTmp = True
  		dlg.callback = None
  		self.execBegin()
-@@ -488,10 +492,10 @@
+@@ -501,10 +505,10 @@
  	if wakeupList:
  		from time import strftime
  		startTime = wakeupList[0]
@@ -10122,46 +7134,125 @@ diff -Nur '--exclude-from=diff-exclude' enigma2.org/mytest.py enigma2/mytest.py
  			setRTCtime(nowTime)
 --- enigma2.org/lib/gdi/picload.cpp
 +++ enigma2/lib/gdi/picload.cpp
-@@ -477,8 +477,9 @@
+@@ -8,6 +8,7 @@
+ extern "C" {
+ #define HAVE_BOOLEAN
+ #define boolean int
++#undef HAVE_STDLIB_H
+ #include <jpeglib.h>
+ #include <gif_lib.h>
+ }
+@@ -35,7 +36,7 @@
+ 		return orgin;
+ 	}
+ 	const int stride = 3 * dx;
+-	#pragma omp parallel for
++//	#pragma omp parallel for
+ 	for (int j = 0; j < dy; j++)
+ 	{
+ 		unsigned char* p = cr + (j * stride);
+@@ -528,12 +529,9 @@
  	ColorMapObject *cmap;
  	int cmaps;
  	int extcode;
 -
+-#if GIFLIB_MAJOR > 5 || GIFLIB_MAJOR == 5 && GIFLIB_MINOR >= 1
 -	gft = DGifOpenFileName(filepara->file, &extcode);
+-#else
+-	gft = DGifOpenFileName(filepara->file);
+-#endif
 +	int GifLastError; 
 +
 +	gft = DGifOpenFileName(filepara->file, &GifLastError); 
  	if (gft == NULL)
  		return;
  	do
-@@ -568,11 +569,11 @@
+@@ -623,19 +621,11 @@
  	}
  	while (rt != TERMINATE_RECORD_TYPE);
  
+-#if GIFLIB_MAJOR > 5 || GIFLIB_MAJOR == 5 && GIFLIB_MINOR >= 1
 -	DGifCloseFile(gft, &extcode);
+-#else
+-	DGifCloseFile(gft);
+-#endif
 +	DGifCloseFile(gft, &GifLastError);
  	return;
  ERROR_R:
  	eDebug("[ePicLoad] <Error gif>");
+-#if GIFLIB_MAJOR > 5 || GIFLIB_MAJOR == 5 && GIFLIB_MINOR >= 1
 -	DGifCloseFile(gft, &extcode);
+-#else
+-	DGifCloseFile(gft);
+-#endif
 +	DGifCloseFile(gft, &GifLastError);
  }
  
  //---------------------------------------------------------------------------------------------
+@@ -1079,7 +1069,7 @@
+ 		else {
+ 			background = m_conf.background;
+ 		}
+-		unsigned int* row_buffer;
++//		unsigned int* row_buffer;
+ 		if (yoff != 0) {
+ 			if (m_filepara->bits == 8)
+ 			{
+@@ -1096,11 +1086,11 @@
+ 					*row_buffer++ = background;
+ 			}
+ 			int y;
+-			#pragma omp parallel for
++//			#pragma omp parallel for
+ 			for (y = 1; y < yoff; ++y) // copy from first line
+ 				memcpy(tmp_buffer + y*surface->stride, tmp_buffer,
+ 					m_filepara->max_x * surface->bypp);
+-			#pragma omp parallel for
++//			#pragma omp parallel for
+ 			for (y = yoff + scry; y < m_filepara->max_y; ++y)
+ 				memcpy(tmp_buffer + y * surface->stride, tmp_buffer,
+ 					m_filepara->max_x * surface->bypp);
+@@ -1125,7 +1115,7 @@
+ 				for (x = xoff + scrx; x < m_filepara->max_x; ++x) // fill right side of first line
+ 					*row_buffer++ = background;
+ 			}
+-			#pragma omp parallel for
++//			#pragma omp parallel for
+ 			for (int y = yoff + 1; y < scry; ++y) { // copy from first line
+ 				memcpy(tmp_buffer + y*surface->stride,
+ 					tmp_buffer + yoff * surface->stride,
+@@ -1208,7 +1198,7 @@
+ 	// Fill surface with image data, resize and correct for orientation on the fly
+ 	if (m_filepara->bits == 8)
+ 	{
+-		#pragma omp parallel for
++//		#pragma omp parallel for
+ 		for (int y = 0; y < scry; ++y) {
+ 			const unsigned char *irow, *irowy = origin + iyfac * (int)(y * yscale);
+ 			unsigned char *srow = tmp_buffer + surface->stride * y;
+@@ -1222,7 +1212,7 @@
+ 	}
+ 	else // 24-bit images
+ 	{
+-		#pragma omp parallel for
++//		#pragma omp parallel for
+ 		for (int y = 0; y < scry; ++y) {
+ 			const unsigned char *irow, *irowy = origin + iyfac * (int)(yscale * y);
+ 			unsigned char *srow = tmp_buffer + surface->stride * y;
 --- enigma2.org/lib/python/Screens/InstallWizard.py
 +++ enigma2.patched/lib/python/Screens/InstallWizard.py
-@@ -46,7 +46,7 @@
- 			if is_found is False:
- 				self.createMenu()
+@@ -35,7 +35,7 @@
+ 			self.adapters = [adapter for adapter in iNetwork.getAdapterList() if adapter in ('eth0', 'eth1')]
+ 			self.checkNetwork()
  		elif self.index == self.STATE_CHOISE_CHANNELLIST:
--			self.enabled = ConfigYesNo(default = True)
-+			self.enabled = ConfigYesNo(default = False)
+-			self.enabled = ConfigYesNo(default = True, graphic = False)
++			self.enabled = ConfigYesNo(default = False, graphic = False)
  			modes = {"19e-23e-basis": "Astra1 Astra3 basis", "19e-23e": "Astra 1 Astra 3", "19e-23e-28e": "Astra 1 Astra 2 Astra 3", "13e-19e-23e-28e": "Astra 1 Astra 2 Astra 3 Hotbird", "kabelnl": "Kabel-NL"}
  			self.channellist_type = ConfigSelection(choices = modes, default = "19e-23e-basis")
  			self.createMenu()
 --- enigma2.org/lib/python/Plugins/SystemPlugins/Videomode/VideoWizard.py
 +++ enigma2.patched/lib/python/Plugins/SystemPlugins/Videomode/VideoWizard.py
-@@ -9,6 +9,7 @@
+@@ -10,6 +10,7 @@
  from Tools.Directories import resolveFilename, SCOPE_PLUGINS
  from Tools.HardwareInfo import HardwareInfo
 +from enigma import evfd
@@ -10170,7 +7261,7 @@ diff -Nur '--exclude-from=diff-exclude' enigma2.org/mytest.py enigma2/mytest.py
 +config.misc.showtestcard = ConfigBoolean(default = True)
  
  class VideoWizardSummary(WizardSummary):
-@@ -70,6 +71,7 @@
+@@ -71,6 +72,7 @@
  		config.misc.videowizardenabled.value = 0
  		config.misc.videowizardenabled.save()
  		configfile.save()
@@ -10180,14 +7271,15 @@ diff -Nur '--exclude-from=diff-exclude' enigma2.org/mytest.py enigma2/mytest.py
  		hw_type = HardwareInfo().get_device_name()
 --- enigma2.org/lib/python/Plugins/SystemPlugins/Videomode/videowizard.xml
 +++ enigma2.patched/lib/python/Plugins/SystemPlugins/Videomode/videowizard.xml
-@@ -1,5 +1,5 @@
+@@ -1,6 +1,6 @@
  <wizard>
 -	<step id="inputselection" nextstep="modeselection" timeout="20" timeoutaction="selectnext">
-+	<step id="inputselection" nextstep="modeselection" timeout="10" timeoutaction="selectnext">
 -		<text value="Video input selection\n\nPlease press OK if you can see this page on your TV (or select a different input port).\n\nThe next input port will be automatically probed in 20 seconds." />
++	<step id="inputselection" nextstep="modeselection" timeout="10" timeoutaction="selectnext">
 +		<text value="Video input selection\n\nPlease press OK if you can see this page on your TV (or select a different input port).\n\nThe next input port will be automatically probed in 10 seconds." />
  		<displaytext value="Select video input with up/down buttons" />
  		<list type="dynamic" source="listInputChannels" evaluation="inputSelectionMade" onselect="inputSelectionMoved" />
+ 		<code>
 @@ -9,7 +9,7 @@
  self.selectKey("OK")
  		</code>
@@ -10204,11 +7296,11 @@ diff -Nur '--exclude-from=diff-exclude' enigma2.org/mytest.py enigma2/mytest.py
 -	<step id="rateselection" timeout="20" timeoutaction="selectnext">
 +	<step id="rateselection" timeout="10" timeoutaction="selectnext">
  		<condition>
- self.condition = (self.port != "DVI" or self.mode == "PC")
+ self.condition = (self.port != "DVI" and not self.port == "RCA" or self.mode == "PC")
  		</condition>
 --- enigma2.org/lib/python/Components/About.py
 +++ enigma2/lib/python/Components/About.py
-@@ -52,7 +52,7 @@
+@@ -64,7 +64,7 @@
  		return _("unknown")
  
  def getHardwareTypeString():
@@ -10217,18 +7309,22 @@ diff -Nur '--exclude-from=diff-exclude' enigma2.org/mytest.py enigma2/mytest.py
  
  def getImageTypeString():
  	try:
-@@ -67,23 +67,12 @@
- 		cpu_speed = 0
+@@ -80,27 +80,12 @@
+ 		processor = ""
  		for line in open("/proc/cpuinfo").readlines():
  			line = [x.strip() for x in line.strip().split(":")]
--			if line[0] in ("system type", "model name"):
-+			if line[0] in ("cpu type", "model name"):
+-			if not processor and line[0] in ("system type", "model name", "Processor"):
++			if not processor and line[0] in ("cpu type", "model name", "Processor"):
  				processor = line[1].split()[0]
 +				cpu_speed = "unknown"
- 			elif line[0] == "cpu MHz":
+ 			elif not cpu_speed and line[0] == "cpu MHz":
  				cpu_speed = "%1.0f" % float(line[1])
 -			elif line[0] == "processor":
- 				cpu_count += 1
+				cpu_count += 1
+-
+-		if processor.startswith("ARM") and os.path.isfile("/proc/stb/info/chipset"):
+-			processor = "%s (%s)" % (open("/proc/stb/info/chipset").readline().strip().upper(), processor)
+-
 -		if not cpu_speed:
 -			try:
 -				cpu_speed = int(open("/sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq").read()) / 1000
@@ -10617,10 +7713,10 @@ diff -Nur '--exclude-from=diff-exclude' enigma2.org/mytest.py enigma2/mytest.py
  	if key in keyDescriptions[idx]:
 --- enigma2.org/lib/python/Screens/InputDeviceSetup.py
 +++ enigma2/lib/python/Screens/InputDeviceSetup.py
-@@ -299,55 +299,22 @@
- 	rcList = [
+@@ -299,57 +299,22 @@
+	rcList = [
  			("0", _("Default")),
- 			("4", _("DMM normal")),
+			("4", _("DMM normal")),
 -			("5", _("et9000/et9100")),
  			("6", _("DMM advanced")),
 -			("7", _("et5000/6000")),
@@ -10633,7 +7729,8 @@ diff -Nur '--exclude-from=diff-exclude' enigma2.org/mytest.py enigma2/mytest.py
 -			("18", _("F1/F3/F4/F4-TURBO")),
 -			("19", _("HD2400")),
 -			("20", _("Zgemma Star S/2S/H1/H2")),
--			("21", _("Zgemma H.S/H.2S/H.2H/H5/H7"))
+-			("21", _("Zgemma H.S/H.2S/H.2H/H5/H7")),
+-			("25", _("Zgemma H9"))
 +			("7", _("fs9000")),
 +			("8", _("hs9510")),
 +			("9", _("hs7110")),
@@ -10675,6 +7772,7 @@ diff -Nur '--exclude-from=diff-exclude' enigma2.org/mytest.py enigma2/mytest.py
 -			("h3", 21),
 -			("h5", 21),
 -			("h7", 21),
+-			("h9", 25),
 -			("et7000mini", 16)
 +			("fs9000", 7),
 +			("hs9510", 8),
@@ -10685,20 +7783,25 @@ diff -Nur '--exclude-from=diff-exclude' enigma2.org/mytest.py enigma2/mytest.py
  		]
  
  	def __init__(self, session):
---- enigma2.org/data/rc_models/rc_models.cfg	2014-04-03 08:38:53.154073324 +0200
-+++ enigma2/data/rc_models/rc_models.cfg	2014-05-28 20:18:22.000000000 +0200
-@@ -19,101 +19,18 @@
+--- enigma2.org/data/rc_models/rc_models.cfg
++++ enigma2/data/rc_models/rc_models.cfg
+@@ -19,112 +19,17 @@
  #
  # When no entry matches at all, 'default' will be used as remoteName
  #
 -# Amiko
 -vipercombo amiko
 -vipert2c amiko
+-vipercombohdd amiko1
+-#Axas
+-e4hd e4hd
 -# Edision
 -osmega osmini
 -osmini osmini
 -osminiplus osmini
 -osnino edision1
+-osninoplus edision2
+-osninopro edision3
 -# Formuler
 -formuler1   formuler1
 -formuler3   formuler1
@@ -10708,7 +7811,8 @@ diff -Nur '--exclude-from=diff-exclude' enigma2.org/mytest.py enigma2/mytest.py
 -et7000mini et7000mini
 -et11000	et7000mini
 -# Gigablue
--gb7252 gb7252
+-gbquad4k gb7252
+-gbue4k gb7252
 -# Max Digital
 -xp1000   xp1000
 -# Miraclebox
@@ -10718,6 +7822,7 @@ diff -Nur '--exclude-from=diff-exclude' enigma2.org/mytest.py enigma2/mytest.py
 -# Mutant
 -hd11	hd-gen
 -hd51	hd-gen
+-hd60	hd60
 -hd500c	hd-gen
 -hd530c  hd-gen
 -hd1100	hd-gen
@@ -10725,17 +7830,20 @@ diff -Nur '--exclude-from=diff-exclude' enigma2.org/mytest.py enigma2/mytest.py
 -hd1265	hd-gen
 -hd1500	hd-gen
 -hd2400	hd2400
+-# Vimastec
+-vs1000	vs1x00
+-vs1500	vs1x00
 -# SAB
 -alphatriplehd sab
--# Vimastec
--vs1000	hd1100
--vs1500	hd1100
+-# Qviart
+-lunix	qviart
+-lunix3-4k	qviart
 -# Spycat
 -spycat spycat
 -spycatmini spycat
 -spycatminiplus	spycat
 -xpeedlx xpeedlx
--# Vu+ 
+-# Vu+
 -vuduo2   vuduo2
 -vuduo    vu
 -vusolo2  vu
@@ -10760,6 +7868,8 @@ diff -Nur '--exclude-from=diff-exclude' enigma2.org/mytest.py enigma2/mytest.py
 -revo4k	revo4k
 -# Xtrend
 -et4000   et4x00
+-et5000   et6x00
+-et6000   et6x00
 -et6500   et6x00
 -et6500.4   dmm
 -et6500.6   dmmadv
@@ -10785,6 +7895,7 @@ diff -Nur '--exclude-from=diff-exclude' enigma2.org/mytest.py enigma2/mytest.py
 -h5 zgemma
 -h6 zgemma
 -h7 zgemma
+-h9 h9
 -lc sh1
 -sh1 sh1
 +hdbox       fs9000
@@ -10801,21 +7912,21 @@ diff -Nur '--exclude-from=diff-exclude' enigma2.org/mytest.py enigma2/mytest.py
 +tf7700hdpvr tf7700
 +ufs910      ufs912
 +ufs912      ufs912
- 
--
 --- enigma2.org/data/rc_models/Makefile.am
 +++ enigma2/data/rc_models/Makefile.am
-@@ -3,10 +3,8 @@
+@@ -3,12 +3,8 @@
  dist_install_DATA = \
  	rc_models.cfg \
--	dmmadv.png amiko.png edision1.png et4x00.png et8000.png et9x00.png vu.png xp1000.png \
+-	dmmadv.png amiko.png amiko1.png edision1.png et4x00.png et8000.png et9x00.png vu.png xp1000.png \
 -	dmm.png et6x00.png et9500.png vuduo2.png vuultimo.png vu2.png et7x00.png formuler1.png \
--	hd2400.png hd-gen.png wetekplay.png osmini.png zgemma.png miraclebox.png miraclebox2.png spycat.png \
--	xpeedlx.png revo4k.png sab.png sh1.png i55.png gb7252.png \
--	dmmadv.xml edision1.xml et4x00.xml et8000.xml et9x00.xml vuultimo.xml xp1000.xml \
--	dmm.xml amiko.xml et6x00.xml et9500.xml et7x00.xml vuduo2.xml vu.xml vu2.xml formuler1.xml \
--	hd2400.xml hd-gen.xml xsarius.xml xsarius.png wetekplay.xml osmini.xml zgemma.xml miraclebox.xml miraclebox2.xml spycat.xml \
--	xpeedlx.xml et7000mini.png et7000mini.xml revo4k.xml sab.xml sh1.xml i55.xml gb7252.xml
+-	hd2400.png hd-gen.png vs1x00.png wetekplay.png osmini.png zgemma.png miraclebox.png miraclebox2.png \
+-	spycat.png xpeedlx.png revo4k.png sab.png sh1.png i55.png qviart.png h9.png gb7252.png e4hd.png \
+-	edision2.png edision3.png hd60.png \
+-	dmmadv.xml edision1.xml et4x00.xml et8000.xml et9x00.xml vuultimo.xml xp1000.xml dmm.xml amiko.xml \
+-	amiko1.xml et6x00.xml et9500.xml et7x00.xml vuduo2.xml vu.xml vu2.xml formuler1.xml hd2400.xml hd-gen.xml \
+-	vs1x00.xml xsarius.xml xsarius.png wetekplay.xml osmini.xml zgemma.xml miraclebox.xml miraclebox2.xml \
+-	spycat.xml xpeedlx.xml et7000mini.png et7000mini.xml revo4k.xml sab.xml sh1.xml i55.xml qviart.xml \
+-	h9.xml gb7252.xml e4hd.xml edision2.xml edision3.xml hd60.xml
 +	dmmadv.png \
 +	fs9000.png  hs7110.png  hs9510.png  spark.png tf7700.png ufs912.png \
 +	dmm.png \
