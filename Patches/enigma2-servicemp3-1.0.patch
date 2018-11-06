@@ -54,9 +54,45 @@
  
  AC_DEFINE([DEBUG])
  
+--- enigma2-servicemp3/m4/ax_python_devel.m4
++++ enigma2-servicemp3/m4/ax_python_devel.m4
+@@ -158,9 +158,9 @@
+ 			print (distutils.sysconfig.get_python_inc (plat_specific=1));"`
+ 		if test -n "${python_path}"; then
+ 			if test "${plat_python_path}" != "${python_path}"; then
+-				python_path="-I$python_path -I$plat_python_path"
++				python_path="-I$PY_PATH/include/python$PYTHON_VER_MAJOR -I$plat_python_path"
+ 			else
+-				python_path="-I$python_path"
++				python_path="-I$PY_PATH/include/python$PYTHON_VER_MAJOR"
+ 			fi
+ 		fi
+ 		PYTHON_CPPFLAGS=$python_path
+@@ -234,7 +234,8 @@
+ 			  "from distutils.sysconfig import get_python_lib as f; \
+ 			  import os; \
+ 			  print (os.path.join(f(plat_specific=1, standard_lib=1), 'config'));"`
+-			PYTHON_LIBS="-L$ac_python_libdir -lpython$ac_python_version"
++			PYTHON_LIBS="-L$PY_PATH/include/python$PYTHON_VER_MAJOR -lpython$ac_python_version"
++#			PYTHON_LIBS="-L$ac_python_libdir -lpython$ac_python_version"
+ 		fi
+ 
+ 		if test -z "PYTHON_LIBS"; then
+@@ -252,8 +254,9 @@
+ 	#
+ 	AC_MSG_CHECKING([for Python site-packages path])
+ 	if test -z "$PYTHON_SITE_PKG"; then
+-		PYTHON_SITE_PKG=`$PYTHON -c "import distutils.sysconfig; \
+-			print (distutils.sysconfig.get_python_lib(0,0));"`
++		PYTHON_SITE_PKG="$PY_PATH/lib/python$PYTHON_VER_MAJOR/site-packages"
++#		PYTHON_SITE_PKG=`$PYTHON -c "import distutils.sysconfig; \
++#			print (distutils.sysconfig.get_python_lib(0,0));"`
+ 	fi
+ 	AC_MSG_RESULT([$PYTHON_SITE_PKG])
+ 	AC_SUBST([PYTHON_SITE_PKG])
 --- enigma2-servicemp3/servicemp3/Makefile.am
 +++ enigma2-servicemp3/servicemp3/Makefile.am
-@@ -5,22 +5,52 @@
+@@ -5,22 +5,57 @@
  	@PYTHON_CPPFLAGS@ \
  	-include Python.h
  
@@ -94,7 +130,7 @@
 +if ENABLE_MEDIAFWGSTREAMER
 +servicemp3_la_SOURCES += \
 +	servicemp3.cpp \
-+ 	servicemp3record.cpp
++	servicemp3record.cpp
 +endif
 +
 +if ENABLE_LIBEPLAYER3
@@ -112,6 +148,11 @@
 +if ENABLE_MEDIAFWGSTREAMER
 +servicemp3_la_LDFLAGS += \
 +	@GSTREAMER_LIBS@
++endif
++
++if ENABLE_LIBEPLAYER3
++servicemp3_la_LDFLAGS += \
++        -leplayer3
 +endif
 --- enigma2-servicemp3/servicemp3/servicemp3.cpp
 +++ enigma2-servicemp3/servicemp3/servicemp3.cpp
@@ -1043,17 +1084,22 @@
  subtype_t getSubtitleType(GstPad* pad, gchar *g_codec=NULL)
  {
  	subtype_t type = stUnknown;
-@@ -1961,6 +2446,9 @@
+@@ -1961,6 +2446,14 @@
  						gst_object_unref(GST_OBJECT(videoSink));
  						videoSink = NULL;
  					}
 +				}	break;
 +				case GST_STATE_CHANGE_READY_TO_NULL:
++				case GST_STATE_CHANGE_NULL_TO_READY:
++				case GST_STATE_CHANGE_NULL_TO_NULL:
++				case GST_STATE_CHANGE_READY_TO_READY:
++				case GST_STATE_CHANGE_PAUSED_TO_PAUSED:
++				case GST_STATE_CHANGE_PLAYING_TO_PLAYING:
 +				{
  				}	break;
  			}
  			break;
-@@ -2615,9 +3103,11 @@
+@@ -2615,9 +3108,11 @@
  		}
  	}
  }
@@ -1065,7 +1111,7 @@
  void eServiceMP3::gstCBsubtitleAvail(GstElement *subsink, GstBuffer *buffer, gpointer user_data)
  {
  	eServiceMP3 *_this = (eServiceMP3*)user_data;
-@@ -2750,9 +3240,30 @@
+@@ -2750,9 +3245,30 @@
  #endif
  	}
  }
@@ -1096,7 +1142,7 @@
  	pts_t running_pts = 0;
  	int32_t next_timer = 0, decoder_ms, start_ms, end_ms, diff_start_ms, diff_end_ms;
  	subtitle_pages_map_t::iterator current;
-@@ -2853,24 +3364,30 @@
+@@ -2853,24 +3369,30 @@
  
  	m_subtitle_sync_timer->start(next_timer, true);
  
@@ -1128,7 +1174,7 @@
  
  #ifdef GSTREAMER_SUBTITLE_SYNC_MODE_BUG
  		/*
-@@ -2879,23 +3396,37 @@
+@@ -2879,23 +3401,37 @@
  		 */
  		seekRelative(-1, 90000);
  #endif
@@ -1167,7 +1213,7 @@
  	return 0;
  }
  
-@@ -3057,7 +3588,9 @@
+@@ -3057,7 +3593,9 @@
  int eServiceMP3::setBufferSize(int size)
  {
  	m_buffer_size = size;
@@ -1177,7 +1223,7 @@
  	return 0;
  }
  
-@@ -3073,6 +3606,7 @@
+@@ -3073,6 +3611,7 @@
  
  void eServiceMP3::setAC3Delay(int delay)
  {
@@ -1185,7 +1231,7 @@
  	ac3_delay = delay;
  	if (!m_gst_playbin || m_state != stRunning)
  		return;
-@@ -3100,10 +3634,12 @@
+@@ -3100,10 +3639,12 @@
  			eTSMPEGDecoder::setHwAC3Delay(config_delay_int);
  		}
  	}
@@ -1198,7 +1244,7 @@
  	pcm_delay = delay;
  	if (!m_gst_playbin || m_state != stRunning)
  		return;
-@@ -3131,6 +3667,7 @@
+@@ -3131,6 +3672,7 @@
  			eTSMPEGDecoder::setHwPCMDelay(config_delay_int);
  		}
  	}
