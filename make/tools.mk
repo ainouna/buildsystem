@@ -350,11 +350,13 @@ ifeq ($(IMAGE), $(filter $(IMAGE), enigma2 enigma2-wlandriver))
 TOOLS += $(D)/tools-libmme_host
 TOOLS += $(D)/tools-libmme_image
 endif
+ifeq ($(E2_DIFF), $(filter $(E2_DIFF), 3 4 5))
 ifeq ($(MEDIAFW), $(filter $(MEDIAFW), gst-eplayer3))
 TOOLS += $(D)/tools-libeplayer3
 endif
 ifeq ($(MEDIAFW), $(filter $(MEDIAFW), eplayer3))
 TOOLS += $(D)/tools-eplayer3
+endif
 endif
 ifneq ($(wildcard $(APPS_DIR)/tools/own-tools),)
 TOOLS += $(D)/tools-own-tools
