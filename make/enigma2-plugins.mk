@@ -94,7 +94,12 @@ $(D)/enigma2_tuxtxt32bpp: $(D)/bootstrap $(D)/enigma2_tuxtxtlib
 #
 # Plugins
 #
-$(D)/enigma2-plugins: $(D)/enigma2_networkbrowser $(D)/enigma2_openwebif
+ifeq ($(E2_DIFF), $(filter $(E2_DIFF), 0 2))
+ifneq ($(MEDIAFW), buildinplayer)
+E2_PLUGIN_DEPS = enigma2_servicemp3
+endif
+endif
+$(D)/enigma2-plugins: $(D)/enigma2_networkbrowser $(D)/enigma2_openwebif $(E2_PLUGIN_DEPS)
 
 #
 # enigma2-openwebif
@@ -189,6 +194,7 @@ MP3_CPPFLAGS += -I$(SOURCE_DIR)/enigma2/include
 MP3_CPPFLAGS += -I$(KERNEL_DIR)/include
 MP3_CPPFLAGS += -I$(TARGET_DIR)/usr/include/glib-2.0
 MP3_CPPFLAGS += -I$(TARGET_DIR)/usr/lib/glib-2.0/include
+#MP3_CPPFLAGS += -L$(TARGET_DIR)/usr/lib/gstreamer-1.0
 ifeq ($(MEDIAFW), eplayer3)
 ENIGMA2_SERVICEMP3_DEPS  += $(D)/tools-eplayer3
 MP3_CONF += --enable-libeplayer3
@@ -231,6 +237,8 @@ $(D)/enigma2_servicemp3: | $(ENIGMA2_SERVICEMP3_DEPS)
 		; \
 		$(MAKE) all; \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
+	cp $(BUILD_TMP)/enigma2-servicemp3-$(ENIGMA2_SERVICEMP3_VER)/servicemp3/servicemp3.la $(TARGET_DIR)/usr/lib/
+	$(REWRITE_LIBTOOL)/servicemp3.la
 #	$(REMOVE)/enigma2-servicemp3-$(ENIGMA2_SERVICEMP3_VER)
 	$(TOUCH)
 

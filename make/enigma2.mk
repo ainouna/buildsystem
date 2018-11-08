@@ -15,10 +15,10 @@ ENIGMA2_DEPS += $(D)/libpng $(D)/libjpeg $(D)/giflib $(D)/freetype $(D)/libfribi
 ENIGMA2_DEPS += $(D)/openssl $(D)/enigma2_tuxtxt32bpp $(D)/enigma2_hotplug_e2_helper $(D)/parted
 ENIGMA2_DEPS += python-all $(D)/alsa_utils
 #following seems to be needed for diff 3 and higher
-#ENIGMA2_DEPS += $(D)/ffmpeg $(D)/libid3tag
-#ENIGMA2_DEPS += $(D)/expat $(D)/libusb
-#ENIGMA2_DEPS += $(D)/sdparm $(D)/minidlna $(D)/ethtool
-#ENIGMA2_DEPS += $(D)/libdreamdvd
+ENIGMA2_DEPS += $(D)/libid3tag
+ENIGMA2_DEPS += $(D)/expat $(D)/libusb
+ENIGMA2_DEPS += $(D)/sdparm $(D)/minidlna $(D)/ethtool
+ENIGMA2_DEPS += $(D)/libdreamdvd
 
 ifeq ($(IMAGE), enigma2-wlandriver)
 ENIGMA2_DEPS += $(D)/wpa_supplicant $(D)/wireless_tools
@@ -104,8 +104,10 @@ E_CONFIG_OPTS +=$(LOCAL_ENIGMA2_BUILD_OPTIONS)
 E_CPPFLAGS    = -I$(DRIVER_DIR)/include
 E_CPPFLAGS   += -I$(TARGET_DIR)/usr/include
 E_CPPFLAGS   += -I$(KERNEL_DIR)/include
+ifeq ($(E2_DIFF), $(filter $(E2_DIFF), 3 4 5))
 E_CPPFLAGS   += -I$(APPS_DIR)/tools/libeplayer3/include
 E_CPPFLAGS   += -I$(APPS_DIR)/tools
+endif
 E_CPPFLAGS   += $(LOCAL_ENIGMA2_CPPFLAGS)
 E_CPPFLAGS   += $(PLATFORM_CPPFLAGS)
 
@@ -237,14 +239,6 @@ $(D)/enigma2: $(D)/enigma2.do_prepare $(D)/enigma2.do_compile
 	$(SILENT)rm -rf $(TARGET_DIR)/usr/local/share/enigma2/PLi-FullHD
 	$(SILENT)rm -rf $(TARGET_DIR)/usr/local/share/enigma2/PLi-FullNightHD
 	$(TOUCH)
-	$(SILENT)if [  "$(FW)" != "buildinplayer" ]; then \
-			if [ "$(DIFF)" == "0" -o "$(DIFF)" == "2" ]; then \
-			(echo; \
-			echo "Adding servicemp3 plugin"; \
-			make enigma2_servicemp3; \
-			); \
-		fi; \
-	fi
 
 enigma2-clean:
 	rm -f $(D)/enigma2
