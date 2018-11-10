@@ -92,7 +92,7 @@
  	AC_SUBST([PYTHON_SITE_PKG])
 --- enigma2-servicemp3/servicemp3/Makefile.am
 +++ enigma2-servicemp3/servicemp3/Makefile.am
-@@ -5,22 +5,57 @@
+@@ -5,22 +5,69 @@
  	@PYTHON_CPPFLAGS@ \
  	-include Python.h
  
@@ -111,11 +111,15 @@
  AM_CXXFLAGS = \
  	-Wall \
 -	@ENIGMA2_CFLAGS@ \
-+	@ENIGMA2_CFLAGS@
++	-fno-rtti -fno-exceptions
 +
 +if ENABLE_MEDIAFWGSTREAMER
 +AM_CXXFLAGS += \
- 	@GSTREAMER_CFLAGS@
+-	@GSTREAMER_CFLAGS@
++	-pthread \
++	-I$(top_srcdir)/../../tufsbox/cdkroot/usr/include/gstreamer-1.0 \
++	-I$(top_srcdir)/../../tufsbox/cdkroot/usr/include/glib-2.0 \
++	-I$(top_srcdir)/../../tufsbox/cdkroot/usr/lib/glib-2.0/include
 +endif
  
  plugindir = $(libdir)/enigma2/python/Plugins/SystemPlugins/ServiceMP3
@@ -136,7 +140,6 @@
 +if ENABLE_LIBEPLAYER3
 +servicemp3_la_SOURCES += \
 +	serviceeplayer3.cpp
-+#	m3u8.cpp
 +endif
 +
  servicemp3_la_LDFLAGS = \
@@ -147,13 +150,23 @@
 +
 +if ENABLE_MEDIAFWGSTREAMER
 +servicemp3_la_LDFLAGS += \
-+	@GSTREAMER_LIBS@
++	-L$(top_srcdir)/../../tufsbox/cdkroot/usr/lib \
++	-lgstpbutils-1.0 \
++	-lgstreamer-1.0 \
++	-lgobject-2.0 \
++	-lglib-2.0
++if ENABLE_LIBEPLAYER3
++servicemp3_la_LDFLAGS += \
++	-L$(top_srcdir)/../../tufsbox/cdkroot/lib \
++	-leplayer3
 +endif
-+
-+#if ENABLE_LIBEPLAYER3
-+#servicemp3_la_LDFLAGS += 
-+#        -leplayer3
-+#endif
++else
++servicemp3_la_LDFLAGS += \
++	-L$(top_srcdir)/../../apps/tools/eplayer3 \
++	-leplayer3 \
++	-lavformat \
++	-lswresample
++endif
 --- enigma2-servicemp3/servicemp3/servicemp3.cpp
 +++ enigma2-servicemp3/servicemp3/servicemp3.cpp
 @@ -17,11 +17,13 @@

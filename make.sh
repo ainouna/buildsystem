@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20181104.1
+# Version 20181110.1
 
 ##############################################
 
@@ -20,11 +20,11 @@ if [ "$1" == -h ] || [ "$1" == --help ]; then
 	echo "-q or --quiet   : quiet build, fastest, almost silent"
 	echo "Parameter 1     : target system (1-37)"
 	echo "Parameter 2     : kernel (1-2)"
-	echo "Parameter 3     : optimization (1-4)"
+	echo "Parameter 3     : optimization (1-5)"
 	echo "Parameter 4     : image (Enigma=1/2 Neutrino=3/4 Tvheadend=5 (1-5)"
 	echo "Parameter 5     : Neutrino variant (1-6) or Enigma2/Tvheadend diff (0-5)"
-	echo "Parameter 6     : media Framework (Enigma2: 1-3, Neutrino: 1-2, Tvheadend: ignored)"
-	echo "Parameter 7     : destination (1-2, 1=flash, 2=USB, Fortis HS711X, HS742X & HS781XX, ignored otherwise)"
+	echo "Parameter 6     : media Framework (Enigma2: 1-4, Neutrino: 1-2, Tvheadend: ignored)"
+	echo "Parameter 7     : destination (1-2, 1=flash, 2=USB, Fortis HS711X, HS742X & HS781X, ignored otherwise)"
 	exit
 fi
 
@@ -119,7 +119,7 @@ case $1 in
 		echo "   34)  Vitamin HD5000"
 		echo "   35)  SagemCom 88 series"
 		echo "   36)  Ferguson Ariva @Link 200"
-#		echo "   37)  Pace HDS-7241 (stm 217 only)"
+#		echo "   37)  Pace HDS-7241 (kernel P0217 only)"
 		echo
 		read -p "Select target (1-36)? ";;
 esac
@@ -211,20 +211,22 @@ echo "KERNEL_STM=$KERNEL_STM" >> config
 ##############################################
 
 case $3 in
-	[1-4]) REPLY=$3;;
+	[1-5]) REPLY=$3;;
 	*)	echo -e "\nOptimization:"
-		echo "   1*) optimization for size"
-		echo "   2)  optimization normal"
-		echo "   3)  Kernel debug"
-		echo "   4)  debug (includes Kernel debug)"
+		echo "   1*) optimization for smallest size"
+		echo "   2*) optimization for size"
+		echo "   3)  optimization normal"
+		echo "   4)  Kernel debug"
+		echo "   5)  debug (includes Kernel debug)"
 		read -p "Select optimization (1-4)? ";;
 esac
 
 case "$REPLY" in
-#	1)  OPTIMIZATIONS="size";;
-	2)  OPTIMIZATIONS="normal";;
-	3)  OPTIMIZATIONS="kerneldebug";;
-	4)  OPTIMIZATIONS="debug";;
+	1)  OPTIMIZATIONS="small";;
+#	2)  OPTIMIZATIONS="size";;
+	3)  OPTIMIZATIONS="normal";;
+	4)  OPTIMIZATIONS="kerneldebug";;
+	5)  OPTIMIZATIONS="debug";;
 	*)  OPTIMIZATIONS="size";;
 esac
 echo "OPTIMIZATIONS=$OPTIMIZATIONS" >> config
@@ -332,16 +334,18 @@ case "$IMAGE" in
 		case $6 in
 			[1-3]) REPLY=$6;;
 			*)	echo -e "\nMedia Framework:"
-				echo "   1)  eplayer3"
-				echo "   2)  gstreamer"
-				echo "   3*) gstreamer+eplayer3 (recommended)"
-				read -p "Select media framework (1-3)? ";;
+				echo "   1)  None (E2 is built without a player)"
+				echo "   2)  eplayer3 (E2 player uses eplayer3 only)"
+				echo "   3)  gstreamer (E2 player uses gstreamer only)"
+				echo "   4*) gstreamer+eplayer3 (recommended, E2 player uses gstreamer + libeplayer3)"
+				read -p "Select media framework (1-4)? ";;
 		esac
 
 		case "$REPLY" in
-			1) MEDIAFW="eplayer3";;
-			2) MEDIAFW="gstreamer";;
-#			3) MEDIAFW="gst-eplayer3";;
+			1) MEDIAFW="buildinplayer";;
+			2) MEDIAFW="eplayer3";;
+			3) MEDIAFW="gstreamer";;
+#			4) MEDIAFW="gst-eplayer3";;
 			*) MEDIAFW="gst-eplayer3";;
 		esac
 
@@ -381,9 +385,9 @@ case "$IMAGE" in
 		echo "E2_DIFF=$DIFF" >> config
 		echo "E2_REVISION=$REVISION" >> config
 
-		if [ $DIFF == 0 -o $DIFF == 2 ] && [ ! "$MEDIAFW" == "buildinplayer" ]; then
-			MEDIAFW="buildinplayer"
-			echo "NOTE: Media framework has been set to built-in (DIFF = 0 or 2)."
+		if [ $DIFF == 0 -o $DIFF == 2 ] && [ ! "$MEDIAFW" == "eplayer3" ]; then
+			MEDIAFW="eplayer3"
+			echo "NOTE: Media framework has been set to eplayer3 (DIFF = 0 or 2)."
 		fi
 
 		echo "make yaud-enigma2" > $CURDIR/build

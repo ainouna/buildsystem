@@ -187,29 +187,24 @@ $(D)/enigma2_networkbrowser: $(D)/bootstrap $(D)/python
 #
 ENIGMA2_SERVICEMP3_VER = 1.0
 ENIGMA2_SERVICEMP3_DEPS = $(D)/bootstrap $(D)/enigma2
-MP3_CPPFLAGS  = -std=c++11
-MP3_CPPFLAGS += -I$(TARGET_DIR)/usr/include/python$(PYTHON_VER_MAJOR)
-MP3_CPPFLAGS += -I$(SOURCE_DIR)/enigma2
-MP3_CPPFLAGS += -I$(SOURCE_DIR)/enigma2/include
-MP3_CPPFLAGS += -I$(KERNEL_DIR)/include
-MP3_CPPFLAGS += -I$(TARGET_DIR)/usr/include/glib-2.0
-MP3_CPPFLAGS += -I$(TARGET_DIR)/usr/lib/glib-2.0/include
-#MP3_CPPFLAGS += -L$(TARGET_DIR)/usr/lib/gstreamer-1.0
+SERVICEMP3_CPPFLAGS  = -std=c++11
+SERVICEMP3_CPPFLAGS += -I$(TARGET_DIR)/usr/include/python$(PYTHON_VER_MAJOR)
+SERVICEMP3_CPPFLAGS += -I$(SOURCE_DIR)/enigma2
+SERVICEMP3_CPPFLAGS += -I$(SOURCE_DIR)/enigma2/include
+SERVICEMP3_CPPFLAGS += -I$(KERNEL_DIR)/include
 ifeq ($(MEDIAFW), eplayer3)
 ENIGMA2_SERVICEMP3_DEPS  += $(D)/tools-eplayer3
 MP3_CONF += --enable-libeplayer3
 endif
 
 ifeq ($(MEDIAFW), gstreamer)
-ENIGMA2_SERVICEMP3_DEPS  += $(D)/gstreamer $(D)/gst_plugins_base $(D)/gst_plugins_dvbmediasink
-MP3_CPPFLAGS += -I$(TARGET_DIR)/usr/include/gstreamer-1.0
+ENIGMA2_SERVICEMP3_DEPS  += $(D)/gstreamer $(D)/gst_plugins_base $(D)/gst_plugins_good $(D)/gst_plugins_bad $(D)/gst_plugins_ugly $(D)/gst_plugins_dvbmediasink
 MP3_CONF += --enable-mediafwgstreamer
 endif
 
 ifeq ($(MEDIAFW), gst-eplayer3)
 ENIGMA2_SERVICEMP3_DEPS  += $(D)/tools-libeplayer3
-ENIGMA2_SERVICEMP3_DEPS  += $(D)/gstreamer $(D)/gst_plugins_base $(D)/gst_plugins_dvbmediasink
-MP3_CPPFLAGS += -I$(TARGET_DIR)/usr/include/gstreamer-1.0
+ENIGMA2_SERVICEMP3_DEPS  += $(D)/gstreamer $(D)/gst_plugins_base $(D)/gst_plugins_good $(D)/gst_plugins_bad $(D)/gst_plugins_ugly $(D)/gst_plugins_dvbmediasink
 MP3_CONF += --enable-libeplayer3
 MP3_CONF += --enable-mediafwgstreamer
 endif
@@ -233,12 +228,12 @@ $(D)/enigma2_servicemp3: | $(ENIGMA2_SERVICEMP3_DEPS)
 			--prefix=/usr \
 			--with-gstversion=1.0 \
 			$(MP3_CONF) \
-			CPPFLAGS="$(MP3_CPPFLAGS)" \
+			CPPFLAGS="$(SERVICEMP3_CPPFLAGS)" \
 		; \
 		$(MAKE) all; \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
-	cp $(BUILD_TMP)/enigma2-servicemp3-$(ENIGMA2_SERVICEMP3_VER)/servicemp3/servicemp3.la $(TARGET_DIR)/usr/lib/
-	$(REWRITE_LIBTOOL)/servicemp3.la
-#	$(REMOVE)/enigma2-servicemp3-$(ENIGMA2_SERVICEMP3_VER)
+#	cp $(BUILD_TMP)/enigma2-servicemp3-$(ENIGMA2_SERVICEMP3_VER)/servicemp3/servicemp3.la $(TARGET_DIR)/usr/lib/
+#	$(REWRITE_LIBTOOL)/servicemp3.la
+	$(REMOVE)/enigma2-servicemp3-$(ENIGMA2_SERVICEMP3_VER)
 	$(TOUCH)
 
