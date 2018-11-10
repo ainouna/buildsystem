@@ -213,12 +213,12 @@ echo "KERNEL_STM=$KERNEL_STM" >> config
 case $3 in
 	[1-5]) REPLY=$3;;
 	*)	echo -e "\nOptimization:"
-		echo "   1*) optimization for smallest size"
+		echo "   1)  optimization for smallest size"
 		echo "   2*) optimization for size"
 		echo "   3)  optimization normal"
 		echo "   4)  Kernel debug"
 		echo "   5)  debug (includes Kernel debug)"
-		read -p "Select optimization (1-4)? ";;
+		read -p "Select optimization (1-5)? ";;
 esac
 
 case "$REPLY" in
