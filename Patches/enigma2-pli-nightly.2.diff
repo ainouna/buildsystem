@@ -7084,9 +7084,6 @@
  
  	printf("[MAIN] executing main\n");
  
- }
- 
- #include <malloc.h>
 --- enigma2.org/main/Makefile.am
 +++ enigma2/main/Makefile.am
 @@ -8,6 +8,8 @@
@@ -7312,18 +7309,19 @@
  
  def getImageTypeString():
  	try:
-@@ -80,27 +80,12 @@
+@@ -80,27 +80,13 @@
  		processor = ""
  		for line in open("/proc/cpuinfo").readlines():
  			line = [x.strip() for x in line.strip().split(":")]
 -			if not processor and line[0] in ("system type", "model name", "Processor"):
-+			if not processor and line[0] in ("cpu type", "model name", "Processor"):
++			if not processor and line[0] == "cpu type":
  				processor = line[1].split()[0]
+-			elif not cpu_speed and line[0] == "cpu MHz":
 +				cpu_speed = "unknown"
- 			elif not cpu_speed and line[0] == "cpu MHz":
++			elif cpu_speed == 0 and line[0] == "cpu MHz":
  				cpu_speed = "%1.0f" % float(line[1])
--			elif line[0] == "processor":
-				cpu_count += 1
+ 			elif line[0] == "processor":
+ 				cpu_count += 1
 -
 -		if processor.startswith("ARM") and os.path.isfile("/proc/stb/info/chipset"):
 -			processor = "%s (%s)" % (open("/proc/stb/info/chipset").readline().strip().upper(), processor)
@@ -7717,9 +7715,9 @@
 --- enigma2.org/lib/python/Screens/InputDeviceSetup.py
 +++ enigma2/lib/python/Screens/InputDeviceSetup.py
 @@ -299,57 +299,22 @@
-	rcList = [
+ 	rcList = [
  			("0", _("Default")),
-			("4", _("DMM normal")),
+ 			("4", _("DMM normal")),
 -			("5", _("et9000/et9100")),
  			("6", _("DMM advanced")),
 -			("7", _("et5000/6000")),

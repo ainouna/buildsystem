@@ -1,4 +1,4 @@
-# revision 023b5e3c68640f3bbe43357817f7766e15ff3cde 04/11/2018 19:16
+# revision 12e2144c411d147e99694d24b8cffad231e6b4f9 10/11/2018 21:06
 --- enigma2.org/configure.ac
 +++ enigma2/configure.ac
 @@ -18,6 +18,7 @@
@@ -4459,7 +4459,7 @@
  %}
  
  %feature("ref")   iObject "$this->AddRef(); /* eDebug(\"AddRef (%s:%d)!\", __FILE__, __LINE__); */ "
-@@ -257,6 +258,7 @@
+@@ -258,6 +259,7 @@
  %include <lib/python/pythonconfig.h>
  %include <lib/gdi/picload.h>
  %include <lib/dvb/streamserver.h>
@@ -6209,7 +6209,7 @@
  
  from enigma import eTimer, eServiceCenter, eDVBServicePMTHandler, iServiceInformation, iPlayableService, eServiceReference, eEPGCache, eActionMap, getDesktop, eDVBDB
  
-@@ -107,7 +108,7 @@
+@@ -105,7 +106,7 @@
  	global resumePointCache, resumePointCacheLast
  	import cPickle
  	try:
@@ -6218,7 +6218,7 @@
  		cPickle.dump(resumePointCache, f, cPickle.HIGHEST_PROTOCOL)
  	except Exception, ex:
  		print "[InfoBar] Failed to write resumepoints:", ex
-@@ -116,7 +117,7 @@
+@@ -114,7 +115,7 @@
  def loadResumePoints():
  	import cPickle
  	try:
@@ -6227,7 +6227,7 @@
  	except Exception, ex:
  		print "[InfoBar] Failed to load resumepoints:", ex
  		return {}
-@@ -234,6 +235,7 @@
+@@ -232,6 +233,7 @@
  	STATE_HIDING = 1
  	STATE_SHOWING = 2
  	STATE_SHOWN = 3
@@ -6235,7 +6235,7 @@
  	FLAG_CENTER_DVB_SUBS = 2048
  
  	def __init__(self):
-@@ -376,6 +378,12 @@
+@@ -374,6 +376,12 @@
  		else:
  			self.toggleShow()
  
@@ -6248,7 +6248,7 @@
  	def toggleShow(self):
  		if self.__state == self.STATE_HIDDEN:
  			self.showFirstInfoBar()
-@@ -390,7 +398,9 @@
+@@ -388,7 +396,9 @@
  			self.show()
  			self.actualSecondInfoBarScreen.show()
  			self.startHideTimer()
@@ -6259,7 +6259,7 @@
  			self.hide()
  			self.hideTimer.stop()
  
-@@ -686,6 +696,20 @@
+@@ -684,6 +694,20 @@
  				"historyNext": (self.historyNext, _("Switch to next channel in history")),
  				"keyChannelUp": (self.keyChannelUpCheck, self.getKeyChannelUpHelptext),
  				"keyChannelDown": (self.keyChannelDownCheck, self.getKeyChannelDownHelptext),
@@ -6280,7 +6280,7 @@
  			})
  
  	def showTvChannelList(self, zap=False):
-@@ -850,6 +874,36 @@
+@@ -848,6 +872,36 @@
  			self.servicelist.moveUp()
  		self.servicelist.zap(enable_pipzap = True)
  
@@ -6317,7 +6317,7 @@
  	def zapDown(self):
  		if self.servicelist.inBouquet():
  			prev = self.servicelist.getCurrentSelection()
-@@ -884,7 +938,7 @@
+@@ -882,7 +936,7 @@
  	def __init__(self):
  		self["MenuActions"] = HelpableActionMap(self, "InfobarMenuActions",
  			{
@@ -6326,7 +6326,7 @@
  			})
  		self.session.infobar = None
  
-@@ -999,7 +1053,7 @@
+@@ -997,7 +1051,7 @@
  
  		self["EPGActions"] = HelpableActionMap(self, "InfobarEPGActions",
  			{
@@ -6335,7 +6335,7 @@
  				"showEventInfoSingleEPG": (self.showSingleEPG, _("Show single service EPG")),
  				"showEventInfoMultiEPG": (self.showMultiEPG, _("Show multi channel EPG")),
  				"showInfobarOrEpgWhenInfobarAlreadyVisible": self.showEventInfoWhenNotVisible,
-@@ -1010,7 +1064,7 @@
+@@ -1008,7 +1062,7 @@
  				if 'selectedevent' not in p.__call__.func_code.co_varnames] or []
  		from Components.ServiceEventTracker import InfoBarCount
  		if getAll or InfoBarCount == 1:
@@ -6344,7 +6344,7 @@
  		pluginlist.append((_("Multi EPG"), self.openMultiServiceEPG, "multi_epg"))
  		pluginlist.append((_("Current event EPG"), self.openEventView, "event_epg"))
  		return pluginlist
-@@ -1164,7 +1218,7 @@
+@@ -1162,7 +1216,7 @@
  	def showEventInfoPlugins(self):
  		pluginlist = self.getEPGPluginList()
  		if pluginlist:
@@ -6353,7 +6353,7 @@
  		else:
  			self.openSingleServiceEPG()
  
-@@ -1237,7 +1291,7 @@
+@@ -1235,7 +1289,7 @@
  				self.eventView = self.session.openWithCallback(self.closed, EventViewEPGSelect, epglist[0], ServiceReference(ref), self.eventViewCallback, self.openSingleServiceEPG, self.openMultiServiceEPG, self.openSimilarList)
  				self.dlg_stack.append(self.eventView)
  		if not epglist:
@@ -6362,7 +6362,7 @@
  			self.openMultiServiceEPG(False)
  
  	def eventViewCallback(self, setEvent, setService, val): #used for now/next displaying
-@@ -2140,7 +2194,7 @@
+@@ -2138,7 +2192,7 @@
  		self.addExtension((lambda: _("Import channels from fallback tuner"), self.importChannels, lambda: config.usage.remote_fallback_extension_menu.value and config.usage.remote_fallback_import.value))
  		self["InstantExtensionsActions"] = HelpableActionMap(self, "InfobarExtensions",
  			{
@@ -6371,7 +6371,7 @@
  			}, 1) # lower priority
  
  	def openSoftcamSetup(self):
-@@ -2170,7 +2224,7 @@
+@@ -2168,7 +2222,7 @@
  
  	def updateExtensions(self):
  		self.extensionsList = []
@@ -6380,7 +6380,7 @@
  		self.extensionKeys = {}
  		for x in self.list:
  			if x[0] == self.EXTENSION_SINGLE:
-@@ -2198,7 +2252,7 @@
+@@ -2196,7 +2250,7 @@
  					extensionsList.remove(extension)
  		list.extend([(x[0](), x) for x in extensionsList])
  		keys += [""] * len(extensionsList)
@@ -6389,7 +6389,7 @@
  
  	def extensionCallback(self, answer):
  		if answer is not None:
-@@ -2401,11 +2455,11 @@
+@@ -2399,11 +2453,11 @@
  
  class InfoBarInstantRecord:
  	"""Instant Record - handles the instantRecord action in order to
@@ -6403,7 +6403,7 @@
  			})
  		self.SelectedInstantServiceRef = None
  		if isStandardInfoBar(self):
-@@ -2488,7 +2542,7 @@
+@@ -2486,7 +2540,7 @@
  	def startInstantRecording(self, limitEvent = False):
  		begin = int(time())
  		end = begin + 3600      # dummy
@@ -6412,7 +6412,7 @@
  		info = { }
  
  		self.getProgramInfoAndEvent(info, name)
-@@ -2717,7 +2771,7 @@
+@@ -2715,7 +2769,7 @@
  	def __init__(self):
  		self["AudioSelectionAction"] = HelpableActionMap(self, "InfobarAudioSelectionActions",
  			{
@@ -6421,7 +6421,7 @@
  			})
  
  	def audioSelection(self):
-@@ -2731,7 +2785,7 @@
+@@ -2729,7 +2783,7 @@
  	def __init__(self):
  		self["SubserviceSelectionAction"] = HelpableActionMap(self, "InfobarSubserviceSelectionActions",
  			{
@@ -6430,7 +6430,7 @@
  			})
  
  		self["SubserviceQuickzapAction"] = HelpableActionMap(self, "InfobarSubserviceQuickzapActions",
-@@ -2815,18 +2869,18 @@
+@@ -2813,18 +2867,18 @@
  				idx += 1
  
  			if cnt_parent and self.bouquets and len(self.bouquets):
@@ -7309,18 +7309,19 @@
  
  def getImageTypeString():
  	try:
-@@ -80,27 +80,12 @@
+@@ -80,27 +80,13 @@
  		processor = ""
  		for line in open("/proc/cpuinfo").readlines():
  			line = [x.strip() for x in line.strip().split(":")]
 -			if not processor and line[0] in ("system type", "model name", "Processor"):
-+			if not processor and line[0] in ("cpu type", "model name", "Processor"):
++			if not processor and line[0] == "cpu type":
  				processor = line[1].split()[0]
+-			elif not cpu_speed and line[0] == "cpu MHz":
 +				cpu_speed = "unknown"
- 			elif not cpu_speed and line[0] == "cpu MHz":
++			elif cpu_speed == 0 and line[0] == "cpu MHz":
  				cpu_speed = "%1.0f" % float(line[1])
--			elif line[0] == "processor":
-				cpu_count += 1
+ 			elif line[0] == "processor":
+ 				cpu_count += 1
 -
 -		if processor.startswith("ARM") and os.path.isfile("/proc/stb/info/chipset"):
 -			processor = "%s (%s)" % (open("/proc/stb/info/chipset").readline().strip().upper(), processor)
@@ -7714,9 +7715,9 @@
 --- enigma2.org/lib/python/Screens/InputDeviceSetup.py
 +++ enigma2/lib/python/Screens/InputDeviceSetup.py
 @@ -299,57 +299,22 @@
-	rcList = [
+ 	rcList = [
  			("0", _("Default")),
-			("4", _("DMM normal")),
+ 			("4", _("DMM normal")),
 -			("5", _("et9000/et9100")),
  			("6", _("DMM advanced")),
 -			("7", _("et5000/6000")),
@@ -7725,12 +7726,12 @@
 -			("11", _("et9200/9500/6500")),
 -			("13", _("et4000")),
 -			("14", _("xp1000")),
--			("16", _("HD11/HD51/HD1100/HD1200/HD1265/HD1500/HD500C/HD530C/VS1000/VS1500/et7x00/et8500/et7000mini")),
+-			("16", _("HDx1/HD1xxx/HD5x0C/VS1x00/et7x00/et8500/et7000mini")),
 -			("18", _("F1/F3/F4/F4-TURBO")),
 -			("19", _("HD2400")),
 -			("20", _("Zgemma Star S/2S/H1/H2")),
 -			("21", _("Zgemma H.S/H.2S/H.2H/H5/H7")),
--			("25", _("Zgemma H9"))
+-			("25", _("Zgemma H9/i55 Plus"))
 +			("7", _("fs9000")),
 +			("8", _("hs9510")),
 +			("9", _("hs7110")),
