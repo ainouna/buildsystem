@@ -607,6 +607,7 @@ enigma2_release_base:
 	$(SILENT)cp -f $(SKEL_ROOT)/root_enigma2/boot/bootlogo.mvi $(RELEASE_DIR)/boot/
 	$(SILENT)echo "720p50" > $(RELEASE_DIR)/etc/videomode
 	$(SILENT)echo "$(BOXTYPE)" > $(RELEASE_DIR)/etc/hostname
+	$(SILENT)date +%Y%m%d > $(RELEASE_DIR)/etc/version
 	$(SILENT)ln -sf ../../bin/showiframe $(RELEASE_DIR)/usr/bin/showiframe
 	$(SILENT)ln -sf ../../usr/sbin/fw_printenv $(RELEASE_DIR)/usr/sbin/fw_setenv
 	$(SILENT)ln -sf ../../bin/grab $(RELEASE_DIR)/usr/bin/grab
