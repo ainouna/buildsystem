@@ -92,7 +92,7 @@
  	AC_SUBST([PYTHON_SITE_PKG])
 --- enigma2-servicemp3/servicemp3/Makefile.am
 +++ enigma2-servicemp3/servicemp3/Makefile.am
-@@ -5,22 +5,69 @@
+@@ -5,22 +5,66 @@
  	@PYTHON_CPPFLAGS@ \
  	-include Python.h
  
@@ -150,19 +150,16 @@
 +
 +if ENABLE_MEDIAFWGSTREAMER
 +servicemp3_la_LDFLAGS += \
-+	-L$(top_srcdir)/../../tufsbox/cdkroot/usr/lib \
 +	-lgstpbutils-1.0 \
 +	-lgstreamer-1.0 \
 +	-lgobject-2.0 \
 +	-lglib-2.0
 +if ENABLE_LIBEPLAYER3
 +servicemp3_la_LDFLAGS += \
-+	-L$(top_srcdir)/../../tufsbox/cdkroot/lib \
 +	-leplayer3
 +endif
 +else
 +servicemp3_la_LDFLAGS += \
-+	-L$(top_srcdir)/../../apps/tools/eplayer3 \
 +	-leplayer3 \
 +	-lavformat \
 +	-lswresample
