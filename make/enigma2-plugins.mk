@@ -185,28 +185,29 @@ $(D)/enigma2_networkbrowser: $(D)/bootstrap $(D)/python
 #
 # enigma2-servicemp3
 #
-SERVICEMP3_VER = 0.1
-SERVICEMP3_DEPS = $(D)/bootstrap $(D)/enigma2
+SERVICEMP3_VER       = 0.1
+SERVICEMP3_DEPS      = $(D)/bootstrap $(D)/enigma2
 SERVICEMP3_CPPFLAGS  = -std=c++11
 SERVICEMP3_CPPFLAGS += -I$(TARGET_DIR)/usr/include/python$(PYTHON_VER_MAJOR)
 SERVICEMP3_CPPFLAGS += -I$(SOURCE_DIR)/enigma2
 SERVICEMP3_CPPFLAGS += -I$(SOURCE_DIR)/enigma2/include
 SERVICEMP3_CPPFLAGS += -I$(KERNEL_DIR)/include
 ifeq ($(MEDIAFW), eplayer3)
-SERVICEMP3_DEPS  += $(D)/tools-eplayer3
-SERVICEMP3_CONF += --enable-libeplayer3
+SERVICEMP3_DEPS     += $(D)/tools-eplayer3
+SERVICEMP3_CPPFLAGS += -L$(APPS_DIR)/tools/eplayer3
+SERVICEMP3_CONF     += --enable-libeplayer3
 endif
 
 ifeq ($(MEDIAFW), gstreamer)
-SERVICEMP3_DEPS  += $(D)/gstreamer $(D)/gst_plugins_base $(D)/gst_plugins_good $(D)/gst_plugins_bad $(D)/gst_plugins_ugly $(D)/gst_plugins_dvbmediasink
-SERVICEMP3_CONF += --enable-mediafwgstreamer
+SERVICEMP3_DEPS    += $(D)/gstreamer $(D)/gst_plugins_base $(D)/gst_plugins_good $(D)/gst_plugins_bad $(D)/gst_plugins_ugly $(D)/gst_plugins_dvbmediasink
+SERVICEMP3_CONF    += --enable-mediafwgstreamer
 endif
 
 ifeq ($(MEDIAFW), gst-eplayer3)
-SERVICEMP3_DEPS  += $(D)/tools-libeplayer3
-SERVICEMP3_DEPS  += $(D)/gstreamer $(D)/gst_plugins_base $(D)/gst_plugins_good $(D)/gst_plugins_bad $(D)/gst_plugins_ugly $(D)/gst_plugins_dvbmediasink
-SERVICEMP3_CONF += --enable-libeplayer3
-SERVICEMP3_CONF += --enable-mediafwgstreamer
+SERVICEMP3_DEPS    += $(D)/tools-libeplayer3
+SERVICEMP3_DEPS    += $(D)/gstreamer $(D)/gst_plugins_base $(D)/gst_plugins_good $(D)/gst_plugins_bad $(D)/gst_plugins_ugly $(D)/gst_plugins_dvbmediasink
+SERVICEMP3_CONF    += --enable-libeplayer3
+SERVICEMP3_CONF    += --enable-mediafwgstreamer
 endif
 SERVICEMP3_PATCH = enigma2-servicemp3-$(SERVICEMP3_VER).patch
 
