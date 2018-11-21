@@ -311,6 +311,8 @@ $(D)/tools-eplayer3: $(D)/bootstrap $(D)/ffmpeg
 		; \
 		$(MAKE); \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
+#	$(SET) -e; cd $(APPS_DIR)/tools/eplayer3;
+#	cp libeplayer3.a $(TARGET_DIR)/usr/lib
 	$(TOUCH)
 
 #
