@@ -202,7 +202,7 @@ endif
 ifeq ($(MEDIAFW), gstreamer)
 SERVICEMP3_DEPS    += $(D)/gstreamer $(D)/gst_plugins_base $(D)/gst_plugins_good $(D)/gst_plugins_bad $(D)/gst_plugins_ugly $(D)/gst_plugins_dvbmediasink
 SERVICEMP3_CONF    += --enable-mediafwgstreamer
-SERVICEMP3_CONF    += --with-gstversion=1.0 \
+SERVICEMP3_CONF    += --with-gstversion=1.0
 endif
 
 ifeq ($(MEDIAFW), gst-eplayer3)
@@ -210,7 +210,7 @@ SERVICEMP3_DEPS    += $(D)/tools-libeplayer3
 SERVICEMP3_DEPS    += $(D)/gstreamer $(D)/gst_plugins_base $(D)/gst_plugins_good $(D)/gst_plugins_bad $(D)/gst_plugins_ugly $(D)/gst_plugins_dvbmediasink
 SERVICEMP3_CONF    += --enable-libeplayer3
 SERVICEMP3_CONF    += --enable-mediafwgstreamer
-SERVICEMP3_CONF    += --with-gstversion=1.0 \
+SERVICEMP3_CONF    += --with-gstversion=1.0
 endif
 SERVICEMP3_PATCH = enigma2-servicemp3-$(SERVICEMP3_VER).patch
 
