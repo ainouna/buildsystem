@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20181110.1
+# Version 20181123.1
 
 ##############################################
 
@@ -332,7 +332,7 @@ case "$IMAGE" in
 #	enigma*)
 	*)
 		case $6 in
-			[1-3]) REPLY=$6;;
+			[1-4]) REPLY=$6;;
 			*)	echo -e "\nMedia Framework:"
 				echo "   1)  None (E2 is built without a player)"
 				echo "   2)  eplayer3 (E2 player uses eplayer3 only)"
