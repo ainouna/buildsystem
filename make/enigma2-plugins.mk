@@ -200,14 +200,20 @@ SERVICEMP3_CONF     += --enable-libeplayer3
 endif
 
 ifeq ($(MEDIAFW), gstreamer)
-SERVICEMP3_DEPS    += $(D)/gstreamer $(D)/gst_plugins_base $(D)/gst_plugins_good $(D)/gst_plugins_bad $(D)/gst_plugins_ugly $(D)/gst_plugins_dvbmediasink
+SERVICEMP3_DEPS    += $(D)/gstreamer $(D)/gst_plugins_base $(D)/gst_plugins_dvbmediasink
 SERVICEMP3_CONF    += --enable-mediafwgstreamer
 SERVICEMP3_CONF    += --with-gstversion=1.0
+ifeq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), normal kerneldebug))
+SERVICEMP3_DEPS    += $(D)/gst_plugins_good $(D)/gst_plugins_bad $(D)/gst_plugins_ugly
+endif
 endif
 
 ifeq ($(MEDIAFW), gst-eplayer3)
 SERVICEMP3_DEPS    += $(D)/tools-libeplayer3
-SERVICEMP3_DEPS    += $(D)/gstreamer $(D)/gst_plugins_base $(D)/gst_plugins_good $(D)/gst_plugins_bad $(D)/gst_plugins_ugly $(D)/gst_plugins_dvbmediasink
+SERVICEMP3_DEPS    += $(D)/gstreamer $(D)/gst_plugins_base $(D)/gst_plugins_dvbmediasink
+ifeq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), normal kerneldebug))
+SERVICEMP3_DEPS    += $(D)/gst_plugins_good $(D)/gst_plugins_bad $(D)/gst_plugins_ugly
+endif
 SERVICEMP3_CONF    += --enable-libeplayer3
 SERVICEMP3_CONF    += --enable-mediafwgstreamer
 SERVICEMP3_CONF    += --with-gstversion=1.0
@@ -235,6 +241,9 @@ $(D)/enigma2_servicemp3: | $(SERVICEMP3_DEPS)
 		; \
 		$(MAKE) all; \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
+	$(SET) -e; cd $(BUILD_TMP)/enigma2-servicemp3-$(SERVICEMP3_VER); \
+	cp ./servicemp3/servicemp3.la $(TARGET_DIR)/usr/lib
+	$(REWRITE_LIBTOOL)/servicemp3.la
 	$(REMOVE)/enigma2-servicemp3-$(SERVICEMP3_VER)
 	$(TOUCH)
 
@@ -255,14 +264,20 @@ SERVICEMP3EPL_CONF     += --enable-libeplayer3
 endif
 
 ifeq ($(MEDIAFW), gstreamer)
-SERVICEMP3EPL_DEPS    += $(D)/gstreamer $(D)/gst_plugins_base $(D)/gst_plugins_good $(D)/gst_plugins_bad $(D)/gst_plugins_ugly $(D)/gst_plugins_dvbmediasink
+SERVICEMP3EPL_DEPS    += $(D)/gstreamer $(D)/gst_plugins_base $(D)/gst_plugins_dvbmediasink
+ifeq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), normal kerneldebug))
+SERVICEMP3RPL_DEPS    += $(D)/gst_plugins_good $(D)/gst_plugins_bad $(D)/gst_plugins_ugly
+endif
 SERVICEMP3EPL_CONF    += --enable-gstreamer
 SERVICEMP3EPL_CONF    += --with-gstversion=1.0
 endif
 
 ifeq ($(MEDIAFW), gst-eplayer3)
 SERVICEMP3EPL_DEPS    += $(D)/tools-libeplayer3
-SERVICEMP3EPL_DEPS    += $(D)/gstreamer $(D)/gst_plugins_base $(D)/gst_plugins_good $(D)/gst_plugins_bad $(D)/gst_plugins_ugly $(D)/gst_plugins_dvbmediasink
+SERVICEMP3EPL_DEPS    += $(D)/gstreamer $(D)/gst_plugins_base $(D)/gst_plugins_dvbmediasink
+ifeq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), normal kerneldebug))
+SERVICEMP3EPL_DEPS    += $(D)/gst_plugins_good $(D)/gst_plugins_bad $(D)/gst_plugins_ugly
+endif
 SERVICEMP3EPL_CONF    += --enable-libeplayer3
 SERVICEMP3EPL_CONF    += --enable-gstreamer
 SERVICEMP3EPL_CONF    += --with-gstversion=1.0
