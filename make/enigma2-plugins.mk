@@ -240,7 +240,7 @@ $(D)/enigma2_servicemp3: | $(SERVICEMP3_DEPS)
 		; \
 		$(MAKE) all; \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
-#	$(REMOVE)/enigma2-servicemp3-$(SERVICEMP3_VER)
+	$(REMOVE)/enigma2-servicemp3-$(SERVICEMP3_VER)
 	$(TOUCH)
 
 #
