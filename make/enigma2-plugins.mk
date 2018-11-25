@@ -195,17 +195,16 @@ SERVICEMP3_CPPFLAGS += -I$(SOURCE_DIR)/enigma2/include
 SERVICEMP3_CPPFLAGS += -I$(KERNEL_DIR)/include
 ifeq ($(MEDIAFW), eplayer3)
 SERVICEMP3_DEPS     += $(D)/tools-eplayer3
-SERVICEMP3_CPPFLAGS += -L$(APPS_DIR)/tools/eplayer3
 SERVICEMP3_CONF     += --enable-libeplayer3
 endif
 
 ifeq ($(MEDIAFW), gstreamer)
 SERVICEMP3_DEPS    += $(D)/gstreamer $(D)/gst_plugins_base $(D)/gst_plugins_dvbmediasink
-SERVICEMP3_CONF    += --enable-mediafwgstreamer
-SERVICEMP3_CONF    += --with-gstversion=1.0
 ifeq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), normal kerneldebug))
 SERVICEMP3_DEPS    += $(D)/gst_plugins_good $(D)/gst_plugins_bad $(D)/gst_plugins_ugly
 endif
+SERVICEMP3_CONF    += --enable-mediafwgstreamer
+SERVICEMP3_CONF    += --with-gstversion=1.0
 endif
 
 ifeq ($(MEDIAFW), gst-eplayer3)
@@ -241,10 +240,7 @@ $(D)/enigma2_servicemp3: | $(SERVICEMP3_DEPS)
 		; \
 		$(MAKE) all; \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
-	$(SET) -e; cd $(BUILD_TMP)/enigma2-servicemp3-$(SERVICEMP3_VER); \
-	cp ./servicemp3/servicemp3.la $(TARGET_DIR)/usr/lib
-	$(REWRITE_LIBTOOL)/servicemp3.la
-	$(REMOVE)/enigma2-servicemp3-$(SERVICEMP3_VER)
+#	$(REMOVE)/enigma2-servicemp3-$(SERVICEMP3_VER)
 	$(TOUCH)
 
 #
@@ -259,7 +255,6 @@ SERVICEMP3EPL_CPPFLAGS += -I$(SOURCE_DIR)/enigma2/include
 SERVICEMP3EPL_CPPFLAGS += -I$(KERNEL_DIR)/include
 ifeq ($(MEDIAFW), eplayer3)
 SERVICEMP3EPL_DEPS     += $(D)/tools-eplayer3
-SERVICEMP3EPL_CPPFLAGS += -L$(APPS_DIR)/tools/eplayer3
 SERVICEMP3EPL_CONF     += --enable-libeplayer3
 endif
 
