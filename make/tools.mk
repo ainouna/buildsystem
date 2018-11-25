@@ -42,6 +42,7 @@ endif
 $(D)/tools-aio-grab: $(D)/bootstrap $(D)/libpng $(D)/libjpeg
 	$(START_BUILD)
 	$(SET) -e; cd $(APPS_DIR)/tools/aio-grab; \
+		if [ ! -d m4 ]; then mkdir m4; fi; \
 		$(CONFIGURE_TOOLS) CPPFLAGS="$(CPPFLAGS) -I$(DRIVER_DIR)/bpamem" \
 			--prefix= \
 		; \
@@ -55,6 +56,7 @@ $(D)/tools-aio-grab: $(D)/bootstrap $(D)/libpng $(D)/libjpeg
 $(D)/tools-devinit: $(D)/bootstrap
 	$(START_BUILD)
 	$(SET) -e; cd $(APPS_DIR)/tools/devinit; \
+		if [ ! -d m4 ]; then mkdir m4; fi; \
 		$(CONFIGURE_TOOLS) \
 			--prefix= \
 		; \
@@ -68,6 +70,7 @@ $(D)/tools-devinit: $(D)/bootstrap
 $(D)/tools-evremote2: $(D)/bootstrap
 	$(START_BUILD)
 	$(SET) -e; cd $(APPS_DIR)/tools/evremote2; \
+		if [ ! -d m4 ]; then mkdir m4; fi; \
 		$(CONFIGURE_TOOLS) \
 			--prefix= \
 		; \
@@ -81,6 +84,7 @@ $(D)/tools-evremote2: $(D)/bootstrap
 $(D)/tools-fp_control: $(D)/bootstrap
 	$(START_BUILD)
 	$(SET) -e; cd $(APPS_DIR)/tools/fp_control; \
+		if [ ! -d m4 ]; then mkdir m4; fi; \
 		$(CONFIGURE_TOOLS) \
 			--prefix= \
 		; \
@@ -94,6 +98,7 @@ $(D)/tools-fp_control: $(D)/bootstrap
 $(D)/tools-hotplug: $(D)/bootstrap
 	$(START_BUILD)
 	$(SET) -e; cd $(APPS_DIR)/tools/hotplug; \
+		if [ ! -d m4 ]; then mkdir m4; fi; \
 		$(CONFIGURE_TOOLS) \
 			--prefix= \
 		; \
@@ -107,6 +112,7 @@ $(D)/tools-hotplug: $(D)/bootstrap
 $(D)/tools-ipbox_eeprom: $(D)/bootstrap
 	$(START_BUILD)
 	$(SET) -e; cd $(APPS_DIR)/tools/ipbox_eeprom; \
+		if [ ! -d m4 ]; then mkdir m4; fi; \
 		$(CONFIGURE_TOOLS) \
 			--prefix= \
 		; \
@@ -120,6 +126,7 @@ $(D)/tools-ipbox_eeprom: $(D)/bootstrap
 $(D)/tools-libeplayer3: $(D)/bootstrap $(D)/ffmpeg
 	$(START_BUILD)
 	$(SET) -e; cd $(APPS_DIR)/tools/libeplayer3; \
+		if [ ! -d m4 ]; then mkdir m4; fi; \
 		$(CONFIGURE_TOOLS) \
 			--prefix= \
 		; \
@@ -133,6 +140,7 @@ $(D)/tools-libeplayer3: $(D)/bootstrap $(D)/ffmpeg
 $(D)/tools-libmme_host: $(D)/bootstrap $(D)/driver
 	$(START_BUILD)
 	$(SET) -e; cd $(APPS_DIR)/tools/libmme_host; \
+		if [ ! -d m4 ]; then mkdir m4; fi; \
 		$(CONFIGURE_TOOLS) \
 			--prefix= \
 		; \
@@ -146,6 +154,7 @@ $(D)/tools-libmme_host: $(D)/bootstrap $(D)/driver
 $(D)/tools-libmme_image: $(D)/bootstrap
 	$(START_BUILD)
 	$(SET) -e; cd $(APPS_DIR)/tools/libmme_image; \
+		if [ ! -d m4 ]; then mkdir m4; fi; \
 		$(CONFIGURE_TOOLS) \
 			--prefix= \
 		; \
@@ -159,6 +168,7 @@ $(D)/tools-libmme_image: $(D)/bootstrap
 $(D)/tools-minimon: $(D)/bootstrap $(D)/jpeg_turbo
 	$(START_BUILD)
 	$(SET) -e; cd $(APPS_DIR)/tools/minimon; \
+		if [ ! -d m4 ]; then mkdir m4; fi; \
 		$(CONFIGURE_TOOLS) \
 			--prefix= \
 		; \
@@ -172,6 +182,7 @@ $(D)/tools-minimon: $(D)/bootstrap $(D)/jpeg_turbo
 $(D)/tools-satfind: $(D)/bootstrap
 	$(START_BUILD)
 	$(SET) -e; cd $(APPS_DIR)/tools/satfind; \
+		if [ ! -d m4 ]; then mkdir m4; fi; \
 		$(CONFIGURE_TOOLS) \
 			--prefix= \
 		; \
@@ -185,6 +196,7 @@ $(D)/tools-satfind: $(D)/bootstrap
 $(D)/tools-showiframe: $(D)/bootstrap
 	$(START_BUILD)
 	$(SET) -e; cd $(APPS_DIR)/tools/showiframe; \
+		if [ ! -d m4 ]; then mkdir m4; fi; \
 		$(CONFIGURE_TOOLS) \
 			--prefix= \
 		; \
@@ -198,6 +210,7 @@ $(D)/tools-showiframe: $(D)/bootstrap
 $(D)/tools-spf_tool: $(D)/bootstrap $(D)/libusb
 	$(START_BUILD)
 	$(SET) -e; cd $(APPS_DIR)/tools/spf_tool; \
+		if [ ! -d m4 ]; then mkdir m4; fi; \
 		$(CONFIGURE_TOOLS) \
 			--prefix= \
 		; \
@@ -211,6 +224,7 @@ $(D)/tools-spf_tool: $(D)/bootstrap $(D)/libusb
 $(D)/tools-stfbcontrol: $(D)/bootstrap
 	$(START_BUILD)
 	$(SET) -e; cd $(APPS_DIR)/tools/stfbcontrol; \
+		if [ ! -d m4 ]; then mkdir m4; fi; \
 		$(CONFIGURE_TOOLS) \
 			--prefix= \
 		; \
@@ -224,6 +238,7 @@ $(D)/tools-stfbcontrol: $(D)/bootstrap
 $(D)/tools-streamproxy: $(D)/bootstrap
 	$(START_BUILD)
 	$(SET) -e; cd $(APPS_DIR)/tools/streamproxy; \
+		if [ ! -d m4 ]; then mkdir m4; fi; \
 		$(CONFIGURE_TOOLS) \
 			--prefix= \
 		; \
@@ -237,6 +252,7 @@ $(D)/tools-streamproxy: $(D)/bootstrap
 $(D)/tools-tfd2mtd: $(D)/bootstrap
 	$(START_BUILD)
 	$(SET) -e; cd $(APPS_DIR)/tools/tfd2mtd; \
+		if [ ! -d m4 ]; then mkdir m4; fi; \
 		$(CONFIGURE_TOOLS) \
 			--prefix= \
 		; \
@@ -251,6 +267,7 @@ $(D)/tools-tffpctl: $(D)/bootstrap
 	$(START_BUILD)
 	$(SET) -e; cd $(APPS_DIR)/tools/tffpctl; \
 		$(CONFIGURE_TOOLS) \
+		if [ ! -d m4 ]; then mkdir m4; fi; \
 			--prefix= \
 		; \
 		$(MAKE); \
@@ -263,6 +280,7 @@ $(D)/tools-tffpctl: $(D)/bootstrap
 $(D)/tools-ustslave: $(D)/bootstrap
 	$(START_BUILD)
 	$(SET) -e; cd $(APPS_DIR)/tools/ustslave; \
+		if [ ! -d m4 ]; then mkdir m4; fi; \
 		$(CONFIGURE_TOOLS) \
 			--prefix= \
 		; \
@@ -280,6 +298,7 @@ endif
 $(D)/tools-vfdctl: $(D)/bootstrap
 	$(START_BUILD)
 	$(SET) -e; cd $(APPS_DIR)/tools/vfdctl; \
+		if [ ! -d m4 ]; then mkdir m4; fi; \
 		$(CONFIGURE_TOOLS) \
 			--prefix= \
 		; \
@@ -293,6 +312,7 @@ $(D)/tools-vfdctl: $(D)/bootstrap
 $(D)/tools-wait4button: $(D)/bootstrap
 	$(START_BUILD)
 	$(SET) -e; cd $(APPS_DIR)/tools/wait4button; \
+		if [ ! -d m4 ]; then mkdir m4; fi; \
 		$(CONFIGURE_TOOLS) \
 			--prefix= \
 		; \
@@ -306,13 +326,12 @@ $(D)/tools-wait4button: $(D)/bootstrap
 $(D)/tools-eplayer3: $(D)/bootstrap $(D)/ffmpeg
 	$(START_BUILD)
 	$(SET) -e; cd $(APPS_DIR)/tools/eplayer3; \
+		if [ ! -d m4 ]; then mkdir m4; fi; \
 		$(CONFIGURE_TOOLS) \
 			--prefix= \
 		; \
 		$(MAKE); \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
-#	$(SET) -e; cd $(APPS_DIR)/tools/eplayer3;
-#	cp libeplayer3.a $(TARGET_DIR)/usr/lib
 	$(TOUCH)
 
 #
@@ -321,6 +340,7 @@ $(D)/tools-eplayer3: $(D)/bootstrap $(D)/ffmpeg
 $(D)/tools-own-tools: $(D)/bootstrap $(D)/libcurl
 	$(START_BUILD)
 	$(SET) -e; cd $(APPS_DIR)/tools/own-tools; \
+		if [ ! -d m4 ]; then mkdir m4; fi; \
 		$(CONFIGURE_TOOLS) \
 			--prefix= \
 		; \
