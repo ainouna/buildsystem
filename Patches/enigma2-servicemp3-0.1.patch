@@ -1,6 +1,6 @@
 --- enigma2-servicemp3/configure.ac
 +++ enigma2-servicemp3/configure.ac
-@@ -10,11 +10,52 @@
+@@ -10,11 +10,58 @@
  AC_LANG(C++)
  
  PKG_CHECK_MODULES(ENIGMA2, enigma2)
@@ -24,7 +24,7 @@
 +fi
 +
 +AC_ARG_ENABLE([mediafwgstreamer],
-+	[  --enable-mediafwgstreamer          enable gstreamer libeplayer3 as player engine support],
++	[  --enable-mediafwgstreamer     enable gstreamer as player engine support],
 +[case "${enableval}" in
 +	yes) mediafwgstreamer=true ;;
 +	no)  mediafwgstreamer=false ;;
@@ -43,14 +43,20 @@
 +	PKG_CHECK_MODULES([AVUTIL], [libavutil])
 +	PKG_CHECK_MODULES([SWSCALE], [libswscale])
 +	PKG_CHECK_MODULES([SWRESAMPLE], [libswresample])
++	GSTREAMER_CFLAGS=
++	GSTREAMER_LIBS=
 +fi
 +
 +if test "$enable_gstreamer" = "yes"; then
 +	PKG_CHECK_MODULES(GSTREAMER, gstreamer-$GST_MAJORMINOR gstreamer-pbutils-$GST_MAJORMINOR)
 +	PKG_CHECK_MODULES(BASE, [freetype2 fribidi gstreamer-$GST_MAJORMINOR gstreamer-pbutils-$GST_MAJORMINOR libdvbsi++ libpng libxml-2.0 sigc++-2.0 libssl libcrypto])
++	GSTREAMER_CFLAGSS=`$PKG_CONFIG --cflags-only-I gstreamer-app-$GST_MAJORMINOR gstreamer-pbutils-$GST_MAJORMINOR`
++	GSTREAMER_LIBS=`$PKG_CONFIG --libs gstreamer-app-$GST_MAJORMINOR gstreamer-pbutils-$GST_MAJORMINOR`
 +else
 +	PKG_CHECK_MODULES(BASE, [freetype2 fribidi libdvbsi++ libpng libxml-2.0 sigc++-2.0 libssl libcrypto])
 +fi
++AC_SUBST(GSTREAMER_CFLAGSS)
++AC_SUBST(GSTREAMER_LIBS)
  
  AC_DEFINE([DEBUG])
  
@@ -92,7 +98,7 @@
  	AC_SUBST([PYTHON_SITE_PKG])
 --- enigma2-servicemp3/servicemp3/Makefile.am
 +++ enigma2-servicemp3/servicemp3/Makefile.am
-@@ -5,22 +5,67 @@
+@@ -5,22 +5,64 @@
  	@PYTHON_CPPFLAGS@ \
  	-include Python.h
  
@@ -150,10 +156,7 @@
 +
 +if ENABLE_MEDIAFWGSTREAMER
 +servicemp3_la_LDFLAGS += \
-+	-lgstpbutils-1.0 \
-+	-lgstreamer-1.0 \
-+	-lgobject-2.0 \
-+	-lglib-2.0
++	@GSTREAMER_LIBS@
 +if ENABLE_LIBEPLAYER3
 +servicemp3_la_LDFLAGS += \
 +	-leplayer3
@@ -3527,6 +3530,16 @@
  	FILE *f = fopen(filename.c_str(), "wb");
  
  	if (f)
+@@ -3233,5 +4273,7 @@
+ 
+ __attribute__((constructor)) void libraryinit(int argc, char **argv)
+ {
+-	gst_init(&argc, &argv);
+-}
++//	eDebug("[eServiceMP3] Initializing gstreamer, # of arguments %d %d\n", argc, (int)&argc);
++	
++	gst_init(NULL, NULL);
++}
 --- enigma2-servicemp3/servicemp3/servicemp3.h
 +++ enigma2-servicemp3/servicemp3/servicemp3.h
 @@ -6,7 +6,18 @@
