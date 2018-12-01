@@ -368,6 +368,19 @@
  lib/python/Tools/Makefile
  po/Makefile
  main/Makefile
+--- enigma2.org/data/fonts/Makefile.am
++++ enigma2/data/fonts/Makefile.am
+@@ -14,9 +14,4 @@
+ 	LiberationSans-Bold.ttf \
+ 	LiberationSans-BoldItalic.ttf \
+ 	LiberationSans-Italic.ttf \
+-	LiberationSans-Regular.ttf \
+-	wqy-microhei.ttc
+-
+-install-exec-hook:
+-	cd $(DESTDIR)$(datadir)/fonts && \
+-	$(LN_S) wqy-microhei.ttc fallback.font
++	LiberationSans-Regular.ttf
 --- enigma2.org/data/skin_display_default.xml
 +++ enigma2/data/skin_display_default.xml
 @@ -22,27 +22,29 @@
@@ -663,7 +676,7 @@
  }
 --- enigma2.org/lib/driver/vfd.cpp
 +++ enigma2/lib/driver/vfd.cpp
-@@ -0,0 +1,809 @@
+@@ -0,0 +1,808 @@
 +/*
 + * vfd.cpp
 + *
@@ -801,7 +814,6 @@
 +	vfd_type = 7;
 +#elif defined(ENABLE_SPARK7162)
 +	vfd_type = 8;
-+#warning "Building for a spark7162."
 +#elif defined(ENABLE_HS7810A) || defined(ENABLE_HS7819) || defined(ENABLE_HS7119)
 +	vfd_type = 9;
 +#elif defined(ENABLE_HS7110)
@@ -3810,7 +3822,7 @@
  						prefix = "+"
 --- enigma2.org/lib/python/Components/Harddisk.py
 +++ enigma2/lib/python/Components/Harddisk.py
-@@ -48,6 +48,7 @@
+@@ -45,6 +45,7 @@
  class Harddisk:
  	def __init__(self, device, removable=False):
  		self.device = device
@@ -3818,7 +3830,7 @@
  
  		if os.access("/dev/.udev", 0):
  			self.type = DEVTYPE_UDEV
-@@ -56,7 +57,6 @@
+@@ -53,7 +54,6 @@
  		else:
  			print "[Harddisk] Unable to determine structure of /dev"
  			self.type = -1
@@ -3826,7 +3838,7 @@
  
  		self.max_idle_time = 0
  		self.idle_running = False
-@@ -85,25 +85,30 @@
+@@ -82,25 +82,30 @@
  			self.card = "sdhci" in self.phys_path
  
  		elif self.type == DEVTYPE_DEVFS:
@@ -3872,7 +3884,7 @@
  
  	def __lt__(self, ob):
  		return self.device < ob.device
-@@ -247,7 +253,9 @@
+@@ -244,7 +249,9 @@
  
  	def createPartition(self):
  		cmd = 'printf "8,\n;0,0\n;0,0\n;0,0\ny\n" | sfdisk -f -uS ' + self.disk_path
@@ -3882,7 +3894,7 @@
  		return (res >> 8)
  
  	def mkfs(self):
-@@ -290,6 +298,7 @@
+@@ -287,6 +294,7 @@
  		return 1
  
  	def killPartitionTable(self):
@@ -3890,7 +3902,7 @@
  		zero = 512 * '\0'
  		h = open(self.dev_path, 'wb')
  		# delete first 9 sectors, which will likely kill the first partition too
-@@ -306,25 +315,30 @@
+@@ -303,25 +311,30 @@
  		h.close()
  
  	def createInitializeJob(self):
@@ -3939,7 +3951,7 @@
  
  		if os.path.exists('/usr/sbin/parted'):
  			use_parted = True
-@@ -335,7 +355,9 @@
+@@ -332,7 +345,9 @@
  			else:
  				use_parted = False
  
@@ -3950,7 +3962,7 @@
  		task.weighting = 5
  		if use_parted:
  			task.setTool('parted')
-@@ -347,9 +369,17 @@
+@@ -344,9 +359,17 @@
  				alignment = 'opt'
  			if size > 2097151:
  				parttype = 'gpt'
@@ -3969,7 +3981,7 @@
  		else:
  			task.setTool('sfdisk')
  			task.args.append('-f')
-@@ -357,51 +387,102 @@
+@@ -354,51 +377,102 @@
  			task.args.append(self.disk_path)
  			if size > 128000:
  				# Start at sector 8 to better support 4k aligned disks
@@ -4099,7 +4111,7 @@
  		return job
  
  	def initialize(self):
-@@ -653,16 +734,19 @@
+@@ -650,16 +724,19 @@
  				self.devices_scanned_on_init.append((blockdev, removable, is_cdrom, medium_found))
  
  	def getAutofsMountpoint(self, device):
@@ -4123,7 +4135,7 @@
  		return None
  
  	def addHotplugPartition(self, device, physdev = None):
-@@ -678,6 +762,10 @@
+@@ -675,6 +752,10 @@
  		error, blacklisted, removable, is_cdrom, partitions, medium_found = self.getBlockDevInfo(device)
  		if not blacklisted and medium_found:
  			description = self.getUserfriendlyDeviceName(device, physdev)
@@ -4134,7 +4146,7 @@
  			p = Partition(mountpoint = self.getMountpoint(device), description = description, force_mounted = True, device = device)
  			self.partitions.append(p)
  			if p.mountpoint: # Plugins won't expect unmounted devices
-@@ -770,7 +858,7 @@
+@@ -767,7 +848,7 @@
  		try:
  			description = readFile("/sys" + phys + "/model")
  		except IOError, s:
@@ -4143,7 +4155,7 @@
  		# not wholedisk and not partition 1
  		if part and part != 1:
  			description += _(" (Partition %d)") % part
-@@ -811,7 +899,7 @@
+@@ -808,7 +889,7 @@
  			dev = self.hdd.disk_path.split('/')[-1]
  			open('/dev/nomount.%s' % dev, "wb").close()
  		except Exception, e:
@@ -4152,7 +4164,7 @@
  		self.setTool('umount')
  		self.args.append('-f')
  		for dev in self.hdd.enumMountDevices():
-@@ -819,7 +907,7 @@
+@@ -816,7 +897,7 @@
  			self.postconditions.append(Task.ReturncodePostcondition())
  			self.mountpoints.append(dev)
  		if not self.mountpoints:
@@ -4161,7 +4173,7 @@
  			self.cmd = 'true'
  			self.args = [self.cmd]
  	def afterRun(self):
-@@ -827,7 +915,7 @@
+@@ -824,7 +905,7 @@
  			try:
  				os.rmdir(path)
  			except Exception, ex:
@@ -4170,7 +4182,7 @@
  
  class MountTask(Task.LoggingTask):
  	def __init__(self, job, hdd):
-@@ -838,7 +926,7 @@
+@@ -835,7 +916,7 @@
  			dev = self.hdd.disk_path.split('/')[-1]
  			os.unlink('/dev/nomount.%s' % dev)
  		except Exception, e:
@@ -4179,7 +4191,7 @@
  		# try mounting through fstab first
  		if self.hdd.mount_device is None:
  			dev = self.hdd.partitionPath("1")
-@@ -867,7 +955,7 @@
+@@ -864,7 +945,7 @@
  	def prepare(self):
  		self.fsck_state = None
  	def processOutput(self, data):
@@ -5849,7 +5861,7 @@
  	config.av.vcrswitch = ConfigEnableDisable(default = False)
 --- enigma2.org/lib/python/Screens/ChannelSelection.py
 +++ enigma2/lib/python/Screens/ChannelSelection.py
-@@ -5,6 +5,11 @@
+@@ -6,6 +6,11 @@
  import Components.ParentalControl
  from Components.Button import Button
  from Components.ServiceList import ServiceList, refreshServiceList
@@ -5861,7 +5873,16 @@
  from Components.ActionMap import NumberActionMap, ActionMap, HelpableActionMap
  from Components.MenuList import MenuList
  from Components.ServiceEventTracker import ServiceEventTracker, InfoBarBase
-@@ -154,7 +159,7 @@
+@@ -122,7 +127,7 @@
+ 		self.csel = csel
+ 		self.bsel = None
+ 		if self.isProtected():
+-			self.onFirstExecBegin.append(boundFunction(self.session.openWithCallback, self.protectResult, PinInput, pinList=[x.value for x in config.ParentalControl.servicepin], triesEntry=config.ParentalControl.retries.servicepin, title=_("Please enter the correct pin code"), windowTitle=_("Enter pin code")))
++			self.onFirstExecBegin.append(boundFunction(self.session.openWithCallback, self.protectResult, PinInput, pinList=[x.value for x in config.ParentalControl.servicepin], triesEntry=config.ParentalControl.retries.servicepin, title=_("Please enter the correct PIN code"), windowTitle=_("Enter PIN code")))
+ 
+ 		self["actions"] = ActionMap(["OkCancelActions", "ColorActions", "NumberActions", "MenuActions"],
+ 			{
+@@ -155,7 +160,7 @@
  		self.parentalControl = parentalControl
  		self.parentalControlEnabled = config.ParentalControl.servicepin[0].value and config.ParentalControl.servicepinactive.value
  		if not (current_sel_path or current_sel_flags & (eServiceReference.isDirectory|eServiceReference.isMarker)) or current_sel_flags & eServiceReference.isGroup:
@@ -5870,7 +5891,7 @@
  		if csel.bouquet_mark_edit == OFF and not csel.entry_marked:
  			if not inBouquetRootList:
  				isPlayable = not (current_sel_flags & (eServiceReference.isMarker|eServiceReference.isDirectory))
-@@ -162,17 +167,17 @@
+@@ -163,17 +168,17 @@
  					for p in plugins.getPlugins(PluginDescriptor.WHERE_CHANNEL_CONTEXT_MENU):
  						append_when_current_valid(current, menu, (p.name, boundFunction(self.runPlugin, p)), key="bullet")
  					if config.servicelist.startupservice.value == current.toString():
@@ -5893,7 +5914,7 @@
  						if self.parentalControl.blacklist and config.ParentalControl.hideBlacklist.value and not self.parentalControl.sessionPinCached and config.ParentalControl.storeservicepin.value != "never":
  							append_when_current_valid(current, menu, (_("Unhide parental control services"), self.unhideParentalServices), level=0, key="1")
  					if SystemInfo["3DMode"] and fileExists("/usr/lib/enigma2/python/Plugins/SystemPlugins/OSD3DSetup/plugin.pyo"):
-@@ -199,91 +204,91 @@
+@@ -200,93 +205,93 @@
  						else:
  							bouquetCnt = len(bouquets)
  						if not self.inBouquet or bouquetCnt > 1:
@@ -5950,6 +5971,8 @@
 +					append_when_current_valid(current, menu, (_("Remove new found flag"), self.removeNewFoundFlag), level=0)
  			else:
  					if self.parentalControlEnabled:
+ 						if self.parentalControl.blacklist and config.ParentalControl.hideBlacklist.value and not self.parentalControl.sessionPinCached and config.ParentalControl.storeservicepin.value != "never":
+ 							append_when_current_valid(current, menu, (_("Unhide parental control services"), self.unhideParentalServices), level=0, key="1")
  						if self.parentalControl.getProtectionLevel(current.toCompareString()) == -1:
 -							append_when_current_valid(current, menu, (_("add bouquet to parental protection"), boundFunction(self.addParentalProtection, current)), level=0)
 +							append_when_current_valid(current, menu, (_("Add bouquet to parental protection"), boundFunction(self.addParentalProtection, current)), level=0)
@@ -6023,7 +6046,52 @@
  
  		menu.append(ChoiceEntryComponent("menu", (_("Configuration..."), self.openSetup)))
  		self["menu"] = ChoiceList(menu)
-@@ -854,6 +859,9 @@
+@@ -333,8 +338,8 @@
+ 		if answer:
+ 			self.csel.protectContextMenu = False
+ 		elif answer is not None:
+-			self.session.openWithCallback(self.close, MessageBox, _("The pin code you entered is wrong."), MessageBox.TYPE_ERROR)
+-		else:
++			self.session.openWithCallback(self.close, MessageBox, _("The PIN code you entered is wrong."), MessageBox.TYPE_ERROR)
++		else:P
+ 			self.close()
+ 
+ 	def addServiceToBouquetOrAlternative(self):
+@@ -475,7 +480,7 @@
+ 		self.close()
+ 
+ 	def removeParentalProtection(self, service):
+-		self.session.openWithCallback(boundFunction(self.pinEntered, service.toCompareString()), PinInput, pinList=[config.ParentalControl.servicepin[0].value], triesEntry=config.ParentalControl.retries.servicepin, title=_("Enter the service pin"), windowTitle=_("Enter pin code"))
++		self.session.openWithCallback(boundFunction(self.pinEntered, service.toCompareString()), PinInput, pinList=[config.ParentalControl.servicepin[0].value], triesEntry=config.ParentalControl.retries.servicepin, title=_("Enter the service PIN"), windowTitle=_("Enter PIN code"))
+ 
+ 	def pinEntered(self, service, answer):
+ 		if answer:
+@@ -484,13 +489,13 @@
+ 				self.csel.servicelist.resetRoot()
+ 			self.close()
+ 		elif answer is not None:
+-			self.session.openWithCallback(self.close, MessageBox, _("The pin code you entered is wrong."), MessageBox.TYPE_ERROR)
++			self.session.openWithCallback(self.close, MessageBox, _("The PIN code you entered is wrong."), MessageBox.TYPE_ERROR)
+ 		else:
+ 			self.close()
+ 
+ 	def unhideParentalServices(self):
+ 		if self.csel.protectContextMenu:
+-			self.session.openWithCallback(self.unhideParentalServicesCallback, PinInput, pinList=[config.ParentalControl.servicepin[0].value], triesEntry=config.ParentalControl.retries.servicepin, title=_("Enter the service pin"), windowTitle=_("Enter pin code"))
++			self.session.openWithCallback(self.unhideParentalServicesCallback, PinInput, pinList=[config.ParentalControl.servicepin[0].value], triesEntry=config.ParentalControl.retries.servicepin, title=_("Enter the service PIN"), windowTitle=_("Enter PIN code"))
+ 		else:
+ 			self.unhideParentalServicesCallback(True)
+ 
+@@ -503,7 +508,7 @@
+ 			self.csel.servicelist.setCurrent(service)
+ 			self.close()
+ 		elif answer is not None:
+-			self.session.openWithCallback(self.close, MessageBox, _("The pin code you entered is wrong."), MessageBox.TYPE_ERROR)
++			self.session.openWithCallback(self.close, MessageBox, _("The PIN code you entered is wrong."), MessageBox.TYPE_ERROR)
+ 		else:
+ 			self.close()
+ 
+@@ -857,6 +862,9 @@
  		self.saved_title = None
  		self.saved_root = None
  		self.current_ref = None
@@ -6033,7 +6101,7 @@
  		self.editMode = False
  		self.confirmRemove = True
  
-@@ -954,7 +962,7 @@
+@@ -957,7 +965,7 @@
  				if mutableAlternatives:
  					mutableAlternatives.setListName(name)
  					if mutableAlternatives.addService(cur_service.ref):
@@ -6042,7 +6110,7 @@
  					mutableAlternatives.flushChanges()
  					self.servicelist.addService(new_ref.ref, True)
  					self.servicelist.removeCurrent()
-@@ -965,7 +973,7 @@
+@@ -968,7 +976,7 @@
  					if self.startServiceRef and cur_service.ref == self.startServiceRef:
  						self.startServiceRef = new_ref.ref
  				else:
@@ -6051,7 +6119,7 @@
  			else:
  				print "add", str, "to", cur_root.getServiceName(), "failed"
  		else:
-@@ -989,10 +997,10 @@
+@@ -992,10 +1000,10 @@
  					if services is not None:
  						for service in services:
  							if mutableBouquet.addService(service):
@@ -6064,7 +6132,7 @@
  				# do some voodoo to check if current_root is equal to bouquet_root
  				cur_root = self.getRoot()
  				str1 = cur_root and cur_root.toString()
-@@ -1002,9 +1010,9 @@
+@@ -1005,9 +1013,9 @@
  					self.servicelist.addService(new_bouquet_ref)
  					self.servicelist.resetRoot()
  			else:
@@ -6077,7 +6145,7 @@
  
  	def copyCurrentToBouquetList(self):
  		provider = ServiceReference(self.getCurrentSelection())
-@@ -1030,11 +1038,11 @@
+@@ -1033,11 +1041,11 @@
  					if self.startServiceRef and cur_service.ref == self.startServiceRef:
  						self.startServiceRef = first_in_alternative
  				else:
@@ -6094,7 +6162,7 @@
  		self.removeBouquet()
  		if not end:
  			self.servicelist.moveUp()
-@@ -1116,6 +1124,9 @@
+@@ -1119,6 +1127,9 @@
  			else:
  				new_title += ' ' + _("[favourite edit]")
  		self.setTitle(new_title)
@@ -6104,7 +6172,7 @@
  		self.__marked = self.servicelist.getRootServices()
  		for x in self.__marked:
  			self.servicelist.addMarked(eServiceReference(x))
-@@ -1143,6 +1154,9 @@
+@@ -1146,6 +1157,9 @@
  		self.bouquet_mark_edit = OFF
  		self.mutableList = None
  		self.setTitle(self.saved_title)
@@ -6114,7 +6182,7 @@
  		self.saved_title = None
  		# self.servicePath is just a reference to servicePathTv or Radio...
  		# so we never ever do use the asignment operator in self.servicePath
-@@ -1219,6 +1233,9 @@
+@@ -1222,6 +1236,9 @@
  			self.mutableList.flushChanges() # FIXME add check if changes was made
  			self.mutableList = None
  			self.setTitle(self.saved_title)
@@ -6124,7 +6192,7 @@
  			self.saved_title = None
  			self.servicelist.resetRoot()
  			self.servicelist.l.setHideNumberMarker(config.usage.hide_number_markers.value)
-@@ -1230,6 +1247,9 @@
+@@ -1233,6 +1250,9 @@
  			self.saved_title = self.getTitle()
  			pos = self.saved_title.find(')')
  			self.setTitle(self.saved_title[:pos+1] + ' ' + _("[move mode]") + self.saved_title[pos+1:])
@@ -6134,7 +6202,7 @@
  			self.servicelist.l.setHideNumberMarker(False)
  			self.setCurrentSelection(self.servicelist.getCurrent())
  		self["Service"].editmode = True
-@@ -1285,6 +1305,11 @@
+@@ -1288,6 +1308,11 @@
  
  		self["list"] = ServiceList(self)
  		self.servicelist = self["list"]
@@ -6146,7 +6214,7 @@
  
  		self.numericalTextInput = NumericalTextInput(handleTimeout=False)
  		self.numericalTextInput.setUseableChars(u'1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ')
-@@ -1378,6 +1403,9 @@
+@@ -1381,6 +1406,9 @@
  			title = title[:pos]
  		title += _(" (TV)")
  		self.setTitle(title)
@@ -6156,7 +6224,7 @@
  
  	def setRadioMode(self):
  		self.mode = MODE_RADIO
-@@ -1389,6 +1417,9 @@
+@@ -1392,6 +1420,9 @@
  			title = title[:pos]
  		title += _(" (Radio)")
  		self.setTitle(title)
@@ -6166,7 +6234,7 @@
  
  	def setRoot(self, root, justSet=False):
  		if self.startRoot is None:
-@@ -1443,6 +1474,9 @@
+@@ -1446,6 +1477,9 @@
  					end_ref = None
  				nameStr = self.getServiceName(base_ref)
  				titleStr += ' - ' + nameStr
@@ -6176,7 +6244,7 @@
  				if end_ref is not None:
  					if Len > 2:
  						titleStr += '/../'
-@@ -1450,7 +1484,13 @@
+@@ -1453,7 +1487,13 @@
  						titleStr += '/'
  					nameStr = self.getServiceName(end_ref)
  					titleStr += nameStr
@@ -6209,7 +6277,7 @@
  
  from enigma import eTimer, eServiceCenter, eDVBServicePMTHandler, iServiceInformation, iPlayableService, eServiceReference, eEPGCache, eActionMap, getDesktop, eDVBDB
  
-@@ -105,7 +106,7 @@
+@@ -106,7 +107,7 @@
  	global resumePointCache, resumePointCacheLast
  	import cPickle
  	try:
@@ -6218,7 +6286,7 @@
  		cPickle.dump(resumePointCache, f, cPickle.HIGHEST_PROTOCOL)
  	except Exception, ex:
  		print "[InfoBar] Failed to write resumepoints:", ex
-@@ -114,7 +115,7 @@
+@@ -115,7 +116,7 @@
  def loadResumePoints():
  	import cPickle
  	try:
@@ -6227,7 +6295,7 @@
  	except Exception, ex:
  		print "[InfoBar] Failed to load resumepoints:", ex
  		return {}
-@@ -232,6 +233,7 @@
+@@ -226,6 +227,7 @@
  	STATE_HIDING = 1
  	STATE_SHOWING = 2
  	STATE_SHOWN = 3
@@ -6235,7 +6303,7 @@
  	FLAG_CENTER_DVB_SUBS = 2048
  
  	def __init__(self):
-@@ -374,6 +376,12 @@
+@@ -368,6 +370,12 @@
  		else:
  			self.toggleShow()
  
@@ -6248,7 +6316,7 @@
  	def toggleShow(self):
  		if self.__state == self.STATE_HIDDEN:
  			self.showFirstInfoBar()
-@@ -388,7 +396,9 @@
+@@ -382,7 +390,9 @@
  			self.show()
  			self.actualSecondInfoBarScreen.show()
  			self.startHideTimer()
@@ -6259,7 +6327,7 @@
  			self.hide()
  			self.hideTimer.stop()
  
-@@ -684,6 +694,20 @@
+@@ -678,6 +688,20 @@
  				"historyNext": (self.historyNext, _("Switch to next channel in history")),
  				"keyChannelUp": (self.keyChannelUpCheck, self.getKeyChannelUpHelptext),
  				"keyChannelDown": (self.keyChannelDownCheck, self.getKeyChannelDownHelptext),
@@ -6280,7 +6348,7 @@
  			})
  
  	def showTvChannelList(self, zap=False):
-@@ -848,6 +872,36 @@
+@@ -842,6 +866,36 @@
  			self.servicelist.moveUp()
  		self.servicelist.zap(enable_pipzap = True)
  
@@ -6317,7 +6385,7 @@
  	def zapDown(self):
  		if self.servicelist.inBouquet():
  			prev = self.servicelist.getCurrentSelection()
-@@ -882,7 +936,7 @@
+@@ -876,7 +930,7 @@
  	def __init__(self):
  		self["MenuActions"] = HelpableActionMap(self, "InfobarMenuActions",
  			{
@@ -6326,7 +6394,7 @@
  			})
  		self.session.infobar = None
  
-@@ -997,7 +1051,7 @@
+@@ -991,7 +1045,7 @@
  
  		self["EPGActions"] = HelpableActionMap(self, "InfobarEPGActions",
  			{
@@ -6335,7 +6403,7 @@
  				"showEventInfoSingleEPG": (self.showSingleEPG, _("Show single service EPG")),
  				"showEventInfoMultiEPG": (self.showMultiEPG, _("Show multi channel EPG")),
  				"showInfobarOrEpgWhenInfobarAlreadyVisible": self.showEventInfoWhenNotVisible,
-@@ -1008,7 +1062,7 @@
+@@ -1002,7 +1056,7 @@
  				if 'selectedevent' not in p.__call__.func_code.co_varnames] or []
  		from Components.ServiceEventTracker import InfoBarCount
  		if getAll or InfoBarCount == 1:
@@ -6344,7 +6412,7 @@
  		pluginlist.append((_("Multi EPG"), self.openMultiServiceEPG, "multi_epg"))
  		pluginlist.append((_("Current event EPG"), self.openEventView, "event_epg"))
  		return pluginlist
-@@ -1162,7 +1216,7 @@
+@@ -1156,7 +1210,7 @@
  	def showEventInfoPlugins(self):
  		pluginlist = self.getEPGPluginList()
  		if pluginlist:
@@ -6353,7 +6421,7 @@
  		else:
  			self.openSingleServiceEPG()
  
-@@ -1235,7 +1289,7 @@
+@@ -1229,7 +1283,7 @@
  				self.eventView = self.session.openWithCallback(self.closed, EventViewEPGSelect, epglist[0], ServiceReference(ref), self.eventViewCallback, self.openSingleServiceEPG, self.openMultiServiceEPG, self.openSimilarList)
  				self.dlg_stack.append(self.eventView)
  		if not epglist:
@@ -6362,7 +6430,7 @@
  			self.openMultiServiceEPG(False)
  
  	def eventViewCallback(self, setEvent, setService, val): #used for now/next displaying
-@@ -2138,7 +2192,7 @@
+@@ -2132,7 +2186,7 @@
  		self.addExtension((lambda: _("Import channels from fallback tuner"), self.importChannels, lambda: config.usage.remote_fallback_extension_menu.value and config.usage.remote_fallback_import.value))
  		self["InstantExtensionsActions"] = HelpableActionMap(self, "InfobarExtensions",
  			{
@@ -6371,7 +6439,7 @@
  			}, 1) # lower priority
  
  	def openSoftcamSetup(self):
-@@ -2168,7 +2222,7 @@
+@@ -2162,7 +2216,7 @@
  
  	def updateExtensions(self):
  		self.extensionsList = []
@@ -6380,16 +6448,16 @@
  		self.extensionKeys = {}
  		for x in self.list:
  			if x[0] == self.EXTENSION_SINGLE:
-@@ -2196,7 +2250,7 @@
+@@ -2189,7 +2243,7 @@
+ 				else:
  					extensionsList.remove(extension)
  		list.extend([(x[0](), x) for x in extensionsList])
- 		keys += [""] * len(extensionsList)
 -		self.session.openWithCallback(self.extensionCallback, ChoiceBox, title=_("Please choose an extension..."), list=list, keys=keys, skin_name="ExtensionsList", reorderConfig="extension_order", windowTitle=_("Extensions menu"))
-+		self.session.openWithCallback(self.extensionCallback, ChoiceBox, title=_("Please select an extension"), list=list, keys=keys, skin_name="ExtensionsList", reorderConfig="extension_order", windowTitle=_("Extensions menu")) 
++		self.session.openWithCallback(self.extensionCallback, ChoiceBox, title=_("Please select an extension..."), list=list, keys=keys, skin_name="ExtensionsList", reorderConfig="extension_order", windowTitle=_("Extensions menu"))
  
  	def extensionCallback(self, answer):
  		if answer is not None:
-@@ -2399,11 +2453,11 @@
+@@ -2392,11 +2446,11 @@
  
  class InfoBarInstantRecord:
  	"""Instant Record - handles the instantRecord action in order to
@@ -6403,7 +6471,7 @@
  			})
  		self.SelectedInstantServiceRef = None
  		if isStandardInfoBar(self):
-@@ -2486,7 +2540,7 @@
+@@ -2479,7 +2533,7 @@
  	def startInstantRecording(self, limitEvent = False):
  		begin = int(time())
  		end = begin + 3600      # dummy
@@ -6412,7 +6480,7 @@
  		info = { }
  
  		self.getProgramInfoAndEvent(info, name)
-@@ -2715,7 +2769,7 @@
+@@ -2708,7 +2762,7 @@
  	def __init__(self):
  		self["AudioSelectionAction"] = HelpableActionMap(self, "InfobarAudioSelectionActions",
  			{
@@ -6421,7 +6489,7 @@
  			})
  
  	def audioSelection(self):
-@@ -2729,7 +2783,7 @@
+@@ -2722,7 +2776,7 @@
  	def __init__(self):
  		self["SubserviceSelectionAction"] = HelpableActionMap(self, "InfobarSubserviceSelectionActions",
  			{
@@ -6430,35 +6498,6 @@
  			})
  
  		self["SubserviceQuickzapAction"] = HelpableActionMap(self, "InfobarSubserviceQuickzapActions",
-@@ -2813,18 +2867,18 @@
- 				idx += 1
- 
- 			if cnt_parent and self.bouquets and len(self.bouquets):
--				keys = ["red", "blue", "", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" ] + [""] * n
-+				keys = ["red", "blue", "yellow", "",  "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" ] + [""] * n
- 				if config.usage.multibouquet.value:
--					tlist = [(_("Quick zap"), "quickzap", service.subServices()), (_("Add to bouquet"), "CALLFUNC", self.addSubserviceToBouquetCallback), ("--", "")] + tlist
-+					tlist = [(_("Quick zap"), "quickzap", service.subServices()), (_("Add to bouquet"), "CALLFUNC", self.addSubserviceToBouquetCallback), ("Exit", "exit"), ("--", "")] + tlist
- 				else:
--					tlist = [(_("Quick zap"), "quickzap", service.subServices()), (_("Add to favourites"), "CALLFUNC", self.addSubserviceToBouquetCallback), ("--", "")] + tlist
--				selection += 3
--			else:
--				tlist = [(_("Quick zap"), "quickzap", service.subServices()), ("--", "")] + tlist
--				keys = ["red", "", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" ] + [""] * n
--				selection += 2
--
--			self.session.openWithCallback(self.subserviceSelected, ChoiceBox, title=_("Please select a sub service..."), list = tlist, selection = selection, keys = keys, skin_name = "SubserviceSelection")
-+					tlist = [(_("Quick zap"), "quickzap", service.subServices()), (_("Add to favourites"), "CALLFUNC", self.addSubserviceToBouquetCallback), ("Exit", "exit"), ("--", "")] + tlist
-+				selection += 4
-+			else:
-+				tlist = [(_("Quick zap"), "quickzap", service.subServices()), ("Exit", "exit"), ("--", "")] + tlist
-+				keys = ["red", "yellow", "",  "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" ] + [""] * n
-+ 				selection += 3
-+
-+			self.session.openWithCallback(self.subserviceSelected, ChoiceBox, title=_("Please select a sub service"), list = tlist, selection = selection, keys = keys, skin_name = "SubserviceSelection")
- 
- 	def subserviceSelected(self, service):
- 		del self.bouquets
 --- enigma2.org/lib/python/Screens/InfoBar.py
 +++ enigma2/lib/python/Screens/InfoBar.py
 @@ -9,6 +9,9 @@
@@ -7786,7 +7825,7 @@
  	def __init__(self, session):
 --- enigma2.org/data/rc_models/rc_models.cfg
 +++ enigma2/data/rc_models/rc_models.cfg
-@@ -19,113 +19,17 @@
+@@ -19,115 +19,17 @@
  #
  # When no entry matches at all, 'default' will be used as remoteName
  #
@@ -7800,6 +7839,7 @@
 -osmega osmini
 -osmini osmini
 -osminiplus osmini
+-osmio4k edision4
 -osnino edision1
 -osninoplus edision2
 -osninopro edision3
@@ -7847,6 +7887,7 @@
 -# Vu+
 -vuduo2   vuduo2
 -vuduo    vu
+-vuduo4k  vu2
 -vusolo2  vu
 -vusolo   vu
 -vusolose vu
@@ -7891,13 +7932,13 @@
 -et10000.6   dmmadv
 -# Zgemma
 -i55 i55
--i55plus h9
+-i55plus zgemma
 -h3 zgemma
 -h4 zgemma
 -h5 zgemma
 -h6 zgemma
 -h7 zgemma
--h9 h9
+-h9 zgemma
 -lc sh1
 -sh1 sh1
 +hdbox       fs9000
@@ -7922,13 +7963,13 @@
 -	dmmadv.png amiko.png amiko1.png edision1.png et4x00.png et8000.png et9x00.png vu.png xp1000.png \
 -	dmm.png et6x00.png et9500.png vuduo2.png vuultimo.png vu2.png et7x00.png formuler1.png \
 -	hd2400.png hd-gen.png vs1x00.png wetekplay.png osmini.png zgemma.png miraclebox.png miraclebox2.png \
--	spycat.png xpeedlx.png revo4k.png sab.png sh1.png i55.png qviart.png h9.png gb7252.png e4hd.png \
--	edision2.png edision3.png hd60.png \
+-	spycat.png xpeedlx.png revo4k.png sab.png sh1.png i55.png qviart.png gb7252.png e4hd.png \
+-	edision2.png edision3.png edision4.png hd60.png \
 -	dmmadv.xml edision1.xml et4x00.xml et8000.xml et9x00.xml vuultimo.xml xp1000.xml dmm.xml amiko.xml \
 -	amiko1.xml et6x00.xml et9500.xml et7x00.xml vuduo2.xml vu.xml vu2.xml formuler1.xml hd2400.xml hd-gen.xml \
 -	vs1x00.xml xsarius.xml xsarius.png wetekplay.xml osmini.xml zgemma.xml miraclebox.xml miraclebox2.xml \
 -	spycat.xml xpeedlx.xml et7000mini.png et7000mini.xml revo4k.xml sab.xml sh1.xml i55.xml qviart.xml \
--	h9.xml gb7252.xml e4hd.xml edision2.xml edision3.xml hd60.xml
+-	gb7252.xml e4hd.xml edision2.xml edision3.xml edision4.xml hd60.xml
 +	dmmadv.png \
 +	fs9000.png  hs7110.png  hs9510.png  spark.png tf7700.png ufs912.png \
 +	dmm.png \

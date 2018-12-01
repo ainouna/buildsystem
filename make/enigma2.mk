@@ -1,20 +1,11 @@
 #
 # enigma2
 #
-#ENIGMA2_DEPS  = $(D)/bootstrap $(D)/opkg $(D)/ncurses $(LIRC) $(D)/libcurl $(D)/libid3tag $(D)/libmad
-#ENIGMA2_DEPS += $(D)/libpng $(D)/libjpeg $(D)/giflib $(D)/freetype
-#ENIGMA2_DEPS += $(D)/alsa_utils $(D)/ffmpeg
-#ENIGMA2_DEPS += $(D)/libfribidi $(D)/expat $(D)/libdvbsi $(D)/libusb
-#ENIGMA2_DEPS += $(D)/sdparm $(D)/minidlna $(D)/ethtool
-#ENIGMA2_DEPS += python-all
-#ENIGMA2_DEPS += $(D)/libdreamdvd $(D)/enigma2_tuxtxt32bpp $(D)/enigma2_hotplug_e2_helper $(D)/parted
-#ENIGMA2_DEPS += $(LOCAL_ENIGMA2_DEPS)
-
 ENIGMA2_DEPS  = $(D)/bootstrap $(D)/opkg $(D)/ncurses $(LIRC) $(D)/libcurl $(D)/libmad
 ENIGMA2_DEPS += $(D)/libpng $(D)/libjpeg $(D)/giflib $(D)/freetype $(D)/libfribidi $(D)/libglib2 $(D)/libdvbsi $(D)/libxml2
-ENIGMA2_DEPS += $(D)/openssl $(D)/enigma2_tuxtxt32bpp $(D)/enigma2_hotplug_e2_helper $(D)/parted
+ENIGMA2_DEPS += $(D)/openssl $(D)/enigma2_tuxtxt32bpp $(D)/enigma2_hotplug_e2_helper $(D)/parted $(D)/avahi
 ENIGMA2_DEPS += python-all $(D)/alsa_utils
-#following seems to be needed for diff 3 and higher
+#following seems to be needed for diff 4 and higher
 ENIGMA2_DEPS += $(D)/libid3tag
 ENIGMA2_DEPS += $(D)/expat $(D)/libusb
 ENIGMA2_DEPS += $(D)/sdparm $(D)/minidlna $(D)/ethtool
@@ -29,11 +20,7 @@ ENIGMA2_DEPS += $(D)/busybox_usb
 E_CONFIG_OPTS += --enable-run_from_usb
 endif
 
-ifeq ($(E2_DIFF), $(filter $(E2_DIFF), 0 2 3 4))
-ENIGMA2_DEPS  += $(D)/avahi
-endif
-
-ifeq ($(E2_DIFF), $(filter $(E2_DIFF), 0 2))
+ifeq ($(E2_DIFF), $(filter $(E2_DIFF), 0 2 3))
 ENIGMA2_DEPS  += $(D)/libsigc
 else
 ENIGMA2_DEPS  += $(D)/libsigc_e2 
@@ -104,7 +91,7 @@ E_CONFIG_OPTS +=$(LOCAL_ENIGMA2_BUILD_OPTIONS)
 E_CPPFLAGS    = -I$(DRIVER_DIR)/include
 E_CPPFLAGS   += -I$(TARGET_DIR)/usr/include
 E_CPPFLAGS   += -I$(KERNEL_DIR)/include
-ifeq ($(E2_DIFF), $(filter $(E2_DIFF), 3 4 5))
+ifeq ($(E2_DIFF), $(filter $(E2_DIFF), 4 5))
 E_CPPFLAGS   += -I$(APPS_DIR)/tools/libeplayer3/include
 E_CPPFLAGS   += -I$(APPS_DIR)/tools
 endif
@@ -216,7 +203,6 @@ HEAD=master
 REVISION_HD=8c9e43bd5b5fbec2d0e0e86d8e9d69a94f139054
 REPO_0=$(REPO_PLIHD)
 FW=$(MEDIAFW)
-DIFF=$(E2_DIFF)
 $(D)/enigma2: $(D)/enigma2.do_prepare $(D)/enigma2.do_compile
 	$(MAKE) -C $(SOURCE_DIR)/enigma2 install DESTDIR=$(TARGET_DIR)
 	@echo -n "Stripping..."
