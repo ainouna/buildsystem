@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20181123.1
+# Version 20181201.1
 
 ##############################################
 
@@ -18,12 +18,12 @@ if [ "$1" == -h ] || [ "$1" == --help ]; then
 	echo
 	echo "-v or --verbose : verbose build (very noisy!)"
 	echo "-q or --quiet   : quiet build, fastest, almost silent"
-	echo "Parameter 1     : target system (1-37)"
+	echo "Parameter 1     : target system (1-36)"
 	echo "Parameter 2     : kernel (1-2)"
 	echo "Parameter 3     : optimization (1-5)"
 	echo "Parameter 4     : image (Enigma=1/2 Neutrino=3/4 Tvheadend=5 (1-5)"
 	echo "Parameter 5     : Neutrino variant (1-6) or Enigma2/Tvheadend diff (0-5)"
-	echo "Parameter 6     : media Framework (Enigma2: 1-4, Neutrino: 1-2, Tvheadend: ignored)"
+	echo "Parameter 6     : media Framework (Enigma2: 1-4, Neutrino, Tvheadend: ignored)"
 	echo "Parameter 7     : destination (1-2, 1=flash, 2=USB, Fortis HS711X, HS742X & HS781X, ignored otherwise)"
 	exit
 fi
@@ -284,6 +284,21 @@ case "$IMAGE" in
 		echo "PLUGINS_NEUTRINO=$PLUGINS_NEUTRINO" >> config
 		MEDIAFW="buildinplayer"
 
+		case "$FLAVOUR" in
+			neutrino-mp*)
+				if [ $PLUGINS_NEUTRINO == "No" ]; then
+					echo "make neutrino-mp" > $CURDIR/build
+				else
+					echo "make neutrino-mp-plugins" > $CURDIR/build
+				fi;;
+			neutrino-hd2*)
+				if [ $PLUGINS_NEUTRINO == "No" ]; then
+					echo "  make neutrino-hd2" > $CURDIR/build
+				else
+					echo "  make neutrino-hd2-plugins" > $CURDIR/build
+				fi;;
+		esac
+
 		if [ "$LASTIMAGE1" ] || [ "$LASTIMAGE3" ] || [ ! "$LASTBOX" == "$BOXTYPE" ]; then
 			if [ -e ./.deps/ ]; then
 				echo -n -e "\nSettings changed, performing distclean..."
@@ -384,11 +399,6 @@ case "$IMAGE" in
 		esac
 		echo "E2_DIFF=$DIFF" >> config
 		echo "E2_REVISION=$REVISION" >> config
-
-		if [ $DIFF == 0 -o $DIFF == 2 ] && [ ! "$MEDIAFW" == "eplayer3" ]; then
-			MEDIAFW="eplayer3"
-			echo "NOTE: Media framework has been set to eplayer3 (DIFF = 0 or 2)."
-		fi
 
 		echo "make yaud-enigma2" > $CURDIR/build
 
