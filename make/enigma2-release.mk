@@ -726,6 +726,8 @@ endif
 #
 	$(SILENT)cp $(SKEL_ROOT)/root_enigma2/usr/share/fonts/* $(RELEASE_DIR)/usr/share/fonts/
 	$(SILENT)cp $(TARGET_DIR)/usr/local/share/fonts/* $(RELEASE_DIR)/usr/share/fonts/
+	$(SILENT)rm -f $(RELEASE_DIR)/usr/share/fonts/wqy-microhei.ttc
+	$(SILENT)rm -f $(RELEASE_DIR)/usr/share/fonts/fallback.font
 	$(SILENT)ln -s /usr/share/fonts $(RELEASE_DIR)/usr/local/share/fonts
 #
 # enigma2
