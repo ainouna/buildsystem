@@ -50,12 +50,12 @@
 +if test "$enable_gstreamer" = "yes"; then
 +	PKG_CHECK_MODULES(GSTREAMER, gstreamer-$GST_MAJORMINOR gstreamer-pbutils-$GST_MAJORMINOR)
 +	PKG_CHECK_MODULES(BASE, [freetype2 fribidi gstreamer-$GST_MAJORMINOR gstreamer-pbutils-$GST_MAJORMINOR libdvbsi++ libpng libxml-2.0 sigc++-2.0 libssl libcrypto])
-+	GSTREAMER_CFLAGSS=`$PKG_CONFIG --cflags-only-I gstreamer-app-$GST_MAJORMINOR gstreamer-pbutils-$GST_MAJORMINOR`
++#	GSTREAMER_CFLAGS=`$PKG_CONFIG --cflags-only-I gstreamer-app-$GST_MAJORMINOR gstreamer-pbutils-$GST_MAJORMINOR`
 +	GSTREAMER_LIBS=`$PKG_CONFIG --libs gstreamer-app-$GST_MAJORMINOR gstreamer-pbutils-$GST_MAJORMINOR`
 +else
 +	PKG_CHECK_MODULES(BASE, [freetype2 fribidi libdvbsi++ libpng libxml-2.0 sigc++-2.0 libssl libcrypto])
 +fi
-+AC_SUBST(GSTREAMER_CFLAGSS)
++#AC_SUBST(GSTREAMER_CFLAGS)
 +AC_SUBST(GSTREAMER_LIBS)
  
  AC_DEFINE([DEBUG])
@@ -98,7 +98,7 @@
  	AC_SUBST([PYTHON_SITE_PKG])
 --- enigma2-servicemp3/servicemp3/Makefile.am
 +++ enigma2-servicemp3/servicemp3/Makefile.am
-@@ -5,22 +5,64 @@
+@@ -5,22 +5,67 @@
  	@PYTHON_CPPFLAGS@ \
  	-include Python.h
  
@@ -156,7 +156,10 @@
 +
 +if ENABLE_MEDIAFWGSTREAMER
 +servicemp3_la_LDFLAGS += \
-+	@GSTREAMER_LIBS@
++	-lgstreamer-1.0 \
++	-lgstpbutils-1.0 \
++	-lglib-2.0 \
++	-lgobject-2.0
 +if ENABLE_LIBEPLAYER3
 +servicemp3_la_LDFLAGS += \
 +	-leplayer3

@@ -979,7 +979,7 @@ $(D)/%enigma2_release: enigma2_release_base enigma2_release_$(BOXTYPE)
 	$(TUXBOX_CUSTOMIZE)
 	$(TOUCH)
 #
-# FOR YOUR OWN CHANGES use these folder in cdk/own_build/enigma2
+# FOR YOUR OWN CHANGES use this folder in /own_build/enigma2
 #
 #	default for all receivers
 	@echo -n "Processing own_build..." ;
