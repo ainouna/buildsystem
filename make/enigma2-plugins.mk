@@ -200,9 +200,7 @@ endif
 
 ifeq ($(MEDIAFW), gstreamer)
 SERVICEMP3_DEPS    += $(D)/gstreamer $(D)/gst_plugins_base $(D)/gst_plugins_dvbmediasink
-ifeq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), normal kerneldebug))
 SERVICEMP3_DEPS    += $(D)/gst_plugins_good $(D)/gst_plugins_bad $(D)/gst_plugins_ugly
-endif
 SERVICEMP3_CONF    += --enable-mediafwgstreamer
 SERVICEMP3_CONF    += --with-gstversion=1.0
 endif
@@ -210,9 +208,7 @@ endif
 ifeq ($(MEDIAFW), gst-eplayer3)
 SERVICEMP3_DEPS    += $(D)/tools-libeplayer3
 SERVICEMP3_DEPS    += $(D)/gstreamer $(D)/gst_plugins_base $(D)/gst_plugins_dvbmediasink
-ifeq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), normal kerneldebug))
 SERVICEMP3_DEPS    += $(D)/gst_plugins_good $(D)/gst_plugins_bad $(D)/gst_plugins_ugly
-endif
 SERVICEMP3_CONF    += --enable-libeplayer3
 SERVICEMP3_CONF    += --enable-mediafwgstreamer
 SERVICEMP3_CONF    += --with-gstversion=1.0
