@@ -383,12 +383,13 @@ $(D)/util_linux: $(D)/bootstrap $(D)/zlib $(ARCHIVE)/$(UTIL_LINUX_SOURCE)
 		$(CONFIGURE) \
 			--prefix=/usr \
 			--mandir=/.remove \
-			--disable-static \
+			--disable-shared \
 			--disable-gtk-doc \
 			--disable-nls \
 			--disable-rpath \
-			--disable-libblkid \
+			--enable-libblkid \
 			--disable-libmount \
+			--enable-libsmartcols \
 			--disable-mount \
 			--disable-partx \
 			--disable-mountpoint \
@@ -429,7 +430,6 @@ $(D)/util_linux: $(D)/bootstrap $(D)/zlib $(ARCHIVE)/$(UTIL_LINUX_SOURCE)
 			--disable-pg \
 			--disable-setterm \
 			--disable-schedutils \
-			--disable-tunelp \
 			--disable-wall \
 			--disable-write \
 			--disable-bash-completion \
@@ -443,16 +443,17 @@ $(D)/util_linux: $(D)/bootstrap $(D)/zlib $(ARCHIVE)/$(UTIL_LINUX_SOURCE)
 			--without-tinfo \
 			--without-slang \
 			--without-utempter \
-			--disable-wall \
 			--without-python \
 			--disable-makeinstall-chown \
 			--without-systemdsystemunitdir \
 		; \
 		$(MAKE); \
+		$(MAKE) sfdisk; \
 		install -D -m 755 sfdisk $(TARGET_DIR)/sbin/sfdisk; \
 		install -D -m 755 mkfs $(TARGET_DIR)/sbin/mkfs
 	$(REMOVE)/util-linux-$(UTIL_LINUX_VER)
 	$(TOUCH)
+#			--disable-tunelp
 
 #
 # dosfstools
