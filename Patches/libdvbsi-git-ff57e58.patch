@@ -28,7 +28,7 @@
  	}
 --- a/include/dvbsi++/network_information_section.h
 +++ b/include/dvbsi++/network_information_section.h
-@@ -37,6 +37,7 @@ typedef TransportStreamInfoList::const_iterator TransportStreamInfoConstIterator
+@@ -37,6 +37,7 @@
  class NetworkInformationSection : public LongCrcSection, public DescriptorContainer
  {
  	protected:
@@ -36,7 +36,7 @@
  		unsigned networkDescriptorsLength		: 12;
  		unsigned transportStreamLoopLength		: 12;
  		TransportStreamInfoList tsInfo;
-@@ -49,6 +50,7 @@ class NetworkInformationSection : public LongCrcSection, public DescriptorContai
+@@ -49,6 +50,7 @@
  		static const enum TableId TID = TID_NIT_ACTUAL;
  		static const uint32_t TIMEOUT = 12000;
  
@@ -46,7 +46,7 @@
  
 --- a/src/network_information_section.cpp
 +++ b/src/network_information_section.cpp
-@@ -35,6 +35,7 @@ uint16_t TransportStreamInfo::getOriginalNetworkId(void) const
+@@ -35,6 +35,7 @@
  
  NetworkInformationSection::NetworkInformationSection(const uint8_t * const buffer) : LongCrcSection(buffer)
  {
@@ -54,7 +54,7 @@
  	networkDescriptorsLength = sectionLength > 9 ? DVB_LENGTH(&buffer[8]) : 0;
  	
  	uint16_t pos = 10;
-@@ -68,6 +69,11 @@ NetworkInformationSection::~NetworkInformationSection(void)
+@@ -68,6 +69,11 @@
  		delete *i;
  }
  
@@ -68,7 +68,7 @@
  	return &tsInfo;
 --- a/src/ac3_descriptor.cpp
 +++ b/src/ac3_descriptor.cpp
-@@ -31,6 +31,16 @@ Ac3Descriptor::Ac3Descriptor(const uint8_t * const buffer) : Descriptor(buffer)
+@@ -31,6 +31,16 @@
  	asvcFlag = (buffer[2] >> 4) & 0x01;
  
  	size_t headerLength = 1 + ac3TypeFlag + bsidFlag + mainidFlag + asvcFlag;
@@ -85,3 +85,15 @@
  	ASSERT_MIN_DLEN(headerLength);
  
  	size_t i = 3;
+--- a/src/descriptor.cpp
++++ b/src/descriptor.cpp
+@@ -17,6 +17,9 @@
+        descriptorTag = buffer[0];
+        descriptorLength = buffer[1];
+ 
++       if(!descriptorLength)
++               descriptorLength = 1;
++
+        dataBytes.resize(descriptorLength);
+        memcpy(&dataBytes[0], &buffer[2], descriptorLength);
+ 
