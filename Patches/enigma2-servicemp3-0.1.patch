@@ -1,6 +1,6 @@
 --- enigma2-servicemp3/configure.ac
 +++ enigma2-servicemp3/configure.ac
-@@ -10,11 +10,58 @@
+@@ -10,11 +10,52 @@
  AC_LANG(C++)
  
  PKG_CHECK_MODULES(ENIGMA2, enigma2)
@@ -43,20 +43,14 @@
 +	PKG_CHECK_MODULES([AVUTIL], [libavutil])
 +	PKG_CHECK_MODULES([SWSCALE], [libswscale])
 +	PKG_CHECK_MODULES([SWRESAMPLE], [libswresample])
-+	GSTREAMER_CFLAGS=
-+	GSTREAMER_LIBS=
 +fi
 +
 +if test "$enable_gstreamer" = "yes"; then
 +	PKG_CHECK_MODULES(GSTREAMER, gstreamer-$GST_MAJORMINOR gstreamer-pbutils-$GST_MAJORMINOR)
 +	PKG_CHECK_MODULES(BASE, [freetype2 fribidi gstreamer-$GST_MAJORMINOR gstreamer-pbutils-$GST_MAJORMINOR libdvbsi++ libpng libxml-2.0 sigc++-2.0 libssl libcrypto])
-+#	GSTREAMER_CFLAGS=`$PKG_CONFIG --cflags-only-I gstreamer-app-$GST_MAJORMINOR gstreamer-pbutils-$GST_MAJORMINOR`
-+	GSTREAMER_LIBS=`$PKG_CONFIG --libs gstreamer-app-$GST_MAJORMINOR gstreamer-pbutils-$GST_MAJORMINOR`
 +else
 +	PKG_CHECK_MODULES(BASE, [freetype2 fribidi libdvbsi++ libpng libxml-2.0 sigc++-2.0 libssl libcrypto])
 +fi
-+#AC_SUBST(GSTREAMER_CFLAGS)
-+AC_SUBST(GSTREAMER_LIBS)
  
  AC_DEFINE([DEBUG])
  
@@ -74,7 +68,7 @@
  			fi
  		fi
  		PYTHON_CPPFLAGS=$python_path
-@@ -234,7 +234,8 @@
+@@ -234,7 +234,8 @@Patches/enigma2-servicemp3-0.1.patch
  			  "from distutils.sysconfig import get_python_lib as f; \
  			  import os; \
  			  print (os.path.join(f(plat_specific=1, standard_lib=1), 'config'));"`
