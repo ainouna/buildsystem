@@ -83,6 +83,33 @@
  #include <aotom_main.h>
  #define DISPLAY_DEV "/dev/vfd"
  #include <zapit/zapit.h>
+@@ -747,8 +750,26 @@
+ 		close(fd);
+ 	}
+ }
++
++void CLCD::ClearIcons()
++{
++	struct aotom_ioctl_data d;
++	d.u.icon.icon_nr = 46;
++	d.u.icon.on = 0;
++	if (g_info.hw_caps->display_type == HW_DISPLAY_LINE_TEXT) {
++		int fd = dev_open();
++		if (fd < 0)
++			return;
++		if (ioctl(fd, VFDICONDISPLAYONOFF, &d) <0)
++			perror("[neutrino] CLCD::ClearIcons() VFDICONDISPLAYONOFF");
++		close(fd);
++	}
++}
+ #else
+ void CLCD::SetIcons(int, bool)
++{
++}
++void CLCD::ClearIcons()
+ {
+ }
+ #endif
 --- neutrino-mp-tangos.org/src/driver/simple_display.h
 +++ neutrino-mp-tangos/src/driver/simple_display.h
 @@ -212,6 +212,7 @@
