@@ -83,6 +83,16 @@
  #include <aotom_main.h>
  #define DISPLAY_DEV "/dev/vfd"
  #include <zapit/zapit.h>
+--- neutrino-mp-tangos.org/src/driver/simple_display.h
++++ neutrino-mp-tangos/src/driver/simple_display.h
+@@ -212,6 +212,7 @@
+ 		void Unlock();
+ 		void Clear();
+ 		void SetIcons(int icon, bool show);
++		void ClearIcons();
+ 		void UpdateIcons();
+ 		void ShowDiskLevel();
+ 		void Reset() {};
 --- neutrino-mp-tangos.org/src/driver/vfd.cpp
 +++ neutrino-mp-tangos/src/driver/vfd.cpp
 @@ -52,21 +52,30 @@
@@ -1027,7 +1037,7 @@
  
  #ifdef ENABLE_LCD4LINUX
  #include "gui/lcd4l_setup.h"
-@@ -228,13 +228,13 @@
+@@ -228,18 +228,18 @@
  	}
  #endif
  
@@ -1038,6 +1048,11 @@
 -	if (g_settings.lcd4l_support == 0)
 -#endif
 -#endif
+-	{
+-		vfds->addItem(GenericMenuSeparatorLine);
+-		vfds->addItem(new CMenuForwarder(LOCALE_GLCD_HEAD, true, NULL, &glcdMenu, NULL, CRCInput::RC_blue));
+-	}
+-#endif
 +//#ifdef ENABLE_GRAPHLCD
 +//	GLCD_Menu glcdMenu;
 +//#ifdef ENABLE_LCD4LINUX
@@ -1045,7 +1060,12 @@
 +//	if (g_settings.lcd4l_support == 0)
 +//#endif
 +//#endif
- 	{
- 		vfds->addItem(GenericMenuSeparatorLine);
- 		vfds->addItem(new CMenuForwarder(LOCALE_GLCD_HEAD, true, NULL, &glcdMenu, NULL, CRCInput::RC_blue));
++//	{
++//		vfds->addItem(GenericMenuSeparatorLine);
++//		vfds->addItem(new CMenuForwarder(LOCALE_GLCD_HEAD, true, NULL, &glcdMenu, NULL, CRCInput::RC_blue));
++//	}
++//#endif
+ 
+ 	int res = vfds->exec(NULL, "");
+ 
 
