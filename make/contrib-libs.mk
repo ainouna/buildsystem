@@ -2859,13 +2859,13 @@ LIBUDFREAD_PATCH =
 
 $(D)/libudfread: $(D)/bootstrap
 	$(START_BUILD)
-	$(REMOVE)/libudfread
+	$(REMOVE)/libudfread-$(LIBUDFREAD_VER)
 	$(SET) -e; if [ -d $(ARCHIVE)/libudfread.git ]; \
 		then cd $(ARCHIVE)/libudfread.git; git pull; \
 		else cd $(ARCHIVE); git clone $(LIBUDFREAD_URL) libudfread.git; \
 		fi
-	$(SILENT)cp -ra $(ARCHIVE)/libudfread.git $(BUILD_TMP)/libudfread
-	$(SET) -e; cd $(BUILD_TMP)/gnutls-$(LIBUDFREAD_VER); \
+	$(SILENT)cp -ra $(ARCHIVE)/libudfread.git $(BUILD_TMP)/libudfread-$(LIBUDFREAD_VER)
+	$(SET) -e; cd $(BUILD_TMP)/libudfread-$(LIBUDFREAD_VER); \
 		$(call apply_patches,$(LIBUDFREAD_PATCH)); \
 		$(CONFIGURE) \
 			--prefix=/usr \
@@ -2878,7 +2878,37 @@ $(D)/libudfread: $(D)/bootstrap
 	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libudfread.pc
 	$(REWRITE_LIBTOOL)/libudfread.la
 	$(REWRITE_LIBTOOLDEP)/libudfread.la
-#	rm -f $(addprefix $(TARGET_DIR)/usr/bin/,psktool gnutls-cli-debug certtool srptool ocsptool gnutls-serv gnutls-cli)
-#	$(REMOVE)/libudfread-$(LIBUDFREAD_VER)
+	rm -f $(addprefix $(TARGET_DIR)/usr/bin/,psktool gnutls-cli-debug certtool srptool ocsptool gnutls-serv gnutls-cli)
+	$(REMOVE)/libudfread-$(LIBUDFREAD_VER)
+	$(TOUCH)
+
+#
+# uchardet
+#
+UCHARDET_VER = 0.0.6
+UCHARDET_SOURCE = uchardet-$(UCHARDET_VER).tar.xz
+UCHARDET_PATCH =
+
+$(ARCHIVE)/$(UCHARDET_SOURCE):
+	$(WGET) https://www.freedesktop.org/software/uchardet/releases/$(UCHARDET_SOURCE)
+
+$(D)/uchardet: $(D)/bootstrap $(ARCHIVE)/$(UCHARDET_SOURCE)
+	$(START_BUILD)
+	$(REMOVE)/uchardet-$(UCHARDET_VER)
+	$(UNTAR)/$(UCHARDET_SOURCE)
+	$(SET) -e; cd $(BUILD_TMP)/uchardet-$(UCHARDET_VER); \
+		$(call apply_patches,$(UCHARDET_PATCH)); \
+		rm CMakeFiles/* -rf CMakeCache.txt cmake_install.cmake; \
+		cmake . -DCMAKE_BUILD_TYPE=Release \
+			-DCMAKE_SYSTEM_NAME="Linux" \
+			-DCMAKE_INSTALL_PREFIX="/usr" \
+			-DCMAKE_C_COMPILER="$(TARGET)-gcc" \
+			-DCMAKE_CXX_COMPILER="$(TARGET)-g++" \
+			-DCMAKE_INCLUDE_PATH="$(TARGET_DIR)/usr/include" \
+		; \
+		$(MAKE); \
+		$(MAKE) install DESTDIR=$(TARGET_DIR)
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/uchardet.pc
+	$(REMOVE)/uchardet-$(UCHARDET_VER)
 	$(TOUCH)
 
