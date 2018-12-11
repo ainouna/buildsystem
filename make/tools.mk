@@ -140,7 +140,7 @@ $(D)/tools-libeplayer3: $(D)/bootstrap $(D)/ffmpeg
 #
 LIBEPLAYER3_NEW_CPPFLAGS = -I$(APPS_DIR)/tools/libeplayer3_new/include
 
-$(D)/tools-libeplayer3_new: $(D)/bootstrap $(D)/ffmpeg
+$(D)/tools-libeplayer3_new: $(D)/bootstrap $(D)/ffmpeg3
 	$(START_BUILD)
 	$(SET) -e; cd $(APPS_DIR)/tools/libeplayer3_new; \
 		if [ ! -d m4 ]; then mkdir m4; fi; \
