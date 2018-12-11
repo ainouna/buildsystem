@@ -511,7 +511,7 @@
  	CONNECT(m_pump.recv_msg, eServiceMP3::gstPoll);
 +#endif
  	CONNECT(m_nownext_timer->timeout, eServiceMP3::updateEpgCacheNowNext);
- 	m_aspect = m_width = m_height = m_framerate = m_progressive = -1;
+ 	m_aspect = m_width = m_height = m_framerate = m_progressive = m_gamma = -1;
  
 @@ -470,20 +500,32 @@
  			size_t hpos_start = pos + 11;
@@ -1782,7 +1782,7 @@
  	return 0;
  }
  
-@@ -1280,117 +1784,181 @@
+@@ -1280,7 +1784,9 @@
  {
  	evt = nownext ? m_event_next : m_event_now;
  	if (!evt)
@@ -1792,275 +1792,7 @@
  	return 0;
  }
  
- int eServiceMP3::getInfo(int w)
- {
-+#if defined ENABLE_MEDIAFWGSTREAMER
- 	const gchar *tag = 0;
-+#endif
- 
- 	switch (w)
- 	{
--	case sServiceref: return m_ref;
--	case sVideoHeight: return m_height;
--	case sVideoWidth: return m_width;
--	case sFrameRate: return m_framerate;
--	case sProgressive: return m_progressive;
--	case sAspect: return m_aspect;
--	case sTagTitle:
--	case sTagArtist:
--	case sTagAlbum:
--	case sTagTitleSortname:
--	case sTagArtistSortname:
--	case sTagAlbumSortname:
--	case sTagDate:
--	case sTagComposer:
--	case sTagGenre:
--	case sTagComment:
--	case sTagExtendedComment:
--	case sTagLocation:
--	case sTagHomepage:
--	case sTagDescription:
--	case sTagVersion:
--	case sTagISRC:
--	case sTagOrganization:
--	case sTagCopyright:
--	case sTagCopyrightURI:
--	case sTagContact:
--	case sTagLicense:
--	case sTagLicenseURI:
--	case sTagCodec:
--	case sTagAudioCodec:
--	case sTagVideoCodec:
--	case sTagEncoder:
--	case sTagLanguageCode:
--	case sTagKeywords:
--	case sTagChannelMode:
--	case sUser+12:
--		return resIsString;
--	case sTagTrackGain:
--	case sTagTrackPeak:
--	case sTagAlbumGain:
--	case sTagAlbumPeak:
--	case sTagReferenceLevel:
--	case sTagBeatsPerMinute:
--	case sTagImage:
--	case sTagPreviewImage:
--	case sTagAttachment:
--		return resIsPyObject;
--	case sTagTrackNumber:
--		tag = GST_TAG_TRACK_NUMBER;
--		break;
--	case sTagTrackCount:
--		tag = GST_TAG_TRACK_COUNT;
--		break;
--	case sTagAlbumVolumeNumber:
--		tag = GST_TAG_ALBUM_VOLUME_NUMBER;
--		break;
--	case sTagAlbumVolumeCount:
--		tag = GST_TAG_ALBUM_VOLUME_COUNT;
--		break;
--	case sTagBitrate:
--		tag = GST_TAG_BITRATE;
--		break;
--	case sTagNominalBitrate:
--		tag = GST_TAG_NOMINAL_BITRATE;
--		break;
--	case sTagMinimumBitrate:
--		tag = GST_TAG_MINIMUM_BITRATE;
--		break;
--	case sTagMaximumBitrate:
--		tag = GST_TAG_MAXIMUM_BITRATE;
--		break;
--	case sTagSerial:
--		tag = GST_TAG_SERIAL;
--		break;
--	case sTagEncoderVersion:
--		tag = GST_TAG_ENCODER_VERSION;
--		break;
--	case sTagCRC:
--		tag = "has-crc";
--		break;
--	case sBuffer: return m_bufferInfo.bufferPercent;
--	case sVideoType:
--	{
--		if (!videoSink) return -1;
--		guint64 v = -1;
--		g_signal_emit_by_name(videoSink, "get-video-codec", &v);
--		return (int) v;
--		break;
--	}
--	case sSID: return m_ref.getData(1);
--	default:
--		return resNA;
--	}
--
-+		case sServiceref:
-+		{
-+			return m_ref;
-+		}
-+		case sVideoHeight:
-+		{
-+			return m_height;
-+		}
-+		case sVideoWidth:
-+		{
-+			return m_width;
-+		}
-+		case sFrameRate:
-+		{
-+			return m_framerate;
-+		}
-+		case sProgressive:
-+		{
-+			return m_progressive;
-+		}
-+		case sAspect:
-+		{
-+			return m_aspect;
-+		}
-+		case sTagTitle:
-+		case sTagArtist:
-+		case sTagAlbum:
-+		case sTagTitleSortname:
-+		case sTagArtistSortname:
-+		case sTagAlbumSortname:
-+		case sTagDate:
-+		case sTagComposer:
-+		case sTagGenre:
-+		case sTagComment:
-+		case sTagExtendedComment:
-+		case sTagLocation:
-+		case sTagHomepage:
-+		case sTagDescription:
-+		case sTagVersion:
-+		case sTagISRC:
-+		case sTagOrganization:
-+		case sTagCopyright:
-+		case sTagCopyrightURI:
-+		case sTagContact:
-+		case sTagLicense:
-+		case sTagLicenseURI:
-+		case sTagCodec:
-+		case sTagAudioCodec:
-+		case sTagVideoCodec:
-+		case sTagEncoder:
-+		case sTagLanguageCode:
-+		case sTagKeywords:
-+		case sTagChannelMode:
-+		case sUser+12:
-+		{
-+			return resIsString;
-+		}
-+		case sTagTrackGain:
-+		case sTagTrackPeak:
-+		case sTagAlbumGain:
-+		case sTagAlbumPeak:
-+		case sTagReferenceLevel:
-+		case sTagBeatsPerMinute:
-+		case sTagImage:
-+		case sTagPreviewImage:
-+		case sTagAttachment:
-+		{
-+			return resIsPyObject;
-+		}
-+#if defined ENABLE_MEDIAFWGSTREAMER
-+		case sTagTrackNumber:
-+		{
-+			tag = GST_TAG_TRACK_NUMBER;
-+			break;
-+		}
-+		case sTagTrackCount:
-+		{
-+			tag = GST_TAG_TRACK_COUNT;
-+			break;
-+		}
-+		case sTagAlbumVolumeNumber:
-+		{
-+			tag = GST_TAG_ALBUM_VOLUME_NUMBER;
-+			break;
-+		}
-+		case sTagAlbumVolumeCount:
-+		{
-+			tag = GST_TAG_ALBUM_VOLUME_COUNT;
-+			break;
-+		}
-+		case sTagBitrate:
-+		{
-+			tag = GST_TAG_BITRATE;
-+			break;
-+		}
-+		case sTagNominalBitrate:
-+		{
-+			tag = GST_TAG_NOMINAL_BITRATE;
-+			break;
-+		}
-+		case sTagMinimumBitrate:
-+		{
-+			tag = GST_TAG_MINIMUM_BITRATE;
-+			break;
-+		}
-+		case sTagMaximumBitrate:
-+		{
-+			tag = GST_TAG_MAXIMUM_BITRATE;
-+			break;
-+		}
-+		case sTagSerial:
-+		{
-+			tag = GST_TAG_SERIAL;
-+			break;
-+		}
-+		case sTagEncoderVersion:
-+		{
-+			tag = GST_TAG_ENCODER_VERSION;
-+			break;
-+		}
-+		case sTagCRC:
-+		{
-+			tag = "has-crc";
-+			break;
-+		}
-+#endif
-+		case sBuffer:
-+		{
-+			return m_bufferInfo.bufferPercent;
-+		}
-+		case sVideoType:
-+		{
-+			if (!videoSink)
-+			{
-+				return -1;
-+			}
-+			guint64 v = -1;
-+			g_signal_emit_by_name(videoSink, "get-video-codec", &v);
-+			return (int) v;
-+			break;
-+		}
-+		case sSID:
-+		{
-+			return m_ref.getData(1);
-+		}
-+		default:
-+		{
-+			return resNA;
-+		}
-+	}
-+#if defined ENABLE_MEDIAFWGSTREAMER
- 	if (!m_stream_tags || !tag)
-+	{
- 		return 0;
--
-+	}
- 	guint value;
- 	if (gst_tag_list_get_uint(m_stream_tags, tag, &value))
-+	{
- 		return (int) value;
--
-+	}
-+#endif
- 	return 0;
- }
- 
-@@ -1400,135 +1968,205 @@
+@@ -1401,135 +1907,205 @@
  	{
  		switch (w)
  		{
@@ -2386,7 +2118,7 @@
  	gchar *value = NULL;
  	if (m_stream_tags && gst_tag_list_get_string(m_stream_tags, tag, &value))
  	{
-@@ -1536,9 +2174,88 @@
+@@ -1537,9 +2113,88 @@
  		g_free(value);
  		return res;
  	}
@@ -2475,7 +2207,7 @@
  ePtr<iServiceInfoContainer> eServiceMP3::getInfoObject(int w)
  {
  	eServiceMP3InfoContainer *container = new eServiceMP3InfoContainer;
-@@ -1548,45 +2265,64 @@
+@@ -1549,45 +2204,64 @@
  	switch (w)
  	{
  		case sTagTrackGain:
@@ -2544,7 +2276,7 @@
  			{
  				GstBuffer *buffer;
  				buffer = gst_value_get_buffer (gv_buffer);
-@@ -1602,6 +2338,7 @@
+@@ -1603,6 +2277,7 @@
  	}
  	return retval;
  }
@@ -2552,7 +2284,7 @@
  
  RESULT eServiceMP3::audioChannel(ePtr<iAudioChannelSelection> &ptr)
  {
-@@ -1640,13 +2377,18 @@
+@@ -1641,13 +2316,18 @@
  
  int eServiceMP3::getCurrentTrack()
  {
@@ -2571,7 +2303,7 @@
  	bool validposition = false;
  	pts_t ppos = 0;
  	if (getPlayPosition(ppos) >= 0)
-@@ -1654,32 +2396,50 @@
+@@ -1655,32 +2335,50 @@
  		validposition = true;
  		ppos -= 90000;
  		if (ppos < 0)
@@ -2626,7 +2358,7 @@
  }
  
  int eServiceMP3::getCurrentChannel()
-@@ -1699,30 +2459,24 @@
+@@ -1700,30 +2398,24 @@
  	{
  		return -2;
  	}
@@ -2658,7 +2390,7 @@
  	if (caps && !gst_caps_is_empty(caps))
  	{
  		GstStructure* str = gst_caps_get_structure(caps, 0);
-@@ -1732,38 +2486,57 @@
+@@ -1733,38 +2425,57 @@
  			eDebug("[eServiceMP3] getSubtitleType::subtitle probe caps type=%s", g_type ? g_type : "(null)");
  			if (g_type)
  			{
@@ -2729,7 +2461,7 @@
  	}
  	else
  		eDebug("[eServiceMP3] getSubtitleType::unidentifiable subtitle stream!");
-@@ -1774,69 +2547,66 @@
+@@ -1775,69 +2486,66 @@
  void eServiceMP3::gstBusCall(GstMessage *msg)
  {
  	if (!msg)
@@ -2816,7 +2548,7 @@
  #if 0
  						/* we should not use ts-offset to sync with the decoder time, we have to do our own decoder timekeeping */
  						g_object_set (G_OBJECT (subsink), "ts-offset", -2LL * GST_SECOND, NULL);
-@@ -1859,26 +2629,18 @@
+@@ -1860,26 +2568,18 @@
  						videoSink = NULL;
  					}
  					children = gst_bin_iterate_recurse(GST_BIN(m_gst_playbin));
@@ -2843,7 +2575,7 @@
  					gst_iterator_free(children);
  
  					/* if we are in preroll already do not check again the state */
-@@ -1886,11 +2648,12 @@
+@@ -1887,11 +2587,12 @@
  					{
  						m_is_live = (gst_element_get_state(m_gst_playbin, NULL, NULL, 0LL) == GST_STATE_CHANGE_NO_PREROLL);
  					}
@@ -2858,7 +2590,7 @@
  					updateEpgCacheNowNext();
  
  					if (!videoSink || m_ref.getData(0) == 2) // show radio pic
-@@ -1900,8 +2663,8 @@
+@@ -1901,8 +2602,8 @@
  						m_decoder = new eTSMPEGDecoder(NULL, 0);
  						m_decoder->showSinglePic(radio_pic.c_str());
  					}
@@ -2869,7 +2601,7 @@
  				case GST_STATE_CHANGE_PAUSED_TO_PLAYING:
  				{
  					m_paused = false;
-@@ -1913,16 +2676,24 @@
+@@ -1914,16 +2615,24 @@
  						std::vector<std::string> autoaudio_languages;
  						configvalue = eConfigManager::getConfigValue("config.autolanguage.audio_autoselect1");
  						if (configvalue != "" && configvalue != "None")
@@ -2894,7 +2626,7 @@
  						for (unsigned int i = 0; i < m_audioStreams.size(); i++)
  						{
  							if (!m_audioStreams[i].language_code.empty())
-@@ -1939,16 +2710,19 @@
+@@ -1940,16 +2649,19 @@
  								}
  							}
  						}
@@ -2917,7 +2649,7 @@
  				case GST_STATE_CHANGE_PAUSED_TO_READY:
  				{
  					if (audioSink)
-@@ -1961,7 +2735,20 @@
+@@ -1962,7 +2674,20 @@
  						gst_object_unref(GST_OBJECT(videoSink));
  						videoSink = NULL;
  					}
@@ -2939,7 +2671,7 @@
  			}
  			break;
  		}
-@@ -1972,19 +2759,24 @@
+@@ -1973,19 +2698,24 @@
  			gst_message_parse_error (msg, &err, &debug);
  			g_free (debug);
  			eWarning("[eServiceMP3] Gstreamer error: %s (%i) from %s", err->message, err->code, sourceName );
@@ -2975,7 +2707,7 @@
  				{
  					stop();
  				}
-@@ -1992,7 +2784,6 @@
+@@ -1993,7 +2723,6 @@
  			g_error_free(err);
  			break;
  		}
@@ -2983,7 +2715,7 @@
  		case GST_MESSAGE_WARNING:
  		{
  			gchar *debug_warn = NULL;
-@@ -2001,11 +2792,12 @@
+@@ -2002,11 +2731,12 @@
  			/* CVR this Warning occurs from time to time with external srt files
  			When a new seek is done the problem off to long wait times before subtitles appears,
  			after movie was restarted with a resume position is solved. */
@@ -2998,7 +2730,7 @@
  				{
  					if (!gst_element_seek (subsink, m_currentTrickRatio, GST_FORMAT_TIME, (GstSeekFlags)(GST_SEEK_FLAG_FLUSH | GST_SEEK_FLAG_KEY_UNIT),
  						GST_SEEK_TYPE_SET, m_last_seek_pos,
-@@ -2020,7 +2812,6 @@
+@@ -2021,7 +2751,6 @@
  			g_error_free(warn);
  			break;
  		}
@@ -3006,7 +2738,7 @@
  		case GST_MESSAGE_INFO:
  		{
  			gchar *debug;
-@@ -2028,10 +2819,12 @@
+@@ -2029,10 +2758,12 @@
  
  			gst_message_parse_info (msg, &inf, &debug);
  			g_free (debug);
@@ -3022,7 +2754,7 @@
  			}
  			g_error_free(inf);
  			break;
-@@ -2051,41 +2844,31 @@
+@@ -2052,41 +2783,31 @@
  					break;
  				}
  				if (m_stream_tags)
@@ -3067,7 +2799,7 @@
  						close(fd);
  						m_coverart = true;
  						m_event((iPlayableService*)this, evUser+13);
-@@ -2098,30 +2881,29 @@
+@@ -2099,30 +2820,29 @@
  			break;
  		}
  		/* TOC entry intercept used for chapter support CVR */
@@ -3104,7 +2836,7 @@
  			m_audioStreams.clear();
  			m_subtitleStreams.clear();
  
-@@ -2132,14 +2914,12 @@
+@@ -2133,14 +2853,12 @@
  				GstTagList *tags = NULL;
  				GstPad* pad = 0;
  				g_signal_emit_by_name (m_gst_playbin, "get-audio-pad", i, &pad);
@@ -3121,7 +2853,7 @@
  				GstStructure* str = gst_caps_get_structure(caps, 0);
  				const gchar *g_type = gst_structure_get_name(str);
  				eDebug("[eServiceMP3] AUDIO STRUCT=%s", g_type);
-@@ -2149,11 +2929,7 @@
+@@ -2150,11 +2868,7 @@
  				g_codec = NULL;
  				g_lang = NULL;
  				g_signal_emit_by_name (m_gst_playbin, "get-audio-tags", i, &tags);
@@ -3133,7 +2865,7 @@
  				{
  					if (gst_tag_list_get_string(tags, GST_TAG_AUDIO_CODEC, &g_codec))
  					{
-@@ -2171,7 +2947,6 @@
+@@ -2172,7 +2886,6 @@
  				m_audioStreams.push_back(audio);
  				gst_caps_unref(caps);
  			}
@@ -3141,7 +2873,7 @@
  			for (i = 0; i < n_text; i++)
  			{
  				gchar *g_codec = NULL, *g_lang = NULL;
-@@ -2179,11 +2954,7 @@
+@@ -2180,11 +2893,7 @@
  				g_signal_emit_by_name (m_gst_playbin, "get-text-tags", i, &tags);
  				subtitleStream subs;
  				subs.language_code = "und";
@@ -3153,7 +2885,7 @@
  				{
  					if (gst_tag_list_get_string(tags, GST_TAG_LANGUAGE_CODE, &g_lang))
  					{
-@@ -2193,31 +2964,31 @@
+@@ -2194,31 +2903,31 @@
  					gst_tag_list_get_string(tags, GST_TAG_SUBTITLE_CODEC, &g_codec);
  					gst_tag_list_free(tags);
  				}
@@ -3190,7 +2922,7 @@
  			}
  			break;
  		}
-@@ -2226,7 +2997,7 @@
+@@ -2227,7 +2936,7 @@
  			const GstStructure *msgstruct = gst_message_get_structure(msg);
  			if (msgstruct)
  			{
@@ -3199,7 +2931,7 @@
  				{
  					GstCaps *caps = NULL;
  					gst_structure_get (msgstruct, "detail", GST_TYPE_CAPS, &caps, NULL);
-@@ -2234,7 +3005,7 @@
+@@ -2235,7 +2944,7 @@
  					{
  						std::string codec = (const char*) gst_caps_to_string(caps);
  						gchar *description = gst_missing_plugin_message_get_description(msg);
@@ -3208,7 +2940,7 @@
  						{
  							eDebug("[eServiceMP3] m_errorInfo.missing_codec = %s", codec.c_str());
  							m_errorInfo.error_message = "GStreamer plugin " + (std::string)description + " not available!\n";
-@@ -2247,27 +3018,36 @@
+@@ -2248,27 +2957,36 @@
  				else
  				{
  					const gchar *eventname = gst_structure_get_name(msgstruct);
@@ -3247,9 +2979,9 @@
  								m_event((iPlayableService*)this, evVideoProgressiveChanged);
 +							}
  						}
- 						else if (!strcmp(eventname, "redirect"))
+ 						else if (!strcmp(eventname, "eventGammaChanged"))
  						{
-@@ -2283,6 +3063,7 @@
+@@ -2290,6 +3008,7 @@
  			break;
  		}
  		case GST_MESSAGE_BUFFERING:
@@ -3257,7 +2989,7 @@
  			if (m_sourceinfo.is_streaming)
  			{
  				GstBufferingMode mode;
-@@ -2291,7 +3072,7 @@
+@@ -2298,7 +3017,7 @@
  				gst_message_parse_buffering_stats(msg, &mode, &(m_bufferInfo.avgInRate), &(m_bufferInfo.avgOutRate), &(m_bufferInfo.bufferingLeft));
  				m_event((iPlayableService*)this, evBuffering);
  				/*
@@ -3266,7 +2998,7 @@
  				 * (even if we are not configured to, we still use the buffer, but we rely on it to remain at the
  				 * healthy level at all times, without ever having to pause the stream)
  				 *
-@@ -2332,8 +3113,11 @@
+@@ -2339,8 +3058,11 @@
  				}
  			}
  			break;
@@ -3279,7 +3011,7 @@
  	}
  	g_free (sourceName);
  }
-@@ -2355,11 +3139,14 @@
+@@ -2362,11 +3084,14 @@
  GstBusSyncReply eServiceMP3::gstBusSyncHandler(GstBus *bus, GstMessage *message, gpointer user_data)
  {
  	eServiceMP3 *_this = (eServiceMP3*)user_data;
@@ -3297,7 +3029,7 @@
  void eServiceMP3::HandleTocEntry(GstMessage *msg)
  {
  	/* limit TOC to dvbvideosink cue sheet only works for video media */
-@@ -2385,9 +3172,13 @@
+@@ -2392,9 +3117,13 @@
  						{
  							m_use_chapter_entries = true;
  							if (m_cuesheet_loaded)
@@ -3311,7 +3043,7 @@
  						}
  						/* first chapter is movie start no cut needed */
  						else if (y >= 1)
-@@ -2397,8 +3188,10 @@
+@@ -2404,8 +3133,10 @@
  							gint type = 0;
  							gst_toc_entry_get_start_stop_times(sub_entry, &start, NULL);
  							type = 2;
@@ -3323,7 +3055,7 @@
  							if (pts > 0)
  							{
  								m_cue_entries.insert(cueEntry(pts, type));
-@@ -2417,14 +3210,14 @@
+@@ -2424,14 +3155,14 @@
  				}
  			}
  		}
@@ -3340,7 +3072,7 @@
  void eServiceMP3::playbinNotifySource(GObject *object, GParamSpec *unused, gpointer user_data)
  {
  	GstElement *source = NULL;
-@@ -2454,11 +3247,7 @@
+@@ -2461,11 +3192,7 @@
  		}
  		if (g_object_class_find_property(G_OBJECT_GET_CLASS(source), "extra-headers") != 0 && !_this->m_extra_headers.empty())
  		{
@@ -3352,7 +3084,7 @@
  			size_t pos = 0;
  			while (pos != std::string::npos)
  			{
-@@ -2525,17 +3314,13 @@
+@@ -2532,17 +3259,13 @@
  			}
  		}
  		else if (g_str_has_prefix(elementname, "uridecodebin")
@@ -3372,7 +3104,7 @@
  		}
  		g_free(elementname);
  	}
-@@ -2544,44 +3329,59 @@
+@@ -2551,44 +3274,59 @@
  audiotype_t eServiceMP3::gstCheckAudioPad(GstStructure* structure)
  {
  	if (!structure)
@@ -3455,7 +3187,7 @@
  	return atUnknown;
  }
  
-@@ -2615,15 +3415,20 @@
+@@ -2622,15 +3360,20 @@
  		}
  	}
  }
@@ -3477,7 +3209,7 @@
  		return;
  	}
  	_this->m_pump.send(new GstMessageContainer(2, NULL, NULL, buffer));
-@@ -2651,14 +3456,17 @@
+@@ -2658,14 +3401,17 @@
  		eDebug("[eServiceMP3] gstTextpadHasCAPS:: signal::caps = %s", gst_caps_to_string(caps));
  //		eDebug("[eServiceMP3] gstGhostpadHasCAPS_synced %p %d", pad, m_subtitleStreams.size());
  
@@ -3499,7 +3231,7 @@
  		{
  			GstTagList *tags = NULL;
  			gchar *g_lang = NULL;
-@@ -2666,11 +3474,7 @@
+@@ -2673,11 +3419,7 @@
  
  			subs.language_code = "und";
  			subs.type = getSubtitleType(pad);
@@ -3511,7 +3243,7 @@
  			{
  				if (gst_tag_list_get_string(tags, GST_TAG_LANGUAGE_CODE, &g_lang))
  				{
-@@ -2679,13 +3483,15 @@
+@@ -2686,13 +3428,15 @@
  				}
  				gst_tag_list_free(tags);
  			}
@@ -3530,7 +3262,7 @@
  //		eDebug("[eServiceMP3] gstGhostpadHasCAPS:: m_gst_prev_subtitle_caps=%s equal=%i",gst_caps_to_string(m_gst_prev_subtitle_caps),gst_caps_is_equal(m_gst_prev_subtitle_caps, caps));
  
  		gst_caps_unref (caps);
-@@ -2696,12 +3502,8 @@
+@@ -2703,12 +3447,8 @@
  {
  	if (buffer && m_currentSubtitleStream >= 0 && m_currentSubtitleStream < (int)m_subtitleStreams.size())
  	{
@@ -3544,7 +3276,7 @@
  		{
  			eLog(3, "[eServiceMP3] pullSubtitle gst_buffer_map failed");
  			return;
-@@ -2709,30 +3511,27 @@
+@@ -2716,30 +3456,27 @@
  		gint64 buf_pos = GST_BUFFER_PTS(buffer);
  		size_t len = map.size;
  		eLog(6, "[eServiceMP3] gst_buffer_get_size %zu map.size %zu", gst_buffer_get_size(buffer), len);
@@ -3582,7 +3314,7 @@
  				eLog(6, "[eServiceMP3] got new text subtitle @ buf_pos = %lld ns (in pts=%lld), dur=%lld: '%s' ", buf_pos, buf_pos/11111, duration_ns, line.c_str());
  
  				uint32_t start_ms = ((buf_pos / 1000000ULL) * convert_fps) + (delay / 90);
-@@ -2745,14 +3544,33 @@
+@@ -2752,14 +3489,33 @@
  				eLog(3, "[eServiceMP3] unsupported subpicture... ignoring");
  			}
  		}
@@ -3620,7 +3352,7 @@
  	pts_t running_pts = 0;
  	int32_t next_timer = 0, decoder_ms, start_ms, end_ms, diff_start_ms, diff_end_ms;
  	subtitle_pages_map_t::iterator current;
-@@ -2760,15 +3578,17 @@
+@@ -2767,15 +3523,17 @@
  	// wait until clock is stable
  
  	if (getPlayPosition(running_pts) < 0)
@@ -3640,7 +3372,7 @@
  		if (m_decoder_time_valid_state < 4)
  		{
  			//eDebug("[eServiceMP3] *** push subtitles, waiting for clock to stabilise");
-@@ -2776,46 +3596,39 @@
+@@ -2783,46 +3541,39 @@
  			next_timer = 50;
  			goto exit;
  		}
@@ -3701,7 +3433,7 @@
  		if (diff_start_ms > 20)
  		{
  			//eDebug("[eServiceMP3] *** current sub in the future, start timer, %d", diff_start_ms);
-@@ -2824,7 +3637,6 @@
+@@ -2831,7 +3582,6 @@
  		}
  
  		// showtime
@@ -3709,7 +3441,7 @@
  		if (m_subtitle_widget && !m_paused)
  		{
  			//eDebug("[eServiceMP3] *** current sub actual, show!");
-@@ -2841,61 +3653,74 @@
+@@ -2848,61 +3598,74 @@
  
  		//eDebug("[eServiceMP3] *** no next sub scheduled, check NEXT subtitle");
  	}
@@ -3798,7 +3530,7 @@
  	return 0;
  }
  
-@@ -2905,8 +3730,9 @@
+@@ -2912,8 +3675,9 @@
  	bool autoturnon = eConfigManager::getConfigBoolValue("config.subtitles.pango_autoturnon", true);
  	int m_subtitleStreams_size = (int)m_subtitleStreams.size();
  	if (!autoturnon)
@@ -3809,7 +3541,7 @@
  	if (m_cachedSubtitleStream == -2 && m_subtitleStreams_size)
  	{
  		m_cachedSubtitleStream = 0;
-@@ -2914,17 +3740,29 @@
+@@ -2921,17 +3685,29 @@
  		std::string configvalue;
  		std::vector<std::string> autosub_languages;
  		configvalue = eConfigManager::getConfigValue("config.autolanguage.subtitle_autoselect1");
@@ -3843,7 +3575,7 @@
  		for (int i = 0; i < m_subtitleStreams_size; i++)
  		{
  			if (!m_subtitleStreams[i].language_code.empty())
-@@ -2942,7 +3780,6 @@
+@@ -2949,7 +3725,6 @@
  			}
  		}
  	}
@@ -3851,7 +3583,7 @@
  	if (m_cachedSubtitleStream >= 0 && m_cachedSubtitleStream < m_subtitleStreams_size)
  	{
  		track.type = 2;
-@@ -2962,22 +3799,24 @@
+@@ -2969,22 +3744,24 @@
  	for (std::vector<subtitleStream>::iterator IterSubtitleStream(m_subtitleStreams.begin()); IterSubtitleStream != m_subtitleStreams.end(); ++IterSubtitleStream)
  	{
  		subtype_t type = IterSubtitleStream->type;
@@ -3892,7 +3624,7 @@
  		}
  		stream_idx++;
  	}
-@@ -3008,20 +3847,21 @@
+@@ -3015,20 +3792,21 @@
  		PyList_Append(list, tuple);
  		Py_DECREF(tuple);
  	}
@@ -3916,7 +3648,7 @@
  	{
  		ePyObject tuple = PyList_GET_ITEM(list, i);
  		if (!PyTuple_Check(tuple))
-@@ -3057,7 +3897,9 @@
+@@ -3064,7 +3842,9 @@
  int eServiceMP3::setBufferSize(int size)
  {
  	m_buffer_size = size;
@@ -3926,7 +3658,7 @@
  	return 0;
  }
  
-@@ -3073,9 +3915,12 @@
+@@ -3080,9 +3860,12 @@
  
  void eServiceMP3::setAC3Delay(int delay)
  {
@@ -3939,7 +3671,7 @@
  	else
  	{
  		int config_delay_int = delay;
-@@ -3091,7 +3936,7 @@
+@@ -3098,7 +3881,7 @@
  		}
  		else
  		{
@@ -3948,7 +3680,7 @@
  			config_delay_int = 0;
  		}
  
-@@ -3100,17 +3945,20 @@
+@@ -3107,17 +3890,20 @@
  			eTSMPEGDecoder::setHwAC3Delay(config_delay_int);
  		}
  	}
@@ -3970,7 +3702,7 @@
  		/*
  		 * NOTE: We only look for dvbmediasinks.
  		 * If either the video or audio sink is of a different type,
-@@ -3122,7 +3970,7 @@
+@@ -3129,7 +3915,7 @@
  		}
  		else
  		{
@@ -3979,7 +3711,7 @@
  			config_delay_int = 0;
  		}
  
-@@ -3131,7 +3979,9 @@
+@@ -3138,7 +3924,9 @@
  			eTSMPEGDecoder::setHwPCMDelay(config_delay_int);
  		}
  	}
@@ -3990,7 +3722,7 @@
  /* cuesheet CVR */
  void eServiceMP3::loadCuesheet()
  {
-@@ -3148,11 +3998,10 @@
+@@ -3155,11 +3943,10 @@
   
  	m_cue_entries.clear();
  	/* only load manual cuts if no chapter info avbl CVR */
@@ -4004,7 +3736,7 @@
  	std::string filename = m_ref.path + ".cuts";
  
  	m_cue_entries.clear();
-@@ -3167,50 +4016,53 @@
+@@ -3174,50 +3961,53 @@
  			unsigned int what;
  
  			if (!fread(&where, sizeof(where), 1, f))
@@ -4073,7 +3805,7 @@
  	FILE *f = fopen(filename.c_str(), "wb");
  
  	if (f)
-@@ -3224,7 +4076,6 @@
+@@ -3231,7 +4021,6 @@
  			what = htonl(i->what);
  			fwrite(&where, sizeof(where), 1, f);
  			fwrite(&what, sizeof(what), 1, f);
@@ -4081,7 +3813,7 @@
  		}
  		fclose(f);
  	}
-@@ -3233,5 +4084,18 @@
+@@ -3240,5 +4029,18 @@
  
  __attribute__((constructor)) void libraryinit(int argc, char **argv)
  {
@@ -4277,7 +4009,7 @@
  
  	RESULT seekToImpl(pts_t to);
  
- 	gint m_aspect, m_width, m_height, m_framerate, m_progressive;
+ 	gint m_aspect, m_width, m_height, m_framerate, m_progressive, m_gamma;
  	std::string m_useragent;
 +#if defined ENABLE_MEDIAFWGSTREAMER
  	std::string m_extra_headers;
