@@ -96,8 +96,8 @@ $(D)/enigma2_tuxtxt32bpp: $(D)/bootstrap $(D)/enigma2_tuxtxtlib
 #
 ifeq ($(E2_DIFF), $(filter $(E2_DIFF), 0 2 3))
 ifneq ($(MEDIAFW), buildinplayer)
-E2_PLUGIN_DEPS = enigma2_servicemp3
-#E2_PLUGIN_DEPS = enigma2_servicemp3epl
+#E2_PLUGIN_DEPS = enigma2_servicemp3
+E2_PLUGIN_DEPS = enigma2_servicemp3epl
 #E2_PLUGIN_DEPS = enigma2_serviceapp
 endif
 endif
@@ -252,7 +252,7 @@ SERVICEMP3EPL_CPPFLAGS += -I$(SOURCE_DIR)/enigma2
 SERVICEMP3EPL_CPPFLAGS += -I$(SOURCE_DIR)/enigma2/include
 SERVICEMP3EPL_CPPFLAGS += -I$(KERNEL_DIR)/include
 ifeq ($(MEDIAFW), eplayer3)
-SERVICEMP3EPL_DEPS     += $(D)/tools-eplayer3
+SERVICEMP3EPL_DEPS     += $(D)/tools-eplayer3_new
 SERVICEMP3EPL_CONF     += --enable-libeplayer3
 endif
 
@@ -264,7 +264,7 @@ SERVICEMP3EPL_CONF    += --with-gstversion=1.0
 endif
 
 ifeq ($(MEDIAFW), gst-eplayer3)
-SERVICEMP3EPL_DEPS    += $(D)/tools-libeplayer3
+SERVICEMP3EPL_DEPS    += $(D)/tools-libeplayer3_new
 SERVICEMP3EPL_DEPS    += $(D)/gstreamer $(D)/gst_plugins_base $(D)/gst_plugins_dvbmediasink
 SERVICEMP3EPL_DEPS    += $(D)/gst_plugins_good $(D)/gst_plugins_bad $(D)/gst_plugins_ugly
 SERVICEMP3EPL_CONF    += --enable-libeplayer3
@@ -294,7 +294,7 @@ $(D)/enigma2_servicemp3epl: | $(SERVICEMP3EPL_DEPS)
 		; \
 		$(MAKE) all; \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
-	$(REMOVE)/enigma2-servicemp3epl-$(SERVICEMP3EPL_VER)
+#	$(REMOVE)/enigma2-servicemp3epl-$(SERVICEMP3EPL_VER)
 	$(TOUCH)
 
 #
@@ -327,6 +327,6 @@ $(D)/enigma2_serviceapp: $(D)/bootstrap $(D)/enigma2 $(D)/enigma2_servicemp3epl 
 		; \
 		$(MAKE) all; \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
-	$(REMOVE)/enigma2-serviceapp-$(SERVICEAPP_VER)
+#	$(REMOVE)/enigma2-serviceapp-$(SERVICEAPP_VER)
 	$(TOUCH)
 

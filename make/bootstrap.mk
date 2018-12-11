@@ -30,7 +30,7 @@ $(D)/host_pkgconfig: directories $(ARCHIVE)/$(HOST_PKGCONFIG_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/pkg-config-$(HOST_PKGCONFIG_VER)
 	$(UNTAR)/$(HOST_PKGCONFIG_SOURCE)
-	$(SET) -e; cd $(BUILD_TMP)/pkg-config-$(HOST_PKGCONFIG_VER); \
+	$(CH_DIR)/pkg-config-$(HOST_PKGCONFIG_VER); \
 		./configure $(SILENT_CONFIGURE) $(SILENT_OPT) \
 			--prefix=$(HOST_DIR) \
 			--program-prefix=$(TARGET)- \
@@ -54,7 +54,7 @@ $(D)/host_module_init_tools: $(ARCHIVE)/$(HOST_MODULE_INIT_TOOLS_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/module-init-tools-$(HOST_MODULE_INIT_TOOLS_VER)
 	$(UNTAR)/$(HOST_MODULE_INIT_TOOLS_SOURCE)
-	$(SET) -e; cd $(BUILD_TMP)/module-init-tools-$(HOST_MODULE_INIT_TOOLS_VER); \
+	$(CH_DIR)/module-init-tools-$(HOST_MODULE_INIT_TOOLS_VER); \
 		$(call apply_patches,$(HOST_MODULE_INIT_TOOLS_PATCH)); \
 		autoreconf -fi $(SILENT_OPT); \
 		./configure $(SILENT_CONFIGURE) $(SILENT_OPT) \
@@ -77,7 +77,7 @@ $(D)/host_mtd_utils: directories $(ARCHIVE)/$(HOST_MTD_UTILS_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/mtd-utils-$(HOST_MTD_UTILS_VER)
 	$(UNTAR)/$(HOST_MTD_UTILS_SOURCE)
-	$(SET) -e; cd $(BUILD_TMP)/mtd-utils-$(HOST_MTD_UTILS_VER); \
+	$(CH_DIR)/mtd-utils-$(HOST_MTD_UTILS_VER); \
 		$(call apply_patches,$(HOST_MTD_UTILS_PATCH)); \
 		$(MAKE) `pwd`/mkfs.jffs2 `pwd`/sumtool BUILDDIR=`pwd` WITHOUT_XATTR=1 DESTDIR=$(HOST_DIR); \
 		$(MAKE) install DESTDIR=$(HOST_DIR)/bin
@@ -97,7 +97,7 @@ $(D)/host_mkcramfs: directories $(ARCHIVE)/$(HOST_MKCRAMFS_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/cramfs-$(HOST_MKCRAMFS_VER)
 	$(UNTAR)/$(HOST_MKCRAMFS_SOURCE)
-	$(SET) -e; cd $(BUILD_TMP)/cramfs-$(HOST_MKCRAMFS_VER); \
+	$(CH_DIR)/cramfs-$(HOST_MKCRAMFS_VER); \
 		$(MAKE) all
 		cp $(BUILD_TMP)/cramfs-$(HOST_MKCRAMFS_VER)/mkcramfs $(HOST_DIR)/bin
 		cp $(BUILD_TMP)/cramfs-$(HOST_MKCRAMFS_VER)/cramfsck $(HOST_DIR)/bin
@@ -117,7 +117,7 @@ $(D)/host_mksquashfs3: directories $(ARCHIVE)/$(HOST_MKSQUASHFS3_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/squashfs$(HOST_MKSQUASHFS3_VER)
 	$(UNTAR)/$(HOST_MKSQUASHFS3_SOURCE)
-	$(SET) -e; cd $(BUILD_TMP)/squashfs$(HOST_MKSQUASHFS3_VER)/squashfs-tools; \
+	$(CH_DIR)/squashfs$(HOST_MKSQUASHFS3_VER)/squashfs-tools; \
 		$(MAKE) CC=gcc all
 		mv $(BUILD_TMP)/squashfs$(HOST_MKSQUASHFS3_VER)/squashfs-tools/mksquashfs $(HOST_DIR)/bin/mksquashfs3.3
 		mv $(BUILD_TMP)/squashfs$(HOST_MKSQUASHFS3_VER)/squashfs-tools/unsquashfs $(HOST_DIR)/bin/unsquashfs3.3
@@ -145,7 +145,7 @@ $(D)/host_mksquashfs: directories $(ARCHIVE)/$(LZMA_SOURCE) $(ARCHIVE)/$(HOST_MK
 	$(UNTAR)/$(LZMA_SOURCE)
 	$(REMOVE)/squashfs$(HOST_MKSQUASHFS_VER)
 	$(UNTAR)/$(HOST_MKSQUASHFS_SOURCE)
-	$(SET) -e; cd $(BUILD_TMP)/squashfs$(HOST_MKSQUASHFS_VER); \
+	$(CH_DIR)/squashfs$(HOST_MKSQUASHFS_VER); \
 		$(MAKE) -C squashfs-tools \
 			LZMA_SUPPORT=1 \
 			LZMA_DIR=$(BUILD_TMP)/lzma-$(LZMA_VER) \

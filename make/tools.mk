@@ -18,6 +18,7 @@ ifeq ($(BOXTYPE), $(filter $(BOXTYPE), ipbox55 ipbox99 ipbox9900 cuberevo cubere
 endif
 ifeq ($(MEDIAFW), $(filter $(MEDIAFW), eplayer3 gst-eplayer3))
 	-$(MAKE) -C $(APPS_DIR)/tools/libeplayer3 distclean
+	-$(MAKE) -C $(APPS_DIR)/tools/libeplayer3_new distclean
 endif
 ifeq ($(IMAGE), $(filter $(IMAGE), enigma2 enigma2-wlandriver))
 	-$(MAKE) -C $(APPS_DIR)/tools/libmme_host distclean
@@ -129,6 +130,24 @@ $(D)/tools-libeplayer3: $(D)/bootstrap $(D)/ffmpeg
 		if [ ! -d m4 ]; then mkdir m4; fi; \
 		$(CONFIGURE_TOOLS) \
 			--prefix= \
+		; \
+		$(MAKE); \
+		$(MAKE) install DESTDIR=$(TARGET_DIR)
+	$(TOUCH)
+
+#
+# libeplayer3_new
+#
+LIBEPLAYER3_NEW_CPPFLAGS = -I$(APPS_DIR)/tools/libeplayer3_new/include
+
+$(D)/tools-libeplayer3_new: $(D)/bootstrap $(D)/ffmpeg
+	$(START_BUILD)
+	$(SET) -e; cd $(APPS_DIR)/tools/libeplayer3_new; \
+		if [ ! -d m4 ]; then mkdir m4; fi; \
+		autoreconf -fi; \
+		$(CONFIGURE) \
+			--prefix= \
+			CPPFLAGS="$(LIBEPLAYER3_NEW_CPPFLAGS)" \
 		; \
 		$(MAKE); \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)

@@ -165,6 +165,9 @@ UNTAR                 = $(SILENT)tar -C $(BUILD_TMP) -xf $(ARCHIVE)
 SET                   = $(SILENT)set
 REMOVE                = $(SILENT)rm -rf $(BUILD_TMP)
 
+CHDIR                 = set -e; cd $(BUILD_TMP)
+MKDIR                 = mkdir -p $(BUILD_TMP)
+STRIP                 = $(TARGET)-strip
 #
 split_deps_dir=$(subst ., ,$(1))
 DEPS_DIR              = $(subst $(D)/,,$@)
