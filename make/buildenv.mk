@@ -165,8 +165,8 @@ UNTAR                 = $(SILENT)tar -C $(BUILD_TMP) -xf $(ARCHIVE)
 SET                   = $(SILENT)set
 REMOVE                = $(SILENT)rm -rf $(BUILD_TMP)
 
-CHDIR                 = set -e; cd $(BUILD_TMP)
-MKDIR                 = mkdir -p $(BUILD_TMP)
+CH_DIR                = $(SILENT)set -e; cd $(BUILD_TMP)
+MK_DIR                = mkdir -p $(BUILD_TMP)
 STRIP                 = $(TARGET)-strip
 #
 split_deps_dir=$(subst ., ,$(1))
@@ -214,7 +214,7 @@ define apply_patches
             fi; \
         fi; \
     done; \
-    if [ '$(1)' ]; then \
+    if [ '$(1)' -a '$(1)' != ' ' ]; then \
         if [ $(PKG_VER_HELPER) == "AA" ]; then \
             echo -e "Patching $(TERM_GREEN_BOLD)$(PKG_NAME)$(TERM_NORMAL) completed."; \
         else \
