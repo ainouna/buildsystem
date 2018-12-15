@@ -1768,7 +1768,7 @@ $(D)/ffmpeg3: $(D)/bootstrap $(D)/openssl $(D)/bzip2 $(D)/libass $(D)/libxml2 $(
 			--disable-fma4 \
 			--disable-vfp \
 			--disable-inline-asm \
-			--disable-yasm \
+			--disable-x86asm \
 			--disable-mips32r2 \
 			--disable-mipsdspr2 \
 			--disable-mipsfpu \
