@@ -92,14 +92,14 @@
  	AC_SUBST([PYTHON_SITE_PKG])
 --- enigma2-servicemp3/servicemp3/Makefile.am
 +++ enigma2-servicemp3/servicemp3/Makefile.am
-@@ -5,22 +5,67 @@
+@@ -5,22 +5,70 @@
  	@PYTHON_CPPFLAGS@ \
  	-include Python.h
  
 +if ENABLE_LIBEPLAYER3
++if ENABLE_MEDIAFWGSTREAMER
 +AM_CPPFLAGS += \
 +	-I$(top_srcdir)/../../apps/tools/libeplayer3/include
-+if ENABLE_MEDIAFWGSTREAMER
 +else
 +AM_CPPFLAGS += \
 +	-D__STDC_CONSTANT_MACROS \
@@ -134,12 +134,15 @@
 +if ENABLE_MEDIAFWGSTREAMER
 +servicemp3_la_SOURCES += \
 +	servicemp3.cpp \
-+	servicemp3record.cpp
++	servicemp3record.cpp \
++	servicemp3.h \
++	servicemp3record.h
 +endif
 +
 +if ENABLE_LIBEPLAYER3
 +servicemp3_la_SOURCES += \
-+	serviceeplayer3.cpp
++	serviceeplayer3.cpp \
++	serviceeplayer3.h
 +endif
 +
  servicemp3_la_LDFLAGS = \
@@ -165,6 +168,16 @@
 +	-lswresample \
 +	-L$(top_srcdir)/../../apps/tools/eplayer3
 +endif
+--- enigma2-servicemp3-0.1/servicemp3/pythonmodule.cpp
++++ enigma2-servicemp3/servicemp3/pythonmodule.cpp
+@@ -1,5 +1,6 @@
++#if ENABLE_MEDIAFWGSTREAMER
+ #include "servicemp3.h"
+-
++#endif
+ 
+ static PyMethodDef servicemp3Methods[] =
+ {
 --- enigma2-servicemp3/servicemp3/servicemp3.cpp
 +++ enigma2-servicemp3/servicemp3/servicemp3.cpp
 @@ -1,5 +1,5 @@
