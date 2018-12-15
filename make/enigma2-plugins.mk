@@ -94,7 +94,7 @@ $(D)/enigma2_tuxtxt32bpp: $(D)/bootstrap $(D)/enigma2_tuxtxtlib
 #
 # Plugins
 #
-ifeq ($(E2_DIFF), $(filter $(E2_DIFF), 0 2 3))
+ifeq ($(E2_DIFF), $(filter $(E2_DIFF), 0 2 3 4))
 ifneq ($(MEDIAFW), buildinplayer)
 E2_PLUGIN_DEPS = enigma2_servicemp3
 #E2_PLUGIN_DEPS = enigma2_servicemp3epl

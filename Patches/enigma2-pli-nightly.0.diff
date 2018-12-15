@@ -370,17 +370,18 @@
  main/Makefile
 --- enigma2.org/data/fonts/Makefile.am
 +++ enigma2/data/fonts/Makefile.am
-@@ -14,9 +14,4 @@
+@@ -14,9 +14,8 @@
  	LiberationSans-Bold.ttf \
  	LiberationSans-BoldItalic.ttf \
  	LiberationSans-Italic.ttf \
 -	LiberationSans-Regular.ttf \
 -	wqy-microhei.ttc
--
--install-exec-hook:
--	cd $(DESTDIR)$(datadir)/fonts && \
--	$(LN_S) wqy-microhei.ttc fallback.font
 +	LiberationSans-Regular.ttf
+ 
+ install-data-hook:
+ 	cd $(DESTDIR)$(datadir)/fonts && \
+-	$(LN_S) wqy-microhei.ttc fallback.font
++	$(LN_S) -f md_khmurabi_10.ttf fallback.font
 --- enigma2.org/data/skin_display_default.xml
 +++ enigma2/data/skin_display_default.xml
 @@ -22,27 +22,29 @@
@@ -1950,7 +1951,7 @@
  #endif
  
  #define eDebugNoSimulate(x...) \
-@@ -3025,10 +3029,10 @@
+@@ -3034,10 +3038,10 @@
  		case SYS_ISDBT:		ss << " ISDBT"; break;
  		case SYS_UNDEFINED:	ss << " UNDEFINED"; break;
  		case SYS_DVBC_ANNEX_A:	ss << " DVBC_ANNEX_A"; break;
@@ -3027,11 +3028,11 @@
  int fbClass::SetMode(int nxRes, int nyRes, int nbpp)
  {
 +#if defined(__sh__)
-+	xRes=nxRes;
-+	yRes=nyRes;
-+	bpp=32;
++	xRes = nxRes;
++	yRes = nyRes;
++	bpp = 32;
 +	m_number_of_pages = 1;
-+	topDiff=bottomDiff=leftDiff=rightDiff = 0;
++	topDiff = bottomDiff = leftDiff = rightDiff = 0;
 +#else
  	if (fbFd < 0) return -1;
  	screeninfo.xres_virtual=screeninfo.xres=nxRes;
@@ -3044,9 +3045,9 @@
  	ioctl(fbFd, FBIOGET_VSCREENINFO, &screeninfo);
  
 +#if defined(__sh__)
-+	xResSc=screeninfo.xres;
-+	yResSc=screeninfo.yres;
-+	stride=xRes*4;
++	xResSc = screeninfo.xres;
++	yResSc = screeninfo.yres;
++	stride = xRes*4;
 +#else
  	if ((screeninfo.xres != (unsigned int)nxRes) || (screeninfo.yres != (unsigned int)nyRes) ||
  		(screeninfo.bits_per_pixel != (unsigned int)nbpp))
@@ -3364,7 +3365,7 @@
  void gFBDC::setResolution(int xres, int yres, int bpp)
  {
 +#if defined(__sh__)
-+	/* if xres and yres are negative call SetMode with the lates xres and yres
++	/* if xres and yres are negative call SetMode with the latest xres and yres
 +	 * we need that to read the new screen dimensions after a resolution change
 +	 * without changing the framebuffer dimensions
 +	 */
@@ -4272,6 +4273,35 @@
  
  		if 'ip' not in data:
  			data['dhcp'] = True
+@@ -567,16 +575,18 @@
+ 			return True
+ 
+ 		# r871x_usb_drv on kernel 2.6.12 is not identifiable over /sys/class/net/'ifacename'/wireless so look also inside /proc/net/wireless
+-		device = re.compile('[a-z]{2,}[0-9]*:')
+-		ifnames = []
+-		fp = open('/proc/net/wireless', 'r')
+-		for line in fp:
+-			try:
+-				ifnames.append(device.search(line).group()[:-1])
+-			except AttributeError:
+-				pass
+-		if iface in ifnames:
+-			return True
++		if os.path.exists('/proc/net/wireless'):
++			device = re.compile('[a-z]{2,}[0-9]*:')
++			ifnames = []
++			fp = open('/proc/net/wireless', 'r')
++			for line in fp:
++				try:
++					ifnames.append(device.search(line).group()[:-1])
++				except AttributeError:
++					pass
++			fp.close()
++			if iface in ifnames:
++				return True
+ 
+ 		return False
+ 
 --- enigma2.org/lib/python/Components/NimManager.py
 +++ enigma2/lib/python/Components/NimManager.py
 @@ -15,6 +15,10 @@
@@ -4292,7 +4322,7 @@
  SystemInfo["Blindscan_t2_available"] = fileCheck("/proc/stb/info/vumodel")
  SystemInfo["RcTypeChangable"] = not(HardwareInfo().get_device_model().startswith('et8500') or HardwareInfo().get_device_model().startswith('et7')) and pathExists('/proc/stb/ir/rc/type')
 -SystemInfo["HasFullHDSkinSupport"] = HardwareInfo().get_device_model() not in ("et4000", "et5000", "sh1", "hd500c", "hd1100", "xp1000", "lc")
-+SystemInfo["HasFullHDSkinSupport"] = True
++SystemInfo["HasFullHDSkinSupport"] = HardwareInfo().get_device_model() in ("spark7162", "atevio7500")
  SystemInfo["HasForceLNBOn"] = fileCheck("/proc/stb/frontend/fbc/force_lnbon")
  SystemInfo["HasForceToneburst"] = fileCheck("/proc/stb/frontend/fbc/force_toneburst")
  SystemInfo["HasBypassEdidChecking"] = fileCheck("/proc/stb/hdmi/bypass_edid_checking")
@@ -4305,7 +4335,7 @@
  SystemInfo["HasHDMIpreemphasis"] = fileCheck("/proc/stb/hdmi/preemphasis")
  SystemInfo["HasColorimetry"] = fileCheck("/proc/stb/video/hdmi_colorimetry")
  SystemInfo["HasHdrType"] = fileCheck("/proc/stb/video/hdmi_hdrtype")
- SystemInfo["HasHDMI-CEC"] = HardwareInfo().has_hdmi() and fileExists("/usr/lib/enigma2/python/Plugins/SystemPlugins/HdmiCEC/plugin.pyo")
+ SystemInfo["HasHDMI-CEC"] = HardwareInfo().has_hdmi() and fileExists("/usr/lib/enigma2/python/Plugins/SystemPlugins/HdmiCEC/plugin.pyo") and (fileExists("/dev/cec0") or fileExists("/dev/hdmi_cec") or fileExists("/dev/misc/hdmi_cec0"))
 -SystemInfo["HasYPbPr"] = HardwareInfo().get_device_model() in ("dm8000", "et5000", "et6000", "et6500", "et9000", "et9200", "et9500", "et10000", "formuler1", "mbtwinplus", "spycat", "vusolo", "vuduo", "vuduo2", "vuultimo")
 -SystemInfo["HasScart"] = HardwareInfo().get_device_model() in ("dm8000", "et4000", "et6500", "et8000", "et9000", "et9200", "et9500", "et10000", "formuler1", "hd1100", "hd1200", "hd1265", "hd2400", "vusolo", "vusolo2", "vuduo", "vuduo2", "vuultimo", "vuuno", "xp1000")
 -SystemInfo["HasSVideo"] = HardwareInfo().get_device_model() in ("dm8000")
@@ -5317,6 +5347,15 @@
 +		PluginDescriptor(where = [PluginDescriptor.WHERE_SESSIONSTART, PluginDescriptor.WHERE_AUTOSTART], fnc = autostart) ]
 --- enigma2.org/lib/python/Plugins/SystemPlugins/HdmiCEC/plugin.py
 +++ enigma2/lib/python/Plugins/SystemPlugins/HdmiCEC/plugin.py
+@@ -141,7 +141,7 @@
+ 
+ def startSetup(menuid):
+ 	# only show in the menu when set to intermediate or higher
+-	if menuid == "video" and config.av.videoport.value == "DVI" and config.usage.setup_level.index >= 1:
++	if menuid == "video" and config.av.videoport.value == "HDMI"  and config.usage.setup_level.index >= 1:
+ 		return [(_("HDMI-CEC setup"), main, "hdmi_cec_setup", 0)]
+ 	return []
+ 
 @@ -147,7 +147,7 @@
  
  def Plugins(**kwargs):
@@ -6892,6 +6931,55 @@
 -	Downloader.py Trashcan.py GetEcmInfo.py Alternatives.py TextBoundary.py \
 +	Downloader.py Trashcan.py GetEcmInfo.py Alternatives.py TextBoundary.py Command.py \
  	camcontrol.py CountryCodes.py Multiboot.py FallbackTimer.py
+--- enigma2.org/lib/python/Tools/Profile.py
++++ enigma2/lib/python/Tools/Profile.py
+@@ -1,6 +1,7 @@
+ # the implementation here is a bit crappy.
+-import time
++import os, time
+ from Directories import resolveFilename, SCOPE_CONFIG
++from enigma import evfd
+ 
+ PERCENTAGE_START = 0
+ PERCENTAGE_END = 100
+@@ -21,12 +22,12 @@
+ 		total_time = t
+ 		profile_data[id] = t
+ except:
+-	print "no profile data available"
++	print "[Profile.py] no profile data available"
+ 
+ try:
+ 	profile_file = open(resolveFilename(SCOPE_CONFIG, "profile"), "w")
+ except IOError:
+-	print "WARNING: couldn't open profile file!"
++	print "[Profile.py] WARNING: couldn't open profile file!"
+ 
+ def profile(id):
+ 	now = time.time() - profile_start
+@@ -41,7 +42,21 @@
+ 				perc = PERCENTAGE_START
+ 			try:
+ 				open("/proc/progress", "w").write("%d \n" % perc)
+-			except IOError:
++				if perc > 1 and perc < 98:
++					value = 1
++					open("/proc/stb/lcd/symbol_circle", "w").write("%1d \n" % value)
++					if perc > 20:
++						if os.path.isfile('/proc/stb/info/model'):
++							model = str(open("/proc/stb/info/model").read())
++							if model.startswith("spark7162") or model.startswith("tf7700hdpvr") or model.startswith("octagon1008") or model.startswith("atevio7500") or model.startswith("hs7420") or model.startswith("hs7429"):
++								evfd.getInstance().vfd_write_string("START %02d" % perc)
++							elif model.startswith("spark") or model.startswith("hs7119") or model.startswith("hs7810a") or model.startswith("hs7819"):
++								evfd.getInstance().vfd_write_string("St%02d" % perc)
++				elif perc > 98:
++					value = 0
++					open("/proc/stb/lcd/symbol_circle", "w").write("%1d \n" % value)
++					evfd.getInstance().vfd_write_string("        ")
++ 			except IOError:
+ 				pass
+ 
+ def profile_final():
 --- enigma2.org/lib/service/listboxservice.cpp
 +++ enigma2/lib/service/listboxservice.cpp
 @@ -189,14 +189,14 @@
@@ -7357,7 +7445,7 @@
  				processor = line[1].split()[0]
 -			elif not cpu_speed and line[0] == "cpu MHz":
 +				cpu_speed = "unknown"
-+			elif cpu_speed == 0 and line[0] == "cpu MHz":
++			elif (cpu_speed == 0 or cpu_speed == "unknown") and line[0] == "cpu MHz":
  				cpu_speed = "%1.0f" % float(line[1])
  			elif line[0] == "processor":
  				cpu_count += 1

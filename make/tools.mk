@@ -391,7 +391,7 @@ ifeq ($(IMAGE), $(filter $(IMAGE), enigma2 enigma2-wlandriver))
 TOOLS += $(D)/tools-libmme_host
 TOOLS += $(D)/tools-libmme_image
 endif
-ifeq ($(E2_DIFF), $(filter $(E2_DIFF), 4 5))
+ifeq ($(E2_DIFF), $(filter $(E2_DIFF), 5))
 ifeq ($(MEDIAFW), $(filter $(MEDIAFW), gst-eplayer3))
 TOOLS += $(D)/tools-libeplayer3
 endif
