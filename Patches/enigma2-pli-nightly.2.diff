@@ -7452,7 +7452,12 @@
  
  def getImageTypeString():
  	try:
-@@ -80,45 +80,13 @@
+@@ -76,29 +76,19 @@
+ def getCPUInfoString():
+ 	try:
+ 		cpu_count = 0
+-		cpu_speed = 0
++		cpu_speed = "unknown"
  		processor = ""
  		for line in open("/proc/cpuinfo").readlines():
  			line = [x.strip() for x in line.strip().split(":")]
@@ -7460,14 +7465,13 @@
 +			if not processor and line[0] == "cpu type":
  				processor = line[1].split()[0]
 -			elif not cpu_speed and line[0] == "cpu MHz":
-+				cpu_speed = "unknown"
-+			elif (cpu_speed == 0 or cpu_speed == "unknown") and line[0] == "cpu MHz":
++			elif cpu_speed = "unknown" and line[0] == "cpu MHz":
  				cpu_speed = "%1.0f" % float(line[1])
  			elif line[0] == "processor":
  				cpu_count += 1
--
--		if processor.startswith("ARM") and os.path.isfile("/proc/stb/info/chipset"):
--			processor = "%s (%s)" % (open("/proc/stb/info/chipset").readline().strip().upper(), processor)
+ 
+ 		if processor.startswith("ARM") and os.path.isfile("/proc/stb/info/chipset"):
+ 			processor = "%s (%s)" % (open("/proc/stb/info/chipset").readline().strip().upper(), processor)
 -
 -		if not cpu_speed:
 -			try:
@@ -7478,29 +7482,9 @@
 -					cpu_speed = int(int(binascii.hexlify(open('/sys/firmware/devicetree/base/cpus/cpu@0/clock-frequency', 'rb').read()), 16) / 100000000) * 100
 -				except:
 -					cpu_speed = "-"
--
--		temperature = None
--		if os.path.isfile('/proc/stb/fp/temp_sensor_avs'):
--			temperature = open("/proc/stb/fp/temp_sensor_avs").readline().replace('\n','')
--		elif os.path.isfile('/proc/stb/power/avs'):
--			temperature = open("/proc/stb/power/avs").readline().replace('\n','')
--		elif os.path.isfile('/proc/stb/fp/temp_sensor'):
--			temperature = open("/proc/stb/fp/temp_sensor").readline().replace('\n','')
--		elif os.path.isfile("/sys/devices/virtual/thermal/thermal_zone0/temp"):
--			try:
--				temperature = int(open("/sys/devices/virtual/thermal/thermal_zone0/temp").read().strip())/1000
--			except:
--				pass
--		elif os.path.isfile("/proc/hisi/msp/pm_cpu"):
--			try:
--				temperature = re.search('temperature = (\d+) degree', open("/proc/hisi/msp/pm_cpu").read()).group(1)
--			except:
--				pass
--		if temperature:
--			return "%s %s MHz (%s) %s°C" % (processor, cpu_speed, ngettext("%d core", "%d cores", cpu_count) % cpu_count, temperature)
- 		return "%s %s MHz (%s)" % (processor, cpu_speed, ngettext("%d core", "%d cores", cpu_count) % cpu_count)
- 	except:
- 		return _("undefined")
+ 
+ 		temperature = None
+ 		if os.path.isfile('/proc/stb/fp/temp_sensor_avs'):
 --- enigma2.org/lib/python/Screens/About.py
 +++ enigma2/lib/python/Screens/About.py
 @@ -47,7 +47,7 @@
