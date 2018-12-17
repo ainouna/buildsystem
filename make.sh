@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20181210.2
+# Version 20181217.2
 
 ##############################################
 
@@ -375,7 +375,7 @@ case "$IMAGE" in
 				echo " 1)  Use your own Enigma2 git dir without patchfile"
 				echo "=================================================================================================="
 				echo " 2*) Mon, 10 Dec 2018 19:01 - E2 OpenPLi  any framework  a8e73e1874100aad76e44117b74543fb4018ff61"
-				echo " 3)  Fri, 30 Oct 2018 20:28 - E2 OpenPLi  any framework  ac0d34146f76cdfdb9363e6780424fd284743b68"
+				echo " 3)  Fri, 02 Nov 2018 20:28 - E2 OpenPLi  any framework  ac0d34146f76cdfdb9363e6780424fd284743b68"
 				echo " 4)  Mon, 29 Oct 2018 12:49 - E2 OpenPLi  any framework  3e63f640c6b31c5c15c150f67c6cbac6b89bcb20"
 				echo " 5)  Fri, 11 Apr 2017 17:45 - E2 OpenPLi  any framework  e45a15d8f494f70c9285e1532c6b6460328f6b89"
 				echo "=================================================================================================="
@@ -383,7 +383,6 @@ case "$IMAGE" in
 				read -p "Select Enigma2 revision : ";;
 		esac
 
-a8e73e1874100aad76e44117b74543fb4018ff61
 		case "$REPLY" in
 			1)	DIFF="1"
 				REVISION="local";;
