@@ -43,9 +43,9 @@
 +#
 +#if test "$enable_mediafwgstreamer" = "yes"; then
 +#	PKG_CHECK_MODULES(GSTREAMER, gstreamer-$GST_MAJORMINOR gstreamer-pbutils-$GST_MAJORMINOR)
-+#	PKG_CHECK_MODULES(BASE, [freetype2 fribidi gstreamer-$GST_MAJORMINOR gstreamer-pbutils-$GST_MAJORMINOR libdvbsi++ libpng libxml-2.0 sigc++-1.2 libssl libcrypto])
++#	PKG_CHECK_MODULES(BASE, [freetype2 fribidi gstreamer-$GST_MAJORMINOR gstreamer-pbutils-$GST_MAJORMINOR libdvbsi++ libpng libxml-2.0 sigc++-1.2 libssl libcrypto glib-2.0])
 +#else
-+#	PKG_CHECK_MODULES(BASE, [freetype2 fribidi libdvbsi++ libpng libxml-2.0 sigc++-1.2 libssl libcrypto])
++#	PKG_CHECK_MODULES(BASE, [freetype2 fribidi libdvbsi++ libpng libxml-2.0 sigc++-1.2 libssl libcrypto glib-2.0])
 +#fi
 +#
 +AC_ARG_ENABLE(tf7700,
@@ -1390,9 +1390,9 @@
 +
 +	#if defined ENABLE_SPARK7162
 +		for (id = 1; id < 46; id++)
-+	#elif defined FORTIS_HDBOX
++	#elif defined ENABLE_FORTIS_HDBOX
 +		for (id = 1; id < 40; id++)
-+	#elif defined OCTAGON1008
++	#elif defined ENABLE_OCTAGON1008
 +		for (id = 1; id < 29; id++)
 +	#elif defined ENABLE_ATEVIO7500
 +		for (id = 1; id < 23; id++);

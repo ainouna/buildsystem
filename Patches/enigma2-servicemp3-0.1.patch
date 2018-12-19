@@ -45,11 +45,11 @@
 +	PKG_CHECK_MODULES([SWRESAMPLE], [libswresample])
 +fi
 +
-+if test "$enable_gstreamer" = "yes"; then
++if test "$enable_mediafwgstreamer" = "yes"; then
 +	PKG_CHECK_MODULES(GSTREAMER, gstreamer-$GST_MAJORMINOR gstreamer-pbutils-$GST_MAJORMINOR)
-+	PKG_CHECK_MODULES(BASE, [freetype2 fribidi gstreamer-$GST_MAJORMINOR gstreamer-pbutils-$GST_MAJORMINOR libdvbsi++ libpng libxml-2.0 sigc++-2.0 libssl libcrypto])
++	PKG_CHECK_MODULES(BASE, [gstreamer-$GST_MAJORMINOR gstreamer-pbutils-$GST_MAJORMINOR freetype2 fribidi gstreamer-$GST_MAJORMINOR gstreamer-pbutils-$GST_MAJORMINOR libdvbsi++ libpng libxml-2.0 sigc++-2.0 libssl libcrypto glib-2.0])
 +else
-+	PKG_CHECK_MODULES(BASE, [freetype2 fribidi libdvbsi++ libpng libxml-2.0 sigc++-2.0 libssl libcrypto])
++	PKG_CHECK_MODULES(BASE, [freetype2 fribidi libdvbsi++ libpng libxml-2.0 sigc++-2.0 libssl libcrypto glib-2.0])
 +fi
  
  AC_DEFINE([DEBUG])
@@ -92,7 +92,7 @@
  	AC_SUBST([PYTHON_SITE_PKG])
 --- enigma2-servicemp3/servicemp3/Makefile.am
 +++ enigma2-servicemp3/servicemp3/Makefile.am
-@@ -5,22 +5,70 @@
+@@ -5,22 +5,65 @@
  	@PYTHON_CPPFLAGS@ \
  	-include Python.h
  
@@ -115,11 +115,8 @@
 +
 +if ENABLE_MEDIAFWGSTREAMER
 +AM_CXXFLAGS += \
--	@GSTREAMER_CFLAGS@
-+	-pthread \
-+	-I$(top_srcdir)/../../tufsbox/cdkroot/usr/include/gstreamer-1.0 \
-+	-I$(top_srcdir)/../../tufsbox/cdkroot/usr/include/glib-2.0 \
-+	-I$(top_srcdir)/../../tufsbox/cdkroot/usr/lib/glib-2.0/include
+ 	@GSTREAMER_CFLAGS@
++	-pthread
 +endif
  
  plugindir = $(libdir)/enigma2/python/Plugins/SystemPlugins/ServiceMP3
@@ -153,10 +150,7 @@
 +
 +if ENABLE_MEDIAFWGSTREAMER
 +servicemp3_la_LDFLAGS += \
-+	-lgstreamer-1.0 \
-+	-lgstpbutils-1.0 \
-+	-lglib-2.0 \
-+	-lgobject-2.0
++	@GSTREAMER_LIBS@
 +if ENABLE_LIBEPLAYER3
 +servicemp3_la_LDFLAGS += \
 +	-leplayer3
