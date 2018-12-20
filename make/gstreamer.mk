@@ -479,7 +479,7 @@ $(D)/gst_plugin_subsink: $(D)/bootstrap $(D)/gstreamer $(D)/gst_plugins_base
 # gst_plugins_dvbmediasink
 #
 GST_PLUGINS_DVBMEDIASINK_VER = 1.0
-GST_PLUGINS_DVBMEDIASINK_PATCH =
+GST_PLUGINS_DVBMEDIASINK_PATCH = gst-plugins-dvbmediasink-$(GST_PLUGINS_DVBMEDIASINK_VER)-add-support-for-gamma-curve.patch
 
 $(D)/gst_plugins_dvbmediasink: $(D)/bootstrap $(D)/gstreamer $(D)/gst_plugins_base $(D)/gst_plugin_subsink $(D)/libdca
 	$(START_BUILD)
