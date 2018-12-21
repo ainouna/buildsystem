@@ -6258,12 +6258,11 @@
  			self.hide()
  			self.hideTimer.stop()
  
-@@ -686,6 +696,20 @@
+@@ -686,6 +696,19 @@
  				"historyNext": (self.historyNext, _("Switch to next channel in history")),
  				"keyChannelUp": (self.keyChannelUpCheck, self.getKeyChannelUpHelptext),
  				"keyChannelDown": (self.keyChannelDownCheck, self.getKeyChannelDownHelptext),
 +#added
-+				'aspectratio': (self.aspectratioSelection, 'Select aspect ratio'),
 +				'sleepTimer': (self.sleepTimer, 'Sleeptimer'),
 +				'timer': (self.timer, 'Timer'),
 +				'showFavourites': (self.showFavourites, _('Bouquet list')),
@@ -6279,14 +6278,10 @@
  			})
  
  	def showTvChannelList(self, zap=False):
-@@ -850,6 +874,36 @@
+@@ -850,6 +873,32 @@
  			self.servicelist.moveUp()
  		self.servicelist.zap(enable_pipzap = True)
  
-+	def aspectratioSelection(self):
-+		from Screens.AspectRatio import AspectRatio
-+		self.session.open(AspectRatio)
-+
 +	def sleepTimer(self):
 +		from Screens.SleepTimerEdit import SleepTimerEdit
 +		self.session.open(SleepTimerEdit)
@@ -6316,7 +6311,7 @@
  	def zapDown(self):
  		if self.servicelist.inBouquet():
  			prev = self.servicelist.getCurrentSelection()
-@@ -884,7 +938,7 @@
+@@ -884,7 +933,7 @@
  	def __init__(self):
  		self["MenuActions"] = HelpableActionMap(self, "InfobarMenuActions",
  			{
@@ -6325,7 +6320,7 @@
  			})
  		self.session.infobar = None
  
-@@ -999,7 +1053,7 @@
+@@ -999,7 +1048,7 @@
  
  		self["EPGActions"] = HelpableActionMap(self, "InfobarEPGActions",
  			{
@@ -6334,7 +6329,7 @@
  				"showEventInfoSingleEPG": (self.showSingleEPG, _("Show single service EPG")),
  				"showEventInfoMultiEPG": (self.showMultiEPG, _("Show multi channel EPG")),
  				"showInfobarOrEpgWhenInfobarAlreadyVisible": self.showEventInfoWhenNotVisible,
-@@ -1010,7 +1064,7 @@
+@@ -1010,7 +1059,7 @@
  				if 'selectedevent' not in p.__call__.func_code.co_varnames] or []
  		from Components.ServiceEventTracker import InfoBarCount
  		if getAll or InfoBarCount == 1:
@@ -6343,7 +6338,7 @@
  		pluginlist.append((_("Multi EPG"), self.openMultiServiceEPG, "multi_epg"))
  		pluginlist.append((_("Current event EPG"), self.openEventView, "event_epg"))
  		return pluginlist
-@@ -1164,7 +1218,7 @@
+@@ -1164,7 +1213,7 @@
  	def showEventInfoPlugins(self):
  		pluginlist = self.getEPGPluginList()
  		if pluginlist:
@@ -6352,7 +6347,7 @@
  		else:
  			self.openSingleServiceEPG()
  
-@@ -1237,7 +1291,7 @@
+@@ -1237,7 +1286,7 @@
  				self.eventView = self.session.openWithCallback(self.closed, EventViewEPGSelect, epglist[0], ServiceReference(ref), self.eventViewCallback, self.openSingleServiceEPG, self.openMultiServiceEPG, self.openSimilarList)
  				self.dlg_stack.append(self.eventView)
  		if not epglist:
@@ -6361,7 +6356,7 @@
  			self.openMultiServiceEPG(False)
  
  	def eventViewCallback(self, setEvent, setService, val): #used for now/next displaying
-@@ -2140,7 +2194,7 @@
+@@ -2140,7 +2189,7 @@
  		self.addExtension((lambda: _("Import channels from fallback tuner"), self.importChannels, lambda: config.usage.remote_fallback_extension_menu.value and config.usage.remote_fallback_import.value))
  		self["InstantExtensionsActions"] = HelpableActionMap(self, "InfobarExtensions",
  			{
@@ -6370,7 +6365,7 @@
  			}, 1) # lower priority
  
  	def openSoftcamSetup(self):
-@@ -2170,7 +2224,7 @@
+@@ -2170,7 +2219,7 @@
  
  	def updateExtensions(self):
  		self.extensionsList = []
@@ -6379,7 +6374,7 @@
  		self.extensionKeys = {}
  		for x in self.list:
  			if x[0] == self.EXTENSION_SINGLE:
-@@ -2198,7 +2252,7 @@
+@@ -2198,7 +2247,7 @@
  					extensionsList.remove(extension)
  		list.extend([(x[0](), x) for x in extensionsList])
  		keys += [""] * len(extensionsList)
@@ -6388,7 +6383,7 @@
  
  	def extensionCallback(self, answer):
  		if answer is not None:
-@@ -2401,11 +2455,11 @@
+@@ -2401,11 +2450,11 @@
  
  class InfoBarInstantRecord:
  	"""Instant Record - handles the instantRecord action in order to
@@ -6402,7 +6397,7 @@
  			})
  		self.SelectedInstantServiceRef = None
  		if isStandardInfoBar(self):
-@@ -2488,7 +2542,7 @@
+@@ -2488,7 +2537,7 @@
  	def startInstantRecording(self, limitEvent = False):
  		begin = int(time())
  		end = begin + 3600      # dummy
@@ -6411,7 +6406,7 @@
  		info = { }
  
  		self.getProgramInfoAndEvent(info, name)
-@@ -2717,7 +2771,7 @@
+@@ -2717,7 +2766,7 @@
  	def __init__(self):
  		self["AudioSelectionAction"] = HelpableActionMap(self, "InfobarAudioSelectionActions",
  			{
@@ -6420,7 +6415,7 @@
  			})
  
  	def audioSelection(self):
-@@ -2731,7 +2785,7 @@
+@@ -2731,7 +2780,7 @@
  	def __init__(self):
  		self["SubserviceSelectionAction"] = HelpableActionMap(self, "InfobarSubserviceSelectionActions",
  			{
@@ -6429,7 +6424,7 @@
  			})
  
  		self["SubserviceQuickzapAction"] = HelpableActionMap(self, "InfobarSubserviceQuickzapActions",
-@@ -2815,18 +2869,18 @@
+@@ -2815,18 +2864,18 @@
  				idx += 1
  
  			if cnt_parent and self.bouquets and len(self.bouquets):
