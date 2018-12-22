@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20181217.2
+# Version 20181221.1
 
 ##############################################
 
@@ -164,7 +164,6 @@ case "$REPLY" in
 	37) BOXTYPE="pace7241";;
 	 *) BOXTYPE="atevio7500";;
 esac
-echo "BOXARCH=$BOXARCH" >> config
 echo "BOXTYPE=$BOXTYPE" >> config
 
 ##############################################
