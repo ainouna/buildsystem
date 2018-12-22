@@ -127,7 +127,7 @@ $(D)/libstb-hal.do_prepare:
 		echo " done."; \
 	else \
 		echo -n "Cloning git..."; \
-		git clone -q $(GIT_URL)/$(LIBSTB_HAL).git $(ARCHIVE)/libstb-hal-ddt.git; \
+		git clone -q $(GIT_URL)/$(LIBSTB_HAL).git $(ARCHIVE)/$(LIBSTB_HAL).git; \
 		echo " done."; \
 	fi
 	$(SILENT)cp -ra $(ARCHIVE)/$(LIBSTB_HAL).git $(SOURCE_DIR)/$(LIBSTB_HAL)
@@ -179,6 +179,80 @@ libstb-hal-clean:
 		$(MAKE) -C $(LH_OBJDIR) distclean
 
 libstb-hal-distclean:
+	$(SILENT)rm -rf $(LH_OBJDIR)
+	$(SILENT)rm -f $(D)/libstb-hal*
+
+################################################################################
+#
+# libstb-hal-tangos
+#
+
+$(D)/libstb-hal-tangos.do_prepare:
+	$(START_BUILD)
+	$(SILENT)rm -rf $(SOURCE_DIR)/$(LIBSTB_HAL)
+	$(SILENT)rm -rf $(SOURCE_DIR)/$(LIBSTB_HAL).org
+	$(SILENT)rm -rf $(LH_OBJDIR)
+	$(SILENT)test -d $(SOURCE_DIR) || mkdir -p $(SOURCE_DIR)
+	$(SILENT)if [ -d "$(ARCHIVE)/$(LIBSTB_HAL).git" ]; then \
+		echo -n "Update local git..."; \
+		cd $(ARCHIVE)/$(LIBSTB_HAL).git; \
+		git pull -q; \
+		cd "$(BUILD_TMP)"; \
+		echo " done."; \
+	else \
+		echo -n "Cloning git..."; \
+		git clone -q $(GIT_URL)/$(LIBSTB_HAL).git $(ARCHIVE)/libstb-hal-tangos.git; \
+		echo " done."; \
+	fi
+	$(SILENT)cp -ra $(ARCHIVE)/$(LIBSTB_HAL).git $(SOURCE_DIR)/$(LIBSTB_HAL)
+	$(SILENT)(cd $(SOURCE_DIR)/$(LIBSTB_HAL); git checkout -q $(HAL_BRANCH);)
+	$(SILENT)cp -ra $(SOURCE_DIR)/$(LIBSTB_HAL) $(SOURCE_DIR)/$(LIBSTB_HAL).org
+	$(SET) -e; cd $(SOURCE_DIR)/$(LIBSTB_HAL); \
+		$(call apply_patches, $(HAL_PATCHES))
+	@touch $@
+
+$(D)/libstb-hal-tangos.config.status: | $(NEUTRINO_DEPS)
+	$(SILENT)rm -rf $(LH_OBJDIR)
+	$(SILENT)test -d $(LH_OBJDIR) || mkdir -p $(LH_OBJDIR)
+	$(SILENT)cd $(LH_OBJDIR); \
+		test -d $(SOURCE_DIR)/$(LIBSTB_HAL)/m4 || mkdir -p $(SOURCE_DIR)/$(LIBSTB_HAL)/m4; \
+		$(SOURCE_DIR)/$(LIBSTB_HAL)/autogen.sh; \
+		$(BUILDENV) \
+		$(SOURCE_DIR)/$(LIBSTB_HAL)/configure  $(SILENT_CONFIGURE) \
+			--host=$(TARGET) \
+			--build=$(BUILD) \
+			--prefix=/usr \
+			--enable-maintainer-mode \
+			--enable-silent-rules \
+			--enable-shared=no \
+			\
+			--with-target=cdk \
+			--with-targetprefix=/usr \
+			--with-boxtype=$(BOXTYPE) \
+			$(LH_CONFIG_OPTS) \
+			PKG_CONFIG=$(PKG_CONFIG) \
+			PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) \
+			CFLAGS="$(N_CFLAGS)" CXXFLAGS="$(N_CFLAGS)" CPPFLAGS="$(N_CPPFLAGS)"
+	@touch $@
+
+$(D)/libstb-hal-tangos.do_compile: $(D)/libstb-hal.config.status
+	PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) \
+	$(MAKE) -C $(LH_OBJDIR) all DESTDIR=$(TARGET_DIR)
+	@touch $@
+
+$(D)/libstb-hal-tangos: $(D)/libstb-hal-tangos.do_prepare $(D)/libstb-hal-tangos.do_compile
+	PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) \
+	$(MAKE) -C $(LH_OBJDIR) install DESTDIR=$(TARGET_DIR)
+	$(REWRITE_LIBTOOL)/libstb-hal.la
+	$(TOUCH)
+
+libstb-hal-tangos-clean:
+	$(SILENT)rm -f $(D)/libstb-hal-tangos
+	$(SILENT)rm -f $(D)/libstb-hal-tangos.config.status
+	cd $(LH_OBJDIR); \
+		$(MAKE) -C $(LH_OBJDIR) distclean
+
+libstb-hal-tangos-distclean:
 	$(SILENT)rm -rf $(LH_OBJDIR)
 	$(SILENT)rm -f $(D)/libstb-hal*
 

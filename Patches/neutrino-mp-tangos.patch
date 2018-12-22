@@ -1,6 +1,6 @@
 --- neutrino-mp-tangos.org/acinclude.m4
 +++ neutrino-mp-tangos/acinclude.m4
-@@ -460,7 +460,7 @@
+@@ -468,7 +468,7 @@
  
  AC_ARG_WITH(boxmodel,
  	AS_HELP_STRING([--with-boxmodel], [valid for coolstream: hd1, hd2])
@@ -9,7 +9,7 @@
  AS_HELP_STRING([], [valid for spark: spark, spark7162])
  AS_HELP_STRING([], [valid for armbox: hd51, hd60, vusolo4k, bre2ze4k])
  AS_HELP_STRING([], [valid for generic: raspi]),
-@@ -541,8 +541,10 @@
+@@ -549,8 +549,10 @@
  AM_CONDITIONAL(BOXMODEL_FORTIS_HDBOX, test "$BOXMODEL" = "fortis_hdbox")
  AM_CONDITIONAL(BOXMODEL_OCTAGON1008, test "$BOXMODEL" = "octagon1008")
  AM_CONDITIONAL(BOXMODEL_HS7110, test "$BOXMODEL" = "hs7110")
@@ -20,7 +20,7 @@
  AM_CONDITIONAL(BOXMODEL_HS7819, test "$BOXMODEL" = "hs7819")
  AM_CONDITIONAL(BOXMODEL_DP7000, test "$BOXMODEL" = "dp7000")
  
-@@ -610,10 +612,14 @@
+@@ -618,10 +620,14 @@
  	AC_DEFINE(BOXMODEL_OCTAGON1008, 1, [octagon1008])
  elif test "$BOXMODEL" = "hs7110"; then
  	AC_DEFINE(BOXMODEL_HS7110, 1, [hs7110])
@@ -48,7 +48,7 @@
 # NEUTRINO_CPP  SglobalInfo	g_info;
 --- neutrino-mp-tangos.org/src/neutrino.cpp
 +++ neutrino-mp-tangos/src/neutrino.cpp
-@@ -4688,6 +4688,9 @@
+@@ -4708,6 +4708,9 @@
  
  		CVFD::getInstance()->Clear();
  		CVFD::getInstance()->setMode(CVFD::MODE_STANDBY);
@@ -58,7 +58,7 @@
  		CVFD::getInstance()->setBacklight(g_settings.backlight_standby);
  
  		InfoClock->enableInfoClock(false);
-@@ -4724,7 +4727,11 @@
+@@ -4744,7 +4747,11 @@
  		// Active standby off
  		powerManager->SetStandby(false, false);
  		CVFD::getInstance()->setMode(CVFD::MODE_TVRADIO);
@@ -939,7 +939,7 @@
  #include <gui/widget/stringinput_ext.h>
  #include <gui/screensetup.h>
  #include <gui/widget/msgbox.h>
-@@ -1428,15 +1428,15 @@
+@@ -1452,15 +1452,15 @@
  #if HAVE_SH4_HARDWARE
  	old3dmode = frameBuffer->get3DMode();
  #endif
@@ -964,7 +964,7 @@
  	pthread_t thrStartHint = 0;
  	if (is_file_player) {
  		showStartingHint = true;
-@@ -1654,14 +1654,14 @@
+@@ -1678,14 +1678,14 @@
  
  	while (playstate >= CMoviePlayerGui::PLAY)
  	{
@@ -987,7 +987,7 @@
  		if (update_lcd || g_settings.movieplayer_display_playtime) {
  			update_lcd = false;
  			updateLcd(g_settings.movieplayer_display_playtime);
-@@ -2231,12 +2231,12 @@
+@@ -2255,12 +2255,12 @@
  	CScreenSetup cSS;
  	cSS.showBorder(CZapit::getInstance()->GetCurrentChannelID());
  #endif
@@ -1006,7 +1006,7 @@
  	if (iso_file) {
  		iso_file = false;
  		if (umount2(ISO_MOUNT_POINT, MNT_FORCE))
-@@ -2356,10 +2356,10 @@
+@@ -2380,10 +2380,10 @@
  		}
  		if (!movie_info.channelName.empty() || !movie_info.epgTitle.empty())
  			p_movie_info = &movie_info;
@@ -1021,7 +1021,7 @@
  	}
  
  	if (p_movie_info) {
-@@ -2879,10 +2879,10 @@
+@@ -2903,10 +2903,10 @@
  		tuxtx_pause_subtitle(true);
  		frameBuffer->paintBackground();
  	}
@@ -1036,7 +1036,7 @@
  #endif
  }
  
-@@ -2920,9 +2920,9 @@
+@@ -2944,9 +2944,9 @@
  {
  #if HAVE_SH4_HARDWARE
  	printf("[CMoviePlayerGui] %s: %s\n", __FUNCTION__, show ? "Show" : "Not show");
@@ -1095,4 +1095,29 @@
  
  	int res = vfds->exec(NULL, "");
  
+--- neutrino-mp-tangos/src/driver/pictureviewer/pictureviewer.cpp
++++ neutrino-mp-tangos/src/driver/pictureviewer/pictureviewer.cpp
+@@ -564,8 +564,10 @@
+ 
+ 		// add neccessary paths to v_path
+ 		v_path.clear();
++#ifdef ENABLE_LCD4LINUX
+ 		if (lcd4l_mode)
+ 			v_path.push_back(g_settings.lcd4l_logodir);
++#endif
+ 		v_path.push_back(g_settings.logo_hdd_dir);
+ 		if (g_settings.logo_hdd_dir != LOGODIR_VAR)
+ 			v_path.push_back(LOGODIR_VAR);
+@@ -667,9 +669,11 @@
+ 
+ 		for (size_t f = 0; f < v_file.size(); f++)
+ 		{
++#ifdef ENABLE_LCD4LINUX
+ 			// process g_settings.lcd4l_logodir
+ 			if (lcd4l_mode)
+ 				v_path.push_back(g_settings.lcd4l_logodir + "/" + v_file[f] + fileType[i]);
++#endif
+ 			// process g_settings.logo_hdd_dir
+ 			v_path.push_back(g_settings.logo_hdd_dir + "/" + v_file[f] + fileType[i]);
+ 			// process LOGODIR_VAR
 

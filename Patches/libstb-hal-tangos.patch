@@ -451,7 +451,7 @@
  	unsigned int		segment_count;
 --- libstb-hal-cst-next-tangos.org/libduckbox/hardware_caps.c
 +++ libstb-hal-cst-next-tangos/libduckbox/hardware_caps.c
-@@ -120,6 +120,15 @@
+@@ -138,6 +138,15 @@
  			caps.can_cec = 1;
  			caps.has_fan = 0;
  		}
@@ -467,7 +467,7 @@
  		else if (!strncmp(buf, "hs7810a", 7)) {
  			strcpy(caps.boxvendor, "DUCKBOX");
  			strcpy(caps.boxname, buf);
-@@ -130,6 +139,15 @@
+@@ -148,6 +157,15 @@
  			caps.has_fan = 0;
  		}
  		else if (!strncmp(buf, "hs7119", 6)) {
@@ -483,16 +483,16 @@
  			strcpy(caps.boxvendor, "DUCKBOX");
  			strcpy(caps.boxname, buf);
  			caps.can_shutdown = 1;
---- libstb-hal-tangos/include/hardware_caps.h
-+++ libstb-hal-tangos/include/hardware_caps.h
-@@ -39,6 +39,7 @@
- 	int display_can_set_brightness;
- 	int display_can_deepstandby;
- 	int display_has_statusline;
-+	int has_button_timer;
- 	char boxvendor[64];
- 	char boxname[64];
- 	char boxarch[64];
+#--- libstb-hal-tangos/include/hardware_caps.h
+#+++ libstb-hal-tangos/include/hardware_caps.h
+#@@ -39,6 +39,7 @@
+# 	int display_can_set_brightness;
+# 	int display_can_deepstandby;
+# 	int display_has_statusline;
+#+	int has_button_timer;
+# 	char boxvendor[64];
+# 	char boxname[64];
+# 	char boxarch[64];
 --- libstb-hal-cst-next-tangos/tools/spark_fp.c.org
 +++ libstb-hal-cst-next-tangos/tools/spark_fp.c
 @@ -30,6 +30,10 @@
