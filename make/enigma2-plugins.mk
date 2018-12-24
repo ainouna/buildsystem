@@ -201,7 +201,7 @@ SERVICEMP3_CONF     += --enable-libeplayer3
 endif
 
 ifeq ($(MEDIAFW), gstreamer)
-SERVICEMP3_DEPS    += $(D)/gstreamer $(D)/gst_plugins_base $(D)/gst_plugins_dvbmediasink
+SERVICEMP3_DEPS    += $(D)/gstreamer $(D)/gst_plugins_base $(D)/gst_plugins_multibox_dvbmediasink
 SERVICEMP3_DEPS    += $(D)/gst_plugins_good $(D)/gst_plugins_bad $(D)/gst_plugins_ugly
 SERVICEMP3_CONF    += --enable-mediafwgstreamer
 SERVICEMP3_CONF    += --with-gstversion=1.0
@@ -209,7 +209,7 @@ endif
 
 ifeq ($(MEDIAFW), gst-eplayer3)
 SERVICEMP3_DEPS    += $(D)/tools-libeplayer3
-SERVICEMP3_DEPS    += $(D)/gstreamer $(D)/gst_plugins_base $(D)/gst_plugins_dvbmediasink
+SERVICEMP3_DEPS    += $(D)/gstreamer $(D)/gst_plugins_base $(D)/gst_plugins_multibox_dvbmediasink
 SERVICEMP3_DEPS    += $(D)/gst_plugins_good $(D)/gst_plugins_bad $(D)/gst_plugins_ugly
 SERVICEMP3_CONF    += --enable-libeplayer3
 SERVICEMP3_CONF    += --enable-mediafwgstreamer
@@ -257,7 +257,7 @@ SERVICEMP3EPL_CONF     += --enable-libeplayer3
 endif
 
 ifeq ($(MEDIAFW), gstreamer)
-SERVICEMP3EPL_DEPS    += $(D)/gstreamer $(D)/gst_plugins_base $(D)/gst_plugins_dvbmediasink
+SERVICEMP3EPL_DEPS    += $(D)/gstreamer $(D)/gst_plugins_base $(D)/gst_plugins_multibox_dvbmediasink
 SERVICEMP3EPL_DEPS    += $(D)/gst_plugins_good $(D)/gst_plugins_bad $(D)/gst_plugins_ugly
 SERVICEMP3EPL_CONF    += --enable-gstreamer
 SERVICEMP3EPL_CONF    += --with-gstversion=1.0
@@ -265,7 +265,7 @@ endif
 
 ifeq ($(MEDIAFW), gst-eplayer3)
 SERVICEMP3EPL_DEPS    += $(D)/tools-libeplayer3_new
-SERVICEMP3EPL_DEPS    += $(D)/gstreamer $(D)/gst_plugins_base $(D)/gst_plugins_dvbmediasink
+SERVICEMP3EPL_DEPS    += $(D)/gstreamer $(D)/gst_plugins_base $(D)/gst_plugins_multibox_dvbmediasink
 SERVICEMP3EPL_DEPS    += $(D)/gst_plugins_good $(D)/gst_plugins_bad $(D)/gst_plugins_ugly
 SERVICEMP3EPL_CONF    += --enable-libeplayer3
 SERVICEMP3EPL_CONF    += --enable-gstreamer
@@ -294,7 +294,7 @@ $(D)/enigma2_servicemp3epl: | $(SERVICEMP3EPL_DEPS)
 		; \
 		$(MAKE) all; \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
-#	$(REMOVE)/enigma2-servicemp3epl-$(SERVICEMP3EPL_VER)
+	$(REMOVE)/enigma2-servicemp3epl-$(SERVICEMP3EPL_VER)
 	$(TOUCH)
 
 #
@@ -327,6 +327,6 @@ $(D)/enigma2_serviceapp: $(D)/bootstrap $(D)/enigma2 $(D)/enigma2_servicemp3epl 
 		; \
 		$(MAKE) all; \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
-#	$(REMOVE)/enigma2-serviceapp-$(SERVICEAPP_VER)
+	$(REMOVE)/enigma2-serviceapp-$(SERVICEAPP_VER)
 	$(TOUCH)
 

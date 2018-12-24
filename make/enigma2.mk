@@ -20,78 +20,87 @@ ENIGMA2_DEPS += $(D)/busybox_usb
 E_CONFIG_OPTS += --enable-run_from_usb
 endif
 
+# determine libsigc++ version
 ifeq ($(E2_DIFF), $(filter $(E2_DIFF), 0 2 3 4))
 ENIGMA2_DEPS  += $(D)/libsigc
 else
 ENIGMA2_DEPS  += $(D)/libsigc_e2 
+endif
+
+# determine requirements for media framework
 ifeq ($(MEDIAFW), eplayer3)
 ENIGMA2_DEPS  += $(D)/tools-eplayer3
 E_CONFIG_OPTS += --enable-libeplayer3
 endif
 
 ifeq ($(MEDIAFW), gstreamer)
-ENIGMA2_DEPS  += $(D)/gst_plugins_dvbmediasink
 E_CONFIG_OPTS += --with-gstversion=1.0 --enable-mediafwgstreamer
+ifeq ($(E2_DIFF), $(filter $(E2_DIFF), 1 5))
+ENIGMA2_DEPS  += $(D)/gstreamer $(D)/gst_plugins_base $(D)/gst_plugins_multibox_dvbmediasink
+ENIGMA2_DEPS  += $(D)/gst_plugins_good $(D)/gst_plugins_bad $(D)/gst_plugins_ugly
+endif
 endif
 
 ifeq ($(MEDIAFW), gst-eplayer3)
 ENIGMA2_DEPS  += $(D)/tools-libeplayer3
-ENIGMA2_DEPS  += $(D)/gst_plugins_dvbmediasink
+ifeq ($(E2_DIFF), $(filter $(E2_DIFF), 1 5))
+ENIGMA2_DEPS  += $(D)/gstreamer $(D)/gst_plugins_base $(D)/gst_plugins_multibox_dvbmediasink
+ENIGMA2_DEPS  += $(D)/gst_plugins_good $(D)/gst_plugins_bad $(D)/gst_plugins_ugly
+endif
 E_CONFIG_OPTS += --with-gstversion=1.0 --enable-libeplayer3 --enable-mediafwgstreamer
 endif
-endif
 
-ifeq ($(BOXTYPE),spark)
-E_CONFIG_OPTS += --enable-spark
-endif
+#ifeq ($(BOXTYPE),spark)
+#E_CONFIG_OPTS += --enable-$(BOXTYPE)
+#endif
 
-ifeq ($(BOXTYPE),spark7162)
-E_CONFIG_OPTS += --enable-spark7162
-ENIGMA2_DEPS += ntp
-endif
+#ifeq ($(BOXTYPE),spark7162)
+#E_CONFIG_OPTS += --enable-spark7162
+#ENIGMA2_DEPS += ntp
+#endif
 
-ifeq ($(BOXTYPE),fortis_hdbox)
-E_CONFIG_OPTS += --enable-fortis_hdbox
-endif
+#ifeq ($(BOXTYPE),fortis_hdbox)
+#E_CONFIG_OPTS += --enable-fortis_hdbox
+#endif
 
-ifeq ($(BOXTYPE),octagon1008)
-E_CONFIG_OPTS += --enable-octagon1008
-endif
+#ifeq ($(BOXTYPE),octagon1008)
+#E_CONFIG_OPTS += --enable-octagon1008
+#endif
 
-ifeq ($(BOXTYPE),atevio7500)
-E_CONFIG_OPTS += --enable-atevio7500
-endif
+#ifeq ($(BOXTYPE),atevio7500)
+#E_CONFIG_OPTS += --enable-atevio7500
+#endif
 
-ifeq ($(BOXTYPE),hs7110)
-E_CONFIG_OPTS += --enable-hs7110
-endif
+#ifeq ($(BOXTYPE),hs7110)
+#E_CONFIG_OPTS += --enable-hs7110
+#endif
 
-ifeq ($(BOXTYPE),hs7420)
-E_CONFIG_OPTS += --enable-hs7420
-endif
+#ifeq ($(BOXTYPE),hs7420)
+#E_CONFIG_OPTS += --enable-hs7420
+#endif
 
-ifeq ($(BOXTYPE),hs7810a)
-E_CONFIG_OPTS += --enable-hs7810a
-endif
+#ifeq ($(BOXTYPE),hs7810a)
+#E_CONFIG_OPTS += --enable-hs7810a
+#endif
 
-ifeq ($(BOXTYPE),hs7119)
-E_CONFIG_OPTS += --enable-hs7119
-endif
+#ifeq ($(BOXTYPE),hs7119)
+#E_CONFIG_OPTS += --enable-hs7119
+#endif
 
-ifeq ($(BOXTYPE),hs7429)
-E_CONFIG_OPTS += --enable-hs7429
-endif
+#ifeq ($(BOXTYPE),hs7429)
+#E_CONFIG_OPTS += --enable-hs7429
+#endif
 
-ifeq ($(BOXTYPE),hs7819)
-E_CONFIG_OPTS += --enable-hs7819
-endif
+#ifeq ($(BOXTYPE),hs7819)
+#E_CONFIG_OPTS += --enable-hs7819
+#endif
 
 E_CONFIG_OPTS +=$(LOCAL_ENIGMA2_BUILD_OPTIONS)
 
 E_CPPFLAGS    = -I$(DRIVER_DIR)/include
 E_CPPFLAGS   += -I$(TARGET_DIR)/usr/include
 E_CPPFLAGS   += -I$(KERNEL_DIR)/include
-ifeq ($(E2_DIFF), 5)
+ifeq ($(E2_DIFF), $(filter $(E2_DIFF), 1 5))
 E_CPPFLAGS   += -I$(APPS_DIR)/tools/libeplayer3/include
 E_CPPFLAGS   += -I$(APPS_DIR)/tools
 endif
@@ -137,6 +146,7 @@ $(D)/enigma2.do_prepare: | $(ENIGMA2_DEPS)
 		echo "Repository : "$$REPO_0; \
 		echo "Revision   : "$$REVISION; \
 		echo "Diff       : "$$DIFF; \
+		echo "E_CONFIG_OPTS: "$(E_CONFIG_OPTS); \
 		echo; \
 		[ -d "$(ARCHIVE)/enigma2-pli-nightly.git" ] && \
 		(cd $(ARCHIVE)/enigma2-pli-nightly.git; echo -n "Updating archived OpenPLi git..."; git pull -q; echo -e -n " done.\nChecking out HEAD..."; git checkout -q HEAD; echo " done."; cd "$(BUILD_TMP)";); \
@@ -144,7 +154,7 @@ $(D)/enigma2.do_prepare: | $(ENIGMA2_DEPS)
 		(echo -n "Cloning remote OpenPLi git..."; git clone -q -b $$HEAD_0 $$REPO_0 $(ARCHIVE)/enigma2-pli-nightly.git; echo " done."); \
 		echo -n "Copying local git content to build environment..."; cp -ra $(ARCHIVE)/enigma2-pli-nightly.git $(SOURCE_DIR)/enigma2; echo " done."; \
 		if [ "$$REVISION" != "newest" ]; then \
-			cd $(SOURCE_DIR)/enigma2; pwd; echo -n "Checking out revision $$REVISION..."; git checkout -q "$$REVISION"; echo " done."; \
+			cd $(SOURCE_DIR)/enigma2; echo -n "Checking out revision $$REVISION..."; git checkout -q "$$REVISION"; echo " done."; \
 		fi; \
 		cp -ra $(SOURCE_DIR)/enigma2 $(SOURCE_DIR)/enigma2.org; \
 		echo "Applying diff-$$DIFF patch..."; \
