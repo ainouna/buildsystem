@@ -124,7 +124,7 @@ $(D)/tools-ipbox_eeprom: $(D)/bootstrap
 #
 # libeplayer3
 #
-$(D)/tools-libeplayer3: $(D)/bootstrap $(D)/ffmpeg
+$(D)/tools-libeplayer3: $(D)/bootstrap $(D)/$(FFMEG_DEP)
 	$(START_BUILD)
 	$(SET) -e; cd $(APPS_DIR)/tools/libeplayer3; \
 		if [ ! -d m4 ]; then mkdir m4; fi; \
@@ -138,9 +138,10 @@ $(D)/tools-libeplayer3: $(D)/bootstrap $(D)/ffmpeg
 #
 # libeplayer3_new
 #
+#FFMPEG_DEP = ffmpeg3
 LIBEPLAYER3_NEW_CPPFLAGS = -I$(APPS_DIR)/tools/libeplayer3_new/include
 
-$(D)/tools-libeplayer3_new: $(D)/bootstrap $(D)/ffmpeg3
+$(D)/tools-libeplayer3_new: $(D)/bootstrap $(D)/$(FFMEG_DEP)
 	$(START_BUILD)
 	$(SET) -e; cd $(APPS_DIR)/tools/libeplayer3_new; \
 		if [ ! -d m4 ]; then mkdir m4; fi; \
@@ -396,7 +397,7 @@ ifeq ($(MEDIAFW), $(filter $(MEDIAFW), gst-eplayer3))
 TOOLS += $(D)/tools-libeplayer3
 endif
 ifeq ($(MEDIAFW), $(filter $(MEDIAFW), eplayer3))
-TOOLS += $(D)/tools-eplayer3
+TOOLS += $(D)/tools-libeplayer3_new
 endif
 endif
 ifneq ($(wildcard $(APPS_DIR)/tools/own-tools),)

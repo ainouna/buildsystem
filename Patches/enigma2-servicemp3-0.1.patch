@@ -92,7 +92,7 @@
  	AC_SUBST([PYTHON_SITE_PKG])
 --- enigma2-servicemp3/servicemp3/Makefile.am
 +++ enigma2-servicemp3/servicemp3/Makefile.am
-@@ -5,22 +5,65 @@
+@@ -5,22 +5,68 @@
  	@PYTHON_CPPFLAGS@ \
  	-include Python.h
  
@@ -156,11 +156,14 @@
 +	-leplayer3
 +endif
 +else
-+servicemp3_la_LDFLAGS += \
-+	-leplayer3 \
-+	-lavformat \
-+	-lswresample \
-+	-L$(top_srcdir)/../../apps/tools/eplayer3
++servicemp3_la_LIBADD = \
++	@AVFORMAT_LIBS@ \
++	@AVUTIL_LIBS@ \
++	@AVCODEC_LIBS@ \
++	@SWSCALE_LIBS@ \
++	@SWRESAMPLE_LIBS@
++servicemp3_la_LIBADD_WHOLE = \
++	$(top_srcdir)/../../apps/tools/eplayer3//libeplayer3.a
 +endif
 --- enigma2-servicemp3-0.1/servicemp3/pythonmodule.cpp
 +++ enigma2-servicemp3/servicemp3/pythonmodule.cpp

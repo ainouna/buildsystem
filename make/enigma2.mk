@@ -5,7 +5,6 @@ ENIGMA2_DEPS  = $(D)/bootstrap $(D)/opkg $(D)/ncurses $(LIRC) $(D)/libcurl $(D)/
 ENIGMA2_DEPS += $(D)/libpng $(D)/libjpeg $(D)/giflib $(D)/freetype $(D)/libfribidi $(D)/libglib2 $(D)/libdvbsi $(D)/libxml2
 ENIGMA2_DEPS += $(D)/openssl $(D)/enigma2_tuxtxt32bpp $(D)/enigma2_hotplug_e2_helper $(D)/parted $(D)/avahi
 ENIGMA2_DEPS += python-all $(D)/alsa_utils
-#following seems to be needed for diff 4 and higher
 ENIGMA2_DEPS += $(D)/libid3tag
 ENIGMA2_DEPS += $(D)/expat $(D)/libusb
 ENIGMA2_DEPS += $(D)/sdparm $(D)/minidlna $(D)/ethtool
@@ -20,80 +19,36 @@ ENIGMA2_DEPS += $(D)/busybox_usb
 E_CONFIG_OPTS += --enable-run_from_usb
 endif
 
-# determine libsigc++ version
+# determine libsigc++ and ffmpeg version
 ifeq ($(E2_DIFF), $(filter $(E2_DIFF), 0 2 3 4))
 ENIGMA2_DEPS  += $(D)/libsigc
+FFMPEG_DEP = ffmpeg3
 else
 ENIGMA2_DEPS  += $(D)/libsigc_e2 
-endif
-
+FFMPEG_DEP = ffmpeg
 # determine requirements for media framework
 ifeq ($(MEDIAFW), eplayer3)
 ENIGMA2_DEPS  += $(D)/tools-eplayer3
 E_CONFIG_OPTS += --enable-libeplayer3
 endif
-
 ifeq ($(MEDIAFW), gstreamer)
-E_CONFIG_OPTS += --with-gstversion=1.0 --enable-mediafwgstreamer
-ifeq ($(E2_DIFF), $(filter $(E2_DIFF), 1 5))
 ENIGMA2_DEPS  += $(D)/gstreamer $(D)/gst_plugins_base $(D)/gst_plugins_multibox_dvbmediasink
 ENIGMA2_DEPS  += $(D)/gst_plugins_good $(D)/gst_plugins_bad $(D)/gst_plugins_ugly
+E_CONFIG_OPTS += --with-gstversion=1.0 --enable-mediafwgstreamer
 endif
-endif
-
 ifeq ($(MEDIAFW), gst-eplayer3)
 ENIGMA2_DEPS  += $(D)/tools-libeplayer3
-ifeq ($(E2_DIFF), $(filter $(E2_DIFF), 1 5))
 ENIGMA2_DEPS  += $(D)/gstreamer $(D)/gst_plugins_base $(D)/gst_plugins_multibox_dvbmediasink
 ENIGMA2_DEPS  += $(D)/gst_plugins_good $(D)/gst_plugins_bad $(D)/gst_plugins_ugly
+E_CONFIG_OPTS += --with-gstversion=1.0 --enable-mediafwgstreamer --enable-libeplayer3
 endif
-E_CONFIG_OPTS += --with-gstversion=1.0 --enable-libeplayer3 --enable-mediafwgstreamer
 endif
 
-#ifeq ($(BOXTYPE),spark)
 #E_CONFIG_OPTS += --enable-$(BOXTYPE)
-#endif
 
-#ifeq ($(BOXTYPE),spark7162)
-#E_CONFIG_OPTS += --enable-spark7162
-#ENIGMA2_DEPS += ntp
-#endif
-
-#ifeq ($(BOXTYPE),fortis_hdbox)
-#E_CONFIG_OPTS += --enable-fortis_hdbox
-#endif
-
-#ifeq ($(BOXTYPE),octagon1008)
-#E_CONFIG_OPTS += --enable-octagon1008
-#endif
-
-#ifeq ($(BOXTYPE),atevio7500)
-#E_CONFIG_OPTS += --enable-atevio7500
-#endif
-
-#ifeq ($(BOXTYPE),hs7110)
-#E_CONFIG_OPTS += --enable-hs7110
-#endif
-
-#ifeq ($(BOXTYPE),hs7420)
-#E_CONFIG_OPTS += --enable-hs7420
-#endif
-
-#ifeq ($(BOXTYPE),hs7810a)
-#E_CONFIG_OPTS += --enable-hs7810a
-#endif
-
-#ifeq ($(BOXTYPE),hs7119)
-#E_CONFIG_OPTS += --enable-hs7119
-#endif
-
-#ifeq ($(BOXTYPE),hs7429)
-#E_CONFIG_OPTS += --enable-hs7429
-#endif
-
-#ifeq ($(BOXTYPE),hs7819)
-#E_CONFIG_OPTS += --enable-hs7819
-#endif
+ifeq ($(BOXTYPE),spark7162)
+ENIGMA2_DEPS += ntp
+endif
 
 E_CONFIG_OPTS +=$(LOCAL_ENIGMA2_BUILD_OPTIONS)
 
@@ -146,7 +101,6 @@ $(D)/enigma2.do_prepare: | $(ENIGMA2_DEPS)
 		echo "Repository : "$$REPO_0; \
 		echo "Revision   : "$$REVISION; \
 		echo "Diff       : "$$DIFF; \
-		echo "E_CONFIG_OPTS: "$(E_CONFIG_OPTS); \
 		echo; \
 		[ -d "$(ARCHIVE)/enigma2-pli-nightly.git" ] && \
 		(cd $(ARCHIVE)/enigma2-pli-nightly.git; echo -n "Updating archived OpenPLi git..."; git pull -q; echo -e -n " done.\nChecking out HEAD..."; git checkout -q HEAD; echo " done."; cd "$(BUILD_TMP)";); \
