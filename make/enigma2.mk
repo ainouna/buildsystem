@@ -19,14 +19,55 @@ ENIGMA2_DEPS += $(D)/busybox_usb
 E_CONFIG_OPTS += --enable-run_from_usb
 endif
 
-# determine libsigc++ and ffmpeg version
+# determine libsigc++ version
 ifeq ($(E2_DIFF), $(filter $(E2_DIFF), 0 2 3 4))
 ENIGMA2_DEPS  += $(D)/libsigc
-FFMPEG_DEP = ffmpeg3
 else
+ifeq ($(E2_DIFF), $(filter $(E2_DIFF), 1))
 ENIGMA2_DEPS  += $(D)/libsigc_e2 
-FFMPEG_DEP = ffmpeg
+else
+ifeq ($(E2_DIFF), $(filter $(E2_DIFF), 5))
+ENIGMA2_DEPS  += $(D)/libsigc_e2 
+endif
+endif
+endif
+
 # determine requirements for media framework
+ifeq ($(E2_DIFF), $(filter $(E2_DIFF), 0 2 3 4))
+ifeq ($(MEDIAFW), eplayer3)
+ENIGMA2_DEPS  += $(D)/tools-libeplayer3
+E_CONFIG_OPTS += --enable-libeplayer3
+endif
+ifeq ($(MEDIAFW), gstreamer)
+ENIGMA2_DEPS  += $(D)/gstreamer $(D)/gst_plugins_base $(D)/gst_plugins_multibox_dvbmediasink
+ENIGMA2_DEPS  += $(D)/gst_plugins_good $(D)/gst_plugins_bad $(D)/gst_plugins_ugly
+E_CONFIG_OPTS += --with-gstversion=1.0 --enable-mediafwgstreamer
+endif
+ifeq ($(MEDIAFW), gst-eplayer3)
+ENIGMA2_DEPS  += $(D)/tools-libeplayer3
+ENIGMA2_DEPS  += $(D)/gstreamer $(D)/gst_plugins_base $(D)/gst_plugins_multibox_dvbmediasink
+ENIGMA2_DEPS  += $(D)/gst_plugins_good $(D)/gst_plugins_bad $(D)/gst_plugins_ugly
+E_CONFIG_OPTS += --with-gstversion=1.0 --enable-mediafwgstreamer --enable-libeplayer3
+endif
+else
+ifeq ($(E2_DIFF), $(filter $(E2_DIFF), 1)) # diff 1
+ifeq ($(MEDIAFW), eplayer3)
+ENIGMA2_DEPS  += $(D)/tools-libeplayer3_new
+E_CONFIG_OPTS += --enable-libeplayer3
+endif
+ifeq ($(MEDIAFW), gstreamer)
+ENIGMA2_DEPS  += $(D)/gstreamer $(D)/gst_plugins_base $(D)/gst_plugins_multibox_dvbmediasink
+ENIGMA2_DEPS  += $(D)/gst_plugins_good $(D)/gst_plugins_bad $(D)/gst_plugins_ugly
+E_CONFIG_OPTS += --with-gstversion=1.0 --enable-mediafwgstreamer
+endif
+ifeq ($(MEDIAFW), gst-eplayer3)
+ENIGMA2_DEPS  += $(D)/tools-libeplayer3
+ENIGMA2_DEPS  += $(D)/gstreamer $(D)/gst_plugins_base $(D)/gst_plugins_multibox_dvbmediasink
+ENIGMA2_DEPS  += $(D)/gst_plugins_good $(D)/gst_plugins_bad $(D)/gst_plugins_ugly
+E_CONFIG_OPTS += --with-gstversion=1.0 --enable-mediafwgstreamer --enable-libeplayer3
+endif
+else
+ifeq ($(E2_DIFF), $(filter $(E2_DIFF), 5)) # diff 5
 ifeq ($(MEDIAFW), eplayer3)
 ENIGMA2_DEPS  += $(D)/tools-eplayer3
 E_CONFIG_OPTS += --enable-libeplayer3
@@ -43,6 +84,8 @@ ENIGMA2_DEPS  += $(D)/gst_plugins_good $(D)/gst_plugins_bad $(D)/gst_plugins_ugl
 E_CONFIG_OPTS += --with-gstversion=1.0 --enable-mediafwgstreamer --enable-libeplayer3
 endif
 endif
+endif
+endif
 
 #E_CONFIG_OPTS += --enable-$(BOXTYPE)
 
@@ -55,9 +98,14 @@ E_CONFIG_OPTS +=$(LOCAL_ENIGMA2_BUILD_OPTIONS)
 E_CPPFLAGS    = -I$(DRIVER_DIR)/include
 E_CPPFLAGS   += -I$(TARGET_DIR)/usr/include
 E_CPPFLAGS   += -I$(KERNEL_DIR)/include
-ifeq ($(E2_DIFF), $(filter $(E2_DIFF), 1 5))
+ifeq ($(E2_DIFF), $(filter $(E2_DIFF), 1))
 E_CPPFLAGS   += -I$(APPS_DIR)/tools/libeplayer3/include
 E_CPPFLAGS   += -I$(APPS_DIR)/tools
+else
+ifeq ($(E2_DIFF), $(filter $(E2_DIFF), 5))
+E_CPPFLAGS   += -I$(APPS_DIR)/tools/libeplayer3/include
+E_CPPFLAGS   += -I$(APPS_DIR)/tools
+endif
 endif
 E_CPPFLAGS   += $(LOCAL_ENIGMA2_CPPFLAGS)
 E_CPPFLAGS   += $(PLATFORM_CPPFLAGS)
@@ -82,7 +130,8 @@ yaud-enigma2: yaud-none $(D)/enigma2 $(D)/enigma2-plugins $(D)/enigma2_release
 # enigma2
 #
 REPO_OPENPLI="https://github.com/OpenPLi/enigma2.git"
-REPO_REPLY_1="https://github.com/MaxWiesel/enigma2-openpli-fulan.git"
+#REPO_REPLY_1="https://github.com/MaxWiesel/enigma2-openpli-fulan.git"
+REPO_REPLY_1="ssh://gituser@192.168.178.17/volume1//git/audioniek-openpli.git"
 
 $(D)/enigma2.do_prepare: | $(ENIGMA2_DEPS)
 	REPO_0=$(REPO_OPENPLI); \
@@ -131,6 +180,7 @@ $(D)/enigma2.do_prepare: | $(ENIGMA2_DEPS)
 		[ -d "$(SOURCE_DIR)/enigma2" ] ; \
 		echo "Cloning local git content to build environment..."; \
 		git clone -b $$HEAD_1 $$REPO_1 $(SOURCE_DIR)/enigma2; \
+		echo; \
 	fi
 	@touch $@
 
@@ -186,8 +236,10 @@ $(D)/enigma2: $(D)/enigma2.do_prepare $(D)/enigma2.do_compile
 	$(SILENT)cp -ra $(ARCHIVE)/PLi-HD_skin.git/usr/share/enigma2/* $(TARGET_DIR)/usr/local/share/enigma2
 	@echo -e "$(TERM_RED)Applying Patch:$(TERM_NORMAL) $(PLI_SKIN_PATCH)"; $(PATCH)/$(PLI_SKIN_PATCH)
 	@echo -e "Patching $(TERM_GREEN_BOLD)PLi-HD skin$(TERM_NORMAL) completed."
-#	$(SILENT)rm -rf $(TARGET_DIR)/usr/local/share/enigma2/PLi-FullHD
-#	$(SILENT)rm -rf $(TARGET_DIR)/usr/local/share/enigma2/PLi-FullNightHD
+ifneq ($(BOXTYPE),spark7162)
+	$(SILENT)rm -rf $(TARGET_DIR)/usr/local/share/enigma2/PLi-FullHD
+	$(SILENT)rm -rf $(TARGET_DIR)/usr/local/share/enigma2/PLi-FullNightHD
+endif
 	$(TOUCH)
 
 enigma2-clean:
