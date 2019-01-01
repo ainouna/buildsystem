@@ -95,10 +95,6 @@ endif
 
 #E_CONFIG_OPTS += --enable-$(BOXTYPE)
 
-ifeq ($(BOXTYPE),spark7162)
-ENIGMA2_DEPS += ntp
-endif
-
 E_CONFIG_OPTS +=$(LOCAL_ENIGMA2_BUILD_OPTIONS)
 
 E_CPPFLAGS    = -I$(DRIVER_DIR)/include

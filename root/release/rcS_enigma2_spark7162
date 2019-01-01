@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 180908.1
+#Version 190101.1
 
 echo "Spark 7162 Enigma2"
 
@@ -211,7 +211,7 @@ mknod /dev/sci1 c 169 1
 stfbcontrol a 255
 
 #wlan=`cat /etc/enigma2/settings | grep systemoptions.wlan | cut -d "=" -f2`
-wlan=8192eu
+wlan=
 if [ ! $wlan ] || [ ! -e $MODDIR/$wlan.ko ]; then
    echo "[rcS] No WLAN"
 else
@@ -268,11 +268,11 @@ fi
 
 # Try and synchronise time
 #inettime=`cat /etc/enigma2/settings | grep systemoptions.inettime | cut -d "=" -f2`
-# if [ ! $inettime ] && [ -e /sbin/ntpdate ]; then
-if [ -e /sbin/ntpdate ]; then
+# if [ ! $inettime ] && [ -h /usr/sbin/ntpd ]; then
+if [ -h /usr/sbin/ntpd ] || [ -e /usr/sbin/ntpd ] || [ -e /sbin/ntpd ]; then
    echo "[rcS] Set internet time"
-   /sbin/ntpdate de.pool.ntp.org
-   /bin/fp_control -sst &
+   ntpd -n -p 0.europe.pool.ntp.org -q
+   /bin/fp_control -sst
 else
    if [ -e /usr/sbin/time.sh ]; then
       echo "[rcS] Use transponder time"
