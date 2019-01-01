@@ -2722,14 +2722,10 @@ $(D)/lzo: $(D)/bootstrap $(ARCHIVE)/$(LZO_SOURCE)
 MINIDLNA_VER = 1.2.1
 MINIDLNA_SOURCE = minidlna-$(MINIDLNA_VER).tar.gz
 MINIDLNA_PATCH = minidlna-$(MINIDLNA_VER).patch
-ifeq ($(E2_DIFF), $(filter $(E2_DIFF), 1))
+ifeq ($(E2_DIFF), $(filter $(E2_DIFF), 1 6))
 FFMPEG_DEPS = ffmpeg3
 else
-ifeq ($(E2_DIFF), $(filter $(E2_DIFF), 5))
 FFMPEG_DEPS = ffmpeg
-else
-FFMPEG_DEPS = ffmpeg3
-endif
 endif
 $(ARCHIVE)/$(MINIDLNA_SOURCE):
 	$(WGET) https://sourceforge.net/projects/minidlna/files/minidlna/$(MINIDLNA_VER)/$(MINIDLNA_SOURCE)
