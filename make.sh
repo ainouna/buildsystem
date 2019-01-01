@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20181221.1
+# Version 20181231.2
 
 ##############################################
 
@@ -14,7 +14,7 @@ fi
 ##############################################
 
 if [ "$1" == -h ] || [ "$1" == --help ]; then
-	echo "Usage: $0 [-v | --verbose | -q | --quiet] [Parameter1 Parameter2 ... Parameter7]"
+	echo "Usage: $0 [-v | --verbose | -q | --quiet] [Parameter1 [Parameter2 ... [Parameter7]]]]]]]"
 	echo
 	echo "-v or --verbose : verbose build (very noisy!)"
 	echo "-q or --quiet   : quiet build, fastest, almost silent"
@@ -22,7 +22,7 @@ if [ "$1" == -h ] || [ "$1" == --help ]; then
 	echo "Parameter 2     : kernel (1-2)"
 	echo "Parameter 3     : optimization (1-5)"
 	echo "Parameter 4     : image (Enigma=1/2 Neutrino=3/4 Tvheadend=5 (1-5)"
-	echo "Parameter 5     : Neutrino variant (1-6) or Enigma2/Tvheadend diff (0-5)"
+	echo "Parameter 5     : Neutrino variant (1-6) or Enigma2/Tvheadend diff (0-6)"
 	echo "Parameter 6     : media Framework (Enigma2: 1-4, Neutrino, Tvheadend: ignored)"
 	echo "Parameter 7     : destination (1-2, 1=flash, 2=USB, Fortis HS711X, HS742X & HS781X, ignored otherwise)"
 	exit
@@ -365,7 +365,7 @@ case "$IMAGE" in
 
 		# Determine the OpenPLi diff-level
  		case $5 in
-			[0-5])	REPLY=$5;;
+			[0-6])	REPLY=$5;;
 			*)	echo
 				echo "Please select one of the following Enigma2 revisions (default = 2):"
 				echo "=================================================================================================="
@@ -377,7 +377,9 @@ case "$IMAGE" in
 				echo " 3)  Fri, 02 Nov 2018 20:28 - E2 OpenPLi  any framework  ac0d34146f76cdfdb9363e6780424fd284743b68"
 				echo " 4)  Mon, 29 Oct 2018 12:49 - E2 OpenPLi  any framework  3e63f640c6b31c5c15c150f67c6cbac6b89bcb20"
 				echo " 5)  Fri, 11 Apr 2017 17:45 - E2 OpenPLi  any framework  e45a15d8f494f70c9285e1532c6b6460328f6b89"
+				echo " 6)  Fri, 11 Apr 2017 17:45 - E2 OpenPLi  gst or eplayer e45a15d8f494f70c9285e1532c6b6460328f6b89"
 				echo "=================================================================================================="
+				echo " NOTE: diff6 is experimental; switch to ffmpeg 3.X and new players!"
 				echo "Media Framework         : $MEDIAFW"
 				read -p "Select Enigma2 revision : ";;
 		esac
@@ -391,11 +393,24 @@ case "$IMAGE" in
 				REVISION="3e63f640c6b31c5c15c150f67c6cbac6b89bcb20";;
 			5)	DIFF="5"
 				REVISION="e45a15d8f494f70c9285e1532c6b6460328f6b89";;
+			6)	DIFF="6"
+				REVISION="e45a15d8f494f70c9285e1532c6b6460328f6b89";;
 			0)	DIFF="0"
 				REVISION="newest";;
 			*)	DIFF="2"
 				REVISION="a8e73e1874100aad76e44117b74543fb4018ff61";;
 		esac
+
+		if [ "$DIFF" == "6" ] && [ "$MEDIAFW" == "gst-eplayer3" ]; then
+			echo
+			echo "Diff 6 can currently only be built with gstreamer only or"
+			echo "eplayer3 only as media framework, not both."
+			echo
+			echo "Sorry, we're working on it (hence experimental)."
+			echo
+			exit
+		fi
+
 		echo "E2_DIFF=$DIFF" >> config
 		echo "E2_REVISION=$REVISION" >> config
 
@@ -407,7 +422,7 @@ case "$IMAGE" in
 				make distclean 2> /dev/null > /dev/null
 				echo " [Done]"
 			fi
-		elif [ ! "$DIFF" == "$LASTDIFF" ]; then
+		elif [ ! "$DIFF" == "$LASTDIFF" ] && [ -e ./deps/enigma2.do-compile ]; then
 			echo -n -e "\nDiff changed, OpenPli Enigma2 will be rebuilt."
 			rm -f ./.deps/enigma2.do_prepare
 			rm -f ./.deps/enigma2_networkbrowser

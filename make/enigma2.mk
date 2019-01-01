@@ -28,31 +28,20 @@ ENIGMA2_DEPS  += $(D)/libsigc_e2
 else
 ifeq ($(E2_DIFF), $(filter $(E2_DIFF), 5))
 ENIGMA2_DEPS  += $(D)/libsigc_e2 
+else
+ifeq ($(E2_DIFF), $(filter $(E2_DIFF), 6))
+ENIGMA2_DEPS  += $(D)/libsigc_e2 
+endif
 endif
 endif
 endif
 
 # determine requirements for media framework
-ifeq ($(E2_DIFF), $(filter $(E2_DIFF), 0 2 3 4))
+# Note: for diffs 0, 2, 3 & 4 there are no extra depencies;
+# these are part of enigma2-plugins
+ifeq ($(E2_DIFF), $(filter $(E2_DIFF), 1)) # diff 1 (local)
 ifeq ($(MEDIAFW), eplayer3)
 ENIGMA2_DEPS  += $(D)/tools-libeplayer3
-E_CONFIG_OPTS += --enable-libeplayer3
-endif
-ifeq ($(MEDIAFW), gstreamer)
-ENIGMA2_DEPS  += $(D)/gstreamer $(D)/gst_plugins_base $(D)/gst_plugins_multibox_dvbmediasink
-ENIGMA2_DEPS  += $(D)/gst_plugins_good $(D)/gst_plugins_bad $(D)/gst_plugins_ugly
-E_CONFIG_OPTS += --with-gstversion=1.0 --enable-mediafwgstreamer
-endif
-ifeq ($(MEDIAFW), gst-eplayer3)
-ENIGMA2_DEPS  += $(D)/tools-libeplayer3
-ENIGMA2_DEPS  += $(D)/gstreamer $(D)/gst_plugins_base $(D)/gst_plugins_multibox_dvbmediasink
-ENIGMA2_DEPS  += $(D)/gst_plugins_good $(D)/gst_plugins_bad $(D)/gst_plugins_ugly
-E_CONFIG_OPTS += --with-gstversion=1.0 --enable-mediafwgstreamer --enable-libeplayer3
-endif
-else
-ifeq ($(E2_DIFF), $(filter $(E2_DIFF), 1)) # diff 1
-ifeq ($(MEDIAFW), eplayer3)
-ENIGMA2_DEPS  += $(D)/tools-libeplayer3_new
 E_CONFIG_OPTS += --enable-libeplayer3
 endif
 ifeq ($(MEDIAFW), gstreamer)
@@ -83,6 +72,23 @@ ENIGMA2_DEPS  += $(D)/gstreamer $(D)/gst_plugins_base $(D)/gst_plugins_multibox_
 ENIGMA2_DEPS  += $(D)/gst_plugins_good $(D)/gst_plugins_bad $(D)/gst_plugins_ugly
 E_CONFIG_OPTS += --with-gstversion=1.0 --enable-mediafwgstreamer --enable-libeplayer3
 endif
+else
+ifeq ($(E2_DIFF), $(filter $(E2_DIFF), 6)) # diff 6 (experimental)
+ifeq ($(MEDIAFW), eplayer3)
+ENIGMA2_DEPS  += $(D)/tools-libeplayer3_new
+E_CONFIG_OPTS += --enable-libeplayer3
+endif
+ifeq ($(MEDIAFW), gstreamer)
+ENIGMA2_DEPS  += $(D)/gstreamer $(D)/gst_plugins_base $(D)/gst_plugins_multibox_dvbmediasink
+ENIGMA2_DEPS  += $(D)/gst_plugins_good $(D)/gst_plugins_bad $(D)/gst_plugins_ugly
+E_CONFIG_OPTS += --with-gstversion=1.0 --enable-mediafwgstreamer
+endif
+ifeq ($(MEDIAFW), gst-eplayer3)
+ENIGMA2_DEPS  += $(D)/tools-libeplayer3_new
+ENIGMA2_DEPS  += $(D)/gstreamer $(D)/gst_plugins_base $(D)/gst_plugins_multibox_dvbmediasink
+ENIGMA2_DEPS  += $(D)/gst_plugins_good $(D)/gst_plugins_bad $(D)/gst_plugins_ugly
+E_CONFIG_OPTS += --with-gstversion=1.0 --enable-mediafwgstreamer --enable-libeplayer3
+endif
 endif
 endif
 endif
@@ -105,6 +111,11 @@ else
 ifeq ($(E2_DIFF), $(filter $(E2_DIFF), 5))
 E_CPPFLAGS   += -I$(APPS_DIR)/tools/libeplayer3/include
 E_CPPFLAGS   += -I$(APPS_DIR)/tools
+else
+ifeq ($(E2_DIFF), $(filter $(E2_DIFF), 6))
+E_CPPFLAGS   += -I$(APPS_DIR)/tools/libeplayer3_new/include
+E_CPPFLAGS   += -I$(APPS_DIR)/tools
+endif
 endif
 endif
 E_CPPFLAGS   += $(LOCAL_ENIGMA2_CPPFLAGS)
