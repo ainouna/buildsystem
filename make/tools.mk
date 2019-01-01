@@ -10,6 +10,7 @@ tools-clean:
 	-$(MAKE) -C $(APPS_DIR)/tools/spf_tool distclean
 	-$(MAKE) -C $(APPS_DIR)/tools/devinit distclean
 	-$(MAKE) -C $(APPS_DIR)/tools/eplayer3 distclean
+	-$(MAKE) -C $(APPS_DIR)/tools/extplayer3 distclean
 	-$(MAKE) -C $(APPS_DIR)/tools/evremote2 distclean
 	-$(MAKE) -C $(APPS_DIR)/tools/fp_control distclean
 	-$(MAKE) -C $(APPS_DIR)/tools/hotplug distclean
@@ -146,7 +147,7 @@ $(D)/tools-libeplayer3_new: $(D)/bootstrap $(D)/ffmpeg3
 		if [ ! -d m4 ]; then mkdir m4; fi; \
 		autoreconf -fi; \
 		$(CONFIGURE) \
-			--prefix= \
+			--prefix=/usr \
 			CPPFLAGS="$(LIBEPLAYER3_NEW_CPPFLAGS)" \
 		; \
 		$(MAKE); \
@@ -354,6 +355,23 @@ $(D)/tools-eplayer3: $(D)/bootstrap $(D)/ffmpeg
 	$(TOUCH)
 
 #
+# exteplayer3
+#
+EXTEPLAYER3_CPPFLAGS = -I$(APPS_DIR)/tools/exteplayer3/include
+$(D)/tools-exteplayer3: $(D)/bootstrap $(D)/ffmpeg
+	$(START_BUILD)
+	$(SET) -e; cd $(APPS_DIR)/tools/exteplayer3; \
+		if [ ! -d m4 ]; then mkdir m4; fi; \
+		autoreconf -fi; \
+		$(CONFIGURE) \
+			--prefix= \
+			CPPFLAGS="$(EXTEPLAYER3_CPPFLAGS)" \
+		; \
+		$(MAKE); \
+		$(MAKE) install DESTDIR=$(TARGET_DIR)
+	$(TOUCH)
+
+#
 # own-tools
 #
 $(D)/tools-own-tools: $(D)/bootstrap $(D)/libcurl
@@ -373,6 +391,7 @@ TOOLS += $(D)/tools-showiframe
 #TOOLS += $(D)/tools-minimon
 TOOLS += $(D)/tools-devinit
 TOOLS += $(D)/tools-evremote2
+#TOOLS += $(D)/tools-exteplayer3
 TOOLS += $(D)/tools-fp_control
 TOOLS += $(D)/tools-hotplug
 ifeq ($(BOXTYPE), $(filter $(BOXTYPE), ipbox55 ipbox99 ipbox9900 cuberevo cuberevo_mini cuberevo_mini2 cuberevo_250hd cuberevo_2000hd cuberevo_3000hd))
@@ -385,20 +404,14 @@ TOOLS += $(D)/tools-tfd2mtd
 TOOLS += $(D)/tools-tffpctl
 endif
 TOOLS += $(D)/tools-ustslave
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE), ufs910 ufs912 ufs913 spark7162))
 TOOLS += $(D)/tools-vfdctl
+endif
 TOOLS += $(D)/tools-wait4button
 ifeq ($(IMAGE), $(filter $(IMAGE), enigma2 enigma2-wlandriver))
 TOOLS += $(D)/tools-libmme_host
 TOOLS += $(D)/tools-libmme_image
 endif
-#ifeq ($(E2_DIFF), $(filter $(E2_DIFF), 1 5))
-#ifeq ($(MEDIAFW), $(filter $(MEDIAFW), gst-eplayer3))
-#TOOLS += $(D)/tools-libeplayer3
-#endif
-#ifeq ($(MEDIAFW), $(filter $(MEDIAFW), eplayer3))
-#TOOLS += $(D)/tools-eplayer3
-#endif
-#endif
 ifneq ($(wildcard $(APPS_DIR)/tools/own-tools),)
 TOOLS += $(D)/tools-own-tools
 endif
