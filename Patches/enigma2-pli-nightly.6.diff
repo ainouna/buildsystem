@@ -7422,7 +7422,7 @@
  			eDebug("[eDVBServiceRecord] can't open recording file: %m");
 --- enigma2.org/lib/service/serviceeplayer3.cpp
 +++ enigma2/lib/service/serviceeplayer3.cpp
-@@ -0,0 +1,2214 @@
+@@ -0,0 +1,2169 @@
 +#include <lib/base/cfile.h>
 +#include <lib/base/ebase.h>
 +#include <lib/base/eerror.h>
@@ -8745,16 +8745,16 @@
 +	{
 +		player->playback->Command(player, PLAYBACK_PTS, &vpts);
 +	}
++#else //eplayer3 code
++//	player->GetPts(pts);
++	player->GetPts((int64_t &) pts); //old serviceeplayer3
++#endif
 +	if (vpts <= 0)
 +	{
 +		return -1;
 +	}
 +	/* len is in nanoseconds. we have 90 000 pts per second. */
 +	pts = vpts;
-+#else //eplayer3 code
-+//	player->GetPts(pts);
-+	player->GetPts((int64_t &) pts); //old serviceeplayer3
-+#endif
 +	return 0;
 +}
 +
@@ -8983,51 +8983,6 @@
 +			break;
 +		}
 +	}
-+#if 0
-+#if defined ENABLE_MEDIAFWGSTREAMER \
-+ && not defined ENABLE_DUAL_MEDIAFW
-+	if (m_state == stRunning && player->playback)
-+	{
-+		/* Hellmaster1024: we need to save the adress of tag to free the strduped mem
-+		   the command will return a new adress for a new strduped string.
-+		   Both Strings need to be freed! */
-+		res_str = tag;
-+		player->playback->Command(player, PLAYBACK_INFO, &res_str);
-+		/* Hellmaster1024: in case something went wrong maybe no new adress is returned */
-+		if (tag != res_str)
-+		{
-+			std::string res = res_str;
-+			free(tag);
-+			free(res_str);
-+			return res;
-+		}
-+		else
-+		{
-+			free(tag);
-+			return "";
-+		}
-+#else //eplayer3 code
-+	if (player)
-+	{
-+		player->input.GetMetadata(keys, values);
-+	}
-+	for (int i = 0; i < keys.size(); i++)
-+	{
-+		if (tag == keys[i])
-+		{
-+			res = values[i];
-+		}
-+	}	
-+#endif
-+	free(tag);
-+
-+#if defined ENABLE_MEDIAFWGSTREAMER \
-+ && not defined ENABLE_DUAL_MEDIAFW
-+	return "";
-+#else //eplayer3 code
-+	return res;
-+#endif
-+#endif //#if 0
 +	return "";
 +}
 +
@@ -9639,7 +9594,7 @@
 +// vim:ts=4
 --- enigma2.org/lib/service/serviceeplayer3.h
 +++ enigma2/lib/service/serviceeplayer3.h
-@@ -0,0 +1,288 @@
+@@ -0,0 +1,290 @@
 +#ifndef __serviceeplayer3_h
 +#define __serviceeplayer3_h
 +
@@ -9667,7 +9622,6 @@
 +public:
 +	eServiceFactoryEPlayer3();
 +	virtual ~eServiceFactoryEPlayer3();
-+//#if defined ENABLE_MEDIAFWGSTREAMER
 +#if defined ENABLE_DUAL_MEDIAFW
 +	enum {
 +		id = 4097,
@@ -9676,7 +9630,7 @@
 +#else
 +	enum { id = 4097 };
 +#endif
-+//#endif
++
 +	// iServiceHandler
 +	RESULT play(const eServiceReference &, ePtr<iPlayableService> &ptr);
 +	RESULT record(const eServiceReference &, ePtr<iRecordableService> &ptr);
@@ -9737,6 +9691,7 @@
 +	eFixedMessagePump<int> (*inst_m_pump);
 +
 +	// iPlayableService
++//	RESULT connectEvent(const sigc::slot2<void,iPlayableService*,int> &event, ePtr<eConnection> &connection);
 +	RESULT connectEvent(const Slot2<void,iPlayableService*,int> &event, ePtr<eConnection> &connection);
 +	RESULT start();
 +	RESULT stop();
@@ -9749,6 +9704,7 @@
 +	RESULT subtitle(ePtr<iSubtitleOutput> &ptr);
 +	RESULT audioDelay(ePtr<iAudioDelay> &ptr);
 +	RESULT cueSheet(ePtr<iCueSheet> &ptr);
++//	void setQpipMode(bool value, bool audio) { }
 +
 +	// not implemented (yet)
 +	RESULT setTarget(int target, bool noaudio = false) { return -1; }
@@ -9889,6 +9845,7 @@
 +	bool m_use_chapter_entries;
 +	bufferInfo m_bufferInfo;
 +	eServiceEPlayer3(eServiceReference ref);
++//	sigc::signal2<void, iPlayableService*, int> m_event;
 +	Signal2<void, iPlayableService*, int> m_event;
 +	enum
 +	{
