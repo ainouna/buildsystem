@@ -252,7 +252,7 @@ SERVICEMP3EPL_CPPFLAGS += -I$(SOURCE_DIR)/enigma2
 SERVICEMP3EPL_CPPFLAGS += -I$(SOURCE_DIR)/enigma2/include
 SERVICEMP3EPL_CPPFLAGS += -I$(KERNEL_DIR)/include
 ifeq ($(MEDIAFW), eplayer3)
-SERVICEMP3EPL_DEPS     += $(D)/tools-eplayer3_new
+SERVICEMP3EPL_DEPS     += $(D)/tools-libeplayer3_new
 SERVICEMP3EPL_CONF     += --enable-libeplayer3
 endif
 
