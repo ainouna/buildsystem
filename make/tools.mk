@@ -130,7 +130,7 @@ $(D)/tools-libeplayer3: $(D)/bootstrap $(D)/ffmpeg
 	$(SET) -e; cd $(APPS_DIR)/tools/libeplayer3; \
 		if [ ! -d m4 ]; then mkdir m4; fi; \
 		$(CONFIGURE_TOOLS) \
-			--prefix= \
+			--prefix=/usr \
 		; \
 		$(MAKE); \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
@@ -139,8 +139,6 @@ $(D)/tools-libeplayer3: $(D)/bootstrap $(D)/ffmpeg
 #
 # libeplayer3_new
 #
-LIBEPLAYER3_NEW_CPPFLAGS = -I$(APPS_DIR)/tools/libeplayer3_new/include
-
 $(D)/tools-libeplayer3_new: $(D)/bootstrap $(D)/ffmpeg3
 	$(START_BUILD)
 	$(SET) -e; cd $(APPS_DIR)/tools/libeplayer3_new; \
@@ -148,7 +146,6 @@ $(D)/tools-libeplayer3_new: $(D)/bootstrap $(D)/ffmpeg3
 		autoreconf -fi; \
 		$(CONFIGURE) \
 			--prefix=/usr \
-			CPPFLAGS="$(LIBEPLAYER3_NEW_CPPFLAGS)" \
 		; \
 		$(MAKE); \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
@@ -348,7 +345,7 @@ $(D)/tools-eplayer3: $(D)/bootstrap $(D)/ffmpeg
 	$(SET) -e; cd $(APPS_DIR)/tools/eplayer3; \
 		if [ ! -d m4 ]; then mkdir m4; fi; \
 		$(CONFIGURE_TOOLS) \
-			--prefix= \
+			--prefix=/usr\
 		; \
 		$(MAKE); \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
@@ -357,7 +354,6 @@ $(D)/tools-eplayer3: $(D)/bootstrap $(D)/ffmpeg
 #
 # exteplayer3
 #
-EXTEPLAYER3_CPPFLAGS = -I$(APPS_DIR)/tools/exteplayer3/include
 $(D)/tools-exteplayer3: $(D)/bootstrap $(D)/ffmpeg
 	$(START_BUILD)
 	$(SET) -e; cd $(APPS_DIR)/tools/exteplayer3; \
@@ -365,7 +361,6 @@ $(D)/tools-exteplayer3: $(D)/bootstrap $(D)/ffmpeg
 		autoreconf -fi; \
 		$(CONFIGURE) \
 			--prefix= \
-			CPPFLAGS="$(EXTEPLAYER3_CPPFLAGS)" \
 		; \
 		$(MAKE); \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
