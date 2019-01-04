@@ -124,7 +124,7 @@ $(D)/tools-ipbox_eeprom: $(D)/bootstrap
 
 #
 # libeplayer3
-#
+# CAUTION: name is misleading; builds a library and an executable
 $(D)/tools-libeplayer3: $(D)/bootstrap $(D)/ffmpeg
 	$(START_BUILD)
 	$(SET) -e; cd $(APPS_DIR)/tools/libeplayer3; \
@@ -139,7 +139,7 @@ $(D)/tools-libeplayer3: $(D)/bootstrap $(D)/ffmpeg
 #
 # libeplayer3_new
 #
-$(D)/tools-libeplayer3_new: $(D)/bootstrap $(D)/ffmpeg3
+$(D)/tools-libeplayer3_new: $(D)/bootstrap $(D)/ffmpeg
 	$(START_BUILD)
 	$(SET) -e; cd $(APPS_DIR)/tools/libeplayer3_new; \
 		if [ ! -d m4 ]; then mkdir m4; fi; \
@@ -339,7 +339,7 @@ $(D)/tools-wait4button: $(D)/bootstrap
 
 #
 # eplayer3
-#
+# CAUTION: name is misleading; builds a library only
 $(D)/tools-eplayer3: $(D)/bootstrap $(D)/ffmpeg
 	$(START_BUILD)
 	$(SET) -e; cd $(APPS_DIR)/tools/eplayer3; \

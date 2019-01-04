@@ -1489,7 +1489,7 @@ $(D)/libdreamdvd: $(D)/bootstrap $(D)/libdvdnav
 #
 # ffmpeg
 #
-FFMPEG_VER = 2.8.15
+FFMPEG_VER = 3.4.3
 FFMPEG_SOURCE = ffmpeg-$(FFMPEG_VER).tar.xz
 FFMPEG_PATCH  = ffmpeg-$(FFMPEG_VER)-buffer-size.patch
 FFMPEG_PATCH += ffmpeg-$(FFMPEG_VER)-hds-libroxml.patch
@@ -1498,251 +1498,17 @@ FFMPEG_PATCH += ffmpeg-$(FFMPEG_VER)-kodi.patch
 
 FFMPEG_DEPS =
 FFMPEG_CONF_OPTS = 
-FFMPEG_EXTRA_CFLAGS =
+FFMPEG_EXTRA_CFLAGS = -I$(TARGET_DIR)/usr/include
 
 $(ARCHIVE)/$(FFMPEG_SOURCE):
 	$(WGET) http://www.ffmpeg.org/releases/$(FFMPEG_SOURCE)
 
-$(D)/ffmpeg: $(D)/bootstrap $(D)/openssl $(D)/bzip2 $(D)/libass $(D)/libxml2 $(D)/libroxml $(FFMPEG_DEPS) $(ARCHIVE)/$(FFMPEG_SOURCE)
+$(D)/ffmpeg: $(D)/bootstrap $(D)/openssl $(D)/bzip2 $(D)/libass $(D)/libxml2 $(D)/libroxml $(ARCHIVE)/$(FFMPEG_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/ffmpeg-$(FFMPEG_VER)
 	$(UNTAR)/$(FFMPEG_SOURCE)
 	set -e; cd $(BUILD_TMP)/ffmpeg-$(FFMPEG_VER); \
-		$(call apply_patches,$(FFMPEG_PATCH)); \
-		./configure $(SILENT_OPT) \
-			--disable-ffserver \
-			--disable-ffplay \
-			--disable-ffprobe \
-			\
-			--disable-doc \
-			--disable-htmlpages \
-			--disable-manpages \
-			--disable-podpages \
-			--disable-txtpages \
-			\
-			--disable-altivec \
-			--disable-amd3dnow \
-			--disable-amd3dnowext \
-			--disable-mmx \
-			--disable-mmxext \
-			--disable-sse \
-			--disable-sse2 \
-			--disable-sse3 \
-			--disable-ssse3 \
-			--disable-sse4 \
-			--disable-sse42 \
-			--disable-avx \
-			--disable-fma4 \
-			--disable-vfp \
-			--disable-inline-asm \
-			--disable-yasm \
-			--disable-mips32r2 \
-			--disable-mipsdspr2 \
-			--disable-mipsfpu \
-			--disable-fast-unaligned \
-			--disable-armv5te \
-			--disable-armv6 \
-			--disable-armv6t2 \
-			--disable-neon \
-			\
-			--disable-dxva2 \
-			--disable-vaapi \
-			--disable-vdpau \
-			\
-			--disable-muxers \
-			--enable-muxer=flac \
-			--enable-muxer=mp3 \
-			--enable-muxer=h261 \
-			--enable-muxer=h263 \
-			--enable-muxer=h264 \
-			--enable-muxer=image2 \
-			--enable-muxer=mpeg1video \
-			--enable-muxer=mpeg2video \
-			--enable-muxer=mpegts \
-			--enable-muxer=ogg \
-			\
-			--disable-parsers \
-			--enable-parser=aac \
-			--enable-parser=aac_latm \
-			--enable-parser=ac3 \
-			--enable-parser=dca \
-			--enable-parser=dvbsub \
-			--enable-parser=dvdsub \
-			--enable-parser=flac \
-			--enable-parser=h264 \
-			--enable-parser=mjpeg \
-			--enable-parser=mpeg4video \
-			--enable-parser=mpegvideo \
-			--enable-parser=mpegaudio \
-			--enable-parser=vc1 \
-			--enable-parser=vorbis \
-			\
-			--disable-encoders \
-			--enable-encoder=aac \
-			--enable-encoder=h261 \
-			--enable-encoder=h263 \
-			--enable-encoder=h263p \
-			--enable-encoder=ljpeg \
-			--enable-encoder=mjpeg \
-			--enable-encoder=mpeg1video \
-			--enable-encoder=mpeg2video \
-			--enable-encoder=png \
-			\
-			--disable-decoders \
-			--enable-decoder=aac \
-			--enable-decoder=aac_latm \
-			--enable-decoder=dca \
-			--enable-decoder=dvbsub \
-			--enable-decoder=dvdsub \
-			--enable-decoder=flac \
-			--enable-decoder=h261 \
-			--enable-decoder=h263 \
-			--enable-decoder=h263i \
-			--enable-decoder=h264 \
-			--enable-decoder=mjpeg \
-			--enable-decoder=mp3 \
-			--enable-decoder=movtext \
-			--enable-decoder=mpeg1video \
-			--enable-decoder=mpeg2video \
-			--enable-decoder=msmpeg4v1 \
-			--enable-decoder=msmpeg4v2 \
-			--enable-decoder=msmpeg4v3 \
-			--enable-decoder=pcm_s16le \
-			--enable-decoder=pcm_s16be \
-			--enable-decoder=pcm_s16le_planar \
-			--enable-decoder=pcm_s16be_planar \
-			--enable-decoder=pgssub \
-			--enable-decoder=png \
-			--enable-decoder=srt \
-			--enable-decoder=subrip \
-			--enable-decoder=subviewer \
-			--enable-decoder=subviewer1 \
-			--enable-decoder=text \
-			--enable-decoder=theora \
-			--enable-decoder=vorbis \
-			--enable-decoder=wmv3 \
-			--enable-decoder=xsub \
-			\
-			--disable-demuxers \
-			--enable-demuxer=aac \
-			--enable-demuxer=ac3 \
-			--enable-demuxer=avi \
-			--enable-demuxer=dts \
-			--enable-demuxer=flac \
-			--enable-demuxer=flv \
-			--enable-demuxer=hds \
-			--enable-demuxer=hls \
-			--enable-demuxer=image2 \
-			--enable-demuxer=image2pipe \
-			--enable-demuxer=image_jpeg_pipe \
-			--enable-demuxer=image_png_pipe \
-			--enable-demuxer=matroska \
-			--enable-demuxer=mjpeg \
-			--enable-demuxer=mov \
-			--enable-demuxer=mp3 \
-			--enable-demuxer=mpegts \
-			--enable-demuxer=mpegtsraw \
-			--enable-demuxer=mpegps \
-			--enable-demuxer=mpegvideo \
-			--enable-demuxer=ogg \
-			--enable-demuxer=pcm_s16be \
-			--enable-demuxer=pcm_s16le \
-			--enable-demuxer=rm \
-			--enable-demuxer=rtp \
-			--enable-demuxer=rtsp \
-			--enable-demuxer=srt \
-			--enable-demuxer=vc1 \
-			--enable-demuxer=wav \
-			\
-			--disable-protocol=cache \
-			--disable-protocol=concat \
-			--disable-protocol=crypto \
-			--disable-protocol=data \
-			--disable-protocol=ftp \
-			--disable-protocol=gopher \
-			--disable-protocol=hls \
-			--disable-protocol=httpproxy \
-			--disable-protocol=md5 \
-			--disable-protocol=pipe \
-			--disable-protocol=sctp \
-			--disable-protocol=srtp \
-			--disable-protocol=subfile \
-			--disable-protocol=unix \
-			\
-			--disable-filters \
-			--enable-filter=scale \
-			\
-			--disable-indevs \
-			\
-			--disable-outdevs \
-			\
-			$(FFMPEG_CONF_OPTS) \
-			\
-			--disable-iconv \
-			--disable-xlib \
-			--disable-libxcb \
-			--disable-postproc \
-			--disable-static \
-			--disable-debug \
-			--disable-runtime-cpudetect \
-			\
-			--enable-bsfs \
-			--enable-bzlib \
-			--enable-zlib \
-			--enable-libass \
-			--enable-openssl \
-			--enable-network \
-			--enable-shared \
-			--enable-small \
-			--enable-stripping \
-			\
-			--enable-cross-compile \
-			--cross-prefix=$(TARGET)- \
-			--extra-cflags="$(TARGET_CFLAGS) $(FFMPEG_EXTRA_CFLAGS)" \
-			--extra-ldflags="$(TARGET_LDFLAGS) -lrt" \
-			--target-os=linux \
-			--arch=sh4 \
-			--prefix=/usr \
-			--bindir=/sbin \
-			--mandir=/.remove \
-			--datadir=/.remove \
-			--docdir=/.remove \
-		; \
-		$(MAKE); \
-		$(MAKE) install DESTDIR=$(TARGET_DIR)
-	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libavcodec.pc
-	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libavdevice.pc
-	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libavfilter.pc
-	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libavformat.pc
-	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libavutil.pc
-	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libswresample.pc
-	$(SILENT)test -e $(PKG_CONFIG_PATH)/libswscale.pc && $(REWRITE_PKGCONF_NQ) $(PKG_CONFIG_PATH)/libswscale.pc || true
-	$(REMOVE)/ffmpeg-$(FFMPEG_VER)
-	$(TOUCH)
-
-#
-# ffmpeg3
-#
-FFMPEG3_VER = 3.4.3
-FFMPEG3_SOURCE = ffmpeg-$(FFMPEG3_VER).tar.xz
-FFMPEG3_PATCH  = ffmpeg-$(FFMPEG3_VER)-buffer-size.patch
-FFMPEG3_PATCH += ffmpeg-$(FFMPEG3_VER)-hds-libroxml.patch
-FFMPEG3_PATCH += ffmpeg-$(FFMPEG3_VER)-aac.patch
-FFMPEG3_PATCH += ffmpeg-$(FFMPEG3_VER)-kodi.patch
-
-FFMPEG3_DEPS =
-FFMPEG3_CONF_OPTS = 
-FFMPEG3_EXTRA_CFLAGS = -I$(TARGET_DIR)/usr/include
-
-$(ARCHIVE)/$(FFMPEG3_SOURCE):
-	$(WGET) http://www.ffmpeg.org/releases/$(FFMPEG3_SOURCE)
-
-$(D)/ffmpeg3: $(D)/bootstrap $(D)/openssl $(D)/bzip2 $(D)/libass $(D)/libxml2 $(D)/libroxml $(FFMPEG3_DEPS) $(ARCHIVE)/$(FFMPEG3_SOURCE)
-	$(START_BUILD)
-	$(REMOVE)/ffmpeg-$(FFMPEG3_VER)
-	$(UNTAR)/$(FFMPEG3_SOURCE)
-	set -e; cd $(BUILD_TMP)/ffmpeg-$(FFMPEG3_VER); \
-		$(call apply_patches, $(FFMPEG3_PATCH)); \
+		$(call apply_patches, $(FFMPEG_PATCH)); \
 		./configure $(SILENT_OPT) \
 			--disable-ffserver \
 			--disable-ffplay \
@@ -1910,7 +1676,7 @@ $(D)/ffmpeg3: $(D)/bootstrap $(D)/openssl $(D)/bzip2 $(D)/libass $(D)/libxml2 $(
 			\
 			--disable-outdevs \
 			\
-			$(FFMPEG3_CONF_OPTS) \
+			$(FFMPEG_CONF_OPTS) \
 			\
 			--disable-iconv \
 			--disable-xlib \
@@ -1933,7 +1699,7 @@ $(D)/ffmpeg3: $(D)/bootstrap $(D)/openssl $(D)/bzip2 $(D)/libass $(D)/libxml2 $(
 			\
 			--enable-cross-compile \
 			--cross-prefix=$(TARGET)- \
-			--extra-cflags="$(TARGET_CFLAGS) $(FFMPEG3_EXTRA_CFLAGS)" \
+			--extra-cflags="$(TARGET_CFLAGS) $(FFMPEG_EXTRA_CFLAGS)" \
 			--extra-ldflags="$(TARGET_LDFLAGS) -lrt" \
 			--target-os=linux \
 			--arch=sh4 \
@@ -1952,7 +1718,7 @@ $(D)/ffmpeg3: $(D)/bootstrap $(D)/openssl $(D)/bzip2 $(D)/libass $(D)/libxml2 $(
 	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libavutil.pc
 	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libswresample.pc
 	$(SILENT)test -e $(PKG_CONFIG_PATH)/libswscale.pc && $(REWRITE_PKGCONF_NQ) $(PKG_CONFIG_PATH)/libswscale.pc || true
-	$(REMOVE)/ffmpeg-$(FFMPEG3_VER)
+	$(REMOVE)/ffmpeg-$(FFMPEG_VER)
 	$(TOUCH)
 
 #
@@ -2722,15 +2488,10 @@ $(D)/lzo: $(D)/bootstrap $(ARCHIVE)/$(LZO_SOURCE)
 MINIDLNA_VER = 1.2.1
 MINIDLNA_SOURCE = minidlna-$(MINIDLNA_VER).tar.gz
 MINIDLNA_PATCH = minidlna-$(MINIDLNA_VER).patch
-ifeq ($(E2_DIFF), $(filter $(E2_DIFF), 1 6))
-FFMPEG_DEPS = ffmpeg3
-else
-FFMPEG_DEPS = ffmpeg
-endif
 $(ARCHIVE)/$(MINIDLNA_SOURCE):
 	$(WGET) https://sourceforge.net/projects/minidlna/files/minidlna/$(MINIDLNA_VER)/$(MINIDLNA_SOURCE)
 
-$(D)/minidlna: $(D)/bootstrap $(D)/zlib $(D)/sqlite $(D)/libexif $(D)/libjpeg $(D)/libid3tag $(D)/libogg $(D)/libvorbis $(D)/flac $(D)/$(FFMPEG_DEPS) $(ARCHIVE)/$(MINIDLNA_SOURCE)
+$(D)/minidlna: $(D)/bootstrap $(D)/zlib $(D)/sqlite $(D)/libexif $(D)/libjpeg $(D)/libid3tag $(D)/libogg $(D)/libvorbis $(D)/flac $(D)/ffmpeg $(ARCHIVE)/$(MINIDLNA_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/minidlna-$(MINIDLNA_VER)
 	$(UNTAR)/$(MINIDLNA_SOURCE)
