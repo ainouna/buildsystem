@@ -719,6 +719,8 @@ endif
 	$(SILENT)chmod 755 $(RELEASE_DIR)/lib/*
 	$(SILENT)cp -R $(TARGET_DIR)/usr/lib/* $(RELEASE_DIR)/usr/lib/
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/{engines,enigma2,gconv,libxslt-plugins,pkgconfig,python$(PYTHON_VER),sigc++-1.2,sigc++-2.0}
+	$(SILENT)mkdir -p $(RELEASE_DIR)/usr/lib/pkgconfig
+	$(SILENT)[ -e $(TARGET_DIR)/usr/lib/pkgconfig/gstreamer-1.0.pc ] && cp $(TARGET_DIR)/usr/lib/pkgconfig/gstreamer-1.0.pc $(RELEASE_DIR)/usr/lib/pkgconfig/ || true
 	$(SILENT)rm -f $(RELEASE_DIR)/usr/lib/*.{a,o,la}
 	$(SILENT)chmod 755 $(RELEASE_DIR)/usr/lib/*
 #
