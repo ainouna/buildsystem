@@ -1,4 +1,4 @@
-# revision 12e2144c411d147e99694d24b8cffad231e6b4f9 10/11/2018 21:06
+# revision ffdaf8a0783f565609540feb199a3247826bc3b6 12/01/2019 11:46
 --- enigma2.org/configure.ac
 +++ enigma2/configure.ac
 @@ -18,6 +18,7 @@
@@ -590,6 +590,35 @@
  	base/i18n.h \
  	base/itssource.h \
  	base/init.h \
+--- enigma2.org/lib/base/estring.cpp
++++ enigma2/lib/base/estring.cpp
+@@ -635,10 +635,10 @@
+ 		eLog(6, "[convertDVBUTF8] %d chars converted, and %d chars left..", convertedLen, len-convertedLen);
+ 	eLog(6, "[convertDVBUTF8] table=0x%02X twochar=%d output:%s\n", table, useTwoCharMapping, output.c_str());
+ 
+-	eLog(6, "[convertDVBUTF8] table=0x%02X tsid:onid=0x%X:0x%X data[0..14]=%s   output:%s\n",
+-		table, (unsigned int)tsidonid >> 16, tsidonid & 0xFFFFU,
+-		string_to_hex(std::string((char*)data, len < 15 ? len : 15)).c_str(),
+-		output.c_str());
++//	eLog(6, "[convertDVBUTF8] table=0x%02X tsid:onid=0x%X:0x%X data[0..14]=%s   output:%s\n",
++//		table, (unsigned int)tsidonid >> 16, tsidonid & 0xFFFFU,
++//		string_to_hex(std::string((char*)data, len < 15 ? len : 15)).c_str(),
++//		output.c_str());
+ 
+ 	return output;
+ }
+@@ -925,8 +925,8 @@
+ 
+ std::string strip_non_graph(std::string s)
+ {
+-	s = std::regex_replace(s, std::regex("[[^:graph:]]"), " ");
+-	s = std::regex_replace(s, std::regex("\\s{2,}"), " ");
+-	s = std::regex_replace(s, std::regex("^\\s+|\\s+$"), "");
++	s = std::regex_replace(s, std::regex("[[^:graph:]]"), (std::basic_string<char>)" ");
++	s = std::regex_replace(s, std::regex("\\s{2,}"), (std::basic_string<char>)" ");
++	s = std::regex_replace(s, std::regex("^\\s+|\\s+$"), (std::basic_string<char>)"");
+ 	return s;
+ }
 --- enigma2.org/lib/base/smartptr.h
 +++ enigma2/lib/base/smartptr.h
 @@ -4,6 +4,8 @@
@@ -677,7 +706,7 @@
  }
 --- enigma2.org/lib/driver/vfd.cpp
 +++ enigma2/lib/driver/vfd.cpp
-@@ -0,0 +1,808 @@
+@@ -0,0 +1,811 @@
 +/*
 + * vfd.cpp
 + *
@@ -797,7 +826,9 @@
 +evfd* evfd::getInstance()
 +{
 +	if (instance == NULL)
++	{
 +		instance = new evfd;
++	}
 +	return instance;
 +}
 +
@@ -831,7 +862,6 @@
 +void evfd::init()
 +{
 +	pthread_create (&thread_start_loop, NULL, &start_loop, NULL);
-+	return;
 +}
 +
 +evfd::~evfd()
@@ -1217,16 +1247,20 @@
 +	}
 +}
 +
-+void evfd::vfd_write_string(char * str, bool force)
++void evfd::vfd_write_string(char *str, bool force)
 +{
 +	int ws = 0;
 +	int i = strlen(str);
 +	if (VFD_CENTER == true)
 +	{
 +		if (i < VFDLENGTH)
++		{
 +			ws=(VFDLENGTH-i)/2;
++		}
 +		else
++		{
 +			ws = 0;
++		}
 +	}
 +
 +	if (i > VFDLENGTH)
@@ -1235,10 +1269,11 @@
 +	}
 +
 +	struct vfd_ioctl_data data;
++
 +	memset(data.data, ' ', VFDLENGTH);
 +	if (VFD_CENTER == true)
 +	{
-+		memcpy(data.data+ws, str, VFDLENGTH-ws);
++		memcpy(data.data + ws, str, VFDLENGTH - ws);
 +	}
 +	else
 +	{
@@ -1247,7 +1282,7 @@
 +	data.start = 0;
 +	if (VFD_CENTER == true)
 +	{
-+		data.length = i+ws<=VFDLENGTH?i+ws:VFDLENGTH;
++		data.length = i + ws <= VFDLENGTH ? i + ws : VFDLENGTH;
 +	}
 +	else
 +	{
@@ -1256,17 +1291,15 @@
 +	file_vfd = open (VFD_DEVICE, O_WRONLY);
 +	write(file_vfd,data.data,data.length);
 +	close (file_vfd);
-+	return;
 +}
-+
 +#else
 +
-+void evfd::vfd_write_string(char * str)
++void evfd::vfd_write_string(char *str)
 +{
 +	vfd_write_string(str, false);
 +}
 +
-+void evfd::vfd_write_string(char * str, bool force)
++void evfd::vfd_write_string(char *str, bool force)
 +{
 +	int i = strlen(str);
 +	if (i > 63)
@@ -1297,10 +1330,9 @@
 +		ioctl (file_vfd, VFDDISPLAYCHARS, &data );
 +		close (file_vfd);
 +	}
-+	return;
 +}
 +
-+void evfd::vfd_write_string_scrollText(char* text)
++void evfd::vfd_write_string_scrollText(char *text)
 +{
 +	if (!blocked)
 +	{
@@ -1324,7 +1356,6 @@
 +		vfd_write_string(out);
 +		free (out);
 +	}
-+	return;
 +}
 +#endif
 +
@@ -1334,13 +1365,11 @@
 +	memset(out, 0, VFDLENGTH + 1);
 +	memset(out, ' ', VFDLENGTH);
 +	vfd_write_string(out, true);
-+	return;
 +}
 +
 +void evfd::vfd_set_icon(int id, bool onoff)
 +{
 +	vfd_set_icon(id, onoff, false);
-+	return;
 +}
 +
 +void evfd::vfd_set_icon(int id, bool onoff, bool force)
@@ -1363,7 +1392,6 @@
 +			close (file_vfd);
 +		}
 +	}
-+	return;
 +}
 +
 +void evfd::vfd_set_led(tvfd_led id, int onoff)
@@ -1381,7 +1409,6 @@
 +		ioctl(file_vfd, VFDSETLED, &data);
 +		close (file_vfd);
 +	}
-+	return;
 +}
 +
 +void evfd::vfd_clear_icons()
@@ -1419,8 +1446,6 @@
 +	file_vfd = open(VFD_DEVICE, O_WRONLY);
 +	ioctl(file_vfd, VFDBRIGHTNESS, &data);
 +	close(file_vfd);
-+
-+	return;
 +}
 +
 +void evfd::vfd_set_light(bool onoff)
@@ -1430,16 +1455,19 @@
 +	memset(&data, 0, sizeof(struct vfd_ioctl_data));
 +
 +	if (onoff)
++	{
 +		data.start = 0x01;
++	}
 +	else
++	{
 +		data.start = 0x00;
-+		data.length = 0;
++	}
++	data.length = 0;
 +
 +	file_vfd = open (VFD_DEVICE, O_WRONLY);
 +	ioctl(file_vfd, VFDDISPLAYWRITEONOFF, &data);
 +
 +	close (file_vfd);
-+	return;
 +}
 +
 +void evfd::vfd_set_fan(bool onoff)
@@ -1456,17 +1484,20 @@
 +	memset(&data, 0, sizeof(struct vfd_ioctl_data));
 +
 +	if (onoff)
++	{
 +		data.start = 0x01;
++	}
 +	else
++	{
 +		data.start = 0x00;
-+		data.length = 0;
++	}
++	data.length = 0;
 +
 +	file_vfd = open (VFD_DEVICE, O_WRONLY);
 +	ioctl(file_vfd, VFDSETFAN, &data);
 +
 +	close (file_vfd);
 +#endif
-+	return;
 +}
 +
 +void evfd::vfd_set_SCROLL(int id)
@@ -1486,25 +1517,24 @@
 +{
 +	VFD_CENTER = id;
 +}
++// vim:ts=4
 --- enigma2.org/lib/driver/vfd.h
 +++ enigma2/lib/driver/vfd.h
-@@ -0,0 +1,54 @@
+@@ -0,0 +1,52 @@
 +#ifndef VFD_H_
 +#define VFD_H_
 +
 +#define ICON_ON  1
 +#define ICON_OFF 0
 +
-+/* Note: C++ handles the #if, #elif, #else and #endif well, but swig does not, always picking the first set.
-+   Do not use them here, making this file box dependent... */
-+#if !defined(ENABLE_FORTIS_HDBOX)
++//#if !defined(ENABLE_FORTIS_HDBOX)
 +typedef enum { USB = 0x10, HD, HDD, LOCK, BT, MP3, MUSIC, DD, MAIL, MUTE, PLAY, PAUSE, FF, FR, REC, CLOCK } tvfd_icon;
 +typedef enum { RED_LED = 0, GREEN_LED } tvfd_led;
-+#else
-+typedef enum { USB = 1, STANDBY, SAT, REC, TIMESHIFT, TIMER, HD, LOCK, DD, MUTE, TUNER1, TUNER2, MP3, REPEAT,
-+			    PLAY, PAUSE, TER, FILE, 480i, 480p, 576i, 576p, 720p, 1080i, 1080p } tvfd_icon;
-+typedef enum { RED_LED = 0, BLUE_LED, CROSS_UP, CROSS_LEFT, CROSS_RIGHT, CROSS_DOWN } tvfd_led;
-+#endif
++//#else
++//typedef enum { USB = 1, I_STANDBY, I_SAT, I_REC, I_TIMESHIFT, I_TIMER, I_HD, I_LOCK, I_DD, I_MUTE, I_TUNER1, I_TUNER2, I_MP3, I_REPEAT,
++//               I_PLAY, I_PAUSE, I_TER, I_FILE_, I_480i, I_480p, I_576i, I_576p, I_720p, I_1080i, I_1080p } tvfd_icon;
++//typedef enum { RED_LED = 0, BLUE_LED, CROSS_UP, CROSS_LEFT, CROSS_RIGHT, CROSS_DOWN } tvfd_led;
++//#endif
 +
 +class evfd
 +{
@@ -1574,7 +1604,7 @@
  	}
  
  	if (m_fd >= 0)
-@@ -134,7 +140,9 @@
+@@ -138,7 +144,9 @@
  			eDebugNoNewLine("failed: %m\n");
  		else
  			eDebugNoNewLine("ok\n");
@@ -1584,7 +1614,7 @@
  		eDebugNoNewLineStart("[eDVBAudio%d] AUDIO_PLAY ", m_dev);
  		if (::ioctl(m_fd, AUDIO_PLAY) < 0)
  			eDebugNoNewLine("failed: %m\n");
-@@ -370,7 +378,11 @@
+@@ -374,7 +382,11 @@
  			pes.pes_type = DMX_PES_VIDEO3;
  			break;
  		}
@@ -1596,7 +1626,7 @@
  		eDebugNoNewLineStart("[eDVBVideo%d] DMX_SET_PES_FILTER pid=0x%04x ", m_dev, pid);
  		if (::ioctl(m_fd_demux, DMX_SET_PES_FILTER, &pes) < 0)
  		{
-@@ -378,6 +390,7 @@
+@@ -382,6 +394,7 @@
  			return -errno;
  		}
  		eDebugNoNewLine("ok\n");
@@ -1604,7 +1634,7 @@
  		eDebugNoNewLineStart("[eDVBVideo%d] DEMUX_START ", m_dev);
  		if (::ioctl(m_fd_demux, DMX_START) < 0)
  		{
-@@ -385,11 +398,14 @@
+@@ -389,11 +402,14 @@
  			return -errno;
  		}
  		eDebugNoNewLine("ok\n");
@@ -1619,7 +1649,7 @@
  		eDebugNoNewLineStart("[eDVBVideo%d] VIDEO_PLAY ", m_dev);
  		if (::ioctl(m_fd, VIDEO_PLAY) < 0)
  			eDebugNoNewLine("failed: %m\n");
-@@ -707,7 +723,11 @@
+@@ -711,7 +727,11 @@
  		pes.pes_type = DMX_PES_PCR3;
  		break;
  	}
@@ -1631,7 +1661,7 @@
  	eDebugNoNewLineStart("[eDVBPCR%d] DMX_SET_PES_FILTER pid=0x%04x ", m_dev, pid);
  	if (::ioctl(m_fd_demux, DMX_SET_PES_FILTER, &pes) < 0)
  	{
-@@ -715,6 +735,7 @@
+@@ -719,6 +739,7 @@
  		return -errno;
  	}
  	eDebugNoNewLine("ok\n");
@@ -1639,7 +1669,7 @@
  	eDebugNoNewLineStart("[eDVBPCR%d] DEMUX_START ", m_dev);
  	if (::ioctl(m_fd_demux, DMX_START) < 0)
  	{
-@@ -722,6 +743,7 @@
+@@ -726,6 +747,7 @@
  		return -errno;
  	}
  	eDebugNoNewLine("ok\n");
@@ -1647,7 +1677,7 @@
  	return 0;
  }
  
-@@ -777,7 +799,11 @@
+@@ -781,7 +803,11 @@
  		pes.pes_type = DMX_PES_TELETEXT3;
  		break;
  	}
@@ -1659,7 +1689,7 @@
  
  	eDebugNoNewLineStart("[eDVBText%d] DMX_SET_PES_FILTER pid=0x%04x ", m_dev, pid);
  	if (::ioctl(m_fd_demux, DMX_SET_PES_FILTER, &pes) < 0)
-@@ -786,6 +812,7 @@
+@@ -790,6 +816,7 @@
  		return -errno;
  	}
  	eDebugNoNewLine("ok\n");
@@ -1667,7 +1697,7 @@
  	eDebugNoNewLineStart("[eDVBText%d] DEMUX_START ", m_dev);
  	if (::ioctl(m_fd_demux, DMX_START) < 0)
  	{
-@@ -793,6 +820,7 @@
+@@ -797,6 +824,7 @@
  		return -errno;
  	}
  	eDebugNoNewLine("ok\n");
@@ -1675,7 +1705,7 @@
  	return 0;
  }
  
-@@ -929,12 +957,28 @@
+@@ -933,12 +961,28 @@
  		int *s = state_table[m_state];
  		if (changed & (changeState|changeVideo) && m_video)
  		{
@@ -1704,7 +1734,7 @@
  		}
  		if (changed & (changeState|changeAudio) && m_audio)
  		{
-@@ -1235,6 +1279,10 @@
+@@ -1239,6 +1283,10 @@
  		{
  			struct stat s;
  			fstat(f, &s);
@@ -1715,7 +1745,7 @@
  			if (m_video_clip_fd == -1)
  				m_video_clip_fd = open("/dev/dvb/adapter0/video0", O_WRONLY);
  			if (m_video_clip_fd >= 0)
-@@ -1255,8 +1303,10 @@
+@@ -1259,8 +1307,10 @@
  
  				if (ioctl(m_video_clip_fd, VIDEO_SELECT_SOURCE, VIDEO_SOURCE_MEMORY) < 0)
  					eDebug("[eTSMPEGDecoder] VIDEO_SELECT_SOURCE MEMORY failed: %m");
@@ -1726,7 +1756,7 @@
  				if (ioctl(m_video_clip_fd, VIDEO_PLAY) < 0)
  					eDebug("[eTSMPEGDecoder] VIDEO_PLAY failed: %m");
  				if (ioctl(m_video_clip_fd, VIDEO_CONTINUE) < 0)
-@@ -1273,7 +1323,9 @@
+@@ -1277,7 +1327,9 @@
  				if (!seq_end_avail)
  					write(m_video_clip_fd, seq_end, sizeof(seq_end));
  				writeAll(m_video_clip_fd, stuffing, 8192);
@@ -2127,7 +2157,7 @@
  class eFilePushThread: public eThread, public sigc::trackable, public iObject
 --- enigma2.org/lib/dvb/pmt.cpp
 +++ enigma2/lib/dvb/pmt.cpp
-@@ -864,6 +864,11 @@
+@@ -916,6 +916,11 @@
  			eDVBCIInterfaces::getInstance()->addPMTHandler(this);
  	} else if (!simulate) // no simulation of playback services
  	{
@@ -3786,41 +3816,41 @@
 +}
 --- enigma2.org/lib/python/Components/Converter/RemainingToText.py
 +++ enigma2/lib/python/Components/Converter/RemainingToText.py
-@@ -8,6 +8,9 @@
- 	IN_SECONDS = 3
+@@ -9,6 +9,9 @@
  	PROGRESS = 4
  	WITH_SECONDSPROGRESS = 5
-+#+++>
-+	FOLLOW = 6
-+#+++<
+ 	ONLY_MINUTES = 6
+++#+++>
+++	FOLLOW = 7
+++#+++<
  
  	def __init__(self, type):
  		Converter.__init__(self, type)
-@@ -21,6 +24,10 @@
- 			self.type = self.PROGRESS
- 		elif type == "WithSecondsProgress":
+@@ -24,6 +27,10 @@
  			self.type = self.WITH_SECONDSPROGRESS
-+#+++>
-+		elif type == "FOLLOW":
-+			self.type = self.FOLLOW
-+#+++<
+ 		elif type == "OnlyMinutes":
+ 			self.type = self.ONLY_MINUTES
+++#+++>
+++		elif type == "FOLLOW":
+++			self.type = self.FOLLOW
+++#+++<
  		else:
  			self.type = self.DEFAULT
  
-@@ -52,6 +59,13 @@
- 					return "%s%d:%02d" % (prefix, hours, minutes)
+@@ -57,6 +64,13 @@
  				elif self.type == self.IN_SECONDS:
  					return prefix+str(tsecs)
-+#+++>
-+				elif self.type == self.FOLLOW:
-+					if remaining is not None:
-+						return "in %d min" % (remaining / 60)
-+					else:
-+						return "%d min" % (duration / 60)
-+#+++<
- 				elif self.type == self.DEFAULT:
+ 				elif self.type == self.DEFAULT or self.type == self.ONLY_MINUTES:
+++#+++>
+++				elif self.type == self.FOLLOW:
+++					if remaining is not None:
+++						return "in %d min" % (remaining / 60)
+++					else:
+++						return "%d min" % (duration / 60)
+++#+++<
  					if remaining <= duration:
  						prefix = "+"
+ 					if self.type == self.DEFAULT:
 --- enigma2.org/lib/python/Components/Harddisk.py
 +++ enigma2/lib/python/Components/Harddisk.py
 @@ -45,6 +45,7 @@
@@ -4322,16 +4352,16 @@
  SystemInfo["Blindscan_t2_available"] = fileCheck("/proc/stb/info/vumodel")
  SystemInfo["RcTypeChangable"] = not(HardwareInfo().get_device_model().startswith('et8500') or HardwareInfo().get_device_model().startswith('et7')) and pathExists('/proc/stb/ir/rc/type')
 -SystemInfo["HasFullHDSkinSupport"] = HardwareInfo().get_device_model() not in ("et4000", "et5000", "sh1", "hd500c", "hd1100", "xp1000", "lc")
-+SystemInfo["HasFullHDSkinSupport"] = HardwareInfo().get_device_model() in ("spark7162", "atevio7500")
- SystemInfo["HasForceLNBOn"] = fileCheck("/proc/stb/frontend/fbc/force_lnbon")
- SystemInfo["HasForceToneburst"] = fileCheck("/proc/stb/frontend/fbc/force_toneburst")
++SystemInfo["HasFullHDSkinSupport"] = HardwareInfo().get_device_model() in ("spark7162")
  SystemInfo["HasBypassEdidChecking"] = fileCheck("/proc/stb/hdmi/bypass_edid_checking")
-@@ -75,15 +75,15 @@
+ SystemInfo["HasColorspace"] = fileCheck("/proc/stb/video/hdmi_colorspace")
+ SystemInfo["HasColorspaceSimple"] = SystemInfo["HasColorspace"] and HardwareInfo().get_device_model() in "vusolo4k"
+@@ -73,15 +73,15 @@
  SystemInfo["HasColordepth"] = fileCheck("/proc/stb/video/hdmi_colordepth")
  SystemInfo["HasFrontDisplayPicon"] = HardwareInfo().get_device_model() in ("vusolo4k", "et8500")
  SystemInfo["Has24hz"] = fileCheck("/proc/stb/video/videomode_24hz")
 -SystemInfo["Has2160p"] = fileHas("/proc/stb/video/videomode_preferred", "2160p50")
-+SystemInfo["Has2160p"] = False
++SystemInfo["Has2160p"] = false
  SystemInfo["HasHDMIpreemphasis"] = fileCheck("/proc/stb/hdmi/preemphasis")
  SystemInfo["HasColorimetry"] = fileCheck("/proc/stb/video/hdmi_colorimetry")
  SystemInfo["HasHdrType"] = fileCheck("/proc/stb/video/hdmi_hdrtype")
@@ -4452,7 +4482,7 @@
 +		self.text = text
 --- enigma2.org/lib/python/Components/UsageConfig.py
 +++ enigma2/lib/python/Components/UsageConfig.py
-@@ -283,7 +283,7 @@
+@@ -287,7 +287,7 @@
  
  	config.misc.disable_background_scan = ConfigYesNo(default = False)
  	config.misc.use_ci_assignment = ConfigYesNo(default = False)
@@ -7431,7 +7461,12 @@
  
  def getImageTypeString():
  	try:
-@@ -80,27 +80,13 @@
+@@ -76,29 +76,19 @@
+ def getCPUInfoString():
+ 	try:
+ 		cpu_count = 0
+-		cpu_speed = 0
++		cpu_speed = "unknown"
  		processor = ""
  		for line in open("/proc/cpuinfo").readlines():
  			line = [x.strip() for x in line.strip().split(":")]
@@ -7439,14 +7474,13 @@
 +			if not processor and line[0] == "cpu type":
  				processor = line[1].split()[0]
 -			elif not cpu_speed and line[0] == "cpu MHz":
-+				cpu_speed = "unknown"
-+			elif (cpu_speed == 0 or cpu_speed == "unknown") and line[0] == "cpu MHz":
++			elif cpu_speed == "unknown" and line[0] == "cpu MHz":
  				cpu_speed = "%1.0f" % float(line[1])
  			elif line[0] == "processor":
  				cpu_count += 1
--
--		if processor.startswith("ARM") and os.path.isfile("/proc/stb/info/chipset"):
--			processor = "%s (%s)" % (open("/proc/stb/info/chipset").readline().strip().upper(), processor)
+ 
+ 		if processor.startswith("ARM") and os.path.isfile("/proc/stb/info/chipset"):
+ 			processor = "%s (%s)" % (open("/proc/stb/info/chipset").readline().strip().upper(), processor)
 -
 -		if not cpu_speed:
 -			try:
@@ -7457,11 +7491,9 @@
 -					cpu_speed = int(int(binascii.hexlify(open('/sys/firmware/devicetree/base/cpus/cpu@0/clock-frequency', 'rb').read()), 16) / 100000000) * 100
 -				except:
 -					cpu_speed = "-"
--
--		temperature = None
+ 
+ 		temperature = None
  		if os.path.isfile('/proc/stb/fp/temp_sensor_avs'):
- 			temperature = open("/proc/stb/fp/temp_sensor_avs").readline().replace('\n','')
- 		elif os.path.isfile('/proc/stb/power/avs'):
 --- enigma2.org/lib/python/Screens/About.py
 +++ enigma2/lib/python/Screens/About.py
 @@ -47,7 +47,7 @@

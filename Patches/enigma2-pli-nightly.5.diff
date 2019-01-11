@@ -631,7 +631,7 @@
  #endif
 --- enigma2.org/lib/driver/vfd.cpp
 +++ enigma2/lib/driver/vfd.cpp
-@@ -0,0 +1,813 @@
+@@ -0,0 +1,811 @@
 +/*
 + * vfd.cpp
 + *
@@ -690,7 +690,7 @@
 +#include <lib/base/eerror.h>
 +#include <lib/driver/vfd.h>
 +
-+#ifdef PLATFORM_TF7700
++#ifdef ENABLE_TF7700
 +#include "../../../apps/tools/tffpctl/frontpanel.h"
 +#endif
 +
@@ -726,21 +726,21 @@
 +	unsigned char length;
 +};
 +
-+#if defined PLATFORM_TF7700
++#if defined ENABLE_TF7700
 +	#define MAX_CHARS 8
 +	#define VFDLENGTH 8
-+#elif defined (PLATFORM_HS7810A) \
-+   || defined (PLATFORM_HS7819) \
-+   || defined (PLATFORM_HS7119) \
-+   || defined (PLATFORM_SPARK)
++#elif defined (ENABLE_HS7810A) \
++   || defined (ENABLE_HS7819) \
++   || defined (ENABLE_HS7119) \
++   || defined (ENABLE_SPARK)
 +	#define VFDLENGTH 4
-+#elif defined (PLATFORM_OCTAGON1008) \
-+   || defined(PLATFORM_HS7420) \
-+   || defined(PLATFORM_HS7429) \
-+   || defined (PLATFORM_SPARK7162)
++#elif defined (ENABLE_OCTAGON1008) \
++   || defined(ENABLE_HS7420) \
++   || defined(ENABLE_HS7429) \
++   || defined (ENABLE_SPARK7162)
 +	#define VFDLENGTH 8
-+#elif defined (PLATFORM_FORTIS_HDBOX) \
-+   || defined (PLATFORM_ATEVIO7500)
++#elif defined (ENABLE_FORTIS_HDBOX) \
++   || defined (ENABLE_ATEVIO7500)
 +	#define VFDLENGTH 12
 +#else
 +	#define VFDLENGTH 16
@@ -760,14 +760,14 @@
 +evfd::evfd()
 +{
 +	file_vfd = 0;
-+	memset (chars, ' ', 63);
-+#if defined(PLATFORM_SPARK)
++	memset ( chars, ' ', 63 );
++#if defined(ENABLE_SPARK)
 +	vfd_type = 4;
-+#elif defined(PLATFORM_ATEVIO7500)
++#elif defined(ENABLE_ATEVIO7500)
 +	vfd_type = 5;
-+#elif defined(PLATFORM_FORTIS_HDBOX)
++#elif defined(ENABLE_FORTIS_HDBOX)
 +	vfd_type = 6;
-+#elif defined(PLATFORM_OCTAGON1008)
++#elif defined(ENABLE_OCTAGON1008)
 +	vfd_type = 7;
 +#elif defined(PLATFORM_SPARK7162)
 +	vfd_type = 8;
@@ -798,7 +798,8 @@
 +	//close (file_vfd);
 +}
 +
-+#if defined PLATFORM_TF7700
++#ifdef ENABLE_TF7700
++
 +char * getProgress()
 +{
 +	int n;
@@ -915,31 +916,31 @@
 +{
 +	evfd vfd;
 +	blocked = true;
-+	#if defined PLATFORM_SPARK7162
++	#if defined ENABLE_SPARK7162
 +		char str[] = "SPARK7162 ENIGMA2";
-+	#elif defined PLATFORM_SPARK
++	#elif defined ENABLE_SPARK
 +		char str[] = "SPARK ENIGMA2";
-+	#elif defined PLATFORM_FORTIS_HDBOX
++	#elif defined ENABLE_FORTIS_HDBOX
 +		char str[] = "FS9000/9200 Enigma2";
-+	#elif defined PLATFORM_OCTAGON1008
++	#elif defined ENABLE_OCTAGON1008
 +		char str[] = "HS9510 Enigma2";
-+	#elif defined PLATFORM_ATEVIO7500
++	#elif defined ENABLE_ATEVIO7500
 +		char str[] = "HS8200 Enigma2";
-+	#elif defined PLATFORM_HS7119
++	#elif defined ENABLE_HS7119
 +		char str[] = "7119 Enigma2";
-+	#elif defined PLATFORM_HS7420
++	#elif defined ENABLE_HS7420
 +		char str[] = "HS7420 Enigma2";
-+	#elif defined PLATFORM_HS7810A
++	#elif defined ENABLE_HS7810A
 +		char str[] = "7810 Enigma2";
-+	#elif defined PLATFORM_HS7429
++	#elif defined ENABLE_HS7429
 +		char str[] = "HS7429 Enigma2";
-+	#elif defined PLATFORM_HS7819
++	#elif defined ENABLE_HS7819
 +		char str[] = "7819 Enigma2";
-+	#elif defined PLATFORM_UFS910
++	#elif defined ENABLE_UFS910
 +		char str[] = "UFS910 Enigma2";
-+	#elif defined PLATFORM_UFS912
++	#elif defined ENABLE_UFS912
 +		char str[] = "UFS912 Enigma2";
-+	#elif defined PLATFORM_UFS913
++	#elif defined ENABLE_UFS913
 +		char str[] = "UFS913 Enigma2";
 +	#else
 +		char str[] = "SH4 Git Enigma2";
@@ -949,24 +950,24 @@
 +	close(vfddev);
 +
 +	/*these boxes can control display brightness*/
-+	#if !defined(PLATFORM_FORTIS_HDBOX) \
-+	 && !defined(PLATFORM_OCTAGON1008) \
-+	 && !defined(PLATFORM_ATEVIO7500) \
-+	 && !defined(PLATFORM_CUBEREVO) \
-+	 && !defined(PLATFORM_CUBEREVO_MINI) \
-+	 && !defined(PLATFORM_CUBEREVO_MINI2) \
-+	 && !defined(PLATFORM_CUBEREVO_MINI_FTA) \
-+	 && !defined(PLATFORM_CUBEREVO_250HD) \
-+	 && !defined(PLATFORM_CUBEREVO_2000HD) \
-+	 && !defined(PLATFORM_CUBEREVO_9500HD) \
-+	 && !defined(PLATFORM_SPARK7162) \
-+	 && !defined PLATFORM_UFS912 \
-+	 && !defined PLATFORM_UFS913 \
-+	 && !defined(PLATFORM_HS7119) \
-+	 && !defined(PLATFORM_HS7420) \
-+	 && !defined(PLATFORM_HS7429) \
-+	 && !defined(PLATFORM_HS7810A) \
-+	 && !defined(PLATFORM_HS7819)
++	#if !defined(ENABLE_FORTIS_HDBOX) \
++	 && !defined(ENABLE_OCTAGON1008) \
++	 && !defined(ENABLE_ATEVIO7500) \
++	 && !defined(ENABLE_CUBEREVO) \
++	 && !defined(ENABLE_CUBEREVO_MINI) \
++	 && !defined(ENABLE_CUBEREVO_MINI2) \
++	 && !defined(ENABLE_CUBEREVO_MINI_FTA) \
++	 && !defined(ENABLE_CUBEREVO_250HD) \
++	 && !defined(ENABLE_CUBEREVO_2000HD) \
++	 && !defined(ENABLE_CUBEREVO_9500HD) \
++	 && !defined(ENABLE_SPARK7162) \
++	 && !defined ENABLE_UFS912 \
++	 && !defined ENABLE_UFS913 \
++	 && !defined(ENABLE_HS7119) \
++	 && !defined(ENABLE_HS7420) \
++	 && !defined(ENABLE_HS7429) \
++	 && !defined(ENABLE_HS7810A) \
++	 && !defined(ENABLE_HS7819)
 +	/* Others cycle their icons */
 +	for (int vloop = 0; vloop < 128; vloop++)
 +	{
@@ -1041,17 +1042,17 @@
 +	vfd.vfd_set_brightness(7); // set final brightness
 +	#endif
 +	vfd.vfd_clear_icons();
-+	#if !defined(PLATFORM_FORTIS_HDBOX) \
-+	 && !defined(PLATFORM_OCTAGON1008) \
-+	 && !defined(PLATFORM_ATEVIO7500) \
-+	 && !defined(PLATFORM_CUBEREVO) \
-+	 && !defined(PLATFORM_CUBEREVO_MINI) \
-+	 && !defined(PLATFORM_CUBEREVO_MINI2) \
-+	 && !defined(PLATFORM_CUBEREVO_MINI_FTA) \
-+	 && !defined(PLATFORM_CUBEREVO_250HD) \
-+	 && !defined(PLATFORM_CUBEREVO_2000HD) \
-+	 && !defined(PLATFORM_CUBEREVO_9500HD) \
-+	 && !defined(PLATFORM_SPARK7162)
++	#if !defined(ENABLE_FORTIS_HDBOX) \
++	 && !defined(ENABLE_OCTAGON1008) \
++	 && !defined(ENABLE_ATEVIO7500) \
++	 && !defined(ENABLE_CUBEREVO) \
++	 && !defined(ENABLE_CUBEREVO_MINI) \
++	 && !defined(ENABLE_CUBEREVO_MINI2) \
++	 && !defined(ENABLE_CUBEREVO_MINI_FTA) \
++	 && !defined(ENABLE_CUBEREVO_250HD) \
++	 && !defined(ENABLE_CUBEREVO_2000HD) \
++	 && !defined(ENABLE_CUBEREVO_9500HD) \
++	 && !defined(ENABLE_SPARK7162)
 +	//set all blocked icons
 +	for (int id = 0x10; id < 0x20; id++)
 +	{
@@ -1059,26 +1060,27 @@
 +	}
 +#endif
 +	blocked = false;
++	return NULL;
 +}
 +#endif
 +
-+#if defined(PLATFORM_FORTIS_HDBOX) \
-+ || defined(PLATFORM_OCTAGON1008) \
-+ || defined(PLATFORM_ATEVIO7500) \
-+ || defined(PLATFORM_CUBEREVO) \
-+ || defined(PLATFORM_CUBEREVO_MINI) \
-+ || defined(PLATFORM_CUBEREVO_MINI2) \
-+ || defined(PLATFORM_CUBEREVO_MINI_FTA) \
-+ || defined(PLATFORM_CUBEREVO_250HD) \
-+ || defined(PLATFORM_CUBEREVO_2000HD) \
-+ || defined(PLATFORM_CUBEREVO_9500HD) \
-+ || defined(PLATFORM_SPARK) \
-+ || defined(PLATFORM_SPARK7162) \
-+ || defined(PLATFORM_HS7420) \
-+ || defined(PLATFORM_HS7429) \
-+ || defined(PLATFORM_HS7119) \
-+ || defined(PLATFORM_HS7810A) \
-+ || defined(PLATFORM_HS7819)
++#if defined(ENABLE_FORTIS_HDBOX) \
++ || defined(ENABLE_OCTAGON1008) \
++ || defined(ENABLE_ATEVIO7500) \
++ || defined(ENABLE_CUBEREVO) \
++ || defined(ENABLE_CUBEREVO_MINI) \
++ || defined(ENABLE_CUBEREVO_MINI2) \
++ || defined(ENABLE_CUBEREVO_MINI_FTA) \
++ || defined(ENABLE_CUBEREVO_250HD) \
++ || defined(ENABLE_CUBEREVO_2000HD) \
++ || defined(ENABLE_CUBEREVO_9500HD) \
++ || defined(ENABLE_SPARK) \
++ || defined(ENABLE_SPARK7162) \
++ || defined(ENABLE_HS7420) \
++ || defined(ENABLE_HS7429) \
++ || defined(ENABLE_HS7119) \
++ || defined(ENABLE_HS7810A) \
++ || defined(ENABLE_HS7819)
 +void evfd::vfd_write_string_scrollText(char* text)
 +{
 +	return;
@@ -1147,6 +1149,7 @@
 +		}
 +	}
 +	blocked = false;
++	return NULL;
 +}
 +
 +void evfd::vfd_write_string(char * str)
@@ -1234,7 +1237,7 @@
 +	}
 +	memset (chars, ' ', 63);
 +	memcpy (chars, str, i);
-+#ifdef PLATFORM_TF7700
++#ifdef ENABLE_TF7700
 +	// request the display to cancel the start loop
 +	requested = true;
 +	while(blocked)
@@ -1341,16 +1344,15 @@
 +{
 +	int id;
 +
-+	#if defined PLATFORM_SPARK7162
++	#if defined ENABLE_SPARK7162
 +		for (id = 1; id < 46; id++)
-+	#elif defined PLATFORM_FORTIS_HDBOX
++	#elif defined ENABLE_FORTIS_HDBOX
 +		for (id = 1; id < 40; id++)
-+	#elif defined PLATFORM_OCTAGON1008
++	#elif defined ENABLE_OCTAGON1008
 +		for (id = 1; id < 29; id++)
-+	#elif defined PLATFORM_ATEVIO7500
++	#elif defined ENABLE_ATEVIO7500
 +		for (id = 1; id < 23; id++);
-+	#elif defined PLATFORM_UFS912 \
-+	||    defined PLATFORM_UFS913
++	#elif defined ENABLE_UFS912 || defined ENABLE_UFS913
 +		for (id = 1; id < 16; id++)
 +	#else
 +		for (id = 0x10; id < 0x20; id++)
@@ -1399,13 +1401,13 @@
 +
 +void evfd::vfd_set_fan(bool onoff)
 +{
-+#if defined(PLATFORM_CUBEREVO) \
-+ || defined(PLATFORM_CUBEREVO_MINI) \
-+ || defined(PLATFORM_CUBEREVO_MINI2) \
-+ || defined(PLATFORM_CUBEREVO_MINI_FTA) \
-+ || defined(PLATFORM_CUBEREVO_250HD) \
-+ || defined(PLATFORM_CUBEREVO_2000HD) \
-+ || defined(PLATFORM_CUBEREVO_9500HD)
++#if defined(ENABLE_CUBEREVO) \
++ || defined(ENABLE_CUBEREVO_MINI) \
++ || defined(ENABLE_CUBEREVO_MINI2) \
++ || defined(ENABLE_CUBEREVO_MINI_FTA) \
++ || defined(ENABLE_CUBEREVO_250HD) \
++ || defined(ENABLE_CUBEREVO_2000HD) \
++ || defined(ENABLE_CUBEREVO_9500HD)
 +	struct vfd_ioctl_data data;
 +
 +	memset(&data, 0, sizeof(struct vfd_ioctl_data));
@@ -1447,23 +1449,21 @@
 +// vim:ts=4
 --- enigma2.org/lib/driver/vfd.h
 +++ enigma2/lib/driver/vfd.h
-@@ -0,0 +1,54 @@
+@@ -0,0 +1,52 @@
 +#ifndef VFD_H_
 +#define VFD_H_
 +
 +#define ICON_ON  1
 +#define ICON_OFF 0
 +
-+/* Note: C++ handles the #if, #elif, #else and #endif well, but swig does not, always picking the first set.
-+   Do not use them here, making this file box dependent... */
-+#if !defined(PLATFORM_FORTIS_HDBOX)
++//#if !defined(ENABLE_FORTIS_HDBOX)
 +typedef enum { USB = 0x10, HD, HDD, LOCK, BT, MP3, MUSIC, DD, MAIL, MUTE, PLAY, PAUSE, FF, FR, REC, CLOCK } tvfd_icon;
 +typedef enum { RED_LED = 0, GREEN_LED } tvfd_led;
-+#else
-+typedef enum { USB = 0x1, STANDBY, SAT, REC, TIMESHIFT, TIMER, HD, LOCK, DD, MUTE, TUNER1, TUNER2, MP3, REPEAT,
-+			    PLAY, PAUSE, TER, FILE, 480i, 480p, 576i, 576p, 720p, 1080i, 1080p } tvfd_icon;
-+typedef enum { RED_LED = 0, BLUE_LED, CROSS_UP, CROSS_LEFT, CROSS_RIGHT, CROSS_DOWN } tvfd_led;
-+#endif
++//#else
++//typedef enum { USB = 1, I_STANDBY, I_SAT, I_REC, I_TIMESHIFT, I_TIMER, I_HD, I_LOCK, I_DD, I_MUTE, I_TUNER1, I_TUNER2, I_MP3, I_REPEAT,
++//               I_PLAY, I_PAUSE, I_TER, I_FILE_, I_480i, I_480p, I_576i, I_576p, I_720p, I_1080i, I_1080p } tvfd_icon;
++//typedef enum { RED_LED = 0, BLUE_LED, CROSS_UP, CROSS_LEFT, CROSS_RIGHT, CROSS_DOWN } tvfd_led;
++//#endif
 +
 +class evfd
 +{

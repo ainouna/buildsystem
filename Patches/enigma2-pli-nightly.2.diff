@@ -437,17 +437,18 @@
  main/Makefile
 --- enigma2.org/data/fonts/Makefile.am
 +++ enigma2/data/fonts/Makefile.am
-@@ -14,9 +14,4 @@
+@@ -14,9 +14,8 @@
  	LiberationSans-Bold.ttf \
  	LiberationSans-BoldItalic.ttf \
  	LiberationSans-Italic.ttf \
 -	LiberationSans-Regular.ttf \
 -	wqy-microhei.ttc
--
--install-data-hook:
--	cd $(DESTDIR)$(datadir)/fonts && \
--	$(LN_S) wqy-microhei.ttc fallback.font
 +	LiberationSans-Regular.ttf
+ 
+ install-data-hook:
+ 	cd $(DESTDIR)$(datadir)/fonts && \
+-	$(LN_S) wqy-microhei.ttc fallback.font
++	$(LN_S) -f md_khmurabi_10.ttf fallback.font
 --- enigma2.org/data/skin_display_default.xml
 +++ enigma2/data/skin_display_default.xml
 @@ -22,27 +22,29 @@
@@ -760,7 +761,7 @@
  }
 --- enigma2.org/lib/driver/vfd.cpp
 +++ enigma2/lib/driver/vfd.cpp
-@@ -0,0 +1,808 @@
+@@ -0,0 +1,811 @@
 +/*
 + * vfd.cpp
 + *
@@ -880,7 +881,9 @@
 +evfd* evfd::getInstance()
 +{
 +	if (instance == NULL)
++	{
 +		instance = new evfd;
++	}
 +	return instance;
 +}
 +
@@ -914,7 +917,6 @@
 +void evfd::init()
 +{
 +	pthread_create (&thread_start_loop, NULL, &start_loop, NULL);
-+	return;
 +}
 +
 +evfd::~evfd()
@@ -1300,16 +1302,20 @@
 +	}
 +}
 +
-+void evfd::vfd_write_string(char * str, bool force)
++void evfd::vfd_write_string(char *str, bool force)
 +{
 +	int ws = 0;
 +	int i = strlen(str);
 +	if (VFD_CENTER == true)
 +	{
 +		if (i < VFDLENGTH)
++		{
 +			ws=(VFDLENGTH-i)/2;
++		}
 +		else
++		{
 +			ws = 0;
++		}
 +	}
 +
 +	if (i > VFDLENGTH)
@@ -1318,10 +1324,11 @@
 +	}
 +
 +	struct vfd_ioctl_data data;
++
 +	memset(data.data, ' ', VFDLENGTH);
 +	if (VFD_CENTER == true)
 +	{
-+		memcpy(data.data+ws, str, VFDLENGTH-ws);
++		memcpy(data.data + ws, str, VFDLENGTH - ws);
 +	}
 +	else
 +	{
@@ -1330,7 +1337,7 @@
 +	data.start = 0;
 +	if (VFD_CENTER == true)
 +	{
-+		data.length = i+ws<=VFDLENGTH?i+ws:VFDLENGTH;
++		data.length = i + ws <= VFDLENGTH ? i + ws : VFDLENGTH;
 +	}
 +	else
 +	{
@@ -1339,17 +1346,15 @@
 +	file_vfd = open (VFD_DEVICE, O_WRONLY);
 +	write(file_vfd,data.data,data.length);
 +	close (file_vfd);
-+	return;
 +}
-+
 +#else
 +
-+void evfd::vfd_write_string(char * str)
++void evfd::vfd_write_string(char *str)
 +{
 +	vfd_write_string(str, false);
 +}
 +
-+void evfd::vfd_write_string(char * str, bool force)
++void evfd::vfd_write_string(char *str, bool force)
 +{
 +	int i = strlen(str);
 +	if (i > 63)
@@ -1380,10 +1385,9 @@
 +		ioctl (file_vfd, VFDDISPLAYCHARS, &data );
 +		close (file_vfd);
 +	}
-+	return;
 +}
 +
-+void evfd::vfd_write_string_scrollText(char* text)
++void evfd::vfd_write_string_scrollText(char *text)
 +{
 +	if (!blocked)
 +	{
@@ -1407,7 +1411,6 @@
 +		vfd_write_string(out);
 +		free (out);
 +	}
-+	return;
 +}
 +#endif
 +
@@ -1417,13 +1420,11 @@
 +	memset(out, 0, VFDLENGTH + 1);
 +	memset(out, ' ', VFDLENGTH);
 +	vfd_write_string(out, true);
-+	return;
 +}
 +
 +void evfd::vfd_set_icon(int id, bool onoff)
 +{
 +	vfd_set_icon(id, onoff, false);
-+	return;
 +}
 +
 +void evfd::vfd_set_icon(int id, bool onoff, bool force)
@@ -1446,7 +1447,6 @@
 +			close (file_vfd);
 +		}
 +	}
-+	return;
 +}
 +
 +void evfd::vfd_set_led(tvfd_led id, int onoff)
@@ -1464,7 +1464,6 @@
 +		ioctl(file_vfd, VFDSETLED, &data);
 +		close (file_vfd);
 +	}
-+	return;
 +}
 +
 +void evfd::vfd_clear_icons()
@@ -1502,8 +1501,6 @@
 +	file_vfd = open(VFD_DEVICE, O_WRONLY);
 +	ioctl(file_vfd, VFDBRIGHTNESS, &data);
 +	close(file_vfd);
-+
-+	return;
 +}
 +
 +void evfd::vfd_set_light(bool onoff)
@@ -1513,16 +1510,19 @@
 +	memset(&data, 0, sizeof(struct vfd_ioctl_data));
 +
 +	if (onoff)
++	{
 +		data.start = 0x01;
++	}
 +	else
++	{
 +		data.start = 0x00;
-+		data.length = 0;
++	}
++	data.length = 0;
 +
 +	file_vfd = open (VFD_DEVICE, O_WRONLY);
 +	ioctl(file_vfd, VFDDISPLAYWRITEONOFF, &data);
 +
 +	close (file_vfd);
-+	return;
 +}
 +
 +void evfd::vfd_set_fan(bool onoff)
@@ -1539,17 +1539,20 @@
 +	memset(&data, 0, sizeof(struct vfd_ioctl_data));
 +
 +	if (onoff)
++	{
 +		data.start = 0x01;
++	}
 +	else
++	{
 +		data.start = 0x00;
-+		data.length = 0;
++	}
++	data.length = 0;
 +
 +	file_vfd = open (VFD_DEVICE, O_WRONLY);
 +	ioctl(file_vfd, VFDSETFAN, &data);
 +
 +	close (file_vfd);
 +#endif
-+	return;
 +}
 +
 +void evfd::vfd_set_SCROLL(int id)
@@ -1569,25 +1572,24 @@
 +{
 +	VFD_CENTER = id;
 +}
++// vim:ts=4
 --- enigma2.org/lib/driver/vfd.h
 +++ enigma2/lib/driver/vfd.h
-@@ -0,0 +1,54 @@
+@@ -0,0 +1,52 @@
 +#ifndef VFD_H_
 +#define VFD_H_
 +
 +#define ICON_ON  1
 +#define ICON_OFF 0
 +
-+/* Note: C++ handles the #if, #elif, #else and #endif well, but swig does not, always picking the first set.
-+   Do not use them here, making this file box dependent... */
-+#if !defined(ENABLE_FORTIS_HDBOX)
++//#if !defined(ENABLE_FORTIS_HDBOX)
 +typedef enum { USB = 0x10, HD, HDD, LOCK, BT, MP3, MUSIC, DD, MAIL, MUTE, PLAY, PAUSE, FF, FR, REC, CLOCK } tvfd_icon;
 +typedef enum { RED_LED = 0, GREEN_LED } tvfd_led;
-+#else
-+typedef enum { USB = 1, STANDBY, SAT, REC, TIMESHIFT, TIMER, HD, LOCK, DD, MUTE, TUNER1, TUNER2, MP3, REPEAT,
-+			    PLAY, PAUSE, TER, FILE, 480i, 480p, 576i, 576p, 720p, 1080i, 1080p } tvfd_icon;
-+typedef enum { RED_LED = 0, BLUE_LED, CROSS_UP, CROSS_LEFT, CROSS_RIGHT, CROSS_DOWN } tvfd_led;
-+#endif
++//#else
++//typedef enum { USB = 1, I_STANDBY, I_SAT, I_REC, I_TIMESHIFT, I_TIMER, I_HD, I_LOCK, I_DD, I_MUTE, I_TUNER1, I_TUNER2, I_MP3, I_REPEAT,
++//               I_PLAY, I_PAUSE, I_TER, I_FILE_, I_480i, I_480p, I_576i, I_576p, I_720p, I_1080i, I_1080p } tvfd_icon;
++//typedef enum { RED_LED = 0, BLUE_LED, CROSS_UP, CROSS_LEFT, CROSS_RIGHT, CROSS_DOWN } tvfd_led;
++//#endif
 +
 +class evfd
 +{
