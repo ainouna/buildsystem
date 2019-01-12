@@ -283,8 +283,8 @@ $(D)/tools-tfd2mtd: $(D)/bootstrap
 $(D)/tools-tffpctl: $(D)/bootstrap
 	$(START_BUILD)
 	$(SET) -e; cd $(APPS_DIR)/tools/tffpctl; \
+	if [ ! -d m4 ]; then mkdir m4; fi; \
 		$(CONFIGURE_TOOLS) \
-		if [ ! -d m4 ]; then mkdir m4; fi; \
 			--prefix= \
 		; \
 		$(MAKE); \
