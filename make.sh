@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20181231.2
+# Version 20190112.1
 
 ##############################################
 
@@ -14,10 +14,11 @@ fi
 ##############################################
 
 if [ "$1" == -h ] || [ "$1" == --help ]; then
-	echo "Usage: $0 [-v | --verbose | -q | --quiet] [Parameter1 [Parameter2 ... [Parameter7]]]]]]]"
+	echo "Usage: $0 [-v | --verbose | -q | --quiet | -b | --batchmode] [Parameter1 [Parameter2 ... [Parameter7]]]]]]]"
 	echo
 	echo "-v or --verbose : verbose build (very noisy!)"
 	echo "-q or --quiet   : quiet build, fastest, almost silent"
+	echo "-b or --batchmode : batch mode; do not become interactive"
 	echo "Parameter 1     : target system (1-36)"
 	echo "Parameter 2     : kernel (1-2)"
 	echo "Parameter 3     : optimization (1-5)"
@@ -66,17 +67,35 @@ fi
 
 ##############################################
 
-if [ "$1" == -q ] || [ "$1" == --quiet ]; then
-	shift
-	KBUILD_VERBOSE=quiet
-elif [ "$1" == -v ] || [ "$1" == --verbose ]; then
-	shift
-	KBUILD_VERBOSE=verbose
-else
-	KBUILD_VERBOSE=normal
-fi
-export KBUILD_VERBOSE
+# Check for quiet / verbose argument
+KBUILD_VERBOSE=normal
+set="$@"
+for i in $set;
+do
+	echo $i
+	if [ $"$i" == -q ] || [ $"$i" == --quiet ]; then
+		shift
+		KBUILD_VERBOSE=quiet
+		break
+	elif [ $"$i" == -v ] || [ $"$i" == --verbose ]; then
+		shift
+		KBUILD_VERBOSE=verbose
+		break
+	fi
+done
 echo "KBUILD_VERBOSE=$KBUILD_VERBOSE" > config
+export KBUILD_VERBOSE
+
+#check for batch mode argument
+for i in $set;
+do
+	if [ $"$i" == "-b" ] || [ $"$i" == "--batchmode" ]; then
+		shift
+		BATCHMODE="yes"
+		break
+	fi
+done
+export BATCHMODE
 
 ##############################################
 
@@ -346,12 +365,13 @@ case "$IMAGE" in
 #	enigma*)
 	*)
 		case $6 in
-			[1-4]) REPLY=$6;;
+			[1-5]) REPLY=$6;;
 			*)	echo -e "\nMedia Framework:"
 				echo "   1)  None (E2 is built without a player)"
 				echo "   2)  eplayer3 (E2 player uses eplayer3 only)"
 				echo "   3)  gstreamer (E2 player uses gstreamer only)"
 				echo "   4*) gstreamer+eplayer3 (recommended, E2 player uses gstreamer + libeplayer3)"
+				echo "   5)  gstreamer/eplayer3 (E2 player is switchable between gstreamer & libeplayer3)"
 				read -p "Select media framework (1-4)? ";;
 		esac
 
@@ -360,6 +380,7 @@ case "$IMAGE" in
 			2) MEDIAFW="eplayer3";;
 			3) MEDIAFW="gstreamer";;
 #			4) MEDIAFW="gst-eplayer3";;
+			5) MEDIAFW="gst-eplayer3-dual";;
 			*) MEDIAFW="gst-eplayer3";;
 		esac
 
@@ -434,8 +455,8 @@ echo "MEDIAFW=$MEDIAFW" >> config
 
 ##############################################
 
-case "$BOXTYPE" in
-	hs7110|hs7119|hs7420|hs7429|hs7810a|hs7819)
+#case "$BOXTYPE" in
+#	hs7110|hs7119|hs7420|hs7429|hs7810a|hs7819)
 		case $7 in
 			[1-2])	REPLY=$7;;
 			*)	echo -e "\nWhere will the image be running:"
@@ -449,25 +470,30 @@ case "$BOXTYPE" in
 			2) DESTINATION="USB";;
 			*) DESTINATION="flash";;
 		esac
-		echo "DESTINATION=$DESTINATION" >> config;;
-	*)
-		;;
-esac
+#		echo "DESTINATION=$DESTINATION" >> config;;
+		echo "DESTINATION=$DESTINATION" >> config
+#	*)
+#		;;
+#esac
 
 ##############################################
 
 chmod 755 $CURDIR/build
 
-make printenv
+if [ ! "$BATCHMODE" == "yes" ]; then
+	make printenv
 ##############################################
-echo "Your build environment is ready :-)"
-echo
-read -p "Do you want to start the build now (Y*/n)? "
+	echo "Your build environment is ready :-)"
+	echo
+	read -p "Do you want to start the build now (Y*/n)? "
 
-case "$REPLY" in
-	N|n|No|NO|no) echo -e "\nOK. To start the build, execute ./build in this directory.\n"
-		exit;;
-  	*)	$CURDIR/build;;
-esac
+	case "$REPLY" in
+		N|n|No|NO|no) echo -e "\nOK. To start the build, execute ./build in this directory.\n"
+			exit;;
+	  	*)	$CURDIR/build;;
+	esac
+else
+	$CURDIR/build
+fi
 echo
 # vim:ts=4
