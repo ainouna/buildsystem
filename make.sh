@@ -72,7 +72,6 @@ KBUILD_VERBOSE=normal
 set="$@"
 for i in $set;
 do
-	echo $i
 	if [ $"$i" == -q ] || [ $"$i" == --quiet ]; then
 		shift
 		KBUILD_VERBOSE=quiet
@@ -89,7 +88,7 @@ export KBUILD_VERBOSE
 #check for batch mode argument
 for i in $set;
 do
-	if [ $"$i" == "-b" ] || [ $"$i" == "--batchmode" ]; then
+	if [ $"$i" == -b ] || [ $"$i" == --batchmode ]; then
 		shift
 		BATCHMODE="yes"
 		break
