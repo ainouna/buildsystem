@@ -7507,16 +7507,40 @@
  		</condition>
 --- enigma2.org/lib/python/Components/About.py
 +++ enigma2/lib/python/Components/About.py
-@@ -64,7 +64,7 @@
+--- enigma2.org/lib/python/Components/About.py
++++ enigma2/lib/python/Components/About.py
+@@ -50,12 +50,15 @@
+ 	return enigma_version
+ 
+ def getGStreamerVersionString():
+-	try:
+-		from glob import glob
+-		gst = [x.split("Version: ") for x in open(glob("/var/lib/opkg/info/gstreamer[0-9].[0-9].control")[0], "r") if x.startswith("Version:")][0]
+-		return "%s" % gst[1].split("+")[0].replace("\n","")
+-	except:
+-		return _("unknown")
++	from glob import glob
++	if os.path.isfile('/usr/lib/pkgconfig/gstreamer-1.0.pc'):
++		gstversion = [x.split("Version:") for x in open(glob("/usr/lib/pkgconfig/gstreamer-1.0.pc")[0], "r") if x.startswith("Version:")][0]
++		if os.path.isfile('/usr/lib/libeplayer3.so'):
++			return "Gstreamer " + ("%s" % gstversion[1].replace("\n","")) + " + eplayer3"
++		else:
++			return "Gstreamer " + ("%s" % gstversion[1].replace("\n",""))
++	else:
++		return _("eplayer3")
+ 
+ def getKernelVersionString():
+ 	try:
+@@ -64,7 +67,7 @@
  		return _("unknown")
  
  def getHardwareTypeString():
 -	return HardwareInfo().get_device_string()
-+	return HardwareInfo().get_device_string().upper()
++	return HardwareInfo().get_device_string().capitalize()
  
  def getImageTypeString():
  	try:
-@@ -76,29 +76,19 @@
+@@ -76,29 +79,19 @@
  def getCPUInfoString():
  	try:
  		cpu_count = 0
