@@ -7119,11 +7119,11 @@
 +		eBackgroundFileEraser *eraser = eBackgroundFileEraser::getInstance();
 +		if (!eraser)
 +		{
-+			eDebug("FATAL !! can't get background file eraser");
++			eDebug("[eServiceEPlayer3] FATAL: cannot get background file eraser");
 +		}
 +		for (std::list<std::string>::iterator i(res.begin()); i != res.end(); ++i)
 +		{
-+			eDebug("Removing %s...", i->c_str());
++			eDebug("[eServiceEPlayer3] Removing %s...", i->c_str());
 +			if (eraser)
 +			{
 +				eraser->erase(i->c_str());
@@ -7517,14 +7517,14 @@
 +	}
 +	else
 +	{
-+		//Creation failed, no playback support for insert file, so delete playback context
-+		//FIXME: How to tell e2 that we failed?
++		// Creation failed, no playback support for insert file, so delete playback context
++		// FIXME: How to tell e2 that we failed?
 +#if defined ENABLE_MEDIAFWGSTREAMER
 +		if (player && player->output)
 +		{
-+			player->output->Command(player,OUTPUT_DEL, (void*)"audio");
-+			player->output->Command(player,OUTPUT_DEL, (void*)"video");
-+			player->output->Command(player,OUTPUT_DEL, (void*)"subtitle");
++			player->output->Command(player, OUTPUT_DEL, (void*)"audio");
++			player->output->Command(player, OUTPUT_DEL, (void*)"video");
++			player->output->Command(player, OUTPUT_DEL, (void*)"subtitle");
 +		}
 +
 +		if (player && player->playback)
@@ -7543,7 +7543,7 @@
 +#endif
 +	}
 +	//m_state = stRunning;
-+	eDebug("eServiceEPlayer3-<\n");
++	eDebug("[eServiceEPlayer3] <\n");
 +}
 +
 +eServiceEPlayer3::~eServiceEPlayer3()
@@ -7628,14 +7628,14 @@
 +
 +	if (player && player->output)
 +	{
-+		player->output->Command(player,OUTPUT_DEL, (void*)"audio");
-+		player->output->Command(player,OUTPUT_DEL, (void*)"video");
-+		player->output->Command(player,OUTPUT_DEL, (void*)"subtitle");
++		player->output->Command(player, OUTPUT_DEL, (void*)"audio");
++		player->output->Command(player, OUTPUT_DEL, (void*)"video");
++		player->output->Command(player, OUTPUT_DEL, (void*)"subtitle");
 +	}
 +
 +	if (player && player->playback)
 +	{
-+		player->playback->Command(player,PLAYBACK_CLOSE, NULL);
++		player->playback->Command(player, PLAYBACK_CLOSE, NULL);
 +	}
 +	if (player)
 +	{
@@ -7862,7 +7862,7 @@
 +		player->Seek(pos,true);
 +	}
 +#endif
-+	ret =0;
++	ret = 0;
 +	return ret;
 +}
 +
@@ -7915,12 +7915,12 @@
 +	{
 +		player->playback->Command(player, PLAYBACK_PTS, &vpts);
 +	}
-+	if (vpts<=0)
++	if (vpts <= 0)
 +	{
 +		return -1;
 +	}
 +	/* len is in nanoseconds. we have 90 000 pts per second. */
-+	pts = vpts>0 ? vpts : pts;
++	pts = vpts;
 +#else //eplayer3 code
 +	if (player)
 +	{
@@ -8056,7 +8056,7 @@
 +	char * tag = NULL;
 +#if defined ENABLE_MEDIAFWGSTREAMER
 +	char * res_str = NULL;
-+#else
++#else //eplayer3
 +	std::vector<std::string> keys, values;
 +	std::string res = "";
 +#endif
@@ -8395,7 +8395,7 @@
 +		}
 +		stream_idx++;
 +	}
-+	eDebug("[eServiceEPlayer3] %s: finished", __func__);
++	eDebug("[eServiceEPlayer3] %s: <", __func__);
 +	return 0;
 +}
 +
@@ -8522,7 +8522,6 @@
 +	DECLARE_REF(eServiceEPlayer3InfoContainer);
 +
 +	double doubleValue;
-+
 +
 +	unsigned char *bufferData;
 +	unsigned int bufferSize;
@@ -8750,6 +8749,7 @@
 +};
 +
 +#endif
++// vim:ts=4
 --- enigma2.org/lib/service/servicemp3.cpp
 +++ enigma2/lib/service/servicemp3.cpp
 @@ -1,5 +1,5 @@

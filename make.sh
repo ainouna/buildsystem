@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20190112.1
+# Version 20190113.1
 
 ##############################################
 
@@ -16,16 +16,16 @@ fi
 if [ "$1" == -h ] || [ "$1" == --help ]; then
 	echo "Usage: $0 [-v | --verbose | -q | --quiet | -b | --batchmode] [Parameter1 [Parameter2 ... [Parameter7]]]]]]]"
 	echo
-	echo "-v or --verbose : verbose build (very noisy!)"
-	echo "-q or --quiet   : quiet build, fastest, almost silent"
+	echo "-v or --verbose   : verbose build (very noisy!)"
+	echo "-q or --quiet     : quiet build, fastest, almost silent"
 	echo "-b or --batchmode : batch mode; do not become interactive"
-	echo "Parameter 1     : target system (1-36)"
-	echo "Parameter 2     : kernel (1-2)"
-	echo "Parameter 3     : optimization (1-5)"
-	echo "Parameter 4     : image (Enigma=1/2 Neutrino=3/4 Tvheadend=5 (1-5)"
-	echo "Parameter 5     : Neutrino variant (1-6) or Enigma2/Tvheadend diff (0-6)"
-	echo "Parameter 6     : media Framework (Enigma2: 1-4, Neutrino, Tvheadend: ignored)"
-	echo "Parameter 7     : destination (1-2, 1=flash, 2=USB, Fortis HS711X, HS742X & HS781X, ignored otherwise)"
+	echo "Parameter 1       : target system (1-36)"
+	echo "Parameter 2       : kernel (1-2)"
+	echo "Parameter 3       : optimization (1-5)"
+	echo "Parameter 4       : image (Enigma=1/2 Neutrino=3/4 Tvheadend=5 (1-5)"
+	echo "Parameter 5       : Neutrino variant (1-6) or Enigma2/Tvheadend diff (0-6)"
+	echo "Parameter 6       : media Framework (Enigma2: 1-4, Neutrino, Tvheadend: ignored)"
+	echo "Parameter 7       : destination (1-2, 1=flash, 2=USB, Fortis HS711X, HS742X & HS781X, ignored otherwise)"
 	exit
 fi
 
@@ -454,34 +454,28 @@ echo "MEDIAFW=$MEDIAFW" >> config
 
 ##############################################
 
-#case "$BOXTYPE" in
-#	hs7110|hs7119|hs7420|hs7429|hs7810a|hs7819)
-		case $7 in
-			[1-2])	REPLY=$7;;
-			*)	echo -e "\nWhere will the image be running:"
-				echo "   1*) Flash memory or hard disk"
-				echo "   2)  USB stick"
-				read -p "Select destination (1-2)? ";;
-		esac
+case $7 in
+	[1-2])	REPLY=$7;;
+	*)	echo -e "\nWhere will the image be running:"
+		echo "   1*) Flash memory or hard disk"
+		echo "   2)  USB stick"
+		read -p "Select destination (1-2)? ";;
+esac
 
-		case "$REPLY" in
-#			1) DESTINATION="flash";;
-			2) DESTINATION="USB";;
-			*) DESTINATION="flash";;
-		esac
-#		echo "DESTINATION=$DESTINATION" >> config;;
-		echo "DESTINATION=$DESTINATION" >> config
-#	*)
-#		;;
-#esac
+case "$REPLY" in
+#	1) DESTINATION="flash";;
+	2) DESTINATION="USB";;
+	*) DESTINATION="flash";;
+esac
+echo "DESTINATION=$DESTINATION" >> config
 
 ##############################################
 
 chmod 755 $CURDIR/build
 
-if [ ! "$BATCHMODE" == "yes" ]; then
-	make printenv
+make printenv
 ##############################################
+if [ ! "$BATCHMODE" == "yes" ]; then
 	echo "Your build environment is ready :-)"
 	echo
 	read -p "Do you want to start the build now (Y*/n)? "
