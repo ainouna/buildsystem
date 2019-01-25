@@ -1,22 +1,25 @@
 #!/bin/sh
 
 echo "------------------------------------------------------------"
-echo "deploy.sh"
-echo
-echo "V0.11: Fixed: non-jfs RECORD partion was always formatted in"
-echo "       ext2, even with useext2e2=0"
-echo "V0.10: Try to mount USB stick several times if mount fails"
-echo "V0.09: Log installation to boot medium removed again because"
-echo "       it caused problems"
-echo "V0.08: Log installation to boot medium"
-echo "V0.07: Do not install E2 if disk is not partitioned"
-echo "       and parameter partition is set to 0"
-echo "V0.06: Added EXT2 option for E2 and MINI partitions"
-echo "V0.05: Added JFS option for RECORD partition"
-echo "V0.04: Changed ini File format"
-echo "V0.03: Suppress meaningless tar errors during save settings"
-echo "V0.02: Format Mini partitions with Ext3 instead of Ext2"
-echo "V0.01: New parameter CREATEMINI and cleanup of KEEPSETTINGS"
+echo "deploy.sh version V0.12"
+#echo
+#echo "V0.12: sfdisk parameters rewritten to use sector (512 byte)
+#echo "       as unit instead of megabytes; use blockdev to read
+#echo "       disk size and force partition table re-read.
+#echo "V0.11: Fixed: non-jfs RECORD partion was always formatted in"
+#echo "       ext2, even with useext2e2=0"
+#echo "V0.10: Try to mount USB stick several times if mount fails"
+#echo "V0.09: Log installation to boot medium removed again because"
+#echo "       it caused problems"
+#echo "V0.08: Log installation to boot medium"
+#echo "V0.07: Do not install E2 if disk is not partitioned"
+#echo "       and parameter partition is set to 0"
+#echo "V0.06: Added EXT2 option for E2 and MINI partitions"
+#echo "V0.05: Added JFS option for RECORD partition"
+#echo "V0.04: Changed ini File format"
+#echo "V0.03: Suppress meaningless tar errors during save settings"
+#echo "V0.02: Format Mini partitions with Ext3 instead of Ext2"
+#echo "V0.01: New parameter CREATEMINI and cleanup of KEEPSETTINGS"
 echo "------------------------------------------------------------"
 
 # default installation device
@@ -259,21 +262,24 @@ if [ $format = "1" ]; then
     echo "<- Partitioning HDD ->"
     echo "   8" > /dev/fpsmall
     echo "HDD PART" > /dev/fplarge
+#   format=1, partition=1
     dd if=/dev/zero of=$HDD bs=512 count=64 2> /dev/null
-    sfdisk --re-read -L -q $HDD
+#   sfdisk --re-read -L -q $HDD
+    blockdev --rereadpt $HDD
     if [ "$createmini" != "1" ]; then
-      # Erase the disk and create 3 partitions
-      #  1:   2GB Linux
-      #  2: 256MB Swap
-      #  3: remaining space LINUX
-      sfdisk $HDD -uM -L << EOF
-,2048,L,*
-,256,S
+    # Erase the disk and create 3 partitions
+    #  1:   2GB Linux
+    #  2: 256MB Swap
+    #  3: remaining space LINUX
+    # NOTE: 1 MB is 2048 sectors
+    sfdisk $HDD << EOF
+,4194304,L,*
+,524288,S
 ,,L
-;
 EOF
-    else
-      export set recsize=$((`sfdisk -s $HDD`/1024-2048-256-1024-1024-1024-1024))
+    else # createmini=1
+#     export set recsize=$((`sfdisk -s $HDD`/1024-2048-256-1024-1024-1024-1024))
+      export set recsize=$((blockdev --getsz $HDD))
       echo "Recording partition size is $recsize MB"
       # Erase the disk and create 8 partitions
       #  1:   2GB Linux
@@ -284,18 +290,19 @@ EOF
       #  6: 1GB  LINUX
       #  7: 1GB  LINUX
       #  8: 1GB  LINUX
-      sfdisk $HDD -uM -L << EOF
-,2048,L,*
-,256,S
+      # NOTE: 1 MB is 2048 sectors
+      sfdisk $HDD << EOF
+,4194304,L,*
+,524288,S
 ,$recsize,L
 ,,E
-,1024,L
-,1024,L
-,1024,L
+,2097152,L
+,2097152,L
+,2097152,L
 ,,L
 EOF
-    fi
-  else
+    fi # createmini
+  else # partition=0
     echo
     echo "<- Skipping partitioning of the HDD ->"
     # Check if the RECORD Partition is there already. If not cancel the installation
@@ -308,14 +315,14 @@ EOF
     else
       echo "OK, HDD already partitioned."
     fi
-  fi
-fi
+  fi #partition
+fi #format
 
 # Format Linux rootfs partitions
 echo
 echo "<- Formatting HDD (rootfs) ->"
 echo "   7" > /dev/fpsmall
-echo "HDD FMT" > /dev/fplarge
+echo "FMT ROOT" > /dev/fplarge
 #ln -s /proc/mounts /etc/mtab
   
 fs="ext3"
@@ -323,7 +330,7 @@ if [ "$useext2e2" = "1" ]; then
   fs="ext2"
 fi
   
-mkfs.$fs -F -L MINI9 $ROOTFS
+mkfs.$fs -F -L ROOTFS $ROOTFS
 
 if [ "$partition" = "1" ]; then
   if [ "$createmini" = "1" ]; then
@@ -340,8 +347,8 @@ if [ "$partition" = "1" ]; then
   # Initialise the swap partition
   echo
   echo "<- Formatting HDD (swap) ->"
-  echo "   5" > /dev/fpsmall
-  echo "HDD SWAP" > /dev/fplarge
+  echo "   6" > /dev/fpsmall
+  echo "FMT SWAP" > /dev/fplarge
   mkswap $SWAPFS
   echo "SWAPPART" > /deploy/swaplabel
   dd if=/deploy/swaplabel of="$SWAPFS" seek=1052 bs=1 count=8 2> /dev/null
@@ -351,12 +358,12 @@ fi
 if [ $format = "1" ]; then
   echo
   echo "<- Formatting HDD (record) ->"
-  echo "   6" > /dev/fpsmall
+  echo "   5" > /dev/fpsmall
   if [ "$usejfs" = "1" ]; then
-    echo "HDD FMT JFS"  > /dev/fplarge
+    echo "FMT REC JFS"  > /dev/fplarge
     mkfs.jfs -q -L RECORD $DATAFS
   else
-    echo "HDD FMT EXT"  > /dev/fplarge
+    echo "FMT REC EXT"  > /dev/fplarge
     mkfs.$fs -F -L RECORD $DATAFS
   fi
 fi
