@@ -288,7 +288,7 @@ $(D)/enigma2_servicemp3epl: | $(SERVICEMP3EPL_DEPS)
 	$(REMOVE)/enigma2-servicemp3epl-$(SERVICEMP3EPL_VER)
 	$(SILENT)if [ -d $(ARCHIVE)/enigma2-servicemp3epl-$(SERVICEMP3EPL_VER).git ]; \
 		then cd $(ARCHIVE)/enigma2-servicemp3epl-$(SERVICEMP3EPL_VER).git; git pull $(SILENT_CONFIGURE); \
-		else cd $(ARCHIVE); git clone $(SILENT_CONFIGURE) https://github.com/PLi-metas/servicemp3epl.git enigma2-servicemp3epl-$(SERVICEMP3EPL_VER).git; \
+		else cd $(ARCHIVE); git clone $(SILENT_CONFIGURE) https://github.com/OpenVisionE2/servicemp3epl.git enigma2-servicemp3epl-$(SERVICEMP3EPL_VER).git; \
 		fi
 	$(SILENT)cp -ra $(ARCHIVE)/enigma2-servicemp3epl-$(SERVICEMP3EPL_VER).git/ $(BUILD_TMP)/enigma2-servicemp3epl-$(SERVICEMP3EPL_VER)
 	$(SET) -e; cd $(BUILD_TMP)/enigma2-servicemp3epl-$(SERVICEMP3EPL_VER); \
