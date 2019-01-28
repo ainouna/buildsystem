@@ -172,6 +172,11 @@ $(D)/enigma2.do_prepare: | $(ENIGMA2_DEPS)
 		if [ "$(MEDIAFW)" == "eplayer3" ]; then \
 			set -e; cd $(SOURCE_DIR)/enigma2 && patch -p1 $(SILENT_PATCH) < "$(PATCHES)/eplayer3.$$DIFF.patch"; \
 		fi; \
+		if [ "$(E2_DIFF)" == "0" ] || [ "$(E2_DIFF)" == "2" ]; then \
+			if [ "$(BOXTYPE)" == "fortis_hdbox" ] || [ "$(BOXTYPE)" == "octagon1008" ] || [ "$(BOXTYPE)" == "tf7700" ]; then \
+				patch -p1 $(SILENT_PATCH) < "$(PATCHES)/enigma2-no_hdmi_cec.$$DIFF.patch"; \
+			fi; \
+		fi; \
 		echo "Patching to diff-$$DIFF completed."; \
 		cd $(SOURCE_DIR)/enigma2; \
 		echo -n "Building VFD-drivers..."; \
