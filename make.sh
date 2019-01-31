@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20190113.1
+# Version 20190126.1
 
 ##############################################
 
@@ -454,20 +454,25 @@ echo "MEDIAFW=$MEDIAFW" >> config
 
 ##############################################
 
-case $7 in
-	[1-2])	REPLY=$7;;
-	*)	echo -e "\nWhere will the image be running:"
-		echo "   1*) Flash memory or hard disk"
-		echo "   2)  USB stick"
-		read -p "Select destination (1-2)? ";;
-esac
+#case "$BOXTYPE" in
+#	hs7110|hs7119|hs7420|hs7429|hs7810a|hs7819)
+    	case $7 in
+		[1-2])	REPLY=$7;;
+		*)	echo -e "\nWhere will the image be running:"
+			echo "   1*) Flash memory or hard disk"
+			echo "   2)  USB stick"
+			read -p "Select destination (1-2)? ";;
+		esac
 
-case "$REPLY" in
-#	1) DESTINATION="flash";;
-	2) DESTINATION="USB";;
-	*) DESTINATION="flash";;
-esac
-echo "DESTINATION=$DESTINATION" >> config
+		case "$REPLY" in
+		#	1) DESTINATION="flash";;
+			2) DESTINATION="USB";;
+			*) DESTINATION="flash";;
+		esac
+		echo "DESTINATION=$DESTINATION" >> config
+#	*)
+#		;;
+#esac
 
 ##############################################
 
