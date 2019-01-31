@@ -1494,7 +1494,7 @@ FFMPEG_SOURCE = ffmpeg-$(FFMPEG_VER).tar.xz
 FFMPEG_PATCH  = ffmpeg-$(FFMPEG_VER)-buffer-size.patch
 FFMPEG_PATCH += ffmpeg-$(FFMPEG_VER)-hds-libroxml.patch
 FFMPEG_PATCH += ffmpeg-$(FFMPEG_VER)-aac.patch
-FFMPEG_PATCH += ffmpeg-$(FFMPEG_VER)-kodi.patch
+#FFMPEG_PATCH += ffmpeg-$(FFMPEG_VER)-kodi.patch
 
 FFMPEG_DEPS =
 FFMPEG_CONF_OPTS = 
@@ -1591,19 +1591,23 @@ $(D)/ffmpeg: $(D)/bootstrap $(D)/openssl $(D)/bzip2 $(D)/libass $(D)/libxml2 $(D
 			--disable-decoders \
 			--enable-decoder=aac \
 			--enable-decoder=aac_latm \
+			--enable-decoder=ac3 \
 			--enable-decoder=dca \
 			--enable-decoder=dvbsub \
 			--enable-decoder=dvdsub \
 			--enable-decoder=flac \
+			--enable-decoder=flv \
 			--enable-decoder=h261 \
 			--enable-decoder=h263 \
 			--enable-decoder=h263i \
 			--enable-decoder=h264 \
 			--enable-decoder=mjpeg \
-			--enable-decoder=mp3 \
 			--enable-decoder=movtext \
+			--enable-decoder=mp2 \
+			--enable-decoder=mp3 \
 			--enable-decoder=mpeg1video \
 			--enable-decoder=mpeg2video \
+			--enable-decoder=mpeg4 \
 			--enable-decoder=msmpeg4v1 \
 			--enable-decoder=msmpeg4v2 \
 			--enable-decoder=msmpeg4v3 \
@@ -1611,6 +1615,9 @@ $(D)/ffmpeg: $(D)/bootstrap $(D)/openssl $(D)/bzip2 $(D)/libass $(D)/libxml2 $(D
 			--enable-decoder=pcm_s16be \
 			--enable-decoder=pcm_s16le_planar \
 			--enable-decoder=pcm_s16be_planar \
+			--enable-decoder=pcm_s24le \
+			--enable-decoder=pcm_s24be \
+			--enable-decoder=pcm_s24le_planar \
 			--enable-decoder=pgssub \
 			--enable-decoder=png \
 			--enable-decoder=srt \
@@ -1620,6 +1627,11 @@ $(D)/ffmpeg: $(D)/bootstrap $(D)/openssl $(D)/bzip2 $(D)/libass $(D)/libxml2 $(D
 			--enable-decoder=text \
 			--enable-decoder=theora \
 			--enable-decoder=vorbis \
+			--enable-decoder=wmav1 \
+			--enable-decoder=wmav2 \
+			--enable-decoder=wmv3 \
+			--enable-decoder=wmv1 \
+			--enable-decoder=wmv2 \
 			--enable-decoder=wmv3 \
 			--enable-decoder=xsub \
 			\
@@ -1636,6 +1648,7 @@ $(D)/ffmpeg: $(D)/bootstrap $(D)/openssl $(D)/bzip2 $(D)/libass $(D)/libxml2 $(D
 			--enable-demuxer=image2pipe \
 			--enable-demuxer=image_jpeg_pipe \
 			--enable-demuxer=image_png_pipe \
+			--enable-demuxer=m4v \
 			--enable-demuxer=matroska \
 			--enable-demuxer=mjpeg \
 			--enable-demuxer=mov \
@@ -1647,6 +1660,8 @@ $(D)/ffmpeg: $(D)/bootstrap $(D)/openssl $(D)/bzip2 $(D)/libass $(D)/libxml2 $(D
 			--enable-demuxer=ogg \
 			--enable-demuxer=pcm_s16be \
 			--enable-demuxer=pcm_s16le \
+			--enable-demuxer=pcm_s24be \
+			--enable-demuxer=pcm_s24le \
 			--enable-demuxer=rm \
 			--enable-demuxer=rtp \
 			--enable-demuxer=rtsp \
