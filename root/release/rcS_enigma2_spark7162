@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 190101.1
+#Version 190125.1
 
 echo "Spark 7162 Enigma2"
 
@@ -125,15 +125,12 @@ if [ ! $tunertype ]; then
 fi
 insmod $MODDIR/spark7162.ko UnionTunerType=$tunertype
 
-if [ -e $MODDIR/pti.ko ]; then
-   insmod $MODDIR/pti.ko waitMS=20 videoMem=4096
-   if [ ! $?=='2' ]; then
-      rmmod pti.ko
-      insmod $MODDIR/pti.ko
-      echo "[rcS] Simple pti"
-   else
-      echo "[rcS] Full feature pti"
-   fi
+insmod $MODDIR/pti.ko waitMS=20 videoMem=4096
+if [ $? -ne 0 ]; then
+   insmod $MODDIR/pti.ko
+   echo "[rcS] Simple pti"
+else
+   echo "[rcS] Full feature pti"
 fi
 insmod $MODDIR/stm_monitor.ko
 insmod $MODDIR/stmsysfs.ko
@@ -269,29 +266,28 @@ fi
 # Try and synchronise time
 #inettime=`cat /etc/enigma2/settings | grep systemoptions.inettime | cut -d "=" -f2`
 # if [ ! $inettime ] && [ -h /usr/sbin/ntpd ]; then
-if [ -h /usr/sbin/ntpd ] || [ -e /usr/sbin/ntpd ] || [ -e /sbin/ntpd ]; then
+#if [ -h /usr/sbin/ntpd ] || [ -e /usr/sbin/ntpd ] || [ -e /sbin/ntpd ]; then
    echo "[rcS] Set internet time"
-   ntpd -n -p 0.europe.pool.ntp.org -q
-   /bin/fp_control -sst
-else
-   if [ -e /usr/sbin/time.sh ]; then
-      echo "[rcS] Use transponder time"
-      /usr/sbin/time.sh &
-   fi
-fi
+   (ntpd -n -p 0.europe.pool.ntp.org -q; /bin/fp_control -sst)
+#else
+#   if [ -e /usr/sbin/time.sh ]; then
+#      echo "[rcS] Use transponder time"
+#      /usr/sbin/time.sh &
+#   fi
+#fi
 
 echo "[rcS] Start Enigma2"
 echo "Start SH4 Enigma2" > /dev/vfd
 
 until false
 do
-   echo "[rcS] Entering e2 main loop"
+   echo "[rcS] Entering E2 main loop"
    if [ -e /usr/local/share/enigma2/backdrop.mvi ]; then
-      showiframe -p /usr/local/share/enigma2/backdrop.mvi &
+      showiframe -p /usr/local/share/enigma2/backdrop.mvi
    fi
    /usr/local/bin/enigma2
    rtv=$?
-   echo "[rcS] e2 ended <- RTV: " $rtv
+   echo "[rcS] E2 ended <- RTV: " $rtv
    /bin/fp_control -i 46 0
    case "$rtv" in
       0)  echo "[rcS] E2 ERROR"
@@ -300,7 +296,7 @@ do
       1)  echo "[rcS] SHUTDOWN"
           echo "Shutdown" > /dev/vfd
           if [ -e /usr/local/share/enigma2/shutdown.mvi ]; then
-             showiframe -p /usr/local/share/enigma2/shutdown.mvi &
+             showiframe -p /usr/local/share/enigma2/shutdown.mvi
           fi
           init 0;;
       2)  echo "[rcS] REBOOT"
@@ -310,10 +306,10 @@ do
           echo "Restart GUI" > /dev/vfd
           echo "0" > /proc/progress
           if [ -e /usr/local/share/enigma2/backdrop.mvi ]; then
-             showiframe -p /usr/local/share/enigma2/backdrop.mvi &
+             showiframe -p /usr/local/share/enigma2/backdrop.mvi
           else
              showiframe -p /boot/bootlogo.mvi &
-          fi;;
+          fi
       10) echo "[rcS] SPARK RESTART"
           echo "SPARK Restart" > /dev/vfd
           insmod $MODDIR/i2s.ko
@@ -344,4 +340,3 @@ done
 echo "[rcS] REBOOT SPARK7162"
 echo "Reboot SPARK7162" > /dev/vfd
 reboot -f
-

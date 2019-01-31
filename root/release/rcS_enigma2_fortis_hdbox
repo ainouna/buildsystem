@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 170422.1
+#Version 190125.1
 
 echo "Fortis FS9000/9200 Enigma2"
 
@@ -48,11 +48,11 @@ fi
 echo "[rcS] Init stmfb (LOAD 9)"
 echo "LOAD 9" > /dev/vfd
 insmod $MODDIR/stmcore-display-stx7109c3.ko
-if grep -q "config.av.videoport=Scart" /etc/enigma2/settings; then
-  insmod $MODDIR/stmfb.ko display0=720x576-32@50:15m:pal:rgb:rgb #SCART
-else
+#if grep -q "config.av.videoport=Scart" /etc/enigma2/settings; then
+#  insmod $MODDIR/stmfb.ko display0=720x576-32@50:15m:pal:rgb:rgb #SCART
+#else
   insmod $MODDIR/stmfb.ko display0=1280x720-32@50:16m:pal:rgb:rgb; #HDMI
-fi
+#fi
 
 echo "[rcS] Loading modules"
 
@@ -98,7 +98,7 @@ echo "[rcS] Init CI & cardreader"
 insmod $MODDIR/starci.ko
 
 insmod $MODDIR/pti.ko waitMS=20 videoMem=4096
-if [ $?=='2' ]; then
+if [ $? -ne 0 ]; then
    insmod $MODDIR/pti.ko
    echo "[rcS] Simple pti"
 else
@@ -223,15 +223,15 @@ date -s "201605011200"
 # Try and synchronise time
 #inettime=`cat /etc/enigma2/settings | grep systemoptions.inettime | cut -d "=" -f2`
 # if [ ! $inettime ] && [ -e /sbin/ntpdate ]; then
-if [ -e /sbin/ntpdate ]; then
+#if [ -e /sbin/ntpdate ]; then
    echo "[rcS] Set internet time"
-   (/sbin/ntpdate nl.pool.ntp.org; /bin/fp_control -sst) &
-else
-   if [ -e /usr/sbin/time.sh ]; then
-      echo "[rcS] Use transponder time"
-      /usr/sbin/time.sh &
-   fi
-fi
+   (ntpd -n -p 0.europe.pool.ntp.org -q; /bin/fp_control -sst)
+#else
+#   if [ -e /usr/sbin/time.sh ]; then
+#      echo "[rcS] Use transponder time"
+#      /usr/sbin/time.sh &
+#   fi
+#fi
 
 echo "[rcS] Init portmap & ftp (LOAD 1)"
 echo "LOAD 1" > /dev/vfd

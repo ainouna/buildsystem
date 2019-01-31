@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 170422.1
+#Version 190125.1
 
 echo "Fortis HS7110 Enigma2"
 
@@ -45,11 +45,11 @@ fi
 echo "[rcS] Init stmfb (LOAD 9)"
 insmod $MODDIR/stmcore-display-sti7111.ko
 
-if grep -q "config.av.videoport=Scart" /etc/enigma2/settings; then
-   insmod $MODDIR/stmfb.ko display0=720x576i-32@50:12m:pal:rgb:rgb #SCART
-else
+#if grep -q "config.av.videoport=Scart" /etc/enigma2/settings; then
+#   insmod $MODDIR/stmfb.ko display0=720x576i-32@50:12m:pal:rgb:rgb #SCART
+#else
    insmod $MODDIR/stmfb.ko display0=1280x720-32@50:12m:pal:rgb:rgb #HDMI
-fi
+#fi
 
 echo "[rcS] Loading modules"
 
@@ -97,7 +97,7 @@ echo "[rcS] Init CI & cardreader"
 insmod $MODDIR/hs711x.ko
 insmod $MODDIR/smartcard.ko
 insmod $MODDIR/pti.ko waitMS=20 videoMem=4096
-if [ $?=='2' ]; then
+if [ $? -ne 0 ]; then
    insmod $MODDIR/pti.ko
    echo "[rcS] Simple pti"
 else
@@ -231,15 +231,15 @@ fi
 # Try and synchronise time
 #inettime=`cat /etc/enigma2/settings | grep systemoptions.inettime | cut -d "=" -f2`
 # if [ ! $inettime ] && [ -e /sbin/ntpdate ]; then
-if [ -e /sbin/ntpdate ]; then
+#if [ -e /sbin/ntpdate ]; then
    echo "[rcS] Set internet time"
-   (/sbin/ntpdate nl.pool.ntp.org; /bin/fp_control -sst) &
-else
-   if [ -e /usr/sbin/time.sh ]; then
-      echo "[rcS] Use transponder time"
-      /usr/sbin/time.sh &
-   fi
-fi
+   (   ntpd -n -p 0.europe.pool.ntp.org -q; /bin/fp_control -sst)
+#else
+#   if [ -e /usr/sbin/time.sh ]; then
+#      echo "[rcS] Use transponder time"
+#      /usr/sbin/time.sh &
+#   fi
+#fi
 
 echo "[rcS] Init portmap & ftp (LOAD 1)"
 /etc/init.d/portmap start
@@ -263,16 +263,16 @@ do
    rtv=$?
    echo "[rcS] e2 ended <- return value: " $rtv
    case "$rtv" in
-      0) echo "E2 ERROR"
+      0) echo "[rcS] E2 ERROR"
          init 6;;
       1) echo "SHUTDOWN"
          if [ -e /usr/local/share/enigma2/shutdown.mvi ]; then
             showiframe -p /usr/local/share/enigma2/shutdown.mvi &
          fi
          init 0;;
-      2) echo "REBOOT"
+      2) echo "[rcS] REBOOT"
          init 6;;
-      3) echo "E2 RESTART"
+      3) echo "[rcS] E2 RESTART"
          echo "0" > /proc/progress
          if [ -e /usr/local/share/enigma2/backdrop.mvi ]; then
             showiframe -p /usr/local/share/enigma2/backdrop.mvi &
@@ -280,11 +280,11 @@ do
             showiframe -p /boot/bootlogo.mvi &
          fi
          echo -n " ";;
-      *) echo "ERROR"
+      *) echo "[rcS] ERROR"
          init 6;;
    esac
 done
 
 #never reached
-echo "REBOOT HS7110"
+echo "[rcS] REBOOT HS7110"
 reboot -f

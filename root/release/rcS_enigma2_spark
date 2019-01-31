@@ -1,12 +1,13 @@
 #!/bin/sh
-#Version 151120.1
-
-MODDIR=/lib/modules
+#Version 190125.1
 
 echo "Spark Enigma2"
 
+MODDIR=/lib/modules
+
 insmod $MODDIR/e2_proc.ko
 
+echo "Init frontpanel"
 insmod $MODDIR/aotom.ko paramDebug=0
 insmod $MODDIR/simu_button.ko
 if [ -e $MODDIR/encrypt.ko ]; then
@@ -20,8 +21,8 @@ if [ -e /var/etc/.firstboot ]; then
    sleep 1
    touch /dev/.devfsd
 else
-   echo "LD10" >/dev/vfd
-   echo "LOAD 10"
+   echo "Ld10" > /dev/vfd
+   echo "[rcS] LOAD 10"
 fi
 
 /etc/init.d/mountvirtfs start
@@ -49,14 +50,14 @@ if [ -e "$MODDIR/cpu_frequ.ko" ]; then
            overclk=4609;;
    esac
    echo $overclk > /proc/cpu_frequ/pll0_ndiv_mdiv
-   echo "Setting CPU clock speed to $cpufreq MHz (overclk=$overclk)"
+   echo "[rcS] Setting CPU clock speed to $cpufreq MHz (overclk=$overclk)"
 fi
 
-echo "Starting DEBUG Interface"
+echo "[rcS] Starting DEBUG Interface"
 /etc/init.d/mountall start
 /etc/init.d/hostname start
 
-echo -n "Starting telnetd "
+echo -n "[rcS] Starting telnetd "
 autologin=`cat /etc/enigma2/settings | grep systemoptions.autologin | cut -d "=" -f2`
 if [ ! $autologin ]; then
    /usr/sbin/telnetd -l /bin/autologin
@@ -66,25 +67,25 @@ else
    echo "with normal login"
 fi
 
-echo "Init stmfb (LOAD 9)"
-echo "LD 9" >/dev/vfd
+echo "[rcS] Init stmfb (LOAD 9)"
+echo "Ld 9" > /dev/vfd
 insmod $MODDIR/stmcore-display-sti7111.ko
 
-if  grep -q "config.av.videoport=Scart" /etc/enigma2/settings; then
-   insmod $MODDIR/stmfb.ko display0=720x576i-32@50:15m:pal:rgb:rgb; #SCART
+if grep -q "config.av.videoport=Scart" /etc/enigma2/settings; then
+  insmod $MODDIR/stmfb.ko display0=720x576i-32@50:15m:pal:rgb:rgb; #SCART
 else
-   insmod $MODDIR/stmfb.ko display0=1280x720-32@50:15m:pal:yuv:yuv; #HDMI
+  insmod $MODDIR/stmfb.ko display0=1280x720-32@50:16m:pal:rgb:rgb; #HDMI
 fi
 
-echo "Loading modules"
+echo "[rcS] Loading modules"
 
 if [ ! -e /boot/audio.elf ] || [ ! -e /boot/video.elf ]; then
-   echo "NO FIRMWARE(S)!!!"
+   echo "[rcS] FIRMWARE MISSING!"
    echo "NOFW" > /dev/vfd
 fi
 
-echo "Load audio firmware (LOAD 8)"
-echo "LD 8" > /dev/vfd
+echo "[rcS] Load audio firmware (LOAD 8)"
+echo "Ld 8" > /dev/vfd
 dtsdown=`cat /etc/enigma2/settings | grep systemoptions.dtsdownmix | cut -d "=" -f2`
 if [ ! $dtsdown ] && [ -e /boot/audio_dts.elf ]; then
    /bin/ustslave /dev/st231-1 /boot/audio_dts.elf > /dev/null
@@ -92,24 +93,24 @@ else
    /bin/ustslave /dev/st231-1 /boot/audio.elf > /dev/null
 fi
 
-echo "Load video firmware (LOAD 7)"
-echo "LD 7" > /dev/vfd
+echo "[rcS] Load video firmware (LOAD 7)"
+echo "Ld 7" > /dev/vfd
 /bin/ustslave /dev/st231-0 /boot/video.elf > /dev/null
 
-echo "Init embx (LOAD 6)"
-echo "LD 6" > /dev/vfd
+echo "[rcS] Init embx (LOAD 6)"
+echo "Ld 6" > /dev/vfd
 insmod $MODDIR/embxshell.ko
-insmod $MODDIR/embxmailbox.ko mailbox0=0xfe211000:136:set2 mailbox1=0xfe212000:0 ;
-insmod $MODDIR/embxshm.ko mailbox0=shm:0:7:0x60000000:0:256:256:0:512:0x40000000:0x10000000 ;
+insmod $MODDIR/embxmailbox.ko mailbox0=0xfe211000:136:set2 mailbox1=0xfe212000:0
+insmod $MODDIR/embxshm.ko mailbox0=shm:0:7:0x60000000:0:256:256:0:512:0x40000000:0x10000000
 insmod $MODDIR/mme_host.ko transport0=shm
 
-echo "Init AVS (LOAD 5)"
-echo "LD 5" > /dev/vfd
+echo "[rcS] Init AVS (LOAD 5)"
+echo "Ld 5" > /dev/vfd
 insmod $MODDIR/avs.ko type=avs_none
 
 player=`cat /proc/stb/player/version | awk '{ print substr( $0, length($0) - 2, length($0) ) }'`
-echo "Init player $player (LOAD 4)"
-echo "LD 4" > /dev/vfd
+echo "[rcS] Init player $player (LOAD 4)"
+echo "Ld 4" > /dev/vfd
 
 insmod $MODDIR/mmelog.ko
 insmod $MODDIR/ksound.ko
@@ -117,25 +118,23 @@ insmod $MODDIR/p2div64.ko
 insmod $MODDIR/stm_v4l2.ko
 insmod $MODDIR/stmvout.ko
 insmod $MODDIR/stmvbi.ko
-
 insmod $MODDIR/pseudocard.ko
 
 insmod $MODDIR/stv090x.ko
 
-if [ -e $MODDIR/pti.ko ]; then
-   insmod $MODDIR/pti.ko waitMS=20 videoMem=4096
-   if [ ! $?=='2' ]; then
-      pti_arg=""
-      echo "Simple pti"
-      insmod $MODDIR/pti.ko $pti_arg
-   fi
+insmod $MODDIR/pti.ko waitMS=20 videoMem=4096
+if [ $? -ne 0 ]; then
+   insmod $MODDIR/pti.ko
+   echo "[rcS] Simple pti"
+else
+   echo "[rcS] Full feature pti"
 fi
 insmod $MODDIR/stm_monitor.ko
 insmod $MODDIR/stmsysfs.ko
 insmod $MODDIR/stmdvb.ko
 
-echo "LD 3" > /dev/vfd
-echo "LOAD 3"
+echo "[rcS] LOAD 3"
+echo "Ld 3" > /dev/vfd
 #insmod $MODDIR/player2.ko discardlateframe=0
 insmod $MODDIR/player2.ko
 insmod $MODDIR/sth264pp.ko
@@ -145,37 +144,37 @@ insmod $MODDIR/silencegen.ko
 
 insmod $MODDIR/smartcard.ko
 
-echo "Init HDMI-CEC"
+echo "[rcS] Init HDMI-CEC"
 insmod $MODDIR/cec.ko activemode=1
 
 insmod $MODDIR/bpamem.ko
-mknod /dev/bpamem c 153 0 
+mknod /dev/bpamem c 153 0
 
-showiframe -p /boot/bootlogo.mvi &
+if [ -e /boot/bootlogo.mvi ]; then
+   showiframe -p /boot/bootlogo.mvi &
+fi
 stfbcontrol a 0
 
-echo "Init lircd (LOAD 2)"
-echo "LD 2" > /dev/vfd
+echo "[rcS] Init lircd (LOAD 2)"
+echo "Ld 2" > /dev/vfd
 /usr/bin/lircd
 rm -rf /dev/rc
 mknod /dev/rc c 147 1
+/bin/evremote2 10 120 &
 
-echo "Init smartcard cardreader"
+echo "[rcS] Init smartcard cardreader"
 mknod /dev/sci0 c 169 0
 mknod /dev/sci1 c 169 1
 
-/bin/evremote2 10 100 &
-
 stfbcontrol a 255
 
-wlan=`cat /etc/enigma2/settings | grep systemoptions.wlan | cut -d "=" -f2`
+#wlan=`cat /etc/enigma2/settings | grep systemoptions.wlan | cut -d "=" -f2`
+wlan=
 if [ ! $wlan ] || [ ! -e $MODDIR/$wlan.ko ]; then
-   echo "No WLAN"
+   echo "[rcS] No WLAN"
 else
    insmod $MODDIR/$wlan.ko
-   echo "$wlan WLAN"
-#   echo "$wlan WLAN" > /dev/vfd
-#   sleep 3
+   echo "[rcS] $wlan WLAN"
 fi
 
 if [ -e $MODDIR/ntfs.ko ]; then
@@ -186,62 +185,32 @@ if [ -e $MODDIR/cifs.ko ]; then
    insmod $MODDIR/cifs.ko
 fi
 
-echo "LD 1" > /dev/vfd
-echo "Init FTP (LOAD 1)"
+echo "[rcS] Init FTP (LOAD 1)"
+echo "Ld 1" > /dev/vfd
 /etc/init.d/vsftpd start
 /usr/sbin/inetd
 
 NFS=`grep -c nfs /proc/cmdline`
-if [ "$NFS" -eq "1" ]; then 
-   echo "Booting from nfs, don't set network" 
-else 
-   if [ -e /etc/network/interfaces ]; then 
+if [ "$NFS" -eq "1" ]; then
+   echo "Booting from nfs, don't set network"
+else
+   if [ -e /etc/network/interfaces ]; then
       ip addr flush eth0
-      /etc/init.d/networking stop 
+      /etc/init.d/networking stop
       DHCP=`grep -c 'iface eth0 inet dhcp' /etc/network/interfaces`
       if [ "$DHCP" -eq "1" ]; then
-         echo "Starting DHCP on eth0"
+         echo "[rcS] Starting DHCP on eth0"
          /etc/init.d/udhcpc start
       fi
       /etc/init.d/networking start &
    fi
 fi
+#Allow network to wake up and initialize
 sleep 2
 
 # Handle SWAPPART and RECORD labels and USB devices
 if [ -e /usr/sbin/amount.sh ]; then
    (sleep 20; /usr/sbin/amount.sh) &
-fi
-
-# inadyn
-inadyn=`cat /etc/enigma2/settings | grep systemoptions.inadyn | cut -d "=" -f2`
-if [ ! $inadyn ]; then
-   echo "No inadyn"
-else
-   if [ -e /usr/bin/inadyn ]; then
-      /usr/bin/inadyn &
-#   else
-#      echo "INADYN MISSING" > /dev/vfd
-#      sleep 2
-   fi
-fi
-
-# OpenSSh daemon
-openssh=`cat /etc/enigma2/settings | grep systemoptions.openssh | cut -d "=" -f2`
-if [ ! $openssh ]; then
-   echo "No OpenSSH"
-else
-   if [ -e /etc/init.d/sshd ]; then
-      (sleep 30; /etc/init.d/sshd start) &
-#   else
-#      echo "SSHD MISSING" > /dev/vfd
-#      sleep 2
-   fi
-fi
-
-# Enable PKT plugins
-if [ ! -e /tmp/reference.dat ] && [ -e /var/bin/reference.dat ]; then
-  cp /var/bin/reference.dat /tmp
 fi
 
 # Start automount
@@ -255,47 +224,50 @@ if [ -e /etc/ownscript.sh ]; then
 fi
 
 # Try and synchronise time
-inettime=`cat /etc/enigma2/settings | grep systemoptions.inettime | cut -d "=" -f2`
-if [ ! $inettime ] && [ -e /sbin/ntpdate ]; then
-   echo "Set internet time"
-   /sbin/ntpdate de.pool.ntp.org
-else
-   if [ -e /usr/sbin/time.sh ]; then
-      echo "Use transponder time"
-      /usr/sbin/time.sh &
-   fi
-fi
+#inettime=`cat /etc/enigma2/settings | grep systemoptions.inettime | cut -d "=" -f2`
+#if [ ! $inettime ] && [ -e /sbin/ntpdate ]; then
+   echo "[rcS] Set internet time"
+   (ntpd -n -p 0.europe.pool.ntp.org -q; /bin/fp_control -sst)
+#else
+#   if [ -e /usr/sbin/time.sh ]; then
+#      echo "[rcS] Use transponder time"
+#      /usr/sbin/time.sh &
+#   fi
+#fi
 
-echo "Start Enigma2"
-echo "Start Enigma2" > /dev/vfd
+echo "[rcS] Start Enigma2"
+echo "StE2" > /dev/vfd
 
 until false
 do
-   echo "Entering E2 main loop"
-#   if [ -e /usr/local/share/enigma2/backdrop.mvi ]; then
-#      showiframe -p /usr/local/share/enigma2/backdrop.mvi
-#   fi
+   echo "[rcS] Entering E2 main loop"
+   if [ -e /usr/local/share/enigma2/backdrop.mvi ]; then
+      showiframe -p /usr/local/share/enigma2/backdrop.mvi
+   fi
    /usr/local/bin/enigma2
    rtv=$?
-   echo "E2 ended <- RTV:" $rtv
+   echo "[rcS] E2 ended <- RTV:" $rtv
    case "$rtv" in
-      0)  echo "E2Er" > /dev/vfd
+      0)  echo "[rcS] E2 ERROR"
+          echo "E2Er" > /dev/vfd
           init 6;;
-      1)  echo "Shdn" > /dev/vfd
+      1)  echo "[rcS] SHUTDOWN"
+          echo "Shdn" > /dev/vfd
           if [ -e /usr/local/share/enigma2/shutdown.mvi ]; then
              showiframe -p /usr/local/share/enigma2/shutdown.mvi
           fi
           init 0;;
-      2)  echo "rEbt" > /dev/vfd
+      2)  echo "[rcS] REBOOT"
+          echo "rEbt" > /dev/vfd
           init 6;;
-      3)  echo "RESTART GUI" > /dev/vfd
+      3)  echo "[rcS] E2 RESTART"
           echo "0" > /proc/progress
-#          if [ -e /usr/local/share/enigma2/backdrop.mvi ]; then
-#             showiframe -p /usr/local/share/enigma2/backdrop.mvi
-#          else
-             showiframe -p /boot/bootlogo.mvi &;;
-#          fi
-      10) echo "SPARK RESTART"
+          if [ -e /usr/local/share/enigma2/backdrop.mvi ]; then
+             showiframe -p /usr/local/share/enigma2/backdrop.mvi
+          else
+             showiframe -p /boot/bootlogo.mvi
+          fi;;
+      10) echo "[rcS] SPARK RESTART"
           echo "SPrK" > /dev/vfd
           insmod $MODDIR/i2s.ko
           if [ ! -f /etc/fw_env.config ]; then
@@ -315,13 +287,13 @@ do
           var=`fw_printenv | grep 'kernel_len_spark='` ; fw_setenv kernel_len ${var#*=}
           sync
           init 6;;
-      *)  echo "ERROR"
+      *)  echo "[rcS] ERROR"
           echo "Err" > /dev/vfd
           init 6;;
    esac
-done 
+done
 
 #never reached
+echo "[rcS] REBOOT SPARK"
 echo "rEbt" > /dev/vfd
-echo "REBOOT SPARK"
 reboot -f

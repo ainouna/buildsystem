@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 170422.1
+#Version 190125.1
 
 echo "Fortis HS7119 Enigma2"
 
@@ -107,7 +107,7 @@ echo "[rcS] Init CI & cardreader"
 insmod $MODDIR/hs711x.ko
 insmod $MODDIR/smartcard.ko
 insmod $MODDIR/pti.ko waitMS=20 videoMem=4096
-if [ $?=='2' ]; then
+if [ $? -ne 0 ]; then
    insmod $MODDIR/pti.ko
    echo "[rcS] Simple pti"
 else
@@ -243,15 +243,15 @@ fi
 # Try and synchronise time
 #inettime=`cat /etc/enigma2/settings | grep systemoptions.inettime | cut -d "=" -f2`
 # if [ ! $inettime ] && [ -e /sbin/ntpdate ]; then
-if [ -e /sbin/ntpdate ]; then
+#if [ -e /sbin/ntpdate ]; then
    echo "[rcS] Set internet time"
-   (/sbin/ntpdate nl.pool.ntp.org; /bin/fp_control -sst) &
-else
-   if [ -e /usr/sbin/time.sh ]; then
-      echo "[rcS] Use transponder time"
-      /usr/sbin/time.sh &
-   fi
-fi
+   (   ntpd -n -p 0.europe.pool.ntp.org -q; /bin/fp_control -sst)
+#else
+#   if [ -e /usr/sbin/time.sh ]; then
+#      echo "[rcS] Use transponder time"
+#      /usr/sbin/time.sh &
+#   fi
+#fi
 
 echo "[rcS] Init portmap & ftp (LOAD 1)"
 echo "LD 1" > /dev/vfd
@@ -277,19 +277,19 @@ do
    rtv=$?
    echo "[rcS] e2 ended <- return value: " $rtv
    case "$rtv" in
-      0) echo "E2 ERROR"
+      0) echo "[rcS] E2 ERROR"
          echo "E2Er" > /dev/vfd
          init 6;;
-      1) echo "SHUTDOWN"
+      1) echo "[rcS] SHUTDOWN"
          echo "Shdn" > /dev/vfd
          if [ -e /usr/local/share/enigma2/shutdown.mvi ]; then
             showiframe -p /usr/local/share/enigma2/shutdown.mvi &
          fi
          init 0;;
-      2) echo "REBOOT"
+      2) echo "[rcS] REBOOT"
          echo "rebt" > /dev/vfd
          init 6;;
-      3) echo "E2 RESTART"
+      3) echo "[rcS] E2 RESTART"
          echo "E2rS" > /dev/vfd
          echo "0" > /proc/progress
          if [ -e /usr/local/share/enigma2/backdrop.mvi ]; then
@@ -298,7 +298,7 @@ do
             showiframe -p /boot/bootlogo.mvi &
          fi
          echo -n " ";;
-      *) echo "ERROR"
+      *) echo "[rcS] ERROR"
          echo "Err " > /dev/vfd
          init 6;;
    esac
@@ -306,5 +306,5 @@ done
 
 #never reached
 echo "rebt" > /dev/vfd
-echo "REBOOT HS7119"
+echo "[rcS] REBOOT HS7119"
 reboot -f

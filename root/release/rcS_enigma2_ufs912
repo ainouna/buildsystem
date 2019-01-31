@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 170422.1
+#Version 190125.1
 
 echo "Kathrein UFS912 Enigma2"
 
@@ -48,11 +48,11 @@ fi
 echo "[rcS] Init stmfb (LOAD 9)"
 echo "LOAD 9" > /dev/vfd
 insmod $MODDIR/stmcore-display-sti7111.ko
-if grep -q "config.av.videoport=Scart" /etc/enigma2/settings; then
-   insmod $MODDIR/stmfb.ko display0=720x576-16@50:1m:pal:cvbs;
-else
+#if grep -q "config.av.videoport=Scart" /etc/enigma2/settings; then
+#   insmod $MODDIR/stmfb.ko display0=720x576-16@50:1m:pal:cvbs;
+#else
    insmod $MODDIR/stmfb.ko display0=1280x720-32@50:15m:pal:yuv:yuv;# display1=720x576-16@50:1m:pal:cvbs;
-fi
+#fi
 echo "[rcS] Loading modules"
 
 if [ ! -e /boot/audio.elf ] || [ ! -e /boot/video.elf ]; then
@@ -94,7 +94,7 @@ insmod $MODDIR/stv090x.ko
 insmod $MODDIR/ufs912_cic.ko
 
 insmod $MODDIR/pti.ko waitMS=20 videoMem=4096
-if [ $?=='2' ]; then
+if [ $? -ne 0 ]; then
    insmod $MODDIR/pti.ko
    echo "[rcS] Simple pti"
 else
@@ -213,15 +213,15 @@ fi
 # Try and synchronise time
 #inettime=`cat /etc/enigma2/settings | grep systemoptions.inettime | cut -d "=" -f2`
 # if [ ! $inettime ] && [ -e /sbin/ntpdate ]; then
-if [ -e /sbin/ntpdate ]; then
+#if [ -e /sbin/ntpdate ]; then
    echo "[rcS] Set internet time"
-   (/sbin/ntpdate nl.pool.ntp.org; /bin/fp_control -sst) &
-else
-   if [ -e /usr/sbin/time.sh ]; then
-      echo "[rcS] Use transponder time"
-      /usr/sbin/time.sh &
-   fi
-fi
+   (ntpd -n -p 0.europe.pool.ntp.org -q; /bin/fp_control -sst) &
+#else
+#   if [ -e /usr/sbin/time.sh ]; then
+#      echo "[rcS] Use transponder time"
+#      /usr/sbin/time.sh &
+#   fi
+#fi
 
 echo "[rcS] Init portmap & ftp (LOAD 1)"
 echo "LOAD 1" > /dev/vfd
@@ -246,22 +246,22 @@ do
    rtv=$?
    echo "e2 ended <- RTV: " $rtv
    case "$rtv" in
-      0) echo "0"
+      0) echo "[rcS] E2 ERROR"
          echo "E2 Error" > /dev/vfd
          init 6;;
-      1) echo "1"
+      1) echo "[rcS] SHUTDOWN"
          echo "Shutdown" > /dev/vfd
          init 0;;
-      2) echo "2"
+      2) echo "[rcS] REBOOT"
          echo "Reboot" > /dev/vfd
          init 6;;
-      3) echo "3"
+      3) echo "[rcS] E2 RESTART"
          echo "E2 Restart" > /dev/vfd
          echo "0" > /proc/progress
          if [ -e /boot/bootlogo.mvi ]; then
             showiframe -p /boot/bootlogo.mvi &
          fi;;
-      *) echo "*"
+      *) echo "[rcS] ERROR"
          echo "Error" > /dev/vfd
          init 6;;
    esac
