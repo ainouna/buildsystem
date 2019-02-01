@@ -2328,8 +2328,8 @@ $(D)/alsa_lib: $(D)/bootstrap $(ARCHIVE)/$(ALSA_LIB_SOURCE)
 # alsa-utils
 #
 ALSA_UTILS_VER = 1.1.8
-
 ALSA_UTILS_SOURCE = alsa-utils-$(ALSA_UTILS_VER).tar.bz2
+ALSA_UTILS_PATCH = alsa-utils-$(ALSA_UTILS_VER)-gettext_fix.patch
 
 $(ARCHIVE)/$(ALSA_UTILS_SOURCE):
 	$(WGET) ftp://ftp.alsa-project.org/pub/utils/$(ALSA_UTILS_SOURCE)
@@ -2339,6 +2339,7 @@ $(D)/alsa_utils: $(D)/bootstrap $(D)/alsa_lib $(ARCHIVE)/$(ALSA_UTILS_SOURCE)
 	$(REMOVE)/alsa-utils-$(ALSA_UTILS_VER)
 	$(UNTAR)/$(ALSA_UTILS_SOURCE)
 	$(CH_DIR)/alsa-utils-$(ALSA_UTILS_VER); \
+		$(call apply_patches, $(ALSA_UTILS_PATCH)); \
 		sed -ir -r "s/(alsamixer|amidi|aplay|iecset|speaker-test|seq|alsactl|alsaucm|topology)//g" Makefile.am ;\
 		autoreconf -fi -I $(TARGET_DIR)/usr/share/aclocal $(SILENT_OPT); \
 		$(CONFIGURE) \
