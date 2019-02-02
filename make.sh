@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20190202.1
+# Version 20190202.2
 
 ##############################################
 
@@ -14,7 +14,7 @@ fi
 ##############################################
 
 if [ "$1" == -h ] || [ "$1" == --help ]; then
-	echo "Usage: $0 [-v | --verbose | -q | --quiet | -b | --batchmode] [Parameter1 [Parameter2 ... [Parameter7]]]]]]]"
+	echo "Usage: $0 [-v | --verbose | -q | --quiet] [-b | --batchmode] [Parameter1 [Parameter2 ... [Parameter7]]]]]]]"
 	echo
 	echo "-v or --verbose   : verbose build (very noisy!)"
 	echo "-q or --quiet     : quiet build, fastest, almost silent"
@@ -398,8 +398,8 @@ case "$IMAGE" in
 				echo " 4)  Mon, 29 Oct 2018 12:49 - E2 OpenPLi  any framework  3e63f640c6b31c5c15c150f67c6cbac6b89bcb20"
 				echo " 5)  Fri, 11 Apr 2017 17:45 - E2 OpenPLi  any framework  e45a15d8f494f70c9285e1532c6b6460328f6b89"
 				echo "=================================================================================================="
-				echo " NOTE: diff6 is experimental; switch to ffmpeg 3.X and new players!"
 				echo "Media Framework         : $MEDIAFW"
+				echo
 				read -p "Select Enigma2 revision : ";;
 		esac
 
