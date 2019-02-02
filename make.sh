@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20190126.1
+# Version 20190202.1
 
 ##############################################
 
@@ -24,7 +24,7 @@ if [ "$1" == -h ] || [ "$1" == --help ]; then
 	echo "Parameter 3       : optimization (1-5)"
 	echo "Parameter 4       : image (Enigma=1/2 Neutrino=3/4 Tvheadend=5 (1-5)"
 	echo "Parameter 5       : Neutrino variant (1-6) or Enigma2/Tvheadend diff (0-6)"
-	echo "Parameter 6       : media Framework (Enigma2: 1-4, Neutrino, Tvheadend: ignored)"
+	echo "Parameter 6       : media Framework (Enigma2: 1-5, Neutrino, Tvheadend: ignored)"
 	echo "Parameter 7       : destination (1-2, 1=flash, 2=USB, Fortis HS711X, HS742X & HS781X, ignored otherwise)"
 	exit
 fi
@@ -397,7 +397,6 @@ case "$IMAGE" in
 				echo " 3)  Fri, 02 Nov 2018 20:28 - E2 OpenPLi  any framework  ac0d34146f76cdfdb9363e6780424fd284743b68"
 				echo " 4)  Mon, 29 Oct 2018 12:49 - E2 OpenPLi  any framework  3e63f640c6b31c5c15c150f67c6cbac6b89bcb20"
 				echo " 5)  Fri, 11 Apr 2017 17:45 - E2 OpenPLi  any framework  e45a15d8f494f70c9285e1532c6b6460328f6b89"
-				echo " 6)  Fri, 11 Apr 2017 17:45 - E2 OpenPLi  gst or eplayer e45a15d8f494f70c9285e1532c6b6460328f6b89"
 				echo "=================================================================================================="
 				echo " NOTE: diff6 is experimental; switch to ffmpeg 3.X and new players!"
 				echo "Media Framework         : $MEDIAFW"
@@ -413,23 +412,11 @@ case "$IMAGE" in
 				REVISION="3e63f640c6b31c5c15c150f67c6cbac6b89bcb20";;
 			5)	DIFF="5"
 				REVISION="e45a15d8f494f70c9285e1532c6b6460328f6b89";;
-			6)	DIFF="6"
-				REVISION="e45a15d8f494f70c9285e1532c6b6460328f6b89";;
 			0)	DIFF="0"
 				REVISION="newest";;
 			*)	DIFF="2"
 				REVISION="a8e73e1874100aad76e44117b74543fb4018ff61";;
 		esac
-
-		if [ "$DIFF" == "6" ] && [ "$MEDIAFW" == "gst-eplayer3" ]; then
-			echo
-			echo "Diff 6 can currently only be built with gstreamer only or"
-			echo "eplayer3 only as media framework, not both."
-			echo
-			echo "Sorry, we're working on it (hence experimental)."
-			echo
-			exit
-		fi
 
 		echo "E2_DIFF=$DIFF" >> config
 		echo "E2_REVISION=$REVISION" >> config
@@ -454,25 +441,19 @@ echo "MEDIAFW=$MEDIAFW" >> config
 
 ##############################################
 
-#case "$BOXTYPE" in
-#	hs7110|hs7119|hs7420|hs7429|hs7810a|hs7819)
-    	case $7 in
-		[1-2])	REPLY=$7;;
-		*)	echo -e "\nWhere will the image be running:"
-			echo "   1*) Flash memory or hard disk"
-			echo "   2)  USB stick"
-			read -p "Select destination (1-2)? ";;
-		esac
+case $7 in
+	[1-2])	REPLY=$7;;
+	*)	echo -e "\nWhere will the image be running:"
+		echo "   1*) Flash memory or hard disk"
+		echo "   2)  USB stick"
+		read -p "Select destination (1-2)? ";;
+esac
 
-		case "$REPLY" in
-		#	1) DESTINATION="flash";;
-			2) DESTINATION="USB";;
-			*) DESTINATION="flash";;
-		esac
-		echo "DESTINATION=$DESTINATION" >> config
-#	*)
-#		;;
-#esac
+case "$REPLY" in
+#	1) DESTINATION="flash";;
+	2) DESTINATION="USB";;
+	*) DESTINATION="flash";;
+esac
 
 ##############################################
 
