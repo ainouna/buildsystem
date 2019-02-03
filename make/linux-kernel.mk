@@ -379,6 +379,7 @@ ifeq ($(IMAGE), $(filter $(IMAGE), enigma2-wlandriver neutrino-wlandriver))
 	$(SILENT)echo "# CONFIG_USB_ZD1201 is not set" >> $(KERNEL_DIR)/.config
 	$(SILENT)echo "# CONFIG_HOSTAP is not set" >> $(KERNEL_DIR)/.config
 endif
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs7110 hs7240 hs7810a hs7119 hs7429 hs7819))
 ifeq ($(DESTINATION), USB)
 	@echo "Configuring kernel for running on USB."
 	$(SILENT)grep -v "CONFIG_BLK_DEV_INITRD" "$(KERNEL_DIR)/.config" > $(KERNEL_DIR)/.config.tmp
@@ -401,6 +402,7 @@ ifeq ($(DESTINATION), USB)
 	$(SILENT)cp $(KERNEL_DIR)/.config.tmp $(KERNEL_DIR)/.config
 	$(SILENT)echo "CONFIG_DECOMPRESS_BZIP2=y" >> $(KERNEL_DIR)/.config
 endif
+endif
 	@touch $@
 
 $(D)/kernel.do_compile: $(D)/kernel.do_prepare
@@ -421,6 +423,10 @@ $(D)/kernel: $(D)/bootstrap host_u_boot_tools $(D)/kernel.do_compile
 	$(SILENT)cp $(KERNEL_DIR)/arch/sh/boot/uImage $(TARGET_DIR)/boot/
 	$(SILENT)rm $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/build || true
 	$(SILENT)rm $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/source || true
+ifeq ($(DESTINATION), USB)
+	$(CH_DIR)/busybox_usb-$(BUSYBOX_USB_VER)
+	$(REMOVE)/busybox_usb-$(BUSYBOX_USB_VER)
+endif
 	$(TOUCH)
 
 kernel-distclean:
