@@ -187,7 +187,7 @@ if [ "$keepsettings" = "1" ]; then
   mount $ROOTFS /instdest
   cd /instdest
 
-  echo "Using settings in file /instsrc/Enigma_Installer.ini, starting at line "$startingLine
+  echo "Using own settings in file /instsrc/Enigma_Installer.ini, starting at line "$startingLine
   tar cvzf "/instsrc/e2settings/$savFile" `tail /instsrc/Enigma_Installer.ini -n +$startingLine | grep -v "^#"` 2>/dev/null
 
   cd /
