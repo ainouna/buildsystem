@@ -548,10 +548,6 @@ $(D)/gst_plugins_multibox_dvbmediasink: $(D)/bootstrap $(D)/gstreamer $(D)/gst_p
 			--with-dtsdownmix \
 			--with-mpeg4v2 \
 			--with-h265 \
-			--with-vb6 \
-			--with-vb8 \
-			--with-vb9 \
-			--with-spark \
 			--with-gstversion=1.0 \
 		; \
 		$(MAKE) all; \
