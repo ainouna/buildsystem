@@ -14,9 +14,11 @@ ifeq ($(IMAGE), enigma2-wlandriver)
 ENIGMA2_DEPS += $(D)/wpa_supplicant $(D)/wireless_tools
 endif
 
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs7110 hs7119 hs7420 hs7429 hs7810a hs7819))
 ifeq ($(DESTINATION), USB)
 ENIGMA2_DEPS += $(D)/busybox_usb
 E_CONFIG_OPTS += --enable-run_from_usb
+endif
 endif
 
 # determine libsigc++ version
