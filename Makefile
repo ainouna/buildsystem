@@ -52,9 +52,9 @@ printenv:
 	@echo "OPTIMIZATIONS    : $(OPTIMIZATIONS)"
 	@echo "PARALLEL_JOBS    : $(PARALLEL_JOBS)"
 	@echo "KBUILD_VERBOSE   : $(KBUILD_VERBOSE)"
-ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs7110 hs7119 hs7420 hs7429 hs7810a hs7819))
+#ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs7110 hs7119 hs7420 hs7429 hs7810a hs7819))
 	@echo "DESTINATION      : $(DESTINATION)"
-endif
+#endif
 	@echo "IMAGE            : $(IMAGE)"
 	@echo '================================================================================'
 ifeq ($(IMAGE), $(filter $(IMAGE), neutrino neutrino-wlandriver))

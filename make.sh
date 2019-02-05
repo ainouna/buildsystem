@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20190202.2
+# Version 20190205.1
 
 ##############################################
 
@@ -454,6 +454,8 @@ case "$REPLY" in
 	2) DESTINATION="USB";;
 	*) DESTINATION="flash";;
 esac
+
+echo "DESTINATION=$DESTINATION" >> config
 
 ##############################################
 
