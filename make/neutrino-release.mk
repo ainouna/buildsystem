@@ -531,6 +531,8 @@ endif
 #
 	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/stgfb/stmfb/stm_v4l2.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/stgfb/stmfb/stm_v4l2.ko $(RELEASE_DIR)/lib/modules/ || true
 	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/stgfb/stmfb/stmfb.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/stgfb/stmfb/stmfb.ko $(RELEASE_DIR)/lib/modules/ || true
+	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/stgfb/stmfb/stmvbi.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/stgfb/stmfb/stmvbi.ko $(RELEASE_DIR)/lib/modules/ || true
+	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/stgfb/stmfb/stmvout.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/stgfb/stmfb/stmvout.ko $(RELEASE_DIR)/lib/modules/ || true
 	$(SILENT)cd $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra && \
 	for mod in \
 		sound/pseudocard/pseudocard.ko \
@@ -681,7 +683,8 @@ endif
 #
 # copy root_neutrino
 #
-	$(SILENT)cp -aR $(SKEL_ROOT)/root_neutrino/* $(RELEASE_DIR)/
+	$(SILENT)cp -aR $(SKEL_ROOT)/root_neutrino/boot/* $(RELEASE_DIR)/boot
+	$(SILENT)cp -aR $(SKEL_ROOT)/root_neutrino/etc/* $(RELEASE_DIR)/etc
 ifeq ($(NEUTRINO_VARIANT), $(filter $(NEUTRINO_VARIANT), mp-ddt, mp-ddt + plugins))
 	$(SILENT)cp -aR $(SKEL_ROOT)/root_neutrino/var_ddt/* $(RELEASE_DIR)/var/
 endif
@@ -825,7 +828,7 @@ endif
 # The main target depends on the model.
 # IMPORTANT: it is assumed that only one variable is set. Otherwise the target name won't be resolved.
 #
-$(D)/neutrino-release: neutrino-release-base neutrino-release-$(BOXTYPE)
+$(D)/neutrino_release: neutrino-release-base neutrino-release-$(BOXTYPE)
 	$(TUXBOX_CUSTOMIZE)
 	@touch $@
 #

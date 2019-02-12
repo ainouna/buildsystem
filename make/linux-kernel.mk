@@ -243,6 +243,9 @@ CUBEREVO_MINI2_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-sh4-cuberevo_mini2_setup_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-i2c-st40-pio_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-cuberevo_rtl8201_stm24_$(KERNEL_LABEL).patch
+ifeq ($(IMAGE), $(filter $(IMAGE), neutrino neutrino-wlandriver))
+CUBEREVO_MINI2_PATCHES_24 += linux-sh4-cuberevo_mini2_mtdconcat_stm24_$(KERNEL_LABEL).patch
+endif
 
 CUBEREVO_MINI_FTA_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-sh4-cuberevo_setup_stm24_$(KERNEL_LABEL).patch \
@@ -423,9 +426,11 @@ $(D)/kernel: $(D)/bootstrap host_u_boot_tools $(D)/kernel.do_compile
 	$(SILENT)cp $(KERNEL_DIR)/arch/sh/boot/uImage $(TARGET_DIR)/boot/
 	$(SILENT)rm $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/build || true
 	$(SILENT)rm $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/source || true
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs7110 hs7119 hs7420 hs7429 hs7810a hs7819))
 ifeq ($(DESTINATION), USB)
 	$(CH_DIR)/busybox_usb-$(BUSYBOX_USB_VER)
 	$(REMOVE)/busybox_usb-$(BUSYBOX_USB_VER)
+endif
 endif
 	$(TOUCH)
 

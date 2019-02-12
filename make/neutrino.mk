@@ -103,17 +103,42 @@ NMP_BRANCH  ?= master
 HAL_BRANCH  ?= master
 NMP_PATCHES  = $(NEUTRINO_MP_DDT_PATCHES)
 HAL_PATCHES  = $(NEUTRINO_MP_LIBSTB_DDT_PATCHES)
+else
+NEUTRINO_MP  = dummy
+LIBSTB_HAL   = dummy2
 endif
 
-N_OBJDIR = $(BUILD_TMP)/$(NEUTRINO_MP)
-LH_OBJDIR = $(BUILD_TMP)/$(LIBSTB_HAL)
+N_OBJDIR = $(SOURCE_DIR)/$(NEUTRINO_MP)
+LH_OBJDIR = $(SOURCE_DIR)/$(LIBSTB_HAL)
+
+#
+# yaud-neutrino-mp
+#
+yaud-neutrino-mp: yaud-none $(D)/neutrino-mp $(D)/neutrino_release
+	@echo "***************************************************************"
+	@echo -e "$(TERM_GREEN_BOLD)"
+	@echo " Build of $(NEUTRINO_MP) for $(BOXTYPE) successfully completed."
+	@echo -e "$(TERM_NORMAL)"
+	@echo "***************************************************************"
+	@touch $(D)/build_complete
+
+#
+# yaud-neutrino-mp-plugins
+#
+yaud-neutrino-mp-plugins: yaud-none $(D)/neutrino-mp-plugins $(D)/neutrino-mp-plugin $(D)/neutrino_release
+	@echo "***************************************************************"
+	@echo -e "$(TERM_GREEN_BOLD)"
+	@echo " Build of $(NEUTRINO_MP) for $(BOXTYPE) successfully completed."
+	@echo -e "$(TERM_NORMAL)"
+	@echo "***************************************************************"
+	@touch $(D)/build_complete
 
 ################################################################################
 #
 # libstb-hal
 #
 
-$(D)/libstb-hal.do_prepare:
+$(D)/libstb-hal.do_prepare: | $(NEUTRINO_DEPS)
 	$(START_BUILD)
 	$(SILENT)rm -rf $(SOURCE_DIR)/$(LIBSTB_HAL)
 	$(SILENT)rm -rf $(SOURCE_DIR)/$(LIBSTB_HAL).org
@@ -137,9 +162,7 @@ $(D)/libstb-hal.do_prepare:
 		$(call apply_patches, $(HAL_PATCHES))
 	@touch $@
 
-$(D)/libstb-hal.config.status: | $(NEUTRINO_DEPS)
-	$(SILENT)rm -rf $(LH_OBJDIR)
-	$(SILENT)test -d $(LH_OBJDIR) || mkdir -p $(LH_OBJDIR)
+$(SOURCE_DIR)/$(LIBSTB_HAL)/config.status:
 	$(SILENT)cd $(LH_OBJDIR); \
 		test -d $(SOURCE_DIR)/$(LIBSTB_HAL)/m4 || mkdir -p $(SOURCE_DIR)/$(LIBSTB_HAL)/m4; \
 		$(SOURCE_DIR)/$(LIBSTB_HAL)/autogen.sh; \
@@ -159,9 +182,8 @@ $(D)/libstb-hal.config.status: | $(NEUTRINO_DEPS)
 			PKG_CONFIG=$(PKG_CONFIG) \
 			PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) \
 			CFLAGS="$(N_CFLAGS)" CXXFLAGS="$(N_CFLAGS)" CPPFLAGS="$(N_CPPFLAGS)"
-	@touch $@
 
-$(D)/libstb-hal.do_compile: $(D)/libstb-hal.config.status
+$(D)/libstb-hal.do_compile: $(SOURCE_DIR)/$(LIBSTB_HAL)/config.status
 	PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) \
 	$(MAKE) -C $(LH_OBJDIR) all DESTDIR=$(TARGET_DIR)
 	@touch $@
@@ -174,7 +196,7 @@ $(D)/libstb-hal: $(D)/libstb-hal.do_prepare $(D)/libstb-hal.do_compile
 
 libstb-hal-clean:
 	$(SILENT)rm -f $(D)/libstb-hal
-	$(SILENT)rm -f $(D)/libstb-hal.config.status
+#	$(SILENT)rm -f $(D)/libstb-hal.config.status
 	cd $(LH_OBJDIR); \
 		$(MAKE) -C $(LH_OBJDIR) distclean
 
@@ -187,7 +209,7 @@ libstb-hal-distclean:
 # libstb-hal-tangos
 #
 
-$(D)/libstb-hal-tangos.do_prepare:
+$(D)/libstb-hal-tangos.do_prepare: | $(NEUTRINO_DEPS)
 	$(START_BUILD)
 	$(SILENT)rm -rf $(SOURCE_DIR)/$(LIBSTB_HAL)
 	$(SILENT)rm -rf $(SOURCE_DIR)/$(LIBSTB_HAL).org
@@ -211,9 +233,7 @@ $(D)/libstb-hal-tangos.do_prepare:
 		$(call apply_patches, $(HAL_PATCHES))
 	@touch $@
 
-$(D)/libstb-hal-tangos.config.status: | $(NEUTRINO_DEPS)
-	$(SILENT)rm -rf $(LH_OBJDIR)
-	$(SILENT)test -d $(LH_OBJDIR) || mkdir -p $(LH_OBJDIR)
+$(SOURCE_DIR)/libstb-hal-tangos/config.status:
 	$(SILENT)cd $(LH_OBJDIR); \
 		test -d $(SOURCE_DIR)/$(LIBSTB_HAL)/m4 || mkdir -p $(SOURCE_DIR)/$(LIBSTB_HAL)/m4; \
 		$(SOURCE_DIR)/$(LIBSTB_HAL)/autogen.sh; \
@@ -235,7 +255,7 @@ $(D)/libstb-hal-tangos.config.status: | $(NEUTRINO_DEPS)
 			CFLAGS="$(N_CFLAGS)" CXXFLAGS="$(N_CFLAGS)" CPPFLAGS="$(N_CPPFLAGS)"
 	@touch $@
 
-$(D)/libstb-hal-tangos.do_compile: $(D)/libstb-hal.config.status
+$(D)/libstb-hal-tangos.do_compile: $(SOURCE_DIR)/libstb-hal-tangos/config.status
 	PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) \
 	$(MAKE) -C $(LH_OBJDIR) all DESTDIR=$(TARGET_DIR)
 	@touch $@
@@ -248,7 +268,7 @@ $(D)/libstb-hal-tangos: $(D)/libstb-hal-tangos.do_prepare $(D)/libstb-hal-tangos
 
 libstb-hal-tangos-clean:
 	$(SILENT)rm -f $(D)/libstb-hal-tangos
-	$(SILENT)rm -f $(D)/libstb-hal-tangos.config.status
+#	$(SILENT)rm -f $(D)/libstb-hal-tangos.config.status
 	cd $(LH_OBJDIR); \
 		$(MAKE) -C $(LH_OBJDIR) distclean
 
@@ -286,10 +306,7 @@ $(D)/neutrino-mp.do_prepare: | $(NEUTRINO_DEPS) $(D)/libstb-hal
 		$(call apply_patches, $(NMP_PATCHES))
 	@touch $@
 
-$(D)/neutrino-mp.config.status \
-$(D)/neutrino-mp-plugins.config.status:
-	$(SILENT)rm -rf $(N_OBJDIR)
-	$(SILENT)test -d $(N_OBJDIR) || mkdir -p $(N_OBJDIR)
+$(SOURCE_DIR)/$(NEUTRINO_MP)/config.status:
 	cd $(N_OBJDIR); \
 		$(SOURCE_DIR)/$(NEUTRINO_MP)/autogen.sh $(SILENT_OPT); \
 		$(BUILDENV) \
@@ -316,12 +333,12 @@ $(D)/neutrino-mp-plugins.config.status:
 			PKG_CONFIG=$(PKG_CONFIG) \
 			PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) \
 			CFLAGS="$(N_CFLAGS)" CXXFLAGS="$(N_CFLAGS)" CPPFLAGS="$(N_CPPFLAGS)"
-		+make $(SOURCE_DIR)/$(NEUTRINO_MP)/src/gui/version.h
-	@touch $@
+		make $(SOURCE_DIR)/$(NEUTRINO_MP)/src/gui/version.h
+#	@touch $@
 
 $(SOURCE_DIR)/$(NEUTRINO_MP)/src/gui/version.h:
 	$(SILENT)rm -f $@
-	echo '#define BUILT_DATE "'`date`'"' > $@
+	$(SILENT)echo '#define BUILT_DATE "'`date`'"' > $@
 	$(SILENT)if test -d $(SOURCE_DIR)/$(LIBSTB_HAL); then \
 		pushd $(SOURCE_DIR)/$(LIBSTB_HAL); \
 		HAL_REV=$$(git log | grep "^commit" | wc -l); \
@@ -336,28 +353,27 @@ $(SOURCE_DIR)/$(NEUTRINO_MP)/src/gui/version.h:
 	fi
 
 $(D)/neutrino-mp-plugins.do_compile \
-$(D)/neutrino-mp.do_compile:
+$(D)/neutrino-mp.do_compile: $(SOURCE_DIR)/$(NEUTRINO_MP)/config.status $(SOURCE_DIR)/$(NEUTRINO_MP)/src/gui/version.h
+
 	PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) \
 	$(MAKE) -C $(N_OBJDIR) all DESTDIR=$(TARGET_DIR)
 	@touch $@
 
-mp \
-neutrino-mp: $(D)/neutrino-mp.do_prepare $(D)/neutrino-mp.config.status $(D)/neutrino-mp.do_compile
+$(D)/neutrino-mp: $(D)/neutrino-mp.do_prepare $(D)/neutrino-mp.do_compile
 	PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) \
 	$(MAKE) -C $(N_OBJDIR) install DESTDIR=$(TARGET_DIR)
 	$(SILENT)make $(TARGET_DIR)/.version
 	$(SILENT)touch $(D)/$(notdir $@)
-#	$(TOUCH)
-	$(SILENT)make neutrino-release
-	$(TUXBOX_CUSTOMIZE)
-	@echo "******************************************************************************"
-	@echo -e "$(TERM_GREEN_BOLD)"
-	@echo " Build of $(NEUTRINO_MP) for $(BOXTYPE) successfully completed."
-	@echo -e "$(TERM_NORMAL)"
-	@echo "******************************************************************************"
-	@touch $(D)/build_complete
+	$(TOUCH)
+#	$(SILENT)make neutrino-release
+#	$(TUXBOX_CUSTOMIZE)
+#	@echo "******************************************************************************"
+#	@echo -e "$(TERM_GREEN_BOLD)"
+#	@echo " Build of $(NEUTRINO_MP) for $(BOXTYPE) successfully completed."
+#	@echo -e "$(TERM_NORMAL)"
+#	@echo "******************************************************************************"
+#	@touch $(D)/build_complete
 
-mp-clean \
 neutrino-mp-clean: neutrino-cdkroot-clean
 	$(SILENT)rm -f $(D)/neutrino-mp
 	$(SILENT)rm -f $(D)/neutrino-mp.config.status
@@ -365,39 +381,35 @@ neutrino-mp-clean: neutrino-cdkroot-clean
 	cd $(N_OBJDIR); \
 		$(MAKE) -C $(N_OBJDIR) distclean
 
-mp-distclean \
 neutrino-mp-distclean: neutrino-cdkroot-clean
 	$(SILENT)rm -rf $(N_OBJDIR)
 	$(SILENT)rm -f $(D)/neutrino-mp*
 
-mpp \
-neutrino-mp-plugins: $(D)/neutrino-mp-plugins.do_prepare $(D)/neutrino-mp-plugins.config.status $(D)/neutrino-mp-plugins.do_compile
+$(D)/neutrino-mp-plugins: $(D)/neutrino-mp-plugins.do_prepare $(D)/neutrino-mp-plugins.do_compile
 	PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) \
 	$(MAKE) -C $(N_OBJDIR) install DESTDIR=$(TARGET_DIR)
 	$(SILENT)rm -f $(TARGET_DIR)/var/etc/.version
 	$(MAKE) $(TARGET_DIR)/.version
 	make $(NEUTRINO_PLUGINS)
 	$(SILENT)touch $(D)/$(notdir $@)
-#	$(TOUCH)
-	$(SILENT)make neutrino-release
-	$(TUXBOX_CUSTOMIZE)
-	@echo "***************************************************************************"
-	@echo -e "$(TERM_GREEN_BOLD)"
-	@echo " Build of $(NEUTRINO_MP) for $(BOXTYPE) successfully completed."
-	@echo -e "$(TERM_NORMAL)"
-	@echo "***************************************************************************"
-	@touch $(D)/build_complete
+	$(TOUCH)
+#	$(SILENT)make neutrino-release
+#	$(TUXBOX_CUSTOMIZE)
+#	@echo "***************************************************************************"
+#	@echo -e "$(TERM_GREEN_BOLD)"
+#	@echo " Build of $(NEUTRINO_MP) for $(BOXTYPE) successfully completed."
+#	@echo -e "$(TERM_NORMAL)"
+#	@echo "***************************************************************************"
+#	@touch $(D)/build_complete
 
-mpp-clean \
 neutrino-mp-plugins-clean: neutrino-cdkroot-clean
 	$(SILENT)rm -f $(D)/neutrino-mp-plugins
-	$(SILENT)rm -f $(D)/neutrino-mp-plugins.config.status
+#	$(SILENT)rm -f $(D)/neutrino-mp-plugins.config.status
 	$(SILENT)rm -f $(SOURCE_DIR)/$(NEUTRINO_MP)/src/gui/version.h
 	$(SILENT)make neutrino-mp-plugin-clean
 	cd $(N_OBJDIR); \
 		$(MAKE) -C $(N_OBJDIR) distclean
 
-mpp-distclean \
 neutrino-mp-plugins-distclean: neutrino-cdkroot-clean
 	$(SILENT)rm -rf $(N_OBJDIR)
 	$(SILENT)rm -f $(D)/neutrino-mp-plugins*
@@ -444,7 +456,7 @@ $(D)/neutrino-hd2.do_prepare: | $(NEUTRINO_DEPS) $(NEUTRINO_DEPS2)
 		$(call apply_patches, $(NEUTRINO_HD2_PATCHES))
 	@touch $@
 
-$(D)/neutrino-hd2.config.status:
+$(SOURCE_DIR)/neutrino-hd2/config.status:
 	cd $(SOURCE_DIR)/neutrino-hd2; \
 		./autogen.sh; \
 		$(BUILDENV) \
@@ -460,9 +472,8 @@ $(D)/neutrino-hd2.config.status:
 			PKG_CONFIG=$(PKG_CONFIG) \
 			PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) \
 			CPPFLAGS="$(N_CPPFLAGS)" LDFLAGS="$(TARGET_LDFLAGS)"
-	@touch $@
 
-$(D)/neutrino-hd2.do_compile: $(D)/neutrino-hd2.config.status
+$(D)/neutrino-hd2.do_compile: $(SOURCE_DIR)/neutrino-hd2/config.status
 	$(SILENT)cd $(SOURCE_DIR)/neutrino-hd2; \
 		$(MAKE) all
 	@touch $@
@@ -473,7 +484,7 @@ neutrino-hd2: $(D)/neutrino-hd2.do_prepare $(D)/neutrino-hd2.do_compile
 	$(SILENT)rm -f $(TARGET_DIR)/.version
 	$(SILENT)make $(TARGET_DIR)/.version
 	$(SILENT)touch $(D)/$(notdir $@)
-#	$(TOUCH)
+	$(TOUCH)
 	$(SILENT)make neutrino-release
 	$(TUXBOX_CUSTOMIZE)
 	@echo "*********************************************************************"
@@ -490,7 +501,7 @@ neutrino-hd2-plugins: $(D)/neutrino-hd2.do_prepare $(D)/neutrino-hd2.do_compile
 	$(SILENT)rm -f $(TARGET_DIR)/.version
 	$(MAKE) $(TARGET_DIR)/.version
 	$(SILENT)touch $(D)/$(notdir $@)
-#	$(TOUCH)
+	$(TOUCH)
 	$(SILENT)make neutrino-hd2-plugins.build
 	$(SILENT)make neutrino-release
 	$(TUXBOX_CUSTOMIZE)
