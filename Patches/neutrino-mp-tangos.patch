@@ -1,6 +1,6 @@
 --- neutrino-mp-tangos.org/acinclude.m4
 +++ neutrino-mp-tangos/acinclude.m4
-@@ -468,7 +468,7 @@
+@@ -476,7 +476,7 @@
  
  AC_ARG_WITH(boxmodel,
  	AS_HELP_STRING([--with-boxmodel], [valid for coolstream: hd1, hd2])
@@ -9,7 +9,7 @@
  AS_HELP_STRING([], [valid for spark: spark, spark7162])
  AS_HELP_STRING([], [valid for armbox: hd51, hd60, vusolo4k, bre2ze4k])
  AS_HELP_STRING([], [valid for generic: raspi]),
-@@ -549,8 +549,10 @@
+@@ -557,8 +557,10 @@
  AM_CONDITIONAL(BOXMODEL_FORTIS_HDBOX, test "$BOXMODEL" = "fortis_hdbox")
  AM_CONDITIONAL(BOXMODEL_OCTAGON1008, test "$BOXMODEL" = "octagon1008")
  AM_CONDITIONAL(BOXMODEL_HS7110, test "$BOXMODEL" = "hs7110")
@@ -20,7 +20,7 @@
  AM_CONDITIONAL(BOXMODEL_HS7819, test "$BOXMODEL" = "hs7819")
  AM_CONDITIONAL(BOXMODEL_DP7000, test "$BOXMODEL" = "dp7000")
  
-@@ -618,10 +620,14 @@
+@@ -626,10 +628,14 @@
  	AC_DEFINE(BOXMODEL_OCTAGON1008, 1, [octagon1008])
  elif test "$BOXMODEL" = "hs7110"; then
  	AC_DEFINE(BOXMODEL_HS7110, 1, [hs7110])
@@ -46,9 +46,31 @@
 # 
 # NEUTRINO_CPP  SNeutrinoSettings	g_settings;
 # NEUTRINO_CPP  SglobalInfo	g_info;
+--- neutrino-mp-tangos.org/lib/hardware/ca.h
++++ neutrino-mp-tangos/lib/hardware/ca.h
+@@ -1,7 +1,7 @@
+ #if HAVE_COOL_HARDWARE
+ #include <ca_cs.h>
+ #elif USE_STB_HAL
+-#include <ca_hal.h>
++#include <ca_cs.h>
+ #else
+ #error neither HAVE_COOL_HARDWARE nor USE_STB_HAL defined.
+ #error do you need to include config.h?
+--- neutrino-mp-tangos.org/lib/hardware/video.h
++++ neutrino-mp-tangos/lib/hardware/video.h
+@@ -2,7 +2,7 @@
+ #include <cs_api.h>
+ #include <video_cs.h>
+ #elif USE_STB_HAL
+-#include <init.h>
++#include <init_td.h>
+ #include <video_hal.h>
+ #else
+ #error neither HAVE_COOL_HARDWARE nor USE_STB_HAL defined.
 --- neutrino-mp-tangos.org/src/neutrino.cpp
 +++ neutrino-mp-tangos/src/neutrino.cpp
-@@ -4708,6 +4708,9 @@
+@@ -4711,6 +4711,9 @@
  
  		CVFD::getInstance()->Clear();
  		CVFD::getInstance()->setMode(CVFD::MODE_STANDBY);
@@ -58,7 +80,7 @@
  		CVFD::getInstance()->setBacklight(g_settings.backlight_standby);
  
  		InfoClock->enableInfoClock(false);
-@@ -4744,7 +4747,11 @@
+@@ -4747,7 +4750,11 @@
  		// Active standby off
  		powerManager->SetStandby(false, false);
  		CVFD::getInstance()->setMode(CVFD::MODE_TVRADIO);
@@ -928,7 +950,7 @@
 @@ -82,10 +82,10 @@
  #include <iconv.h>
  #include <libdvbsub/dvbsub.h>
- #include <audio.h>
+ #include <hardware/audio.h>
 -#ifdef ENABLE_GRAPHLCD
 -#include <driver/nglcd.h>
 +//#ifdef ENABLE_GRAPHLCD
@@ -1038,7 +1060,7 @@
  
 @@ -2944,9 +2944,9 @@
  {
- #if HAVE_SH4_HARDWARE
+ #if HAVE_SH4_HARDWARE || HAVE_ARM_HARDWARE
  	printf("[CMoviePlayerGui] %s: %s\n", __FUNCTION__, show ? "Show" : "Not show");
 -#ifdef ENABLE_GRAPHLCD
 -	nGLCD::MirrorOSD(false);
@@ -1049,55 +1071,9 @@
  
  	if(!show)
  		return;
---- neutrino-mp-tangos/src/gui/vfd_setup.cpp
-+++ neutrino-mp-tangos/src/gui/vfd_setup.cpp
-@@ -35,9 +35,9 @@
- 
- 
- #include "vfd_setup.h"
--#ifdef ENABLE_GRAPHLCD
--#include <gui/glcdsetup.h>
--#endif
-+//#ifdef ENABLE_GRAPHLCD
-+//#include <gui/glcdsetup.h>
-+//#endif
- 
- #ifdef ENABLE_LCD4LINUX
- #include "gui/lcd4l_setup.h"
-@@ -228,18 +228,18 @@
- 	}
- #endif
- 
--#ifdef ENABLE_GRAPHLCD
--	GLCD_Menu glcdMenu;
--#ifdef ENABLE_LCD4LINUX
--#if !defined BOXMODEL_VUSOLO4K
--	if (g_settings.lcd4l_support == 0)
--#endif
--#endif
--	{
--		vfds->addItem(GenericMenuSeparatorLine);
--		vfds->addItem(new CMenuForwarder(LOCALE_GLCD_HEAD, true, NULL, &glcdMenu, NULL, CRCInput::RC_blue));
--	}
--#endif
-+//#ifdef ENABLE_GRAPHLCD
-+//	GLCD_Menu glcdMenu;
-+//#ifdef ENABLE_LCD4LINUX
-+//#if !defined BOXMODEL_VUSOLO4K
-+//	if (g_settings.lcd4l_support == 0)
-+//#endif
-+//#endif
-+//	{
-+//		vfds->addItem(GenericMenuSeparatorLine);
-+//		vfds->addItem(new CMenuForwarder(LOCALE_GLCD_HEAD, true, NULL, &glcdMenu, NULL, CRCInput::RC_blue));
-+//	}
-+//#endif
- 
- 	int res = vfds->exec(NULL, "");
- 
 --- neutrino-mp-tangos/src/driver/pictureviewer/pictureviewer.cpp
 +++ neutrino-mp-tangos/src/driver/pictureviewer/pictureviewer.cpp
-@@ -564,8 +564,10 @@
+@@ -566,8 +566,10 @@
  
  		// add neccessary paths to v_path
  		v_path.clear();
@@ -1108,7 +1084,7 @@
  		v_path.push_back(g_settings.logo_hdd_dir);
  		if (g_settings.logo_hdd_dir != LOGODIR_VAR)
  			v_path.push_back(LOGODIR_VAR);
-@@ -667,9 +669,11 @@
+@@ -669,9 +671,11 @@
  
  		for (size_t f = 0; f < v_file.size(); f++)
  		{
