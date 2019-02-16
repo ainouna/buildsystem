@@ -2,7 +2,8 @@
 
 MODDIR=/lib/modules
 
-insmod $MODDIR/micom.ko paramDebug=0
+insmod $MODDIR/e2_proc.ko
+insmod $MODDIR/kathrein_micom.ko paramDebug=0
 
 if [ -e /var/etc/.firstboot ]; then
    echo "WAIT 3 min" > /dev/vfd
@@ -13,7 +14,6 @@ fi
 
 /etc/init.d/mountvirtfs start
 
-insmod $MODDIR/e2_proc.ko
 insmod $MODDIR/fan_ctrl.ko
 
 if [ ! -e /var/etc/.firstboot ]; then
