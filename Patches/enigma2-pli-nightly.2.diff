@@ -435,20 +435,6 @@
  lib/python/Tools/Makefile
  po/Makefile
  main/Makefile
---- enigma2.org/data/fonts/Makefile.am
-+++ enigma2/data/fonts/Makefile.am
-@@ -14,9 +14,8 @@
- 	LiberationSans-Bold.ttf \
- 	LiberationSans-BoldItalic.ttf \
- 	LiberationSans-Italic.ttf \
--	LiberationSans-Regular.ttf \
--	wqy-microhei.ttc
-+	LiberationSans-Regular.ttf
- 
- install-data-hook:
- 	cd $(DESTDIR)$(datadir)/fonts && \
--	$(LN_S) wqy-microhei.ttc fallback.font
-+	$(LN_S) -f md_khmurabi_10.ttf fallback.font
 --- enigma2.org/data/skin_display_default.xml
 +++ enigma2/data/skin_display_default.xml
 @@ -22,27 +22,29 @@
@@ -646,6 +632,20 @@
 +		<widget source="parent.selectedChoice" render="Label" position="bottom" size="*,44" font="FdLcD;44" halign="center" valign="center" />
  	</screen>
  </skin>
+--- enigma2.org/data/fonts/Makefile.am
++++ enigma2/data/fonts/Makefile.am
+@@ -14,9 +14,8 @@
+ 	LiberationSans-Bold.ttf \
+ 	LiberationSans-BoldItalic.ttf \
+ 	LiberationSans-Italic.ttf \
+-	LiberationSans-Regular.ttf \
+-	wqy-microhei.ttc
++	LiberationSans-Regular.ttf
+ 
+ install-data-hook:
+ 	cd $(DESTDIR)$(datadir)/fonts && \
+-	$(LN_S) wqy-microhei.ttc fallback.font
++	$(LN_S) -f md_khmurabi_10.ttf fallback.font
 --- enigma2.org/lib/base/Makefile.inc
 +++ enigma2/lib/base/Makefile.inc
 @@ -42,7 +42,7 @@
@@ -747,6 +747,16 @@
  
  if HAVE_LIBSDL
  driver_libenigma_driver_a_SOURCES += \
+--- enigma2.org/lib/driver/hdmi_cec.cpp
++++ enigma2/lib/driver/hdmi_cec.cpp
+@@ -153,6 +153,7 @@
+ 	else
+ 	{
+ 		eDebug("[eHdmiCEC] cannot open %s: %m", HDMIDEV);
++		bool hdmicec_enabled = eConfigManager::getConfigBoolValue("config.hdmicec.enabled", false);
+ 	}
+ 
+ 	getAddressInfo();
 --- enigma2.org/lib/driver/rc.cpp
 +++ enigma2/lib/driver/rc.cpp
 @@ -164,6 +164,9 @@
@@ -4052,22 +4062,22 @@
  				alignment = 'opt'
  			if size > 2097151:
  				parttype = 'gpt'
-+				task.args += ['-a', alignment, '-s', self.disk_path, 'mklabel', parttype, 'mkpart', 'primary', '0%', endsize, 'name', '1', 'RECORD', 'mkpart', 'primary', endsize, '100%', 'name', '2', 'SWAPPART']
++				task.args = [self.disk_path, '-s', '-a', alignment, 'mktable', parttype, 'mkpart', 'primary', '0%', endsize, 'mkpart', 'primary', endsize, '100%']
 +				print "[Harddisk init] Creating 2 partitions RECORD and SWAPPART with command ", task.args
  			else:
  				parttype = 'msdos'
 -			task.args += ['-a', alignment, '-s', self.disk_path, 'mklabel', parttype, 'mkpart', 'primary', '0%', '100%']
 +				if size > 20000: # create a second SWAPPART partition
 +					endsize = str(size - 1024) + "MB"
-+					task.args += ['-a', alignment,'-s', self.disk_path, 'mklabel', parttype, 'mkpart', 'primary', '0%', endsize, 'mkpart', 'primary', endsize, '100%']
++					task.args += [self.disk_path, '-s', '-a', alignment, 'mktable', parttype, 'mkpart', 'primary', 'ext3', '0%', endsize, 'mkpart', 'primary', endsize, str(size) + 'MB']
 +					print "[Harddisk init] Creating 2 partitions RECORD and SWAPPART with command ", task.args
 +				else:
-+					task.args += ['-a', alignment, '-s', self.disk_path, 'mklabel', parttype, 'mkpart', 'primary', '0%', '100%']
++					task.args += [self.disk_path, '--s', '-a', alignment, 'mktable', parttype, 'mkpart', 'primary', 'ext3', '0%', '100%']
 +					print "[Harddisk init] Creating RECORD partition with command ", task.args
  		else:
  			task.setTool('sfdisk')
  			task.args.append('-f')
-@@ -354,51 +377,102 @@
+@@ -354,51 +377,96 @@
  			task.args.append(self.disk_path)
  			if size > 128000:
  				# Start at sector 8 to better support 4k aligned disks
@@ -4100,6 +4110,17 @@
 -
 -		task = MkfsTask(job, _("Creating filesystem"))
 -		big_o_options = ["dir_index"]
+-		if isFileSystemSupported("ext4"):
+-			task.setTool("mkfs.ext4")
+-			if size > 20000:
+-				try:
+-					version = map(int, open("/proc/version","r").read().split(' ', 4)[2].split('.',2)[:2])
+-					if (version[0] > 3) or (version[0] > 2 and version[1] >= 2):
+-						# Linux version 3.2 supports bigalloc and -C option, use 256k blocks
+-						task.args += ["-C", "262144"]
+-						big_o_options.append("bigalloc")
+-				except Exception, ex:
+-					print "Failed to detect Linux version:", ex
 +		task.setTool('fdisk')
 +		task.args.append('-l')
 +		print "[Harddisk init] Dummy command fdisk -l"
@@ -4114,17 +4135,9 @@
 +		print "[Harddisk init] Wait for ", self.partitionPath("1"), " to exist"
 +
 +		task = MkfsTask(job, _("Creating filesystem on RECORD partition"))
- 		if isFileSystemSupported("ext4"):
- 			task.setTool("mkfs.ext4")
--			if size > 20000:
--				try:
--					version = map(int, open("/proc/version","r").read().split(' ', 4)[2].split('.',2)[:2])
--					if (version[0] > 3) or (version[0] > 2 and version[1] >= 2):
--						# Linux version 3.2 supports bigalloc and -C option, use 256k blocks
--						task.args += ["-C", "262144"]
--						big_o_options.append("bigalloc")
--				except Exception, ex:
--					print "Failed to detect Linux version:", ex
++		if not use_parted:
++			if isFileSystemSupported("ext4"):
++				task.setTool("mkfs.ext4")
  		else:
  			task.setTool("mkfs.ext3")
 -		if size > 250000:
@@ -4149,21 +4162,14 @@
 +
 +		if size > 20000:
 +			task = MkfsTask(job, _("Creating filesystem on SWAPPART partition"))
-+			if isFileSystemSupported("ext4"):
-+				task.setTool("mkfs.ext4")
-+			else:
-+				task.setTool("mkfs.ext3")
-+			if size > 250000:  #250GB
-+				# No more than 256k i-nodes (prevent problems with fsck memory requirements)
-+				task.args += ["-T", "largefile", "-O", "sparse_super", "-N", "262144"]
-+			elif size > 16384:
-+				# between 16GB and 250GB: 1 i-node per megabyte
-+				task.args += ["-T", "largefile", "-O", "sparse_super"]
-+			elif size > 2048:
-+				# Over 2GB: 32 i-nodes per megabyte
-+				task.args += ["-T", "largefile", "-N", str(size * 32)]
-+			task.args += ["-L", "SWAPPART", "-m0", "-O", "dir_index", self.disk_path+"2"]
-+			print "[Harddisk init] Make fs on partition 2 using ", task.args
++			task.setTool("mkswap")
++			task.args += ["-L", "SWAPPART", self.disk_path + "2"]
++			print "[Harddisk init] Make swapfs on partition 2 using ", task.args
++
++			task = MkfsTask(job, _("Switch swap on"))
++			task.setTool("swapon")
++			task.args += [self.disk_path + "2"]
++			print "[Harddisk init] Switching swap on using ", task.args
 +
 +# in the previous process /media/hdd is destroyed, so recreate it
 +		task = Task.LoggingTask(job, _("Re-create /media/hdd"))
@@ -4176,9 +4182,9 @@
 +		task = Task.LoggingTask(job, _("Re-mount %s") % (self.disk_path + "1"))
  		task.weighting = 3
 +		task.setTool('mount')
-+		task.args.append(self.disk_path+"1")
++		task.args.append(self.disk_path + "1")
 +		task.args.append('/hdd')
-+		print "[Harddisk init] Re-mounting %s" % (self.disk_path+"1")
++		print "[Harddisk init] Re-mounting %s" % (self.disk_path + "1")
  
  		task = Task.ConditionTask(job, _("Waiting for mount"), timeoutCount=20)
  		task.check = self.mountDevice
@@ -4197,7 +4203,7 @@
  		return job
  
  	def initialize(self):
-@@ -650,16 +724,19 @@
+@@ -650,16 +718,19 @@
  				self.devices_scanned_on_init.append((blockdev, removable, is_cdrom, medium_found))
  
  	def getAutofsMountpoint(self, device):
@@ -4221,7 +4227,7 @@
  		return None
  
  	def addHotplugPartition(self, device, physdev = None):
-@@ -675,6 +752,10 @@
+@@ -675,6 +746,10 @@
  		error, blacklisted, removable, is_cdrom, partitions, medium_found = self.getBlockDevInfo(device)
  		if not blacklisted and medium_found:
  			description = self.getUserfriendlyDeviceName(device, physdev)
@@ -4232,7 +4238,7 @@
  			p = Partition(mountpoint = self.getMountpoint(device), description = description, force_mounted = True, device = device)
  			self.partitions.append(p)
  			if p.mountpoint: # Plugins won't expect unmounted devices
-@@ -767,7 +848,7 @@
+@@ -767,7 +842,7 @@
  		try:
  			description = readFile("/sys" + phys + "/model")
  		except IOError, s:
@@ -4241,7 +4247,7 @@
  		# not wholedisk and not partition 1
  		if part and part != 1:
  			description += _(" (Partition %d)") % part
-@@ -808,7 +889,7 @@
+@@ -808,7 +883,7 @@
  			dev = self.hdd.disk_path.split('/')[-1]
  			open('/dev/nomount.%s' % dev, "wb").close()
  		except Exception, e:
@@ -4250,7 +4256,7 @@
  		self.setTool('umount')
  		self.args.append('-f')
  		for dev in self.hdd.enumMountDevices():
-@@ -816,7 +897,7 @@
+@@ -816,7 +891,7 @@
  			self.postconditions.append(Task.ReturncodePostcondition())
  			self.mountpoints.append(dev)
  		if not self.mountpoints:
@@ -4259,7 +4265,7 @@
  			self.cmd = 'true'
  			self.args = [self.cmd]
  	def afterRun(self):
-@@ -824,7 +905,7 @@
+@@ -824,7 +899,7 @@
  			try:
  				os.rmdir(path)
  			except Exception, ex:
@@ -4268,7 +4274,7 @@
  
  class MountTask(Task.LoggingTask):
  	def __init__(self, job, hdd):
-@@ -835,7 +916,7 @@
+@@ -835,7 +910,7 @@
  			dev = self.hdd.disk_path.split('/')[-1]
  			os.unlink('/dev/nomount.%s' % dev)
  		except Exception, e:
@@ -4277,7 +4283,7 @@
  		# try mounting through fstab first
  		if self.hdd.mount_device is None:
  			dev = self.hdd.partitionPath("1")
-@@ -864,7 +945,7 @@
+@@ -864,7 +939,7 @@
  	def prepare(self):
  		self.fsck_state = None
  	def processOutput(self, data):
@@ -4407,7 +4413,7 @@
  SystemInfo["Blindscan_t2_available"] = fileCheck("/proc/stb/info/vumodel")
  SystemInfo["RcTypeChangable"] = not(HardwareInfo().get_device_model().startswith('et8500') or HardwareInfo().get_device_model().startswith('et7')) and pathExists('/proc/stb/ir/rc/type')
 -SystemInfo["HasFullHDSkinSupport"] = HardwareInfo().get_device_model() not in ("et4000", "et5000", "sh1", "hd500c", "hd1100", "xp1000", "lc")
-+SystemInfo["HasFullHDSkinSupport"] = HardwareInfo().get_device_model() in ("spark7162", "atevio7500")
++SystemInfo["HasFullHDSkinSupport"] = HardwareInfo().get_device_model() in ("spark", "spark7162", "atevio7500")
  SystemInfo["HasForceLNBOn"] = fileCheck("/proc/stb/frontend/fbc/force_lnbon")
  SystemInfo["HasForceToneburst"] = fileCheck("/proc/stb/frontend/fbc/force_toneburst")
  SystemInfo["HasBypassEdidChecking"] = fileCheck("/proc/stb/hdmi/bypass_edid_checking")
@@ -4420,12 +4426,13 @@
  SystemInfo["HasHDMIpreemphasis"] = fileCheck("/proc/stb/hdmi/preemphasis")
  SystemInfo["HasColorimetry"] = fileCheck("/proc/stb/video/hdmi_colorimetry")
  SystemInfo["HasHdrType"] = fileCheck("/proc/stb/video/hdmi_hdrtype")
- SystemInfo["HasHDMI-CEC"] = HardwareInfo().has_hdmi() and fileExists("/usr/lib/enigma2/python/Plugins/SystemPlugins/HdmiCEC/plugin.pyo")
+-SystemInfo["HasHDMI-CEC"] = HardwareInfo().has_hdmi() and fileExists("/usr/lib/enigma2/python/Plugins/SystemPlugins/HdmiCEC/plugin.pyo")
++SystemInfo["HasHDMI-CEC"] = fileExists("/lib/modules/cec.ko") and fileExists("proc/stb/cec/send")
 -SystemInfo["HasYPbPr"] = HardwareInfo().get_device_model() in ("dm8000", "et5000", "et6000", "et6500", "et9000", "et9200", "et9500", "et10000", "formuler1", "mbtwinplus", "spycat", "vusolo", "vuduo", "vuduo2", "vuultimo")
 -SystemInfo["HasScart"] = HardwareInfo().get_device_model() in ("dm8000", "et4000", "et6500", "et8000", "et9000", "et9200", "et9500", "et10000", "formuler1", "hd1100", "hd1200", "hd1265", "hd2400", "vusolo", "vusolo2", "vuduo", "vuduo2", "vuultimo", "vuuno", "xp1000")
 -SystemInfo["HasSVideo"] = HardwareInfo().get_device_model() in ("dm8000")
 -SystemInfo["HasComposite"] = HardwareInfo().get_device_model() not in ("i55", "gbquad4k", "gbue4k", "hd1500", "osnino", "osninoplus", "purehd", "purehdse", "revo4k", "vusolo4k", "vuzero4k")
-+SystemInfo["HasYPbPr"] = HardwareInfo().get_device_model() in ("atevio7500", "fortis_hdbox", "hs7420", "hs7429")
++SystemInfo["HasYPbPr"] = HardwareInfo().get_device_model() in ("atevio7500", "fortis_hdbox", "octagon1008", "hs7420", "hs7429", "ufs912", "ufs913")
 +SystemInfo["HasScart"] = True
 +SystemInfo["HasSVideo"] = False
 +SystemInfo["HasComposite"] = True
@@ -5432,7 +5439,7 @@
 +		PluginDescriptor(where = [PluginDescriptor.WHERE_SESSIONSTART, PluginDescriptor.WHERE_AUTOSTART], fnc = autostart) ]
 --- enigma2.org/lib/python/Plugins/SystemPlugins/HdmiCEC/plugin.py
 +++ enigma2/lib/python/Plugins/SystemPlugins/HdmiCEC/plugin.py
-@@ -141,7 +141,7 @@
+@@ -141,14 +141,17 @@
  
  def startSetup(menuid):
  	# only show in the menu when set to intermediate or higher
@@ -5441,15 +5448,17 @@
  		return [(_("HDMI-CEC setup"), main, "hdmi_cec_setup", 0)]
  	return []
  
-@@ -147,7 +147,7 @@
- 
  def Plugins(**kwargs):
  	from os import path
 -	if path.exists("/dev/hdmi_cec") or path.exists("/dev/misc/hdmi_cec0"):
-+	if path.exists("/dev/hdmi_cec") or path.exists("/lib/modules/cec.ko"):
++	if path.exists("/dev/hdmi_cec") and path.exists("/lib/modules/cec.ko"):
  		import Components.HdmiCec
  		from Plugins.Plugin import PluginDescriptor
  		return [PluginDescriptor(where = PluginDescriptor.WHERE_MENU, fnc = startSetup)]
++#	else:
++#		list = []
++#		list.append(getConfigListEntry(_("Disabled"), config.hdmicec.enabled))
+ 	return []
 --- enigma2.org/lib/python/Plugins/SystemPlugins/Hotplug/plugin.py
 +++ enigma2/lib/python/Plugins/SystemPlugins/Hotplug/plugin.py
 @@ -19,6 +19,8 @@
@@ -7201,11 +7210,13 @@
  	p.setForegroundColor(gRGB(0xFFFFFF));
  
  	int hd =  my_dc->size().width() == 1920;
-@@ -213,13 +213,13 @@
+@@ -212,14 +212,14 @@
+ 	os.clear();
  	os << "We are really sorry. Your STB encountered "
  		"a software problem, and needs to be restarted.\n"
- 		"Please send the logfile " << crashlog_name << " to " << crash_emailaddr << ".\n"
+-		"Please send the logfile " << crashlog_name << " to " << crash_emailaddr << ".\n"
 -		"Your STB restarts in 10 seconds!\n"
++		"Details have been logged in the logfile " << crashlog_name << ".\n"
 +		"Your STB will restart in 30 seconds...\n"
  		"Component: " << component;
  
