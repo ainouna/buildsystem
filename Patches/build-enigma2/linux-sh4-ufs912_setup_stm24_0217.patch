@@ -1,6 +1,6 @@
 --- a/arch/sh/kernel/setup.c
 +++ b/arch/sh/kernel/setup.c
-@@ -555,6 +555,7 @@
+@@ -587,6 +587,7 @@
  	seq_printf(m, "cpu family\t: %s\n", init_utsname()->machine);
  	seq_printf(m, "cpu variant\t: %s\n", get_cpu_variant(c));
  	seq_printf(m, "cpu type\t: %s\n", get_cpu_subtype(c));
@@ -8,8 +8,8 @@
  	if (c->cut_major == -1)
  		seq_printf(m, "cut\t\t: unknown\n");
  	else if (c->cut_minor == -1)
---- a/drivers/stm/stx7111_comms.c.org	2011-07-02 05:58:19.000000000 -0700
-+++ b/drivers/stm/stx7111_comms.c	2011-07-03 05:30:59.771608244 -0700
+--- a/drivers/stm/stx7111_comms.c.org
++++ b/drivers/stm/stx7111_comms.c
 @@ -211,10 +211,17 @@
  			STM_PAD_PIO_BIDIR_NAMED(2, 0, 1, "SCL"),
  			STM_PAD_PIO_BIDIR_NAMED(2, 1, 1, "SDA"),
@@ -30,8 +30,8 @@
  			/* This is a signal from SPI block */
  			/* Hope this is set correctly by default */
  
---- a/arch/sh/boards/mach-mb618/setup.c.org	2012-03-08 08:58:51.000000000 -0800
-+++ b/arch/sh/boards/mach-mb618/setup.c	2012-03-09 08:48:35.000000000 -0800
+--- a/arch/sh/boards/mach-mb618/setup.c.org
++++ b/arch/sh/boards/mach-mb618/setup.c
 @@ -17,35 +17,78 @@
  #include <linux/phy.h>
  #include <linux/i2c.h>
@@ -216,7 +216,7 @@
  	.num_resources	= 1,
  	.resource	= (struct resource[]) {
 -		STM_PLAT_RESOURCE_MEM(0, 32*1024*1024),
-+		STM_PLAT_RESOURCE_MEM(0, 4*1024*1024),
++		STM_PLAT_RESOURCE_MEM(0, 4 * 1024 * 1024),
  	},
  	.dev.platform_data = &(struct physmap_flash_data) {
  		.width		= 2,
@@ -245,43 +245,43 @@
 +// Nand Flash Configuration
 +static struct mtd_partition nand_parts[] = {
 +#ifdef ORIGINAL_MTD
-+	 {
-+	 .name = "NAND KERNEL    0x0000.0000-0x002F.FFFF",
-+	 .size = 0x300000,
-+	 .offset = 0
-+	 }, {
-+	 .name = "NAND ROOT      0x0030.0000-0x027F.FFFF",
-+	 .size = 0x2500000,
-+	 .offset = 0x300000
-+	 }, {
-+	 .name = "NAND CONFIG    0x0280.0000-0x04FF.FFFF",
-+	 .size = 0x2800000,
-+	 .offset = 0x2800000
-+	 }, {
-+	 .name = "NAND DATA      0x0500.0000-0x07FF.FFFF",
-+	 .size = MTDPART_SIZ_FULL,	/* will expand to the end of the flash */
-+	 .offset = 0x05000000
-+	 }
++	{
++		.name = "NAND KERNEL    0x0000.0000-0x002F.FFFF",
++		.size = 0x300000,
++		.offset = 0
++	}, {
++		.name = "NAND ROOT      0x0030.0000-0x027F.FFFF",
++		.size = 0x2500000,
++		.offset = 0x300000
++	}, {
++		.name = "NAND CONFIG    0x0280.0000-0x04FF.FFFF",
++		.size = 0x2800000,
++		.offset = 0x2800000
++	}, {
++		.name = "NAND DATA      0x0500.0000-0x07FF.FFFF",
++		.size = MTDPART_SIZ_FULL,	/* will expand to the end of the flash */
++		.offset = 0x05000000
++	}
  #else
 -struct stm_nand_bank_data mb618_nand_flash = {
 -	.csn		= 0,
-+	 {
-+	 .name   = "NAND KERNEL    0x0000.0000-0x003F.FFFF (  4MB)",
-+	 .size   = 0x400000,
-+	 .offset = 0
-+	 }, {
-+	 .name   = "NAND FW        0x0040.0000-0x00BF.FFFF (  8MB)",
-+	 .size   = 0x800000,
-+	 .offset = MTDPART_OFS_APPEND
-+	 }, {
-+	 .name   = "NAND ROOT      0x00C0.0000-0x04BF.FFFF ( 64MB)",
-+	 .size   = 0x4000000,
-+	 .offset = MTDPART_OFS_APPEND
-+	 }, {
-+	 .name   = "NAND DATA      0x04C0.0000-0x07FF.FFFF ( 52MB)",
-+	 .size   = MTDPART_SIZ_FULL,	/* will expand to the end of the flash */
-+	 .offset = MTDPART_OFS_APPEND
-+	 }
++	{
++		.name   = "NAND KERNEL    0x0000.0000-0x003F.FFFF (  4MB)",
++		.size   = 0x400000,
++		.offset = 0
++	}, {
++		.name   = "NAND FW        0x0040.0000-0x00BF.FFFF (  8MB)",
++		.size   = 0x800000,
++		.offset = MTDPART_OFS_APPEND
++	}, {
++		.name   = "NAND ROOT      0x00C0.0000-0x04BF.FFFF ( 64MB)",
++		.size   = 0x4000000,
++		.offset = MTDPART_OFS_APPEND
++	}, {
++		.name   = "NAND DATA      0x04C0.0000-0x07FF.FFFF ( 52MB)",
++		.size   = MTDPART_SIZ_FULL,	/* will expand to the end of the flash */
++		.offset = MTDPART_OFS_APPEND
++	}
 +#endif
 +};
 +static struct stm_nand_bank_data nand_bank_data = {
@@ -532,8 +532,8 @@
  	.mv_ioport_map		= mb618_ioport_map,
 -	STM_PCI_IO_MACHINE_VEC
  };
-*** a/drivers/mtd/chips/cfi_probe.c	2011-01-02 21:05:30.000000000 +0100
---- b/cfi_probe.c	2011-01-05 20:38:36.087467593 +0100
+*** a/drivers/mtd/chips/cfi_probe.c
+--- b/drivers/mtd/chips/cfi_probe.c
 ***************
 *** 221,226 ****
 --- 221,242 ----
@@ -559,8 +559,8 @@
   #ifdef DEBUG_CFI
   		printk("  Erase Region #%d: BlockSize 0x%4.4X bytes, %d blocks\n",
   		       i, (cfi->cfiq->EraseRegionInfo[i] >> 8) & ~0xff,
---- a/drivers/mtd/nand/nand_base.c	2014-05-15 10:24:39.000000000 +0200
-+++ b/drivers/mtd/nand/nand_base.c	2014-05-16 01:35:09.000000000 +0200
+--- a/drivers/mtd/nand/nand_base.c
++++ b/drivers/mtd/nand/nand_base.c
 @@ -57,8 +57,7 @@
  struct dentry *file_erasebb;
  #endif
@@ -1093,8 +1093,8 @@
  #endif
  
  	led_trigger_register_simple("nand-disk", &nand_led_trigger);
---- a/include/linux/mtd/nand.h	2014-05-15 10:24:39.000000000 +0200
-+++ b/include/linux/mtd/nand.h	2014-05-16 01:35:09.000000000 +0200
+--- a/include/linux/mtd/nand.h
++++ b/include/linux/mtd/nand.h
 @@ -44,8 +44,8 @@
   * is supported now. If you add a chip with bigger oobsize/page
   * adjust this accordingly.
@@ -1358,8 +1358,8 @@
  
  /*
  * Constants for oob configuration
---- a/drivers/mtd/nand/nand_ids.c	2014-05-15 10:24:39.000000000 +0200
-+++ b/drivers/mtd/nand/nand_ids.c	2009-12-03 04:51:21.000000000 +0100
+--- a/drivers/mtd/nand/nand_ids.c
++++ b/drivers/mtd/nand/nand_ids.c
 @@ -73,24 +73,17 @@
  #define LP_OPTIONS (NAND_SAMSUNG_LP_OPTIONS | NAND_NO_READRDY | NAND_NO_AUTOINCR)
  #define LP_OPTIONS16 (LP_OPTIONS | NAND_BUSWIDTH_16)
@@ -2088,8 +2088,8 @@
  MODULE_LICENSE("GPL");
  MODULE_AUTHOR("Thomas Gleixner <tglx@linutronix.de>");
  MODULE_DESCRIPTION("Nand device & manufacturer IDs");
---- a/drivers/mtd/maps/physmap.c	2014-05-15 10:24:39.000000000 +0200
-+++ b/drivers/mtd/maps/physmap.c	2009-12-03 04:51:21.000000000 +0100
+--- a/drivers/mtd/maps/physmap.c
++++ b/drivers/mtd/maps/physmap.c
 @@ -134,11 +134,6 @@
  			goto err_out;
  		}
@@ -2102,8 +2102,8 @@
  		simple_map_init(&info->map[i]);
  
  		probe_type = rom_probe_types;
---- a/drivers/mtd/nand/Kconfig	2014-05-15 10:24:39.000000000 +0200
-+++ b/drivers/mtd/nand/Kconfig	2014-05-16 01:35:09.000000000 +0200
+--- a/drivers/mtd/nand/Kconfig
++++ b/drivers/mtd/nand/Kconfig
 @@ -482,18 +482,6 @@
  	  This enables the driver for the NAND Flash on evaluation board based
  	  on w90p910.
@@ -2140,8 +2140,8 @@
 -	  to that currently employed).
 -
  endif # MTD_NAND
---- a/drivers/mtd/nand/Makefile	2014-05-15 10:24:39.000000000 +0200
-+++ b/drivers/mtd/nand/Makefile	2014-05-16 01:35:09.000000000 +0200
+--- a/drivers/mtd/nand/Makefile
++++ b/drivers/mtd/nand/Makefile
 @@ -42,7 +42,6 @@
  obj-$(CONFIG_MTD_NAND_TXX9NDFMC)	+= txx9ndfmc.o
  obj-$(CONFIG_MTD_NAND_W90P910)		+= w90p910_nand.o
@@ -2150,8 +2150,8 @@
  obj-$(CONFIG_MTD_NAND_STM_EMI)		+= stm_nand_emi.o
  obj-$(CONFIG_MTD_NAND_STM_FLEX)		+= stm_nand_flex.o stm_nand_ecc.o
  obj-$(CONFIG_MTD_NAND_STM_AFM)          += stm_nand_afm.o stm_nand_ecc.o
---- a/drivers/mtd/chips/cfi_cmdset_0002.c	2014-05-15 10:24:39.000000000 +0200
-+++ b/drivers/mtd/chips/cfi_cmdset_0002.c	2009-12-03 04:51:21.000000000 +0100
+--- a/drivers/mtd/chips/cfi_cmdset_0002.c
++++ b/drivers/mtd/chips/cfi_cmdset_0002.c
 @@ -57,8 +57,6 @@
  static int cfi_amdstd_write_buffers(struct mtd_info *, loff_t, size_t, size_t *, const u_char *);
  static int cfi_amdstd_erase_chip(struct mtd_info *, struct erase_info *);
@@ -2265,8 +2265,8 @@
  static int do_atmel_lock(struct map_info *map, struct flchip *chip,
  			 unsigned long adr, int len, void *thunk)
  {
---- a/include/linux/mtd/physmap.h	2014-05-15 10:24:39.000000000 +0200
-+++ b/include/linux/mtd/physmap.h	2009-12-03 04:51:21.000000000 +0100
+--- a/include/linux/mtd/physmap.h
++++ b/include/linux/mtd/physmap.h
 @@ -26,9 +26,6 @@
  	unsigned int		nr_parts;
  	unsigned int		pfow_base;
@@ -2277,8 +2277,8 @@
  };
  
  /*
---- a/drivers/mtd/nand/stm_nand_emi.c	2014-05-15 10:24:39.000000000 +0200
-+++ b/drivers/mtd/nand/stm_nand_emi.c	2014-05-16 01:35:09.000000000 +0200
+--- a/drivers/mtd/nand/stm_nand_emi.c
++++ b/drivers/mtd/nand/stm_nand_emi.c
 @@ -38,8 +38,6 @@
  #include <linux/stm/nand.h>
  #include <asm/dma.h>
