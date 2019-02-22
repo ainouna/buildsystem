@@ -1,5 +1,5 @@
---- a/arch/sh/Makefile
-+++ b/arch/sh/Makefile
+--- a/arch/sh/Makefile	2011-08-16 18:57:57.000000000 +0200
++++ b/arch/sh/Makefile	2011-08-25 20:33:12.078531194 +0200
 @@ -74,7 +74,7 @@
  cflags-y	+= $(isaflags-y) -ffreestanding
  
@@ -9,8 +9,8 @@
  
  # Give the various platforms the opportunity to set default image types
  defaultimage-$(CONFIG_SUPERH32)			:= zImage
---- a/drivers/stm/stx7100_comms.c
-+++ b/drivers/stm/stx7100_comms.c
+--- a/drivers/stm/stx7100_comms.c	2011-08-16 18:58:00.000000000 +0200
++++ b/stx7100_comms.c	2011-09-21 20:11:09.330974528 +0200
 @@ -238,14 +238,14 @@
  		.gpios_num = 2,
  		.gpios = (struct stm_pad_gpio []) {
@@ -30,7 +30,7 @@
  		},
  	},
  	[2] = {
-@@ -345,7 +345,7 @@
+@@ -344,7 +344,7 @@
  	BUG_ON(stx7100_ssc_configured[ssc]);
  	stx7100_ssc_configured[ssc] = 1;
  
@@ -39,8 +39,8 @@
  	stx7100_ssc_devices[ssc].id = i2c_busnum;
  
  	plat_data = stx7100_ssc_devices[ssc].dev.platform_data;
---- a/arch/sh/boards/mach-mb442/setup.c
-+++ b/arch/sh/boards/mach-mb442/setup.c
+--- a/arch/sh/boards/mach-mb442/setup.c	2011-08-16 18:57:57.000000000 +0200
++++ b/setup.c	2011-09-29 16:58:45.602366977 +0200
 @@ -22,6 +22,7 @@
  #include <linux/stm/platform.h>
  #include <linux/stm/stx7100.h>
@@ -85,7 +85,7 @@
 +	{
 +		.name  = "LMI_SYS",
 +		.start = 0,
-+		.size  = 0x01300000,
++		.size  = 0x02600000,
 +		.flags = 0,
 +		.aka   = LMI_SYS_partalias
 +	}
@@ -98,13 +98,13 @@
 + * code taken from old stpio stuff.
 + */
 +
-+#define PIO_BASE		0xb8020000  
++#define PIO_BASE			0xb8020000  
 +#define STPIO_PC0_OFFSET	0x20
 +#define STPIO_PC1_OFFSET	0x30
 +#define STPIO_PC2_OFFSET	0x40
 +#define STPIO_SET_OFFSET	0x4
 +#define STPIO_CLEAR_OFFSET	0x8
-+#define PIO_PORT_SIZE		0x1000
++#define PIO_PORT_SIZE			0x1000
 +#define PIO_PORT(n) (((n)*PIO_PORT_SIZE) + PIO_BASE)
 +
 +/* directions */
@@ -114,7 +114,7 @@
 +#define STPIO_OUT		2	/* Output push-pull */
 +#define STPIO_IN		4	/* Input Hi-Z */
 +#define STPIO_ALT_OUT		6	/* Alt output push-pull (arch defn) */
-+#define STPIO_ALT_BIDIR	7	/* Alt bidir open drain (arch defn) */
++#define STPIO_ALT_BIDIR		7	/* Alt bidir open drain (arch defn) */
 +
 +void configure_pin(int portno, int pinno, int direction)
 +{
@@ -158,7 +158,7 @@
 -		.flags	= IORESOURCE_IRQ,
 -	},
 -};
-+#define FLASH_32MB
++#define	FLASH_32MB
 +//#define FLASH_16MB
 +
 +#if defined(FLASH_32MB)
@@ -188,7 +188,7 @@
 +#define WELCOME_SIZE	0x020000	// welcomeboot config
 +#define KERNEL_SIZE	0x1A0000	// kernel size
 +#define ROOT_SIZE	(WINDOW_SIZE-WELCOME_SIZE-KERNEL_SIZE-DB_SIZE-BOOT_SIZE)
-+#define DB_SIZE	0x600000
++#define DB_SIZE		0x600000
 +#else
 +
 +// 8MB flash
@@ -205,62 +205,62 @@
 +#endif
 +
 +
++
 +#define ONBOARD_ADDR 0x00000000
 +
 +#define ONBOARD_SIZE		WINDOW_SIZE
 +#define ONBOARD_BANKWIDTH	2
 +
 +static struct mtd_partition mtd_parts_table[] = {
-+	{
-+		.name       = "nor.boot",
-+		.offset     = 0x00000000,
-+		.size       = BOOT_SIZE,
-+		.mask_flags = MTD_WRITEABLE,    /* force read-only */
-+	},
-+	{
-+		.name       = "nor.config_welcome",
-+		.offset     = BOOT_SIZE,
-+		.size       = WELCOME_SIZE,
-+	},
-+	{
-+		.name       = "nor.kernel",
-+		.offset     = BOOT_SIZE + WELCOME_SIZE,
-+		.size       = KERNEL_SIZE,
-+		//.mask_flags = MTD_WRITEABLE,
-+	},
-+	{
-+		.name       = "nor.root",
-+		.offset     = BOOT_SIZE + WELCOME_SIZE + KERNEL_SIZE,
-+		.size       = ROOT_SIZE,
-+		//.mask_flags = MTD_WRITEABLE,
-+	},
-+	{
-+		.name       = "nor.var",
-+		.offset     = BOOT_SIZE+WELCOME_SIZE+KERNEL_SIZE + ROOT_SIZE,
-+		.size       = DB_SIZE,
-+	},
-+	/* partitions for upgrade */
-+	{
-+		.name       = "nor.mtd2_mtd3",
-+		.offset     = BOOT_SIZE + WELCOME_SIZE,
-+		.size       = KERNEL_SIZE + ROOT_SIZE,
-+	},
-+	{
-+		.name       = "nor.mtd2_mtd3_mtd4",
-+		.offset     = BOOT_SIZE + WELCOME_SIZE,
-+		.size       = KERNEL_SIZE + ROOT_SIZE + DB_SIZE,
-+	},
-+	{
-+		.name       = "nor.full",
-+		.offset     = BOOT_SIZE,
-+		.size       = (WINDOW_SIZE - BOOT_SIZE),
-+	},
-+	{
-+		.name       = "nor.all",
-+		.offset     = 0,
-+		.size       = WINDOW_SIZE,
-+		.mask_flags = MTD_WRITEABLE,    /* force read-only */
-+	},
++   {
++       .name       = "nor.boot",
++       .offset     = 0x00000000,
++       .size       = BOOT_SIZE,
++       .mask_flags = MTD_WRITEABLE,    /* force read-only */
++   },
++   {
++       .name       = "nor.config_welcome",
++       .offset     = BOOT_SIZE,
++       .size       = WELCOME_SIZE,
++   },
++   {   .name       = "nor.kernel",
++       .offset     = BOOT_SIZE + WELCOME_SIZE,
++       .size       = KERNEL_SIZE,
++       .mask_flags = MTD_WRITEABLE,
++   },
++   {
++       .name       = "nor.root",
++       .offset     = BOOT_SIZE + WELCOME_SIZE + KERNEL_SIZE,
++       .size       = ROOT_SIZE,
++       .mask_flags = MTD_WRITEABLE,
++   },
++   {
++       .name       = "nor.var",
++       .offset     = BOOT_SIZE+WELCOME_SIZE+KERNEL_SIZE+ROOT_SIZE,
++       .size       = DB_SIZE,
++   },
++   /* partitions for upgrade */
++   {
++       .name       = "nor.mtd2_mtd3",
++       .offset     = BOOT_SIZE+WELCOME_SIZE,
++       .size       = KERNEL_SIZE+ROOT_SIZE,
++   },
++   {
++       .name       = "nor.mtd2_mtd3_mtd4",
++       .offset     = BOOT_SIZE+WELCOME_SIZE,
++       .size       = KERNEL_SIZE+ROOT_SIZE+DB_SIZE,
++   },
++   {
++       .name       = "nor.full",
++       .offset     = BOOT_SIZE,
++       .size       = (WINDOW_SIZE-BOOT_SIZE),
++   },
++   {
++       .name       = "nor.all",
++       .offset     = 0,
++       .size       = WINDOW_SIZE,
++       .mask_flags = MTD_WRITEABLE,    /* force read-only */
++   },
  };
  
  static void mb442_set_vpp(struct map_info *info, int enable)
@@ -274,8 +274,8 @@
  	.dev.platform_data = &(struct physmap_flash_data) {
  		.width		= 2,
  		.set_vpp	= mb442_set_vpp,
-+		.nr_parts	= ARRAY_SIZE(mtd_parts_table),
-+		.parts		= mtd_parts_table
++	    .nr_parts	= ARRAY_SIZE(mtd_parts_table),
++	    .parts		= mtd_parts_table
  	},
  };
  
@@ -335,10 +335,10 @@
 -			.out0_enabled = 0,
 -			.out1_enabled = 1, });
 -
- 	stx7100_configure_ssc_i2c(0, NULL);
+ 	stx7100_configure_ssc_i2c(0);
 -	stx7100_configure_ssc_spi(1, NULL);
-+	stx7100_configure_ssc_i2c(1, NULL);
- 	stx7100_configure_ssc_i2c(2, NULL);
++	stx7100_configure_ssc_i2c(1);
+ 	stx7100_configure_ssc_i2c(2);
  
  	stx7100_configure_usb();
  
@@ -376,9 +376,9 @@
  
  	return platform_add_devices(mb442_devices,
  			ARRAY_SIZE(mb442_devices));
---- a/linux-sh4/drivers/serial/stm-asc.c
-+++ b/linux-sh4/drivers/serial/stm-asc.c
-@@ -576,7 +576,7 @@
+--- linux-sh4/drivers/serial/stm-asc.c	2011-08-16 18:57:59.000000000 +0200
++++ b/stm-asc.c	2011-09-29 18:32:31.495178472 +0200
+@@ -574,7 +574,7 @@
  	struct platform_device *pdev = to_platform_device(port->dev);
  	int size = pdev->resource[0].end - pdev->resource[0].start + 1;
  
@@ -387,20 +387,8 @@
  		/* Can't use dev_name() here as we can be called early */
  		ascport->pad_state = stm_pad_claim(ascport->pad_config,
  				"stasc");
---- a/linux-sh4/drivers/stm/stx7100_hispeed.c
-+++ b/linux-sh4/drivers/stm/stx7100_hispeed.c
-@@ -190,7 +190,8 @@
- 	 * option to select an inverted output from the TPS2052, so no
- 	 * software work around is required.)
- 	 */
--	stx7100_usb_pwr_gpio = stm_pad_gpio_request_output(state, "PWR", 1);
-+/* for CUBEREVO_250HD, CUBEREVO_MINI_FTA, CUBEREVO_2000HD */
-+	stx7100_usb_pwr_gpio = stm_pad_gpio_request_output(state, "PWR", 0);
- 	BUG_ON(stx7100_usb_pwr_gpio == STM_GPIO_INVALID);
- 
- 	return 0;
---- a/linux-sh4/arch/sh/boards/mach-mb442/mach.c
-+++ b/linux-sh4/arch/sh/boards/mach-mb442/mach.c
+--- linux-sh4/arch/sh/boards/mach-mb442/mach.c	2011-08-16 18:57:57.000000000 +0200
++++ b/mach.c	2011-09-29 19:56:34.997700735 +0200
 @@ -43,7 +43,7 @@
  	/* Set the ILC to route external interrupts to the the INTC */
  	/* Outputs 0-3 are the interrupt pins, 4-7 are routed to the INTC */
@@ -410,8 +398,8 @@
  	ilc_route_external(ILC_EXT_IRQ1, 5, 0);		/* ATA */
  	ilc_route_external(ILC_EXT_IRQ2, 6, 0);		/* Unused */
  	ilc_route_external(ILC_EXT_MDINT, 7, 0);	/* STe100 PHY */
---- a/linux-sh4/arch/sh/include/asm/setup.h
-+++ b/linux-sh4/arch/sh/include/asm/setup.h
+--- linux-sh4/arch/sh/include/asm/setup.h	2009-12-03 04:51:21.000000000 +0100
++++ b/setup.h	2011-10-01 10:02:00.790393249 +0200
 @@ -15,12 +15,48 @@
  #define LOADER_TYPE (*(unsigned long *) (PARAM+0x00c))
  #define INITRD_START (*(unsigned long *) (PARAM+0x010))
@@ -461,9 +449,9 @@
  #endif /* __KERNEL__ */
  
  #endif /* _SH_SETUP_H */
---- a/linux-sh4/arch/sh/kernel/setup.c
-+++ b/linux-sh4/arch/sh/kernel/setup.c
-@@ -97,6 +97,9 @@
+--- linux-sh4/arch/sh/kernel/setup.c	2011-08-16 18:57:58.000000000 +0200
++++ b/kernel/setup.c	2011-10-01 10:03:59.030452949 +0200
+@@ -96,6 +96,9 @@
  unsigned long memory_end = 0;
  EXPORT_SYMBOL(memory_end);
  
@@ -473,7 +461,7 @@
  static struct resource mem_resources[MAX_NUMNODES];
  
  int l1i_cache_shape, l1d_cache_shape, l2_cache_shape;
-@@ -420,6 +423,34 @@
+@@ -419,6 +422,34 @@
  #endif
  #endif
  
@@ -508,7 +496,7 @@
  	/* Save unparsed command line copy for /proc/cmdline */
  	memcpy(boot_command_line, command_line, COMMAND_LINE_SIZE);
  	*cmdline_p = command_line;
-@@ -430,6 +461,9 @@
+@@ -429,6 +460,9 @@
  
  	sh_mv_setup();
  
@@ -518,8 +506,8 @@
  	/*
  	 * Find the highest page frame number we have available
  	 */
---- a/linux-sh4/drivers/net/stmmac/stmmac_main.c
-+++ b/linux-sh4/drivers/net/stmmac/stmmac_main.c
+--- linux-sh4/drivers/net/stmmac/stmmac_main.c	2011-08-16 18:57:59.000000000 +0200
++++ b/stmmac_main.c	2011-10-01 10:27:41.761164284 +0200
 @@ -44,6 +44,7 @@
  #include <linux/debugfs.h>
  #include <linux/seq_file.h>
@@ -527,10 +515,10 @@
 +#include <asm/setup.h>
  #include "stmmac.h"
  
- #undef STMMAC_DEBUG
-@@ -972,14 +973,35 @@
- 	return hw_cap;
- }
+ #define STMMAC_RESOURCE_NAME	"stmmaceth"
+@@ -1484,6 +1485,15 @@
+ 	.ndo_set_mac_address = eth_mac_addr,
+ };
  
 +static inline void print_mac_addr(u8 addr[6])
 +{
@@ -541,26 +529,27 @@
 +	return;
 +}
 +
- static void stmmac_check_ether_addr(struct stmmac_priv *priv)
- {
- 	/* verify if the MAC address is valid, in case of failures it
- 	 * generates a random MAC address */
- 	if (!is_valid_ether_addr(priv->dev->dev_addr)) {
-+/*
- 		priv->hw->mac->get_umac_addr((void __iomem *)
- 					     priv->dev->base_addr,
- 					     priv->dev->dev_addr, 0);
+ /**
+  * stmmac_probe - Initialization of the adapter .
+  * @dev : device pointer
+@@ -1516,8 +1526,19 @@
+ 	netif_napi_add(dev, &priv->napi, stmmac_poll, 64);
+ 
+ 	/* Get the MAC address */
+-	priv->hw->mac->get_umac_addr((void __iomem *) dev->base_addr,
++/*	priv->hw->mac->get_umac_addr((void __iomem *) dev->base_addr,
+ 				     dev->dev_addr, 0);
 +*/
-+		printk(KERN_INFO "\tHW MAC address from bdinfo: ");
-+		/* copy mac address from u-boot */
-+		priv->dev->dev_addr[0] = bd.bi_enetaddr[0];
-+		priv->dev->dev_addr[1] = bd.bi_enetaddr[1];
-+		priv->dev->dev_addr[2] = bd.bi_enetaddr[2];
-+		priv->dev->dev_addr[3] = bd.bi_enetaddr[3];
-+		priv->dev->dev_addr[4] = bd.bi_enetaddr[4];
-+		priv->dev->dev_addr[5] = bd.bi_enetaddr[5];
-+		print_mac_addr(priv->dev->dev_addr);
++   printk(KERN_INFO "\tHW MAC address from bdinfo: ");
++   /* copy mac address from u-boot */
++   dev->dev_addr[0] = bd.bi_enetaddr[0];
++   dev->dev_addr[1] = bd.bi_enetaddr[1];
++   dev->dev_addr[2] = bd.bi_enetaddr[2];
++   dev->dev_addr[3] = bd.bi_enetaddr[3];
++   dev->dev_addr[4] = bd.bi_enetaddr[4];
++   dev->dev_addr[5] = bd.bi_enetaddr[5];
 +
- 		if  (!is_valid_ether_addr(priv->dev->dev_addr))
- 			random_ether_addr(priv->dev->dev_addr);
- 	}
++   print_mac_addr(dev->dev_addr);
+ 
+ 	if (!is_valid_ether_addr(dev->dev_addr))
+ 		pr_warning("\tno valid MAC address;"
