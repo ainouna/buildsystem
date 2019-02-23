@@ -1,5 +1,5 @@
---- linux-sh4_org/arch/sh/Makefile
-+++ linux-sh4/arch/sh/Makefile
+--- a/arch/sh/Makefile
++++ b/arch/sh/Makefile
 @@ -74,7 +74,7 @@
  cflags-y	+= $(isaflags-y) -ffreestanding
  
@@ -9,8 +9,8 @@
  
  # Give the various platforms the opportunity to set default image types
  defaultimage-$(CONFIG_SUPERH32)			:= zImage
---- linux-sh4_org/drivers/stm/stx7100_comms.c
-+++ linux-sh4/drivers/stm/stx7100_comms.c
+--- a/drivers/stm/stx7100_comms.c
++++ b/drivers/stm/stx7100_comms.c
 @@ -238,14 +238,14 @@
  		.gpios_num = 2,
  		.gpios = (struct stm_pad_gpio []) {
@@ -39,8 +39,8 @@
  	stx7100_ssc_devices[ssc].id = i2c_busnum;
  
  	plat_data = stx7100_ssc_devices[ssc].dev.platform_data;
---- linux-sh4_org/arch/sh/boards/mach-mb442/setup.c
-+++ linux-sh4/arch/sh/boards/mach-mb442/setup.c
+--- a/arch/sh/boards/mach-mb442/setup.c
++++ b/arch/sh/boards/mach-mb442/setup.c
 @@ -22,6 +22,7 @@
  #include <linux/stm/platform.h>
  #include <linux/stm/stx7100.h>
@@ -56,7 +56,7 @@
 +const char *LMI_VID_partalias[] = { "BPA2_Region1", "coredisplay-video", "gfx-memory", "v4l2-video-buffers", NULL };
 +const char *LMI_SYS_partalias[] = { "BPA2_Region0", "bigphysarea", "v4l2-coded-video-buffers", NULL };
 + 
-+#ifdef CONFIG_32BIT
++#if defined(CONFIG_32BIT)
 +static struct bpa2_partition_desc bpa2_parts_table[] = {
 +	{
 +		.name  = "LMI_VID",
@@ -98,23 +98,23 @@
 + * code taken from old stpio stuff.
 + */
 +
-+#define PIO_BASE			0xb8020000  
-+#define STPIO_PC0_OFFSET	0x20
-+#define STPIO_PC1_OFFSET	0x30
-+#define STPIO_PC2_OFFSET	0x40
-+#define STPIO_SET_OFFSET	0x4
-+#define STPIO_CLEAR_OFFSET	0x8
-+#define PIO_PORT_SIZE			0x1000
-+#define PIO_PORT(n) (((n)*PIO_PORT_SIZE) + PIO_BASE)
++#define PIO_BASE               0xb8020000  
++#define STPIO_PC0_OFFSET       0x20
++#define STPIO_PC1_OFFSET       0x30
++#define STPIO_PC2_OFFSET       0x40
++#define STPIO_SET_OFFSET       0x4
++#define STPIO_CLEAR_OFFSET     0x8
++#define PIO_PORT_SIZE          0x1000
++#define PIO_PORT(n)            (((n)*PIO_PORT_SIZE) + PIO_BASE)
 +
 +/* directions */
-+#define STPIO_NONPIO		0	/* Non-PIO function (ST40 defn) */
-+#define STPIO_BIDIR_Z1     	0	/* Input weak pull-up (arch defn) */
-+#define STPIO_BIDIR		1	/* Bidirectonal open-drain */
-+#define STPIO_OUT		2	/* Output push-pull */
-+#define STPIO_IN		4	/* Input Hi-Z */
-+#define STPIO_ALT_OUT		6	/* Alt output push-pull (arch defn) */
-+#define STPIO_ALT_BIDIR		7	/* Alt bidir open drain (arch defn) */
++#define STPIO_NONPIO           0	/* Non-PIO function (ST40 defn) */
++#define STPIO_BIDIR_Z1         0	/* Input weak pull-up (arch defn) */
++#define STPIO_BIDIR            1	/* Bidirectonal open-drain */
++#define STPIO_OUT              2	/* Output push-pull */
++#define STPIO_IN               4	/* Input Hi-Z */
++#define STPIO_ALT_OUT          6	/* Alt output push-pull (arch defn) */
++#define STPIO_ALT_BIDIR        7	/* Alt bidir open drain (arch defn) */
 +
 +void configure_pin(int portno, int pinno, int direction)
 +{
@@ -158,7 +158,7 @@
 -		.flags	= IORESOURCE_IRQ,
 -	},
 -};
-+#define	FLASH_32MB
++#define FLASH_32MB
 +//#define FLASH_16MB
 +
 +#if defined(FLASH_32MB)
@@ -187,8 +187,8 @@
 +#define BOOT_SIZE	0x040000	// boot loader
 +#define WELCOME_SIZE	0x020000	// bootargs (welcomeboot config)
 +#define KERNEL_SIZE	0x1A0000	// kernel size
-+#define ROOT_SIZE	(WINDOW_SIZE-WELCOME_SIZE-KERNEL_SIZE-DB_SIZE-BOOT_SIZE)
-+#define DB_SIZE		0x600000
++#define ROOT_SIZE	(WINDOW_SIZE - WELCOME_SIZE - KERNEL_SIZE - DB_SIZE-BOOT_SIZE)
++#define DB_SIZE	0x600000
 +#else
 +
 +// 8MB flash
@@ -198,7 +198,7 @@
 +#define BOOT_SIZE       0x030000        // boot loader 	 
 +#define WELCOME_SIZE    0x010000        // bootargs (welcomeboot config)
 +#define KERNEL_SIZE     0x180000        // kernel size 	 
-+#define ROOT_SIZE       (WINDOW_SIZE-WELCOME_SIZE-KERNEL_SIZE-DB_SIZE-BOOT_SIZE) 	 
++#define ROOT_SIZE       (WINDOW_SIZE - WELCOME_SIZE - KERNEL_SIZE - DB_SIZE-BOOT_SIZE) 	 
 +#define DB_SIZE         0x230000
 +#endif
 +
@@ -232,24 +232,24 @@
 +	},
 +	{
 +		.name       = "nor.var",
-+		.offset     = BOOT_SIZE+WELCOME_SIZE+KERNEL_SIZE+ROOT_SIZE,
++		.offset     = BOOT_SIZE+WELCOME_SIZE + KERNEL_SIZE + ROOT_SIZE,
 +		.size       = DB_SIZE,
 +	},
 +	/* partitions for upgrade */
 +	{
 +		.name       = "nor.mtd2_mtd3",
-+		.offset     = BOOT_SIZE+WELCOME_SIZE,
-+		.size       = KERNEL_SIZE+ROOT_SIZE,
++		.offset     = BOOT_SIZE + WELCOME_SIZE,
++		.size       = KERNEL_SIZE + ROOT_SIZE,
 +	},
 +	{
 +		.name       = "nor.mtd2_mtd3_mtd4",
-+		.offset     = BOOT_SIZE+WELCOME_SIZE,
-+		.size       = KERNEL_SIZE+ROOT_SIZE+DB_SIZE,
++		.offset     = BOOT_SIZE + WELCOME_SIZE,
++		.size       = KERNEL_SIZE + ROOT_SIZE + DB_SIZE,
 +	},
 +	{
 +		.name       = "nor.full",
 +		.offset     = BOOT_SIZE,
-+		.size       = (WINDOW_SIZE-BOOT_SIZE),
++		.size       = (WINDOW_SIZE - BOOT_SIZE),
 +	},
 +//	{
 +//		.name       = "nor.all",
@@ -265,7 +265,7 @@
  	.num_resources	= 1,
  	.resource	= (struct resource[]) {
 -		STM_PLAT_RESOURCE_MEM(0, 8*1024*1024),
-+		STM_PLAT_RESOURCE_MEM(0, 32*1024*1024),
++		STM_PLAT_RESOURCE_MEM(0, 32 * 1024 * 1024),
  	},
  	.dev.platform_data = &(struct physmap_flash_data) {
  		.width		= 2,
@@ -372,8 +372,8 @@
  
  	return platform_add_devices(mb442_devices,
  			ARRAY_SIZE(mb442_devices));
---- linux-sh4_org/drivers/serial/stm-asc.c
-+++ linux-sh4/drivers/serial/stm-asc.c
+--- a/drivers/serial/stm-asc.c
++++ b/drivers/serial/stm-asc.c
 @@ -576,7 +576,7 @@
  	struct platform_device *pdev = to_platform_device(port->dev);
  	int size = pdev->resource[0].end - pdev->resource[0].start + 1;
@@ -383,8 +383,8 @@
  		/* Can't use dev_name() here as we can be called early */
  		ascport->pad_state = stm_pad_claim(ascport->pad_config,
  				"stasc");
---- linux-sh4/arch/sh/boards/mach-mb442/mach.c
-+++ b/mach.c
+--- a/arch/sh/boards/mach-mb442/mach.c
++++ b/arch/sh/boards/mach-mb442/mach.c
 @@ -43,7 +43,7 @@
  	/* Set the ILC to route external interrupts to the the INTC */
  	/* Outputs 0-3 are the interrupt pins, 4-7 are routed to the INTC */
@@ -394,8 +394,8 @@
  	ilc_route_external(ILC_EXT_IRQ1, 5, 0);		/* ATA */
  	ilc_route_external(ILC_EXT_IRQ2, 6, 0);		/* Unused */
  	ilc_route_external(ILC_EXT_MDINT, 7, 0);	/* STe100 PHY */
---- linux-sh4_org/arch/sh/include/asm/setup.h
-+++ linux-sh4/arch/sh/include/asm/setup.h
+--- a/arch/sh/include/asm/setup.h
++++ b/arch/sh/include/asm/setup.h
 @@ -15,12 +15,48 @@
  #define LOADER_TYPE (*(unsigned long *) (PARAM+0x00c))
  #define INITRD_START (*(unsigned long *) (PARAM+0x010))
@@ -409,7 +409,7 @@
  
 +typedef struct bd_info
 +{
-+	int bi_baudrate;        /* serial console baudrate */
++	int bi_baudrate;        	/* serial console baudrate */
 +	unsigned long bi_ip_addr;       /* IP Address */
 +	unsigned char bi_enetaddr[6];   /* Ethernet adress */
 +	unsigned long bi_arch_number;   /* unique id for this board */
@@ -445,8 +445,8 @@
  #endif /* __KERNEL__ */
  
  #endif /* _SH_SETUP_H */
---- linux-sh4_org/arch/sh/kernel/setup.c
-+++ linux-sh4/arch/sh/kernel/setup.c
+--- a/arch/sh/kernel/setup.c
++++ b/arch/sh/kernel/setup.c
 @@ -97,6 +97,9 @@
  unsigned long memory_end = 0;
  EXPORT_SYMBOL(memory_end);
@@ -463,7 +463,7 @@
  
 +	{
 +		char org_command_line[] = "console=ttyAS1,115200 root=/dev/mtdblock3";
-+		char tdt_command_line[] = "console=ttyAS1,115200 root=/dev/mtdblock4 rw rootfstype=jffs2 init=/bin/devinit coprocessor_mem=4m@0x40000000,4m@0x40400000 printk=1 stmmaceth=ethaddr:";
++		char tdt_command_line[] = "console=ttyAS1,115200 root=/dev/mtdblock4 rw rootfstype=jffs2 mem=128m init=/bin/devinit coprocessor_mem=4m@0x10000000,4m@0x10400000 rootdelay=0 printk=1 stmmaceth=ethaddr:";
 +		char mac[] = "00:00:00:00:00:00";
 +		int command_line_len = strlen(command_line);
 +		int org_command_line_len = strlen(org_command_line);
@@ -502,8 +502,8 @@
  	/*
  	 * Find the highest page frame number we have available
  	 */
---- linux-sh4_org/drivers/net/stmmac/stmmac_main.c
-+++ linux-sh4/drivers/net/stmmac/stmmac_main.c
+--- a/drivers/net/stmmac/stmmac_main.c
++++ b/drivers/net/stmmac/stmmac_main.c
 @@ -44,6 +44,7 @@
  #include <linux/debugfs.h>
  #include <linux/seq_file.h>
