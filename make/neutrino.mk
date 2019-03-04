@@ -354,7 +354,6 @@ $(SOURCE_DIR)/$(NEUTRINO_MP)/src/gui/version.h:
 
 $(D)/neutrino-mp-plugins.do_compile \
 $(D)/neutrino-mp.do_compile: $(SOURCE_DIR)/$(NEUTRINO_MP)/config.status $(SOURCE_DIR)/$(NEUTRINO_MP)/src/gui/version.h
-
 	PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) \
 	$(MAKE) -C $(N_OBJDIR) all DESTDIR=$(TARGET_DIR)
 	@touch $@
@@ -363,7 +362,8 @@ $(D)/neutrino-mp: $(D)/neutrino-mp.do_prepare $(D)/neutrino-mp.do_compile
 	PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) \
 	$(MAKE) -C $(N_OBJDIR) install DESTDIR=$(TARGET_DIR)
 	$(SILENT)make $(TARGET_DIR)/.version
-	$(SILENT)touch $(D)/$(notdir $@)
+	$(SILENT)rm -f $(TARGET_DIR)/var/etc/.version
+#	$(SILENT)touch $(D)/$(notdir $@)
 	$(TOUCH)
 #	$(SILENT)make neutrino-release
 #	$(TUXBOX_CUSTOMIZE)
@@ -377,7 +377,7 @@ $(D)/neutrino-mp: $(D)/neutrino-mp.do_prepare $(D)/neutrino-mp.do_compile
 neutrino-mp-clean: neutrino-cdkroot-clean
 	$(SILENT)rm -f $(D)/neutrino-mp
 	$(SILENT)rm -f $(D)/neutrino-mp.config.status
-	$(SILENT)rm -f $(SOURCE_DIR)/$(NEUTRINO_MP)/src/gui/version.h
+#	$(SILENT)rm -f $(SOURCE_DIR)/$(NEUTRINO_MP)/src/gui/version.h
 	cd $(N_OBJDIR); \
 		$(MAKE) -C $(N_OBJDIR) distclean
 
@@ -386,8 +386,6 @@ neutrino-mp-distclean: neutrino-cdkroot-clean
 	$(SILENT)rm -f $(D)/neutrino-mp*
 
 $(D)/neutrino-mp-plugins: $(D)/neutrino-mp-plugins.do_prepare $(D)/neutrino-mp-plugins.do_compile
-	PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) \
-	$(MAKE) -C $(N_OBJDIR) install DESTDIR=$(TARGET_DIR)
 	$(SILENT)rm -f $(TARGET_DIR)/var/etc/.version
 	$(MAKE) $(TARGET_DIR)/.version
 	make $(NEUTRINO_PLUGINS)
@@ -405,7 +403,7 @@ $(D)/neutrino-mp-plugins: $(D)/neutrino-mp-plugins.do_prepare $(D)/neutrino-mp-p
 neutrino-mp-plugins-clean: neutrino-cdkroot-clean
 	$(SILENT)rm -f $(D)/neutrino-mp-plugins
 #	$(SILENT)rm -f $(D)/neutrino-mp-plugins.config.status
-	$(SILENT)rm -f $(SOURCE_DIR)/$(NEUTRINO_MP)/src/gui/version.h
+#	$(SILENT)rm -f $(SOURCE_DIR)/$(NEUTRINO_MP)/src/gui/version.h
 	$(SILENT)make neutrino-mp-plugin-clean
 	cd $(N_OBJDIR); \
 		$(MAKE) -C $(N_OBJDIR) distclean

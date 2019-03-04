@@ -700,7 +700,7 @@ endif
 ifeq ($(NEUTRINO_VARIANT), $(filter $(NEUTRINO_VARIANT), mp-max, mp-max + plugins))
 	$(SILENT)cp -aR $(SKEL_ROOT)/root_neutrino/var_max/* $(RELEASE_DIR)/var/
 endif
-ifneq ($(BOXTYPE), $(filter $(BOXTYPE), atevio7500 spark7162 cuberevo_mini2 cuberevo_3000hd))
+ifneq ($(BOXTYPE), $(filter $(BOXTYPE), atevio7500 spark7162 cuberevo cuberevo_mini cuberevo_mini2 cuberevo_3000hd))
 	$(SILENT)rm -f $(RELEASE_DIR)/var/tuxbox/config/cables.xml
 	$(SILENT)rm -f $(RELEASE_DIR)/var/tuxbox/config/terrestrial.xml
 endif
