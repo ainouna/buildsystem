@@ -131,13 +131,15 @@ case $1 in
 		echo "   28)  Spark7162       30)  AM530"
 		echo
 		echo "  Various sh4-based receivers"
-		echo "   31)  Edision Argus VIP1 v1 [ single tuner + 2 CI + 2 USB ]"
-		echo "   32)  SpiderBox HL-101"
-		echo "   33)  B4Team ADB 5800S"
-		echo "   34)  Vitamin HD5000"
-		echo "   35)  SagemCom 88 series"
-		echo "   36)  Ferguson Ariva @Link 200"
-#		echo "   37)  Pace HDS-7241 (kernel P0217 only)"
+		echo "   31)  Edision Argus VIP1 V1 [ 1 tuner + 2 CI + 2 USB ]"
+		echo "   32)  Edision Argus VIP1 V2 [ 1 fixedtuner + 2 CI + 1 USB + plugin tuner (DVB-S2/T/C) ]"
+		echo "   33)  Edision Argus VIP2 V1 [ 2 plugin tuners ]"
+		echo "   34)  SpiderBox HL-101"
+		echo "   35)  B4Team ADB 5800S"
+		echo "   36)  Vitamin HD5000"
+		echo "   37)  SagemCom 88 series"
+		echo "   38)  Ferguson Ariva @Link 200"
+		echo "   39)  Pace HDS-7241 (kernel P0217 only)"
 		echo
 		read -p "Select target (1-36)? ";;
 esac
@@ -174,12 +176,14 @@ case "$REPLY" in
 	29) BOXTYPE="atemio520";;
 	30) BOXTYPE="atemio530";;
 	31) BOXTYPE="hl101";;
-	32) BOXTYPE="hl101";;
-	33) BOXTYPE="adb_box";;
-	34) BOXTYPE="vitamin_hd5000";;
-	35) BOXTYPE="sagemcom88";;
-	36) BOXTYPE="arivalink200";;
-	37) BOXTYPE="pace7241";;
+	32) BOXTYPE="vip1_v2";;
+	33) BOXTYPE="vip2_v1";;
+	34) BOXTYPE="hl101";;
+	35) BOXTYPE="adb_box";;
+	36) BOXTYPE="vitamin_hd5000";;
+	37) BOXTYPE="sagemcom88";;
+	38) BOXTYPE="arivalink200";;
+	39) BOXTYPE="pace7241";;
 	 *) BOXTYPE="atevio7500";;
 esac
 echo "BOXTYPE=$BOXTYPE" >> config
