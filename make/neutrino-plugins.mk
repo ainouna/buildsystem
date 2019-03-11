@@ -55,29 +55,30 @@ NEUTRINO_PLUGINS  = $(D)/neutrino-mp-plugin
 NEUTRINO_PLUGINS += $(D)/neutrino-mp-plugin-scripts-lua
 NEUTRINO_PLUGINS += $(D)/neutrino-mp-plugin-mediathek
 NEUTRINO_PLUGINS += $(D)/neutrino-mp-plugin-xupnpd
+NEUTRINO_PLUGINS += $(LOCAL_NEUTRINO_PLUGINS)
 
-NP_OBJDIR = $(BUILD_TMP)/neutrino-mp-plugins
+NP_OBJDIR = $(SOURCE_DIR)/neutrino-mp-plugins
 
 EXTRA_CPPFLAGS_MP_PLUGINS = -DMARTII
 
 $(D)/neutrino-mp-plugin.do_prepare:
-	$(SILENT)rm -rf $(SOURCE_DIR)/neutrino-mp-plugins
-	$(SILENT)rm -rf $(SOURCE_DIR)/neutrino-mp-plugins.org
+	$(START_BUILD)
+	$(SILENT)rm -rf $(NP_OBJDIR)
+	$(SILENT)rm -rf $(NP_OBJDIR).org
 	$(SET) -e; if [ -d $(ARCHIVE)/neutrino-mp-plugins.git ]; \
-		then cd $(ARCHIVE)/neutrino-mp-plugins.git; git pull -q; \
-		else cd $(ARCHIVE); git clone -q https://github.com/Duckbox-Developers/neutrino-mp-plugins.git neutrino-mp-plugins.git; \
+		then cd $(ARCHIVE)/neutrino-mp-plugins.git; git pull $(SILENT_CONFIGURE); \
+		else cd $(ARCHIVE); git clone $(SILENT_CONFIGURE) https://github.com/Duckbox-Developers/neutrino-mp-plugins.git neutrino-mp-plugins.git; \
 		fi
-	$(SILENT)cp -ra $(ARCHIVE)/neutrino-mp-plugins.git $(SOURCE_DIR)/neutrino-mp-plugins
-	cp -ra $(SOURCE_DIR)/neutrino-mp-plugins $(SOURCE_DIR)/neutrino-mp-plugins.org
+	$(SILENT)cp -ra $(ARCHIVE)/neutrino-mp-plugins.git $(NP_OBJDIR)
+	$(SILENT)cp -ra $(NP_OBJDIR) $(NP_OBJDIR).org
 	@touch $@
 
 $(D)/neutrino-mp-plugin.config.status: $(D)/bootstrap
-	$(SILENT)rm -rf $(NP_OBJDIR)
-	$(SILENT)test -d $(NP_OBJDIR) || mkdir -p $(NP_OBJDIR)
 	$(SILENT)cd $(NP_OBJDIR); \
-		$(SOURCE_DIR)/neutrino-mp-plugins/autogen.sh $(SILENT_OPT) && automake --add-missing $(SILENT_OPT); \
+		if [ ! -d m4 ]; then mkdir -p m4; fi;\
+		./autogen.sh $(SILENT_OPT) && automake --add-missing $(SILENT_OPT); \
 		$(BUILDENV) \
-		$(SOURCE_DIR)/neutrino-mp-plugins/configure $(SILENT_OPT) \
+		./configure $(SILENT_CONFIGURE) \
 			--host=$(TARGET) \
 			--build=$(BUILD) \
 			--prefix= \
@@ -101,7 +102,6 @@ $(D)/neutrino-mp-plugin.do_compile: $(D)/neutrino-mp-plugin.config.status
 	@touch $@
 
 $(D)/neutrino-mp-plugin: $(D)/neutrino-mp-plugin.do_prepare $(D)/neutrino-mp-plugin.do_compile
-	$(START_BUILD)
 	$(MAKE) -C $(NP_OBJDIR) install DESTDIR=$(TARGET_DIR)
 	$(TOUCH)
 
@@ -126,8 +126,8 @@ $(D)/neutrino-mp-plugin-xupnpd: $(D)/bootstrap $(D)/lua $(D)/openssl $(D)/neutri
 	$(START_BUILD)
 	$(REMOVE)/xupnpd
 	$(SET) -e; if [ -d $(ARCHIVE)/xupnpd.git ]; \
-		then cd $(ARCHIVE)/xupnpd.git; git pull; \
-		else cd $(ARCHIVE); git clone git://github.com/clark15b/xupnpd.git xupnpd.git; \
+		then cd $(ARCHIVE)/xupnpd.git; git pull $(SILENT_CONFIGURE); \
+		else cd $(ARCHIVE); git clone $(SILENT_CONFIGURE) git://github.com/clark15b/xupnpd.git xupnpd.git; \
 		fi
 	$(SILENT)cp -ra $(ARCHIVE)/xupnpd.git $(BUILD_TMP)/xupnpd
 	$(CH_DIR)/xupnpd; \
@@ -153,8 +153,8 @@ $(D)/neutrino-mp-plugin-scripts-lua: $(D)/bootstrap
 	$(START_BUILD)
 	$(REMOVE)/neutrino-mp-plugin-scripts-lua
 	$(SET) -e; if [ -d $(ARCHIVE)/plugin-scripts-lua.git ]; \
-		then cd $(ARCHIVE)/plugin-scripts-lua.git; git pull; \
-		else cd $(ARCHIVE); git clone -q https://github.com/tuxbox-neutrino/plugin-scripts-lua.git plugin-scripts-lua.git; \
+		then cd $(ARCHIVE)/plugin-scripts-lua.git; git pull $(SILENT_CONFIGURE); \
+		else cd $(ARCHIVE); git clone $(SILENT_CONFIGURE) https://github.com/tuxbox-neutrino/plugin-scripts-lua.git plugin-scripts-lua.git; \
 		fi
 	$(SILENT)cp -ra $(ARCHIVE)/plugin-scripts-lua.git/plugins $(BUILD_TMP)/neutrino-mp-plugin-scripts-lua
 	$(CH_DIR)/neutrino-mp-plugin-scripts-lua; \
@@ -175,8 +175,8 @@ $(D)/neutrino-mp-plugin-mediathek:
 	$(START_BUILD)
 	$(REMOVE)/plugins-mediathek
 	$(SET) -e; if [ -d $(ARCHIVE)/plugins-mediathek.git ]; \
-		then cd $(ARCHIVE)/plugins-mediathek.git; git pull; \
-		else cd $(ARCHIVE); git clone https://github.com/neutrino-mediathek/mediathek.git plugins-mediathek.git; \
+		then cd $(ARCHIVE)/plugins-mediathek.git; git pull $(SILENT_CONFIGURE); \
+		else cd $(ARCHIVE); git clone $(SILENT_CONFIGURE) https://github.com/neutrino-mediathek/mediathek.git plugins-mediathek.git; \
 		fi
 	$(SILENT)cp -ra $(ARCHIVE)/plugins-mediathek.git $(BUILD_TMP)/plugins-mediathek
 	$(SILENT)install -d $(TARGET_DIR)/var/tuxbox/plugins
@@ -189,22 +189,53 @@ $(D)/neutrino-mp-plugin-mediathek:
 	$(TOUCH)
 
 #
+# neutrino-iptvplayer
+#
+$(D)/neutrino-mp-plugin-iptvplayer-nightly \
+$(D)/neutrino-mp-plugin-iptvplayer: $(D)/librtmp $(D)/python_twisted_small
+	$(START_BUILD)
+	$(REMOVE)/iptvplayer
+	set -e; if [ -d $(ARCHIVE)/iptvplayer.git ]; \
+		then cd $(ARCHIVE)/iptvplayer.git; git pull; \
+		else cd $(ARCHIVE); git clone https://github.com/TangoCash/crossplatform_iptvplayer.git iptvplayer.git; \
+		fi
+	cp -ra $(ARCHIVE)/iptvplayer.git $(BUILD_TMP)/iptvplayer
+	@if [ "$@" = "$(D)/neutrino-mp-plugin-iptvplayer-nightly" ]; then \
+		$(BUILD_TMP)/iptvplayer/SyncWithGitLab.sh $(BUILD_TMP)/iptvplayer; \
+	fi
+	install -d $(TARGET_DIR)/var/tuxbox/plugins
+	install -d $(TARGET_DIR)/usr/share/E2emulator
+	cp -R $(BUILD_TMP)/iptvplayer/E2emulator/* $(TARGET_DIR)/usr/share/E2emulator/
+	install -d $(TARGET_DIR)/usr/share/E2emulator/Plugins/Extensions/IPTVPlayer
+	cp -R $(BUILD_TMP)/iptvplayer/IPTVplayer/* $(TARGET_DIR)/usr/share/E2emulator//Plugins/Extensions/IPTVPlayer/
+	cp -R $(BUILD_TMP)/iptvplayer/IPTVdaemon/* $(TARGET_DIR)/usr/share/E2emulator//Plugins/Extensions/IPTVPlayer/
+	chmod 755 $(TARGET_DIR)/usr/share/E2emulator/Plugins/Extensions/IPTVPlayer/cmdlineIPTV.*
+	chmod 755 $(TARGET_DIR)/usr/share/E2emulator/Plugins/Extensions/IPTVPlayer/IPTVdaemon.*
+	PYTHONPATH=$(TARGET_DIR)/$(PYTHON_DIR) \
+	$(HOST_DIR)/bin/python$(PYTHON_VER_MAJOR) -Wi -t -O $(TARGET_DIR)/$(PYTHON_DIR)/compileall.py \
+		-d /usr/share/E2emulator -f -x badsyntax $(TARGET_DIR)/usr/share/E2emulator
+	cp -R $(BUILD_TMP)/iptvplayer/addon4neutrino/neutrinoIPTV/* $(TARGET_DIR)/var/tuxbox/plugins/
+	$(REMOVE)/iptvplayer
+	$(TOUCH)
+
+#
 # neutrino-hd2 plugins
 #
 NEUTRINO_HD2_PLUGINS_PATCHES =
 
-$(D)/neutrino-hd2-plugins.do_prepare:
+$(D)/neutrino-hd2-plugin.do_prepare:
+	$(START_BUILD)
 	$(SILENT)rm -rf $(SOURCE_DIR)/neutrino-hd2-plugins
 	$(SILENT)ln -s $(SOURCE_DIR)/neutrino-hd2.git/plugins $(SOURCE_DIR)/neutrino-hd2-plugins
 	$(SET) -e; cd $(SOURCE_DIR)/neutrino-hd2-plugins; \
 		$(call apply_patches, $(NEUTRINO_HD2_PLUGINS_PATCHES))
 	@touch $@
 
-$(D)/neutrino-hd2-plugins.config.status: $(D)/bootstrap neutrino-hd2
+$(D)/neutrino-hd2-plugin.config.status: $(D)/bootstrap neutrino-hd2
 	$(SILENT)cd $(SOURCE_DIR)/neutrino-hd2-plugins; \
 		./autogen.sh; \
 		$(BUILDENV) \
-		./configure $(SILENT_OPT) \
+		./configure $(SILENT_CONFIGURE) \
 			--host=$(TARGET) \
 			--build=$(BUILD) \
 			--prefix= \
@@ -212,7 +243,6 @@ $(D)/neutrino-hd2-plugins.config.status: $(D)/bootstrap neutrino-hd2
 			--with-boxtype=$(BOXTYPE) \
 			--with-plugindir=/var/tuxbox/plugins \
 			--with-datadir=/usr/share/tuxbox \
-			--with-fontdir=/usr/share/fonts \
 			--enable-silent-rules \
 			PKG_CONFIG=$(PKG_CONFIG) \
 			PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) \
@@ -220,24 +250,23 @@ $(D)/neutrino-hd2-plugins.config.status: $(D)/bootstrap neutrino-hd2
 			LDFLAGS="$(TARGET_LDFLAGS)"
 	@touch $@
 
-$(D)/neutrino-hd2-plugins.do_compile: $(D)/neutrino-hd2-plugins.config.status
+$(D)/neutrino-hd2-plugin.do_compile: $(D)/neutrino-hd2-plugin.config.status
 	$(SILENT)cd $(SOURCE_DIR)/neutrino-hd2-plugins
-	$(MAKE) top_srcdir=$(SOURCE_DIR)/neutrino-hd2
+	$(MAKE) -C $(SOURCE_DIR)/neutrino-hd2-plugins top_srcdir=$(SOURCE_DIR)/neutrino-hd2
 	@touch $@
 
-$(D)/neutrino-hd2-plugins.build: neutrino-hd2-plugins.do_prepare neutrino-hd2-plugins.do_compile
-	$(START_BUILD)
+$(D)/neutrino-hd2-plugin: neutrino-hd2-plugin.do_prepare neutrino-hd2-plugin.do_compile
 	$(MAKE) -C $(SOURCE_DIR)/neutrino-hd2-plugins install DESTDIR=$(TARGET_DIR) top_srcdir=$(SOURCE_DIR)/neutrino-hd2
 	$(TOUCH)
 
 neutrino-hd2-plugins-clean:
 	$(SILENT)cd $(SOURCE_DIR)/neutrino-hd2-plugins
 	$(MAKE) clean
-	$(SILENT)rm -f $(D)/neutrino-hd2-plugins.build
-	$(SILENT)rm -f $(D)/neutrino-hd2-plugins.config.status
+	$(SILENT)rm -f $(D)/neutrino-hd2-plugin
+	$(SILENT)rm -f $(D)/neutrino-hd2-plugin.config.status
 
 neutrino-hd2-plugins-distclean:
-	rm -f $(D)/neutrino-hd2-plugins.build
-	rm -f $(D)/neutrino-hd2-plugins.config.status
-	rm -f $(D)/neutrino-hd2-plugins.do_prepare
-	rm -f $(D)/neutrino-hd2-plugins.do_compile
+	rm -f $(D)/neutrino-hd2-plugin
+	rm -f $(D)/neutrino-hd2-plugin.config.status
+	rm -f $(D)/neutrino-hd2-plugin.do_prepare
+	rm -f $(D)/neutrino-hd2-plugin.do_compile

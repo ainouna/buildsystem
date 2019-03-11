@@ -210,9 +210,9 @@
  
  elif test "$BOXMODEL" = "vusolo2"; then
  	AC_DEFINE(BOXMODEL_VUSOLO2, 1, [vuplus solo2])
-@@ -1113,4 +1171,3 @@
- fi
+@@ -2146,4 +2204,3 @@
  ])
+ 
  
 -
 --- nhd2-exp.org/lib/libdvbsub/dvbsubtitle.cpp
@@ -245,7 +245,7 @@
  #endif
 --- nhd2-exp.org/src/neutrino.h
 +++ nhd2-exp/src/neutrino.h
-@@ -208,13 +208,13 @@
+@@ -213,13 +213,13 @@
  		void lockPlayBack(void);
  		void unlockPlayBack(void);
  		
@@ -1069,7 +1069,7 @@
  
  //konfetti: let us share the device with evremote and fp_control
  //it does currently not support more than one user (see e.g. micom)
-@@ -69,9 +82,11 @@
+@@ -69,9 +83,11 @@
  		if(fd < 0)
  		{
  			printf("failed to open vfd\n");
@@ -1081,7 +1081,7 @@
  		}
  		else
  			blocked = true;
-@@ -88,7 +103,7 @@
+@@ -88,7 +104,7 @@
  	
  	fd = -1;
  }
@@ -1090,7 +1090,7 @@
  
  // default: has_lcd:1, is4digits:0, has_led:0
  // constructor
-@@ -208,7 +223,11 @@
+@@ -208,7 +224,11 @@
  	}
  	else
  		setPower(1);
@@ -1103,7 +1103,7 @@
  }
  
  void * CVFD::TimeThread(void *)
-@@ -342,14 +361,23 @@
+@@ -342,14 +362,23 @@
  			{
  				hour = t->tm_hour;
  				minute = t->tm_min;
@@ -1130,7 +1130,7 @@
  	}
  
  	if (CNeutrinoApp::getInstance()->recordingstatus) 
-@@ -408,25 +436,86 @@
+@@ -408,25 +437,86 @@
  	switch(m) 
  	{
  		case AUDIO_MODE_PLAY:
@@ -1226,7 +1226,7 @@
  	}
  
  	wake_up();
-@@ -450,24 +539,28 @@
+@@ -450,24 +540,28 @@
  
  	switch (m) 
  	{
@@ -1259,7 +1259,7 @@
  		case MODE_AUDIO:
  		{
  #if defined(PLATFORM_SPARK7162)
-@@ -477,7 +570,7 @@
+@@ -477,7 +571,7 @@
  			ShowIcon(VFD_ICON_TV, false);			
  			showAudioPlayMode(AUDIO_MODE_STOP);			
  			showclock = true;
@@ -1268,7 +1268,7 @@
  			ShowIcon(VFD_ICON_LOCK, false);
  #endif			
  			ShowIcon(VFD_ICON_HD, false);
-@@ -485,61 +578,67 @@
+@@ -485,21 +579,23 @@
  			//showTime();      /* "showclock = true;" implies that "showTime();" does a "displayUpdate();" */
  			break;
  		}
@@ -1295,9 +1295,7 @@
  			//Clear();
  			/* clear all symbols */
  			ClearIcons();
--#if defined(PLATFORM_SPARK7162)
-+#if defined(PLATFORM_SPARK7162) || defined(BOXMODEL_OCTAGON1008) || defined(BOXMODEL_FORTIS_HDBOX)
- 			ShowIcon(VFD_ICON_CLOCK, timer_icon);	
+@@ -508,8 +604,9 @@
  #endif			
  			showclock = false;
  			break;
@@ -1307,11 +1305,8 @@
 +		{
  			ShowIcon(VFD_ICON_TV, false);
  			ClearIcons();
--#if defined(PLATFORM_SPARK7162)
-+#if defined(PLATFORM_SPARK7162) || defined(BOXMODEL_FORTIS_HDBOX) || defined(BOXMODEL_ATEVIO7500)
- 			ShowIcon(VFD_ICON_STANDBY, true);	
- #endif			
- 			showclock = true;
+ #if defined(PLATFORM_SPARK7162)
+@@ -519,25 +616,29 @@
  			showTime(true);      	/* "showclock = true;" implies that "showTime();" does a "displayUpdate();" */
  						/* "showTime()" clears the whole lcd in MODE_STANDBY */
  			break;
@@ -1333,22 +1328,18 @@
  			showclock = false;
  			break;
 -			
--		case MODE_IPTV: 
 +		}
-+		case MODE_IPTV:
+ 		case MODE_WEBTV: 
 +		{
  			showServicename(servicename);
  			ShowIcon(VFD_ICON_TV, false);			
  			showclock = false;
  			break;
--	}
--
 +		}
-+	}
- 	wake_up();
- }
+ 	}
  
-@@ -587,13 +686,29 @@
+ 	wake_up();
+@@ -587,13 +688,29 @@
  
  #if defined (__sh__)
  	struct vfd_ioctl_data data;
@@ -1383,7 +1374,7 @@
  	closeDevice();
  #endif
  }
-@@ -656,22 +771,25 @@
+@@ -656,22 +773,25 @@
  #if defined (ENABLE_4DIGITS)
  	ShowText("     "); // 5 empty digits
  #elif defined (__sh__)
@@ -1419,7 +1410,7 @@
  #elif (PLATFORM_COOLSTREAM)
  	int ret = ioctl(fd, IOC_VFD_CLEAR_ALL, 0);
  	if(ret < 0)
-@@ -683,20 +801,42 @@
+@@ -683,20 +803,42 @@
  #endif
  }
  
@@ -1465,7 +1456,7 @@
  	int i;
  	struct vfd_ioctl_data data;
  	
-@@ -712,14 +852,14 @@
+@@ -712,14 +854,14 @@
  	}
  	
  	closeDevice();
@@ -1482,7 +1473,7 @@
  	int percent, digits, i, j;
  	uint64_t t, u;
  	
-@@ -752,13 +892,17 @@
+@@ -752,13 +894,17 @@
  
  void CVFD::ShowIcon(vfd_icon icon, bool show)
  {
@@ -1502,7 +1493,7 @@
  	switch (icon)
  	{
  		case VFD_ICON_USB:
-@@ -767,31 +910,51 @@
+@@ -767,31 +913,51 @@
  		case VFD_ICON_CLOCK:
  			timer_icon = show;
  			break;
@@ -1560,7 +1551,7 @@
  	struct vfd_ioctl_data data;
  
  	data.data[0] = (icon - 1) & 0x1F;
-@@ -799,7 +962,7 @@
+@@ -799,7 +965,7 @@
  	
  	if( ioctl(fd, VFDICONDISPLAYONOFF, &data) < 0)
  		perror("VFDICONDISPLAYONOFF");
@@ -1569,7 +1560,7 @@
  	closeDevice();
  #elif defined (PLATFORM_COOLSTREAM)
  	int ret = ioctl(fd, show ? IOC_VFD_SET_ICON : IOC_VFD_CLEAR_ICON, icon);
-@@ -816,6 +979,14 @@
+@@ -816,6 +982,14 @@
  	dprintf(DEBUG_INFO, "CVFD::ShowText: [%s]\n", str);
  
  	int len = strlen(str);
@@ -1584,7 +1575,7 @@
  	
  	//FIXME: some vfd treiber can not handle NULL string len
  	if(len == 0)
-@@ -839,19 +1010,29 @@
+@@ -839,19 +1013,29 @@
  	 
  #if defined (__sh__)	 
  	openDevice();
@@ -1626,7 +1617,7 @@
  }
  
  void CVFD::setFan(bool enable)
-@@ -949,14 +1130,14 @@
+@@ -949,14 +1133,14 @@
  	timebuf[2]=now->tm_hour;
  	timebuf[3]=now->tm_mday;
  	timebuf[4]=now->tm_mon+1;
@@ -1645,7 +1636,7 @@
  #endif
 --- nhd2-exp.org/src/nhttpd/tuxboxapi/neutrinoyparser.cpp
 +++ nhd2-exp/src/nhttpd/tuxboxapi/neutrinoyparser.cpp
-@@ -680,6 +680,22 @@
+@@ -679,6 +679,22 @@
  	return "atevio7500";
  #elif defined (BOXMODEL_ATEVIO7600)
  	return "atevio7600";
@@ -2027,7 +2018,7 @@
  keybinding.key_audioplayer Audioplayer
  keybinding.key_pictureviewer PictureViewer
  keybinding.key_timerlist Timerlist
-@@ -1683,7 +1683,7 @@
+@@ -1684,7 +1684,7 @@
  glcd.enable GraphLCD enabled
  glcd.font Font
  glcd.head GraphLCD

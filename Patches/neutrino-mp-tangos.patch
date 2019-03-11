@@ -46,31 +46,31 @@
 # 
 # NEUTRINO_CPP  SNeutrinoSettings	g_settings;
 # NEUTRINO_CPP  SglobalInfo	g_info;
---- neutrino-mp-tangos.org/lib/hardware/ca.h
-+++ neutrino-mp-tangos/lib/hardware/ca.h
-@@ -1,7 +1,7 @@
- #if HAVE_COOL_HARDWARE
- #include <ca_cs.h>
- #elif USE_STB_HAL
--#include <ca_hal.h>
-+#include <ca_cs.h>
- #else
- #error neither HAVE_COOL_HARDWARE nor USE_STB_HAL defined.
- #error do you need to include config.h?
---- neutrino-mp-tangos.org/lib/hardware/video.h
-+++ neutrino-mp-tangos/lib/hardware/video.h
-@@ -2,7 +2,7 @@
- #include <cs_api.h>
- #include <video_cs.h>
- #elif USE_STB_HAL
--#include <init.h>
-+#include <init_td.h>
- #include <video_hal.h>
- #else
- #error neither HAVE_COOL_HARDWARE nor USE_STB_HAL defined.
+#--- neutrino-mp-tangos.org/lib/hardware/ca.h
+#+++ neutrino-mp-tangos/lib/hardware/ca.h
+#@@ -1,7 +1,7 @@
+# #if HAVE_COOL_HARDWARE
+# #include <ca_cs.h>
+# #elif USE_STB_HAL
+#-#include <ca_hal.h>
+#+#include <ca_cs.h>
+# #else
+# #error neither HAVE_COOL_HARDWARE nor USE_STB_HAL defined.
+# #error do you need to include config.h?
+#--- neutrino-mp-tangos.org/lib/hardware/video.h
+#+++ neutrino-mp-tangos/lib/hardware/video.h
+#@@ -2,7 +2,7 @@
+# #include <cs_api.h>
+# #include <video_cs.h>
+# #elif USE_STB_HAL
+#-#include <init.h>
+#+#include <init_td.h>
+# #include <video_hal.h>
+# #else
+# #error neither HAVE_COOL_HARDWARE nor USE_STB_HAL defined.
 --- neutrino-mp-tangos.org/src/neutrino.cpp
 +++ neutrino-mp-tangos/src/neutrino.cpp
-@@ -4711,6 +4711,9 @@
+@@ -4724,6 +4724,9 @@
  
  		CVFD::getInstance()->Clear();
  		CVFD::getInstance()->setMode(CVFD::MODE_STANDBY);
@@ -80,7 +80,7 @@
  		CVFD::getInstance()->setBacklight(g_settings.backlight_standby);
  
  		InfoClock->enableInfoClock(false);
-@@ -4747,7 +4750,11 @@
+@@ -4760,7 +4763,11 @@
  		// Active standby off
  		powerManager->SetStandby(false, false);
  		CVFD::getInstance()->setMode(CVFD::MODE_TVRADIO);
@@ -1043,7 +1043,7 @@
  	}
  
  	if (p_movie_info) {
-@@ -2903,10 +2903,10 @@
+@@ -2905,10 +2905,10 @@
  		tuxtx_pause_subtitle(true);
  		frameBuffer->paintBackground();
  	}
@@ -1058,7 +1058,7 @@
  #endif
  }
  
-@@ -2944,9 +2944,9 @@
+@@ -2946,9 +2946,9 @@
  {
  #if HAVE_SH4_HARDWARE || HAVE_ARM_HARDWARE
  	printf("[CMoviePlayerGui] %s: %s\n", __FUNCTION__, show ? "Show" : "Not show");
@@ -1071,29 +1071,40 @@
  
  	if(!show)
  		return;
---- neutrino-mp-tangos/src/driver/pictureviewer/pictureviewer.cpp
-+++ neutrino-mp-tangos/src/driver/pictureviewer/pictureviewer.cpp
-@@ -566,8 +566,10 @@
+#--- neutrino-mp-tangos/src/driver/pictureviewer/pictureviewer.cpp
+#+++ neutrino-mp-tangos/src/driver/pictureviewer/pictureviewer.cpp
+#@@ -566,8 +566,10 @@
+# 
+# 		// add neccessary paths to v_path
+# 		v_path.clear();
+#+#ifdef ENABLE_LCD4LINUX
+# 		if (lcd4l_mode)
+# 			v_path.push_back(g_settings.lcd4l_logodir);
+#+#endif
+# 		v_path.push_back(g_settings.logo_hdd_dir);
+# 		if (g_settings.logo_hdd_dir != LOGODIR_VAR)
+# 			v_path.push_back(LOGODIR_VAR);
+#@@ -669,9 +671,11 @@
+# 
+# 		for (size_t f = 0; f < v_file.size(); f++)
+# 		{
+#+#ifdef ENABLE_LCD4LINUX
+# 			// process g_settings.lcd4l_logodir
+# 			if (lcd4l_mode)
+# 				v_path.push_back(g_settings.lcd4l_logodir + "/" + v_file[f] + fileType[i]);
+#+#endif
+# 			// process g_settings.logo_hdd_dir
+# 			v_path.push_back(g_settings.logo_hdd_dir + "/" + v_file[f] + fileType[i]);
+# 			// process LOGODIR_VAR
+--- neutrino-mp-tangos.org/lib/jsoncpp/jsoncpp.cpp
++++ neutrino-mp-tangos/lib/jsoncpp/jsoncpp.cpp
+@@ -101,6 +101,8 @@
+ #ifndef JSONCPP_NO_LOCALE_SUPPORT
+ #include <clocale>
+ #endif
++
++#include <stdio.h>
  
- 		// add neccessary paths to v_path
- 		v_path.clear();
-+#ifdef ENABLE_LCD4LINUX
- 		if (lcd4l_mode)
- 			v_path.push_back(g_settings.lcd4l_logodir);
-+#endif
- 		v_path.push_back(g_settings.logo_hdd_dir);
- 		if (g_settings.logo_hdd_dir != LOGODIR_VAR)
- 			v_path.push_back(LOGODIR_VAR);
-@@ -669,9 +671,11 @@
- 
- 		for (size_t f = 0; f < v_file.size(); f++)
- 		{
-+#ifdef ENABLE_LCD4LINUX
- 			// process g_settings.lcd4l_logodir
- 			if (lcd4l_mode)
- 				v_path.push_back(g_settings.lcd4l_logodir + "/" + v_file[f] + fileType[i]);
-+#endif
- 			// process g_settings.logo_hdd_dir
- 			v_path.push_back(g_settings.logo_hdd_dir + "/" + v_file[f] + fileType[i]);
- 			// process LOGODIR_VAR
+ /* This header provides common string manipulation support, such as UTF-8,
+  * portable conversion from/to string...
 

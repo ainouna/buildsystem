@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20190205.1
+# Version 20190211.1
 
 ##############################################
 
@@ -23,7 +23,7 @@ if [ "$1" == -h ] || [ "$1" == --help ]; then
 	echo "Parameter 2       : kernel (1-2)"
 	echo "Parameter 3       : optimization (1-5)"
 	echo "Parameter 4       : image (Enigma=1/2 Neutrino=3/4 Tvheadend=5 (1-5)"
-	echo "Parameter 5       : Neutrino variant (1-6) or Enigma2/Tvheadend diff (0-6)"
+	echo "Parameter 5       : Neutrino variant (1-6) or Enigma2/Tvheadend diff (0-5)"
 	echo "Parameter 6       : media Framework (Enigma2: 1-5, Neutrino, Tvheadend: ignored)"
 	echo "Parameter 7       : destination (1-2, 1=flash, 2=USB, Fortis HS711X, HS742X & HS781X, ignored otherwise)"
 	exit
@@ -308,15 +308,15 @@ case "$IMAGE" in
 		case "$FLAVOUR" in
 			neutrino-mp*)
 				if [ $PLUGINS_NEUTRINO == "No" ]; then
-					echo "make neutrino-mp" > $CURDIR/build
+					echo "make yaud-neutrino-mp" > $CURDIR/build
 				else
-					echo "make neutrino-mp-plugins" > $CURDIR/build
+					echo "make yaud-neutrino-mp-plugins" > $CURDIR/build
 				fi;;
 			neutrino-hd2*)
 				if [ $PLUGINS_NEUTRINO == "No" ]; then
-					echo "  make neutrino-hd2" > $CURDIR/build
+					echo "  make yaud-neutrino-hd2" > $CURDIR/build
 				else
-					echo "  make neutrino-hd2-plugins" > $CURDIR/build
+					echo "  make yaud-neutrino-hd2-plugins" > $CURDIR/build
 				fi;;
 		esac
 
