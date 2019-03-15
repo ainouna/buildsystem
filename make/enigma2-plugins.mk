@@ -1,7 +1,7 @@
 #
 # enigma2_hotplug_e2_helper
 #
-HOTPLUG_E2_PATCH = hotplug-e2-helper.patch
+HOTPLUG_E2_PATCH = build-enigma2/hotplug-e2-helper.patch
 
 $(D)/enigma2_hotplug_e2_helper: $(D)/bootstrap
 	$(START_BUILD)
@@ -24,7 +24,7 @@ $(D)/enigma2_hotplug_e2_helper: $(D)/bootstrap
 #
 # enigma2_tuxtxtlib
 #
-TUXTXTLIB_PATCH = tuxtxtlib-1.0-fix-dbox-headers.patch
+TUXTXTLIB_PATCH = build-enigma2/tuxtxtlib-1.0-fix-dbox-headers.patch
 
 $(D)/enigma2_tuxtxtlib: $(D)/bootstrap
 	$(START_BUILD)
@@ -139,7 +139,7 @@ $(D)/enigma2_openwebif: $(D)/bootstrap $(D)/python $(D)/python_cheetah $(D)/pyth
 #
 # enigma2-networkbrowser
 #
-ENIGMA2_NETWORBROWSER_PATCH = enigma2-networkbrowser-support-autofs.patch
+ENIGMA2_NETWORBROWSER_PATCH = build-enigma2/enigma2-networkbrowser-support-autofs.patch
 
 $(D)/enigma2_networkbrowser: $(D)/bootstrap $(D)/python
 	$(START_BUILD)
@@ -197,7 +197,7 @@ SERVICEMP3_CPPFLAGS += -I$(TARGET_DIR)/usr/include/python$(PYTHON_VER_MAJOR)
 SERVICEMP3_CPPFLAGS += -I$(SOURCE_DIR)/enigma2
 SERVICEMP3_CPPFLAGS += -I$(SOURCE_DIR)/enigma2/include
 SERVICEMP3_CPPFLAGS += -I$(KERNEL_DIR)/include
-SERVICEMP3_PATCH     = enigma2-servicemp3-$(SERVICEMP3_VER).patch
+SERVICEMP3_PATCH     = build-enigma2/enigma2-servicemp3-$(SERVICEMP3_VER).patch
 
 ifeq ($(MEDIAFW), eplayer3)
 SERVICEMP3_DEPS     += $(D)/tools-eplayer3
@@ -254,7 +254,7 @@ SERVICEMP3EPL_CPPFLAGS += -I$(TARGET_DIR)/usr/include/python$(PYTHON_VER_MAJOR)
 SERVICEMP3EPL_CPPFLAGS += -I$(SOURCE_DIR)/enigma2
 SERVICEMP3EPL_CPPFLAGS += -I$(SOURCE_DIR)/enigma2/include
 SERVICEMP3EPL_CPPFLAGS += -I$(KERNEL_DIR)/include
-SERVICEMP3EPL_PATCH     = enigma2-servicemp3epl-$(SERVICEMP3EPL_VER).patch
+SERVICEMP3EPL_PATCH     = build-enigma2/enigma2-servicemp3epl-$(SERVICEMP3EPL_VER).patch
 
 ifeq ($(MEDIAFW), eplayer3)
 SERVICEMP3EPL_DEPS     += $(D)/tools-libeplayer3_new
@@ -315,7 +315,7 @@ SERVICEAPP_CPPFLAGS += -I$(TARGET_DIR)/usr/include/python$(PYTHON_VER_MAJOR)
 SERVICEAPP_CPPFLAGS += -I$(SOURCE_DIR)/enigma2
 SERVICEAPP_CPPFLAGS += -I$(SOURCE_DIR)/enigma2/include
 SERVICEAPP_CPPFLAGS += -I$(KERNEL_DIR)/include
-SERVICEAPP_PATCH     = enigma2-serviceapp-$(SERVICEAPP_VER).patch
+SERVICEAPP_PATCH     = build-enigma2/enigma2-serviceapp-$(SERVICEAPP_VER).patch
 
 $(D)/enigma2_serviceapp: $(D)/bootstrap $(D)/enigma2 $(D)/enigma2_servicemp3epl $(D)/uchardet
 	$(START_BUILD)

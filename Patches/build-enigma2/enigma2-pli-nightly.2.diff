@@ -4426,7 +4426,7 @@
  SystemInfo["Blindscan_t2_available"] = fileCheck("/proc/stb/info/vumodel")
  SystemInfo["RcTypeChangable"] = not(HardwareInfo().get_device_model().startswith('et8500') or HardwareInfo().get_device_model().startswith('et7')) and pathExists('/proc/stb/ir/rc/type')
 -SystemInfo["HasFullHDSkinSupport"] = HardwareInfo().get_device_model() not in ("et4000", "et5000", "sh1", "hd500c", "hd1100", "xp1000", "lc")
-+SystemInfo["HasFullHDSkinSupport"] = HardwareInfo().get_device_model() in ("spark", "spark7162", "atevio7500")
++SystemInfo["HasFullHDSkinSupport"] = HardwareInfo().get_device_model() in ("spark", "spark7162", "atevio7500", "fortis_hdbox", "hs7110", "hs7420", "hs7810a", "hs7119", "hs7429", "hs7819")
  SystemInfo["HasForceLNBOn"] = fileCheck("/proc/stb/frontend/fbc/force_lnbon")
  SystemInfo["HasForceToneburst"] = fileCheck("/proc/stb/frontend/fbc/force_toneburst")
  SystemInfo["HasBypassEdidChecking"] = fileCheck("/proc/stb/hdmi/bypass_edid_checking")
@@ -4445,10 +4445,10 @@
 -SystemInfo["HasScart"] = HardwareInfo().get_device_model() in ("dm8000", "et4000", "et6500", "et8000", "et9000", "et9200", "et9500", "et10000", "formuler1", "hd1100", "hd1200", "hd1265", "hd2400", "vusolo", "vusolo2", "vuduo", "vuduo2", "vuultimo", "vuuno", "xp1000")
 -SystemInfo["HasSVideo"] = HardwareInfo().get_device_model() in ("dm8000")
 -SystemInfo["HasComposite"] = HardwareInfo().get_device_model() not in ("i55", "gbquad4k", "gbue4k", "hd1500", "osnino", "osninoplus", "purehd", "purehdse", "revo4k", "vusolo4k", "vuzero4k")
-+SystemInfo["HasYPbPr"] = HardwareInfo().get_device_model() in ("atevio7500", "fortis_hdbox", "octagon1008", "hs7420", "hs7429", "ufs912", "ufs913")
++SystemInfo["HasYPbPr"] = HardwareInfo().get_device_model() in ("atevio7500", "cuberevo", "cuberevo_mini", "cuberevo_mini2", "cuberevo_2000hd", "cuberevo_3000hd", "fortis_hdbox", "octagon1008", "hs7420", "hs7429", "ufs912", "ufs913")
 +SystemInfo["HasScart"] = True
-+SystemInfo["HasSVideo"] = False
-+SystemInfo["HasComposite"] = True
++SystemInfo["HasSVideo"] = HardwareInfo().get_device_model() in ("cuberevo")
++SystemInfo["HasComposite"] = HardwareInfo().get_device_model() not in ("cuberevo_mini_fta", "cuberevo_250hd")
  SystemInfo["HasAutoVolume"] = fileExists("/proc/stb/audio/avl_choices") and fileCheck("/proc/stb/audio/avl")
  SystemInfo["HasAutoVolumeLevel"] = fileExists("/proc/stb/audio/autovolumelevel_choices") and fileCheck("/proc/stb/audio/autovolumelevel")
  SystemInfo["Has3DSurround"] = fileExists("/proc/stb/audio/3d_surround_choices") and fileCheck("/proc/stb/audio/3d_surround")

@@ -170,23 +170,23 @@ $(D)/enigma2.do_prepare: | $(ENIGMA2_DEPS)
 		fi; \
 		cp -ra $(SOURCE_DIR)/enigma2 $(SOURCE_DIR)/enigma2.org; \
 		echo "Applying diff-$$DIFF patch..."; \
-		set -e; cd $(SOURCE_DIR)/enigma2 && patch -p1 $(SILENT_PATCH) < "$(PATCHES)/enigma2-pli-nightly.$$DIFF.diff"; \
+		set -e; cd $(SOURCE_DIR)/enigma2 && patch -p1 $(SILENT_PATCH) < "$(PATCHES)/build-enigma2/enigma2-pli-nightly.$$DIFF.diff"; \
 		if [ "$(MEDIAFW)" == "eplayer3" ]; then \
-			set -e; cd $(SOURCE_DIR)/enigma2 && patch -p1 $(SILENT_PATCH) < "$(PATCHES)/eplayer3.$$DIFF.patch"; \
+			set -e; cd $(SOURCE_DIR)/enigma2 && patch -p1 $(SILENT_PATCH) < "$(PATCHES)/build-enigma2/eplayer3.$$DIFF.patch"; \
 		fi; \
 		if [ "$(E2_DIFF)" == "0" ] || [ "$(E2_DIFF)" == "2" ]; then \
 			if [ "$(BOXTYPE)" == "fortis_hdbox" ] || [ "$(BOXTYPE)" == "octagon1008" ] || [ "$(BOXTYPE)" == "tf7700" ]; then \
-				patch -p1 $(SILENT_PATCH) < "$(PATCHES)/enigma2-no_hdmi_cec.$$DIFF.patch"; \
+				patch -p1 $(SILENT_PATCH) < "$(PATCHES)/build-enigma2/enigma2-no_hdmi_cec.$$DIFF.patch"; \
 			fi; \
 		fi; \
 		echo "Patching to diff-$$DIFF completed."; \
 		cd $(SOURCE_DIR)/enigma2; \
 		echo -n "Building VFD-drivers..."; \
-		patch -p1 -s -i "$(PATCHES)/vfd-drivers.patch"; echo " done."; \
+		patch -p1 -s -i "$(PATCHES)/build-enigma2/vfd-drivers.patch"; echo " done."; \
 		rm -rf $(TARGET_DIR)/usr/local/share/enigma2/rc_models; \
 		echo; \
 		echo -n "Patching remote control files..."; \
-		patch -p1 -s -i "$(PATCHES)/rc-models.patch"; \
+		patch -p1 -s -i "$(PATCHES)/build-enigma2/rc-models.patch"; \
 		echo -e " done.\nBuild preparation for OpenPLi complete."; echo; \
 	else \
 		echo "Repository : "$$REPO_1; \
@@ -225,10 +225,10 @@ $(D)/enigma2.do_compile: $(SOURCE_DIR)/enigma2/config.status
 		$(MAKE) all
 	@touch $@
 
-PLI_SKIN_PATCH = PLi-HD_skin.patch
+PLI_SKIN_PATCH = build-enigma2/PLi-HD_skin.patch
 REPO_PLIHD="https://github.com/littlesat/skin-PLiHD.git"
 HEAD=master
-REVISION_HD=8c9e43bd5b5fbec2d0e0e86d8e9d69a94f139054
+#REVISION_HD=8c9e43bd5b5fbec2d0e0e86d8e9d69a94f139054
 REPO_0=$(REPO_PLIHD)
 FW=$(MEDIAFW)
 $(D)/enigma2: $(D)/enigma2.do_prepare $(D)/enigma2.do_compile
@@ -246,11 +246,11 @@ $(D)/enigma2: $(D)/enigma2.do_prepare $(D)/enigma2.do_compile
 	$(SILENT)if [ ! -d $(ARCHIVE)/PLi-HD_skin.git ]; then \
 		(echo -n "Cloning PLi-HD skin git..."; git clone -q -b $(HEAD) $(REPO_0) $(ARCHIVE)/PLi-HD_skin.git; echo " done."); \
 	fi
-	$(SILENT)(cd $(ARCHIVE)/PLi-HD_skin.git; echo -n "Checkout commit $(REVISION_HD)..."; git checkout -q $(REVISION_HD); echo " done.")
+#	$(SILENT)(cd $(ARCHIVE)/PLi-HD_skin.git; echo -n "Checkout commit $(REVISION_HD)..."; git checkout -q $(REVISION_HD); echo " done.")
 	$(SILENT)cp -ra $(ARCHIVE)/PLi-HD_skin.git/usr/share/enigma2/* $(TARGET_DIR)/usr/local/share/enigma2
-	@echo -e "$(TERM_RED)Applying Patch:$(TERM_NORMAL) $(PLI_SKIN_PATCH)"; $(PATCH)/$(PLI_SKIN_PATCH)
+	@echo -e "$(TERM_RED)Applying Patch:$(TERM_NORMAL) $(PLI_SKIN_PATCH)"; $(PATCH)/build-enigma2/$(PLI_SKIN_PATCH)
 	@echo -e "Patching $(TERM_GREEN_BOLD)PLi-HD skin$(TERM_NORMAL) completed."
-ifneq ($(BOXTYPE),spark7162)
+ifneq ($(BOXTYPE), $(filter $(BOXTYPE), spark spark7162 atevio7500 fortis_hdbox hs7110 hs7420 hs7810a hs7119 hs7429 hs7819 tf7700))
 	$(SILENT)rm -rf $(TARGET_DIR)/usr/local/share/enigma2/PLi-FullHD
 	$(SILENT)rm -rf $(TARGET_DIR)/usr/local/share/enigma2/PLi-FullNightHD
 endif

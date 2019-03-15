@@ -1,5 +1,15 @@
---- linux-sh4-2.6.32.16_stm24_0205/arch/sh/boards/mach-st/epld.c.org	2011-01-03 18:09:34.000000000 +0100
-+++ linux-sh4-2.6.32.16_stm24_0205/arch/sh/boards/mach-st/epld.c	2011-01-03 18:09:45.000000000 +0100
+--- a/arch/sh/kernel/setup.c
++++ a/arch/sh/kernel/setup.c
+@@ -587,6 +587,7 @@
+ 	seq_printf(m, "cpu family\t: %s\n", init_utsname()->machine);
+ 	seq_printf(m, "cpu variant\t: %s\n", get_cpu_variant(c));
+	seq_printf(m, "cpu type\t: %s\n", get_cpu_subtype(c));
++	seq_printf(m, "cpu MHz\t: 266\n");
+ 	if (c->cut_major == -1)
+ 		seq_printf(m, "cut\t\t: unknown\n");
+ 	else if (c->cut_minor == -1)
+--- linux-sh4-2.6.32.16_stm24_0205/arch/sh/boards/mach-st/epld.c
++++ linux-sh4-2.6.32.16_stm24_0205/arch/sh/boards/mach-st/epld.c
 @@ -9,7 +9,7 @@
  #include <linux/kernel.h>
  #include <linux/platform_device.h>
@@ -9,8 +19,8 @@
  
  #define DRIVER_NAME "epld"
  
---- linux-sh4-2.6.32.16_stm24_0205/arch/sh/boards/mach-mb448/mach.c.org	2011-01-03 13:49:54.000000000 +0100
-+++ linux-sh4-2.6.32.16_stm24_0205/arch/sh/boards/mach-mb448/mach.c	2011-01-03 23:24:43.000000000 +0100
+--- linux-sh4-2.6.32.16_stm24_0205/arch/sh/boards/mach-mb448/mach.c
++++ linux-sh4-2.6.32.16_stm24_0205/arch/sh/boards/mach-mb448/mach.c
 @@ -41,16 +41,18 @@
  
  	/* Set the ILC to route external interrupts to the the INTC */
@@ -29,12 +39,12 @@
  
  static struct sh_machine_vector mv_mb448 __initmv = {
 -	.mv_name		= "mb448",
-+	.mv_name		= "mb448 (TF77000HDPVR)",
++	.mv_name		= "mb448 (TF77X0HDPVR)",
  	.mv_setup		= mb448_setup,
  	.mv_nr_irqs		= NR_IRQS,
  	.mv_init_irq		= mb448_init_irq,
---- linux-sh4-2.6.32.16_stm24_0205/arch/sh/boards/mach-mb448/setup.c.org	2011-07-23 01:58:30.000000000 -0700
-+++ linux-sh4-2.6.32.16_stm24_0205/arch/sh/boards/mach-mb448/setup.c	2011-07-23 04:02:47.000000000 -0700
+--- linux-sh4-2.6.32.16_stm24_0205/arch/sh/boards/mach-mb448/setup.c
++++ linux-sh4-2.6.32.16_stm24_0205/arch/sh/boards/mach-mb448/setup.c
 @@ -20,17 +20,116 @@
  #include <linux/stm/platform.h>
  #include <linux/stm/stx7100.h>
@@ -344,8 +354,8 @@
  
  	return platform_add_devices(mb448_devices,
  			ARRAY_SIZE(mb448_devices));
---- linux-sh4-2.6.32.16_stm24_0205/drivers/stm/stx7100_hispeed.c.org	2011-01-03 17:06:42.000000000 +0100
-+++ linux-sh4-2.6.32.16_stm24_0205/drivers/stm/stx7100_hispeed.c	2011-01-03 23:27:51.000000000 +0100
+--- linux-sh4-2.6.32.16_stm24_0205/drivers/stm/stx7100_hispeed.c
++++ linux-sh4-2.6.32.16_stm24_0205/drivers/stm/stx7100_hispeed.c
 @@ -190,7 +190,8 @@
  	 * option to select an inverted output from the TPS2052, so no
  	 * software work around is required.)
@@ -356,8 +366,8 @@
  	BUG_ON(stx7100_usb_pwr_gpio == STM_GPIO_INVALID);
  
  	return 0;
---- linux-sh4/drivers/stm/stx7100_comms.c.orig	2011-01-09 14:19:17.000000000 +0100
-+++ linux-sh4/drivers/stm/stx7100_comms.c	2011-01-09 14:19:52.000000000 +0100
+--- linux-sh4/drivers/stm/stx7100_comms.c
++++ linux-sh4/drivers/stm/stx7100_comms.c
 @@ -240,12 +240,12 @@
  			STM_PAD_PIO_BIDIR_NAMED(3, 0, 1, "SCL"),
  			STM_PAD_PIO_BIDIR_NAMED(3, 1, 1, "SDA"),

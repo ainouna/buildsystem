@@ -60,28 +60,28 @@
 - * made, and equivalent changes to the setup here.  Note, only boot-from-NOR has
 - * been fully tested.
 - */
-+const char *LMI_IO_partalias[] = { "audio", "v4l2-coded-video-buffers", "BPA2_Region1", "v4l2-video-buffers" ,
-+                                    "coredisplay-video", "gfx-memory", "BPA2_Region0", "LMI_VID", NULL };
++const char *LMI_IO_partalias[] = { "audio", "v4l2-coded-video-buffers", "BPA2_Region1", "v4l2-video-buffers",
++                                   "coredisplay-video", "gfx-memory", "BPA2_Region0", "LMI_VID", NULL };
 +
 +/*
-+0x40000000 - 0x403FFFFF - cocpu 1 ram (4mb)
-+0x40400000 - 0x407FFFFF - cocpu 2 ram (4mb)
-+0x40800000 - 0x47FFFFFF - linux   (120mb)
-+0x48000000 - 0x49FFFFFF - bigphys ( 32mb)
-+0x4A000000 - 0x4FFFFFFF - lmi_io  ( 96mb)
++0x40000000 - 0x403FFFFF - cocpu 1 ram (4Mb)
++0x40400000 - 0x407FFFFF - cocpu 2 ram (4Mb)
++0x40800000 - 0x498FFFFF - linux   (145Mb)
++0x49900000 - 0x4B1FFFFF - bigphys ( 25Mb)
++0x4B200000 - 0x4FFFFFFF - lmi_io  ( 78Mb)
 +*/
 +static struct bpa2_partition_desc bpa2_parts_table[] = {
 +    {
 + 	    .name  = "bigphysarea",
-+ 	    .start = 0x48000000,
-+ 	    .size  = 0x02000000, /* 32 Mb */
++ 	    .start = 0x49900000,
++ 	    .size  = 0x01900000, /* 25 Mb */
 + 	    .flags = 0,
 + 	    .aka   = NULL
 +    },
 +    {
 + 	    .name  = "LMI_IO",
-+ 	    .start = 0x4A000000,
-+ 	    .size  = 0x06000000, /* 96 Mb */
++ 	    .start = 0x4B200000,
++ 	    .size  = 0x04E00000, /* 78 Mb */
 + 	    .flags = 0,
 + 	    .aka   = LMI_IO_partalias
 +    },
@@ -90,7 +90,7 @@
  static void __init sat7111_setup(char** cmdline_p)
  {
 -	printk(KERN_INFO "STMicroelectronics sat7111 reference board initialisation\n");
-+	printk(KERN_INFO "Spark-7111 board initialization\n");
++	printk(KERN_INFO "Spark-7111 board initialisation\n");
  
  	stx7111_early_device_init();
  
@@ -162,7 +162,7 @@
  	.num_resources	= 1,
  	.resource	= (struct resource[]) {
 -		STM_PLAT_RESOURCE_MEM(0, 32*1024*1024),
-+		STM_PLAT_RESOURCE_MEM(0, 8*1024*1024),
++		STM_PLAT_RESOURCE_MEM(0, 8 * 1024 * 1024),
  	},
  	.dev.platform_data = &(struct physmap_flash_data) {
  		.width		= 2,
