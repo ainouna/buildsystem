@@ -14,6 +14,9 @@ enigma2_release_cube_common:
 	$(SILENT)cp $(SKEL_ROOT)/boot/audio_7109.elf $(RELEASE_DIR)/boot/audio.elf
 	$(SILENT)cp $(SKEL_ROOT)/firmware/dvb-fe-cx24116.fw $(RELEASE_DIR)/lib/firmware/
 	$(SILENT)cp $(SKEL_ROOT)/firmware/dvb-fe-stv6306.fw $(RELEASE_DIR)/lib/firmware/
+	$(SILENT)cp -f $(SKEL_ROOT)/release/rc_cuberevo_uni.png $(RELEASE_DIR)/usr/local/share/enigma2/skin_default/rc.png
+	$(SILENT)cp -f $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/rc_cuberevo_uni.xml $(RELEASE_DIR)/usr/local/share/enigma2/rcpositions.xml
+	$(SILENT)cp -f $(SKEL_ROOT)/root_enigma2/usr/local/share/enigma2/keymap_cube.xml $(RELEASE_DIR)/usr/local/share/enigma2/keymap.xml
 
 #
 # release_cube_common_tuner
@@ -562,6 +565,7 @@ enigma2_release_base:
 	@echo -n "Copying image to release directory..."
 	$(SILENT)install -d $(RELEASE_DIR)
 	$(SILENT)install -d $(RELEASE_DIR)/{autofs,bin,boot,dev,dev.static,etc,lib,media,mnt,proc,ram,root,sbin,share,sys,tmp,usr,var}
+	$(SILENT)install -d $(RELEASE_DIR)/autofs/{sda1,sda2,sda3,sda4,sdb1,sdb2,sdb3,sdb4,sdc1,sdc2,sdc3,sdc4,sdd1,sdd2,sdd3,sdd4}
 	$(SILENT)install -d $(RELEASE_DIR)/etc/{enigma2,init.d,network,mdev,tuxbox,tuxtxt}
 	$(SILENT)install -d $(RELEASE_DIR)/etc/network/if-{post-{up,down},pre-{up,down},up,down}.d
 	$(SILENT)install -d $(RELEASE_DIR)/lib/{modules,udev,firmware}
@@ -906,10 +910,11 @@ endif
 #
 # delete unnecessary remote control files and VFD plugins
 #
-	$(SILENT)cp -f $(SKEL_ROOT)/release/rc_spark.png $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/spark.png
+	$(SILENT)cp -f $(SKEL_ROOT)/release/rc_cuberevo_uni.png $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/cuberevo_uni.png
 	$(SILENT)cp -f $(SKEL_ROOT)/release/rc_fs9000.png $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/fs9000.png
 	$(SILENT)cp -f $(SKEL_ROOT)/release/rc_hs9510.png $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/hs9510.png
 	$(SILENT)cp -f $(SKEL_ROOT)/release/rc_hs7110.png $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/hs7110.png
+	$(SILENT)cp -f $(SKEL_ROOT)/release/rc_spark.png $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/spark.png
 	$(SILENT)cp -f $(SKEL_ROOT)/release/rc_tf7700.png $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/tf7700.png
 	$(SILENT)cp -f $(SKEL_ROOT)/release/rc_ufs912.png $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/ufs912.png
 # delete mips remote control files
@@ -924,6 +929,10 @@ endif
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/hd2400.*
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/vu*.*
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/xp1000.*
+	$(SILENT)if [[ ! ENABLE_CUBEREVO && ! ENABLE_CUBEREVO_MINI_FTA && ! ENABLE_CUBEREVO_250HD && ! ENABLE_CUBEREVO_MINI && ! CUBEREVO_MINI2 && ! CUBEREVO_2000HD && ! CUBEREVO_3000HD && ! CUBEREVO_9500HD ]]; then \
+		rm -rf $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/cuberevo_uni/*; \
+		rmdir $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/cuberevo_uni; \
+	fi
 	$(SILENT)if [[ ! ENABLE_SPARK7162 && ! ENABLE_SPARK ]]; then \
 		rm -rf $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/spark/*; \
 		rmdir $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/spark; \
