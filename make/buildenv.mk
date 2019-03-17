@@ -496,43 +496,43 @@ ifeq ($(BOXTYPE), cuberevo_mini)
 KERNEL_PATCHES_24  = $(CUBEREVO_MINI_PATCHES_24)
 PLATFORM_CPPFLAGS += -DPLATFORM_CUBEREVO_MINI
 DRIVER_PLATFORM   += CUBEREVO_MINI=cuberevo_mini
-E_CONFIG_OPTS     += --enable-cuberevo
+E_CONFIG_OPTS     += --enable-cuberevo_mini
 endif
 ifeq ($(BOXTYPE), cuberevo_mini2)
 KERNEL_PATCHES_24  = $(CUBEREVO_MINI2_PATCHES_24)
 PLATFORM_CPPFLAGS += -DPLATFORM_CUBEREVO_MINI2
 DRIVER_PLATFORM   += CUBEREVO_MINI2=cuberevo_mini2
-E_CONFIG_OPTS     += --enable-cuberevo
+E_CONFIG_OPTS     += --enable-cuberevo_mini2
 endif
 ifeq ($(BOXTYPE), cuberevo_mini_fta)
 KERNEL_PATCHES_24  = $(CUBEREVO_MINI_FTA_PATCHES_24)
 PLATFORM_CPPFLAGS += -DPLATFORM_CUBEREVO_MINI_FTA
 DRIVER_PLATFORM   += CUBEREVO_MINI_FTA=cuberevo_mini_fta
-E_CONFIG_OPTS     += --enable-cuberevo
+E_CONFIG_OPTS     += --enable-cuberevo_mini_fta
 endif
 ifeq ($(BOXTYPE), cuberevo_250hd)
 KERNEL_PATCHES_24  = $(CUBEREVO_250HD_PATCHES_24)
 PLATFORM_CPPFLAGS += -DPLATFORM_CUBEREVO_250HD
 DRIVER_PLATFORM   += CUBEREVO_250HD=cuberevo_250hd
-E_CONFIG_OPTS     += --enable-cuberevo
+E_CONFIG_OPTS     += --enable-cuberevo_250hd
 endif
 ifeq ($(BOXTYPE), cuberevo_2000hd)
 KERNEL_PATCHES_24  = $(CUBEREVO_2000HD_PATCHES_24)
 PLATFORM_CPPFLAGS += -DPLATFORM_CUBEREVO_2000HD
 DRIVER_PLATFORM   += CUBEREVO_2000HD=cuberevo_2000hd
-E_CONFIG_OPTS     += --enable-cuberevo
+E_CONFIG_OPTS     += --enable-cuberevo_2000hd
 endif
 ifeq ($(BOXTYPE), cuberevo_3000hd)
 KERNEL_PATCHES_24  = $(CUBEREVO_3000HD_PATCHES_24)
 PLATFORM_CPPFLAGS += -DPLATFORM_CUBEREVO_3000HD
 DRIVER_PLATFORM   += CUBEREVO_3000HD=cuberevo_3000hd
-E_CONFIG_OPTS     += --enable-cuberevo
+E_CONFIG_OPTS     += --enable-cuberevo_3000hd
 endif
 ifeq ($(BOXTYPE), cuberevo_9500hd)
 KERNEL_PATCHES_24  = $(CUBEREVO_9500HD_PATCHES_24)
 PLATFORM_CPPFLAGS += -DPLATFORM_CUBEREVO_9500HD
 DRIVER_PLATFORM   += CUBEREVO_9500HD=cuberevo_9500hd
-E_CONFIG_OPTS     += --enable-cuberevo
+E_CONFIG_OPTS     += --enable-cuberevo_9500hd
 endif
 ifeq ($(BOXTYPE), vitamin_hd5000)
 KERNEL_PATCHES_24  = $(VITAMIN_HD5000_PATCHES_24)
