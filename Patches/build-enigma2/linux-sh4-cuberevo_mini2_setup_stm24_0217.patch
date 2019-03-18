@@ -1,4 +1,14 @@
---- a/arch/sh/Makefile
+--- a/arch/sh/kernel/setup.c.orig
++++ a/arch/sh/kernel/setup.c
+@@ -587,6 +587,7 @@
+ 	seq_printf(m, "cpu family\t: %s\n", init_utsname()->machine);
+ 	seq_printf(m, "cpu variant\t: %s\n", get_cpu_variant(c));
+	seq_printf(m, "cpu type\t: %s\n", get_cpu_subtype(c));
++	seq_printf(m, "cpu MHz\t\t: 266\n");
+ 	if (c->cut_major == -1)
+ 		seq_printf(m, "cut\t\t: unknown\n");
+ 	else if (c->cut_minor == -1)
+--- a/arch/sh/Makefile.orig
 +++ b/arch/sh/Makefile
 @@ -74,7 +74,7 @@
  cflags-y	+= $(isaflags-y) -ffreestanding
@@ -9,8 +19,8 @@
  
  # Give the various platforms the opportunity to set default image types
  defaultimage-$(CONFIG_SUPERH32)			:= zImage
---- a/drivers/stm/stx7100_comms.c
-+++ b/stx7100_comms.c
+--- a/drivers/stm/stx7100_comms.c.orig
++++ b/drivers/stm/stx7100_comms.c
 @@ -238,14 +238,14 @@
  		.gpios_num = 2,
  		.gpios = (struct stm_pad_gpio []) {
@@ -39,8 +49,8 @@
  	stx7100_ssc_devices[ssc].id = i2c_busnum;
  
  	plat_data = stx7100_ssc_devices[ssc].dev.platform_data;
---- a/arch/sh/boards/mach-mb442/setup.c
-+++ b/setup.c
+--- a/arch/sh/boards/mach-mb442/setup.c.orig
++++ b/arch/sh/boards/mach-mb442/setup.c
 @@ -22,6 +22,7 @@
  #include <linux/stm/platform.h>
  #include <linux/stm/stx7100.h>
@@ -175,7 +185,7 @@
 +#define BOOT_SIZE	0x040000	// boot loader
 +#define WELCOME_SIZE	0x020000	// welcomeboot config
 +#define KERNEL_SIZE	0x220000	// kernel size
-+#define ROOT_SIZE	(WINDOW_SIZE-WELCOME_SIZE-KERNEL_SIZE-DB_SIZE-BOOT_SIZE)
++#define ROOT_SIZE	(WINDOW_SIZE - WELCOME_SIZE - KERNEL_SIZE - DB_SIZE-BOOT_SIZE)
 +#define DB_SIZE	0xa00000
 +
 +#elif defined(FLASH_16MB) 
@@ -187,8 +197,8 @@
 +#define BOOT_SIZE	0x040000	// boot loader
 +#define WELCOME_SIZE	0x020000	// welcomeboot config
 +#define KERNEL_SIZE	0x1A0000	// kernel size
-+#define ROOT_SIZE	(WINDOW_SIZE-WELCOME_SIZE-KERNEL_SIZE-DB_SIZE-BOOT_SIZE)
-+#define DB_SIZE		0x600000
++#define ROOT_SIZE	(WINDOW_SIZE - WELCOME_SIZE - KERNEL_SIZE - DB_SIZE-BOOT_SIZE)
++#define DB_SIZE	0x600000
 +#else
 +
 +// 8MB flash
@@ -198,7 +208,7 @@
 +#define BOOT_SIZE       0x030000        // boot loader 	 
 +#define WELCOME_SIZE    0x010000        // welcomeboot config 	 
 +#define KERNEL_SIZE     0x180000        // kernel size 	 
-+#define ROOT_SIZE       (WINDOW_SIZE-WELCOME_SIZE-KERNEL_SIZE-DB_SIZE-BOOT_SIZE) 	 
++#define ROOT_SIZE       (WINDOW_SIZE - WELCOME_SIZE - KERNEL_SIZE - DB_SIZE-BOOT_SIZE) 	 
 +#define DB_SIZE         0x230000
 +
 +
@@ -236,24 +246,24 @@
 +   },
 +   {
 +       .name       = "nor.var",
-+       .offset     = BOOT_SIZE+WELCOME_SIZE+KERNEL_SIZE+ROOT_SIZE,
++       .offset     = BOOT_SIZE + WELCOME_SIZE + KERNEL_SIZE + ROOT_SIZE,
 +       .size       = DB_SIZE,
 +   },
 +   /* partitions for upgrade */
 +   {
 +       .name       = "nor.mtd2_mtd3",
-+       .offset     = BOOT_SIZE+WELCOME_SIZE,
-+       .size       = KERNEL_SIZE+ROOT_SIZE,
++       .offset     = BOOT_SIZE + WELCOME_SIZE,
++       .size       = KERNEL_SIZE + ROOT_SIZE,
 +   },
 +   {
 +       .name       = "nor.mtd2_mtd3_mtd4",
-+       .offset     = BOOT_SIZE+WELCOME_SIZE,
-+       .size       = KERNEL_SIZE+ROOT_SIZE+DB_SIZE,
++       .offset     = BOOT_SIZE + WELCOME_SIZE,
++       .size       = KERNEL_SIZE + ROOT_SIZE + DB_SIZE,
 +   },
 +   {
 +       .name       = "nor.full",
 +       .offset     = BOOT_SIZE,
-+       .size       = (WINDOW_SIZE-BOOT_SIZE),
++       .size       = (WINDOW_SIZE - BOOT_SIZE),
 +   },
 +   {
 +       .name       = "nor.all",
@@ -274,8 +284,8 @@
  	.dev.platform_data = &(struct physmap_flash_data) {
  		.width		= 2,
  		.set_vpp	= mb442_set_vpp,
-+	    .nr_parts	= ARRAY_SIZE(mtd_parts_table),
-+	    .parts		= mtd_parts_table
++		.nr_parts	= ARRAY_SIZE(mtd_parts_table),
++		.parts		= mtd_parts_table
  	},
  };
  
@@ -308,8 +318,8 @@
 +	.num_resources  = 2,
 +	.resource       = (struct resource[]) {
 +		{
-+	                .start = 0xa2000000,
-+		        .end   = 0xa200ffff,
++	                .start  = 0xa2000000,
++		        .end    = 0xa200ffff,
 +	        	.flags  = IORESOURCE_MEM,
 +		},
 +		{
@@ -376,8 +386,8 @@
  
  	return platform_add_devices(mb442_devices,
  			ARRAY_SIZE(mb442_devices));
---- linux-sh4/drivers/serial/stm-asc.c	2011-08-16 18:57:59.000000000 +0200
-+++ b/stm-asc.c	2011-09-29 18:32:31.495178472 +0200
+--- a/drivers/serial/stm-asc.c.orig
++++ b/drivers/serial/stm-asc.c
 @@ -576,7 +576,7 @@
  	struct platform_device *pdev = to_platform_device(port->dev);
  	int size = pdev->resource[0].end - pdev->resource[0].start + 1;
@@ -387,8 +397,8 @@
  		/* Can't use dev_name() here as we can be called early */
  		ascport->pad_state = stm_pad_claim(ascport->pad_config,
  				"stasc");
---- linux-sh4/arch/sh/boards/mach-mb442/mach.c	2011-08-16 18:57:57.000000000 +0200
-+++ b/mach.c	2011-09-29 19:56:34.997700735 +0200
+--- a/arch/sh/boards/mach-mb442/mach.c.orig
++++ b/arch/sh/boards/mach-mb442/mach.c
 @@ -43,7 +43,7 @@
  	/* Set the ILC to route external interrupts to the the INTC */
  	/* Outputs 0-3 are the interrupt pins, 4-7 are routed to the INTC */
@@ -398,8 +408,8 @@
  	ilc_route_external(ILC_EXT_IRQ1, 5, 0);		/* ATA */
  	ilc_route_external(ILC_EXT_IRQ2, 6, 0);		/* Unused */
  	ilc_route_external(ILC_EXT_MDINT, 7, 0);	/* STe100 PHY */
---- linux-sh4/arch/sh/include/asm/setup.h	2009-12-03 04:51:21.000000000 +0100
-+++ b/setup.h	2011-10-01 10:02:00.790393249 +0200
+--- a/arch/sh/include/asm/setup.h.orig
++++ b/arch/sh/include/asm/setup.h
 @@ -15,12 +15,48 @@
  #define LOADER_TYPE (*(unsigned long *) (PARAM+0x00c))
  #define INITRD_START (*(unsigned long *) (PARAM+0x010))
@@ -413,7 +423,7 @@
  
 +typedef struct bd_info
 +{
-+   int bi_baudrate;        /* serial console baudrate */
++   int bi_baudrate;                /* serial console baudrate */
 +   unsigned long bi_ip_addr;       /* IP Address */
 +   unsigned char bi_enetaddr[6];   /* Ethernet adress */
 +   unsigned long bi_arch_number;   /* unique id for this board */
@@ -449,8 +459,8 @@
  #endif /* __KERNEL__ */
  
  #endif /* _SH_SETUP_H */
---- linux-sh4/arch/sh/kernel/setup.c	2011-08-16 18:57:58.000000000 +0200
-+++ b/kernel/setup.c	2011-10-01 10:03:59.030452949 +0200
+--- a/arch/sh/kernel/setup.c.orig
++++ b/arch/sh/kernel/setup.c
 @@ -97,6 +97,9 @@
  unsigned long memory_end = 0;
  EXPORT_SYMBOL(memory_end);
@@ -506,8 +516,8 @@
  	/*
  	 * Find the highest page frame number we have available
  	 */
---- linux-sh4/drivers/net/stmmac/stmmac_main.c	2011-08-16 18:57:59.000000000 +0200
-+++ b/stmmac_main.c	2011-10-01 10:27:41.761164284 +0200
+--- a/drivers/net/stmmac/stmmac_main.c.orig
++++ b/drivers/net/stmmac/stmmac_main.c
 @@ -44,6 +44,7 @@
  #include <linux/debugfs.h>
  #include <linux/seq_file.h>

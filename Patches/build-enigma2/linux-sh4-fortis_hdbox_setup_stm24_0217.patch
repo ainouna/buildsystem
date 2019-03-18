@@ -1,5 +1,15 @@
---- a/arch/sh/boards/mach-mb448/setup.c	2011-07-15 00:53:16.000000000 +0200
-+++ b/setup.c.patched	2011-07-20 15:08:41.000000000 +0200
+--- a/arch/sh/kernel/setup.c.orig
++++ a/arch/sh/kernel/setup.c
+@@ -587,6 +587,7 @@
+ 	seq_printf(m, "cpu family\t: %s\n", init_utsname()->machine);
+ 	seq_printf(m, "cpu variant\t: %s\n", get_cpu_variant(c));
+	seq_printf(m, "cpu type\t: %s\n", get_cpu_subtype(c));
++	seq_printf(m, "cpu MHz\t\t: 266\n");
+ 	if (c->cut_major == -1)
+ 		seq_printf(m, "cut\t\t: unknown\n");
+ 	else if (c->cut_minor == -1)
+--- a/arch/sh/boards/mach-mb448/setup.c.orig
++++ b/arch/sh/boards/mach-mb448/setup.c
 @@ -19,6 +19,7 @@
  #include <linux/mtd/physmap.h>
  #include <linux/stm/platform.h>
@@ -204,8 +214,8 @@
  	return platform_add_devices(mb448_devices,
  			ARRAY_SIZE(mb448_devices));
  }
---- a/drivers/stm/stx7100_comms.c	2011-07-11 21:21:19.000000000 +0200
-+++ b/stx7100_comms.c	2011-07-14 19:51:23.729808261 +0200
+--- a/drivers/stm/stx7100_comms.c.orig
++++ b/drivers/stm/stx7100_comms.c
 @@ -240,12 +240,12 @@
  			STM_PAD_PIO_BIDIR_NAMED(3, 0, 1, "SCL"),
  			STM_PAD_PIO_BIDIR_NAMED(3, 1, 1, "SDA"),
