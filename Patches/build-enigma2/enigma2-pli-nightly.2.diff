@@ -9,7 +9,7 @@
  AX_PYTHON_DEVEL
  AX_PKG_SWIG
  AX_SWIG_ENABLE_CXX
-@@ -35,6 +36,240 @@
+@@ -35,6 +36,249 @@
  PKG_CHECK_MODULES(LIBDDVD, libdreamdvd, HAVE_LIBDDVD="yes", HAVE_LIBDDVD="no")
  AM_CONDITIONAL(HAVE_LIBDDVD, test "$HAVE_LIBDDVD" = "yes")
  PKG_CHECK_MODULES(AVAHI, avahi-client)
@@ -32,15 +32,6 @@
 +	AC_DEFINE(ENABLE_TF7700, 1, [enable tf7700 stuff])
 +fi
 +
-+AC_ARG_ENABLE(cuberevo,
-+	[  --enable-cuberevo       enable cuberevo stuff],
-+	[AC_DEFINE(ENABLE_CUBEREVO, 1, [enable cuberevo stuff])])
-+
-+AM_CONDITIONAL(ENABLE_CUBEREVO, test "$enable_cuberevo" = "yes")
-+if test "$enable_cuberevo" = "yes"; then
-+	AC_DEFINE(ENABLE_CUBEREVO, 1, [enable cuberevo stuff])
-+fi
-+
 +AC_ARG_ENABLE(cuberevo_250hd,
 +	[  --enable-cuberevo_250hd enable cuberevo_250d stuff],
 +	[AC_DEFINE(ENABLE_CUBEREVO_250HD, 1, [enable cuberevo_250hd stuff])])
@@ -57,6 +48,15 @@
 +AM_CONDITIONAL(ENABLE_CUBEREVO_2000HD, test "$enable_cuberevo_2000hd" = "yes")
 +if test "$enable_cuberevo_2000hd" = "yes"; then
 +	AC_DEFINE(ENABLE_CUBEREVO_2000HD, 1, [enable cuberevo_2000hd stuff])
++fi
++
++AC_ARG_ENABLE(cuberevo_3000hd,
++	[  --enable-cuberevo_3000hd enable cuberevo_3000d stuff],
++	[AC_DEFINE(ENABLE_CUBEREVO_3000HD, 1, [enable cuberevo_3000hd stuff])])
++
++AM_CONDITIONAL(ENABLE_CUBEREVO_3000HD, test "$enable_cuberevo_3000hd" = "yes")
++if test "$enable_cuberevo_3000hd" = "yes"; then
++	AC_DEFINE(ENABLE_CUBEREVO_3000HD, 1, [enable cuberevo_3000hd stuff])
 +fi
 +
 +AC_ARG_ENABLE(cuberevo_9500hd,
@@ -88,11 +88,20 @@
 +
 +AC_ARG_ENABLE(cuberevo_mini_fta,
 +	[  --enable-cuberevo_mini_fta enable cuberevo_mini stuff],
-+	[AC_DEFINE(ENABLE_CUBEREVO_MINI, 1, [enable cuberevo_mini_fta stuff])])
++	[AC_DEFINE(ENABLE_CUBEREVO_MINI_FTA, 1, [enable cuberevo_mini_fta stuff])])
 +
 +AM_CONDITIONAL(ENABLE_CUBEREVO_MINI_FTA, test "$enable_cuberevo_mini_fta" = "yes")
 +if test "$enable_cuberevo_mini_fta" = "yes"; then
 +	AC_DEFINE(ENABLE_CUBEREVO_MINI_FTA, 1, [enable cuberevo_mini_fta stuff])
++fi
++
++AC_ARG_ENABLE(cuberevo,
++	[  --enable-cuberevo       enable cuberevo stuff],
++	[AC_DEFINE(ENABLE_CUBEREVO, 1, [enable cuberevo stuff])])
++
++AM_CONDITIONAL(ENABLE_CUBEREVO, test "$enable_cuberevo" = "yes")
++if test "$enable_cuberevo" = "yes"; then
++	AC_DEFINE(ENABLE_CUBEREVO, 1, [enable cuberevo stuff])
 +fi
 +
 +AC_ARG_ENABLE(spark,
@@ -250,7 +259,7 @@
  
  AC_CHECK_LIB([udfread], [udfread_init])
  AC_CHECK_LIB([dl], [dlopen], [LIBDL_LIBS="-ldl"], [AC_MSG_ERROR([Could not find libdl])])
-@@ -48,11 +283,11 @@
+@@ -48,11 +292,11 @@
  	[  --with-crashlogemail=crash log email address],
  	[CRASHLOGEMAIL="$withval"],[CRASHLOGEMAIL="the OpenPLi forum"])
  AC_SUBST(CRASHLOGEMAIL)
@@ -264,7 +273,7 @@
  AC_SUBST(BOXTYPE)
  AC_DEFINE_UNQUOTED(BOXTYPE,"$BOXTYPE",[box type])
  
-@@ -60,7 +295,7 @@
+@@ -60,7 +304,7 @@
  AM_CONDITIONAL(HAVE_TEMPFANCONTROL, test "$BOXTYPE" == dm8000 -o "$BOXTYPE" == dm800se -o "$BOXTYPE" == dm500hd)
  if test `echo "$BOXTYPE" | cut -b 1-2` == "dm"; then
  	AC_DEFINE(DREAMBOX, 1, [Dreambox hardware])
@@ -273,7 +282,7 @@
  fi
  
  AC_ARG_WITH(textlcd,
-@@ -69,7 +304,7 @@
+@@ -69,7 +313,7 @@
  	[[withtextlcd=no]]
  )
  if test x"$withtextlcd" != xno ; then
@@ -282,7 +291,7 @@
  fi
  AM_CONDITIONAL(HAVE_TEXTLCD, test x"$withtextlcd" != xno)
  
-@@ -79,19 +314,6 @@
+@@ -79,19 +323,6 @@
  	[[TEXTSKIN="default"]]
  )
  AC_SUBST(TEXTSKIN)
@@ -302,7 +311,7 @@
  
  AC_ARG_WITH(libsdl,
  	AS_HELP_STRING([--with-libsdl],[use libsdl, yes or no]),
-@@ -106,7 +328,7 @@
+@@ -106,7 +337,7 @@
  	[with_libxine=$withval],[with_libxine=no])
  if test "$with_libxine" = "yes"; then
  	PKG_CHECK_MODULES(LIBXINE, libxine)
@@ -311,7 +320,7 @@
  fi
  AM_CONDITIONAL(HAVE_LIBXINE, test "$with_libxine" = "yes")
  
-@@ -114,14 +336,14 @@
+@@ -114,14 +345,14 @@
  	AS_HELP_STRING([--without-debug],[disable debugging code]),
  	[with_debug="$withval"],[with_debug="yes"])
  if test "$with_debug" = "yes"; then
@@ -328,7 +337,7 @@
  fi
  
  AC_ARG_WITH(po,
-@@ -141,11 +363,11 @@
+@@ -141,11 +372,11 @@
  
  AC_ARG_WITH(alsa,
  	AC_HELP_STRING([--with-alsa], [Enable ALSA support]),
@@ -343,7 +352,7 @@
  	PKG_CHECK_MODULES(ALSA, alsa)
  fi
  
-@@ -155,7 +377,7 @@
+@@ -155,7 +386,7 @@
  	[[with_alsacard=no]]
  )
  if test x"$with_alsacard" != xno ; then
@@ -352,7 +361,7 @@
  fi
  
  AC_ARG_WITH(alsamixer,
-@@ -192,11 +414,21 @@
+@@ -192,11 +423,21 @@
  )
  AM_CONDITIONAL(HAVE_AMLOGIC, test x"$with_amlogic" = xyes)
  if test x"$with_amlogic" = xyes ; then
@@ -375,7 +384,7 @@
  
  AC_ARG_WITH(alphablendingacceleration,
  	AC_HELP_STRING([--with-alphablendingacceleration=never/always/auto], [alphablending acceleration strategy: never accelerate / always accelerate / automatically decide when to accelerate (default)]),
-@@ -313,8 +545,6 @@
+@@ -313,8 +554,6 @@
  lib/python/Plugins/Extensions/TuxboxPlugins/Makefile
  lib/python/Plugins/Extensions/TuxboxPlugins/meta/Makefile
  lib/python/Plugins/PLi/Makefile
@@ -771,7 +780,7 @@
  }
 --- enigma2.org/lib/driver/vfd.cpp
 +++ enigma2/lib/driver/vfd.cpp
-@@ -0,0 +1,811 @@
+@@ -0,0 +1,849 @@
 +/*
 + * vfd.cpp
 + *
@@ -814,6 +823,7 @@
 + * 20150316 Audioniek       Spark7162 circle spin on init removed.
 + * 20160101 Audioniek       Fortis HS7420 and HS7429 added.
 + * 20170313 Audioniek       Kathrein UFS910/912 added.
++ * 20190317 Audioniek       Several CubeRevo's added.
 + *
 + ****************************************************************************/
 +#include <stdarg.h>
@@ -873,6 +883,8 @@
 +   || defined (ENABLE_HS7819) \
 +   || defined (ENABLE_HS7119) \
 +   || defined (ENABLE_SPARK)
++   || defined (ENABLE_CUBEREVO_MINI_FTA) \
++   || defined (ENABLE_CUBEREVO_250HD)
 +	#define VFDLENGTH 4
 +#elif defined (ENABLE_OCTAGON1008) \
 +   || defined(ENABLE_HS7420) \
@@ -880,8 +892,16 @@
 +   || defined (ENABLE_SPARK7162)
 +	#define VFDLENGTH 8
 +#elif defined (ENABLE_FORTIS_HDBOX) \
-+   || defined (ENABLE_ATEVIO7500)
++   || defined (ENABLE_ATEVIO7500) \
++   || defined (ENABLE_CUBEREVO)
 +	#define VFDLENGTH 12
++#elif defined (ENABLE_CUBEREVO_9500HD)
++	#define VFDLENGTH 13
++#elif defined (ENABLE_CUBEREVO_MINI) \
++   || defined (ENABLE_CUBEREVO_MINI2) \
++   || defined (ENABLE_CUBEREVO_2000HD) \
++   || defined (ENABLE_CUBEREVO_3000HD)
++	#define VFDLENGTH 14
 +#else
 +	#define VFDLENGTH 16
 +#endif
@@ -919,6 +939,17 @@
 +	vfd_type = 11;
 +#elif defined(ENABLE_UFS912) || defined(ENABLE_UFS913)
 +	vfd_type = 12;
++elif defined (ENABLE_CUBEREVO)
++	vfd_type = 13;
++elif defined (ENABLE_CUBEREVO_MINI_FTA) || defined (ENABLE_CUBEREVO_250HD)
++	vfd_type = 14;
++#elif defined (ENABLE_CUBEREVO_MINI) \
++   || defined (ENABLE_CUBEREVO_MINI2) \
++   || defined (ENABLE_CUBEREVO_2000HD) \
++   || defined (ENABLE_CUBEREVO_3000HD)
++	vfd_type = 15;
++#elif defined (ENABLE_CUBEREVO_9500HD)
++	vfd_type = 16;
 +#else
 +	vfd_type = -1;
 +#endif
@@ -1046,7 +1077,7 @@
 +
 +	return NULL;
 +}
-+#else  //next code for boxes other than Topfield TF7700HDPVR
++#else  //next code for boxes other than Topfield TF77X0HDPVR
 +
 +void * start_loop (void *arg)
 +{
@@ -1056,6 +1087,20 @@
 +		char str[] = "SPARK7162 ENIGMA2";
 +	#elif defined ENABLE_SPARK
 +		char str[] = "SPARK ENIGMA2";
++	#elif defined ENABLE_CUBEREVO
++		char str[] = "CubeRevo Enigma2";
++	#elif defined ENABLE_CUBEREVO_MINI_FTA
++		char str[] = "CubeRevo 200HD Enigma2";
++	#elif defined ENABLE_CUBEREVO_250HD
++		char str[] = "CubeRevo 250HD Enigma2";
++	#elif defined ENABLE_CUBEREVO_MINI
++		char str[] = "CubeRevo Mini Enigma2";
++	#elif defined ENABLE_CUBEREVO_MINI2
++		char str[] = "CubeRevo Mini II Enigma2";
++	#elif defined ENABLE_CUBEREVO_2000HD
++		char str[] = "CubeRevo 2000HD Enigma2";
++	#elif defined ENABLE_CUBEREVO_3000HD
++		char str[] = "CubeRevo 3000HD Enigma2";
 +	#elif defined ENABLE_FORTIS_HDBOX
 +		char str[] = "FS9000/9200 Enigma2";
 +	#elif defined ENABLE_OCTAGON1008
@@ -1095,6 +1140,7 @@
 +	 && !defined(ENABLE_CUBEREVO_MINI_FTA) \
 +	 && !defined(ENABLE_CUBEREVO_250HD) \
 +	 && !defined(ENABLE_CUBEREVO_2000HD) \
++	 && !defined(ENABLE_CUBEREVO_3000HD) \
 +	 && !defined(ENABLE_CUBEREVO_9500HD) \
 +	 && !defined(ENABLE_SPARK7162) \
 +	 && !defined ENABLE_UFS912 \
@@ -1187,6 +1233,7 @@
 +	 && !defined(ENABLE_CUBEREVO_MINI_FTA) \
 +	 && !defined(ENABLE_CUBEREVO_250HD) \
 +	 && !defined(ENABLE_CUBEREVO_2000HD) \
++	 && !defined(ENABLE_CUBEREVO_3000HD) \
 +	 && !defined(ENABLE_CUBEREVO_9500HD) \
 +	 && !defined(ENABLE_SPARK7162)
 +	//set all blocked icons
@@ -1209,6 +1256,7 @@
 + || defined(ENABLE_CUBEREVO_MINI_FTA) \
 + || defined(ENABLE_CUBEREVO_250HD) \
 + || defined(ENABLE_CUBEREVO_2000HD) \
++ || defined(ENABLE_CUBEREVO_3000HD) \
 + || defined(ENABLE_CUBEREVO_9500HD) \
 + || defined(ENABLE_SPARK) \
 + || defined(ENABLE_SPARK7162) \
@@ -1320,7 +1368,7 @@
 +	{
 +		if (i < VFDLENGTH)
 +		{
-+			ws=(VFDLENGTH-i)/2;
++			ws=(VFDLENGTH - i) / 2;
 +		}
 +		else
 +		{
@@ -1490,6 +1538,10 @@
 +		for (id = 1; id < 23; id++);
 +	#elif defined ENABLE_UFS912 || defined ENABLE_UFS913
 +		for (id = 1; id < 16; id++)
++	#elif defined ENABLE_CUBEREVO
++		for (id = 1; id < 28; id++)
++	#elif defined ENABLE_CUBEREVO_MINI || defined ENABLE_CUBEREVO_MINI2 || defined ENABLE_CUBEREVO_2000HD || defined ENABLE_CUBEREVO_3000HD
++		for (id = 1; id < 7; id++)
 +	#else
 +		for (id = 0x10; id < 0x20; id++)
 +	#endif
@@ -1538,11 +1590,6 @@
 +void evfd::vfd_set_fan(bool onoff)
 +{
 +#if defined(ENABLE_CUBEREVO) \
-+ || defined(ENABLE_CUBEREVO_MINI) \
-+ || defined(ENABLE_CUBEREVO_MINI2) \
-+ || defined(ENABLE_CUBEREVO_MINI_FTA) \
-+ || defined(ENABLE_CUBEREVO_250HD) \
-+ || defined(ENABLE_CUBEREVO_2000HD) \
 + || defined(ENABLE_CUBEREVO_9500HD)
 +	struct vfd_ioctl_data data;
 +
@@ -4426,7 +4473,7 @@
  SystemInfo["Blindscan_t2_available"] = fileCheck("/proc/stb/info/vumodel")
  SystemInfo["RcTypeChangable"] = not(HardwareInfo().get_device_model().startswith('et8500') or HardwareInfo().get_device_model().startswith('et7')) and pathExists('/proc/stb/ir/rc/type')
 -SystemInfo["HasFullHDSkinSupport"] = HardwareInfo().get_device_model() not in ("et4000", "et5000", "sh1", "hd500c", "hd1100", "xp1000", "lc")
-+SystemInfo["HasFullHDSkinSupport"] = HardwareInfo().get_device_model() in ("spark", "spark7162", "atevio7500", "fortis_hdbox", "hs7110", "hs7420", "hs7810a", "hs7119", "hs7429", "hs7819")
++SystemInfo["HasFullHDSkinSupport"] = HardwareInfo().get_device_model() in ("atevio7500", "cuberevo", "cuberevo_mini-fta", "cuberevo-250hd", "cuberevo-mini", "cuberevo-mini2", "cuberevo-2000hd", "cuberevo-3000hd", "cuberevo-9500hd", "hdbox", "hs7110", "hs7420", "hs7810a", "hs7119", "hs7429", "hs7819", "octagon1008", "spark", "spark7162", "tf7700hdpvr", "ufs912", "ufs913")
  SystemInfo["HasForceLNBOn"] = fileCheck("/proc/stb/frontend/fbc/force_lnbon")
  SystemInfo["HasForceToneburst"] = fileCheck("/proc/stb/frontend/fbc/force_toneburst")
  SystemInfo["HasBypassEdidChecking"] = fileCheck("/proc/stb/hdmi/bypass_edid_checking")
@@ -4445,10 +4492,10 @@
 -SystemInfo["HasScart"] = HardwareInfo().get_device_model() in ("dm8000", "et4000", "et6500", "et8000", "et9000", "et9200", "et9500", "et10000", "formuler1", "hd1100", "hd1200", "hd1265", "hd2400", "vusolo", "vusolo2", "vuduo", "vuduo2", "vuultimo", "vuuno", "xp1000")
 -SystemInfo["HasSVideo"] = HardwareInfo().get_device_model() in ("dm8000")
 -SystemInfo["HasComposite"] = HardwareInfo().get_device_model() not in ("i55", "gbquad4k", "gbue4k", "hd1500", "osnino", "osninoplus", "purehd", "purehdse", "revo4k", "vusolo4k", "vuzero4k")
-+SystemInfo["HasYPbPr"] = HardwareInfo().get_device_model() in ("atevio7500", "cuberevo", "cuberevo_mini", "cuberevo_mini2", "cuberevo_2000hd", "cuberevo_3000hd", "fortis_hdbox", "octagon1008", "hs7420", "hs7429", "ufs912", "ufs913")
++SystemInfo["HasYPbPr"] = HardwareInfo().get_device_model() in ("atevio7500", "cuberevo", "cuberevo-mini-fta", "cuberevo-250hd", "cuberevo-mini", "cuberevo-mini2", "cuberevo-2000hd", "cuberevo-3000hd", "cuberevo-9500hd", "hdbox", "octagon1008", "hs7420", "hs7429", "tf7700hdpvr", "ufs912", "ufs913")
 +SystemInfo["HasScart"] = True
 +SystemInfo["HasSVideo"] = HardwareInfo().get_device_model() in ("cuberevo")
-+SystemInfo["HasComposite"] = HardwareInfo().get_device_model() not in ("cuberevo_mini_fta", "cuberevo_250hd")
++SystemInfo["HasComposite"] = HardwareInfo().get_device_model() not in ("cuberevo_mini-fta", "cuberevo-250hd")
  SystemInfo["HasAutoVolume"] = fileExists("/proc/stb/audio/avl_choices") and fileCheck("/proc/stb/audio/avl")
  SystemInfo["HasAutoVolumeLevel"] = fileExists("/proc/stb/audio/autovolumelevel_choices") and fileCheck("/proc/stb/audio/autovolumelevel")
  SystemInfo["Has3DSurround"] = fileExists("/proc/stb/audio/3d_surround_choices") and fileCheck("/proc/stb/audio/3d_surround")
@@ -4640,7 +4687,7 @@
 +	plugin.py
 --- enigma2.org/lib/python/Plugins/Extensions/CuberevoVFD/plugin.py
 +++ enigma2/lib/python/Plugins/Extensions/CuberevoVFD/plugin.py
-@@ -0,0 +1,317 @@
+@@ -0,0 +1,338 @@
 +from Screens.Screen import Screen
 +from Screens.MessageBox import MessageBox
 +from Plugins.Plugin import PluginDescriptor
@@ -4661,11 +4708,32 @@
 +from re import compile as re_compile, search as re_search
 +
 +import os
++#Version 190317.1
++
++try:
++	DisplayType = evfd.getInstance().getVfdType()
++	if DisplayType < 13 or DisplayType > 16:
++		DisplayType = None
++except:
++	DisplayType = None
++DisplayTypevfd = DisplayType
++
++if DisplayTypevfd is None:
++	if stb.lower() == 'cuberevo': # 12 character VFD
++		DisplayType = 13
++	elif stb.lower() == 'cuberevo_mini_fta' or stb.lower() == 'cuberevo_250hd': # LED models
++		DisplayType = 14
++	elif stb.lower() == 'cuberevo_mini' or stb.lower() == 'cuberevo_mini2' or stb.lower() == 'cuberevo_2000hd' or stb.lower() == 'cuberevo_3000hd': # 14 character VFD
++		DisplayType = 15
++	elif stb.lower() == 'cuberevo_9500hd': # 13 character VFD
++		DisplayType = 16
++	else:
++		DisplayType = None
 +
 +my_global_session = None
 +
 +config.plugins.CuberevoVFD = ConfigSubsection()
-+config.plugins.CuberevoVFD.scroll = ConfigSelection(default = "once", choices = [("never"), ("once"), ("always")])
++#config.plugins.CuberevoVFD.scroll = ConfigSelection(default = "once", choices = [("never"), ("once"), ("always")])
 +config.plugins.CuberevoVFD.brightness = ConfigSelection(default = "bright", choices = [("dark"), ("medium"), ("bright")])
 +config.plugins.CuberevoVFD.showClock = ConfigEnableDisable(default = True)
 +#config.plugins.CuberevoVFD.setDaylight = ConfigEnableDisable(default = False)
@@ -4693,7 +4761,7 @@
 +		self.list.append(getConfigListEntry(_("Time mode"), config.plugins.CuberevoVFD.timeMode))
 +		self.list.append(getConfigListEntry(_("Set led"), config.plugins.CuberevoVFD.setLed))
 +		self.list.append(getConfigListEntry(_("Brightness"), config.plugins.CuberevoVFD.brightness))
-+		self.list.append(getConfigListEntry(_("Scroll long strings"), config.plugins.CuberevoVFD.scroll))
++#		self.list.append(getConfigListEntry(_("Scroll long strings"), config.plugins.CuberevoVFD.scroll))
 +		self.list.append(getConfigListEntry(_("Set fan"), config.plugins.CuberevoVFD.setFan))
 +		ConfigListScreen.__init__(self, self.list)
 +
@@ -4797,12 +4865,12 @@
 +
 +	def handleTimer(self):
 +		global showmenuorpanel
-+		try:
-+			from Plugins.Extensions.Aafpanel.plugin import inAAFPanel
-+			showPanel = inAAFPanel
-+		except:
-+			#print '[CuberevoVFD] Error showPanel'
-+			showPanel = None
++#		try:
++#			from Plugins.Extensions.Aafpanel.plugin import inAAFPanel
++#			showPanel = inAAFPanel
++#		except:
++#			#print '[CuberevoVFD] Error showPanel'
++		showPanel = None
 +		try:
 +			from Screens.Menu import inMenu
 +			showMenu = inMenu
@@ -4823,7 +4891,7 @@
 +					servicename =subservice[1].replace('\xc2\x87', '').replace('\xc3\x9f', 'ss').replace('\xc2\x86', '').ljust(16)
 +				else:
 +					servicename=servicename
-+				evfd.getInstance().vfd_write_string(servicename[0:17])
++				evfd.getInstance().vfd_write_string(servicename)
 +
 +	def setshowmenuorpanel(self):
 +		global showmenuorpanel
@@ -4960,7 +5028,7 @@
 +		PluginDescriptor(where = [PluginDescriptor.WHERE_SESSIONSTART, PluginDescriptor.WHERE_AUTOSTART], fnc = autostart) ]
 --- enigma2.org/lib/python/Plugins/Extensions/Makefile.am
 +++ enigma2/lib/python/Plugins/Extensions/Makefile.am
-@@ -1,6 +1,14 @@
+@@ -1,6 +1,42 @@
  installdir = $(pkglibdir)/python/Plugins/Extensions
  
 -SUBDIRS = TuxboxPlugins CutListEditor PicturePlayer MediaScanner MediaPlayer GraphMultiEPG SocketMMI DVDBurn
@@ -4968,6 +5036,34 @@
 +
 +if ENABLE_TF7700
 +SUBDIRS += TopfieldVFD
++endif
++
++if ENABLE_CUBEREVO_MINI_FTA
++SUBDIRS += CuberevoVFD
++endif
++
++if ENABLE_CUBEREVO_250HD
++SUBDIRS += CuberevoVFD
++endif
++
++if ENABLE_CUBEREVO_MINI
++SUBDIRS += CuberevoVFD
++endif
++
++if ENABLE_CUBEREVO_MINI2
++SUBDIRS += CuberevoVFD
++endif
++
++if ENABLE_CUBEREVO_2000HD
++SUBDIRS += CuberevoVFD
++endif
++
++if ENABLE_CUBEREVO_3000HD
++SUBDIRS += CuberevoVFD
++endif
++
++if ENABLE_CUBEREVO_9500HD
++SUBDIRS += CuberevoVFD
 +endif
 +
 +if ENABLE_CUBEREVO
@@ -5609,17 +5705,17 @@
 +			self.service = self.session.nav.getCurrentlyPlayingServiceReference()
 +			if not self.service is None:
 +				service = self.service.toCompareString()
-+				servicename = ServiceReference.ServiceReference(service).getServiceName().replace('\xc2\x87', '').replace('\xc2\x86', '').ljust(16)
++				servicename = ServiceReference.ServiceReference(service).getServiceName().replace('\xc2\x87', '').replace('\xc2\x86', '')
 +				subservice = self.service.toString().split("::")
 +				if subservice[0].count(':') == 9:
-+					servicename = subservice[1].replace('\xc2\x87', '').replace('\xc3\x9f', 'ss').replace('\xc2\x86', '').ljust(16)
++					servicename = subservice[1].replace('\xc2\x87', '').replace('\xc3\x9f', 'ss').replace('\xc2\x86', '')
 +				else:
 +					servicename=servicename
 +			else:
 +				print "no Service found"
 +
-+		print "vfd display text:", servicename[0:63]
-+		evfd.getInstance().vfd_write_string(servicename[0:63])
++#		print "[VFD-Icons] vfd display text:", servicename
++		evfd.getInstance().vfd_write_string(servicename)
 +		return 1
 +
 +	def showCrypted(self):
@@ -7070,7 +7166,7 @@
 +					if perc > 20:
 +						if os.path.isfile('/proc/stb/info/model'):
 +							model = str(open("/proc/stb/info/model").read())
-+							if model.startswith("spark7162") or model.startswith("tf7700hdpvr") or model.startswith("octagon1008") or model.startswith("atevio7500") or model.startswith("hs7420") or model.startswith("hs7429"):
++							if model.startswith("spark7162") or model.startswith("tf7700hdpvr") or model.startswith("octagon1008") or model.startswith("hdbox") or model.startswith("atevio7500") or model.startswith("hs7420") or model.startswith("hs7429"):
 +								evfd.getInstance().vfd_write_string("START %02d" % perc)
 +							elif model.startswith("spark") or model.startswith("hs7119") or model.startswith("hs7810a") or model.startswith("hs7819"):
 +								evfd.getInstance().vfd_write_string("St%02d" % perc)
@@ -7531,8 +7627,6 @@
  		</condition>
 --- enigma2.org/lib/python/Components/About.py
 +++ enigma2/lib/python/Components/About.py
---- enigma2.org/lib/python/Components/About.py
-+++ enigma2/lib/python/Components/About.py
 @@ -50,12 +50,15 @@
  	return enigma_version
  
@@ -7560,7 +7654,7 @@
  
  def getHardwareTypeString():
 -	return HardwareInfo().get_device_string()
-+	return HardwareInfo().get_device_string().capitalize()
++	return HardwareInfo().get_device_string().upper()
  
  def getImageTypeString():
  	try:
@@ -7962,8 +8056,8 @@
 +			idx = 5
 +		elif rctype == 12:	# Kathrein UFS912
 +			idx = 6
-+#		elif rctype == 13:	# Cuberevo
-+#			idx = 7
++		elif rctype == 13:	# CubeRevo Universal
++			idx = 7
 +#		elif rctype == 14:	# ...
 +#			idx = 8
  		else:
@@ -7971,7 +8065,7 @@
  	if key in keyDescriptions[idx]:
 --- enigma2.org/lib/python/Screens/InputDeviceSetup.py
 +++ enigma2/lib/python/Screens/InputDeviceSetup.py
-@@ -299,57 +299,22 @@
+@@ -299,57 +299,24 @@
  	rcList = [
  			("0", _("Default")),
  			("4", _("DMM normal")),
@@ -7995,6 +8089,7 @@
 +			("10", _("spark")),
 +			("11", _("tf7700")),
 +			("12", _("ufs912")),
++			("12", _("cuberevo_uni")),
  		]
  
  	defaultRcList = [
@@ -8038,12 +8133,13 @@
 +			("spark", 10),
 +			("tf7700", 11),
 +			("ufs912", 12),
++			("cuberevo_uni", 13),
  		]
  
  	def __init__(self, session):
 --- enigma2.org/data/rc_models/rc_models.cfg
 +++ enigma2/data/rc_models/rc_models.cfg
-@@ -19,115 +19,17 @@
+@@ -19,115 +19,25 @@
  #
  # When no entry matches at all, 'default' will be used as remoteName
  #
@@ -8159,20 +8255,28 @@
 -h9 zgemma
 -lc sh1
 -sh1 sh1
-+hdbox       fs9000
-+octagon1008 hs9510
-+atevio7500  fs9000
-+hs7110      hs7110
-+hs7119      hs7110
-+hs7420      hs9510
-+hs7429      hs9510
-+hs7810a     hs9510
-+hs7819      hs9510
-+spark       spark
-+spark7162   spark
-+tf7700hdpvr tf7700
-+ufs910      ufs912
-+ufs912      ufs912
++hdbox             fs9000
++octagon1008       hs9510
++atevio7500        fs9000
++hs7110            hs7110
++hs7119            hs7110
++hs7420            hs9510
++hs7429            hs9510
++hs7810a           hs9510
++hs7819            hs9510
++spark             spark
++spark7162         spark
++tf7700hdpvr       tf7700
++ufs910            ufs912
++ufs912            ufs912
++cuberevo          cuberevo_uni
++cuberevo-mini-fta cuberevo_uni
++cuberevo-250hd    cuberevo_uni
++cuberevo-mini     cuberevo_uni
++cuberevo-mini2    cuberevo_uni
++cuberevo-2000hd   cuberevo_uni
++cuberevo-3000hd   cuberevo_uni
++cuberevo-9500hd   cuberevo_uni
 --- enigma2.org/data/rc_models/Makefile.am
 +++ enigma2/data/rc_models/Makefile.am
 @@ -3,12 +3,8 @@
@@ -8189,9 +8293,9 @@
 -	spycat.xml xpeedlx.xml et7000mini.png et7000mini.xml revo4k.xml sab.xml sh1.xml i55.xml qviart.xml \
 -	gb7252.xml e4hd.xml edision2.xml edision3.xml edision4.xml hd60.xml
 +	dmmadv.png \
-+	fs9000.png  hs7110.png  hs9510.png  spark.png tf7700.png ufs912.png \
++	cuberevo_uni.png fs9000.png  hs7110.png  hs9510.png  spark.png tf7700.png ufs912.png \
 +	dmm.png \
 +	dmmadv.xml  \
-+	fs9000.xml  hs7110.xml  hs9510.xml  spark.xml tf7700.xml ufs912.xml \
++	cuberevo_uni.xml fs9000.xml  hs7110.xml  hs9510.xml  spark.xml tf7700.xml ufs912.xml \
 +	dmm.xml
 
