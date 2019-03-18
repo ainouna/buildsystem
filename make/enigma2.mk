@@ -74,24 +74,6 @@ ENIGMA2_DEPS  += $(D)/gstreamer $(D)/gst_plugins_base $(D)/gst_plugins_multibox_
 ENIGMA2_DEPS  += $(D)/gst_plugins_good $(D)/gst_plugins_bad $(D)/gst_plugins_ugly
 E_CONFIG_OPTS += --with-gstversion=1.0 --enable-mediafwgstreamer --enable-libeplayer3
 endif
-else
-ifeq ($(E2_DIFF), $(filter $(E2_DIFF), 6)) # diff 6 (experimental)
-ifeq ($(MEDIAFW), eplayer3)
-ENIGMA2_DEPS  += $(D)/tools-libeplayer3_new
-E_CONFIG_OPTS += --enable-libeplayer3
-endif
-ifeq ($(MEDIAFW), gstreamer)
-ENIGMA2_DEPS  += $(D)/gstreamer $(D)/gst_plugins_base $(D)/gst_plugins_multibox_dvbmediasink
-ENIGMA2_DEPS  += $(D)/gst_plugins_good $(D)/gst_plugins_bad $(D)/gst_plugins_ugly
-E_CONFIG_OPTS += --with-gstversion=1.0 --enable-mediafwgstreamer
-endif
-ifeq ($(MEDIAFW), gst-eplayer3)
-ENIGMA2_DEPS  += $(D)/tools-libeplayer3_new
-ENIGMA2_DEPS  += $(D)/gstreamer $(D)/gst_plugins_base $(D)/gst_plugins_multibox_dvbmediasink
-ENIGMA2_DEPS  += $(D)/gst_plugins_good $(D)/gst_plugins_bad $(D)/gst_plugins_ugly
-E_CONFIG_OPTS += --with-gstversion=1.0 --enable-mediafwgstreamer --enable-libeplayer3
-endif
-endif
 endif
 endif
 
@@ -110,10 +92,6 @@ ifeq ($(E2_DIFF), $(filter $(E2_DIFF), 5))
 E_CPPFLAGS   += -I$(APPS_DIR)/tools/libeplayer3/include
 E_CPPFLAGS   += -I$(APPS_DIR)/tools
 else
-ifeq ($(E2_DIFF), $(filter $(E2_DIFF), 6))
-E_CPPFLAGS   += -I$(APPS_DIR)/tools/libeplayer3_new/include
-E_CPPFLAGS   += -I$(APPS_DIR)/tools
-endif
 endif
 endif
 E_CPPFLAGS   += $(LOCAL_ENIGMA2_CPPFLAGS)
@@ -139,7 +117,6 @@ yaud-enigma2: yaud-none $(D)/enigma2 $(D)/enigma2-plugins $(D)/enigma2_release
 # enigma2
 #
 REPO_OPENPLI="https://github.com/OpenPLi/enigma2.git"
-#REPO_REPLY_1="https://github.com/MaxWiesel/enigma2-openpli-fulan.git"
 REPO_REPLY_1="ssh://gituser@192.168.178.17/volume1//git/audioniek-openpli.git"
 
 $(D)/enigma2.do_prepare: | $(ENIGMA2_DEPS)
@@ -175,7 +152,7 @@ $(D)/enigma2.do_prepare: | $(ENIGMA2_DEPS)
 			set -e; cd $(SOURCE_DIR)/enigma2 && patch -p1 $(SILENT_PATCH) < "$(PATCHES)/build-enigma2/eplayer3.$$DIFF.patch"; \
 		fi; \
 		if [ "$(E2_DIFF)" == "0" ] || [ "$(E2_DIFF)" == "2" ]; then \
-			if [ "$(BOXTYPE)" == "fortis_hdbox" ] || [ "$(BOXTYPE)" == "octagon1008" ] || [ "$(BOXTYPE)" == "tf7700" ]; then \
+			if [ "$(BOXTYPE)" == "fortis_hdbox" ] || [ "$(BOXTYPE)" == "octagon1008" ] || [ "$(BOXTYPE)" == "cuberevo" ] || [ "$(BOXTYPE)" == "cuberevo_250hd" ] || [ "$(BOXTYPE)" == "cuberevo_mini_fta" ] || [ "$(BOXTYPE)" == "cuberevo_mini" ] || [ "$(BOXTYPE)" == "cuberevo_mini2" ] || [ "$(BOXTYPE)" == "tf7700" ]; then \
 				patch -p1 $(SILENT_PATCH) < "$(PATCHES)/build-enigma2/enigma2-no_hdmi_cec.$$DIFF.patch"; \
 			fi; \
 		fi; \
@@ -250,10 +227,10 @@ $(D)/enigma2: $(D)/enigma2.do_prepare $(D)/enigma2.do_compile
 	$(SILENT)cp -ra $(ARCHIVE)/PLi-HD_skin.git/usr/share/enigma2/* $(TARGET_DIR)/usr/local/share/enigma2
 	@echo -e "$(TERM_RED)Applying Patch:$(TERM_NORMAL) $(PLI_SKIN_PATCH)"; $(PATCH)/$(PLI_SKIN_PATCH)
 	@echo -e "Patching $(TERM_GREEN_BOLD)PLi-HD skin$(TERM_NORMAL) completed."
-ifneq ($(BOXTYPE), $(filter $(BOXTYPE), spark spark7162 atevio7500 fortis_hdbox hs7110 hs7420 hs7810a hs7119 hs7429 hs7819 tf7700))
-	$(SILENT)rm -rf $(TARGET_DIR)/usr/local/share/enigma2/PLi-FullHD
-	$(SILENT)rm -rf $(TARGET_DIR)/usr/local/share/enigma2/PLi-FullNightHD
-endif
+#ifneq ($(BOXTYPE), $(filter $(BOXTYPE), spark spark7162 atevio7500 cuberevo cuberevo_250hd cuberevo_mini_fta cuberevo_mini cuberevo_mini2 cuberevo_2000hd cuberevo3000hd cuberevo_9500hd fortis_hdbox hs7110 hs7420 hs7810a hs7119 hs7429 hs7819 octagon1008 tf7700 ufs912 ufs913))
+#	$(SILENT)rm -rf $(TARGET_DIR)/usr/local/share/enigma2/PLi-FullHD
+#	$(SILENT)rm -rf $(TARGET_DIR)/usr/local/share/enigma2/PLi-FullNightHD
+#endif
 	$(TOUCH)
 
 enigma2-clean:
