@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 190129.2
+#Version 190311.1
 
 echo "Fortis HS7429 Enigma2"
 
@@ -49,10 +49,10 @@ echo "LOAD 9" > /dev/vfd
 insmod $MODDIR/stmcore-display-sti7111.ko
 
 #if grep -q "config.av.videoport=Scart" /etc/enigma2/settings; then
-#   insmod $MODDIR/stmfb.ko display0=720x576-16@50i:1M::pal:cvbs display1=720x576i-32@50:12M::pal:rgb:rgb #SCART
+#   insmod $MODDIR/stmfb.ko display0=720x576-16@50i:1M::pal:cvbs #SCART
 #else
 #   insmod $MODDIR/stmfb.ko display0=1280x720-32@50:12M::pal:cvbs:rgb display1=720x576-16@50i:1M::pal:cvbs #HDMI
-   insmod $MODDIR/stmfb.ko display0=1280x720-32@50:12m:pal:cvbs:yuv
+insmod $MODDIR/stmfb.ko display0=1280x720-32@50:16M::pal:cvbs:rgb #HDMI
 #fi
 
 echo "[rcS] Loading modules"
@@ -217,6 +217,8 @@ if [ -e /usr/sbin/amount.sh ]; then
    (sleep 20; /usr/sbin/amount.sh) &
 fi
 
+echo "[rcS] Do extras (LOAD 1)"
+echo "LD 1" > /dev/vfd
 # inadyn
 inadyn=`cat /etc/enigma2/settings | grep systemoptions.inadyn | cut -d "=" -f2`
 if [ ! $inadyn ] ||  [ ! -e /usr/bin/inadyn ]; then
@@ -255,8 +257,7 @@ fi
 #   fi
 #fi
 
-echo "[rcS] Init portmap & ftp (LOAD 1)"
-echo "LOAD 1" > /dev/vfd
+echo "[rcS] Init portmap & ftp"
 /etc/init.d/portmap start
 /etc/init.d/vsftpd start
 /usr/sbin/inetd

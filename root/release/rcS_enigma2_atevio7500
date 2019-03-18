@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 190125.1
+#Version 190210.1
 
 echo "Fortis HS8200 Enigma2"
 
@@ -54,9 +54,9 @@ echo "LOAD 9" > /dev/vfd
 insmod $MODDIR/stmcore-display-sti7105.ko
 
 #if grep -q "config.av.videoport=Scart" /etc/enigma2/settings; then
-#   insmod $MODDIR/stmfb.ko display0=720x576i-32@50:1m:pal:rgb:rgb #SCART
+#   insmod $MODDIR/stmfb.ko display0=720x576i-32@50:1m::pal:rgb:rgb #SCART
 #else
-   insmod $MODDIR/stmfb.ko display0=1280x720-32@50:12m:pal:rgb:rgb #HDMI
+   insmod $MODDIR/stmfb.ko display0=1280x720-32@50:16m::pal:rgb:rgb #HDMI
 #fi
 
 echo "[rcS] Loading modules"
@@ -224,6 +224,8 @@ if [ -e /usr/sbin/amount.sh ]; then
    (sleep 20; /usr/sbin/amount.sh) &
 fi
 
+echo "[rcS] Apply various E2 settings(LOAD 1)"
+echo "LOAD 1" > /dev/vfd
 # inadyn
 inadyn=`cat /etc/enigma2/settings | grep systemoptions.inadyn | cut -d "=" -f2`
 if [ ! $inadyn ] ||  [ ! -e /usr/bin/inadyn ]; then
@@ -250,21 +252,11 @@ if [ ! -e /tmp/reference.dat ] && [ -e /var/bin/reference.dat ]; then
 fi
 
 # Try and synchronise time
-#inettime=`cat /etc/enigma2/settings | grep systemoptions.inettime | cut -d "=" -f2`
-# if [ ! $inettime ] && [ -e /sbin/ntpdate ]; then
-#if [ -e /sbin/ntpdate ]; then
-   echo "[rcS] Set internet time"
-   ntpd -n -p 0.europe.pool.ntp.org -q
-   /bin/fp_control -sst
-#else
-#   if [ -e /usr/sbin/time.sh ]; then
-#      echo "[rcS] Use transponder time"
-#      /usr/sbin/time.sh &
-#   fi
-#fi
+echo "[rcS] Set internet time"
+ntpd -n -p 0.europe.pool.ntp.org -q
+/bin/fp_control -sst
 
-echo "[rcS] Init portmap & ftp (LOAD 1)"
-echo "LOAD 1" > /dev/vfd
+echo "[rcS] Init portmap & ftp"
 /etc/init.d/portmap start
 /etc/init.d/vsftpd start
 /usr/sbin/inetd

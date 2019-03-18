@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 190127.1
+#Version 190312.1
 
 echo "Topfield TF77X0HDPVR Enigma2"
 
@@ -61,7 +61,7 @@ echo "LOAD" > /dev/fplarge
 echo "   9" > /dev/fpsmall
 echo "[rcS] Init stmfb (LOAD 9)"
 insmod $MODDIR/stmcore-display-stx7109c3.ko
-insmod $MODDIR/stmfb.ko display0=1280x720-32@50:12m:pal:yuv:yuv
+insmod $MODDIR/stmfb.ko display0=1280x720-32@50:16m::pal:cvbs:rgb
 
 if [ ! -e /boot/audio.elf ] || [ ! -e /boot/video.elf ]; then
    echo "[rcS] FIRMWARE MISSING!"

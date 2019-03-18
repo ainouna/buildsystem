@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 190125.1
+#Version 190211.1
 
 echo "Spark Enigma2"
 
@@ -71,11 +71,11 @@ echo "[rcS] Init stmfb (LOAD 9)"
 echo "Ld 9" > /dev/vfd
 insmod $MODDIR/stmcore-display-sti7111.ko
 
-if grep -q "config.av.videoport=Scart" /etc/enigma2/settings; then
-  insmod $MODDIR/stmfb.ko display0=720x576i-32@50:15m:pal:rgb:rgb; #SCART
-else
-  insmod $MODDIR/stmfb.ko display0=1280x720-32@50:16m:pal:rgb:rgb; #HDMI
-fi
+#if grep -q "config.av.videoport=Scart" /etc/enigma2/settings; then
+#  insmod $MODDIR/stmfb.ko display0=720x576i-32@50:15m::pal:cvbs:rgb; #SCART
+#else
+  insmod $MODDIR/stmfb.ko display0=1280x720-32@50:16m::pal:cvbs:rgb; #HDMI
+#fi
 
 echo "[rcS] Loading modules"
 
@@ -185,8 +185,7 @@ if [ -e $MODDIR/cifs.ko ]; then
    insmod $MODDIR/cifs.ko
 fi
 
-echo "[rcS] Init FTP (LOAD 1)"
-echo "Ld 1" > /dev/vfd
+echo "[rcS] Init FTP & network"
 /etc/init.d/vsftpd start
 /usr/sbin/inetd
 
@@ -208,6 +207,8 @@ fi
 #Allow network to wake up and initialize
 sleep 2
 
+echo "[rcS] Do extras (LOAD 1)"
+echo "Ld 1" > /dev/vfd
 # Handle SWAPPART and RECORD labels and USB devices
 if [ -e /usr/sbin/amount.sh ]; then
    (sleep 20; /usr/sbin/amount.sh) &

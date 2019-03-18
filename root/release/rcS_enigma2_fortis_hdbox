@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 190125.1
+#Version 190312.1
 
 echo "Fortis FS9000/9200 Enigma2"
 
@@ -49,9 +49,9 @@ echo "[rcS] Init stmfb (LOAD 9)"
 echo "LOAD 9" > /dev/vfd
 insmod $MODDIR/stmcore-display-stx7109c3.ko
 #if grep -q "config.av.videoport=Scart" /etc/enigma2/settings; then
-#  insmod $MODDIR/stmfb.ko display0=720x576-32@50:15m:pal:rgb:rgb #SCART
+#  insmod $MODDIR/stmfb.ko display0=720x576-32@50:15M::pal:cvbs:rgb #SCART
 #else
-  insmod $MODDIR/stmfb.ko display0=1280x720-32@50:16m:pal:rgb:rgb; #HDMI
+  insmod $MODDIR/stmfb.ko display0=1280x720-32@50:16M::pal:cvbs:rgb #HDMI
 #fi
 
 echo "[rcS] Loading modules"
@@ -146,7 +146,6 @@ insmod $MODDIR/boxtype.ko
 insmod $MODDIR/simu_button.ko
 
 echo "[rcS] Init remote control"
-echo "Load 2" > /dev/vfd
 mknod /dev/rc c 147 1
 /bin/evremote2 10 140 &
 
@@ -193,6 +192,8 @@ if [ -e /etc/init.d/automount ]; then
    python /etc/init.d/automount &
 fi
 
+echo "[rcS] Do extras (LOAD 1)"
+echo "LOAD 1" > /dev/vfd
 # inadyn
 inadyn=`cat /etc/enigma2/settings | grep systemoptions.inadyn | cut -d "=" -f2`
 if [ ! $inadyn ] ||  [ ! -e /usr/bin/inadyn ]; then
@@ -219,7 +220,7 @@ if [ ! -e /tmp/reference.dat ] && [ -e /var/bin/reference.dat ]; then
 fi
 
 #timefix e2
-date -s "201605011200"
+#date -s "201605011200"
 # Try and synchronise time
 #inettime=`cat /etc/enigma2/settings | grep systemoptions.inettime | cut -d "=" -f2`
 # if [ ! $inettime ] && [ -e /sbin/ntpdate ]; then
@@ -233,8 +234,7 @@ date -s "201605011200"
 #   fi
 #fi
 
-echo "[rcS] Init portmap & ftp (LOAD 1)"
-echo "LOAD 1" > /dev/vfd
+echo "[rcS] Init portmap & ftp"
 /etc/init.d/portmap start
 /etc/init.d/vsftpd start
 /usr/sbin/inetd
@@ -260,19 +260,19 @@ do
    echo "[rcS] e2 ended <- return value: " $rtv
    /bin/fp_control -i 40 0
    case "$rtv" in
-      0) echo "E2 ERROR"
+      0) echo "[rcS] E2 ERROR"
          echo "E2 Error" > /dev/vfd
          init 6;;
-      1) echo "SHUTDOWN"
+      1) echo "[rcS] SHUTDOWN"
          echo "Shutdown" > /dev/vfd
          if [ -e /usr/local/share/enigma2/shutdown.mvi ]; then
             showiframe -p /usr/local/share/enigma2/shutdown.mvi &
          fi
          init 0;;
-      2) echo "REBOOT"
+      2) echo "[rcS] REBOOT"
          echo "Reboot" > /dev/vfd
          init 6;;
-      3) echo "E2 RESTART"
+      3) echo "[rcS] E2 RESTART"
          echo "Restart GUI" > /dev/vfd
          echo "0" > /proc/progress
          if [ -e /usr/local/share/enigma2/backdrop.mvi ]; then
@@ -280,7 +280,7 @@ do
          else
             showiframe -p /boot/bootlogo.mvi &
          fi;;
-      *) echo "ERROR"
+      *) echo "[rcS] ERROR"
          echo "Error" > /dev/vfd
          init 6;;
    esac
@@ -288,6 +288,6 @@ done
 
 #never reached
 echo "Reboot FS9000/9200" > /dev/vfd
-echo "Reboot FS9000/9200"
+echo "[rcS] Reboot FS9000/9200"
 reboot
 

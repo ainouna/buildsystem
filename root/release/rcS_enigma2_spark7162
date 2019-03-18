@@ -71,9 +71,9 @@ echo "[rcS] Init stmfb (LOAD 9)"
 echo "Load 9" > /dev/vfd
 insmod $MODDIR/stmcore-display-sti7105.ko
 if grep -q "config.av.videoport=Scart" /etc/enigma2/settings; then
-  insmod $MODDIR/stmfb.ko display0=720x576i-32@50:15m:pal:rgb:rgb; #SCART
+  insmod $MODDIR/stmfb.ko display0=720x576i-32@50:15m::pal:cvbs:rgb; #SCART
 else
-  insmod $MODDIR/stmfb.ko display0=1280x720-32@50:16m:pal:rgb:rgb; #HDMI
+  insmod $MODDIR/stmfb.ko display0=1280x720-32@50:16m::pal:cvbs:rgb; #HDMI
 fi
 
 echo "[rcS] Loading modules"
@@ -226,8 +226,7 @@ if [ -e $MODDIR/cifs.ko ]; then
    insmod $MODDIR/cifs.ko
 fi
 
-echo "[rcS] Init FTP (LOAD 1)"
-echo "Load 1" > /dev/vfd
+echo "[rcS] Init FTP & network"
 /etc/init.d/vsftpd start
 /usr/sbin/inetd
 
@@ -253,7 +252,8 @@ sleep 2
 #echo "IP $ip" > /dev/vfd
 #sleep 3
 
-# Start automount
+echo "[rcS] Do extras (LOAD 1)"
+echo "Load 1" > /dev/vfd# Start automount
 if [ -e /etc/init.d/automount ]; then
    python /etc/init.d/automount &
 fi

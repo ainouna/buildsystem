@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 190125.1
+#Version 190312.1
 
 echo "Kathrein UFS912 Enigma2"
 
@@ -49,9 +49,9 @@ echo "[rcS] Init stmfb (LOAD 9)"
 echo "LOAD 9" > /dev/vfd
 insmod $MODDIR/stmcore-display-sti7111.ko
 #if grep -q "config.av.videoport=Scart" /etc/enigma2/settings; then
-#   insmod $MODDIR/stmfb.ko display0=720x576-16@50:1m:pal:cvbs;
+#   insmod $MODDIR/stmfb.ko display0=720x576-16@50:1m::pal:cvbs
 #else
-   insmod $MODDIR/stmfb.ko display0=1280x720-32@50:15m:pal:yuv:yuv;# display1=720x576-16@50:1m:pal:cvbs;
+   insmod $MODDIR/stmfb.ko display0=1280x720-32@50:16m::pal:cvbs:rgb # display1=720x576-16@50:1m::pal:cvbs
 #fi
 echo "[rcS] Loading modules"
 
@@ -186,6 +186,8 @@ if [ -e /etc/init.d/automount ]; then
    python /etc/init.d/automount &
 fi
 
+echo "[rcS] Do extras (LOAD 1)"
+echo "LOAD 1" > /dev/vfd
 # inadyn
 inadyn=`cat /etc/enigma2/settings | grep systemoptions.inadyn | cut -d "=" -f2`
 if [ ! $inadyn ] ||  [ ! -e /usr/bin/inadyn ]; then
@@ -223,8 +225,7 @@ fi
 #   fi
 #fi
 
-echo "[rcS] Init portmap & ftp (LOAD 1)"
-echo "LOAD 1" > /dev/vfd
+echo "[rcS] Init portmap & ftp"
 /etc/init.d/portmap start
 /etc/init.d/vsftpd start
 /usr/sbin/inetd
