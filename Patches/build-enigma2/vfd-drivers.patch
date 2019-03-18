@@ -1,7 +1,6 @@
-diff -Naur '--exclude-from=diff-exclude' enigma2.org/lib/python/Plugins/Extensions/Makefile.am enigma2/lib/python/Plugins/Extensions/Makefile.am
---- enigma2/lib/python/Plugins/Extensions/Makefile.am	2014-03-25 21:34:35.256596942 +0100
-+++ enigma2/lib/python/Plugins/Extensions/Makefile.am	2014-03-26 02:23:54.227866921 +0100
-@@ -10,6 +10,50 @@
+--- enigma2/lib/python/Plugins/Extensions/Makefile.am.orig
++++ enigma2/lib/python/Plugins/Extensions/Makefile.am
+@@ -38,6 +38,50 @@
  SUBDIRS += CuberevoVFD
  endif
  
@@ -53,18 +52,17 @@ diff -Naur '--exclude-from=diff-exclude' enigma2.org/lib/python/Plugins/Extensio
  SUBDIRS += DVDPlayer
  endif
 --- /dev/null
-+++ enigma2/lib/python/Plugins/Extensions/fs9000VFD/__init__.py	2012-03-08 20:35:00.000000000 +0100
++++ enigma2/lib/python/Plugins/Extensions/fs9000VFD/__init__.py
 @@ -0,0 +1,2 @@
 +
 +
 --- /dev/null
-+++ enigma2/lib/python/Plugins/Extensions/fs9000VFD/vfddisplay.png	2012-03-08 20:35:00.000000000 +0100
++++ enigma2/lib/python/Plugins/Extensions/fs9000VFD/vfddisplay.png
 @@ -0,0 +1,2 @@
 +
 +
-diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensions/fs9000VFD/Makefile.am enigma2/lib/python/Plugins/Extensions/fs9000VFD/Makefile.am
---- enigma2.org/lib/python/Plugins/Extensions/fs9000VFD/Makefile.am	1970-01-01 01:00:00.000000000 +0100
-+++ enigma2/lib/python/Plugins/Extensions/fs9000VFD/Makefile.am	2013-12-18 20:00:00.000000000 +0100
+--- enigma2.org/lib/python/Plugins/Extensions/fs9000VFD/Makefile.am
++++ enigma2/lib/python/Plugins/Extensions/fs9000VFD/Makefile.am
 @@ -0,0 +1,10 @@
 +installdir = $(pkglibdir)/python/Plugins/Extensions/fs9000VFD
 +
@@ -76,9 +74,8 @@ diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensi
 +
 +dist_install_DATA = \
 +	vfddisplay.png
-diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensions/fs9000VFD/plugin.py enigma2/lib/python/Plugins/Extensions/fs9000VFD/plugin.py
---- enigma2.org/lib/python/Plugins/Extensions/fs9000VFD/plugin.py	1970-01-01 01:00:00.000000000 +0100
-+++ enigma2/lib/python/Plugins/Extensions/fs9000VFD/plugin.py	2013-12-18 20:00:00.000000000 +0100
+--- enigma2.org/lib/python/Plugins/Extensions/fs9000VFD/plugin.py
++++ enigma2/lib/python/Plugins/Extensions/fs9000VFD/plugin.py
 @@ -0,0 +1,761 @@
 +# -*- coding: utf-8 -*-
 +from Plugins.Plugin import PluginDescriptor
@@ -841,16 +838,14 @@ diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensi
 +			icon = _("vfddisplay.png"),
 +			fnc = opencfg))
 +	return l
-diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensions/fs9000VFD/meta/Makefile.am enigma2/lib/python/Plugins/Extensions/fs9000VFD/meta/Makefile.am
---- enigma2.org/lib/python/Plugins/Extensions/fs9000VFD/meta/Makefile.am	1970-01-01 01:00:00.000000000 +0100
-+++ enigma2/lib/python/Plugins/Extensions/fs9000VFD/meta/Makefile.am	2013-12-18 20:00:00.000000000 +0100
+--- enigma2.org/lib/python/Plugins/Extensions/fs9000VFD/meta/Makefile.am
++++ enigma2/lib/python/Plugins/Extensions/fs9000VFD/meta/Makefile.am
 @@ -0,0 +1,3 @@
 +installdir = $(datadir)/meta
 +
 +dist_install_DATA = plugin_vfd-icons.xml
-diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensions/fs9000VFD/meta/plugin_vfd-icons.xml enigma2/lib/python/Plugins/Extensions/fs9000VFD/meta/plugin_vfd-icons.xml
---- enigma2.org/lib/python/Plugins/Extensions/fs9000VFD/meta/plugin_vfd-icons.xml	1970-01-01 01:00:00.000000000 +0100
-+++ enigma2/lib/python/Plugins/Extensions/fs9000VFD/meta/plugin_vfd-icons.xml	2013-12-18 20:00:00.000000000 +0100
+--- enigma2.org/lib/python/Plugins/Extensions/fs9000VFD/meta/plugin_vfd-icons.xml
++++ enigma2/lib/python/Plugins/Extensions/fs9000VFD/meta/plugin_vfd-icons.xml
 @@ -0,0 +1,20 @@
 +<default>
 +	<prerequisites>
@@ -900,9 +895,8 @@ diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensi
 +dist_install_DATA = \
 +	VFD-Icons.po \
 +	VFD-Icons.mo
-diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensions/fs9000VFD/locale/nl/LC_MESSAGES/VFD-Icons.po Extensions/fs9000VFD/locale/nl/LC_MESSAGES/VFD-Icons.po
---- enigma2.org/lib/python/Plugins/Extensions/fs9000VFD/locale/nl/LC_MESSAGES/VFD-Icons.po	1970-01-01 01:00:00.000000000 +0100
-+++ enigma2/lib/python/Plugins/Extensions/fs9000VFD/locale/nl/LC_MESSAGES/VFD-Icons.po	2013-12-18 20:00:00.000000000 +0100
+--- enigma2.org/lib/python/Plugins/Extensions/fs9000VFD/locale/nl/LC_MESSAGES/VFD-Icons.po
++++ enigma2/lib/python/Plugins/Extensions/fs9000VFD/locale/nl/LC_MESSAGES/VFD-Icons.po
 @@ -0,0 +1,115 @@
 +msgid ""
 +msgstr ""
@@ -1019,21 +1013,18 @@ diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensi
 +
 +msgid "VFD configuration for Fortis FS9000/9200"
 +msgstr "VFD displayinstellingen voor Fortis FS9000/9200"
-diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensions/hs7110VFD/__init__.py enigma2/lib/python/Plugins/Extensions/hs7110VFD/__init__.py
---- enigma2.org/lib/python/Plugins/Extensions/hs7110VFD/__init__.py	1970-01-01 01:00:00.000000000 +0100
-+++ enigma2/lib/python/Plugins/Extensions/hs7110VFD/__init__.py	2012-03-08 20:35:00.000000000 +0100
+--- enigma2.org/lib/python/Plugins/Extensions/hs7110VFD/__init__.py
++++ enigma2/lib/python/Plugins/Extensions/hs7110VFD/__init__.py
 @@ -0,0 +1,2 @@
 +
 +
-diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensions/hs7110VFD/leddisplay.png enigma2/lib/python/Plugins/Extensions/hs7110VFD/leddisplay.png
---- enigma2.org/lib/python/Plugins/Extensions/hs7110VFD/leddisplay.png	1970-01-01 01:00:00.000000000 +0100
-+++ enigma2/lib/python/Plugins/Extensions/hs7110VFD/leddisplay.png	2012-03-08 20:35:00.000000000 +0100
+--- enigma2.org/lib/python/Plugins/Extensions/hs7110VFD/leddisplay.png
++++ enigma2/lib/python/Plugins/Extensions/hs7110VFD/leddisplay.png
 @@ -0,0 +1,2 @@
 +
 +
-diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensions/hs7110VFD/Makefile.am enigma2/lib/python/Plugins/Extensions/hs7110VFD/Makefile.am
---- enigma2.org/lib/python/Plugins/Extensions/hs7110VFD/Makefile.am	1970-01-01 01:00:00.000000000 +0100
-+++ enigma2/lib/python/Plugins/Extensions/hs7110VFD/Makefile.am	2013-12-18 20:00:00.000000000 +0100
+--- enigma2.org/lib/python/Plugins/Extensions/hs7110VFD/Makefile.am
++++ enigma2/lib/python/Plugins/Extensions/hs7110VFD/Makefile.am
 @@ -0,0 +1,10 @@
 +installdir = $(pkglibdir)/python/Plugins/Extensions/hs7110VFD
 +
@@ -1045,9 +1036,8 @@ diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensi
 +
 +dist_install_DATA = \
 +	leddisplay.png
-diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensions/hs7110VFD/plugin.py enigma2/lib/python/Plugins/Extensions/hs7110VFD/plugin.py
---- enigma2.org/lib/python/Plugins/Extensions/hs7110VFD/plugin.py	1970-01-01 01:00:00.000000000 +0100
-+++ enigma2/lib/python/Plugins/Extensions/hs7110VFD/plugin.py	2013-12-18 20:00:00.000000000 +0100
+--- enigma2.org/lib/python/Plugins/Extensions/hs7110VFD/plugin.py
++++ enigma2/lib/python/Plugins/Extensions/hs7110VFD/plugin.py
 @@ -0,0 +1,193 @@
 +# -*- coding: utf-8 -*-
 +from Plugins.Plugin import PluginDescriptor
@@ -1242,16 +1232,14 @@ diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensi
 +			icon = _("leddisplay.png"),
 +			fnc = opencfg))
 +	return l
-diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensions/hs7110VFD/meta/Makefile.am enigma2/lib/python/Plugins/Extensions/hs7110VFD/meta/Makefile.am
---- enigma2.org/lib/python/Plugins/Extensions/hs7110VFD/meta/Makefile.am	1970-01-01 01:00:00.000000000 +0100
-+++ enigma2/lib/python/Plugins/Extensions/hs7110VFD/meta/Makefile.am	2013-12-18 20:00:00.000000000 +0100
+--- enigma2.org/lib/python/Plugins/Extensions/hs7110VFD/meta/Makefile.am
++++ enigma2/lib/python/Plugins/Extensions/hs7110VFD/meta/Makefile.am
 @@ -0,0 +1,3 @@
 +installdir = $(datadir)/meta
 +
 +dist_install_DATA = plugin_vfd-icons.xml
-diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensions/hs7110VFD/meta/plugin_vfd-icons.xml enigma2/lib/python/Plugins/Extensions/hs7110VFD/meta/plugin_vfd-icons.xml
---- enigma2.org/lib/python/Plugins/Extensions/hs7110VFD/meta/plugin_vfd-icons.xml	1970-01-01 01:00:00.000000000 +0100
-+++ enigma2/lib/python/Plugins/Extensions/hs7110VFD/meta/plugin_vfd-icons.xml	2013-12-18 20:00:00.000000000 +0100
+--- enigma2.org/lib/python/Plugins/Extensions/hs7110VFD/meta/plugin_vfd-icons.xml
++++ enigma2/lib/python/Plugins/Extensions/hs7110VFD/meta/plugin_vfd-icons.xml
 @@ -0,0 +1,20 @@
 +<default>
 +	<prerequisites>
@@ -1273,23 +1261,20 @@ diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensi
 +	</files>
 +
 +</default>
-diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensions/hs7110VFD/locale/Makefile.am enigma2/lib/python/Plugins/Extensions/hs7110VFD/locale/Makefile.am
---- enigma2.org/lib/python/Plugins/Extensions/hs7110VFD/locale/Makefile.am	1970-01-01 01:00:00.000000000 +0100
-+++ enigma2/lib/python/Plugins/Extensions/hs7110VFD/locale/Makefile.am	2013-12-18 20:00:00.000000000 +0100
+--- enigma2.org/lib/python/Plugins/Extensions/hs7110VFD/locale/Makefile.am
++++ enigma2/lib/python/Plugins/Extensions/hs7110VFD/locale/Makefile.am
 @@ -0,0 +1,3 @@
 +installdir = $(pkglibdir)/python/Plugins/Extensions/hs7110VFD/locale
 +
 +SUBDIRS = nl
-diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensions/hs7110VFD/locale/nl/Makefile.am enigma2/lib/python/Plugins/Extensions/hs7110VFD/locale/nl/Makefile.am
---- enigma2.org/lib/python/Plugins/Extensions/hs7110VFD/locale/nl/Makefile.am	1970-01-01 01:00:00.000000000 +0100
-+++ enigma2/lib/python/Plugins/Extensions/hs7110VFD/locale/nl/Makefile.am	2013-12-18 20:00:00.000000000 +0100
+--- enigma2.org/lib/python/Plugins/Extensions/hs7110VFD/locale/nl/Makefile.am
++++ enigma2/lib/python/Plugins/Extensions/hs7110VFD/locale/nl/Makefile.am
 @@ -0,0 +1,3 @@
 +installdir = $(pkglibdir)/python/Plugins/Extensions/hs7110VFD/locale/nl
 +
 +SUBDIRS = LC_MESSAGES
-diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensions/hs7110VFD/locale/nl/LC_MESSAGES/Makefile.am enigma2/lib/python/Plugins/Extensions/hs7110VFD/locale/nl/LC_MESSAGES/Makefile.am
---- enigma2.org/lib/python/Plugins/Extensions/hs7110VFD/locale/nl/LC_MESSAGES/Makefile.am	1970-01-01 01:00:00.000000000 +0100
-+++ enigma2/lib/python/Plugins/Extensions/hs7110VFD/locale/nl/LC_MESSAGES/Makefile.am	2013-12-18 20:00:00.000000000 +0100
+--- enigma2.org/lib/python/Plugins/Extensions/hs7110VFD/locale/nl/LC_MESSAGES/Makefile.am
++++ enigma2/lib/python/Plugins/Extensions/hs7110VFD/locale/nl/LC_MESSAGES/Makefile.am
 @@ -0,0 +1,10 @@
 +installdir = $(pkglibdir)/python/Plugins/Extensions/hs7110VFD/locale/nl/LC_MESSAGES
 +
@@ -1301,9 +1286,8 @@ diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensi
 +dist_install_DATA = \
 +	VFD-Icons.po \
 +	VFD-Icons.mo
-diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensions/hs7110VFD/locale/nl/LC_MESSAGES/VFD-Icons.po Extensions/hs7110VFD/locale/nl/LC_MESSAGES/VFD-Icons.po
---- enigma2.org/lib/python/Plugins/Extensions/hs7110VFD/locale/nl/LC_MESSAGES/VFD-Icons.po	1970-01-01 01:00:00.000000000 +0100
-+++ enigma2/lib/python/Plugins/Extensions/hs7110VFD/locale/nl/LC_MESSAGES/VFD-Icons.po	2013-12-18 20:00:00.000000000 +0100
+--- enigma2.org/lib/python/Plugins/Extensions/hs7110VFD/locale/nl/LC_MESSAGES/VFD-Icons.po
++++ enigma2/lib/python/Plugins/Extensions/hs7110VFD/locale/nl/LC_MESSAGES/VFD-Icons.po
 @@ -0,0 +1,134 @@
 +msgid ""
 +msgstr ""
@@ -1439,21 +1423,18 @@ diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensi
 +msgid "LED display configuration for Fortis HS7110"
 +msgstr "LED displayinstellingen voor Fortis FS7110"
 +
-diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensions/hs8200VFD/__init__.py enigma2/lib/python/Plugins/Extensions/hs8200VFD/__init__.py
---- enigma2.org/lib/python/Plugins/Extensions/hs8200VFD/__init__.py	1970-01-01 01:00:00.000000000 +0100
-+++ enigma2/lib/python/Plugins/Extensions/hs8200VFD/__init__.py	2012-03-08 20:35:00.000000000 +0100
+--- enigma2.org/lib/python/Plugins/Extensions/hs8200VFD/__init__.py
++++ enigma2/lib/python/Plugins/Extensions/hs8200VFD/__init__.py
 @@ -0,0 +1,2 @@
 +
 +
-diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensions/hs8200VFD/vfddisplay.png enigma2/lib/python/Plugins/Extensions/hs8200VFD/vfddisplay.png
---- enigma2.org/lib/python/Plugins/Extensions/hs8200VFD/vfddisplay.png	1970-01-01 01:00:00.000000000 +0100
-+++ enigma2/lib/python/Plugins/Extensions/hs8200VFD/vfddisplay.png	2012-03-08 20:35:00.000000000 +0100
+--- enigma2.org/lib/python/Plugins/Extensions/hs8200VFD/vfddisplay.png
++++ enigma2/lib/python/Plugins/Extensions/hs8200VFD/vfddisplay.png
 @@ -0,0 +1,2 @@
 +
 +
-diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensions/hs8200VFD/Makefile.am enigma2/lib/python/Plugins/Extensions/hs8200VFD/Makefile.am
---- enigma2.org/lib/python/Plugins/Extensions/hs8200VFD/Makefile.am	1970-01-01 01:00:00.000000000 +0100
-+++ enigma2/lib/python/Plugins/Extensions/hs8200VFD/Makefile.am	2013-12-18 20:00:00.000000000 +0100
+--- enigma2.org/lib/python/Plugins/Extensions/hs8200VFD/Makefile.am
++++ enigma2/lib/python/Plugins/Extensions/hs8200VFD/Makefile.am
 @@ -0,0 +1,10 @@
 +installdir = $(pkglibdir)/python/Plugins/Extensions/hs8200VFD
 +
@@ -1465,9 +1446,8 @@ diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensi
 +
 +dist_install_DATA = \
 +	vfddisplay.png
-diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensions/hs8200VFD/plugin.py enigma2/lib/python/Plugins/Extensions/hs8200VFD/plugin.py
---- enigma2.org/lib/python/Plugins/Extensions/hs8200VFD/plugin.py	1970-01-01 01:00:00.000000000 +0100
-+++ enigma2/lib/python/Plugins/Extensions/hs8200VFD/plugin.py	2013-12-18 20:00:00.000000000 +0100
+--- enigma2.org/lib/python/Plugins/Extensions/hs8200VFD/plugin.py
++++ enigma2/lib/python/Plugins/Extensions/hs8200VFD/plugin.py
 @@ -0,0 +1,583 @@
 +# -*- coding: utf-8 -*-
 +from Plugins.Plugin import PluginDescriptor
@@ -2052,16 +2032,14 @@ diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensi
 +			icon = _("vfddisplay.png"),
 +			fnc = opencfg))
 +	return l
-diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensions/hs8200VFD/meta/Makefile.am enigma2/lib/python/Plugins/Extensions/hs8200VFD/meta/Makefile.am
---- enigma2.org/lib/python/Plugins/Extensions/hs8200VFD/meta/Makefile.am	1970-01-01 01:00:00.000000000 +0100
-+++ enigma2/lib/python/Plugins/Extensions/hs8200VFD/meta/Makefile.am	2013-12-18 20:00:00.000000000 +0100
+--- enigma2.org/lib/python/Plugins/Extensions/hs8200VFD/meta/Makefile.am
++++ enigma2/lib/python/Plugins/Extensions/hs8200VFD/meta/Makefile.am
 @@ -0,0 +1,3 @@
 +installdir = $(datadir)/meta
 +
 +dist_install_DATA = plugin_vfd-icons.xml
-diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensions/hs8200VFD/meta/plugin_vfd-icons.xml enigma2/lib/python/Plugins/Extensions/hs8200VFD/meta/plugin_vfd-icons.xml
---- enigma2.org/lib/python/Plugins/Extensions/hs8200VFD/meta/plugin_vfd-icons.xml	1970-01-01 01:00:00.000000000 +0100
-+++ enigma2/lib/python/Plugins/Extensions/hs8200VFD/meta/plugin_vfd-icons.xml	2013-12-18 20:00:00.000000000 +0100
+--- enigma2.org/lib/python/Plugins/Extensions/hs8200VFD/meta/plugin_vfd-icons.xml
++++ enigma2/lib/python/Plugins/Extensions/hs8200VFD/meta/plugin_vfd-icons.xml
 @@ -0,0 +1,20 @@
 +<default>
 +	<prerequisites>
@@ -2083,23 +2061,20 @@ diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensi
 +	</files>
 +
 +</default>
-diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensions/hs8200VFD/locale/Makefile.am enigma2/lib/python/Plugins/Extensions/hs8200VFD/locale/Makefile.am
---- enigma2.org/lib/python/Plugins/Extensions/hs8200VFD/locale/Makefile.am	1970-01-01 01:00:00.000000000 +0100
-+++ enigma2/lib/python/Plugins/Extensions/hs8200VFD/locale/Makefile.am	2013-12-18 20:00:00.000000000 +0100
+--- enigma2.org/lib/python/Plugins/Extensions/hs8200VFD/locale/Makefile.am
++++ enigma2/lib/python/Plugins/Extensions/hs8200VFD/locale/Makefile.am
 @@ -0,0 +1,3 @@
 +installdir = $(pkglibdir)/python/Plugins/Extensions/hs8200VFD/locale
 +
 +SUBDIRS = nl
-diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensions/hs8200VFD/locale/nl/Makefile.am enigma2/lib/python/Plugins/Extensions/hs8200VFD/locale/nl/Makefile.am
---- enigma2.org/lib/python/Plugins/Extensions/hs8200VFD/locale/nl/Makefile.am	1970-01-01 01:00:00.000000000 +0100
-+++ enigma2/lib/python/Plugins/Extensions/hs8200VFD/locale/nl/Makefile.am	2013-12-18 20:00:00.000000000 +0100
+--- enigma2.org/lib/python/Plugins/Extensions/hs8200VFD/locale/nl/Makefile.am
++++ enigma2/lib/python/Plugins/Extensions/hs8200VFD/locale/nl/Makefile.am
 @@ -0,0 +1,3 @@
 +installdir = $(pkglibdir)/python/Plugins/Extensions/hs8200VFD/locale/nl
 +
 +SUBDIRS = LC_MESSAGES
-diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensions/hs8200VFD/locale/nl/LC_MESSAGES/Makefile.am enigma2/lib/python/Plugins/Extensions/hs8200VFD/locale/nl/LC_MESSAGES/Makefile.am
---- enigma2.org/lib/python/Plugins/Extensions/hs8200VFD/locale/nl/LC_MESSAGES/Makefile.am	1970-01-01 01:00:00.000000000 +0100
-+++ enigma2/lib/python/Plugins/Extensions/hs8200VFD/locale/nl/LC_MESSAGES/Makefile.am	2013-12-18 20:00:00.000000000 +0100
+--- enigma2.org/lib/python/Plugins/Extensions/hs8200VFD/locale/nl/LC_MESSAGES/Makefile.am
++++ enigma2/lib/python/Plugins/Extensions/hs8200VFD/locale/nl/LC_MESSAGES/Makefile.am
 @@ -0,0 +1,10 @@
 +installdir = $(pkglibdir)/python/Plugins/Extensions/hs8200VFD/locale/nl/LC_MESSAGES
 +
@@ -2111,9 +2086,8 @@ diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensi
 +dist_install_DATA = \
 +	VFD-Icons.po \
 +	VFD-Icons.mo
-diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensions/hs8200VFD/locale/nl/LC_MESSAGES/VFD-Icons.po Extensions/hs8200VFD/locale/nl/LC_MESSAGES/VFD-Icons.po
---- enigma2.org/lib/python/Plugins/Extensions/hs8200VFD/locale/nl/LC_MESSAGES/VFD-Icons.po	1970-01-01 01:00:00.000000000 +0100
-+++ enigma2/lib/python/Plugins/Extensions/hs8200VFD/locale/nl/LC_MESSAGES/VFD-Icons.po	2013-12-18 20:00:00.000000000 +0100
+--- enigma2.org/lib/python/Plugins/Extensions/hs8200VFD/locale/nl/LC_MESSAGES/VFD-Icons.po
++++ enigma2/lib/python/Plugins/Extensions/hs8200VFD/locale/nl/LC_MESSAGES/VFD-Icons.po
 @@ -0,0 +1,115 @@
 +msgid ""
 +msgstr ""
@@ -2230,21 +2204,18 @@ diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensi
 +
 +msgid "VFD configuration for Fortis HS8200"
 +msgstr "VFD displayinstellingen voor Fortis HS8200"
-diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensions/hs9510VFD/__init__.py enigma2/lib/python/Plugins/Extensions/hs9510VFD/__init__.py
---- enigma2.org/lib/python/Plugins/Extensions/hs9510VFD/__init__.py	1970-01-01 01:00:00.000000000 +0100
-+++ enigma2/lib/python/Plugins/Extensions/hs9510VFD/__init__.py	2012-03-08 20:35:00.000000000 +0100
+--- enigma2.org/lib/python/Plugins/Extensions/hs9510VFD/__init__.py
++++ enigma2/lib/python/Plugins/Extensions/hs9510VFD/__init__.py
 @@ -0,0 +1,2 @@
 +
 +
-diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensions/hs9510VFD/vfddisplay.png enigma2/lib/python/Plugins/Extensions/hs9510VFD/vfddisplay.png
---- enigma2.org/lib/python/Plugins/Extensions/hs9510VFD/vfddisplay.png	1970-01-01 01:00:00.000000000 +0100
-+++ enigma2/lib/python/Plugins/Extensions/hs9510VFD/vfddisplay.png	2012-03-08 20:35:00.000000000 +0100
+--- enigma2.org/lib/python/Plugins/Extensions/hs9510VFD/vfddisplay.png
++++ enigma2/lib/python/Plugins/Extensions/hs9510VFD/vfddisplay.png
 @@ -0,0 +1,2 @@
 +
 +
-diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensions/hs9510VFD/Makefile.am enigma2/lib/python/Plugins/Extensions/hs9510VFD/Makefile.am
---- enigma2.org/lib/python/Plugins/Extensions/hs9510VFD/Makefile.am	1970-01-01 01:00:00.000000000 +0100
-+++ enigma2/lib/python/Plugins/Extensions/hs9510VFD/Makefile.am	2013-12-18 20:00:00.000000000 +0100
+--- enigma2.org/lib/python/Plugins/Extensions/hs9510VFD/Makefile.am
++++ enigma2/lib/python/Plugins/Extensions/hs9510VFD/Makefile.am
 @@ -0,0 +1,10 @@
 +installdir = $(pkglibdir)/python/Plugins/Extensions/hs9510VFD
 +
@@ -2256,9 +2227,8 @@ diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensi
 +
 +dist_install_DATA = \
 +	vfddisplay.png
-diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensions/hs9510VFD/plugin.py enigma2/lib/python/Plugins/Extensions/hs9510VFD/plugin.py
---- enigma2.org/lib/python/Plugins/Extensions/hs9510VFD/plugin.py	1970-01-01 01:00:00.000000000 +0100
-+++ enigma2/lib/python/Plugins/Extensions/hs9510VFD/plugin.py	2013-12-18 20:00:00.000000000 +0100
+--- enigma2.org/lib/python/Plugins/Extensions/hs9510VFD/plugin.py
++++ enigma2/lib/python/Plugins/Extensions/hs9510VFD/plugin.py
 @@ -0,0 +1,641 @@
 +# -*- coding: utf-8 -*-
 +from Plugins.Plugin import PluginDescriptor
@@ -2901,16 +2871,14 @@ diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensi
 +			icon = _("vfddisplay.png"),
 +			fnc = opencfg))
 +	return l
-diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensions/hs9510VFD/meta/Makefile.am enigma2/lib/python/Plugins/Extensions/hs9510VFD/meta/Makefile.am
---- enigma2.org/lib/python/Plugins/Extensions/hs9510VFD/meta/Makefile.am	1970-01-01 01:00:00.000000000 +0100
-+++ enigma2/lib/python/Plugins/Extensions/hs9510VFD/meta/Makefile.am	2013-12-18 20:00:00.000000000 +0100
+--- enigma2.org/lib/python/Plugins/Extensions/hs9510VFD/meta/Makefile.am
++++ enigma2/lib/python/Plugins/Extensions/hs9510VFD/meta/Makefile.am
 @@ -0,0 +1,3 @@
 +installdir = $(datadir)/meta
 +
 +dist_install_DATA = plugin_vfd-icons.xml
-diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensions/hs9510VFD/meta/plugin_vfd-icons.xml enigma2/lib/python/Plugins/Extensions/hs9510VFD/meta/plugin_vfd-icons.xml
---- enigma2.org/lib/python/Plugins/Extensions/hs9510VFD/meta/plugin_vfd-icons.xml	1970-01-01 01:00:00.000000000 +0100
-+++ enigma2/lib/python/Plugins/Extensions/hs9510VFD/meta/plugin_vfd-icons.xml	2013-12-18 20:00:00.000000000 +0100
+--- enigma2.org/lib/python/Plugins/Extensions/hs9510VFD/meta/plugin_vfd-icons.xml
++++ enigma2/lib/python/Plugins/Extensions/hs9510VFD/meta/plugin_vfd-icons.xml
 @@ -0,0 +1,20 @@
 +<default>
 +	<prerequisites>
@@ -2932,23 +2900,20 @@ diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensi
 +	</files>
 +
 +</default>
-diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensions/hs9510VFD/locale/Makefile.am enigma2/lib/python/Plugins/Extensions/hs9510VFD/locale/Makefile.am
---- enigma2.org/lib/python/Plugins/Extensions/hs9510VFD/locale/Makefile.am	1970-01-01 01:00:00.000000000 +0100
-+++ enigma2/lib/python/Plugins/Extensions/hs9510VFD/locale/Makefile.am	2013-12-18 20:00:00.000000000 +0100
+--- enigma2.org/lib/python/Plugins/Extensions/hs9510VFD/locale/Makefile.am
++++ enigma2/lib/python/Plugins/Extensions/hs9510VFD/locale/Makefile.am
 @@ -0,0 +1,3 @@
 +installdir = $(pkglibdir)/python/Plugins/Extensions/hs9510VFD/locale
 +
 +SUBDIRS = nl
-diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensions/hs9510VFD/locale/nl/Makefile.am enigma2/lib/python/Plugins/Extensions/hs9510VFD/locale/nl/Makefile.am
---- enigma2.org/lib/python/Plugins/Extensions/hs9510VFD/locale/nl/Makefile.am	1970-01-01 01:00:00.000000000 +0100
-+++ enigma2/lib/python/Plugins/Extensions/hs9510VFD/locale/nl/Makefile.am	2013-12-18 20:00:00.000000000 +0100
+--- enigma2.org/lib/python/Plugins/Extensions/hs9510VFD/locale/nl/Makefile.am
++++ enigma2/lib/python/Plugins/Extensions/hs9510VFD/locale/nl/Makefile.am
 @@ -0,0 +1,3 @@
 +installdir = $(pkglibdir)/python/Plugins/Extensions/hs9510VFD/locale/nl
 +
 +SUBDIRS = LC_MESSAGES
-diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensions/hs9510VFD/locale/nl/LC_MESSAGES/Makefile.am enigma2/lib/python/Plugins/Extensions/hs9510VFD/locale/nl/LC_MESSAGES/Makefile.am
---- enigma2.org/lib/python/Plugins/Extensions/hs9510VFD/locale/nl/LC_MESSAGES/Makefile.am	1970-01-01 01:00:00.000000000 +0100
-+++ enigma2/lib/python/Plugins/Extensions/hs9510VFD/locale/nl/LC_MESSAGES/Makefile.am	2013-12-18 20:00:00.000000000 +0100
+--- enigma2.org/lib/python/Plugins/Extensions/hs9510VFD/locale/nl/LC_MESSAGES/Makefile.am
++++ enigma2/lib/python/Plugins/Extensions/hs9510VFD/locale/nl/LC_MESSAGES/Makefile.am
 @@ -0,0 +1,10 @@
 +installdir = $(pkglibdir)/python/Plugins/Extensions/hs9510VFD/locale/nl/LC_MESSAGES
 +
@@ -3082,21 +3047,18 @@ diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensi
 +
 +msgid "VFD display configuration for Fortis HS9510"
 +msgstr "VFD displayinstellingen voor Fortis HS9510"
-diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensions/hs7810aVFD/__init__.py enigma2/lib/python/Plugins/Extensions/hs7810aVFD/__init__.py
---- enigma2.org/lib/python/Plugins/Extensions/hs7810aVFD/__init__.py	1970-01-01 01:00:00.000000000 +0100
-+++ enigma2/lib/python/Plugins/Extensions/hs7810aVFD/__init__.py	2012-03-08 20:35:00.000000000 +0100
+--- enigma2.org/lib/python/Plugins/Extensions/hs7810aVFD/__init__.py
++++ enigma2/lib/python/Plugins/Extensions/hs7810aVFD/__init__.py
 @@ -0,0 +1,2 @@
 +
 +
-diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensions/hs7810aVFD/leddisplay.png enigma2/lib/python/Plugins/Extensions/hs7810aVFD/leddisplay.png
---- enigma2.org/lib/python/Plugins/Extensions/hs7810aVFD/leddisplay.png	1970-01-01 01:00:00.000000000 +0100
-+++ enigma2/lib/python/Plugins/Extensions/hs7810aVFD/leddisplay.png	2012-03-08 20:35:00.000000000 +0100
+--- enigma2.org/lib/python/Plugins/Extensions/hs7810aVFD/leddisplay.png
++++ enigma2/lib/python/Plugins/Extensions/hs7810aVFD/leddisplay.png
 @@ -0,0 +1,2 @@
 +
 +
-diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensions/hs7810aVFD/Makefile.am enigma2/lib/python/Plugins/Extensions/hs7810aVFD/Makefile.am
---- enigma2.org/lib/python/Plugins/Extensions/hs7810aVFD/Makefile.am	1970-01-01 01:00:00.000000000 +0100
-+++ enigma2/lib/python/Plugins/Extensions/hs7810aVFD/Makefile.am	2013-12-18 20:00:00.000000000 +0100
+--- enigma2.org/lib/python/Plugins/Extensions/hs7810aVFD/Makefile.am
++++ enigma2/lib/python/Plugins/Extensions/hs7810aVFD/Makefile.am
 @@ -0,0 +1,10 @@
 +installdir = $(pkglibdir)/python/Plugins/Extensions/hs7810aVFD
 +
@@ -3521,16 +3483,14 @@ diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensi
 +			fnc = opencfg))
 +	return l
 +
-diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensions/hs7810aVFD/meta/Makefile.am enigma2/lib/python/Plugins/Extensions/hs7810aVFD/meta/Makefile.am
---- enigma2.org/lib/python/Plugins/Extensions/hs7810aVFD/meta/Makefile.am	1970-01-01 01:00:00.000000000 +0100
-+++ enigma2/lib/python/Plugins/Extensions/hs7810aVFD/meta/Makefile.am	2013-12-18 20:00:00.000000000 +0100
+--- enigma2.org/lib/python/Plugins/Extensions/hs7810aVFD/meta/Makefile.am
++++ enigma2/lib/python/Plugins/Extensions/hs7810aVFD/meta/Makefile.am
 @@ -0,0 +1,3 @@
 +installdir = $(datadir)/meta
 +
 +dist_install_DATA = plugin_vfd-icons.xml
-diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensions/hs7810aVFD/meta/plugin_vfd-icons.xml enigma2/lib/python/Plugins/Extensions/hs7810aVFD/meta/plugin_vfd-icons.xml
---- enigma2.org/lib/python/Plugins/Extensions/hs7810aVFD/meta/plugin_vfd-icons.xml	1970-01-01 01:00:00.000000000 +0100
-+++ enigma2/lib/python/Plugins/Extensions/hs7810aVFD/meta/plugin_vfd-icons.xml	2013-12-18 20:00:00.000000000 +0100
+--- enigma2.org/lib/python/Plugins/Extensions/hs7810aVFD/meta/plugin_vfd-icons.xml
++++ enigma2/lib/python/Plugins/Extensions/hs7810aVFD/meta/plugin_vfd-icons.xml
 @@ -0,0 +1,20 @@
 +<default>
 +	<prerequisites>
@@ -3552,23 +3512,20 @@ diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensi
 +	</files>
 +
 +</default>
-diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensions/hs7810aVFD/locale/Makefile.am enigma2/lib/python/Plugins/Extensions/hs7810aVFD/locale/Makefile.am
---- enigma2.org/lib/python/Plugins/Extensions/hs7810aVFD/locale/Makefile.am	1970-01-01 01:00:00.000000000 +0100
-+++ enigma2/lib/python/Plugins/Extensions/hs7810aVFD/locale/Makefile.am	2013-12-18 20:00:00.000000000 +0100
+--- enigma2.org/lib/python/Plugins/Extensions/hs7810aVFD/locale/Makefile.am
++++ enigma2/lib/python/Plugins/Extensions/hs7810aVFD/locale/Makefile.am
 @@ -0,0 +1,3 @@
 +installdir = $(pkglibdir)/python/Plugins/Extensions/hs7810aVFD/locale
 +
 +SUBDIRS = nl
-diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensions/hs7810aVFD/locale/nl/Makefile.am enigma2/lib/python/Plugins/Extensions/hs7810aVFD/locale/nl/Makefile.am
---- enigma2.org/lib/python/Plugins/Extensions/hs7810aVFD/locale/nl/Makefile.am	1970-01-01 01:00:00.000000000 +0100
-+++ enigma2/lib/python/Plugins/Extensions/hs7810aVFD/locale/nl/Makefile.am	2013-12-18 20:00:00.000000000 +0100
+--- enigma2.org/lib/python/Plugins/Extensions/hs7810aVFD/locale/nl/Makefile.am
++++ enigma2/lib/python/Plugins/Extensions/hs7810aVFD/locale/nl/Makefile.am
 @@ -0,0 +1,3 @@
 +installdir = $(pkglibdir)/python/Plugins/Extensions/hs7810aVFD/locale/nl
 +
 +SUBDIRS = LC_MESSAGES
-diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensions/hs7810aVFD/locale/nl/LC_MESSAGES/Makefile.am enigma2/lib/python/Plugins/Extensions/hs7810aVFD/locale/nl/LC_MESSAGES/Makefile.am
---- enigma2.org/lib/python/Plugins/Extensions/hs7810aVFD/locale/nl/LC_MESSAGES/Makefile.am	1970-01-01 01:00:00.000000000 +0100
-+++ enigma2/lib/python/Plugins/Extensions/hs7810aVFD/locale/nl/LC_MESSAGES/Makefile.am	2013-12-18 20:00:00.000000000 +0100
+--- enigma2.org/lib/python/Plugins/Extensions/hs7810aVFD/locale/nl/LC_MESSAGES/Makefile.am
++++ enigma2/lib/python/Plugins/Extensions/hs7810aVFD/locale/nl/LC_MESSAGES/Makefile.am
 @@ -0,0 +1,10 @@
 +installdir = $(pkglibdir)/python/Plugins/Extensions/hs7810aVFD/locale/nl/LC_MESSAGES
 +
@@ -3580,9 +3537,8 @@ diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensi
 +dist_install_DATA = \
 +	VFD-Icons.po \
 +	VFD-Icons.mo
-diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensions/hs7810aVFD/locale/nl/LC_MESSAGES/VFD-Icons.po enigma2/lib/python/Plugins/Extensions/hs7810aVFD/locale/nl/LC_MESSAGES/VFD-Icons.po
---- enigma2.org/lib/python/Plugins/Extensions/hs7810aVFD/locale/nl/LC_MESSAGES/VFD-Icons.po	1970-01-01 01:00:00.000000000 +0100
-+++ enigma2/lib/python/Plugins/Extensions/hs7810aVFD/locale/nl/LC_MESSAGES/VFD-Icons.po	2013-12-18 20:00:00.000000000 +0100
+--- enigma2.org/lib/python/Plugins/Extensions/hs7810aVFD/locale/nl/LC_MESSAGES/VFD-Icons.po
++++ enigma2/lib/python/Plugins/Extensions/hs7810aVFD/locale/nl/LC_MESSAGES/VFD-Icons.po
 @@ -0,0 +1,100 @@
 +msgid ""
 +msgstr ""
@@ -3685,17 +3641,17 @@ diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensi
 +msgid "LED display configuration for Fortis HS7119/HS7810A/HS7819"
 +msgstr "LED displayinstellingen voor Fortis HS7119/HS7810A/HS7819"
 --- /dev/null
-+++ enigma2/lib/python/Plugins/Extensions/hs742xVFD/__init__.py	2012-03-08 20:35:00.000000000 +0100
++++ enigma2/lib/python/Plugins/Extensions/hs742xVFD/__init__.py
 @@ -0,0 +1,2 @@
 +
 +
 --- /dev/null
-+++ enigma2/lib/python/Plugins/Extensions/hs742xVFD/vfddisplay.png	2012-03-08 20:35:00.000000000 +0100
++++ enigma2/lib/python/Plugins/Extensions/hs742xVFD/vfddisplay.png
 @@ -0,0 +1,2 @@
 +
 +
 --- /dev/null
-+++ enigma2/lib/python/Plugins/Extensions/hs742xVFD/Makefile.am	2013-12-18 20:00:00.000000000 +0100
++++ enigma2/lib/python/Plugins/Extensions/hs742xVFD/Makefile.am
 @@ -0,0 +1,10 @@
 +installdir = $(pkglibdir)/python/Plugins/Extensions/hs742xVFD
 +
@@ -3708,7 +3664,7 @@ diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensi
 +dist_install_DATA = \
 +	vfddisplay.png
 --- /dev/null
-+++ enigma2/lib/python/Plugins/Extensions/hs742xVFD/plugin.py	2013-12-18 20:00:00.000000000 +0100
++++ enigma2/lib/python/Plugins/Extensions/hs742xVFD/plugin.py
 @@ -0,0 +1,435 @@
 +# -*- coding: utf-8 -*-
 +from Screens.Screen import Screen
@@ -4146,13 +4102,13 @@ diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensi
 +			fnc = opencfg))
 +	return l
 --- /dev/null
-+++ enigma2/lib/python/Plugins/Extensions/hs742xVFD/meta/Makefile.am	2013-12-18 20:00:00.000000000 +0100
++++ enigma2/lib/python/Plugins/Extensions/hs742xVFD/meta/Makefile.am
 @@ -0,0 +1,3 @@
 +installdir = $(datadir)/meta
 +
 +dist_install_DATA = plugin_vfd-icons.xml
 --- /dev/null
-+++ enigma2/lib/python/Plugins/Extensions/hs742xVFD/meta/plugin_vfd-icons.xml	2013-12-18 20:00:00.000000000 +0100
++++ enigma2/lib/python/Plugins/Extensions/hs742xVFD/meta/plugin_vfd-icons.xml
 @@ -0,0 +1,20 @@
 +<default>
 +	<prerequisites>
@@ -4175,19 +4131,19 @@ diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensi
 +
 +</default>
 --- /dev/null
-+++ enigma2/lib/python/Plugins/Extensions/hs742xVFD/locale/Makefile.am	2013-12-18 20:00:00.000000000 +0100
++++ enigma2/lib/python/Plugins/Extensions/hs742xVFD/locale/Makefile.am
 @@ -0,0 +1,3 @@
 +installdir = $(pkglibdir)/python/Plugins/Extensions/hs742xVFD/locale
 +
 +SUBDIRS = nl
 --- /dev/null
-+++ enigma2/lib/python/Plugins/Extensions/hs742xVFD/locale/nl/Makefile.am	2013-12-18 20:00:00.000000000 +0100
++++ enigma2/lib/python/Plugins/Extensions/hs742xVFD/locale/nl/Makefile.am
 @@ -0,0 +1,3 @@
 +installdir = $(pkglibdir)/python/Plugins/Extensions/hs742xVFD/locale/nl
 +
 +SUBDIRS = LC_MESSAGES
 --- /dev/null
-+++ enigma2/lib/python/Plugins/Extensions/hs742xVFD/locale/nl/LC_MESSAGES/Makefile.am	2013-12-18 20:00:00.000000000 +0100
++++ enigma2/lib/python/Plugins/Extensions/hs742xVFD/locale/nl/LC_MESSAGES/Makefile.am
 @@ -0,0 +1,10 @@
 +installdir = $(pkglibdir)/python/Plugins/Extensions/hs742xVFD/locale/nl/LC_MESSAGES
 +
@@ -4200,7 +4156,7 @@ diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensi
 +	VFD-Icons.po \
 +	VFD-Icons.mo
 --- /dev/null
-+++ enigma2/lib/python/Plugins/Extensions/hs742xVFD/locale/nl/LC_MESSAGES/VFD-Icons.po	2013-12-18 20:00:00.000000000 +0100
++++ enigma2/lib/python/Plugins/Extensions/hs742xVFD/locale/nl/LC_MESSAGES/VFD-Icons.po
 @@ -0,0 +1,118 @@
 +msgid ""
 +msgstr ""
@@ -4321,17 +4277,17 @@ diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensi
 +msgid "VFD display configuration for Fortis HS742X"
 +msgstr "VFD displayinstellingen voor Fortis HS742X"
 --- /dev/null
-+++ enigma2/lib/python/Plugins/Extensions/spark7162VFD/__init__.py	2012-03-08 20:35:00.000000000 +0100
++++ enigma2/lib/python/Plugins/Extensions/spark7162VFD/__init__.py
 @@ -0,0 +1,2 @@
 +
 +
 --- /dev/null
-+++ enigma2/lib/python/Plugins/Extensions/spark7162VFD/vfddisplay.png	2012-03-08 20:35:00.000000000 +0100
++++ enigma2/lib/python/Plugins/Extensions/spark7162VFD/vfddisplay.png
 @@ -0,0 +1,2 @@
 +
 +
 --- /dev/null
-+++ enigma2/lib/python/Plugins/Extensions/spark7162VFD/Makefile.am	2013-12-18 20:00:00.000000000 +0100
++++ enigma2/lib/python/Plugins/Extensions/spark7162VFD/Makefile.am
 @@ -0,0 +1,10 @@
 +installdir = $(pkglibdir)/python/Plugins/Extensions/spark7162VFD
 +
@@ -4344,7 +4300,7 @@ diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensi
 +dist_install_DATA = \
 +	vfddisplay.png
 --- /dev/null
-+++ enigma2/lib/python/Plugins/Extensions/spark7162VFD/plugin.py	2013-12-18 20:00:00.000000000 +0100
++++ enigma2/lib/python/Plugins/Extensions/spark7162VFD/plugin.py
 @@ -0,0 +1,821 @@
 +# -*- coding: utf-8 -*-
 +from Plugins.Plugin import PluginDescriptor
@@ -5168,13 +5124,13 @@ diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensi
 +			fnc = opencfg))
 +	return l
 --- /dev/null
-+++ enigma2/lib/python/Plugins/Extensions/spark7162VFD/meta/Makefile.am	2013-12-18 20:00:00.000000000 +0100
++++ enigma2/lib/python/Plugins/Extensions/spark7162VFD/meta/Makefile.am
 @@ -0,0 +1,3 @@
 +installdir = $(datadir)/meta
 +
 +dist_install_DATA = plugin_vfd-icons.xml
 --- /dev/null
-+++ enigma2/lib/python/Plugins/Extensions/spark7162VFD/meta/plugin_vfd-icons.xml	2013-12-18 20:00:00.000000000 +0100
++++ enigma2/lib/python/Plugins/Extensions/spark7162VFD/meta/plugin_vfd-icons.xml
 @@ -0,0 +1,20 @@
 +<default>
 +	<prerequisites>
@@ -5197,19 +5153,19 @@ diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensi
 +
 +</default>
 --- /dev/null
-+++ enigma2/lib/python/Plugins/Extensions/spark7162VFD/locale/Makefile.am	2013-12-18 20:00:00.000000000 +0100
++++ enigma2/lib/python/Plugins/Extensions/spark7162VFD/locale/Makefile.am
 @@ -0,0 +1,3 @@
 +installdir = $(pkglibdir)/python/Plugins/Extensions/spark7162VFD/locale
 +
 +SUBDIRS = nl
 --- /dev/null
-+++ enigma2/lib/python/Plugins/Extensions/spark7162VFD/locale/nl/Makefile.am	2013-12-18 20:00:00.000000000 +0100
++++ enigma2/lib/python/Plugins/Extensions/spark7162VFD/locale/nl/Makefile.am
 @@ -0,0 +1,3 @@
 +installdir = $(pkglibdir)/python/Plugins/Extensions/spark7162VFD/locale/nl
 +
 +SUBDIRS = LC_MESSAGES
 --- /dev/null
-+++ enigma2/lib/python/Plugins/Extensions/spark7162VFD/locale/nl/LC_MESSAGES/Makefile.am	2013-12-18 20:00:00.000000000 +0100
++++ enigma2/lib/python/Plugins/Extensions/spark7162VFD/locale/nl/LC_MESSAGES/Makefile.am
 @@ -0,0 +1,10 @@
 +installdir = $(pkglibdir)/python/Plugins/Extensions/spark7162VFD/locale/nl/LC_MESSAGES
 +
@@ -5222,7 +5178,7 @@ diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensi
 +	VFD-Icons.po \
 +	VFD-Icons.mo
 --- /dev/null
-+++ enigma2/lib/python/Plugins/Extensions/spark7162VFD/locale/nl/LC_MESSAGES/VFD-Icons.po	2013-12-18 20:00:00.000000000 +0100
++++ enigma2/lib/python/Plugins/Extensions/spark7162VFD/locale/nl/LC_MESSAGES/VFD-Icons.po
 @@ -0,0 +1,133 @@
 +msgid ""
 +msgstr ""
@@ -5358,17 +5314,17 @@ diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensi
 +msgid "VFD display configuration for Spark 7162"
 +msgstr "VFD displayinstellingen voor Spark 7162"
 --- /dev/null
-+++ enigma2/lib/python/Plugins/Extensions/sparkVFD/__init__.py	2012-03-08 20:35:00.000000000 +0100
++++ enigma2/lib/python/Plugins/Extensions/sparkVFD/__init__.py
 @@ -0,0 +1,2 @@
 +
 +
 --- /dev/null
-+++ enigma2/lib/python/Plugins/Extensions/sparkVFD/leddisplay.png	2012-03-08 20:35:00.000000000 +0100
++++ enigma2/lib/python/Plugins/Extensions/sparkVFD/leddisplay.png
 @@ -0,0 +1,2 @@
 +
 +
 --- /dev/null
-+++ enigma2/lib/python/Plugins/Extensions/sparkVFD/Makefile.am	2013-12-18 20:00:00.000000000 +0100
++++ enigma2/lib/python/Plugins/Extensions/sparkVFD/Makefile.am
 @@ -0,0 +1,10 @@
 +installdir = $(pkglibdir)/python/Plugins/Extensions/sparkVFD
 +
@@ -5380,9 +5336,8 @@ diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensi
 +
 +dist_install_DATA = \
 +	leddisplay.png
-diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensions/sparkVFD/plugin.py enigma2/lib/python/Plugins/Extensions/sparkVFD/plugin.py
---- enigma2.org/lib/python/Plugins/Extensions/sparkVFD/plugin.py	1970-01-01 01:00:00.000000000 +0100
-+++ enigma2/lib/python/Plugins/Extensions/sparkVFD/plugin.py	2013-12-18 20:00:00.000000000 +0100
+--- enigma2.org/lib/python/Plugins/Extensions/sparkVFD/plugin.py
++++ enigma2/lib/python/Plugins/Extensions/sparkVFD/plugin.py
 @@ -0,0 +1,389 @@
 +# -*- coding: utf-8 -*-
 +from Plugins.Plugin import PluginDescriptor
@@ -5774,13 +5729,13 @@ diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensi
 +			fnc = opencfg))
 +	return l
 --- /dev/null
-+++ enigma2/lib/python/Plugins/Extensions/sparkVFD/meta/Makefile.am	2013-12-18 20:00:00.000000000 +0100
++++ enigma2/lib/python/Plugins/Extensions/sparkVFD/meta/Makefile.am
 @@ -0,0 +1,3 @@
 +installdir = $(datadir)/meta
 +
 +dist_install_DATA = plugin_vfd-icons.xml
 --- /dev/null
-+++ enigma2/lib/python/Plugins/Extensions/sparkVFD/meta/plugin_vfd-icons.xml	2013-12-18 20:00:00.000000000 +0100
++++ enigma2/lib/python/Plugins/Extensions/sparkVFD/meta/plugin_vfd-icons.xml
 @@ -0,0 +1,20 @@
 +<default>
 +	<prerequisites>
@@ -5803,19 +5758,19 @@ diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensi
 +
 +</default>
 --- /dev/null
-+++ enigma2/lib/python/Plugins/Extensions/sparkVFD/locale/Makefile.am	2013-12-18 20:00:00.000000000 +0100
++++ enigma2/lib/python/Plugins/Extensions/sparkVFD/locale/Makefile.am
 @@ -0,0 +1,3 @@
 +installdir = $(pkglibdir)/python/Plugins/Extensions/sparkVFD/locale
 +
 +SUBDIRS = nl
 --- /dev/null
-+++ enigma2/lib/python/Plugins/Extensions/sparkVFD/locale/nl/Makefile.am	2013-12-18 20:00:00.000000000 +0100
++++ enigma2/lib/python/Plugins/Extensions/sparkVFD/locale/nl/Makefile.am
 @@ -0,0 +1,3 @@
 +installdir = $(pkglibdir)/python/Plugins/Extensions/sparkVFD/locale/nl
 +
 +SUBDIRS = LC_MESSAGES
 --- /dev/null
-+++ enigma2/lib/python/Plugins/Extensions/sparkVFD/locale/nl/LC_MESSAGES/Makefile.am	2013-12-18 20:00:00.000000000 +0100
++++ enigma2/lib/python/Plugins/Extensions/sparkVFD/locale/nl/LC_MESSAGES/Makefile.am
 @@ -0,0 +1,10 @@
 +installdir = $(pkglibdir)/python/Plugins/Extensions/sparkVFD/locale/nl/LC_MESSAGES
 +
@@ -5828,7 +5783,7 @@ diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensi
 +	VFD-Icons.po \
 +	VFD-Icons.mo
 --- /dev/null
-+++ enigma2/lib/python/Plugins/Extensions/sparkVFD/locale/nl/LC_MESSAGES/VFD-Icons.po	2013-12-18 20:00:00.000000000 +0100
++++ enigma2/lib/python/Plugins/Extensions/sparkVFD/locale/nl/LC_MESSAGES/VFD-Icons.po
 @@ -0,0 +1,106 @@
 +msgid ""
 +msgstr ""
