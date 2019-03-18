@@ -12,7 +12,7 @@ BUSYBOX_PATCH += busybox-$(BUSYBOX_VER)-flashcp-small-output.patch
 $(ARCHIVE)/$(BUSYBOX_SOURCE):
 	$(WGET) https://busybox.net/downloads/$(BUSYBOX_SOURCE)
 
-ifeq ($(BOXTYPE), $(filter $(BOXTYPE), spark spark7162 ufs912 ufs913))
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs7119 hs7429 hs7819 spark spark7162 ufs912 ufs913))
 BUSYBOX_CONFIG = busybox-$(BUSYBOX_VER).config_nandwrite
 else
 BUSYBOX_CONFIG = busybox-$(BUSYBOX_VER).config
@@ -37,7 +37,7 @@ $(D)/busybox: $(D)/bootstrap $(ARCHIVE)/$(BUSYBOX_SOURCE) $(PATCHES)/$(BUSYBOX_C
 #
 BUSYBOX_USB_VER = $(BUSYBOX_VER)
 
-ifeq ($(BOXTYPE), $(filter $(BOXTYPE), spark spark7162 ufs912 ufs913))
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs7119 hs7429 hs7819 spark spark7162 ufs912 ufs913))
 BUSYBOX_USB_CONFIG = busybox_usb-$(BUSYBOX_USB_VER).config_nandwrite
 else
 BUSYBOX_USB_CONFIG = busybox_usb-$(BUSYBOX_USB_VER).config
@@ -500,7 +500,7 @@ $(D)/jfsutils: $(D)/bootstrap $(D)/e2fsprogs $(ARCHIVE)/$(JFSUTILS_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/jfsutils-$(JFSUTILS_VER)
 	$(UNTAR)/$(JFSUTILS_SOURCE)
-	set -e; cd $(BUILD_TMP)/jfsutils-$(JFSUTILS_VER); \
+	$(SET) -e; cd $(BUILD_TMP)/jfsutils-$(JFSUTILS_VER); \
 		$(call apply_patches, $(JFSUTILS_PATCH)); \
 		sed "s@<unistd.h>@&\n#include <sys/types.h>@g" -i fscklog/extract.c; \
 		autoreconf -fi $(SILENT_OPT); \
