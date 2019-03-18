@@ -15,7 +15,6 @@ enigma2_release_cube_common:
 	$(SILENT)cp $(SKEL_ROOT)/firmware/dvb-fe-cx24116.fw $(RELEASE_DIR)/lib/firmware/
 	$(SILENT)cp $(SKEL_ROOT)/firmware/dvb-fe-stv6306.fw $(RELEASE_DIR)/lib/firmware/
 	$(SILENT)cp -f $(SKEL_ROOT)/release/rc_cuberevo_uni.png $(RELEASE_DIR)/usr/local/share/enigma2/skin_default/rc.png
-	$(SILENT)cp -f $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/rc_cuberevo_uni.xml $(RELEASE_DIR)/usr/local/share/enigma2/rcpositions.xml
 	$(SILENT)cp -f $(SKEL_ROOT)/root_enigma2/usr/local/share/enigma2/keymap_cube.xml $(RELEASE_DIR)/usr/local/share/enigma2/keymap.xml
 
 #
@@ -909,6 +908,10 @@ endif
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/TuxboxPlugins
 #
 # delete unnecessary remote control files and VFD plugins
+#
+ifneq ($(BOXTYPE), $(filter $(BOXTYPE), cuberevo cuberevo_mini_fta cuberevo_250hd cuberevo_mini cuberevo_mini2 cuberevo_2000hd cuberevo_3000hd cuberevo_9500hd))
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/CuberevoVFD
+endif
 #
 	$(SILENT)cp -f $(SKEL_ROOT)/release/rc_cuberevo_uni.png $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/cuberevo_uni.png
 	$(SILENT)cp -f $(SKEL_ROOT)/release/rc_fs9000.png $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/fs9000.png
