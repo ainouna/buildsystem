@@ -84,13 +84,12 @@ E_CONFIG_OPTS +=$(LOCAL_ENIGMA2_BUILD_OPTIONS)
 E_CPPFLAGS    = -I$(DRIVER_DIR)/include
 E_CPPFLAGS   += -I$(TARGET_DIR)/usr/include
 E_CPPFLAGS   += -I$(KERNEL_DIR)/include
+E_CPPFLAGS   += -I$(APPS_DIR)/tools
 ifeq ($(E2_DIFF), $(filter $(E2_DIFF), 1))
 E_CPPFLAGS   += -I$(APPS_DIR)/tools/libeplayer3/include
-E_CPPFLAGS   += -I$(APPS_DIR)/tools
 else
 ifeq ($(E2_DIFF), $(filter $(E2_DIFF), 5))
 E_CPPFLAGS   += -I$(APPS_DIR)/tools/libeplayer3/include
-E_CPPFLAGS   += -I$(APPS_DIR)/tools
 else
 endif
 endif
