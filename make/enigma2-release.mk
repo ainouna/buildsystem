@@ -861,6 +861,13 @@ endif
 	$(SILENT)rm -rf $(RELEASE_DIR)/lib/modules/$(KERNEL_VER)
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/gcc
 	$(SILENT)rm -f $(RELEASE_DIR)/usr/lib/libc.so
+	$(SILENT)rm -f $(addprefix $(RELEASE_DIR)/usr/local/share/,skin_display_dm800se.xml skin_display_e4hd.xml skin_display_et10000.xml skin_display_et8500.xml skin_display_gbquad4k.xml skin_display_gbu4k.xml skin_display_hd2400.xml skin_display_vuduo2.xml skin_display_vuduo4k.xml skin_display_vusolo4k.xml skin_display_vuultimo4k.xml skin_display_vuuno4kse.xml skin_text_formuler1.xml)
+	$(SILENT)if [ -d $(RELEASE_DIR)/usr/local/share/hwinfo ]; then \
+		rm -rf $(RELEASE_DIR)/usr/local/share/hwinfo; \
+	fi
+	$(SILENT)if [ -d $(RELEASE_DIR)/usr/local/share/skin_default/LCDIcons ]; then \
+		rm -rf $(RELEASE_DIR)/usr/local/share/skin_default/LCDIcons; \
+	fi
 #
 # delete unnecessary files python
 #
@@ -901,6 +908,7 @@ endif
 	$(SILENT)rm -rf $(RELEASE_DIR)/$(PYTHON_DIR)/site-packages/twisted/web/test
 	$(SILENT)rm -rf $(RELEASE_DIR)/$(PYTHON_DIR)/site-packages/twisted/words/test
 	$(SILENT)rm -rf $(RELEASE_DIR)/$(PYTHON_DIR)/site-packages/*-py$(PYTHON_VER_MAJOR).egg-info
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/{GlobalActions,Navigation,NavigationInstance,RecordTimer,ServiceReference,SleepTimer,e2reactor,enigma,keyids,keymapparser,skin,timer}.py*
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/DemoPlugins
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/SystemPlugins/FrontprocessorUpgrade
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/SystemPlugins/NFIFlash
@@ -966,7 +974,7 @@ endif
 # Do not remove pyo files, remove pyc instead
 #
 	$(SILENT)find $(RELEASE_DIR)/usr/lib/enigma2/ -name '*.pyc' -exec rm -f {} \;
-ifeq ($(OPTIMIZATIONS), size)
+ifeq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), small size))
 ifneq ($(BOXTYPE), atevio7500)
 	$(SILENT)find $(RELEASE_DIR)/usr/lib/enigma2/ -not -name 'mytest.py' -name '*.py' -exec rm -f {} \;
 else
@@ -977,7 +985,7 @@ endif
 	$(SILENT)find $(RELEASE_DIR)/usr/lib/enigma2/ -name '*.o' -exec rm -f {} \;
 	$(SILENT)find $(RELEASE_DIR)/usr/lib/enigma2/ -name '*.la' -exec rm -f {} \;
 	$(SILENT)find $(RELEASE_DIR)/$(PYTHON_DIR)/ -name '*.pyc' -exec rm -f {} \;
-ifeq ($(OPTIMIZATIONS), size)
+ifeq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), small size))
 	$(SILENT)find $(RELEASE_DIR)/$(PYTHON_DIR)/ -name '*.py' -exec rm -f {} \;
 endif
 	$(SILENT)find $(RELEASE_DIR)/$(PYTHON_DIR)/ -name '*.a' -exec rm -f {} \;
