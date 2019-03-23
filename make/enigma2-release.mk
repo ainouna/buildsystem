@@ -908,12 +908,15 @@ endif
 	$(SILENT)rm -rf $(RELEASE_DIR)/$(PYTHON_DIR)/site-packages/twisted/web/test
 	$(SILENT)rm -rf $(RELEASE_DIR)/$(PYTHON_DIR)/site-packages/twisted/words/test
 	$(SILENT)rm -rf $(RELEASE_DIR)/$(PYTHON_DIR)/site-packages/*-py$(PYTHON_VER_MAJOR).egg-info
-	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/{GlobalActions,Navigation,NavigationInstance,RecordTimer,ServiceReference,SleepTimer,e2reactor,enigma,keyids,keymapparser,skin,timer}.py*
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/DemoPlugins
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/SystemPlugins/FrontprocessorUpgrade
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/SystemPlugins/NFIFlash
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/FileManager
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/TuxboxPlugins
+ifeq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), small size))
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/DVDBurn
+endif
+
 #
 # delete unnecessary remote control files and VFD plugins
 #
