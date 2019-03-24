@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20190211.1
+# Version 20190324.1
 
 ##############################################
 
@@ -24,8 +24,8 @@ if [ "$1" == -h ] || [ "$1" == --help ]; then
 	echo "Parameter 3       : optimization (1-5)"
 	echo "Parameter 4       : image (Enigma=1/2 Neutrino=3/4 Tvheadend=5 (1-5)"
 	echo "Parameter 5       : Neutrino variant (1-6) or Enigma2/Tvheadend diff (0-5)"
-	echo "Parameter 6       : media Framework (Enigma2: 1-5, Neutrino, Tvheadend: ignored)"
-	echo "Parameter 7       : destination (1-2, 1=flash, 2=USB, Fortis HS711X, HS742X & HS781X, ignored otherwise)"
+	echo "Parameter 6       : media Framework (Enigma2: 1-5; Neutrino, Tvheadend: ignored)"
+	echo "Parameter 7       : destination (1-2, 1=flash, 2=USB, Fortis HS711X, HS742X & HS781X)"
 	exit
 fi
 
@@ -375,7 +375,7 @@ case "$IMAGE" in
 				echo "   3)  gstreamer (E2 player uses gstreamer only)"
 				echo "   4*) gstreamer+eplayer3 (recommended, E2 player uses gstreamer + libeplayer3)"
 				echo "   5)  gstreamer/eplayer3 (E2 player is switchable between gstreamer & libeplayer3)"
-				read -p "Select media framework (1-4)? ";;
+				read -p "Select media framework (1-5)? ";;
 		esac
 
 		case "$REPLY" in
@@ -397,9 +397,9 @@ case "$IMAGE" in
 				echo "=================================================================================================="
 				echo " 1)  Use your own Enigma2 git dir without patchfile"
 				echo "=================================================================================================="
-				echo " 2*) Mon, 10 Dec 2018 19:01 - E2 OpenPLi  any framework  a8e73e1874100aad76e44117b74543fb4018ff61"
-				echo " 3)  Fri, 02 Nov 2018 20:28 - E2 OpenPLi  any framework  ac0d34146f76cdfdb9363e6780424fd284743b68"
-				echo " 4)  Mon, 29 Oct 2018 12:49 - E2 OpenPLi  any framework  3e63f640c6b31c5c15c150f67c6cbac6b89bcb20"
+				echo " 2*) Sat, 23 Mar 2019 19:40 - E2 OpenPLi  any framework  e2e791cf8426028d8cc225d5fa2bceb55df634f5"
+				echo " 3)  Mon, 10 Dec 2018 19:01 - E2 OpenPLi  any framework  a8e73e1874100aad76e44117b74543fb4018ff61"
+				echo " 4)  Fri, 02 Nov 2018 20:28 - E2 OpenPLi  any framework  ac0d34146f76cdfdb9363e6780424fd284743b68"
 				echo " 5)  Fri, 11 Apr 2017 17:45 - E2 OpenPLi  any framework  e45a15d8f494f70c9285e1532c6b6460328f6b89"
 				echo "=================================================================================================="
 				echo "Media Framework         : $MEDIAFW"
@@ -411,15 +411,15 @@ case "$IMAGE" in
 			1)	DIFF="1"
 				REVISION="local";;
 			3)	DIFF="3"
-				REVISION="ac0d34146f76cdfdb9363e6780424fd284743b68";;
+				REVISION="a8e73e1874100aad76e44117b74543fb4018ff61";;
 			4)	DIFF="4"
-				REVISION="3e63f640c6b31c5c15c150f67c6cbac6b89bcb20";;
+				REVISION="ac0d34146f76cdfdb9363e6780424fd284743b68";;
 			5)	DIFF="5"
 				REVISION="e45a15d8f494f70c9285e1532c6b6460328f6b89";;
 			0)	DIFF="0"
 				REVISION="newest";;
 			*)	DIFF="2"
-				REVISION="a8e73e1874100aad76e44117b74543fb4018ff61";;
+				REVISION="e2e791cf8426028d8cc225d5fa2bceb55df634f5";; # 23-03
 		esac
 
 		echo "E2_DIFF=$DIFF" >> config

@@ -253,7 +253,8 @@ sleep 2
 #sleep 3
 
 echo "[rcS] Do extras (LOAD 1)"
-echo "Load 1" > /dev/vfd# Start automount
+echo "Load 1" > /dev/vfd
+# Start automount
 if [ -e /etc/init.d/automount ]; then
    python /etc/init.d/automount &
 fi
@@ -266,7 +267,6 @@ fi
 # Try and synchronise time
 #inettime=`cat /etc/enigma2/settings | grep systemoptions.inettime | cut -d "=" -f2`
 # if [ ! $inettime ] && [ -h /usr/sbin/ntpd ]; then
-#if [ -h /usr/sbin/ntpd ] || [ -e /usr/sbin/ntpd ] || [ -e /sbin/ntpd ]; then
    echo "[rcS] Set internet time"
    (ntpd -n -p 0.europe.pool.ntp.org -q; /bin/fp_control -sst)
 #else

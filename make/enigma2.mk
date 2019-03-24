@@ -8,8 +8,11 @@ ENIGMA2_DEPS += python-all $(D)/alsa_utils
 ENIGMA2_DEPS += $(D)/libid3tag
 ENIGMA2_DEPS += $(D)/expat $(D)/libusb
 ENIGMA2_DEPS += $(D)/sdparm $(D)/minidlna $(D)/ethtool
-ENIGMA2_DEPS += $(D)/libdreamdvd
-
+ENIGMA2_DEPS += $(D)/libdreamdvd $(D)/libudfread
+#ifneq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), small size))
+# required for DVDBurn plugin
+#ENIGMA2_DEPS += $(D)/dvd+rw-tools $(D)/dvdauthor $(D)/mjpegtools $(D)/cdrkit $(D)/python-imaging
+#endif
 ifeq ($(IMAGE), enigma2-wlandriver)
 ENIGMA2_DEPS += $(D)/wpa_supplicant $(D)/wireless_tools
 endif
