@@ -1838,8 +1838,8 @@ $(D)/libpsl: $(D)/bootstrap $(D)/host_python
 	$(START_BUILD)
 	$(REMOVE)/libpsl
 	$(SET) -e; if [ -d $(ARCHIVE)/libpsl.git ]; \
-		then cd $(ARCHIVE)/libpsl.git; git pull; \
-		else cd $(ARCHIVE); git clone git://github.com/rockdaboot/libpsl.git libpsl.git; \
+		then cd $(ARCHIVE)/libpsl.git; git pull $(SILENT_CONFIGURE); \
+		else cd $(ARCHIVE); git clone $(SILENT_CONFIGURE) git://github.com/rockdaboot/libpsl.git libpsl.git; \
 		fi
 	$(SILENT)cp -ra $(ARCHIVE)/libpsl.git $(BUILD_TMP)/libpsl
 	$(CH_DIR)/libpsl; \
@@ -1979,7 +1979,8 @@ $(D)/libxml2: $(D)/bootstrap $(D)/zlib $(ARCHIVE)/$(LIBXML2_SOURCE)
 		$(MAKE) install DESTDIR=$(TARGET_DIR); \
 		if [ -d $(TARGET_DIR)/usr/include/libxml2/libxml ] ; then \
 			ln -sf ./libxml2/libxml $(TARGET_DIR)/usr/include/libxml; \
-		fi;
+		fi; \
+		cp libxml.m4 $(TARGET_DIR)/usr/share/aclocal
 	$(SILENT)mv $(TARGET_DIR)/usr/bin/xml2-config $(HOST_DIR)/bin
 	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libxml-2.0.pc
 	$(REWRITE_PKGCONF) $(HOST_DIR)/bin/xml2-config
@@ -2185,7 +2186,8 @@ $(D)/lcd4linux: $(D)/bootstrap $(D)/libusb_compat $(D)/gd $(D)/libusb $(D)/libdp
 		$(BUILDENV) ./bootstrap $(SILENT_OPT); \
 		$(BUILDENV) ./configure $(CONFIGURE_OPTS) $(SILENT_OPT) \
 			--prefix=/usr \
-			--with-drivers='DPF,SamsungSPF$(LCD4LINUX_DRV),PNG' \			--with-plugins='all,!apm,!asterisk,!dbus,!dvb,!gps,!hddtemp,!huawei,!imon,!isdn,!kvv,!mpd,!mpris_dbus,!mysql,!pop3,!ppp,!python,!qnaplog,!raspi,!sample,!seti,!w1retap,!wireless,!xmms' \
+			--with-drivers='DPF,SamsungSPF$(LCD4LINUX_DRV),PNG' \
+			--with-plugins='all,!apm,!asterisk,!dbus,!dvb,!gps,!hddtemp,!huawei,!imon,!isdn,!kvv,!mpd,!mpris_dbus,!mysql,!pop3,!ppp,!python,!qnaplog,!raspi,!sample,!seti,!w1retap,!wireless,!xmms' \
 			--without-ncurses \
 		; \
 		$(MAKE) vcs_version all; \
@@ -2622,7 +2624,7 @@ $(D)/rarfs: $(D)/bootstrap $(D)/fuse $(ARCHIVE)/$(RARFS_SOURCE)
 		export PKG_CONFIG_PATH=$(PKG_CONFIG_PATH); \
 		$(CONFIGURE) \
 			CFLAGS="$(TARGET_CFLAGS) -D_FILE_OFFSET_BITS=64" \
-+			--prefix=/usr \
+			--prefix=/usr \
 			--disable-option-checking \
 			--includedir=/usr/include/fuse \
 		; \
@@ -2871,15 +2873,14 @@ LIBUDFREAD_VER_MINOR = 0
 LIBUDFREAD_VER_MICRO = 0
 LIBUDFREAD_VER = $(LIBUDFREAD_VER_MAJOR).$(LIBUDFREAD_VER_MINOR).$(LIBUDFREAD_VER_MICRO)
 LIBUDFREAD_URL = https://git.videolan.org/git/libudfread.git
-#LIBUDFREAD_SOURCE = libudfread-git-$(LIBUDFREAD_VER).tar.xz
 LIBUDFREAD_PATCH =
 
 $(D)/libudfread: $(D)/bootstrap
 	$(START_BUILD)
 	$(REMOVE)/libudfread-$(LIBUDFREAD_VER)
 	$(SET) -e; if [ -d $(ARCHIVE)/libudfread.git ]; \
-		then cd $(ARCHIVE)/libudfread.git; git pull; \
-		else cd $(ARCHIVE); git clone $(LIBUDFREAD_URL) libudfread.git; \
+		then cd $(ARCHIVE)/libudfread.git; git pull $(SILENT_CONFIGURE); \
+		else cd $(ARCHIVE); git clone $(SILENT_CONFIGURE) $(LIBUDFREAD_URL) libudfread.git; \
 		fi
 	$(SILENT)cp -ra $(ARCHIVE)/libudfread.git $(BUILD_TMP)/libudfread-$(LIBUDFREAD_VER)
 	$(CH_DIR)/libudfread-$(LIBUDFREAD_VER); \
@@ -2927,5 +2928,31 @@ $(D)/uchardet: $(D)/bootstrap $(ARCHIVE)/$(UCHARDET_SOURCE)
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
 	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/uchardet.pc
 	$(REMOVE)/uchardet-$(UCHARDET_VER)
+	$(TOUCH)
+
+#
+# libcap
+#
+LIBCAP_VER = 2.25
+LIBCAP_SOURCE = libcap-$(LIBCAP_VER).tar.gz
+LIBCAP_PATCH  = libcap-$(LIBCAP_VER)-cross_compile.patch
+LIBCAP_PATCH += libcap-$(LIBCAP_VER)-old_kernel.patch
+
+$(ARCHIVE)/$(LIBCAP_SOURCE):
+	$(WGET) https://git.kernel.org/pub/scm/libs/libcap/libcap.git/snapshot/$(LIBCAP_SOURCE)
+
+$(D)/libcap: $(D)/bootstrap $(D)/libglib2 $(ARCHIVE)/$(LIBCAP_SOURCE)
+	$(START_BUILD)
+	$(REMOVE)/libcap-$(LIBCAP_VER)
+	$(UNTAR)/$(LIBCAP_SOURCE)
+	$(CH_DIR)/libcap-$(LIBCAP_VER); \
+		$(call apply_patches, $(LIBCAP_PATCH)); \
+		sed -e 's,:=,?=,g' -i Make.Rules; \
+		sed -e 's,^BUILD_CFLAGS ?= $(.*CFLAGS),BUILD_CFLAGS := $(BUILD_CFLAGS),' -i Make.Rules; \
+		sed -e '/shell gperf/cifeq (,yes)' -i libcap/Makefile; \
+		$(MAKE) CC=$(TARGET)-gcc INDENT= lib=/usr/lib RAISE_SETFCAP=no DYNAMIC=yes; \
+		$(MAKE) RAISE_SETFCAP=no prefix=/usr lib=lib DESTDIR=$(TARGET_DIR) SBINDIR=/usr/sbin install
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libcap.pc
+	$(REMOVE)/libcap-$(LIBCAP_VER)
 	$(TOUCH)
 
