@@ -2884,6 +2884,7 @@ $(D)/libudfread: $(D)/bootstrap
 	$(SILENT)cp -ra $(ARCHIVE)/libudfread.git $(BUILD_TMP)/libudfread-$(LIBUDFREAD_VER)
 	$(CH_DIR)/libudfread-$(LIBUDFREAD_VER); \
 		$(call apply_patches, $(LIBUDFREAD_PATCH)); \
+		autoreconf -fi $(SILENT_OPT); \
 		$(CONFIGURE) \
 			--prefix=/usr \
 			--mandir=/.remove \
@@ -2892,7 +2893,6 @@ $(D)/libudfread: $(D)/bootstrap
 		; \
 		$(MAKE); \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
-	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libudfread.pc
 	$(REWRITE_LIBTOOL)/libudfread.la
 	$(REWRITE_LIBTOOLDEP)/libudfread.la
 	rm -f $(addprefix $(TARGET_DIR)/usr/bin/,psktool gnutls-cli-debug certtool srptool ocsptool gnutls-serv gnutls-cli)
