@@ -8361,7 +8361,7 @@
  
  	def __init__(self):
  		global hw_info
-@@ -35,37 +35,15 @@
+@@ -35,37 +35,19 @@
  			pass
  
  		# Model
@@ -8379,7 +8379,7 @@
 -				except:
 -					pass
 +		try:
-+			self.device_name = open("/proc/stb/info/boxtype").read().strip()
++			self.device_model = open("/proc/stb/info/boxtype").read().strip()
 +		except:
 +			pass
  
@@ -8390,14 +8390,16 @@
 -			self.machine_name = "%sx00" % self.device_model[:3]
 -		else:
 -			self.machine_name = self.device_model
--
++		self.machine_name = self.device_model
+ 
 -		if self.device_revision:
 -			self.device_string = "%s (%s-%s)" % (self.device_model, self.device_revision, self.device_version)
 -		elif self.device_version:
 -			self.device_string = "%s (%s)" % (self.device_model, self.device_version)
 -		else:
 -			self.device_string = self.device_model
--
++		self.device_string = self.device_model
+ 
  		# only some early DMM boxes do not have HDMI hardware
 -		self.device_hdmi =  self.device_model not in ("dm800", "dm8000")
 +#		self.device_hdmi =  self.device_model not in ("dm800", "dm8000")
