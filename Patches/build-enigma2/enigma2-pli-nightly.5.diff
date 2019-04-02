@@ -162,7 +162,7 @@
  
  AC_CHECK_LIB([udfread], [udfread_init])
  AC_CHECK_LIB([dl], [dlopen], [LIBDL_LIBS="-ldl"], [AC_MSG_ERROR([Could not find libdl])])
-@@ -205,6 +345,22 @@
+@@ -205,6 +345,32 @@
  	PKG_CHECK_MODULES(DVBCSA, libdvbcsa)
  fi
  
@@ -176,6 +176,16 @@
 +fi
 +AM_CONDITIONAL(HAVE_GRAPHLCD, test x"$withgraphlcd" != xno)
 +
++AC_ARG_WITH(lcd4linux,
++	AC_HELP_STRING([--with-lcd4linux], [use LCD4Linux color display, yes or no]),
++	[[withlcd4linux=$withval]],
++	[[withlcd4linux=no]]
++)
++if test x"$withlcd4linux" != xno ; then
++	AC_DEFINE(HAVE_LCD4LINUX, 1,[Define when using a LCD4Linux color display device])
++fi
++AM_CONDITIONAL(HAVE_LCD4LINUX, test x"$withlcd4linux" != xno)
++ 
 +PKG_CHECK_MODULES([AVFORMAT], [libavformat >= 53.21.1])
 +PKG_CHECK_MODULES([AVCODEC], [libavcodec >= 54.28.0])
 +# do not know which version is exactly needed here...
@@ -185,7 +195,7 @@
  
  ENIGMA2_CFLAGS="-fno-rtti -fno-exceptions"
  AC_SUBST(ENIGMA2_CFLAGS)
-@@ -266,8 +422,6 @@
+@@ -266,8 +432,6 @@
  lib/python/Plugins/Extensions/TuxboxPlugins/Makefile
  lib/python/Plugins/Extensions/TuxboxPlugins/meta/Makefile
  lib/python/Plugins/PLi/Makefile
@@ -194,7 +204,7 @@
  lib/python/Plugins/SystemPlugins/DefaultServicesScanner/Makefile
  lib/python/Plugins/SystemPlugins/DefaultServicesScanner/meta/Makefile
  lib/python/Plugins/SystemPlugins/DiseqcTester/Makefile
-@@ -297,6 +451,50 @@
+@@ -297,6 +461,50 @@
  lib/python/Plugins/SystemPlugins/Videomode/meta/Makefile
  lib/python/Plugins/SystemPlugins/WirelessLan/Makefile
  lib/python/Plugins/SystemPlugins/WirelessLan/meta/Makefile

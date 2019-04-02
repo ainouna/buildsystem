@@ -9,17 +9,17 @@ ENIGMA2_DEPS += $(D)/libid3tag
 ENIGMA2_DEPS += $(D)/expat $(D)/libusb
 ENIGMA2_DEPS += $(D)/sdparm $(D)/minidlna $(D)/ethtool
 ENIGMA2_DEPS += $(D)/libdreamdvd $(D)/libudfread
-#ifneq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), small size))
-# required for DVDBurn plugin
-#ENIGMA2_DEPS += $(D)/dvd+rw-tools $(D)/dvdauthor $(D)/mjpegtools $(D)/cdrkit $(D)/python-imaging
-#endif
+ifneq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), small size))
+# required for DVDBurn plugin (adds ? Mbyte to image)
+ENIGMA2_DEPS += $(D)/dvd+rw-tools $(D)/dvdauthor $(D)/mjpegtools $(D)/cdrkit $(D)/python_imaging
+endif
 ifeq ($(IMAGE), enigma2-wlandriver)
 ENIGMA2_DEPS += $(D)/wpa_supplicant $(D)/wireless_tools
 endif
 
 ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs7110 hs7119 hs7420 hs7429 hs7810a hs7819))
 ifeq ($(DESTINATION), USB)
-ENIGMA2_DEPS += $(D)/busybox_usb
+#ENIGMA2_DEPS += $(D)/busybox_usb
 E_CONFIG_OPTS += --enable-run_from_usb
 endif
 endif
@@ -78,6 +78,23 @@ ENIGMA2_DEPS  += $(D)/gst_plugins_good $(D)/gst_plugins_bad $(D)/gst_plugins_ugl
 E_CONFIG_OPTS += --with-gstversion=1.0 --enable-mediafwgstreamer --enable-libeplayer3
 endif
 endif
+endif
+
+ifeq ($(EXTERNAL_LCD), graphlcd)
+E_CONFIG_OPTS += --with-graphlcd
+ENIGMA2_DEPS_ += $(D)/graphlcd
+endif
+
+ifeq ($(EXTERNAL_LCD), lcd4linux)
+E_CONFIG_OPTS += --with-lcd4linux
+ENIGMA2_DEPS += $(D)/lcd4linux
+endif
+
+ifeq ($(EXTERNAL_LCD), both)
+E_CONFIG_OPTS += --with-graphlcd
+ENIGMA2_DEPS += $(D)/graphlcd
+E_CONFIG_OPTS += --with-lcd4linux
+ENIGMA2_DEPS += $(D)/lcd4linux
 endif
 
 #E_CONFIG_OPTS += --enable-$(BOXTYPE)

@@ -352,7 +352,7 @@
  fi
  
  AC_ARG_WITH(alsamixer,
-@@ -192,11 +414,21 @@
+@@ -192,12 +414,32 @@
  )
  AM_CONDITIONAL(HAVE_AMLOGIC, test x"$with_amlogic" = xyes)
  if test x"$with_amlogic" = xyes ; then
@@ -362,7 +362,7 @@
  	PKG_CHECK_MODULES(AMADEC, libamadec)
  	PKG_CHECK_MODULES(DVBCSA, libdvbcsa)
  fi
-+
+ 
 +AC_ARG_WITH(graphlcd,
 +	AC_HELP_STRING([--with-graphlcd], [use GraphLCD color display, yes or no]),
 +	[[withgraphlcd=$withval]],
@@ -372,10 +372,21 @@
 +	AC_DEFINE(HAVE_GRAPHLCD, 1, [Define when using a GraphLCD color display device])
 +fi
 +AM_CONDITIONAL(HAVE_GRAPHLCD, test x"$withgraphlcd" != xno)
- 
++
++AC_ARG_WITH(lcd4linux,
++	AC_HELP_STRING([--with-lcd4linux], [use LCD4Linux color display, yes or no]),
++	[[withlcd4linux=$withval]],
++	[[withlcd4linux=no]]
++)
++if test x"$withlcd4linux" != xno ; then
++	AC_DEFINE(HAVE_LCD4LINUX, 1,[Define when using a LCD4Linux color display device])
++fi
++AM_CONDITIONAL(HAVE_LCD4LINUX, test x"$withlcd4linux" != xno)
++ 
  AC_ARG_WITH(alphablendingacceleration,
  	AC_HELP_STRING([--with-alphablendingacceleration=never/always/auto], [alphablending acceleration strategy: never accelerate / always accelerate / automatically decide when to accelerate (default)]),
-@@ -313,8 +545,6 @@
+ 	[[with_alphablendingacceleration=$withval]],
+@@ -313,8 +555,6 @@
  lib/python/Plugins/Extensions/TuxboxPlugins/Makefile
  lib/python/Plugins/Extensions/TuxboxPlugins/meta/Makefile
  lib/python/Plugins/PLi/Makefile
@@ -384,7 +395,7 @@
  lib/python/Plugins/SystemPlugins/DefaultServicesScanner/Makefile
  lib/python/Plugins/SystemPlugins/DefaultServicesScanner/meta/Makefile
  lib/python/Plugins/SystemPlugins/DiseqcTester/Makefile
-@@ -344,6 +574,50 @@
+@@ -344,6 +584,50 @@
  lib/python/Plugins/SystemPlugins/Videomode/meta/Makefile
  lib/python/Plugins/SystemPlugins/WirelessLan/Makefile
  lib/python/Plugins/SystemPlugins/WirelessLan/meta/Makefile

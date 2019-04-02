@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20190324.1
+# Version 20190402.1
 
 ##############################################
 
@@ -14,7 +14,7 @@ fi
 ##############################################
 
 if [ "$1" == -h ] || [ "$1" == --help ]; then
-	echo "Usage: $0 [-v | --verbose | -q | --quiet] [-b | --batchmode] [Parameter1 [Parameter2 ... [Parameter7]]]]]]]"
+	echo "Usage: $0 [-v | --verbose | -q | --quiet] [-b | --batchmode] [Parameter1 [Parameter2 ... [Parameter8]]]]]]]"
 	echo
 	echo "-v or --verbose   : verbose build (very noisy!)"
 	echo "-q or --quiet     : quiet build, fastest, almost silent"
@@ -25,7 +25,8 @@ if [ "$1" == -h ] || [ "$1" == --help ]; then
 	echo "Parameter 4       : image (Enigma=1/2 Neutrino=3/4 Tvheadend=5 (1-5)"
 	echo "Parameter 5       : Neutrino variant (1-6) or Enigma2/Tvheadend diff (0-5)"
 	echo "Parameter 6       : media Framework (Enigma2: 1-5; Neutrino, Tvheadend: ignored)"
-	echo "Parameter 7       : destination (1-2, 1=flash, 2=USB, Fortis HS711X, HS742X & HS781X)"
+	echo "Parameter 7       : external LCD (1=none, 2=graphlcd, 3=lcd4linux, 4=both)"
+	echo "Parameter 8       : destination (1-2, 1=flash, 2=USB)"
 	exit
 fi
 
@@ -446,7 +447,28 @@ echo "MEDIAFW=$MEDIAFW" >> config
 ##############################################
 
 case $7 in
-	[1-2])	REPLY=$7;;
+	[1-4]) REPLY=$7;;
+	*)	echo -e "\nExternal LCD support:"
+		echo "   1)  No external LCD"
+		echo "   2)  graphlcd for external LCD"
+		echo "   3)  lcd4linux for external LCD"
+		echo "   4)  graphlcd and lcd4linux for external LCD (both)"
+		read -p "Select external LCD support (1-4)? ";;
+esac
+
+case "$REPLY" in
+	1) EXTERNAL_LCD="none";;
+	2) EXTERNAL_LCD="graphlcd";;
+	3) EXTERNAL_LCD="lcd4linux";;
+	4) EXTERNAL_LCD="both";;
+	*) EXTERNAL_LCD="none";;
+esac
+echo "EXTERNAL_LCD=$EXTERNAL_LCD" >> config
+
+##############################################
+
+case $8 in
+	[1-2])	REPLY=$8;;
 	*)	echo -e "\nWhere will the image be running:"
 		echo "   1*) Flash memory or hard disk"
 		echo "   2)  USB stick"
