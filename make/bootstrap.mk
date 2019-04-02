@@ -69,9 +69,10 @@ $(D)/host_module_init_tools: $(ARCHIVE)/$(HOST_MODULE_INIT_TOOLS_SOURCE)
 #
 # host_mtd_utils
 #
-HOST_MTD_UTILS_VER = $(MTD_UTILS_VER)
+HOST_MTD_UTILS_VER    = $(MTD_UTILS_VER)
 HOST_MTD_UTILS_SOURCE = $(MTD_UTILS_SOURCE)
-HOST_MTD_UTILS_PATCH = host-mtd-utils-$(HOST_MTD_UTILS_VER).patch
+HOST_MTD_UTILS_PATCH  = host-mtd-utils-$(HOST_MTD_UTILS_VER).patch
+HOST_MTD_UTILS_PATCH += host-mtd-utils-$(HOST_MTD_UTILS_VER)-sysmacros.patch
 
 $(D)/host_mtd_utils: directories $(ARCHIVE)/$(HOST_MTD_UTILS_SOURCE)
 	$(START_BUILD)
