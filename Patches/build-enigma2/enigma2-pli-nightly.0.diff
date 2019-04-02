@@ -1,4 +1,4 @@
-# revision 0a65fb97471e54d1f991549ae6b2b543ff87b8a9 18/03/2019 14:51
+# revision 0e4b0dd75b0adf4a3c80973bb4b5c00cfeab9237 02/04/2019 11:23
 --- enigma2.org/configure.ac
 +++ enigma2/configure.ac
 @@ -18,6 +18,7 @@
@@ -3549,8 +3549,8 @@
  };
 --- enigma2.org/lib/gdi/epng.cpp
 +++ enigma2/lib/gdi/epng.cpp
-@@ -11,6 +11,9 @@
- #include <lib/base/elock.h>
+@@ -8,6 +8,9 @@
+ #include <unistd.h>
  
  extern "C" {
 +#if defined HAVE_STDLIB_H
@@ -4532,10 +4532,10 @@
  	gdi/compositing.cpp \
  	gdi/epng.cpp \
  	gdi/erect.cpp \
-@@ -20,7 +19,8 @@
- 	gdi/lcd.cpp \
+@@ -21,7 +20,8 @@
  	gdi/picexif.cpp \
  	gdi/picload.cpp \
+ 	gdi/pixmapcache.cpp \
 -	gdi/region.cpp
 +	gdi/region.cpp \
 +	gdi/stmfb.cpp
@@ -8320,6 +8320,60 @@
 +	os.system("rm /tmp/command.txt")
 +	return comandline
 +
+--- enigma2.org/lib/python/Tools/HardwareInfo.py
++++ enigma2/lib/python/Tools/HardwareInfo.py
+@@ -7,7 +7,7 @@
+ 	device_model = None
+ 	device_version = ""
+ 	device_revision = ""
+-	device_hdmi = False
++	device_hdmi = True
+ 
+ 	def __init__(self):
+ 		global hw_info
+@@ -35,37 +35,15 @@
+ 			pass
+ 
+ 		# Model
+-		for line in open((resolveFilename(SCOPE_SKIN, 'hw_info/hw_info.cfg')), 'r'):
+-			if not line.startswith('#') and not line.isspace():
+-				l = line.strip().replace('\t', ' ')
+-				if ' ' in l:
+-					infoFname, prefix = l.split()
+-				else:
+-					infoFname = l
+-					prefix = ""
+-				try:
+-					self.device_model = prefix + open("/proc/stb/info/" + infoFname).read().strip()
+-					break
+-				except:
+-					pass
++		try:
++			self.device_name = open("/proc/stb/info/boxtype").read().strip()
++		except:
++			pass
+ 
+ 		self.device_model = self.device_model or self.device_name
+ 
+-		# map for Xtrend device models to machine names
+-		if self.device_model.startswith(("et9", "et4", "et5", "et6", "et7")):
+-			self.machine_name = "%sx00" % self.device_model[:3]
+-		else:
+-			self.machine_name = self.device_model
+-
+-		if self.device_revision:
+-			self.device_string = "%s (%s-%s)" % (self.device_model, self.device_revision, self.device_version)
+-		elif self.device_version:
+-			self.device_string = "%s (%s)" % (self.device_model, self.device_version)
+-		else:
+-			self.device_string = self.device_model
+-
+ 		# only some early DMM boxes do not have HDMI hardware
+-		self.device_hdmi =  self.device_model not in ("dm800", "dm8000")
++#		self.device_hdmi =  self.device_model not in ("dm800", "dm8000")
+ 
+ 		print "Detected: " + self.get_device_string()
+ 
 --- enigma2.org/lib/python/Tools/Makefile.am
 +++ enigma2/lib/python/Tools/Makefile.am
 @@ -5,5 +5,5 @@
