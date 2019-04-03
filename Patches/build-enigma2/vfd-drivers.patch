@@ -3665,7 +3665,7 @@ diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensi
 +	vfddisplay.png
 --- /dev/null
 +++ enigma2/lib/python/Plugins/Extensions/hs742xVFD/plugin.py
-@@ -0,0 +1,435 @@
+@@ -0,0 +1,415 @@
 +# -*- coding: utf-8 -*-
 +from Screens.Screen import Screen
 +from Plugins.Plugin import PluginDescriptor
@@ -3690,8 +3690,7 @@ diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensi
 +from os import environ, statvfs
 +from Tools.HardwareInfo import HardwareInfo
 +import gettext
-+#from __init__ import _
-+#Version 160102.1
++#Version 190403.1
 +stb = HardwareInfo().get_device_name()
 +lang = language.getLanguage()
 +environ['LANGUAGE'] = lang[:2]
@@ -3758,34 +3757,17 @@ diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensi
 +		])
 +config.plugins.vfdicon.logoled = ConfigSlider(default=4, limits=(0, 7))
 +config.plugins.vfdicon.standbyredled = ConfigSlider(default=0, limits=(0, 7))
-+#config.plugins.vfdicon.dstandbyredled = ConfigSlider(default=7, limits=(0, 7))
 +config.plugins.vfdicon.recredled = ConfigSlider(default=2, limits=(0, 7))
 +config.plugins.vfdicon.extMenu = ConfigYesNo(default=True)
 +
 +class ConfigVFDDisplay(Screen, ConfigListScreen):
-+#	skin = """
-+#	<screen position="center,center" size="700,340" title="VFD display configuration">
-+#		<widget name="lab1" position="10,30" halign="center" size="680,60" zPosition="1" font="Regular;24" valign="top" transparent="1" />
-+#		<widget name="config" position="10,100" size="680,180" scrollbarMode="showOnDemand" />
-+#		<ePixmap position="140,290" size="140,40" pixmap="skin_default/buttons/red.png" alphatest="on" />
-+#		<widget name="key_red" position="140,290" zPosition="1" size="140,40" font="Regular;20" halign="center" valign="center" backgroundColor="red" transparent="1" />
-+#		<ePixmap position="420,290" size="140,40" pixmap="skin_default/buttons/green.png" alphatest="on" zPosition="1" />
-+#		<widget name="key_green" position="420,290" zPosition="2" size="140,40" font="Regular;20" halign="center" valign="center" backgroundColor="green" transparent="1" />
-+#	</screen>"""
 +
 +	def __init__(self, session):
-+#		self.skin = ConfigVFDDisplay.skin
 +		Screen.__init__(self, session)
 +		self.skinName = ["Setup"]
-+#		self.edittext = "* Not available on some models"
 +
-+		self["introduction"] = StaticText(self.edittext)
-+#		self.list = []
-+#		ConfigListScreen.__init__(self, self.list)
-+#		self["lab1"] = Label(_("* not available on some models"))
 +		self["key_red"] = StaticText(_("Cancel"))
 +		self["key_green"] = StaticText(_("OK"))
-+#		self["introduction"] = StaticText(self.edittext)
 +		self["actions"] = ActionMap(["OkCancelActions", "DirectionActions", "SetupActions", "ColorActions"],
 +			{
 +				'left': self.keyLeft,
@@ -3812,9 +3794,8 @@ diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensi
 +		self.cfglist.append(getConfigListEntry(_("Uppercase letters only"), config.plugins.vfdicon.uppercase))
 +		self.cfglist.append(getConfigListEntry(_("Scroll text"), config.plugins.vfdicon.textscroll))
 +		self.cfglist.append(getConfigListEntry(_("Center text"), config.plugins.vfdicon.textcenter))
-+		self.cfglist.append(getConfigListEntry(_('Logo brightness *'), config.plugins.vfdicon.logoled))
++		self.cfglist.append(getConfigListEntry(_('Logo brightness'), config.plugins.vfdicon.logoled))
 +		self.cfglist.append(getConfigListEntry(_('Stby LED brightness'), config.plugins.vfdicon.standbyredled))
-+#		self.cfglist.append(getConfigListEntry(_('Deepstby LED brightness'), config.plugins.vfdicon.dstandbyredled))
 +		self.cfglist.append(getConfigListEntry(_('Rec LED brightness'), config.plugins.vfdicon.recredled))
 +	        self.cfglist.append(getConfigListEntry(_('Show this plugin in plugin menu'), config.plugins.vfdicon.extMenu))
 +		self["config"].list = self.cfglist
@@ -3827,8 +3808,6 @@ diff -Nur --exclude=.git --exclude=tuxtxt enigma2.org/lib/python/Plugins/Extensi
 +				Console().ePopen("fp_control -b " + str(config.plugins.vfdicon.stbcontrast.value))
 +			elif self["config"].getCurrent()[1] == config.plugins.vfdicon.standbyredled:
 +				Console().ePopen("fp_control -l 0 " + str(config.plugins.vfdicon.standbyredled.value))
-+#			elif self["config"].getCurrent()[1] == config.plugins.vfdicon.dstandbyredled:
-+#				Console().ePopen("fp_control -l 0 " + str(config.plugins.vfdicon.dstandbyredled.value))
 +			elif self["config"].getCurrent()[1] == config.plugins.vfdicon.recredled:
 +				Console().ePopen("fp_control -l 0 " + str(config.plugins.vfdicon.recredled.value))
 +			else:
