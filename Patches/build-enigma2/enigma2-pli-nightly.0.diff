@@ -5019,10 +5019,10 @@
  			self.type = self.WITH_SECONDSPROGRESS
  		elif type == "OnlyMinutes":
  			self.type = self.ONLY_MINUTES
-++#+++>
-++		elif type == "FOLLOW":
-++			self.type = self.FOLLOW
-++#+++<
++#+++>
++		elif type == "FOLLOW":
++			self.type = self.FOLLOW
++#+++<
  		else:
  			self.type = self.DEFAULT
  
@@ -5030,13 +5030,13 @@
  				elif self.type == self.IN_SECONDS:
  					return prefix+str(tsecs)
  				elif self.type == self.DEFAULT or self.type == self.ONLY_MINUTES:
-++#+++>
-++				elif self.type == self.FOLLOW:
-++					if remaining is not None:
-++						return "in %d min" % (remaining / 60)
-++					else:
-++						return "%d min" % (duration / 60)
-++#+++<
++#+++>
++				elif self.type == self.FOLLOW:
++					if remaining is not None:
++						return "in %d min" % (remaining / 60)
++					else:
++						return "%d min" % (duration / 60)
++#+++<
  					if remaining <= duration:
  						prefix = "+"
  					if self.type == self.DEFAULT:
@@ -8172,6 +8172,17 @@
 +	def sleepTimer(self):
 +		from Screens.SleepTimerEdit import SleepTimerEdit
 +		self.session.open(SleepTimerEdit)
+--- enigma2.org/lib/python/Screens/InstallWizard.py
++++ enigma2/lib/python/Screens/InstallWizard.py
+@@ -35,7 +35,7 @@
+ 			self.adapters = [adapter for adapter in iNetwork.getAdapterList() if adapter in ('eth0', 'eth1')]
+ 			self.checkNetwork()
+ 		elif self.index == self.STATE_CHOISE_CHANNELLIST:
+-			self.enabled = ConfigYesNo(default = True, graphic = False)
++			self.enabled = ConfigYesNo(default = False, graphic = False)
+ 			modes = {"19e-23e-basis": "Astra1 Astra3 basis", "19e-23e": "Astra 1 Astra 3", "19e-23e-28e": "Astra 1 Astra 2 Astra 3", "13e-19e-23e-28e": "Astra 1 Astra 2 Astra 3 Hotbird", "kabelnl": "Kabel-NL"}
+ 			self.channellist_type = ConfigSelection(choices = modes, default = "19e-23e-basis")
+ 			self.createMenu()
 --- enigma2.org/lib/python/Screens/ScanSetup.py
 +++ enigma2/lib/python/Screens/ScanSetup.py
 @@ -1217,7 +1217,7 @@
