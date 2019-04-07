@@ -5026,10 +5026,10 @@
  		else:
  			self.type = self.DEFAULT
  
-@@ -57,6 +64,13 @@
+@@ -56,6 +63,13 @@
+ 					return "%s%d:%02d" % (prefix, hours, minutes)
  				elif self.type == self.IN_SECONDS:
  					return prefix+str(tsecs)
- 				elif self.type == self.DEFAULT or self.type == self.ONLY_MINUTES:
 +#+++>
 +				elif self.type == self.FOLLOW:
 +					if remaining is not None:
@@ -5037,9 +5037,9 @@
 +					else:
 +						return "%d min" % (duration / 60)
 +#+++<
+ 				elif self.type == self.DEFAULT or self.type == self.ONLY_MINUTES:
  					if remaining <= duration:
  						prefix = "+"
- 					if self.type == self.DEFAULT:
 --- enigma2.org/lib/python/Components/Harddisk.py
 +++ enigma2/lib/python/Components/Harddisk.py
 @@ -45,6 +45,7 @@
