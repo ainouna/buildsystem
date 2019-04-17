@@ -394,13 +394,37 @@ ifeq ($(IMAGE), $(filter $(IMAGE), enigma2-wlandriver neutrino-wlandriver))
 	$(SILENT)echo "# CONFIG_USB_ZD1201 is not set" >> $(KERNEL_DIR)/.config
 	$(SILENT)echo "# CONFIG_HOSTAP is not set" >> $(KERNEL_DIR)/.config
 endif
-ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs7110 hs7240 hs7810a hs7119 hs7429 hs7819))
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs7110 hs7420 hs7810a hs7119 hs7429 hs7819))
 ifeq ($(DESTINATION), USB)
 	@echo "Configuring kernel for running on USB."
 	$(SILENT)grep -v "CONFIG_BLK_DEV_INITRD" "$(KERNEL_DIR)/.config" > $(KERNEL_DIR)/.config.tmp
 	$(SILENT)cp $(KERNEL_DIR)/.config.tmp $(KERNEL_DIR)/.config
 	$(SILENT)echo "CONFIG_BLK_DEV_INITRD=y " >> $(KERNEL_DIR)/.config
 	$(SILENT)echo "CONFIG_INITRAMFS_SOURCE=\"$(APPS_DIR)/tools/USB_boot/initramfs_no_hdd\"" >> $(KERNEL_DIR)/.config
+	$(SILENT)echo "CONFIG_INITRAMFS_ROOT_UID=0" >> $(KERNEL_DIR)/.config
+	$(SILENT)echo "CONFIG_INITRAMFS_ROOT_GID=0" >> $(KERNEL_DIR)/.config
+	$(SILENT)echo "CONFIG_RD_GZIP=y" >> $(KERNEL_DIR)/.config
+	$(SILENT)echo "CONFIG_RD_BZIP2=y" >> $(KERNEL_DIR)/.config
+	$(SILENT)echo "# CONFIG_RD_LZMA is not set" >> $(KERNEL_DIR)/.config
+	$(SILENT)echo "# CONFIG_INITRAMFS_COMPRESSION_NONE is not set" >> $(KERNEL_DIR)/.config
+	$(SILENT)echo "CONFIG_INITRAMFS_COMPRESSION_GZIP=y" >> $(KERNEL_DIR)/.config
+	$(SILENT)echo "# CONFIG_INITRAMFS_COMPRESSION_BZIP2 is not set" >> $(KERNEL_DIR)/.config
+	$(SILENT)echo "# CONFIG_INITRAMFS_COMPRESSION_LZMA is not set" >> $(KERNEL_DIR)/.config
+	$(SILENT)grep -v "CONFIG_DECOMPRESS_GZIP" "$(KERNEL_DIR)/.config" > $(KERNEL_DIR)/.config.tmp
+	$(SILENT)cp $(KERNEL_DIR)/.config.tmp $(KERNEL_DIR)/.config
+	$(SILENT)echo "CONFIG_DECOMPRESS_GZIP=y" >> $(KERNEL_DIR)/.config
+	$(SILENT)grep -v "CONFIG_DECOMPRESS_BZIP2" $(KERNEL_DIR)/.config > $(KERNEL_DIR)/.config.tmp
+	$(SILENT)cp $(KERNEL_DIR)/.config.tmp $(KERNEL_DIR)/.config
+	$(SILENT)echo "CONFIG_DECOMPRESS_BZIP2=y" >> $(KERNEL_DIR)/.config
+endif
+endif
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE), fortis_hdbox octagon1008))
+ifeq ($(DESTINATION), HDD)
+	@echo "Configuring kernel for running on HDD."
+	$(SILENT)grep -v "CONFIG_BLK_DEV_INITRD" "$(KERNEL_DIR)/.config" > $(KERNEL_DIR)/.config.tmp
+	$(SILENT)cp $(KERNEL_DIR)/.config.tmp $(KERNEL_DIR)/.config
+	$(SILENT)echo "CONFIG_BLK_DEV_INITRD=y " >> $(KERNEL_DIR)/.config
+	$(SILENT)echo "CONFIG_INITRAMFS_SOURCE=\"$(APPS_DIR)/tools/HDD_boot/initramfs\"" >> $(KERNEL_DIR)/.config
 	$(SILENT)echo "CONFIG_INITRAMFS_ROOT_UID=0" >> $(KERNEL_DIR)/.config
 	$(SILENT)echo "CONFIG_INITRAMFS_ROOT_GID=0" >> $(KERNEL_DIR)/.config
 	$(SILENT)echo "CONFIG_RD_GZIP=y" >> $(KERNEL_DIR)/.config
@@ -438,12 +462,6 @@ $(D)/kernel: $(D)/bootstrap host_u_boot_tools $(D)/kernel.do_compile
 	$(SILENT)cp $(KERNEL_DIR)/arch/sh/boot/uImage $(TARGET_DIR)/boot/
 	$(SILENT)rm $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/build || true
 	$(SILENT)rm $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/source || true
-ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs7110 hs7119 hs7420 hs7429 hs7810a hs7819))
-ifeq ($(DESTINATION), USB)
-	$(CH_DIR)/busybox_usb-$(BUSYBOX_USB_VER)
-	$(REMOVE)/busybox_usb-$(BUSYBOX_USB_VER)
-endif
-endif
 	$(TOUCH)
 
 kernel-distclean:
