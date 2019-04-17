@@ -54,9 +54,9 @@ $(D)/busybox_usb: $(D)/bootstrap $(ARCHIVE)/$(BUSYBOX_SOURCE) $(PATCHES)/$(BUSYB
 		sed -i -e 's#^CONFIG_PREFIX.*#CONFIG_PREFIX="$(TARGET_DIR)"#' .config; \
 		$(BUILDENV) \
 		$(MAKE) busybox ARCH=sh4 CROSS_COMPILE=$(TARGET)- CFLAGS_EXTRA="$(TARGET_CFLAGS)"; \
-		$(MAKE) install ARCH=sh4 CROSS_COMPILE=$(TARGET)- CFLAGS_EXTRA="$(TARGET_CFLAGS)" CONFIG_PREFIX=$(TARGET_DIR)
+		$(MAKE) install ARCH=sh4 CROSS_COMPILE=$(TARGET)- CFLAGS_EXTRA="$(TARGET_CFLAGS)" CONFIG_PREFIX=$(TARGET_DIR); \
 		cp -f $(BUILD_TMP)/busybox_usb-$(BUSYBOX_USB_VER)/busybox $(APPS_DIR)/tools/USB_boot
-#	$(REMOVE)/busybox_usb-$(BUSYBOX_USB_VER)
+	$(REMOVE)/busybox_usb-$(BUSYBOX_USB_VER)
 	$(TOUCH)
 
 #
