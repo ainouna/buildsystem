@@ -14,6 +14,9 @@ tools-clean:
 	-$(MAKE) -C $(APPS_DIR)/tools/evremote2 distclean
 	-$(MAKE) -C $(APPS_DIR)/tools/fp_control distclean
 	-$(MAKE) -C $(APPS_DIR)/tools/hotplug distclean
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs7110 hs7420 hs7810a hs7119 hs7429 hs7819))
+	-$(MAKE) -C $(APPS_DIR)/tools/fortis_eeprom distclean
+endif
 ifeq ($(BOXTYPE), $(filter $(BOXTYPE), ipbox55 ipbox99 ipbox9900 cuberevo cuberevo_mini cuberevo_mini2 cuberevo_250hd cuberevo_2000hd cuberevo_3000hd))
 	-$(MAKE) -C $(APPS_DIR)/tools/ipbox_eeprom distclean
 endif

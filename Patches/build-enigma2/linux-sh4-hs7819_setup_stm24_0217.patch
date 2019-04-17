@@ -49,7 +49,7 @@
  	seq_printf(m, "cpu family\t: %s\n", init_utsname()->machine);
  	seq_printf(m, "cpu variant\t: %s\n", get_cpu_variant(c));
  	seq_printf(m, "cpu type\t: %s\n", get_cpu_subtype(c));
-+	seq_printf(m, "cpu MHz\t\t: 450\n");
++	seq_printf(m, "cpu MHz\t: 450\n");
  	if (c->cut_major == -1)
  		seq_printf(m, "cut\t\t: unknown\n");
  	else if (c->cut_minor == -1)
@@ -432,8 +432,8 @@
  	stx7111_configure_ssc_i2c(1, NULL);
  	stx7111_configure_ssc_i2c(2, NULL);
  	stx7111_configure_ssc_i2c(3, NULL);
---- linux-sh4/arch/sh/include/asm/irq-ilc.h	2012-03-31 15:26:54.634523363 +0200
-+++ linux-sh4/arch/sh/include/asm/irq-ilc.h.patched	2012-03-31 15:26:54.084558439 +0200
+--- linux-sh4/arch/sh/include/asm/irq-ilc.h.org
++++ linux-sh4/arch/sh/include/asm/irq-ilc.h
 @@ -44,7 +44,7 @@
  #define ILC_IRQ(x)	(ILC_FIRST_IRQ + (x))
  #elif	defined(CONFIG_CPU_SUBTYPE_STX7111)
@@ -471,8 +471,8 @@
  			STM_PLAT_RESOURCE_DMA_NAMED("rx_half_full", 14),
  			STM_PLAT_RESOURCE_DMA_NAMED("tx_half_empty", 18),
  		},
---- linux-sh4/drivers/stm/gpio.c	2012-03-31 15:26:55.000000000 +0200
-+++ linux-sh4/drivers/stm/gpio.c.patched	2012-07-08 17:17:27.000000000 +0200
+--- linux-sh4/drivers/stm/gpio.c.org
++++ linux-sh4/drivers/stm/gpio.c
 @@ -28,12 +28,17 @@
  #include <linux/stm/pad.h>
  #include <linux/stm/pio.h>
@@ -631,8 +631,8 @@
  
  	return 0;
  }
---- linux-sh4/drivers/net/stmmac/stmmac_mdio.c	2012-03-31 15:26:54.233314199 +0300
-+++ linux-sh4/drivers/net/stmmac/stmmac_mdio.c.patched	2012-03-31 15:26:54.531239690 +0300
+--- linux-sh4/drivers/net/stmmac/stmmac_mdio.c.org
++++ linux-sh4/drivers/net/stmmac/stmmac_mdio.c
 @@ -170,6 +170,7 @@
  	priv->mii = new_bus;
  

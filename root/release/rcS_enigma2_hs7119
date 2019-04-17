@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 190312.1
+#Version 190416.1
 
 echo "Fortis HS7119 Enigma2"
 
@@ -184,6 +184,11 @@ else
    if [ -e /etc/network/interfaces ]; then
       ip addr flush eth0
       /etc/init.d/networking stop
+      if [ -e /bin/eeprom ]; then
+         MAC=`/bin/eeprom -m`
+         echo "MAC = $MAC"
+         ip link set eth0 address $MAC
+      fi
       DHCP=`grep -c 'iface eth0 inet dhcp' /etc/network/interfaces`
       if [ "$DHCP" -eq "1" ]; then
          echo "[rcS] Starting DHCP"

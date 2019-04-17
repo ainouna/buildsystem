@@ -1,41 +1,51 @@
---- linux-sh4-2.6.32.61_stm24_0217.org/arch/sh/kernel/setup.c
-+++ linux-sh4-2.6.32.61_stm24_0217/arch/sh/kernel/setup.c
-@@ -389,6 +389,34 @@
+--- a/arch/sh/kernel/setup.c.org
++++ b/arch/sh/kernel/setup.c
+@@ -389,6 +389,44 @@
  #endif
  #endif
  
 +	{
-+		char org_command_line[] = "console=ttyAS0,115200 root=/dev/mtdblock3";
-+		char tdt_command_line[] = "console=ttyAS0,115200 root=/dev/mtdblock3 rootfstype=squashfs init=/bin/devinit coprocessor_mem=4m@0x40000000,4m@0x40400000 printk=1 console_loglevel=7 stmmaceth=ethaddr:";
-+		char mac[] = "00:00:00:00:00:00";
 +		int command_line_len = strlen(command_line);
-+		int org_command_line_len = strlen(org_command_line);
++		char flash_org_command_line[] = "console=ttyAS0,115200 root=/dev/mtdblock3";
++		char flash_new_command_line[] = "console=ttyAS0,115200 root=/dev/mtdblock3 rootfstype=squashfs init=/bin/devinit coprocessor_mem=4m@0x40000000,4m@0x40400000 printk=1 console_loglevel=7 stmmaceth=ethaddr:";
++		char usb_org_command_line[] = "console=ttyAS0,115200 root=/dev/root";
++		char usb_new_command_line[] = "console=ttyAS0,115200 root=/dev/root rw init=/bin/devinit coprocessor_mem=4m@0x40000000,4m@0x40400000 nwhwconf=device:eth0,hwaddr:";
++		char mac[] = "12:34:56:78:9A:BC";
++		int flash_org_command_line_len = strlen(flash_org_command_line);
++		int usb_org_command_line_len = strlen(usb_org_command_line);
++		int i;
 +
-+		if (command_line_len >= org_command_line_len && !strncmp(command_line, org_command_line, org_command_line_len))
++		for (i = 0; i < (command_line_len - 7); i++)
 +		{
-+			int i;
-+			for (i = 0; i < (command_line_len - 7); i++)
++			if (!strncmp(command_line + i, "ethaddr", 7))
 +			{
-+				if (!strncmp(command_line + i, "ethaddr", 7))
-+				{
-+					strlcpy(mac, command_line + i + 8, sizeof(mac));
-+					break;
-+				}
-+				if (!strncmp(command_line + i, "hwaddr", 6))
-+				{
-+					strlcpy(mac, command_line + i + 7, sizeof(mac));
-+					break;
-+				}
++				strlcpy(mac, command_line + i + 8, sizeof(mac));
++				break;
 +			}
-+			strlcpy(command_line, tdt_command_line, sizeof(command_line));
-+			strlcat(command_line, mac, sizeof(command_line));
++			if (!strncmp(command_line + i, "hwaddr", 6))
++			{
++				strlcpy(mac, command_line + i + 7, sizeof(mac));
++				break;
++			}
++		}
++		/* boot from flash */
++		if (command_line_len >= flash_org_command_line_len && !strncmp(command_line, flash_org_command_line, flash_org_command_line_len))
++		{
++			strlcpy(command_line, flash_new_command_line, sizeof(flash_new_command_line));
++			strlcat(command_line, mac, sizeof(mac));
++		}
++		/* boot from USB */
++		if (command_line_len >= usb_org_command_line_len && !strncmp(command_line, usb_org_command_line, usb_org_command_line_len))
++		{
++			strlcpy(command_line, usb_new_command_line, sizeof(usb_new_command_line));
++			strlcat(command_line, mac, sizeof(mac));
 +		}
 +	}
 +
  	/* Save unparsed command line copy for /proc/cmdline */
  	memcpy(boot_command_line, command_line, COMMAND_LINE_SIZE);
  	*cmdline_p = command_line;
-@@ -555,6 +583,7 @@
+@@ -555,6 +593,7 @@
  	seq_printf(m, "cpu family\t: %s\n", init_utsname()->machine);
  	seq_printf(m, "cpu variant\t: %s\n", get_cpu_variant(c));
  	seq_printf(m, "cpu type\t: %s\n", get_cpu_subtype(c));
@@ -58,7 +68,7 @@
  
  /* The sat7111 board is populated with NOR, NAND, and Serial Flash.  The setup
   * below assumes the board is in its default boot-from-NOR configuration.  Other
-@@ -43,9 +44,36 @@
+@@ -43,9 +46,36 @@
   * been fully tested.
   */
  
@@ -73,21 +83,21 @@
 +0x4A000000 - 0x4FFFFFFF - lmi_io  ( 96mb)
 +*/
 +static struct bpa2_partition_desc bpa2_parts_table[] = {
-+    {
-+ 	    .name  = "bigphysarea",
-+ 	    .start = 0x48000000,
-+ 	    .size  = 0x02000000, /* 32 Mb */
-+ 	    .flags = 0,
-+ 	    .aka   = NULL
-+    },
-+    {
-+ 	    .name  = "LMI_IO",
-+ 	    .start = 0x4A000000,
-+ 	    .size  = 0x06000000, /* 96 Mb */
-+ 	    .flags = 0,
-+ 	    .aka   = LMI_IO_partalias
-+    },
-+ };
++	{
++		.name  = "bigphysarea",
++		.start = 0x48000000,
++		.size  = 0x02000000, /* 32 Mb */
++		.flags = 0,
++		.aka   = NULL
++	},
++	{
++		.name  = "LMI_IO",
++		.start = 0x4A000000,
++		.size  = 0x06000000, /* 96 Mb */
++		.flags = 0,
++		.aka   = LMI_IO_partalias
++	},
++};
 +
  static void __init sat7111_setup(char** cmdline_p)
  {
@@ -128,7 +138,7 @@
  static struct platform_device sat7111_nor_flash = {
  	.name		= "physmap-flash",
  	.id		= -1,
-@@ -118,75 +151,59 @@
+@@ -118,75 +151,58 @@
  	},
  	.dev.platform_data = &(struct physmap_flash_data) {
  		.width		= 2,
@@ -149,20 +159,19 @@
 -				.size = MTDPART_SIZ_FULL,
 -				.offset = MTDPART_OFS_NXTBLK,
 +				.name   = "Boot firmware",      //mtd0
-+				.size   = 0x00100000,           // 1M
++				.size   = 0x00100000,           // 1M //should be 384k (0x60000)
 +				.offset = 0x00000000,
 +			},
 +			{
 +				.name   = "Kernel",             //mtd1
-+				.size   = 0x00200000,           // 2M
-+				.offset = 0x00100000,           // 3M
++				.size   = 0x00200000,           // 2M // should be var
++				.offset = 0x00100000,           // 3M // should be 384k
 +			},
 +			{
 +				.name   = "APP",                //mtd2
 +				.size   = 0x00a00000,           //10M
 +				.offset = 0x00300000,           // 3M
 +			},
-+
 +			{
 +				.name   = "ROOT FS",            //mtd3
 +				.size   = 0x00b00000,           //11M
@@ -288,8 +297,8 @@
  	return platform_add_devices(sat7111_devices,
  				    ARRAY_SIZE(sat7111_devices));
  }
---- linux-sh4/arch/sh/include/asm/irq-ilc.h	2012-03-31 15:26:54.634523363 +0200
-+++ linux-sh4/arch/sh/include/asm/irq-ilc.h.patched	2012-03-31 15:26:54.084558439 +0200
+--- linux-sh4/arch/sh/include/asm/irq-ilc.h.org
++++ linux-sh4/arch/sh/include/asm/irq-ilc.h
 @@ -44,7 +44,7 @@
  #define ILC_IRQ(x)	(ILC_FIRST_IRQ + (x))
  #elif	defined(CONFIG_CPU_SUBTYPE_STX7111)
@@ -327,8 +336,8 @@
  			STM_PLAT_RESOURCE_DMA_NAMED("rx_half_full", 14),
  			STM_PLAT_RESOURCE_DMA_NAMED("tx_half_empty", 18),
  		},
---- linux-sh4/drivers/stm/gpio.c	2012-03-31 15:26:55.000000000 +0200
-+++ linux-sh4/drivers/stm/gpio.c.patched	2012-07-08 17:17:27.000000000 +0200
+--- linux-sh4/drivers/stm/gpio.c.org
++++ linux-sh4/drivers/stm/gpio.c
 @@ -27,6 +27,10 @@
  #include <linux/stm/platform.h>
  #include <linux/stm/pad.h>
@@ -377,7 +386,7 @@
  	stm_pad_release_gpio(stm_gpio(pin->port_no, pin->pin_no));
  }
  EXPORT_SYMBOL(stpio_free_pin);
-@@ -624,6 +637,85 @@
+@@ -624,6 +637,86 @@
  	set_irq_type(irq, triggertype);
  }
  EXPORT_SYMBOL(stpio_set_irq_type);
@@ -388,13 +397,13 @@
 +static inline const char *stpio_get_direction_name(unsigned int direction)
 +{
 +	switch (direction) {
-+	case STPIO_NONPIO:		return "IN  (pull-up)      ";
-+	case STPIO_BIDIR:		return "BI  (open-drain)   ";
-+	case STPIO_OUT:			return "OUT (push-pull)    ";
-+	case STPIO_IN:			return "IN  (Hi-Z)         ";
-+	case STPIO_ALT_OUT:		return "Alt-OUT (push-pull)";
-+	case STPIO_ALT_BIDIR:	return "Alt-BI (open-drain)";
-+	default:				return "forbidden          ";
++	case STPIO_NONPIO:     return "IN  (pull-up)      ";
++	case STPIO_BIDIR:      return "BI  (open-drain)   ";
++	case STPIO_OUT:        return "OUT (push-pull)    ";
++	case STPIO_IN:         return "IN  (Hi-Z)         ";
++	case STPIO_ALT_OUT:    return "Alt-OUT (push-pull)";
++	case STPIO_ALT_BIDIR:  return "Alt-BI (open-drain)";
++	default:               return "forbidden          ";
 +	}
 +};
 +
@@ -419,6 +428,7 @@
 +{
 +	int len;
 +	int port_no, pin_no;
++	char *name;
 +	off_t begin = 0;
 +	int num_ports = stm_gpio_num / STM_GPIO_PINS_PER_PORT;
 +	struct stm_gpio_port *port;
@@ -435,13 +445,13 @@
 +			pin = &port->pins[pin_no];
 +			if(!pin) continue;
 +
-+			char *name = pin->stpio.pin_name ? pin->stpio.pin_name : "";
++			*name = (char)(pin->stpio.pin_name ? pin->stpio.pin_name : "");
 +			len += sprintf(page + len,
 +					"PIO %d.%d [%-10s] [%s] [%s]\n",
 +					port_no, pin_no, name,
 +					stpio_get_direction_name(pin->direction),
 +					stpio_get_handler_name(pin->stpio.func));
-+ 			if (len + begin > off + count)
++			if (len + begin > off + count)
 +				goto done;
 +			if (len + begin < off) {
 +				begin += len;
@@ -463,7 +473,7 @@
  
  #endif /* CONFIG_STPIO */
  
-@@ -1031,7 +1123,11 @@
+@@ -1031,7 +1124,11 @@
  static int __init stm_gpio_init(void)
  {
  	int ret;
@@ -476,8 +486,8 @@
  	ret = platform_driver_register(&stm_gpio_driver);
  	if (ret)
  		return ret;
-*** linux-sh4/drivers/net/phy/phy_device.c	2012-03-31 15:26:54.440157990 +0300
---- linux-sh4/drivers/net/phy/phy_device.c.patched	2012-03-31 15:26:54.308158605 +0300
+*** linux-sh4/drivers/net/phy/phy_device.c.org
+--- linux-sh4/drivers/net/phy/phy_device.c
 ***************
 *** 1104,1110 ****
   		return retval;
@@ -495,8 +505,8 @@
   
   	return 0;
   }
-*** linux-sh4/drivers/net/stmmac/stmmac_mdio.c	2012-03-31 15:26:54.233314199 +0300
---- linux-sh4/drivers/net/stmmac/stmmac_mdio.c.patched	2012-03-31 15:26:54.531239690 +0300
+*** linux-sh4/drivers/net/stmmac/stmmac_mdio.c.org
+--- linux-sh4/drivers/net/stmmac/stmmac_mdio.c
 ***************
 *** 170,175 ****
 --- 170,176 ----

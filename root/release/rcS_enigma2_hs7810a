@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 190312.1
+#Version 190416.1
 
 echo "Fortis HS7810A Enigma2"
 
@@ -126,7 +126,7 @@ insmod $MODDIR/silencegen.ko
 insmod $MODDIR/bpamem.ko
 mknod /dev/bpamem c 153 0
 
-if [ -e $MODDIR/cec.ko ];then
+if [ -e $MODDIR/cec.ko ]; then
    echo "[rcS] Init HDMI-CEC"
    insmod $MODDIR/cec.ko activemode=1
 fi
@@ -182,6 +182,11 @@ else
    if [ -e /etc/network/interfaces ]; then
       ip addr flush eth0
       /etc/init.d/networking stop
+      if [ -e /bin/eeprom ]; then
+         MAC=`/bin/eeprom -m`
+         echo "MAC = $MAC"
+         ip link set eth0 address $MAC
+      fi
       DHCP=`grep -c 'iface eth0 inet dhcp' /etc/network/interfaces`
       if [ "$DHCP" -eq "1" ]; then
          echo "[rcS] Starting DHCP"
