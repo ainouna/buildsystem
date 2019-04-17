@@ -81,6 +81,20 @@ $(D)/tools-evremote2: $(D)/bootstrap
 	$(TOUCH)
 
 #
+# fortis_eeprom
+#
+$(D)/tools-fortis_eeprom: $(D)/bootstrap
+	$(START_BUILD)
+	$(SET) -e; cd $(APPS_DIR)/tools/fortis_eeprom; \
+		if [ ! -d m4 ]; then mkdir m4; fi; \
+		$(CONFIGURE_TOOLS) \
+			--prefix= \
+		; \
+		$(MAKE); \
+		$(MAKE) install DESTDIR=$(TARGET_DIR)
+	$(TOUCH)
+
+#
 # fp_control
 #
 $(D)/tools-fp_control: $(D)/bootstrap
@@ -389,6 +403,9 @@ TOOLS += $(D)/tools-evremote2
 #TOOLS += $(D)/tools-exteplayer3
 TOOLS += $(D)/tools-fp_control
 TOOLS += $(D)/tools-hotplug
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs7110 hs7420 hs7810a hs7119 hs7249 hs7819))
+TOOLS += $(D)/tools-fortis_eeprom
+endif
 ifeq ($(BOXTYPE), $(filter $(BOXTYPE), ipbox55 ipbox99 ipbox9900 cuberevo cuberevo_mini cuberevo_mini2 cuberevo_250hd cuberevo_2000hd cuberevo_3000hd))
 TOOLS += $(D)/tools-ipbox_eeprom
 endif
