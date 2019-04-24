@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 190317.1
+#Version 190424.1
 
 echo "[rcS] Start"
 echo "CubeRevo Mini Enigma2"
@@ -110,17 +110,6 @@ insmod $MODDIR/frontend_platform.ko
 insmod $MODDIR/socket.ko
 insmod $MODDIR/lnbh221.ko
 insmod $MODDIR/lnb_pio.ko
-# DVB-T
-if [ -f $MODDIR/dvb-pll.ko ]; then
-   insmod $MODDIR/dvb-pll.ko
-fi
-if [ -f $MODDIR/zl10353.ko ]; then
-   insmod $MODDIR/zl10353.ko
-fi
-# DVB-C
-if [ -f $MODDIR/tda10023.ko ]; then
-   insmod $MODDIR/tda10023.ko
-fi
 # DVB-S(2)
 if [ -f $MODDIR/cx24116.ko ]; then
    insmod $MODDIR/cx24116.ko
@@ -131,6 +120,17 @@ fi
 # DVB-S
 if [ -f $MODDIR/stv0288.ko ]; then
    insmod $MODDIR/stv0288.ko
+fi
+# DVB-C
+if [ -f $MODDIR/tda10023.ko ]; then
+   insmod $MODDIR/tda10023.ko
+fi
+# DVB-T
+if [ -f $MODDIR/dvb-pll.ko ]; then
+   insmod $MODDIR/dvb-pll.ko
+fi
+if [ -f $MODDIR/zl10353.ko ]; then
+   insmod $MODDIR/zl10353.ko
 fi
 
 echo "[rcS] Init CI & cardreader"
