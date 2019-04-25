@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 190424.1
+#Version 190425.1
 
 echo "Fortis HS8200 Enigma2"
 
@@ -112,8 +112,12 @@ if [ -e $MODDIR/tda10024.ko ]; then
    insmod $MODDIR/tda10024.ko
 fi
 # DVB-T
-if [ -e $MODDIR/tda10024.ko ]; then
+if [ -e $MODDIR/cxd2820.ko ]; then
    insmod $MODDIR/cxd2820.ko
+fi
+# DVB-T
+if [ -e $MODDIR/s5h1432.ko ]; then
+   insmod $MODDIR/s5h1432.ko
 fi
 
 echo "[rcS] Init CI & cardreader"
