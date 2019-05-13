@@ -545,18 +545,18 @@
  </skin>
 --- enigma2.org/data/fonts/Makefile.am
 +++ enigma2/data/fonts/Makefile.am
-@@ -14,9 +14,8 @@
+@ -14,8 +14,9 @@
  	LiberationSans-Bold.ttf \
  	LiberationSans-BoldItalic.ttf \
  	LiberationSans-Italic.ttf \
--	LiberationSans-Regular.ttf \
--	wqy-microhei.ttc
-+	LiberationSans-Regular.ttf
+-	LiberationSans-Regular.ttf
++	LiberationSans-Regular.ttf \
++	wqy-microhei.ttc
  
- install-data-hook:
+ install-exec-hook:
  	cd $(DESTDIR)$(datadir)/fonts && \
--	$(LN_S) wqy-microhei.ttc fallback.font
-+	$(LN_S) -f md_khmurabi_10.ttf fallback.font
+-	$(LN_S) -f md_khmurabi_10.ttf fallback.font
++	$(LN_S) wqy-microhei.ttc fallback.font
 --- enigma2.org/lib/base/Makefile.inc
 +++ enigma2/lib/base/Makefile.inc
 @@ -42,7 +42,7 @@
