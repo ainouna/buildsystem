@@ -1,15 +1,35 @@
 --- neutrino-mp-tangos.org/acinclude.m4
 +++ neutrino-mp-tangos/acinclude.m4
-@@ -476,7 +476,7 @@
+@@ -490,6 +490,10 @@
+ 			BOXTYPE="duckbox"
+ 			BOXMODEL="$withval"
+ 		;;
++		adb_box)
++			BOXTYPE="duckbox"
++			BOXMODEL="$withval"
++		;;
+ 		hd51|hd60|bre2ze4k|vusolo4k)
+ 			BOXTYPE="armbox"
+ 			BOXMODEL="$withval"
+@@ -506,7 +510,7 @@
  
  AC_ARG_WITH(boxmodel,
  	AS_HELP_STRING([--with-boxmodel], [valid for coolstream: hd1, hd2])
 -AS_HELP_STRING([], [valid for duckbox: ufs910, ufs912, ufs913, ufs922, atevio7500, fortis_hdbox, octagon1008, hs7110, hs7810a, hs7119, hs7819, dp7000, cuberevo, cuberevo_mini, cuberevo_mini2, cuberevo_250hd, cuberevo_2000hd, cuberevo_3000hd, ipbox9900, ipbox99, ipbox55, arivalink200, tf7700, hl101])
-+AS_HELP_STRING([], [valid for duckbox: ufs910, ufs912, ufs913, ufs922, atevio7500, fortis_hdbox, octagon1008, hs7110, hs7420, hs7810a, hs7119, hs7429, hs7819, cuberevo, cuberevo_mini, cuberevo_mini2, cuberevo_250hd, cuberevo_2000hd, cuberevo_3000hd, ipbox9900, ipbox99, ipbox55, arivalink200, tf7700, hl101])
++AS_HELP_STRING([], [valid for duckbox: ufs910, ufs912, ufs913, ufs922, atevio7500, fortis_hdbox, octagon1008, hs7110, hs7420, hs7810a, hs7119, hs7429, hs7819, cuberevo, cuberevo_mini, cuberevo_mini2, cuberevo_250hd, cuberevo_2000hd, cuberevo_3000hd, ipbox9900, ipbox99, ipbox55, arivalink200, tf7700, hl101, adb_box])
  AS_HELP_STRING([], [valid for spark: spark, spark7162])
- AS_HELP_STRING([], [valid for armbox: hd51, hd60, vusolo4k, bre2ze4k])
+ AS_HELP_STRING([], [valid for mipsbox: vuduo])
  AS_HELP_STRING([], [valid for generic: raspi]),
-@@ -557,8 +557,10 @@
+@@ -530,7 +534,7 @@
+ 				AC_MSG_ERROR([unknown model $withval for boxtype $BOXTYPE])
+ 			fi
+ 		;;
+-		ufs910|ufs912|ufs913|ufs922|atevio7500|fortis_hdbox|octagon1008|hs7110|hs7810a|hs7119|hs7819|dp7000|cuberevo|cuberevo_mini|cuberevo_mini2|cuberevo_250hd|cuberevo_2000hd|cuberevo_3000hd|ipbox9900|ipbox99|ipbox55|arivalink200|tf7700|hl101)
++		ufs910|ufs912|ufs913|ufs922|atevio7500|fortis_hdbox|octagon1008|hs7110|hs7810a|hs7119|hs7819|dp7000|cuberevo|cuberevo_mini|cuberevo_mini2|cuberevo_250hd|cuberevo_2000hd|cuberevo_3000hd|ipbox9900|ipbox99|ipbox55|arivalink200|tf7700|hl101|adb_box)
+ 			if test "$BOXTYPE" = "duckbox"; then
+ 				BOXMODEL="$withval"
+ 			else
+@@ -595,8 +599,10 @@
  AM_CONDITIONAL(BOXMODEL_FORTIS_HDBOX, test "$BOXMODEL" = "fortis_hdbox")
  AM_CONDITIONAL(BOXMODEL_OCTAGON1008, test "$BOXMODEL" = "octagon1008")
  AM_CONDITIONAL(BOXMODEL_HS7110, test "$BOXMODEL" = "hs7110")
@@ -20,7 +40,15 @@
  AM_CONDITIONAL(BOXMODEL_HS7819, test "$BOXMODEL" = "hs7819")
  AM_CONDITIONAL(BOXMODEL_DP7000, test "$BOXMODEL" = "dp7000")
  
-@@ -626,10 +628,14 @@
+@@ -612,6 +618,7 @@
+ AM_CONDITIONAL(BOXMODEL_ARIVALINK200, test "$BOXMODEL" = "arivalink200")
+ AM_CONDITIONAL(BOXMODEL_TF7700, test "$BOXMODEL" = "tf7700")
+ AM_CONDITIONAL(BOXMODEL_HL101, test "$BOXMODEL" = "hl101")
++AM_CONDITIONAL(BOXMODEL_ADB_BOX, test "$BOXMODEL" = "adb_box")
+ 
+ AM_CONDITIONAL(BOXMODEL_HD51, test "$BOXMODEL" = "hd51")
+ AM_CONDITIONAL(BOXMODEL_HD60, test "$BOXMODEL" = "hd60")
+@@ -666,10 +673,14 @@
  	AC_DEFINE(BOXMODEL_OCTAGON1008, 1, [octagon1008])
  elif test "$BOXMODEL" = "hs7110"; then
  	AC_DEFINE(BOXMODEL_HS7110, 1, [hs7110])
@@ -35,6 +63,15 @@
  elif test "$BOXMODEL" = "hs7819"; then
  	AC_DEFINE(BOXMODEL_HS7819, 1, [hs7819])
  elif test "$BOXMODEL" = "dp7000"; then
+@@ -698,6 +709,8 @@
+ 	AC_DEFINE(BOXMODEL_TF7700, 1, [tf7700])
+ elif test "$BOXMODEL" = "hl101"; then
+ 	AC_DEFINE(BOXMODEL_HL101, 1, [hl101])
++elif test "$BOXMODEL" = "adb_box"; then
++	AC_DEFINE(BOXMODEL_ADB_BOX, 1, [adb_box])
+ elif test "$BOXMODEL" = "hd51"; then
+ 	AC_DEFINE(BOXMODEL_HD51, 1, [hd51])
+ 	AC_DEFINE(ENABLE_CHANGE_OSD_RESOLUTION, 1, [enable change the osd resolution])
 #--- neutrino-mp-tangos.org/src/global.h
 #+++ neutrino-mp-tangos/src/global.h
 #@@ -57,7 +57,7 @@
@@ -70,7 +107,7 @@
 # #error neither HAVE_COOL_HARDWARE nor USE_STB_HAL defined.
 --- neutrino-mp-tangos.org/src/neutrino.cpp
 +++ neutrino-mp-tangos/src/neutrino.cpp
-@@ -4724,6 +4724,9 @@
+@@ -4739,6 +4739,9 @@
  
  		CVFD::getInstance()->Clear();
  		CVFD::getInstance()->setMode(CVFD::MODE_STANDBY);
@@ -80,7 +117,7 @@
  		CVFD::getInstance()->setBacklight(g_settings.backlight_standby);
  
  		InfoClock->enableInfoClock(false);
-@@ -4760,7 +4763,11 @@
+@@ -4774,7 +4777,11 @@
  		// Active standby off
  		powerManager->SetStandby(false, false);
  		CVFD::getInstance()->setMode(CVFD::MODE_TVRADIO);
@@ -105,7 +142,7 @@
  #include <aotom_main.h>
  #define DISPLAY_DEV "/dev/vfd"
  #include <zapit/zapit.h>
-@@ -747,8 +750,26 @@
+@@ -757,8 +760,26 @@
  		close(fd);
  	}
  }
@@ -961,7 +998,7 @@
  #include <gui/widget/stringinput_ext.h>
  #include <gui/screensetup.h>
  #include <gui/widget/msgbox.h>
-@@ -1452,15 +1452,15 @@
+@@ -1444,15 +1444,15 @@
  #if HAVE_SH4_HARDWARE
  	old3dmode = frameBuffer->get3DMode();
  #endif
@@ -986,7 +1023,7 @@
  	pthread_t thrStartHint = 0;
  	if (is_file_player) {
  		showStartingHint = true;
-@@ -1678,14 +1678,14 @@
+@@ -1670,14 +1670,14 @@
  
  	while (playstate >= CMoviePlayerGui::PLAY)
  	{
@@ -1009,7 +1046,7 @@
  		if (update_lcd || g_settings.movieplayer_display_playtime) {
  			update_lcd = false;
  			updateLcd(g_settings.movieplayer_display_playtime);
-@@ -2255,12 +2255,12 @@
+@@ -2247,12 +2247,12 @@
  	CScreenSetup cSS;
  	cSS.showBorder(CZapit::getInstance()->GetCurrentChannelID());
  #endif
@@ -1028,7 +1065,7 @@
  	if (iso_file) {
  		iso_file = false;
  		if (umount2(ISO_MOUNT_POINT, MNT_FORCE))
-@@ -2380,10 +2380,10 @@
+@@ -2372,10 +2372,10 @@
  		}
  		if (!movie_info.channelName.empty() || !movie_info.epgTitle.empty())
  			p_movie_info = &movie_info;
@@ -1043,7 +1080,7 @@
  	}
  
  	if (p_movie_info) {
-@@ -2905,10 +2905,10 @@
+@@ -2897,10 +2897,10 @@
  		tuxtx_pause_subtitle(true);
  		frameBuffer->paintBackground();
  	}
@@ -1058,9 +1095,9 @@
  #endif
  }
  
-@@ -2946,9 +2946,9 @@
+@@ -2938,9 +2938,9 @@
  {
- #if HAVE_SH4_HARDWARE || HAVE_ARM_HARDWARE
+ #if HAVE_SH4_HARDWARE || HAVE_ARM_HARDWARE || HAVE_MIPS_HARDWARE
  	printf("[CMoviePlayerGui] %s: %s\n", __FUNCTION__, show ? "Show" : "Not show");
 -#ifdef ENABLE_GRAPHLCD
 -	nGLCD::MirrorOSD(false);
@@ -1107,4 +1144,29 @@
  
  /* This header provides common string manipulation support, such as UTF-8,
   * portable conversion from/to string...
+--- neutrino-mp-tangos.org/src/gui/weather.h
++++ neutrino-mp-tangos/src/gui/weather.h
+@@ -116,11 +116,11 @@
+ 		};
+ 		std::string getCurrentPressure()
+ 		{
+-			return to_string(current.pressure);
++			return to_string((int)current.pressure);
+ 		};
+ 		std::string getCurrentWindSpeed()
+ 		{
+-			return to_string(current.windSpeed);
++			return to_string((int)current.windSpeed);
+ 		};
+ 		std::string getCurrentWindBearing()
+ 		{
+@@ -158,7 +158,7 @@
+ 		{
+ 			if (i > (int)v_forecast.size())
+ 				i = (int)v_forecast.size();
+-			return to_string(v_forecast[i].windSpeed);
++			return to_string((int)v_forecast[i].windSpeed);
+ 		};
+ 		std::string getForecastWindBearing(int i = 0)
+ 		{
 
