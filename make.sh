@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20190402.1
+# Version 20190513.1
 
 ##############################################
 
@@ -100,6 +100,22 @@ export BATCHMODE
 ##############################################
 
 CURDIR=`pwd`
+
+if [ -e $CURDIR/build ]; then
+	rm -f $CURDIR/build
+fi
+touch $CURDIR/build
+
+##############################################
+
+# Check if running on Gentoo
+if `which lsb_release > /dev/null 2>&1`; then 
+	if [ `lsb_release -s -i` == "Gentoo" ]; then
+		echo "WANT_AUTOMAKE=1.15" > $CURDIR/build
+	fi
+fi
+
+##############################################
 
 case $1 in
 	[1-9] | 1[0-9] | 2[0-9] | 3[0-7]) REPLY=$1;;
@@ -309,15 +325,15 @@ case "$IMAGE" in
 		case "$FLAVOUR" in
 			neutrino-mp*)
 				if [ $PLUGINS_NEUTRINO == "No" ]; then
-					echo "make yaud-neutrino-mp" > $CURDIR/build
+					echo "make yaud-neutrino-mp" >> $CURDIR/build
 				else
-					echo "make yaud-neutrino-mp-plugins" > $CURDIR/build
+					echo "make yaud-neutrino-mp-plugins" >> $CURDIR/build
 				fi;;
 			neutrino-hd2*)
 				if [ $PLUGINS_NEUTRINO == "No" ]; then
-					echo "  make yaud-neutrino-hd2" > $CURDIR/build
+					echo "  make yaud-neutrino-hd2" >> $CURDIR/build
 				else
-					echo "  make yaud-neutrino-hd2-plugins" > $CURDIR/build
+					echo "  make yaud-neutrino-hd2-plugins" >> $CURDIR/build
 				fi;;
 		esac
 
@@ -354,7 +370,7 @@ case "$IMAGE" in
 		echo "TVHEADEND_DIFF=$DIFF" >> config
 		echo "TVHEADEND_REVISION=$REVISION" >> config
 
-		echo "make yaud-tvheadend" > $CURDIR/build
+		echo "make yaud-tvheadend" >> $CURDIR/build
 
 		if [ "$LASTIMAGE1" ] || [ "$LASTIMAGE2" ] || [ ! "$LASTBOX" == "$BOXTYPE" ]; then
 			if [ -e ./.deps/ ]; then
@@ -426,7 +442,7 @@ case "$IMAGE" in
 		echo "E2_DIFF=$DIFF" >> config
 		echo "E2_REVISION=$REVISION" >> config
 
-		echo "make yaud-enigma2" > $CURDIR/build
+		echo "make yaud-enigma2" >> $CURDIR/build
 
 		if [ "$LASTIMAGE2" ] || [ "$LASTIMAGE3" ] || [ ! "$LASTBOX" == "$BOXTYPE" ]; then
 			if [ -e ./.deps/ ]; then
