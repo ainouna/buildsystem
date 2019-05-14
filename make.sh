@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20190513.1
+# Version 20190514.1
 
 ##############################################
 
@@ -111,7 +111,7 @@ touch $CURDIR/build
 # Check if running on Gentoo
 if `which lsb_release > /dev/null 2>&1`; then 
 	if [ `lsb_release -s -i` == "Gentoo" ]; then
-		echo "WANT_AUTOMAKE=1.15" > $CURDIR/build
+		echo "export WANT_AUTOMAKE=1.15" > $CURDIR/build
 	fi
 fi
 
