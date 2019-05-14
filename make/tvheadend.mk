@@ -40,9 +40,9 @@ $(D)/tvheadend.do_prepare: | $(TVHEADEND_DEPS)
 	echo "Diff       : "$$DIFF; \
 	echo ""; \
 	[ -d "$(ARCHIVE)/tvheadend.git" ] && \
-	(cd $(ARCHIVE)/tvheadend.git; echo -n "Updating archived Tvheadend git..."; git pull -q; echo -e -n " done.\nChecking out HEAD..."; git checkout -q HEAD; echo " done."; cd "$(BUILD_TMP)";); \
+	(cd $(ARCHIVE)/tvheadend.git; echo -n "Updating archived Tvheadend git..."; git pull $(SILENT_CONFIGURE); echo -e -n " done.\nChecking out HEAD..."; git checkout -q HEAD; echo " done."; cd "$(BUILD_TMP)";); \
 	[ -d "$(ARCHIVE)/tvheadend.git" ] || \
-	(echo -n "Cloning remote Tvheadend git..."; git clone -q -b $$HEAD $$REPO_0 $(ARCHIVE)/tvheadend.git; echo " done."); \
+	(echo -n "Cloning remote Tvheadend git..."; git clone $(SILENT_CONFIGURE) -b $$HEAD $$REPO_0 $(ARCHIVE)/tvheadend.git; echo " done."); \
 	echo -n "Copying local git content to build environment..."; cp -ra $(ARCHIVE)//tvheadend.git $(SOURCE_DIR)/tvheadend; echo " done."; \
 	if [ "$$REVISION" != "newest" ]; then \
 		cd $(SOURCE_DIR)/tvheadend; echo -n "Checking out revision $$REVISION..."; git checkout -q "$$REVISION"; echo " done."; \
@@ -85,10 +85,10 @@ $(SOURCE_DIR)/tvheadend/config.status:
 			--disable-pcre2 \
 			--disable-dvben50221 \
 			--disable-dbus_1 \
-                        --disable-timeshift \
-                        --disable-libopus \
-                        --disable-libopus_static \
-                        --enable-pngquant \
+			--disable-timeshift \
+			--disable-libopus \
+			--disable-libopus_static \
+			--enable-pngquant \
 			--with-boxtype=$(BOXTYPE) \
 			PKG_CONFIG=$(PKG_CONFIG) \
 			PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) \

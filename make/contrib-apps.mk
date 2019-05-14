@@ -54,7 +54,7 @@ $(D)/busybox_usb: $(D)/bootstrap $(ARCHIVE)/$(BUSYBOX_SOURCE) $(PATCHES)/$(BUSYB
 		sed -i -e 's#^CONFIG_PREFIX.*#CONFIG_PREFIX="$(TARGET_DIR)"#' .config; \
 		$(BUILDENV) \
 		$(MAKE) busybox ARCH=sh4 CROSS_COMPILE=$(TARGET)- CFLAGS_EXTRA="$(TARGET_CFLAGS)"; \
-		$(MAKE) install ARCH=sh4 CROSS_COMPILE=$(TARGET)- CFLAGS_EXTRA="$(TARGET_CFLAGS)" CONFIG_PREFIX=$(TARGET_DIR); \
+		$(MAKE) install ARCH=sh4 CROSS_COMPILE=$(TARGET)- CFLAGS_EXTRA="$(TARGET_CFLAGS)" CONFIG_PREFIX=$(TARGET_DIR)
 		cp -f $(BUILD_TMP)/busybox_usb-$(BUSYBOX_USB_VER)/busybox $(APPS_DIR)/tools/USB_boot
 	$(REMOVE)/busybox_usb-$(BUSYBOX_USB_VER)
 	$(TOUCH)
@@ -553,7 +553,7 @@ $(D)/ntfs_3g: $(D)/bootstrap $(ARCHIVE)/$(NTFS_3G_SOURCE)
 #
 # mc
 #
-MC_VER = 4.8.20
+MC_VER = 4.8.22
 MC_SOURCE = mc-$(MC_VER).tar.xz
 MC_PATCH = mc-$(MC_VER).patch
 
@@ -566,7 +566,7 @@ $(D)/mc: $(D)/bootstrap $(D)/ncurses $(D)/libglib2 $(ARCHIVE)/$(MC_SOURCE)
 	$(UNTAR)/$(MC_SOURCE)
 	$(CH_DIR)/mc-$(MC_VER); \
 		$(call apply_patches, $(MC_PATCH)); \
-		autoreconf -fi  $(SILENT_OPT); \
+		autoreconf -fi $(SILENT_OPT); \
 		$(CONFIGURE) \
 			--prefix=/usr \
 			--mandir=/.remove \
@@ -956,7 +956,7 @@ $(D)/shairport-sync: $(D)/bootstrap $(D)/libdaemon $(D)/libpopt $(D)/libconfig $
 	$(START_BUILD)
 	$(REMOVE)/shairport-sync
 	$(SET) -e; if [ -d $(ARCHIVE)/shairport-sync.git ]; \
-		else cd $(ARCHIVE); git clone https://github.com/mikebrady/shairport-sync.git shairport-sync.git; \
+		else cd $(ARCHIVE); git clone $(SILENT_CONFIGURE) https://github.com/mikebrady/shairport-sync.git shairport-sync.git; \
 		fi
 	cp -ra $(ARCHIVE)/shairport-sync.git $(BUILD_TMP)/shairport-sync
 	set -e; cd $(BUILD_TMP)/shairport-sync; \
@@ -1362,6 +1362,21 @@ SAMBA_VER = 3.6.25
 SAMBA_SOURCE = samba-$(SAMBA_VER).tar.gz
 SAMBA_PATCH = $(PATCHES)/samba
 
+ifeq ($(SAMBA_SMALL_INSTALL), 1)
+SAMBA_INSTALL = \
+		$(MAKE) $(MAKE_OPTS) \
+			installservers installbin installdat installmodules \
+			SBIN_PROGS="bin/samba_multicall" \
+			BIN_PROGS="bin/testparm" \
+			DESTDIR=$(TARGET_DIR) prefix=./. ;
+else
+SAMBA_INSTALL = \
+		$(MAKE) $(MAKE_OPTS) \
+			installservers installbin installscripts installdat installmodules \
+			SBIN_PROGS="bin/samba_multicall" \
+			DESTDIR=$(TARGET_DIR) prefix=./. ;
+endif
+
 $(ARCHIVE)/$(SAMBA_SOURCE):
 	$(WGET) https://ftp.samba.org/pub/samba/stable/$(SAMBA_SOURCE)
 
@@ -1386,11 +1401,13 @@ $(D)/samba: $(D)/bootstrap $(ARCHIVE)/$(SAMBA_SOURCE)
 		samba_cv_HAVE_IFACE_IFCONF=yes \
 		samba_cv_HAVE_KERNEL_OPLOCKS_LINUX=yes \
 		samba_cv_HAVE_SECURE_MKSTEMP=yes \
+		libreplace_cv_HAVE_SECURE_MKSTEMP=yes \
 		samba_cv_HAVE_WRFILE_KEYTAB=no \
 		samba_cv_USE_SETREUID=yes \
 		samba_cv_USE_SETRESUID=yes \
 		samba_cv_have_setreuid=yes \
 		samba_cv_have_setresuid=yes \
+		samba_cv_optimize_out_funcation_calls=no \
 		ac_cv_header_zlib_h=no \
 		samba_cv_zlib_1_2_3=no \
 		ac_cv_path_PYTHON="" \
@@ -1455,13 +1472,16 @@ $(D)/samba: $(D)/bootstrap $(ARCHIVE)/$(SAMBA_SOURCE)
 			--without-libaddns \
 		; \
 		$(MAKE) $(MAKE_OPTS); \
-		$(MAKE) $(MAKE_OPTS) installservers installbin installscripts installdat installmodules \
-			SBIN_PROGS="bin/samba_multicall" DESTDIR=$(TARGET_DIR) prefix=./. ; \
-			ln -s samba_multicall $(TARGET_DIR)/usr/sbin/nmbd
-			ln -s samba_multicall $(TARGET_DIR)/usr/sbin/smbd
-			ln -s samba_multicall $(TARGET_DIR)/usr/sbin/smbpasswd
+		$(SAMBA_INSTALL)
+			ln -sf samba_multicall $(TARGET_DIR)/usr/sbin/nmbd
+			ln -sf samba_multicall $(TARGET_DIR)/usr/sbin/smbd
+			ln -sf samba_multicall $(TARGET_DIR)/usr/sbin/smbpasswd
 	$(SILENT)install -m 755 $(SKEL_ROOT)/etc/init.d/samba $(TARGET_DIR)/etc/init.d/
 	$(SILENT)install -m 644 $(SKEL_ROOT)/etc/samba/smb.conf $(TARGET_DIR)/etc/samba/
+	$(SILENT)rm -rf $(TARGET_DIR)/usr/lib/pdb
+	$(SILENT)rm -rf $(TARGET_DIR)/usr/lib/perfcount
+	$(SILENT)rm -rf $(TARGET_DIR)/usr/lib/nss_info
+	$(SILENT)rm -rf $(TARGET_DIR)/usr/lib/gpext
 	$(REMOVE)/samba-$(SAMBA_VER)
 	$(TOUCH)
 
@@ -1826,7 +1846,8 @@ $(D)/usb_modeswitch: $(D)/bootstrap $(D)/libusb $(D)/usb_modeswitch_data $(ARCHI
 		$(call apply_patches, $(USB_MODESWITCH_PATCH)); \
 		sed -i -e "s/= gcc/= $(TARGET)-gcc/" -e "s/-l usb/-lusb -lusb-1.0 -lpthread -lrt/" -e "s/install -D -s/install -D --strip-program=$(TARGET)-strip -s/" Makefile; \
 		sed -i -e "s/@CC@/$(TARGET)-gcc/g" jim/Makefile.in; \
-		$(BUILDENV) $(MAKE) DESTDIR=$(TARGET_DIR); \
+		$(BUILDENV) \
+		$(MAKE) DESTDIR=$(TARGET_DIR); \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
 	$(REMOVE)/usb-modeswitch-$(USB_MODESWITCH_VER)
 	$(TOUCH)
@@ -1837,6 +1858,7 @@ $(D)/usb_modeswitch: $(D)/bootstrap $(D)/libusb $(D)/usb_modeswitch_data $(ARCHI
 OFGWRITE_VER = 78ae5d3
 OFGWRITE_SOURCE = ofgwrite-git-$(OFGWRITE_VER).tar.bz2
 OFGWRITE_URL = https://github.com/Duckbox-Developers/ofgwrite-ddt.git
+OFGWRITE_PATCH =
 
 $(ARCHIVE)/$(OFGWRITE_SOURCE):
 	$(SCRIPTS_DIR)/get-git-archive.sh $(OFGWRITE_URL) $(OFGWRITE_VER) $(notdir $@) $(ARCHIVE)
@@ -1846,6 +1868,7 @@ $(D)/ofgwrite: $(D)/bootstrap $(ARCHIVE)/$(OFGWRITE_SOURCE)
 	$(REMOVE)/ofgwrite-git-$(OFGWRITE_VER)
 	$(UNTAR)/$(OFGWRITE_SOURCE)
 	$(CH_DIR)/ofgwrite-git-$(OFGWRITE_VER); \
+		$(call apply_patches, $(OFGWRITE_PATCH)); \
 		$(BUILDENV) \
 		$(MAKE); \
 	$(SILENT)install -m 755 $(BUILD_TMP)/ofgwrite-git-$(OFGWRITE_VER)/ofgwrite_bin $(TARGET_DIR)/usr/bin

@@ -36,6 +36,7 @@ $(ARCHIVE)/$(PYTHON_SOURCE):
 
 $(D)/host_python: $(ARCHIVE)/$(PYTHON_SOURCE)
 	$(START_BUILD)
+	$(SILENT)if [ ! -d $(BUILD_TMP) ]; then mkdir $(BUILD_TMP); fi;
 	$(REMOVE)/Python-$(PYTHON_VER)
 	$(UNTAR)/$(PYTHON_SOURCE)
 	$(CH_DIR)/Python-$(PYTHON_VER); \
@@ -208,7 +209,7 @@ $(ARCHIVE)/$(PYTHON_TWISTED_SOURCE):
 #	$(WGET) https://pypi.python.org/packages/source/T/Twisted/$(PYTHON_TWISTED_SOURCE)
 	$(WGET) https://twistedmatrix.com/Releases/Twisted/16.4/$(PYTHON_TWISTED_SOURCE)
 
-$(D)/python_twisted: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(D)/python_zope_interface $(D)/python_pyopenssl $(D)/python_service_identity $(ARCHIVE)/$(PYTHON_TWISTED_SOURCE)
+$(D)/python_twisted: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(ARCHIVE)/$(PYTHON_TWISTED_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/Twisted-$(PYTHON_TWISTED_VER)
 	$(UNTAR)/$(PYTHON_TWISTED_SOURCE)
@@ -251,7 +252,7 @@ PYTHON_PYCRYPTO_PATCH = python-pycrypto-$(PYTHON_PYCRYPTO_VER).patch
 $(ARCHIVE)/$(PYTHON_PYCRYPTO_SOURCE):
 	$(WGET) https://pypi.python.org/packages/source/p/pycrypto/$(PYTHON_PYCRYPTO_SOURCE)
 
-$(D)/python_pycrypto: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(ARCHIVE)/$(PYTHON_PYCRYPTO_SOURCE)
+$(D)/python_pycrypto: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(D)/gmp $(ARCHIVE)/$(PYTHON_PYCRYPTO_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/pycrypto-$(PYTHON_PYCRYPTO_VER)
 	$(UNTAR)/$(PYTHON_PYCRYPTO_SOURCE)
@@ -333,7 +334,7 @@ PYTHON_CFFI_SOURCE = cffi-$(PYTHON_CFFI_VER).tar.gz
 $(ARCHIVE)/$(PYTHON_CFFI_SOURCE):
 	$(WGET) https://pypi.python.org/packages/source/c/cffi/$(PYTHON_CFFI_SOURCE)
 
-$(D)/python_cffi: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(ARCHIVE)/$(PYTHON_CFFI_SOURCE)
+$(D)/python_cffi: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(D)/libffi $(ARCHIVE)/$(PYTHON_CFFI_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/cffi-$(PYTHON_CFFI_VER)
 	$(UNTAR)/$(PYTHON_CFFI_SOURCE)
@@ -390,7 +391,7 @@ PYTHON_PYASN1_SOURCE = pyasn1-$(PYTHON_PYASN1_VER).tar.gz
 $(ARCHIVE)/$(PYTHON_PYASN1_SOURCE):
 	$(WGET) https://pypi.python.org/packages/source/p/pyasn1/$(PYTHON_PYASN1_SOURCE)
 
-$(D)/python_pyasn1: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(D)/python_pyasn1_modules $(ARCHIVE)/$(PYTHON_PYASN1_SOURCE)
+$(D)/python_pyasn1: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(ARCHIVE)/$(PYTHON_PYASN1_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/pyasn1-$(PYTHON_PYASN1_VER)
 	$(UNTAR)/$(PYTHON_PYASN1_SOURCE)
@@ -409,7 +410,7 @@ PYTHON_PYCPARSER_SOURCE = pycparser-$(PYTHON_PYCPARSER_VER).tar.gz
 $(ARCHIVE)/$(PYTHON_PYCPARSER_SOURCE):
 	$(WGET) https://pypi.python.org/packages/source/p/pycparser/$(PYTHON_PYCPARSER_SOURCE)
 
-$(D)/python_pycparser: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(D)/python_pyasn1 $(ARCHIVE)/$(PYTHON_PYCPARSER_SOURCE)
+$(D)/python_pycparser: $(D)/bootstrap $(D)/python $(ARCHIVE)/$(PYTHON_PYCPARSER_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/pycparser-$(PYTHON_PYCPARSER_VER)
 	$(UNTAR)/$(PYTHON_PYCPARSER_SOURCE)
@@ -428,7 +429,7 @@ PYTHON_CRYPTOGRAPHY_SOURCE = cryptography-$(PYTHON_CRYPTOGRAPHY_VER).tar.gz
 $(ARCHIVE)/$(PYTHON_CRYPTOGRAPHY_SOURCE):
 	$(WGET) https://pypi.python.org/packages/source/c/cryptography/$(PYTHON_CRYPTOGRAPHY_SOURCE)
 
-$(D)/python_cryptography: $(D)/bootstrap $(D)/libffi $(D)/python $(D)/python_setuptools $(D)/python_pyopenssl $(D)/python_six $(D)/python_pycparser $(ARCHIVE)/$(PYTHON_CRYPTOGRAPHY_SOURCE)
+$(D)/python_cryptography: $(D)/bootstrap $(D)/libffi $(D)/python $(D)/python_setuptools $(D)/python_pyopenssl $(D)/python_six $(ARCHIVE)/$(PYTHON_CRYPTOGRAPHY_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/cryptography-$(PYTHON_CRYPTOGRAPHY_VER)
 	$(UNTAR)/$(PYTHON_CRYPTOGRAPHY_SOURCE)
@@ -448,7 +449,7 @@ PYTHON_PYOPENSSL_PATCH = python-pyopenssl-$(PYTHON_PYOPENSSL_VER).patch
 $(ARCHIVE)/$(PYTHON_PYOPENSSL_SOURCE):
 	$(WGET) https://pypi.python.org/packages/source/p/pyOpenSSL/$(PYTHON_PYOPENSSL_SOURCE)
 
-$(D)/python_pyopenssl: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(ARCHIVE)/$(PYTHON_PYOPENSSL_SOURCE)
+$(D)/python_pyopenssl: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(D)/openssl $(ARCHIVE)/$(PYTHON_PYOPENSSL_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/pyOpenSSL-$(PYTHON_PYOPENSSL_VER)
 	$(UNTAR)/$(PYTHON_PYOPENSSL_SOURCE)
@@ -469,7 +470,7 @@ PYTHON_SERVICE_IDENTITY_PATCH =
 $(ARCHIVE)/$(PYTHON_SERVICE_IDENTITY_SOURCE):
 	$(WGET) https://pypi.python.org/packages/source/s/service_identity/$(PYTHON_SERVICE_IDENTITY_SOURCE)
 
-$(D)/python_service_identity: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(D)/python_attr $(D)/python_attrs $(D)/python_pyasn1 $(ARCHIVE)/$(PYTHON_SERVICE_IDENTITY_SOURCE)
+$(D)/python_service_identity: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(ARCHIVE)/$(PYTHON_SERVICE_IDENTITY_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/service_identity-$(PYTHON_SERVICE_IDENTITY_VER)
 	$(UNTAR)/$(PYTHON_SERVICE_IDENTITY_SOURCE)
@@ -490,7 +491,7 @@ PYTHON_ATTR_PATCH =
 $(ARCHIVE)/$(PYTHON_ATTR_SOURCE):
 	$(WGET) https://pypi.python.org/packages/source/a/attr/$(PYTHON_ATTR_SOURCE)
 
-$(D)/python_attr: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(ARCHIVE)/$(PYTHON_ATTR_SOURCE)
+$(D)/python_attr: $(D)/bootstrap $(D)/python $(ARCHIVE)/$(PYTHON_ATTR_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/attr-$(PYTHON_ATTR_VER)
 	$(UNTAR)/$(PYTHON_ATTR_SOURCE)
@@ -529,7 +530,7 @@ PYTHON_ELEMENTTREE_SOURCE = elementtree-$(PYTHON_ELEMENTTREE_VER).tar.gz
 $(ARCHIVE)/$(PYTHON_ELEMENTTREE_SOURCE):
 	$(WGET) http://effbot.org/media/downloads/$(PYTHON_ELEMENTTREE_SOURCE)
 
-$(D)/python_elementtree: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(ARCHIVE)/$(PYTHON_ELEMENTTREE_SOURCE)
+$(D)/python_elementtree: $(D)/bootstrap $(D)/python $(ARCHIVE)/$(PYTHON_ELEMENTTREE_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/elementtree-$(PYTHON_ELEMENTTREE_VER)
 	$(UNTAR)/$(PYTHON_ELEMENTTREE_SOURCE)
@@ -603,9 +604,10 @@ PYTHON_GDATA_VER = 2.0.18
 PYTHON_GDATA_SOURCE = gdata-$(PYTHON_GDATA_VER).tar.gz
 
 $(ARCHIVE)/$(PYTHON_GDATA_SOURCE):
-	$(WGET) https://gdata-python-client.googlecode.com/files/$(PYTHON_GDATA_SOURCE)
+#	$(WGET) https://gdata-python-client.googlecode.com/files/$(PYTHON_GDATA_SOURCE)
+	$(WGET) https://files.pythonhosted.org/packages/a8/70/bd554151443fe9e89d9a934a7891aaffc63b9cb5c7d608972919a002c03c/$(PYTHON_GDATA_SOURCE)
 
-$(D)/python_gdata: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(ARCHIVE)/$(PYTHON_GDATA_SOURCE)
+$(D)/python_gdata: $(D)/bootstrap $(D)/python $(ARCHIVE)/$(PYTHON_GDATA_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/gdata-$(PYTHON_GDATA_VER)
 	$(UNTAR)/$(PYTHON_GDATA_SOURCE)
@@ -698,11 +700,12 @@ $(D)/python_livestreamer: $(D)/bootstrap $(D)/python $(D)/python_setuptools
 	$(START_BUILD)
 	$(REMOVE)/livestreamer
 	$(SET) -e; if [ -d $(ARCHIVE)/livestreamer.git ]; \
-		then cd $(ARCHIVE)/livestreamer.git; git pull; \
-		else cd $(ARCHIVE); git clone https://github.com/chrippa/livestreamer.git livestreamer.git; \
+		then cd $(ARCHIVE)/livestreamer.git; git pull $(SILENT_CONFIGURE); \
+		else cd $(ARCHIVE); git clone $(SILENT_CONFIGURE) https://github.com/chrippa/livestreamer.git livestreamer.git; \
 		fi
-	cp -ra $(ARCHIVE)/livestreamer.git $(BUILD_TMP)/livestreamer
+	$(SILENT)cp -ra $(ARCHIVE)/livestreamer.git $(BUILD_TMP)/livestreamer
 	$(CH_DIR)/livestreamer; \
+		touch AUTHORS; \
 		$(PYTHON_BUILD); \
 		$(PYTHON_INSTALL)
 	$(REMOVE)/livestreamer
@@ -715,10 +718,10 @@ $(D)/python_livestreamersrv: $(D)/bootstrap $(D)/python $(D)/python_setuptools $
 	$(START_BUILD)
 	$(REMOVE)/livestreamersrv
 	$(SET) -e; if [ -d $(ARCHIVE)/livestreamersrv.git ]; \
-		then cd $(ARCHIVE)/livestreamersrv.git; git pull; \
-		else cd $(ARCHIVE); git clone https://github.com/athoik/livestreamersrv.git livestreamersrv.git; \
+		then cd $(ARCHIVE)/livestreamersrv.git; git pull $(SILENT_CONFIGURE); \
+		else cd $(ARCHIVE); git clone $(SILENT_CONFIGURE) https://github.com/athoik/livestreamersrv.git livestreamersrv.git; \
 		fi
-	cp -ra $(ARCHIVE)/livestreamersrv.git $(BUILD_TMP)/livestreamersrv
+	$(SILENT)cp -ra $(ARCHIVE)/livestreamersrv.git $(BUILD_TMP)/livestreamersrv
 	$(CH_DIR)/livestreamersrv; \
 		cp -rd livestreamersrv $(TARGET_DIR)/usr/sbin; \
 		cp -rd offline.mp4 $(TARGET_DIR)/usr/share

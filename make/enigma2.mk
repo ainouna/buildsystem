@@ -11,7 +11,7 @@ ENIGMA2_DEPS += $(D)/sdparm $(D)/minidlna $(D)/ethtool
 ENIGMA2_DEPS += $(D)/libdreamdvd $(D)/libudfread
 ifneq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), small size))
 # required for DVDBurn plugin (adds ? Mbyte to image)
-#ENIGMA2_DEPS += $(D)/dvd+rw-tools $(D)/dvdauthor $(D)/mjpegtools $(D)/cdrkit $(D)/python_imaging
+#ENIGMA2_DEPS += $(D)/dvd+rw-tools $(D)/dvdauthor $(D)/mjpegtools $(D)/cdrkit $(D)/replex $(D)/python_imaging
 endif
 ifeq ($(IMAGE), enigma2-wlandriver)
 ENIGMA2_DEPS += $(D)/wpa_supplicant $(D)/wireless_tools

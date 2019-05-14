@@ -185,7 +185,7 @@ $(D)/tools-libmme_host: $(D)/bootstrap $(D)/driver
 #
 # libmme_image
 #
-$(D)/tools-libmme_image: $(D)/bootstrap
+$(D)/tools-libmme_image: $(D)/bootstrap $(D)/libjpeg_turbo
 	$(START_BUILD)
 	$(SET) -e; cd $(APPS_DIR)/tools/libmme_image; \
 		if [ ! -d m4 ]; then mkdir m4; fi; \
@@ -199,7 +199,7 @@ $(D)/tools-libmme_image: $(D)/bootstrap
 #
 # minimon
 #
-$(D)/tools-minimon: $(D)/bootstrap $(D)/jpeg_turbo
+$(D)/tools-minimon: $(D)/bootstrap $(D)/libjpeg $(D)/libusb
 	$(START_BUILD)
 	$(SET) -e; cd $(APPS_DIR)/tools/minimon; \
 		if [ ! -d m4 ]; then mkdir m4; fi; \
@@ -300,7 +300,7 @@ $(D)/tools-tfd2mtd: $(D)/bootstrap
 $(D)/tools-tffpctl: $(D)/bootstrap
 	$(START_BUILD)
 	$(SET) -e; cd $(APPS_DIR)/tools/tffpctl; \
-	if [ ! -d m4 ]; then mkdir m4; fi; \
+		if [ ! -d m4 ]; then mkdir m4; fi; \
 		$(CONFIGURE_TOOLS) \
 			--prefix= \
 		; \
