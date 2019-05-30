@@ -9,7 +9,6 @@ enigma2_release_cube_common:
 	$(SILENT)install -m 0755 $(SKEL_ROOT)/release/halt_cuberevo $(RELEASE_DIR)/etc/init.d/halt
 	$(SILENT)install -m 0777 $(SKEL_ROOT)/release/reboot_cuberevo $(RELEASE_DIR)/etc/init.d/reboot
 	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/stgfb/stmfb/stmcore-display-stx7109c3.ko $(RELEASE_DIR)/lib/modules/
-	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/frontcontroller/cuberevo_micom/cuberevo_micom.ko $(RELEASE_DIR)/lib/modules/
 	$(SILENT)cp $(SKEL_ROOT)/boot/video_7109.elf $(RELEASE_DIR)/boot/video.elf
 	$(SILENT)cp $(SKEL_ROOT)/boot/audio_7109.elf $(RELEASE_DIR)/boot/audio.elf
 	$(SILENT)cp $(SKEL_ROOT)/firmware/dvb-fe-cx24116.fw $(RELEASE_DIR)/lib/firmware/
@@ -28,41 +27,49 @@ enigma2_release_cube_common_tuner:
 # cuberevo_9500hd
 #
 enigma2_release_cuberevo_9500hd: enigma2_release_cube_common enigma2_release_cube_common_tuner
+	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/frontcontroller/ipbox/fp.ko $(RELEASE_DIR)/lib/modules/
 
 #
 # cuberevo_2000hd
 #
 enigma2_release_cuberevo_2000hd: enigma2_release_cube_common enigma2_release_cube_common_tuner
+	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/frontcontroller/cuberevo_micom/cuberevo_micom.ko $(RELEASE_DIR)/lib/modules/
 
 #
 # cuberevo_250hd
 #
 enigma2_release_cuberevo_250hd: enigma2_release_cube_common enigma2_release_cube_common_tuner
+	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/frontcontroller/ipbox/micom.ko $(RELEASE_DIR)/lib/modules/
 
 #
 # cuberevo_mini_fta
 #
 enigma2_release_cuberevo_mini_fta: enigma2_release_cube_common enigma2_release_cube_common_tuner
+	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/frontcontroller/ipbox/micom.ko $(RELEASE_DIR)/lib/modules/
 
 #
 # cuberevo_mini2
 #
 enigma2_release_cuberevo_mini2: enigma2_release_cube_common enigma2_release_cube_common_tuner
+	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/frontcontroller/cuberevo_micom/cuberevo_micom.ko $(RELEASE_DIR)/lib/modules/
 
 #
 # cuberevo_mini
 #
 enigma2_release_cuberevo_mini: enigma2_release_cube_common enigma2_release_cube_common_tuner
+	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/frontcontroller/cuberevo_micom/cuberevo_micom.ko $(RELEASE_DIR)/lib/modules/
 
 #
 # cuberevo
 #
 enigma2_release_cuberevo: enigma2_release_cube_common enigma2_release_cube_common_tuner
+	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/frontcontroller/ipbox/micom.ko $(RELEASE_DIR)/lib/modules/
 
 #
 # cuberevo_3000hd
 #
 enigma2_release_cuberevo_3000hd: enigma2_release_cube_common enigma2_release_cube_common_tuner
+	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/frontcontroller/cuberevo_micom/cuberevo_micom.ko $(RELEASE_DIR)/lib/modules/
 
 #
 # release_common_ipbox

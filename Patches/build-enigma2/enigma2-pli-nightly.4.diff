@@ -1,4 +1,4 @@
-# revision ac0d34146f76cdfdb9363e6780424fd284743b68 02/11/2018 20:28
+# revision 12e2144c411d147e99694d24b8cffad231e6b4f9 10/12/2018 19:01
 --- enigma2.org/configure.ac
 +++ enigma2/configure.ac
 @@ -18,6 +18,7 @@
@@ -250,7 +250,12 @@
  
  AC_CHECK_LIB([udfread], [udfread_init])
  AC_CHECK_LIB([dl], [dlopen], [LIBDL_LIBS="-ldl"], [AC_MSG_ERROR([Could not find libdl])])
-@@ -52,7 +287,7 @@
+@@ -48,11 +283,11 @@
+ 	[  --with-crashlogemail=crash log email address],
+ 	[CRASHLOGEMAIL="$withval"],[CRASHLOGEMAIL="the OpenPLi forum"])
+ AC_SUBST(CRASHLOGEMAIL)
+-AC_DEFINE_UNQUOTED(CRASH_EMAILADDR,"$CRASHLOGEMAIL",[crash log email address])
++AC_DEFINE_UNQUOTED(CRASH_EMAILADDR,"$CRASHLOGEMAIL", [crash log email address])
  
  AC_ARG_WITH(boxtype,
  	[  --with-boxtype=NAME box type [[none,dm7025,dm800...]]],
@@ -259,7 +264,102 @@
  AC_SUBST(BOXTYPE)
  AC_DEFINE_UNQUOTED(BOXTYPE,"$BOXTYPE",[box type])
  
-@@ -198,6 +433,26 @@
+@@ -60,7 +295,7 @@
+ AM_CONDITIONAL(HAVE_TEMPFANCONTROL, test "$BOXTYPE" == dm8000 -o "$BOXTYPE" == dm800se -o "$BOXTYPE" == dm500hd)
+ if test `echo "$BOXTYPE" | cut -b 1-2` == "dm"; then
+ 	AC_DEFINE(DREAMBOX, 1, [Dreambox hardware])
+-	AC_DEFINE(KEY_PLAY_ACTUALLY_IS_KEY_PLAYPAUSE, 1,[define when rc sends a KEY_PLAY event for its KEY_PLAYPAUSE key])
++	AC_DEFINE(KEY_PLAY_ACTUALLY_IS_KEY_PLAYPAUSE, 1, [define when rc sends a KEY_PLAY event for its KEY_PLAYPAUSE key])
+ fi
+ 
+ AC_ARG_WITH(textlcd,
+@@ -69,7 +304,7 @@
+ 	[[withtextlcd=no]]
+ )
+ if test x"$withtextlcd" != xno ; then
+-	AC_DEFINE(HAVE_TEXTLCD, 1,[Define when using an ascii based lcd device])
++	AC_DEFINE(HAVE_TEXTLCD, 1, [Define when using an ASCII based lcd device])
+ fi
+ AM_CONDITIONAL(HAVE_TEXTLCD, test x"$withtextlcd" != xno)
+ 
+@@ -79,19 +314,6 @@
+ 	[[TEXTSKIN="default"]]
+ )
+ AC_SUBST(TEXTSKIN)
+-
+-if test `echo "$BOXTYPE" | cut -b 1-7` == "mbmicro"; then
+-	AC_DEFINE(FORCE_NO_BLENDING_ACCELERATION, 1,[define when the framebuffer acceleration does not have alphablending support, though the autodetection might indicate that it does])
+-	AC_DEFINE(FORCE_NO_FILL_ACCELERATION, 1,[define when the framebuffer acceleration does not have fill support])
+-	AC_DEFINE(FORCE_ADVANCED_REMOTE, 1,[define to fixup the input device identification when the remote control is actually an 'advanced' remote (with play/forward/rewind keys)])
+-	AC_DEFINE(KEY_PLAY_ACTUALLY_IS_KEY_PLAYPAUSE, 1,[define when rc sends a KEY_PLAY event for its KEY_PLAYPAUSE key])
+-fi
+-
+-if test `echo "$BOXTYPE" | cut -b 1-2` == "vu"; then
+-	AC_DEFINE(FORCE_NO_BLENDING_ACCELERATION, 1,[define when the framebuffer acceleration does not have alphablending support, though the autodetection might indicate that it does])
+-	AC_DEFINE(FORCE_NO_FILL_ACCELERATION, 1,[define when the framebuffer acceleration does not have fill support])
+-	AC_DEFINE(FORCE_ADVANCED_REMOTE, 1,[define to fixup the input device identification when the remote control is actually an 'advanced' remote (with play/forward/rewind keys)])
+-fi
+ 
+ AC_ARG_WITH(libsdl,
+ 	AS_HELP_STRING([--with-libsdl],[use libsdl, yes or no]),
+@@ -106,7 +328,7 @@
+ 	[with_libxine=$withval],[with_libxine=no])
+ if test "$with_libxine" = "yes"; then
+ 	PKG_CHECK_MODULES(LIBXINE, libxine)
+-	AC_DEFINE([WITH_XINE],[1],[Define to 1 if you have libxine])
++	AC_DEFINE([WITH_XINE], 1, [Define to 1 if you have libxine])
+ fi
+ AM_CONDITIONAL(HAVE_LIBXINE, test "$with_libxine" = "yes")
+ 
+@@ -114,14 +336,14 @@
+ 	AS_HELP_STRING([--without-debug],[disable debugging code]),
+ 	[with_debug="$withval"],[with_debug="yes"])
+ if test "$with_debug" = "yes"; then
+-	AC_DEFINE([DEBUG],[1],[Define to 1 to enable debugging code])
++	AC_DEFINE([DEBUG], 1, [Define to 1 to enable debugging code])
+ fi
+ 
+ AC_ARG_WITH(memcheck,
+ 	AS_HELP_STRING([--with-memcheck],[enable memory leak checks]),
+ 	[with_memcheck="$withval"],[with_memcheck="no"])
+ if test "$with_memcheck" = "yes"; then
+-	AC_DEFINE([MEMLEAK_CHECK],[1],[Define to 1 to enable memory leak checks])
++	AC_DEFINE([MEMLEAK_CHECK], 1, [Define to 1 to enable memory leak checks])
+ fi
+ 
+ AC_ARG_WITH(po,
+@@ -141,11 +363,11 @@
+ 
+ AC_ARG_WITH(alsa,
+ 	AC_HELP_STRING([--with-alsa], [Enable ALSA support]),
+-	[[with_alse=$withval]],
+-	[[with_alse=no]]
++	[[with_alsa=$withval]],
++	[[with_alsa=no]]
+ )
+ if test x"$with_alsa" == xyes ; then
+-	AC_DEFINE(HAVE_ALSA, 1,[Enables ALSA support])
++	AC_DEFINE(HAVE_ALSA, 1, [Enables ALSA support])
+ 	PKG_CHECK_MODULES(ALSA, alsa)
+ fi
+ 
+@@ -155,7 +377,7 @@
+ 	[[with_alsacard=no]]
+ )
+ if test x"$with_alsacard" != xno ; then
+-	AC_DEFINE_UNQUOTED(ALSA_CARD, "$withval",[Defines which alsa card to use])
++	AC_DEFINE_UNQUOTED(ALSA_CARD, "$withval", [Defines which alsa card to use])
+ fi
+ 
+ AC_ARG_WITH(alsamixer,
+@@ -192,12 +414,32 @@
+ )
+ AM_CONDITIONAL(HAVE_AMLOGIC, test x"$with_amlogic" = xyes)
+ if test x"$with_amlogic" = xyes ; then
+-	AC_DEFINE(HAVE_AMLOGIC, 1,[Enables AMLOGIC decoder support])
++	AC_DEFINE(HAVE_AMLOGIC, 1, [Enables AMLOGIC decoder support])
+ 	PKG_CHECK_MODULES(AMCODEC, libamcodec)
+ 	PKG_CHECK_MODULES(AMADEC, libamadec)
  	PKG_CHECK_MODULES(DVBCSA, libdvbcsa)
  fi
  
@@ -269,7 +369,7 @@
 +	[[withgraphlcd=no]]
 +)
 +if test x"$withgraphlcd" != xno ; then
-+	AC_DEFINE(HAVE_GRAPHLCD, 1,[Define when using a GraphLCD color display device])
++	AC_DEFINE(HAVE_GRAPHLCD, 1, [Define when using a GraphLCD color display device])
 +fi
 +AM_CONDITIONAL(HAVE_GRAPHLCD, test x"$withgraphlcd" != xno)
 +
@@ -286,7 +386,7 @@
  AC_ARG_WITH(alphablendingacceleration,
  	AC_HELP_STRING([--with-alphablendingacceleration=never/always/auto], [alphablending acceleration strategy: never accelerate / always accelerate / automatically decide when to accelerate (default)]),
  	[[with_alphablendingacceleration=$withval]],
-@@ -313,8 +568,6 @@
+@@ -313,8 +555,6 @@
  lib/python/Plugins/Extensions/TuxboxPlugins/Makefile
  lib/python/Plugins/Extensions/TuxboxPlugins/meta/Makefile
  lib/python/Plugins/PLi/Makefile
@@ -295,7 +395,7 @@
  lib/python/Plugins/SystemPlugins/DefaultServicesScanner/Makefile
  lib/python/Plugins/SystemPlugins/DefaultServicesScanner/meta/Makefile
  lib/python/Plugins/SystemPlugins/DiseqcTester/Makefile
-@@ -344,6 +597,50 @@
+@@ -344,6 +584,50 @@
  lib/python/Plugins/SystemPlugins/Videomode/meta/Makefile
  lib/python/Plugins/SystemPlugins/WirelessLan/Makefile
  lib/python/Plugins/SystemPlugins/WirelessLan/meta/Makefile
@@ -545,18 +645,18 @@
  </skin>
 --- enigma2.org/data/fonts/Makefile.am
 +++ enigma2/data/fonts/Makefile.am
-@ -14,8 +14,9 @@
+@@ -14,9 +14,8 @@
  	LiberationSans-Bold.ttf \
  	LiberationSans-BoldItalic.ttf \
  	LiberationSans-Italic.ttf \
--	LiberationSans-Regular.ttf
-+	LiberationSans-Regular.ttf \
-+	wqy-microhei.ttc
+-	LiberationSans-Regular.ttf \
+-	wqy-microhei.ttc
++	LiberationSans-Regular.ttf
  
- install-exec-hook:
+ install-data-hook:
  	cd $(DESTDIR)$(datadir)/fonts && \
--	$(LN_S) -f md_khmurabi_10.ttf fallback.font
-+	$(LN_S) wqy-microhei.ttc fallback.font
+-	$(LN_S) wqy-microhei.ttc fallback.font
++	$(LN_S) -f md_khmurabi_10.ttf fallback.font
 --- enigma2.org/lib/base/Makefile.inc
 +++ enigma2/lib/base/Makefile.inc
 @@ -42,7 +42,7 @@
@@ -568,6 +668,23 @@
  	base/i18n.h \
  	base/itssource.h \
  	base/init.h \
+--- enigma2.org/lib/base/estring.cpp
++++ enigma2/lib/base/estring.cpp
+@@ -634,10 +634,10 @@
+ 		eLog(6, "[convertDVBUTF8] %d chars converted, and %d chars left..", convertedLen, len-convertedLen);
+ 	eLog(6, "[convertDVBUTF8] table=0x%02X twochar=%d output:%s\n", table, useTwoCharMapping, output.c_str());
+ 
+-	eLog(6, "[convertDVBUTF8] table=0x%02X tsid:onid=0x%X:0x%X data[0..14]=%s   output:%s\n",
+-		table, (unsigned int)tsidonid >> 16, tsidonid & 0xFFFFU,
+-		string_to_hex(std::string((char*)data, len < 15 ? len : 15)).c_str(),
+-		output.c_str());
++//	eLog(6, "[convertDVBUTF8] table=0x%02X tsid:onid=0x%X:0x%X data[0..14]=%s   output:%s\n",
++//		table, (unsigned int)tsidonid >> 16, tsidonid & 0xFFFFU,
++//		string_to_hex(std::string((char*)data, len < 15 ? len : 15)).c_str(),
++//		output.c_str());
+ 
+ 	return output;
+ }
 --- enigma2.org/lib/base/smartptr.h
 +++ enigma2/lib/base/smartptr.h
 @@ -4,6 +4,8 @@
@@ -641,6 +758,16 @@
  
  if HAVE_LIBSDL
  driver_libenigma_driver_a_SOURCES += \
+--- enigma2.org/lib/driver/hdmi_cec.cpp
++++ enigma2/lib/driver/hdmi_cec.cpp
+@@ -153,6 +153,7 @@
+ 	else
+ 	{
+ 		eDebug("[eHdmiCEC] cannot open %s: %m", HDMIDEV);
++		bool hdmicec_enabled = eConfigManager::getConfigBoolValue("config.hdmicec.enabled", false);
+ 	}
+ 
+ 	getAddressInfo();
 --- enigma2.org/lib/driver/rc.cpp
 +++ enigma2/lib/driver/rc.cpp
 @@ -164,6 +164,9 @@
@@ -1930,7 +2057,7 @@
  #endif
  
  #define eDebugNoSimulate(x...) \
-@@ -3025,10 +3029,10 @@
+@@ -3034,10 +3038,10 @@
  		case SYS_ISDBT:		ss << " ISDBT"; break;
  		case SYS_UNDEFINED:	ss << " UNDEFINED"; break;
  		case SYS_DVBC_ANNEX_A:	ss << " DVBC_ANNEX_A"; break;
@@ -3326,6 +3453,19 @@
  #include <fribidi/fribidi.h>
  
  #include <map>
+--- enigma2.org/lib/gdi/font.h
++++ enigma2/lib/gdi/font.h
+@@ -152,8 +152,8 @@
+ 	void calc_bbox();
+ public:
+ 	eTextPara(eRect area, ePoint start=ePoint(-1, -1))
+-		: current_font(0), replacement_font(0), current_face(0), replacement_face(0),
+-		fallback_font(0), fallback_face(0),
++		: current_font(0), replacement_font(0), fallback_font(0),
++		current_face(0), replacement_face(0), fallback_face(0),
+ 		area(area), cursor(start), maximum(0, 0), left(start.x()), charCount(0), totalheight(0),
+ 		bboxValid(0), doTopBottomReordering(false)
+ 	{
 --- enigma2.org/lib/gdi/gfbdc.cpp
 +++ enigma2/lib/gdi/gfbdc.cpp
 @@ -25,8 +25,8 @@
@@ -3946,22 +4086,22 @@
  				alignment = 'opt'
  			if size > 2097151:
  				parttype = 'gpt'
-+				task.args += ['-a', alignment, '-s', self.disk_path, 'mklabel', parttype, 'mkpart', 'primary', '0%', endsize, 'name', '1', 'RECORD', 'mkpart', 'primary', endsize, '100%', 'name', '2', 'SWAPPART']
++				task.args = [self.disk_path, '-s', '-a', alignment, 'mktable', parttype, 'mkpart', 'primary', '0%', endsize, 'mkpart', 'primary', endsize, '100%']
 +				print "[Harddisk init] Creating 2 partitions RECORD and SWAPPART with command ", task.args
  			else:
  				parttype = 'msdos'
 -			task.args += ['-a', alignment, '-s', self.disk_path, 'mklabel', parttype, 'mkpart', 'primary', '0%', '100%']
 +				if size > 20000: # create a second SWAPPART partition
 +					endsize = str(size - 1024) + "MB"
-+					task.args += ['-a', alignment,'-s', self.disk_path, 'mklabel', parttype, 'mkpart', 'primary', '0%', endsize, 'mkpart', 'primary', endsize, '100%']
++					task.args += [self.disk_path, '-s', '-a', alignment, 'mktable', parttype, 'mkpart', 'primary', 'ext3', '0%', endsize, 'mkpart', 'primary', endsize, str(size) + 'MB']
 +					print "[Harddisk init] Creating 2 partitions RECORD and SWAPPART with command ", task.args
 +				else:
-+					task.args += ['-a', alignment, '-s', self.disk_path, 'mklabel', parttype, 'mkpart', 'primary', '0%', '100%']
++					task.args += [self.disk_path, '--s', '-a', alignment, 'mktable', parttype, 'mkpart', 'primary', 'ext3', '0%', '100%']
 +					print "[Harddisk init] Creating RECORD partition with command ", task.args
  		else:
  			task.setTool('sfdisk')
  			task.args.append('-f')
-@@ -354,51 +377,102 @@
+@@ -354,51 +377,96 @@
  			task.args.append(self.disk_path)
  			if size > 128000:
  				# Start at sector 8 to better support 4k aligned disks
@@ -3994,6 +4134,17 @@
 -
 -		task = MkfsTask(job, _("Creating filesystem"))
 -		big_o_options = ["dir_index"]
+-		if isFileSystemSupported("ext4"):
+-			task.setTool("mkfs.ext4")
+-			if size > 20000:
+-				try:
+-					version = map(int, open("/proc/version","r").read().split(' ', 4)[2].split('.',2)[:2])
+-					if (version[0] > 3) or (version[0] > 2 and version[1] >= 2):
+-						# Linux version 3.2 supports bigalloc and -C option, use 256k blocks
+-						task.args += ["-C", "262144"]
+-						big_o_options.append("bigalloc")
+-				except Exception, ex:
+-					print "Failed to detect Linux version:", ex
 +		task.setTool('fdisk')
 +		task.args.append('-l')
 +		print "[Harddisk init] Dummy command fdisk -l"
@@ -4008,17 +4159,9 @@
 +		print "[Harddisk init] Wait for ", self.partitionPath("1"), " to exist"
 +
 +		task = MkfsTask(job, _("Creating filesystem on RECORD partition"))
- 		if isFileSystemSupported("ext4"):
- 			task.setTool("mkfs.ext4")
--			if size > 20000:
--				try:
--					version = map(int, open("/proc/version","r").read().split(' ', 4)[2].split('.',2)[:2])
--					if (version[0] > 3) or (version[0] > 2 and version[1] >= 2):
--						# Linux version 3.2 supports bigalloc and -C option, use 256k blocks
--						task.args += ["-C", "262144"]
--						big_o_options.append("bigalloc")
--				except Exception, ex:
--					print "Failed to detect Linux version:", ex
++		if not use_parted:
++			if isFileSystemSupported("ext4"):
++				task.setTool("mkfs.ext4")
  		else:
  			task.setTool("mkfs.ext3")
 -		if size > 250000:
@@ -4043,21 +4186,14 @@
 +
 +		if size > 20000:
 +			task = MkfsTask(job, _("Creating filesystem on SWAPPART partition"))
-+			if isFileSystemSupported("ext4"):
-+				task.setTool("mkfs.ext4")
-+			else:
-+				task.setTool("mkfs.ext3")
-+			if size > 250000:  #250GB
-+				# No more than 256k i-nodes (prevent problems with fsck memory requirements)
-+				task.args += ["-T", "largefile", "-O", "sparse_super", "-N", "262144"]
-+			elif size > 16384:
-+				# between 16GB and 250GB: 1 i-node per megabyte
-+				task.args += ["-T", "largefile", "-O", "sparse_super"]
-+			elif size > 2048:
-+				# Over 2GB: 32 i-nodes per megabyte
-+				task.args += ["-T", "largefile", "-N", str(size * 32)]
-+			task.args += ["-L", "SWAPPART", "-m0", "-O", "dir_index", self.disk_path+"2"]
-+			print "[Harddisk init] Make fs on partition 2 using ", task.args
++			task.setTool("mkswap")
++			task.args += ["-L", "SWAPPART", self.disk_path + "2"]
++			print "[Harddisk init] Make swapfs on partition 2 using ", task.args
++
++			task = MkfsTask(job, _("Switch swap on"))
++			task.setTool("swapon")
++			task.args += [self.disk_path + "2"]
++			print "[Harddisk init] Switching swap on using ", task.args
 +
 +# in the previous process /media/hdd is destroyed, so recreate it
 +		task = Task.LoggingTask(job, _("Re-create /media/hdd"))
@@ -4070,9 +4206,9 @@
 +		task = Task.LoggingTask(job, _("Re-mount %s") % (self.disk_path + "1"))
  		task.weighting = 3
 +		task.setTool('mount')
-+		task.args.append(self.disk_path+"1")
++		task.args.append(self.disk_path + "1")
 +		task.args.append('/hdd')
-+		print "[Harddisk init] Re-mounting %s" % (self.disk_path+"1")
++		print "[Harddisk init] Re-mounting %s" % (self.disk_path + "1")
  
  		task = Task.ConditionTask(job, _("Waiting for mount"), timeoutCount=20)
  		task.check = self.mountDevice
@@ -4091,7 +4227,7 @@
  		return job
  
  	def initialize(self):
-@@ -650,16 +724,19 @@
+@@ -650,16 +718,19 @@
  				self.devices_scanned_on_init.append((blockdev, removable, is_cdrom, medium_found))
  
  	def getAutofsMountpoint(self, device):
@@ -4115,7 +4251,7 @@
  		return None
  
  	def addHotplugPartition(self, device, physdev = None):
-@@ -675,6 +752,10 @@
+@@ -675,6 +746,10 @@
  		error, blacklisted, removable, is_cdrom, partitions, medium_found = self.getBlockDevInfo(device)
  		if not blacklisted and medium_found:
  			description = self.getUserfriendlyDeviceName(device, physdev)
@@ -4126,7 +4262,7 @@
  			p = Partition(mountpoint = self.getMountpoint(device), description = description, force_mounted = True, device = device)
  			self.partitions.append(p)
  			if p.mountpoint: # Plugins won't expect unmounted devices
-@@ -767,7 +848,7 @@
+@@ -767,7 +842,7 @@
  		try:
  			description = readFile("/sys" + phys + "/model")
  		except IOError, s:
@@ -4135,7 +4271,7 @@
  		# not wholedisk and not partition 1
  		if part and part != 1:
  			description += _(" (Partition %d)") % part
-@@ -808,7 +889,7 @@
+@@ -808,7 +883,7 @@
  			dev = self.hdd.disk_path.split('/')[-1]
  			open('/dev/nomount.%s' % dev, "wb").close()
  		except Exception, e:
@@ -4144,7 +4280,7 @@
  		self.setTool('umount')
  		self.args.append('-f')
  		for dev in self.hdd.enumMountDevices():
-@@ -816,7 +897,7 @@
+@@ -816,7 +891,7 @@
  			self.postconditions.append(Task.ReturncodePostcondition())
  			self.mountpoints.append(dev)
  		if not self.mountpoints:
@@ -4153,7 +4289,7 @@
  			self.cmd = 'true'
  			self.args = [self.cmd]
  	def afterRun(self):
-@@ -824,7 +905,7 @@
+@@ -824,7 +899,7 @@
  			try:
  				os.rmdir(path)
  			except Exception, ex:
@@ -4162,7 +4298,7 @@
  
  class MountTask(Task.LoggingTask):
  	def __init__(self, job, hdd):
-@@ -835,7 +916,7 @@
+@@ -835,7 +910,7 @@
  			dev = self.hdd.disk_path.split('/')[-1]
  			os.unlink('/dev/nomount.%s' % dev)
  		except Exception, e:
@@ -4171,7 +4307,7 @@
  		# try mounting through fstab first
  		if self.hdd.mount_device is None:
  			dev = self.hdd.partitionPath("1")
-@@ -864,7 +945,7 @@
+@@ -864,7 +939,7 @@
  	def prepare(self):
  		self.fsck_state = None
  	def processOutput(self, data):
@@ -4252,6 +4388,35 @@
  
  		if 'ip' not in data:
  			data['dhcp'] = True
+@@ -567,16 +575,18 @@
+ 			return True
+ 
+ 		# r871x_usb_drv on kernel 2.6.12 is not identifiable over /sys/class/net/'ifacename'/wireless so look also inside /proc/net/wireless
+-		device = re.compile('[a-z]{2,}[0-9]*:')
+-		ifnames = []
+-		fp = open('/proc/net/wireless', 'r')
+-		for line in fp:
+-			try:
+-				ifnames.append(device.search(line).group()[:-1])
+-			except AttributeError:
+-				pass
+-		if iface in ifnames:
+-			return True
++		if os.path.exists('/proc/net/wireless'):
++			device = re.compile('[a-z]{2,}[0-9]*:')
++			ifnames = []
++			fp = open('/proc/net/wireless', 'r')
++			for line in fp:
++				try:
++					ifnames.append(device.search(line).group()[:-1])
++				except AttributeError:
++					pass
++			fp.close()
++			if iface in ifnames:
++				return True
+ 
+ 		return False
+ 
 --- enigma2.org/lib/python/Components/NimManager.py
 +++ enigma2/lib/python/Components/NimManager.py
 @@ -15,6 +15,10 @@
@@ -4272,7 +4437,7 @@
  SystemInfo["Blindscan_t2_available"] = fileCheck("/proc/stb/info/vumodel")
  SystemInfo["RcTypeChangable"] = not(HardwareInfo().get_device_model().startswith('et8500') or HardwareInfo().get_device_model().startswith('et7')) and pathExists('/proc/stb/ir/rc/type')
 -SystemInfo["HasFullHDSkinSupport"] = HardwareInfo().get_device_model() not in ("et4000", "et5000", "sh1", "hd500c", "hd1100", "xp1000", "lc")
-+SystemInfo["HasFullHDSkinSupport"] = HardwareInfo().get_device_model() in ("atevio7500", "spark7162")
++SystemInfo["HasFullHDSkinSupport"] = HardwareInfo().get_device_model() in ("spark", "spark7162", "atevio7500", "fortis_hdbox", "hs7110", "hs7420", "hs7810a", "hs7119", "hs7429", "hs7819")
  SystemInfo["HasForceLNBOn"] = fileCheck("/proc/stb/frontend/fbc/force_lnbon")
  SystemInfo["HasForceToneburst"] = fileCheck("/proc/stb/frontend/fbc/force_toneburst")
  SystemInfo["HasBypassEdidChecking"] = fileCheck("/proc/stb/hdmi/bypass_edid_checking")
@@ -4285,15 +4450,16 @@
  SystemInfo["HasHDMIpreemphasis"] = fileCheck("/proc/stb/hdmi/preemphasis")
  SystemInfo["HasColorimetry"] = fileCheck("/proc/stb/video/hdmi_colorimetry")
  SystemInfo["HasHdrType"] = fileCheck("/proc/stb/video/hdmi_hdrtype")
- SystemInfo["HasHDMI-CEC"] = HardwareInfo().has_hdmi() and fileExists("/usr/lib/enigma2/python/Plugins/SystemPlugins/HdmiCEC/plugin.pyo")
+-SystemInfo["HasHDMI-CEC"] = HardwareInfo().has_hdmi() and fileExists("/usr/lib/enigma2/python/Plugins/SystemPlugins/HdmiCEC/plugin.pyo")
++SystemInfo["HasHDMI-CEC"] = fileExists("/lib/modules/cec.ko") and fileExists("proc/stb/cec/send")
 -SystemInfo["HasYPbPr"] = HardwareInfo().get_device_model() in ("dm8000", "et5000", "et6000", "et6500", "et9000", "et9200", "et9500", "et10000", "formuler1", "mbtwinplus", "spycat", "vusolo", "vuduo", "vuduo2", "vuultimo")
 -SystemInfo["HasScart"] = HardwareInfo().get_device_model() in ("dm8000", "et4000", "et6500", "et8000", "et9000", "et9200", "et9500", "et10000", "formuler1", "hd1100", "hd1200", "hd1265", "hd2400", "vusolo", "vusolo2", "vuduo", "vuduo2", "vuultimo", "vuuno", "xp1000")
 -SystemInfo["HasSVideo"] = HardwareInfo().get_device_model() in ("dm8000")
 -SystemInfo["HasComposite"] = HardwareInfo().get_device_model() not in ("i55", "gbquad4k", "gbue4k", "hd1500", "osnino", "osninoplus", "purehd", "purehdse", "revo4k", "vusolo4k", "vuzero4k")
-+SystemInfo["HasYPbPr"] = HardwareInfo().get_device_model() in ("atevio7500", "fortis_hdbox", "hs7420", "hs7429")
++SystemInfo["HasYPbPr"] = HardwareInfo().get_device_model() in ("atevio7500", "cuberevo", "cuberevo_mini", "cuberevo_mini2", "cuberevo_2000hd", "cuberevo_3000hd", "fortis_hdbox", "octagon1008", "hs7420", "hs7429", "ufs912", "ufs913")
 +SystemInfo["HasScart"] = True
-+SystemInfo["HasSVideo"] = False
-+SystemInfo["HasComposite"] = True
++SystemInfo["HasSVideo"] = HardwareInfo().get_device_model() in ("cuberevo")
++SystemInfo["HasComposite"] = HardwareInfo().get_device_model() not in ("cuberevo_mini_fta", "cuberevo_250hd")
  SystemInfo["HasAutoVolume"] = fileExists("/proc/stb/audio/avl_choices") and fileCheck("/proc/stb/audio/avl")
  SystemInfo["HasAutoVolumeLevel"] = fileExists("/proc/stb/audio/autovolumelevel_choices") and fileCheck("/proc/stb/audio/autovolumelevel")
  SystemInfo["Has3DSurround"] = fileExists("/proc/stb/audio/3d_surround_choices") and fileCheck("/proc/stb/audio/3d_surround")
@@ -5297,15 +5463,26 @@
 +		PluginDescriptor(where = [PluginDescriptor.WHERE_SESSIONSTART, PluginDescriptor.WHERE_AUTOSTART], fnc = autostart) ]
 --- enigma2.org/lib/python/Plugins/SystemPlugins/HdmiCEC/plugin.py
 +++ enigma2/lib/python/Plugins/SystemPlugins/HdmiCEC/plugin.py
-@@ -147,7 +147,7 @@
+@@ -141,14 +141,17 @@
+ 
+ def startSetup(menuid):
+ 	# only show in the menu when set to intermediate or higher
+-	if menuid == "video" and config.av.videoport.value == "DVI" and config.usage.setup_level.index >= 1:
++	if menuid == "video" and config.av.videoport.value == "HDMI"  and config.usage.setup_level.index >= 1:
+ 		return [(_("HDMI-CEC setup"), main, "hdmi_cec_setup", 0)]
+ 	return []
  
  def Plugins(**kwargs):
  	from os import path
 -	if path.exists("/dev/hdmi_cec") or path.exists("/dev/misc/hdmi_cec0"):
-+	if path.exists("/dev/hdmi_cec") or path.exists("/lib/modules/cec.ko"):
++	if path.exists("/dev/hdmi_cec") and path.exists("/lib/modules/cec.ko"):
  		import Components.HdmiCec
  		from Plugins.Plugin import PluginDescriptor
  		return [PluginDescriptor(where = PluginDescriptor.WHERE_MENU, fnc = startSetup)]
++#	else:
++#		list = []
++#		list.append(getConfigListEntry(_("Disabled"), config.hdmicec.enabled))
+ 	return []
 --- enigma2.org/lib/python/Plugins/SystemPlugins/Hotplug/plugin.py
 +++ enigma2/lib/python/Plugins/SystemPlugins/Hotplug/plugin.py
 @@ -19,6 +19,8 @@
@@ -6428,10 +6605,51 @@
  					extensionsList.remove(extension)
  		list.extend([(x[0](), x) for x in extensionsList])
 -		self.session.openWithCallback(self.extensionCallback, ChoiceBox, title=_("Please choose an extension..."), list=list, keys=keys, skin_name="ExtensionsList", reorderConfig="extension_order", windowTitle=_("Extensions menu"))
-+		self.session.openWithCallback(self.extensionCallback, ChoiceBox, title=_("Please choose an extension"), list=list, keys=keys, skin_name="ExtensionsList", reorderConfig="extension_order", windowTitle=_("Extensions menu"))
++		self.session.openWithCallback(self.extensionCallback, ChoiceBox, title=_("Please select an extension..."), list=list, keys=keys, skin_name="ExtensionsList", reorderConfig="extension_order", windowTitle=_("Extensions menu"))
  
  	def extensionCallback(self, answer):
  		if answer is not None:
+@@ -2392,11 +2441,11 @@
+ 
+ class InfoBarInstantRecord:
+ 	"""Instant Record - handles the instantRecord action in order to
+-	start/stop instant records"""
++	start/stop instant recordings"""
+ 	def __init__(self):
+ 		self["InstantRecordActions"] = HelpableActionMap(self, "InfobarInstantRecord",
+ 			{
+-				"instantRecord": (self.instantRecord, _("Instant recording...")),
++				"instantRecord": (self.instantRecord, _("Instant recording")),
+ 			})
+ 		self.SelectedInstantServiceRef = None
+ 		if isStandardInfoBar(self):
+@@ -2479,7 +2528,7 @@
+ 	def startInstantRecording(self, limitEvent = False):
+ 		begin = int(time())
+ 		end = begin + 3600      # dummy
+-		name = "instant record"
++		name = "Instant recording"
+ 		info = { }
+ 
+ 		self.getProgramInfoAndEvent(info, name)
+@@ -2708,7 +2757,7 @@
+ 	def __init__(self):
+ 		self["AudioSelectionAction"] = HelpableActionMap(self, "InfobarAudioSelectionActions",
+ 			{
+-				"audioSelection": (self.audioSelection, _("Audio options...")),
++				"audioSelection": (self.audioSelection, _("Audio options")),
+ 			})
+ 
+ 	def audioSelection(self):
+@@ -2722,7 +2771,7 @@
+ 	def __init__(self):
+ 		self["SubserviceSelectionAction"] = HelpableActionMap(self, "InfobarSubserviceSelectionActions",
+ 			{
+-				"subserviceSelection": (self.subserviceSelection, _("Subservice list...")),
++				"subserviceSelection": (self.subserviceSelection, _("Subservice list")),
+ 			})
+ 
+ 		self["SubserviceQuickzapAction"] = HelpableActionMap(self, "InfobarSubserviceQuickzapActions",
 --- enigma2.org/lib/python/Screens/InfoBar.py
 +++ enigma2/lib/python/Screens/InfoBar.py
 @@ -9,6 +9,9 @@
@@ -6826,6 +7044,55 @@
 -	Downloader.py Trashcan.py GetEcmInfo.py Alternatives.py TextBoundary.py \
 +	Downloader.py Trashcan.py GetEcmInfo.py Alternatives.py TextBoundary.py Command.py \
  	camcontrol.py CountryCodes.py Multiboot.py FallbackTimer.py
+--- enigma2.org/lib/python/Tools/Profile.py
++++ enigma2/lib/python/Tools/Profile.py
+@@ -1,6 +1,7 @@
+ # the implementation here is a bit crappy.
+-import time
++import os, time
+ from Directories import resolveFilename, SCOPE_CONFIG
++from enigma import evfd
+ 
+ PERCENTAGE_START = 0
+ PERCENTAGE_END = 100
+@@ -21,12 +22,12 @@
+ 		total_time = t
+ 		profile_data[id] = t
+ except:
+-	print "no profile data available"
++	print "[Profile.py] no profile data available"
+ 
+ try:
+ 	profile_file = open(resolveFilename(SCOPE_CONFIG, "profile"), "w")
+ except IOError:
+-	print "WARNING: couldn't open profile file!"
++	print "[Profile.py] WARNING: couldn't open profile file!"
+ 
+ def profile(id):
+ 	now = time.time() - profile_start
+@@ -41,7 +42,21 @@
+ 				perc = PERCENTAGE_START
+ 			try:
+ 				open("/proc/progress", "w").write("%d \n" % perc)
+-			except IOError:
++				if perc > 1 and perc < 98:
++					value = 1
++					open("/proc/stb/lcd/symbol_circle", "w").write("%1d \n" % value)
++					if perc > 20:
++						if os.path.isfile('/proc/stb/info/model'):
++							model = str(open("/proc/stb/info/model").read())
++							if model.startswith("spark7162") or model.startswith("tf7700hdpvr") or model.startswith("octagon1008") or model.startswith("atevio7500") or model.startswith("hs7420") or model.startswith("hs7429"):
++								evfd.getInstance().vfd_write_string("START %02d" % perc)
++							elif model.startswith("spark") or model.startswith("hs7119") or model.startswith("hs7810a") or model.startswith("hs7819"):
++								evfd.getInstance().vfd_write_string("St%02d" % perc)
++				elif perc > 98:
++					value = 0
++					open("/proc/stb/lcd/symbol_circle", "w").write("%1d \n" % value)
++					evfd.getInstance().vfd_write_string("        ")
++ 			except IOError:
+ 				pass
+ 
+ def profile_final():
 --- enigma2.org/lib/service/listboxservice.cpp
 +++ enigma2/lib/service/listboxservice.cpp
 @@ -189,14 +189,14 @@
@@ -6967,11 +7234,13 @@
  	p.setForegroundColor(gRGB(0xFFFFFF));
  
  	int hd =  my_dc->size().width() == 1920;
-@@ -213,13 +213,13 @@
+@@ -212,14 +212,14 @@
+ 	os.clear();
  	os << "We are really sorry. Your STB encountered "
  		"a software problem, and needs to be restarted.\n"
- 		"Please send the logfile " << crashlog_name << " to " << crash_emailaddr << ".\n"
+-		"Please send the logfile " << crashlog_name << " to " << crash_emailaddr << ".\n"
 -		"Your STB restarts in 10 seconds!\n"
++		"Details have been logged in the logfile " << crashlog_name << ".\n"
 +		"Your STB will restart in 30 seconds...\n"
  		"Component: " << component;
  
@@ -7273,16 +7542,45 @@
  		</condition>
 --- enigma2.org/lib/python/Components/About.py
 +++ enigma2/lib/python/Components/About.py
-@@ -64,7 +64,7 @@
+--- enigma2.org/lib/python/Components/About.py
++++ enigma2/lib/python/Components/About.py
+@@ -50,12 +50,15 @@
+ 	return enigma_version
+ 
+ def getGStreamerVersionString():
+-	try:
+-		from glob import glob
+-		gst = [x.split("Version: ") for x in open(glob("/var/lib/opkg/info/gstreamer[0-9].[0-9].control")[0], "r") if x.startswith("Version:")][0]
+-		return "%s" % gst[1].split("+")[0].replace("\n","")
+-	except:
+-		return _("unknown")
++	from glob import glob
++	if os.path.isfile('/usr/lib/pkgconfig/gstreamer-1.0.pc'):
++		gstversion = [x.split("Version:") for x in open(glob("/usr/lib/pkgconfig/gstreamer-1.0.pc")[0], "r") if x.startswith("Version:")][0]
++		if os.path.isfile('/usr/lib/libeplayer3.so'):
++			return "Gstreamer " + ("%s" % gstversion[1].replace("\n","")) + " + eplayer3"
++		else:
++			return "Gstreamer " + ("%s" % gstversion[1].replace("\n",""))
++	else:
++		return _("eplayer3")
+ 
+ def getKernelVersionString():
+ 	try:
+@@ -64,7 +67,7 @@
  		return _("unknown")
  
  def getHardwareTypeString():
 -	return HardwareInfo().get_device_string()
-+	return HardwareInfo().get_device_string().upper()
++	return HardwareInfo().get_device_string().capitalize()
  
  def getImageTypeString():
  	try:
-@@ -80,27 +80,13 @@
+@@ -76,29 +79,19 @@
+ def getCPUInfoString():
+ 	try:
+ 		cpu_count = 0
+-		cpu_speed = 0
++		cpu_speed = "unknown"
  		processor = ""
  		for line in open("/proc/cpuinfo").readlines():
  			line = [x.strip() for x in line.strip().split(":")]
@@ -7290,14 +7588,13 @@
 +			if not processor and line[0] == "cpu type":
  				processor = line[1].split()[0]
 -			elif not cpu_speed and line[0] == "cpu MHz":
-+				cpu_speed = "unknown"
-+			elif cpu_speed == 0 and line[0] == "cpu MHz":
++			elif cpu_speed == "unknown" and line[0] == "cpu MHz":
  				cpu_speed = "%1.0f" % float(line[1])
  			elif line[0] == "processor":
  				cpu_count += 1
--
--		if processor.startswith("ARM") and os.path.isfile("/proc/stb/info/chipset"):
--			processor = "%s (%s)" % (open("/proc/stb/info/chipset").readline().strip().upper(), processor)
+ 
+ 		if processor.startswith("ARM") and os.path.isfile("/proc/stb/info/chipset"):
+ 			processor = "%s (%s)" % (open("/proc/stb/info/chipset").readline().strip().upper(), processor)
 -
 -		if not cpu_speed:
 -			try:
@@ -7308,11 +7605,9 @@
 -					cpu_speed = int(int(binascii.hexlify(open('/sys/firmware/devicetree/base/cpus/cpu@0/clock-frequency', 'rb').read()), 16) / 100000000) * 100
 -				except:
 -					cpu_speed = "-"
--
--		temperature = None
+ 
+ 		temperature = None
  		if os.path.isfile('/proc/stb/fp/temp_sensor_avs'):
- 			temperature = open("/proc/stb/fp/temp_sensor_avs").readline().replace('\n','')
- 		elif os.path.isfile('/proc/stb/power/avs'):
 --- enigma2.org/lib/python/Screens/About.py
 +++ enigma2/lib/python/Screens/About.py
 @@ -47,7 +47,7 @@

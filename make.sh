@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20190514.1
+# Version 20190526.1
 
 ##############################################
 
@@ -414,9 +414,9 @@ case "$IMAGE" in
 				echo "=================================================================================================="
 				echo " 1)  Use your own Enigma2 git dir without patchfile"
 				echo "=================================================================================================="
-				echo " 2*) Sat, 23 Mar 2019 19:40 - E2 OpenPLi  any framework  e2e791cf8426028d8cc225d5fa2bceb55df634f5"
-				echo " 3)  Mon, 10 Dec 2018 19:01 - E2 OpenPLi  any framework  a8e73e1874100aad76e44117b74543fb4018ff61"
-				echo " 4)  Fri, 02 Nov 2018 20:28 - E2 OpenPLi  any framework  ac0d34146f76cdfdb9363e6780424fd284743b68"
+				echo " 2)  Sun, 26 May 2019 09:43 - E2 OpenPLi  any framework  5e9391033abcaa818d9969b0f282e55307693ebf"
+				echo " 3)  Sat, 23 Mar 2019 19:40 - E2 OpenPLi  any framework  e2e791cf8426028d8cc225d5fa2bceb55df634f5"
+				echo " 4)  Mon, 10 Dec 2018 19:01 - E2 OpenPLi  any framework  a8e73e1874100aad76e44117b74543fb4018ff61"
 				echo " 5)  Fri, 11 Apr 2017 17:45 - E2 OpenPLi  any framework  e45a15d8f494f70c9285e1532c6b6460328f6b89"
 				echo "=================================================================================================="
 				echo "Media Framework         : $MEDIAFW"
@@ -428,15 +428,15 @@ case "$IMAGE" in
 			1)	DIFF="1"
 				REVISION="local";;
 			3)	DIFF="3"
-				REVISION="a8e73e1874100aad76e44117b74543fb4018ff61";;
+				REVISION="e2e791cf8426028d8cc225d5fa2bceb55df634f5";;
 			4)	DIFF="4"
-				REVISION="ac0d34146f76cdfdb9363e6780424fd284743b68";;
+				REVISION="a8e73e1874100aad76e44117b74543fb4018ff61";;
 			5)	DIFF="5"
 				REVISION="e45a15d8f494f70c9285e1532c6b6460328f6b89";;
 			0)	DIFF="0"
 				REVISION="newest";;
 			*)	DIFF="2"
-				REVISION="e2e791cf8426028d8cc225d5fa2bceb55df634f5";; # 23-03
+				REVISION="5e9391033abcaa818d9969b0f282e55307693ebf";;
 		esac
 
 		echo "E2_DIFF=$DIFF" >> config
