@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20190526.1
+# Version 20190607.1
 
 ##############################################
 
@@ -19,7 +19,7 @@ if [ "$1" == -h ] || [ "$1" == --help ]; then
 	echo "-v or --verbose   : verbose build (very noisy!)"
 	echo "-q or --quiet     : quiet build, fastest, almost silent"
 	echo "-b or --batchmode : batch mode; do not become interactive"
-	echo "Parameter 1       : target system (1-36)"
+	echo "Parameter 1       : target system (1-39)"
 	echo "Parameter 2       : kernel (1-2)"
 	echo "Parameter 3       : optimization (1-5)"
 	echo "Parameter 4       : image (Enigma=1/2 Neutrino=3/4 Tvheadend=5 (1-5)"
@@ -118,7 +118,7 @@ fi
 ##############################################
 
 case $1 in
-	[1-9] | 1[0-9] | 2[0-9] | 3[0-7]) REPLY=$1;;
+	[1-9] | 1[0-9] | 2[0-9] | 3[0-9]) REPLY=$1;;
 	*)
 		echo "Target receivers:"
 		echo
@@ -158,7 +158,7 @@ case $1 in
 		echo "   38)  Ferguson Ariva @Link 200"
 		echo "   39)  Pace HDS-7241 (kernel P0217 only)"
 		echo
-		read -p "Select target (1-36)? ";;
+		read -p "Select target (1-39)? ";;
 esac
 
 case "$REPLY" in
@@ -414,7 +414,7 @@ case "$IMAGE" in
 				echo "=================================================================================================="
 				echo " 1)  Use your own Enigma2 git dir without patchfile"
 				echo "=================================================================================================="
-				echo " 2)  Sun, 26 May 2019 09:43 - E2 OpenPLi  any framework  5e9391033abcaa818d9969b0f282e55307693ebf"
+				echo " 2*) Sun, 26 May 2019 09:43 - E2 OpenPLi  any framework  5e9391033abcaa818d9969b0f282e55307693ebf"
 				echo " 3)  Sat, 23 Mar 2019 19:40 - E2 OpenPLi  any framework  e2e791cf8426028d8cc225d5fa2bceb55df634f5"
 				echo " 4)  Mon, 10 Dec 2018 19:01 - E2 OpenPLi  any framework  a8e73e1874100aad76e44117b74543fb4018ff61"
 				echo " 5)  Fri, 11 Apr 2017 17:45 - E2 OpenPLi  any framework  e45a15d8f494f70c9285e1532c6b6460328f6b89"
