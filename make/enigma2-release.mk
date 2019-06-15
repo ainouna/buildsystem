@@ -27,7 +27,7 @@ enigma2_release_cube_common_tuner:
 # cuberevo_9500hd
 #
 enigma2_release_cuberevo_9500hd: enigma2_release_cube_common enigma2_release_cube_common_tuner
-	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/frontcontroller/ipbox/fp.ko $(RELEASE_DIR)/lib/modules/
+	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/frontcontroller/ipbox/micom.ko $(RELEASE_DIR)/lib/modules/
 
 #
 # cuberevo_2000hd

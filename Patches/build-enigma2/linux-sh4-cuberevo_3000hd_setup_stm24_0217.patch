@@ -1,5 +1,5 @@
---- a/arch/sh/Makefile	2011-08-16 18:57:57.000000000 +0200
-+++ b/arch/sh/Makefile	2011-08-25 20:33:12.078531194 +0200
+--- a/arch/sh/Makefile.org
++++ b/arch/sh/Makefile
 @@ -74,7 +74,7 @@
  cflags-y	+= $(isaflags-y) -ffreestanding
  
@@ -9,8 +9,8 @@
  
  # Give the various platforms the opportunity to set default image types
  defaultimage-$(CONFIG_SUPERH32)			:= zImage
---- a/drivers/stm/stx7100_comms.c	2011-08-16 18:58:00.000000000 +0200
-+++ b/stx7100_comms.c	2011-09-21 20:11:09.330974528 +0200
+--- a/drivers/stm/stx7100_comms.c.org
++++ b/drivers/stm/stx7100_comms.c
 @@ -238,14 +238,14 @@
  		.gpios_num = 2,
  		.gpios = (struct stm_pad_gpio []) {
@@ -30,7 +30,7 @@
  		},
  	},
  	[2] = {
-@@ -344,7 +344,7 @@
+@@ -345,7 +345,7 @@
  	BUG_ON(stx7100_ssc_configured[ssc]);
  	stx7100_ssc_configured[ssc] = 1;
  
@@ -39,8 +39,8 @@
  	stx7100_ssc_devices[ssc].id = i2c_busnum;
  
  	plat_data = stx7100_ssc_devices[ssc].dev.platform_data;
---- a/arch/sh/boards/mach-mb442/setup.c	2011-08-16 18:57:57.000000000 +0200
-+++ b/setup.c	2011-09-29 16:58:45.602366977 +0200
+--- a/arch/sh/boards/mach-mb442/setup.c.org
++++ b/arch/sh/boards/mach-mb442/setup.c
 @@ -22,6 +22,7 @@
  #include <linux/stm/platform.h>
  #include <linux/stm/stx7100.h>
@@ -376,9 +376,9 @@
  
  	return platform_add_devices(mb442_devices,
  			ARRAY_SIZE(mb442_devices));
---- linux-sh4/drivers/serial/stm-asc.c	2011-08-16 18:57:59.000000000 +0200
-+++ b/stm-asc.c	2011-09-29 18:32:31.495178472 +0200
-@@ -574,7 +574,7 @@
+--- a/drivers/serial/stm-asc.c.org
++++ b/drivers/serial/stm-asc.c
+@@ -576,7 +576,7 @@
  	struct platform_device *pdev = to_platform_device(port->dev);
  	int size = pdev->resource[0].end - pdev->resource[0].start + 1;
  
@@ -387,8 +387,8 @@
  		/* Can't use dev_name() here as we can be called early */
  		ascport->pad_state = stm_pad_claim(ascport->pad_config,
  				"stasc");
---- linux-sh4/drivers/stm/stx7100_hispeed.c	2011-08-16 18:58:00.000000000 +0200
-+++ b/stx7100_hispeed.c	2011-09-29 17:40:18.743612862 +0200
+--- a/drivers/stm/stx7100_hispeed.c.org
++++ b/drivers/stm/stx7100_hispeed.c
 @@ -190,7 +190,8 @@
  	 * option to select an inverted output from the TPS2052, so no
  	 * software work around is required.)
@@ -399,8 +399,8 @@
  	BUG_ON(stx7100_usb_pwr_gpio == STM_GPIO_INVALID);
  
  	return 0;
---- linux-sh4/arch/sh/boards/mach-mb442/mach.c	2011-08-16 18:57:57.000000000 +0200
-+++ b/mach.c	2011-09-29 19:56:34.997700735 +0200
+--- a/arch/sh/boards/mach-mb442/mach.c.org
++++ b/arch/sh/boards/mach-mb442/mach.c
 @@ -43,7 +43,7 @@
  	/* Set the ILC to route external interrupts to the the INTC */
  	/* Outputs 0-3 are the interrupt pins, 4-7 are routed to the INTC */
@@ -410,8 +410,8 @@
  	ilc_route_external(ILC_EXT_IRQ1, 5, 0);		/* ATA */
  	ilc_route_external(ILC_EXT_IRQ2, 6, 0);		/* Unused */
  	ilc_route_external(ILC_EXT_MDINT, 7, 0);	/* STe100 PHY */
---- linux-sh4/arch/sh/include/asm/setup.h	2009-12-03 04:51:21.000000000 +0100
-+++ b/setup.h	2011-10-01 10:02:00.790393249 +0200
+--- a/arch/sh/include/asm/setup.h.org
++++ b/arch/sh/include/asm/setup.h
 @@ -15,12 +15,48 @@
  #define LOADER_TYPE (*(unsigned long *) (PARAM+0x00c))
  #define INITRD_START (*(unsigned long *) (PARAM+0x010))
@@ -461,9 +461,9 @@
  #endif /* __KERNEL__ */
  
  #endif /* _SH_SETUP_H */
---- linux-sh4/arch/sh/kernel/setup.c	2011-08-16 18:57:58.000000000 +0200
-+++ b/kernel/setup.c	2011-10-01 10:03:59.030452949 +0200
-@@ -96,6 +96,9 @@
+--- a/arch/sh/kernel/setup.c.org
++++ b/arch/sh/kernel/setup.c
+@@ -97,6 +97,9 @@
  unsigned long memory_end = 0;
  EXPORT_SYMBOL(memory_end);
  
@@ -473,7 +473,7 @@
  static struct resource mem_resources[MAX_NUMNODES];
  
  int l1i_cache_shape, l1d_cache_shape, l2_cache_shape;
-@@ -419,6 +422,34 @@
+@@ -420,6 +423,34 @@
  #endif
  #endif
  
@@ -508,7 +508,7 @@
  	/* Save unparsed command line copy for /proc/cmdline */
  	memcpy(boot_command_line, command_line, COMMAND_LINE_SIZE);
  	*cmdline_p = command_line;
-@@ -429,6 +460,9 @@
+@@ -430,6 +461,9 @@
  
  	sh_mv_setup();
  
@@ -518,8 +518,8 @@
  	/*
  	 * Find the highest page frame number we have available
  	 */
---- linux-sh4/drivers/net/stmmac/stmmac_main.c	2011-08-16 18:57:59.000000000 +0200
-+++ b/stmmac_main.c	2011-10-01 10:27:41.761164284 +0200
+--- a/drivers/net/stmmac/stmmac_main.c.org
++++ b/drivers/net/stmmac/stmmac_main.c
 @@ -44,6 +44,7 @@
  #include <linux/debugfs.h>
  #include <linux/seq_file.h>
@@ -528,7 +528,7 @@
  #include "stmmac.h"
  
  #undef STMMAC_DEBUG
-@@ -958,14 +958,35 @@
+@@ -972,14 +973,35 @@
  	return hw_cap;
  }
  

@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 190424.1
+#Version 190614.1
 
 echo "[rcS] Start"
 echo "CubeRevo 2000HD Enigma2"
@@ -88,9 +88,9 @@ insmod $MODDIR/embxmailbox.ko mailbox0=0xb9211000:136:set2 mailbox1=0xb9212000:0
 insmod $MODDIR/embxshm.ko mailbox0=shm:0:7:0x60000000:0:256:256:0:512:0xa4000000:0x10000000 ;
 insmod $MODDIR/mme_host.ko transport0=shm
 
-   echo "load a/v firmware"
-   /bin/ustslave /dev/st231-1 /boot/audio.elf
-   /bin/ustslave /dev/st231-0 /boot/video.elf
+echo "[rcS] Init AVS (LOAD 5)"
+echo "Load 5" > /dev/vfd
+insmod $MODDIR/avs.ko type=stv6418
 
 player=`cat /proc/stb/player/version | awk '{ print substr( $0, length($0) - 2, length($0) ) }'`
 echo "[rcS] Init player $player (LOAD 4)"

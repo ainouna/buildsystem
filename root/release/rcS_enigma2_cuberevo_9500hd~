@@ -3,13 +3,13 @@
 MODDIR=/lib/modules
 
 insmod $MODDIR/e2_proc.ko
-insmod $MODDIR/micom.ko
+insmod $MODDIR/fp.ko
 
 if [ -e /var/etc/.firstboot ]; then
    rm /var/etc/.firstboot
    sleep 1
    echo "WAIT 3 min"
-   echo "WAIT 3 min" > /dev/vfd
+   echo "WAIT 3 min" > /dev/dbox/fp0
    touch /dev/.devfsd
 fi
 
@@ -21,10 +21,10 @@ fi
 
 /etc/init.d/portmap start
 
-#/bin/cubefpctl --syncsystime
+/bin/cubefpctl --syncsystime
 
 if [ ! -e /var/etc/.firstboot ]; then
-   echo "LOADING MODULES" > /dev/vfd
+   echo "LOADING MODULES" > /dev/dbox/fp0
    echo "LOADING MODULES"   
 
    echo "init AVS"
@@ -32,7 +32,7 @@ if [ ! -e /var/etc/.firstboot ]; then
 
    echo "init stmfb"
    insmod $MODDIR/stmcore-display-stx7109c3.ko
-   /bin/eeprom tvmode
+   /bin/cubefpctl --gettvmode
    TVMODE=$?
    case "$TVMODE" in
 	0) echo "SD-PAL"
@@ -87,7 +87,7 @@ showiframe -p /var/boot/bootlogo.mvi &
 stfbcontrol a 0
 
 if [ ! -e /var/etc/.firstboot ]; then
-   echo "enigma2" > /dev/vfd
+   echo "enigma2" > /dev/dbox/fp0
    echo "LOADING e2"
 
    /etc/init.d/mountall start
@@ -112,7 +112,7 @@ if [ ! -e /var/etc/.firstboot ]; then
    stfbcontrol a 255
    until false
    do
-#      /bin/cubefpctl --setledoff
+      /bin/cubefpctl --setledoff
       echo "starting e2->"
       /usr/local/bin/enigma2
       rtv=$?
@@ -123,7 +123,7 @@ if [ ! -e /var/etc/.firstboot ]; then
       		   init 6;;
 		1) echo "1"
 		   echo "SHUTDOWN"
-		   echo "SHUTDOWN" > /dev/vfd
+		   echo "SHUTDOWN" > /dev/dbox/fp0
 		   init 0;;
 		2) echo "2"
 		   echo "REBOOT"
@@ -140,6 +140,6 @@ if [ ! -e /var/etc/.firstboot ]; then
    done 
 fi
 
-echo "REBOOT CUBEREVO" > /dev/vfd
+echo "REBOOT CUBEREVO" > /dev/dbox/fp0
 echo "REBOOT CUBEREVO"
 init 6
