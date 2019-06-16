@@ -30,7 +30,7 @@
  		},
  	},
  	[2] = {
-@@ -344,7 +344,7 @@
+@@ -345,7 +345,7 @@
  	BUG_ON(stx7100_ssc_configured[ssc]);
  	stx7100_ssc_configured[ssc] = 1;
  
@@ -175,8 +175,8 @@
 +#define BOOT_SIZE	0x040000	// boot loader
 +#define WELCOME_SIZE	0x020000	// welcomeboot config
 +#define KERNEL_SIZE	0x220000	// kernel size
-+#define ROOT_SIZE	(WINDOW_SIZE-WELCOME_SIZE-KERNEL_SIZE-DB_SIZE-BOOT_SIZE)
-+#define DB_SIZE	0xA00000
++#define ROOT_SIZE	(WINDOW_SIZE - WELCOME_SIZE - KERNEL_SIZE - DB_SIZE-BOOT_SIZE)
++#define DB_SIZE	0xa00000
 +
 +#elif defined(FLASH_16MB) 
 +
@@ -187,8 +187,8 @@
 +#define BOOT_SIZE	0x040000	// boot loader
 +#define WELCOME_SIZE	0x020000	// welcomeboot config
 +#define KERNEL_SIZE	0x1A0000	// kernel size
-+#define ROOT_SIZE	(WINDOW_SIZE-WELCOME_SIZE-KERNEL_SIZE-DB_SIZE-BOOT_SIZE)
-+#define DB_SIZE		0x600000
++#define ROOT_SIZE	(WINDOW_SIZE - WELCOME_SIZE - KERNEL_SIZE - DB_SIZE-BOOT_SIZE)
++#define DB_SIZE	0x600000
 +#else
 +
 +// 8MB flash
@@ -198,7 +198,7 @@
 +#define BOOT_SIZE       0x030000        // boot loader 	 
 +#define WELCOME_SIZE    0x010000        // welcomeboot config 	 
 +#define KERNEL_SIZE     0x180000        // kernel size 	 
-+#define ROOT_SIZE       (WINDOW_SIZE-WELCOME_SIZE-KERNEL_SIZE-DB_SIZE-BOOT_SIZE) 	 
++#define ROOT_SIZE       (WINDOW_SIZE - WELCOME_SIZE - KERNEL_SIZE - DB_SIZE-BOOT_SIZE) 	 
 +#define DB_SIZE         0x230000
 +
 +
@@ -232,28 +232,28 @@
 +       .name       = "nor.root",
 +       .offset     = BOOT_SIZE + WELCOME_SIZE + KERNEL_SIZE,
 +       .size       = ROOT_SIZE,
-+       .mask_flags = MTD_WRITEABLE,
++       //.mask_flags = MTD_WRITEABLE,
 +   },
 +   {
 +       .name       = "nor.var",
-+       .offset     = BOOT_SIZE+WELCOME_SIZE+KERNEL_SIZE+ROOT_SIZE,
++       .offset     = BOOT_SIZE + WELCOME_SIZE + KERNEL_SIZE + ROOT_SIZE,
 +       .size       = DB_SIZE,
 +   },
 +   /* partitions for upgrade */
 +   {
 +       .name       = "nor.mtd2_mtd3",
-+       .offset     = BOOT_SIZE+WELCOME_SIZE,
-+       .size       = KERNEL_SIZE+ROOT_SIZE,
++       .offset     = BOOT_SIZE + WELCOME_SIZE,
++       .size       = KERNEL_SIZE + ROOT_SIZE,
 +   },
 +   {
 +       .name       = "nor.mtd2_mtd3_mtd4",
-+       .offset     = BOOT_SIZE+WELCOME_SIZE,
-+       .size       = KERNEL_SIZE+ROOT_SIZE+DB_SIZE,
++       .offset     = BOOT_SIZE + WELCOME_SIZE,
++       .size       = KERNEL_SIZE + ROOT_SIZE + DB_SIZE,
 +   },
 +   {
 +       .name       = "nor.full",
 +       .offset     = BOOT_SIZE,
-+       .size       = (WINDOW_SIZE-BOOT_SIZE),
++       .size       = (WINDOW_SIZE - BOOT_SIZE),
 +   },
 +   {
 +       .name       = "nor.all",
@@ -274,8 +274,8 @@
  	.dev.platform_data = &(struct physmap_flash_data) {
  		.width		= 2,
  		.set_vpp	= mb442_set_vpp,
-+	    .nr_parts	= ARRAY_SIZE(mtd_parts_table),
-+	    .parts		= mtd_parts_table
++		.nr_parts	= ARRAY_SIZE(mtd_parts_table),
++		.parts		= mtd_parts_table
  	},
  };
  
@@ -308,8 +308,8 @@
 +	.num_resources  = 2,
 +	.resource       = (struct resource[]) {
 +		{
-+	                .start = 0xa2000000,
-+		        .end   = 0xa200ffff,
++	                .start  = 0xa2000000,
++		        .end    = 0xa200ffff,
 +	        	.flags  = IORESOURCE_MEM,
 +		},
 +		{
@@ -378,7 +378,7 @@
  			ARRAY_SIZE(mb442_devices));
 --- a/drivers/serial/stm-asc.c.org
 +++ b/drivers/serial/stm-asc.c
-@@ -574,7 +574,7 @@
+@@ -576,7 +576,7 @@
  	struct platform_device *pdev = to_platform_device(port->dev);
  	int size = pdev->resource[0].end - pdev->resource[0].start + 1;
  
@@ -404,7 +404,7 @@
  #define LOADER_TYPE (*(unsigned long *) (PARAM+0x00c))
  #define INITRD_START (*(unsigned long *) (PARAM+0x010))
  #define INITRD_SIZE (*(unsigned long *) (PARAM+0x014))
-+#define BDINFO                  ((char*)PARAM+0x018)
++#define BDINFO ((char *) PARAM+0x018)
  /* ... */
  #define COMMAND_LINE ((char *) (PARAM+0x100))
  
@@ -413,33 +413,33 @@
  
 +typedef struct bd_info
 +{
-+   int bi_baudrate;        /* serial console baudrate */
-+   unsigned long bi_ip_addr;       /* IP Address */
-+   unsigned char bi_enetaddr[6];   /* Ethernet adress */
-+   unsigned long bi_arch_number;   /* unique id for this board */
-+   unsigned long bi_boot_params;   /* where this board expects params */
-+   unsigned long bi_memstart;      /* start of DRAM memory */
-+   unsigned long bi_memsize;       /* size  of DRAM memory in bytes */
-+   unsigned long bi_flashstart;    /* start of FLASH memory */
-+   unsigned long bi_flashsize;     /* size  of FLASH memory */
-+   unsigned long bi_flashoffset;   /* reserved area for startup monitor */
++	int bi_baudrate;	        /* serial console baudrate */
++	unsigned long bi_ip_addr;       /* IP Address */
++	unsigned char bi_enetaddr[6];   /* Ethernet adress */
++	unsigned long bi_arch_number;   /* unique id for this board */
++	unsigned long bi_boot_params;   /* where this board expects params */
++	unsigned long bi_memstart;      /* start of DRAM memory */
++	unsigned long bi_memsize;       /* size  of DRAM memory in bytes */
++	unsigned long bi_flashstart;    /* start of FLASH memory */
++	unsigned long bi_flashsize;     /* size  of FLASH memory */
++	unsigned long bi_flashoffset;   /* reserved area for startup monitor */
 +#if defined(CONFIG_CPU_SUBTYPE_STB7100)
-+   unsigned long bi_devid;
-+   unsigned long bi_pll0frq;
-+   unsigned long bi_pll1frq;
-+   unsigned long bi_st40cpufrq;
-+   unsigned long bi_st40busfrq;
-+   unsigned long bi_st40perfrq;
-+   unsigned long bi_st231frq;
-+   unsigned long bi_stbusfrq;
-+   unsigned long bi_emifrq;
-+   unsigned long bi_lmifrq;
++	unsigned long bi_devid;
++	unsigned long bi_pll0frq;
++	unsigned long bi_pll1frq;
++	unsigned long bi_st40cpufrq;
++	unsigned long bi_st40busfrq;
++	unsigned long bi_st40perfrq;
++	unsigned long bi_st231frq;
++	unsigned long bi_stbusfrq;
++	unsigned long bi_emifrq;
++	unsigned long bi_lmifrq;
 +#elif defined(CONFIG_CPU_SUBTYPE_STI5528)
-+   unsigned long bi_pll1frq;
-+   unsigned long bi_st40cpufrq;
-+   unsigned long bi_st40busfrq;
-+   unsigned long bi_st40perfrq;
-+   unsigned long bi_emifrq;
++	unsigned long bi_pll1frq;
++	unsigned long bi_st40cpufrq;
++	unsigned long bi_st40busfrq;
++	unsigned long bi_st40perfrq;
++	unsigned long bi_emifrq;
 +#endif
 +}__attribute__ ((packed)) bd_t;
 +
@@ -466,31 +466,31 @@
  #endif
  
 +	{
-+	char org_command_line[] = "console=ttyAS0,115200 root=/dev/mtdblock3";
-+	char tdt_command_line[] = "console=ttyAS0,115200 root=/dev/mtdblock4 rw rootfstype=jffs2 init=/bin/devinit coprocessor_mem=4m@0x40000000,4m@0x40400000 printk=1 stmmaceth=ethaddr:";
-+	char mac[] = "00:00:00:00:00:00";
-+	int command_line_len = strlen(command_line);
-+	int org_command_line_len = strlen(org_command_line);
++		char org_command_line[] = "console=ttyAS0,115200 root=/dev/mtdblock3";
++		char tdt_command_line[] = "console=ttyAS0,115200 root=/dev/mtdblock4 rw rootfstype=jffs2 init=/bin/devinit coprocessor_mem=4m@0x40000000,4m@0x40400000 printk=1 stmmaceth=ethaddr:";
++		char mac[] = "00:00:00:00:00:00";
++		int command_line_len = strlen(command_line);
++		int org_command_line_len = strlen(org_command_line);
 +
-+	if(command_line_len >= org_command_line_len && !strncmp(command_line, org_command_line, org_command_line_len))
-+	{
-+		int i;
-+		for(i = 0; i < (command_line_len - 7); i++)
++		if(command_line_len >= org_command_line_len && !strncmp(command_line, org_command_line, org_command_line_len))
 +		{
-+			if(!strncmp(command_line + i, "ethaddr", 7))
++			int i;
++			for(i = 0; i < (command_line_len - 7); i++)
 +			{
-+				strlcpy(mac, command_line + i + 8, sizeof(mac));
-+				break;
++				if(!strncmp(command_line + i, "ethaddr", 7))
++				{
++					strlcpy(mac, command_line + i + 8, sizeof(mac));
++					break;
++				}
++				if(!strncmp(command_line + i, "hwaddr", 6))
++				{
++					strlcpy(mac, command_line + i + 7, sizeof(mac));
++					break;
++				}
 +			}
-+			if(!strncmp(command_line + i, "hwaddr", 6))
-+			{
-+				strlcpy(mac, command_line + i + 7, sizeof(mac));
-+				break;
-+			}
++			strlcpy(command_line, tdt_command_line, sizeof(command_line));
++			strlcat(command_line, mac, sizeof(command_line));
 +		}
-+		strlcpy(command_line, tdt_command_line, sizeof(command_line));
-+		strlcat(command_line, mac, sizeof(command_line));
-+	}
 +	}
 +
  	/* Save unparsed command line copy for /proc/cmdline */
@@ -506,6 +506,14 @@
  	/*
  	 * Find the highest page frame number we have available
  	 */
+@@ -587,6 +621,7 @@
+ 	seq_printf(m, "cpu family\t: %s\n", init_utsname()->machine);
+ 	seq_printf(m, "cpu variant\t: %s\n", get_cpu_variant(c));
+	seq_printf(m, "cpu type\t: %s\n", get_cpu_subtype(c));
++	seq_printf(m, "cpu MHz\t\t: 266\n");
+ 	if (c->cut_major == -1)
+ 		seq_printf(m, "cut\t\t: unknown\n");
+ 	else if (c->cut_minor == -1)
 --- a/drivers/net/stmmac/stmmac_main.c.org
 +++ b/drivers/net/stmmac/stmmac_main.c
 @@ -44,6 +44,7 @@
@@ -516,7 +524,7 @@
  #include "stmmac.h"
  
  #undef STMMAC_DEBUG
-@@ -958,14 +958,35 @@
+@@ -972,14 +973,35 @@
  	return hw_cap;
  }
  
