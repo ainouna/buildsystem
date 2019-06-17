@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 190203.1
+#Version 190617.1
 
 echo "Spark 7162 Enigma2"
 
@@ -304,6 +304,14 @@ do
           init 6;;
       3)  echo "[rcS] E2 RESTART"
           echo "Restart GUI" > /dev/vfd
+          echo "0" > /proc/progress
+          if [ -e /usr/local/share/enigma2/backdrop.mvi ]; then
+             showiframe -p /usr/local/share/enigma2/backdrop.mvi
+          else
+             showiframe -p /boot/bootlogo.mvi &
+          fi;;
+      6)  echo "[rcS] E2 DEBUG"
+          echo "Restart Dbg" > /dev/vfd
           echo "0" > /proc/progress
           if [ -e /usr/local/share/enigma2/backdrop.mvi ]; then
              showiframe -p /usr/local/share/enigma2/backdrop.mvi

@@ -154,6 +154,15 @@ if [ ! -e /var/etc/.firstboot ]; then
                else
                     showiframe -p /boot/bootlogo.mvi &
                fi;;
+           6)  echo "6"
+               echo "E2 DEBUG RESTART"
+               echo "Restart Dbg" > /dev/vfd
+               echo "0" > /proc/progress
+               if [ -e /usr/local/share/enigma2/backdrop.mvi ]; then
+                    showiframe -p /usr/local/share/enigma2/backdrop.mvi &
+               else
+                    showiframe -p /boot/bootlogo.mvi &
+               fi;;
            *)  echo "*"
                echo "ERROR"
                echo "Error" > /dev/vfd

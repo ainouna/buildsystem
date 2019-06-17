@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 190424.1
+#Version 190617.1
 
 echo "[rcS] Start"
 echo "CubeRevo Enigma2"
@@ -315,6 +315,14 @@ do
          fp_control -r 00:00:00 01.01.1980;;
       3) echo "E2 RESTART"
          echo "Restart GUI" > /dev/vfd
+         echo "0" > /proc/progress
+         if [ -e /usr/local/share/enigma2/backdrop.mvi ]; then
+            showiframe -p /usr/local/share/enigma2/backdrop.mvi &
+         else
+            showiframe -p /boot/bootlogo.mvi &
+         fi;;
+      6) echo "E2 DEBUG RESTART"
+         echo "Restart Debug" > /dev/vfd
          echo "0" > /proc/progress
          if [ -e /usr/local/share/enigma2/backdrop.mvi ]; then
             showiframe -p /usr/local/share/enigma2/backdrop.mvi &

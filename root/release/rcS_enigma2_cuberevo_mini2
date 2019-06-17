@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 190614.1
+#Version 190617.1
 
 echo "[rcS] Start"
 echo "CubeRevo Mini II Enigma2"
@@ -321,7 +321,15 @@ do
          else
             showiframe -p /boot/bootlogo.mvi &
          fi;;
-      *) echo "ERROR"
+      6) echo "E2 DEBUG RESTART"
+         echo "Restart Debug" > /dev/vfd
+         echo "0" > /proc/progress
+         if [ -e /usr/local/share/enigma2/backdrop.mvi ]; then
+            showiframe -p /usr/local/share/enigma2/backdrop.mvi &
+         else
+            showiframe -p /boot/bootlogo.mvi &
+         fi;;
+       *) echo "ERROR"
          echo "Error" > /dev/vfd
          fp_control -r 00:00:00 01.01.1980;;
    esac

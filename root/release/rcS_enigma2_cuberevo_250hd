@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 190424.1
+#Version 190617.1
 
 echo "[rcS] Start"
 echo "CubeRevo 250HD Enigma2"
@@ -302,26 +302,34 @@ do
    echo "[rcS] E2 ended <- return value: " $rtv
    case "$rtv" in
       0) echo "E2 ERROR"
-         echo "E2 Error" > /dev/vfd
+         echo "E2Er" > /dev/vfd
          init 6;;
       1) echo "SHUTDOWN"
-         echo "Shutdown" > /dev/vfd
+         echo "Shdn" > /dev/vfd
          if [ -e /usr/local/share/enigma2/shutdown.mvi ]; then
             showiframe -p /usr/local/share/enigma2/shutdown.mvi &
          fi
          init 0;;
       2) echo "REBOOT"
-         echo "Reboot" > /dev/vfd
+         echo "Rebt" > /dev/vfd
          fp_control -r 00:00:00 01.01.1980;;
       3) echo "E2 RESTART"
-         echo "Restart GUI" > /dev/vfd
+         echo "Rest" > /dev/vfd
          echo "0" > /proc/progress
          if [ -e /usr/local/share/enigma2/backdrop.mvi ]; then
             showiframe -p /usr/local/share/enigma2/backdrop.mvi &
          else
             showiframe -p /boot/bootlogo.mvi &
          fi;;
-      *) echo "ERROR"
+      6) echo "E2 DEBUG RESTART"
+         echo "Rdbg" > /dev/vfd
+         echo "0" > /proc/progress
+         if [ -e /usr/local/share/enigma2/backdrop.mvi ]; then
+            showiframe -p /usr/local/share/enigma2/backdrop.mvi &
+         else
+            showiframe -p /boot/bootlogo.mvi &
+         fi;;
+       *) echo "ERROR"
          echo "Error" > /dev/vfd
          fp_control -r 00:00:00 01.01.1980;;
    esac

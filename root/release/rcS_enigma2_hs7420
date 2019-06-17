@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 190416.1
+#Version 190617.1
 
 echo "Fortis HS7420 Enigma2"
 
@@ -305,7 +305,16 @@ do
             showiframe -p /boot/bootlogo.mvi &
          fi
          echo -n " ";;
-      *) echo "[rcS] ERROR"
+      6) echo "[rcS] E2 DEBUG RESTART"
+         echo "RSt Dbg" > /dev/vfd
+         echo "0" > /proc/progress
+         if [ -e /usr/local/share/enigma2/backdrop.mvi ]; then
+            showiframe -p /usr/local/share/enigma2/backdrop.mvi &
+         else
+            showiframe -p /boot/bootlogo.mvi &
+         fi
+         echo -n " ";;
+       *) echo "[rcS] ERROR"
          echo "ERROR " > /dev/vfd
          init 6;;
    esac

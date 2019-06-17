@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 190312.1
+#Version 190617.1
 
 echo "Fortis FS9000/9200 Enigma2"
 
@@ -280,7 +280,15 @@ do
          else
             showiframe -p /boot/bootlogo.mvi &
          fi;;
-      *) echo "[rcS] ERROR"
+      6) echo "[rcS] E2 DEBUG RESTART"
+         echo "Restart Debug" > /dev/vfd
+         echo "0" > /proc/progress
+         if [ -e /usr/local/share/enigma2/backdrop.mvi ]; then
+            showiframe -p /usr/local/share/enigma2/backdrop.mvi &
+         else
+            showiframe -p /boot/bootlogo.mvi &
+         fi;;
+       *) echo "[rcS] ERROR"
          echo "Error" > /dev/vfd
          init 6;;
    esac

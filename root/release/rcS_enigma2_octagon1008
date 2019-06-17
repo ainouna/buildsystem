@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 190312.1
+#Version 190617.1
 
 echo "Fortis HS9510 Enigma2"
 
@@ -263,6 +263,14 @@ do
          init 6;;
       3) echo "[rcS] E2 RESTART"
          echo "Restart GUI" > /dev/vfd
+         echo "0" > /proc/progress
+         if [ -e /usr/local/share/enigma2/backdrop.mvi ]; then
+            showiframe -p /usr/local/share/enigma2/backdrop.mvi &
+         else
+            showiframe -p /boot/bootlogo.mvi &
+         fi;;
+      6) echo "[rcS] E2 DEBUG RESTART"
+         echo "Restart dbg" > /dev/vfd
          echo "0" > /proc/progress
          if [ -e /usr/local/share/enigma2/backdrop.mvi ]; then
             showiframe -p /usr/local/share/enigma2/backdrop.mvi &
