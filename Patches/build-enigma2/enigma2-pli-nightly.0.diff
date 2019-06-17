@@ -1,4 +1,4 @@
-# revision 5e9391033abcaa818d9969b0f282e55307693ebf 26/05/2019 09:43
+# revision a9cc0357830d86ef4c262324ee54f3e709c548e9 17/06/2019 17:10
 --- enigma2.org/configure.ac
 +++ enigma2/configure.ac
 @@ -18,6 +18,7 @@
@@ -8217,16 +8217,19 @@
  		self.scan_onlyfree = ConfigYesNo(default = False)
 --- enigma2.org/lib/python/Screens/Standby.py
 +++ enigma2/lib/python/Screens/Standby.py
-@@ -15,11 +15,51 @@
+@@ -15,6 +15,11 @@
  from enigma import eDVBVolumecontrol, eTimer, eDVBLocalTimeHandler, eServiceReference, eStreamServer
  from Components.Sources.StreamService import StreamServiceList
-+from Tools.HardwareInfo import HardwareInfo
  
++from Tools.HardwareInfo import HardwareInfo
++ 
 +pll0 = '/proc/cpu_frequ/pll0_ndiv_mdiv'
 +stb = HardwareInfo().get_device_name()
 +
  inStandby = None
  
+ QUIT_SHUTDOWN = 1
+@@ -30,6 +35,42 @@
  class Standby(Screen):
  	def Power(self):
  		print "[Standby] leave standby"
@@ -8269,7 +8272,7 @@
  		self.close(True)
  
  	def setMute(self):
-@@ -61,6 +101,40 @@
+@@ -71,6 +112,40 @@
  		self.timeHandler = None
  
  		self.setMute()
@@ -8310,7 +8313,7 @@
  
  		self.paused_service = self.paused_action = False
  
-@@ -91,6 +165,9 @@
+@@ -101,6 +176,9 @@
  			self.avswitch.setInput("SCART")
  		else:
  			self.avswitch.setInput("AUX")
@@ -8320,22 +8323,22 @@
  
  		gotoShutdownTime = int(config.usage.standby_to_shutdown_timer.value)
  		if gotoShutdownTime:
-@@ -206,6 +283,7 @@
- 			4: _("Your frontprocessor will be upgraded\nPlease wait until your receiver reboots\nThis may take a few minutes"),
- 			5: _("The user interface of your receiver is restarting\ndue to an error in mytest.py"),
- 			6: _("The user interface of your receiver is restarting in debug mode"),
+@@ -217,6 +295,7 @@
+ 			QUIT_UPGRADE_FP: _("Your frontprocessor will be upgraded\nPlease wait until your receiver reboots\nThis may take a few minutes"),
+ 			QUIT_ERROR_RESTART: _("The user interface of your receiver is restarting\ndue to an error in mytest.py"),
+ 			QUIT_DEBUG_RESTART: _("The user interface of your receiver is restarting in debug mode"),
 +			10: _('Your receiver is rebooting to Spark now\nThis may take a while'),
- 			42: _("Unattended upgrade in progress\nPlease wait until your receiver reboots\nThis may take a few minutes") }.get(retvalue)
+ 			QUIT_UPGRADE_PROGRAM: _("Unattended upgrade in progress\nPlease wait until your receiver reboots\nThis may take a few minutes")
+ 		}.get(retvalue)
  		self["text"] = Label(text)
- 
-@@ -243,6 +321,7 @@
- 				3: _("Really restart now?"),
- 				4: _("Really upgrade the frontprocessor and reboot now?"),
- 				6: _("Really restart in debug mode now?"),
+@@ -256,6 +335,7 @@
+				QUIT_RESTART: _("Really restart now?"),
+				QUIT_UPGRADE_FP: _("Really upgrade the frontprocessor and reboot now?"),
+				QUIT_DEBUG_RESTART: _("Really restart in debug mode now?"),
 +				10: _('Really reboot to Spark now?'),
- 				42: _("Really upgrade your settop box and reboot now?") }.get(retvalue, None)
- 			if text:
- 				MessageBox.__init__(self, session, "%s\n%s" % (reason, text), type=MessageBox.TYPE_YESNO, timeout=timeout, default=default_yes)
+				QUIT_UPGRADE_PROGRAM: _("Really upgrade your settop box and reboot now?")
+			}.get(retvalue, None)
+			if text:
 --- enigma2.org/lib/python/Screens/Wizard.py
 +++ enigma2/lib/python/Screens/Wizard.py
 @@ -13,6 +13,9 @@
@@ -8863,13 +8866,13 @@
 @@ -50,12 +50,15 @@
  	return enigma_version
  
- def getGStreamerVersionString():
+ def getGStreamerVersionString(cpu):
 -	try:
 -		from glob import glob
 -		gst = [x.split("Version: ") for x in open(glob("/var/lib/opkg/info/gstreamer[0-9].[0-9].control")[0], "r") if x.startswith("Version:")][0]
 -		return "%s" % gst[1].split("+")[0].replace("\n","")
 -	except:
--		return _("unknown")
+-		return _("Not Required") if cpu.upper().startswith('HI') else _("Not Installed")
 +	from glob import glob
 +	if os.path.isfile('/usr/lib/pkgconfig/gstreamer-1.0.pc'):
 +		gstversion = [x.split("Version:") for x in open(glob("/usr/lib/pkgconfig/gstreamer-1.0.pc")[0], "r") if x.startswith("Version:")][0]
@@ -8926,12 +8929,12 @@
  		if os.path.isfile('/proc/stb/fp/temp_sensor_avs'):
 --- enigma2.org/lib/python/Screens/About.py
 +++ enigma2/lib/python/Screens/About.py
-@@ -47,7 +47,7 @@
+@@ -48,7 +48,7 @@
  
  		AboutText += _("DVB driver version: ") + about.getDriverInstalledDate() + "\n"
  
--		GStreamerVersion = _("GStreamer version: ") + about.getGStreamerVersionString().replace("GStreamer","")
-+		GStreamerVersion = "Media framework: " + about.getGStreamerVersionString()
+-		GStreamerVersion = _("GStreamer version: ") + about.getGStreamerVersionString(cpu).replace("GStreamer","")
++		GStreamerVersion = "Media framework: " + about.getGStreamerVersionString(cpu)
  		self["GStreamerVersion"] = StaticText(GStreamerVersion)
  		AboutText += GStreamerVersion + "\n"
  
