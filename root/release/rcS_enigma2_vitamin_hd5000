@@ -1,150 +1,293 @@
 #!/bin/sh
+#Version 190618.1
+
+echo "Showbox Vitamin HD 5000 Enigma2"
 
 MODDIR=/lib/modules
 
-insmod $MODDIR/micom.ko
-echo "init frontpanel"
+insmod $MODDIR/e2_proc.ko
+
+echo "[rcS] Init frontpanel"
+insmod $MODDIR/vitamin_micom.ko paramDebug=0
 insmod $MODDIR/simu_button.ko
 
 if [ -e /var/etc/.firstboot ]; then
-   #fp_control does not work here
-   echo "WAIT 1 min" >/dev/vfd
-   echo "WAIT 1 min"
+   echo "Wait 1 min." > /dev/vfd
+   echo "[rcS] Wait 1 min"
    rm /var/etc/.firstboot
-   touch /dev/.devfsd
+   sleep 1  touch /dev/.devfsd
+else
+   echo "Load 10" > /dev/vfd
+   echo "[rcS] LOAD 10"
 fi
-
-echo "Booting" > /dev/vfd
 
 /etc/init.d/mountvirtfs start
-
 /etc/init.d/portmap start
-
-insmod $MODDIR/e2_proc.ko
-
 /etc/init.d/autofs start
 
-if [ ! -e /var/etc/.firstboot ]; then
+echo "[rcS] Starting DEBUG Interface"
+/etc/init.d/mountall start
+/etc/init.d/hostname start
 
-   echo "Starting DEBUG Interface"
-   /etc/init.d/mountall start
-   /etc/init.d/hostname start
-
-   echo "starting telnetd"
+echo -n "[rcS] Starting telnetd "
+autologin=`cat /etc/enigma2/settings | grep systemoptions.autologin | cut -d "=" -f2`
+if [ ! $autologin ]; then
    /usr/sbin/telnetd -l /bin/autologin
-
-   echo "init stmfb"
-   insmod $MODDIR/stmcore-display-sti7111.ko
-   if  grep -q "config.av.videoport=HDMI" /etc/enigma2/settings; then
-         insmod $MODDIR/stmfb.ko display0=1280x720-32@50:12m:pal:yuv:yuv;
-        echo "VIDEO:scart"
-        VIDEO=scart
-   else
-        insmod $MODDIR/stmfb.ko display0=720x576-32@50i:12m:pal:yuv:rgb;
-        echo "VIDEO:hdmi_component"
-        VIDEO=hdmi_component
-    fi
-
-   echo "LOADING MODULES"   
-
-   if [ ! -e /boot/audio.elf ]; then
-      echo "FW MISSING!!!"
-   fi
-
-   echo "load audio firmware"
-   /bin/ustslave /dev/st231-1 /boot/audio.elf
-   echo "load video firmware"
-   /bin/ustslave /dev/st231-0 /boot/video.elf
-
-   echo "init embx"
-   insmod $MODDIR/embxshell.ko
-   insmod $MODDIR/embxmailbox.ko mailbox0=0xfe211000:136:set2 mailbox1=0xfe212000:0 ;
-   insmod $MODDIR/embxshm.ko mailbox0=shm:0:7:0x60000000:0:256:256:0:512:0x40000000:0x10000000 ;
-   insmod $MODDIR/mme_host.ko transport0=shm
-
-   echo "init AVS"
-   insmod $MODDIR/avs.ko type=stv6419
-
-   echo "init player 191"
-   insmod $MODDIR/mmelog.ko
-   insmod $MODDIR/ksound.ko
-   insmod $MODDIR/p2div64.ko
-   insmod $MODDIR/stm_v4l2.ko
-   insmod $MODDIR/stmvout.ko
-   insmod $MODDIR/stmvbi.ko
-   insmod $MODDIR/pseudocard.ko
-
-   insmod $MODDIR/stv090x.ko
-   insmod $MODDIR/starci.ko
-   insmod $MODDIR/pti.ko
-   insmod $MODDIR/stm_monitor.ko
-   insmod $MODDIR/stmsysfs.ko
-   insmod $MODDIR/stmdvb.ko
-   insmod $MODDIR/player2.ko discardlateframe=0
-   insmod $MODDIR/sth264pp.ko
-   insmod $MODDIR/stmalloc.ko
-   insmod $MODDIR/platform.ko
-   insmod $MODDIR/silencegen.ko
-
-   insmod $MODDIR/bpamem.ko
-   mknod /dev/bpamem c 153 0
-
-
-    showiframe -p /boot/bootlogo.mvi &
-   stfbcontrol a 0
-
-   insmod $MODDIR/smartcard.ko
-   mknod /dev/sci0 c 169 0
-
-   /bin/evremote2 &
-
-   /etc/init.d/mountall start
-
-   /etc/init.d/hostname start
-
-   echo "starting telnetd"
-   /usr/sbin/telnetd -l /bin/autologin
-   /etc/init.d/vsftpd start
-   /usr/sbin/inetd
-
-   /etc/init.d/network start &
-
-   echo "LOADING e2"
-   echo "LOADING e2" > /dev/vfd
-
-   stfbcontrol a 255
-
-  # /etc/init.d/fixdate.sh
-
-  # /etc/init.d/softcam start &
-
-   until false
-   do
-      echo "starting e2->"
-      /usr/local/bin/enigma2
-      rtv=$?
-      echo "e2 ended <- RTV: " $rtv
-      case "$rtv" in
-		0) echo "0"
-		   echo "E2 ERROR"
-      	   init 6;;
-		1) echo "1"
-		   echo "SHUTDOWN"
-		   init 0;;
-		2) echo "2"
-		   echo "REBOOT"
-		   init 6;;
-		3) echo "3"
-		   echo "E2 RESTART"
-		   echo "0" > /proc/progress
-		   showiframe -p /boot/bootlogo.mvi &;;
-		6) echo "6"
-		   echo "E2 DEBUG RESTART"
-		   echo "0" > /proc/progress
-		   showiframe -p /boot/bootlogo.mvi &;;
-		*) echo "*"
-		   echo "ERROR"
-           init 6;;
-      esac
-   done 
+   echo "with autologin"
+else
+   /usr/sbin/telnetd -l /bin/login
+   echo "with normal login"
 fi
+
+echo "[rcS] Init stmfb (LOAD 9)"
+echo "Load 9" > /dev/vfd
+insmod $MODDIR/stmcore-display-sti7111.ko
+#if grep -q "config.av.videoport=HDMI" /etc/enigma2/settings; then
+   insmod $MODDIR/stmfb.ko display0=1280x720-32@50:16m:pal:yuv:yuv;
+#  echo "[rcS] VIDEO: HDMI"
+#  VIDEO=HDMI
+#else
+#   insmod $MODDIR/stmfb.ko display0=720x576-32@50i:12m:pal:yuv:rgb;
+#  echo "[rcS] VIDEO: SCART"
+#  VIDEO=scart
+#fi
+
+echo "[rcS] Loading modules"
+
+if [ ! -e /boot/audio.elf ] || [ ! -e /boot/video.elf ]; then
+   echo "[rcS] FIRMWARE MISSING!"
+   echo "FW MISSING!" > /dev/vfd
+fi
+
+echo "[rcS] Load audio firmware (LOAD 8)"
+echo "Load 8" > /dev/vfd
+dtsdown=`cat /etc/enigma2/settings | grep systemoptions.dtsdownmix | cut -d "=" -f2`
+if [ ! $dtsdown ] && [ -e /boot/audio_dts.elf ]; then
+   /bin/ustslave /dev/st231-1 /boot/audio_dts.elf > /dev/null
+else
+   /bin/ustslave /dev/st231-1 /boot/audio.elf > /dev/null
+fi
+echo "[rcS] Load video firmware (LOAD 7)"
+echo "Load 7" > /dev/vfd
+/bin/ustslave /dev/st231-0 /boot/video.elf > /dev/null
+
+echo "[rcS] Init embx (LOAD 6)"
+echo "Load 6" > /dev/vfd
+insmod $MODDIR/embxshell.ko
+insmod $MODDIR/embxmailbox.ko mailbox0=0xfe211000:136:set2 mailbox1=0xfe212000:0 ;
+insmod $MODDIR/embxshm.ko mailbox0=shm:0:7:0x60000000:0:256:256:0:512:0x40000000:0x10000000 ;
+insmod $MODDIR/mme_host.ko transport0=shm
+
+echo "[rcS] Init AVS (LOAD 5)"
+echo "Load 5" > /dev/vfd
+insmod $MODDIR/avs.ko type=stv6419
+
+player=`cat /proc/stb/player/version | awk '{ print substr( $0, length($0) - 2, length($0) ) }'`
+echo "[rcS] Init player $player (LOAD 4)"
+echo "Load 4" > /dev/vfd
+insmod $MODDIR/mmelog.ko
+insmod $MODDIR/ksound.ko
+insmod $MODDIR/p2div64.ko
+insmod $MODDIR/stm_v4l2.ko
+insmod $MODDIR/stmvout.ko
+insmod $MODDIR/stmvbi.ko
+insmod $MODDIR/pseudocard.ko
+
+echo "[rcS] Init frontend"
+insmod $MODDIR/stv090x.ko
+insmod $MODDIR/starci.ko
+
+insmod $MODDIR/pti.ko waitMS=20 videoMem=4096
+if [ $? -ne 0 ]; then
+   insmod $MODDIR/pti.ko
+   echo "[rcS] Simple pti"
+else
+   echo "[rcS] Full feature pti"
+fi
+insmod $MODDIR/stm_monitor.ko
+insmod $MODDIR/stmsysfs.ko
+insmod $MODDIR/stmdvb.ko
+
+echo "[rcS] LOAD 3"
+echo "Load 3" > /dev/vfd
+insmod $MODDIR/player2.ko discardlateframe=0
+insmod $MODDIR/sth264pp.ko
+insmod $MODDIR/stmalloc.ko
+insmod $MODDIR/platform.ko
+insmod $MODDIR/silencegen.ko
+
+insmod $MODDIR/smartcard.ko
+#mknod /dev/sci0 c 169 0
+
+if [ -e $MODDIR/dvb-it913x.ko ]; then
+   echo
+   echo "[rcS] IT913X driver loading"
+   echo "[rcS] ---------------------"
+   insmod $MODDIR/dvb-pll.ko
+   insmod $MODDIR/dvb-it913x.ko
+   echo
+   echo "[rcS] End of IT913X driver loading"
+   echo "[rcS] ----------------------------"
+fi
+
+if [ -e $MODDIR/dvb-usb-rtl2832u.ko ]; then
+   echo
+   echo "[rcS] RTL2832U driver loading"
+   echo "[rcS] -----------------------"
+   insmod $MODDIR/dvb-usb-rtl2832u.ko
+   echo
+   echo "[rcS] End of RTL2832U driver loading"
+   echo "[rcS] ------------------------------"
+fi
+
+if [ -e $MODDIR/usb_serial.ko ]; then
+   insmod $MODDIR/usb_serial.ko
+   if [ -e $MODDIR/option.ko ]; then
+      insmod $MODDIR/option.ko
+   fi
+   if [ -e $MODDIR/usb_wwan.ko ]; then # 3G modem
+      insmod $MODDIR/usb_wwan.ko
+   fi
+   insmod $MODDIR/option.ko
+fi
+
+insmod $MODDIR/bpamem.ko
+#mknod /dev/bpamem c 153 0
+
+if [ -e /boot/bootlogo.mvi ]; then
+   showiframe -p /boot/bootlogo.mvi &
+fi
+stfbcontrol a 0
+
+echo "[rcS] Init lircd (LOAD 2)"
+echo "Load 2" > /dev/vfd
+/bin/evremote2 &
+
+stfbcontrol a 255
+
+#wlan=`cat /etc/enigma2/settings | grep systemoptions.wlan | cut -d "=" -f2`
+wlan=
+if [ ! $wlan ] || [ ! -e $MODDIR/$wlan.ko ]; then
+   echo "[rcS] No WLAN"
+else
+   insmod $MODDIR/$wlan.ko
+   echo "[rcS] $wlan WLAN"
+#   echo "$wlan WLAN" > /dev/vfd
+#   sleep 3
+fi
+
+if [ -e $MODDIR/ntfs.ko ]; then
+   insmod $MODDIR/ntfs.ko
+fi
+
+if [ -e $MODDIR/cifs.ko ]; then
+   insmod $MODDIR/cifs.ko
+fi
+
+echo "[rcS] Init FTP & network"
+/etc/init.d/vsftpd start
+/usr/sbin/inetd
+
+NFS=`grep -c nfs /proc/cmdline`
+if [ "$NFS" -eq "1" ]; then
+   echo "Booting from NFS, do not set network"
+else
+   if [ -e /etc/network/interfaces ]; then
+      ip addr flush eth0
+      /etc/init.d/networking stop
+#      if [ -e /bin/eeprom ]; then
+#        MAC=`/bin/eeprom -m`
+         MAC="00:19:14:00:10:5a"
+         echo "MAC = $MAC"
+         ip link set eth0 address $MAC
+#      fi
+      DHCP=`grep -c 'iface eth0 inet dhcp' /etc/network/interfaces`
+      if [ "$DHCP" -eq "1" ]; then
+         echo "[rcS] Starting DHCP on eth0"
+         /etc/init.d/udhcpc start
+      fi
+      /etc/init.d/networking start &
+   fi
+fi
+#Allow network to wake up and initialize
+sleep 2
+#Show IP address on frontpanel
+#ip=`ifconfig eth0 | sed -n '/inet addr/s/.*addr.\([^ ]*\) .*/\1/p'`
+#echo "IP $ip" > /dev/vfd
+#sleep 3
+
+echo "[rcS] Do extras (LOAD 1)"
+echo "Load 1" > /dev/vfd
+# Start automount
+if [ -e /etc/init.d/automount ]; then
+   python /etc/init.d/automount &
+fi
+
+# Do own extras
+if [ -e /etc/ownscript.sh ]; then
+   /etc/ownscript.sh &
+fi
+
+# Try and synchronise time
+#inettime=`cat /etc/enigma2/settings | grep systemoptions.inettime | cut -d "=" -f2`
+# if [ ! $inettime ] && [ -h /usr/sbin/ntpd ]; then
+   echo "[rcS] Set internet time"
+   (ntpd -n -p 0.europe.pool.ntp.org -q; /bin/fp_control -sst)
+#else
+#   if [ -e /usr/sbin/time.sh ]; then
+#      echo "[rcS] Use transponder time"
+#      /usr/sbin/time.sh &
+#   fi
+#fi
+
+echo "[rcS] Start Enigma2"
+echo "Start SH4 Enigma2" > /dev/vfd
+
+# /etc/init.d/fixdate.sh
+# /etc/init.d/softcam start &
+
+until false
+do
+   echo "starting e2->"
+   /usr/local/bin/enigma2
+   rtv=$?
+   echo "e2 ended <- RTV: " $rtv
+   case "$rtv" in
+      0) echo "[rcS] E2 ERROR"
+         echo "E2 Error" > /dev/vfd
+         init 6;;
+      1) echo "[rcS] SHUTDOWN"
+         echo "Shutdown" > /dev/vfd
+         if [ -e /usr/local/share/enigma2/shutdown.mvi ]; then
+            showiframe -p /usr/local/share/enigma2/shutdown.mvi
+         fi
+         init 0;;
+      2) echo "[rcS] REBOOT"
+         echo "Reboot" > /dev/vfd
+         init 6;;
+      3) echo "[rcS] E2 RESTART"
+         echo "Restart GUI" > /dev/vfd
+         echo "0" > /proc/progress
+         if [ -e /usr/local/share/enigma2/backdrop.mvi ]; then
+            showiframe -p /usr/local/share/enigma2/backdrop.mvi
+         elif [ -e /usr/local/share/enigma2/shutdown.mvi ]; then
+            showiframe -p /boot/bootlogo.mvi &
+         fi;;
+      6) echo "[rcS] E2 DEBUG RESTART"
+         echo "Restart dbg" > /dev/vfd
+         echo "0" > /proc/progress
+         if [ -e /usr/local/share/enigma2/backdrop.mvi ]; then
+            showiframe -p /usr/local/share/enigma2/backdrop.mvi
+         elif [ -e /usr/local/share/enigma2/shutdown.mvi ]; then
+            showiframe -p /boot/bootlogo.mvi &
+         fi;;
+      *) echo "[rcS] ERROR"
+         echo "Error" > /dev/vfd
+        init 6;;
+   esac
+done
+
+#never reached
+echo "[rcS] REBOOT VITAMIN HD5000"
+echo "Reboot" > /dev/vfd
+reboot -f

@@ -12,7 +12,7 @@ BUSYBOX_PATCH += busybox-$(BUSYBOX_VER)-flashcp-small-output.patch
 $(ARCHIVE)/$(BUSYBOX_SOURCE):
 	$(WGET) https://busybox.net/downloads/$(BUSYBOX_SOURCE)
 
-ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs7119 hs7429 hs7819 spark spark7162 ufs912 ufs913))
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs7119 hs7429 hs7819 spark spark7162 ufs912 ufs913 vitamin_hd5000))
 BUSYBOX_CONFIG = busybox-$(BUSYBOX_VER).config_nandwrite
 else
 BUSYBOX_CONFIG = busybox-$(BUSYBOX_VER).config
@@ -37,7 +37,7 @@ $(D)/busybox: $(D)/bootstrap $(ARCHIVE)/$(BUSYBOX_SOURCE) $(PATCHES)/$(BUSYBOX_C
 #
 BUSYBOX_USB_VER = $(BUSYBOX_VER)
 
-ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs7119 hs7429 hs7819 spark spark7162 ufs912 ufs913))
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs7119 hs7429 hs7819 spark spark7162 ufs912 ufs913 vitamin_hd5000))
 BUSYBOX_USB_CONFIG = busybox_usb-$(BUSYBOX_USB_VER).config_nandwrite
 else
 BUSYBOX_USB_CONFIG = busybox_usb-$(BUSYBOX_USB_VER).config
@@ -374,7 +374,6 @@ UTIL_LINUX_VER = $(UTIL_LINUX_MAJOR).$(UTIL_LINUX_MINOR)
 UTIL_LINUX_SOURCE = util-linux-$(UTIL_LINUX_MAJOR).tar.xz
 
 $(ARCHIVE)/$(UTIL_LINUX_SOURCE):
-	$(WGET) https://www.kernel.org/pub/linux/utils/util-linux/v$(UTIL_LINUX_MAJOR)/$(UTIL_LINUX_SOURCE)
 	$(WGET) https://mirrors.edge.kernel.org/pub/linux/utils/util-linux/v$(UTIL_LINUX_MAJOR)/$(UTIL_LINUX_SOURCE)
 
 $(D)/util_linux: $(D)/bootstrap $(D)/zlib $(ARCHIVE)/$(UTIL_LINUX_SOURCE)

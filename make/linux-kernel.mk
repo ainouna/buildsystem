@@ -76,13 +76,13 @@ UFS910_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-sh4-pcm_noise_fix_stm24_$(KERNEL_LABEL).patch
 
 UFS912_PATCHES_24 = $(COMMON_PATCHES_24) \
+		linux-sh4-lmb_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-ufs912_setup_stm24_$(KERNEL_LABEL).patch \
-		linux-sh4-stmmac_stm24_$(KERNEL_LABEL).patch \
-		linux-sh4-lmb_stm24_$(KERNEL_LABEL).patch
+		linux-sh4-stmmac_stm24_$(KERNEL_LABEL).patch
 
 UFS913_PATCHES_24 = $(COMMON_PATCHES_24) \
-		linux-sh4-ufs913_setup_stm24_$(KERNEL_LABEL).patch \
-		linux-sh4-lmb_stm24_$(KERNEL_LABEL).patch
+		linux-sh4-lmb_stm24_$(KERNEL_LABEL).patch \
+		linux-sh4-ufs913_setup_stm24_$(KERNEL_LABEL).patch
 
 OCTAGON1008_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-sh4-octagon1008_setup_stm24_$(KERNEL_LABEL).patch \
@@ -274,14 +274,14 @@ CUBEREVO_3000HD_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-sh4-cuberevo_rtl8201_stm24_$(KERNEL_LABEL).patch
 
 VITAMIN_HD5000_PATCHES_24 = $(COMMON_PATCHES_24) \
+		linux-sh4-lmb_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-vitamin_hd5000_setup_stm24_$(KERNEL_LABEL).patch \
-		linux-sh4-stmmac_stm24_$(KERNEL_LABEL).patch \
-		linux-sh4-lmb_stm24_$(KERNEL_LABEL).patch
+		linux-sh4-stmmac_stm24_$(KERNEL_LABEL).patch
 
 SAGEMCOM88_PATCHES_24 = $(COMMON_PATCHES_24) \
+		linux-sh4-lmb_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-sagemcom88_setup_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-stmmac_stm24_$(KERNEL_LABEL).patch \
-		linux-sh4-lmb_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-sagemcom88_sound_stm24_$(KERNEL_LABEL).patch
 
 ARIVALINK200_PATCHES_24 = $(COMMON_PATCHES_24) \
@@ -394,7 +394,7 @@ ifeq ($(IMAGE), $(filter $(IMAGE), enigma2-wlandriver neutrino-wlandriver))
 	$(SILENT)echo "# CONFIG_USB_ZD1201 is not set" >> $(KERNEL_DIR)/.config
 	$(SILENT)echo "# CONFIG_HOSTAP is not set" >> $(KERNEL_DIR)/.config
 endif
-ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs7110 hs7420 hs7810a hs7119 hs7429 hs7819))
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs7110 hs7420 hs7810a hs7119 hs7429 hs7819 vitamin_hd5000))
 ifeq ($(DESTINATION), USB)
 	@echo "Configuring kernel for running on USB."
 	$(SILENT)grep -v "CONFIG_BLK_DEV_INITRD" "$(KERNEL_DIR)/.config" > $(KERNEL_DIR)/.config.tmp

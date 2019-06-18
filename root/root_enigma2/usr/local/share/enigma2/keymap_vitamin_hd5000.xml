@@ -1,3 +1,59 @@
+<!--
+	{"POWER"            , "5F", KEY_POWER},
+	{"OK"               , "45", KEY_OK},
+	{"LEFT"             , "41", KEY_LEFT},
+	{"RIGHT"            , "49", KEY_RIGHT},
+	{"UP"               , "18", KEY_UP},
+	{"DOWN"             , "46", KEY_DOWN},
+	{"MENU"             , "1C", KEY_MENU},
+	{"EXIT"             , "4A", KEY_EXIT},		// KEY_BACK ?
+	{"INFO"             , "1D", KEY_INFO},  	// INFO
+	{"FEED"             , "16", KEY_F11},		// FEED
+	{"RECALL"           , "14", KEY_F12},		// RECALL
+	{"FAV"              , "4C", KEY_FAVORITES},
+	{"EPG"              , "1A", KEY_EPG},
+	{"VOLUP"            , "40", KEY_VOLUMEUP},
+	{"VOLDOWN"          , "44", KEY_VOLUMEDOWN},
+	{"CHUP"             , "03", KEY_PAGEUP},
+	{"CHDOWN"           , "07", KEY_PAGEDOWN},
+	{"TVRADIO"          , "19", KEY_TV}, 		// TV/RADIO
+	{"SATLIST"          , "17", KEY_F10},		// SAT LIST
+	{"MOSAIC"           , "15", KEY_WWW},		// MOSAIC
+	{"PLAYLIST"         , "42", KEY_MEDIA},
+	{"RED"              , "09", KEY_RED},
+	{"GREEN"            , "0D", KEY_GREEN},
+	{"YELLOW"           , "00", KEY_YELLOW},
+	{"BLUE"             , "0C", KEY_BLUE},
+	{"0"                , "1B", KEY_0},
+	{"1"                , "56", KEY_1},
+	{"2"                , "5A", KEY_2},
+	{"3"                , "5E", KEY_3},
+	{"4"                , "55", KEY_4},
+	{"5"                , "59", KEY_5},
+	{"6"                , "5D", KEY_6},
+	{"7"                , "54", KEY_7},
+	{"8"                , "58", KEY_8},
+	{"9"                , "5C", KEY_9},
+	{"F1"               , "11", KEY_F1},
+	{"F2"               , "12", KEY_F2},
+	{"TV_STB"           , "5B", KEY_TV2}, 		// TV/STB
+	{"MUTE"             , "57", KEY_MUTE},
+	{"TEXT"             , "48", KEY_F8},		// TEXT
+	{"SUBTITLE"         , "01", KEY_F9},		// SUBTITLE
+	{"SIGNAL"           , "1F", KEY_F3},		// SIGNAL
+	{"CAPTURE"          , "53", KEY_F4},		// CAPTURE
+	{"BOOK_M"           , "1E", KEY_F5},		// BOOK_M
+	{"BOOK_J"           , "02", KEY_F6},		// BOOK_J
+	{"PREV"             , "05", KEY_PREVIOUS},
+	{"REW"              , "06", KEY_REWIND},
+	{"FWD"              , "0A", KEY_FASTFORWARD},
+	{"NEXT"             , "0E", KEY_NEXT},
+	{"REPEAT"           , "08", KEY_F7},		// REPEAT
+	{"PLAY"             , "50", KEY_PLAY},
+	{"STOP"             , "52", KEY_STOP},
+	{"RECORD"           , "0F", KEY_RECORD},
+-->
+	
 <keymap>
 	<map context="ListboxActions">
 		<device name="keyboard">
@@ -71,8 +127,13 @@
 	</map>
 
 	<map context="InfobarEPGActions">
-		<!--key id="KEY_EPG" mapto="showEventInfo" flags="b" /-->
-		<key id="KEY_EPG" mapto="showEventInfoPlugin" flags="m" />
+		<!--key id="KEY_EPG" mapto="showEventInfoPlugin" flags="b" /-->
+		<!--key id="KEY_EPG" mapto="showSimpleInfo" flags="l" /-->
+		<!--key id="KEY_INFO" mapto="showEventInfo" flags="l"/-->
+		<key id="KEY_EPG" mapto="showEventInfoSingleEPG" flags="b" />
+		<key id="KEY_EPG" mapto="showEventInfo" flags="l" />
+		<!--key id="KEY_INFO" mapto="showSimpleInfo" flags="l"/-->
+		<key id="KEY_HELP" mapto="showSimpleInfo" flags="l"/>
 	</map>
 	
 	<map context="InfobarInstantRecord">
@@ -81,9 +142,6 @@
 
 	<map context="InfobarExtensions">
 		<key id="KEY_RED" mapto="extensions" flags="b" />
-		<key id="KEY_BLUE" mapto="extensions_PKT" flags="b" />
-		<key id="KEY_RED" mapto="redLong" flags="l" />
-		<key id="KEY_BLUE" mapto="blueLong" flags="l" />
 	</map>
 	
 	<map context="SatlistShortcutAction">
@@ -91,20 +149,24 @@
 	</map>
 	
 	<map context="InfobarChannelSelection">
-		<key id="KEY_LEFT" mapto="zapL" flags="mr" />
-		<key id="KEY_RIGHT" mapto="zapR" flags="mr" />
-		<key id="KEY_PAGEUP" mapto="zapDown" flags="m" />
-		<key id="KEY_PAGEDOWN" mapto="zapUp" flags="m" />
 		<key id="KEY_UP" mapto="switchChannelUp" flags="mr" />
 		<key id="KEY_DOWN" mapto="switchChannelDown" flags="mr" />
+		<key id="KEY_LEFT" mapto="zapL" flags="mr" />
+		<key id="KEY_PAGEUP" mapto="zapDown" flags="m" />
+		<key id="KEY_PAGEDOWN" mapto="zapUp" flags="m" />
+		<!--key id="KEY_CHANNELDOWN" mapto="zapDown" flags="mr" />
+		<key id="KEY_CHANNELUP" mapto="zapUp" flags="mr" /-->
+		<key id="KEY_RIGHT" mapto="zapR" flags="mr" />
+		<key id="KEY_F12" mapto="historyBack" flags="mr" /> <!-- RECALL -->
 		<key id="KEY_REWIND" mapto="historyBack" flags="mr" />
 		<key id="KEY_FASTFORWARD" mapto="historyNext" flags="mr" />
 		<key id="KEY_OK" mapto="openServiceList" flags="m" />
-		<key id="KEY_FAVORITES" mapto="openFavourites" flags="m" />
-		<key id="KEY_YELLOW" mapto="yellow" flags="b" />
+		<key id="KEY_FAVORITES" mapto="showFavourites" flags="m" />
+		<key id="KEY_F10" mapto="showSatellites" flags="m" /> <!-- SATLIST -->
+		<!--key id="KEY_YELLOW" mapto="yellow" flags="b" />
 		<key id="KEY_YELLOW" mapto="yellowLong" flags="l" />
 		<key id="KEY_GREEN" mapto="blackout" flags="b" />
-		<key id="KEY_GREEN" mapto="greenLong" flags="l" />
+		<key id="KEY_GREEN" mapto="greenLong" flags="l" /-->
 	</map>
 	
 	<map context="MinuteInputActions">
@@ -115,11 +177,6 @@
 		<key id="KEY_EXIT" mapto="cancel" flags="m" />
 	</map>
 
-	<map context="InputAsciiActions">
-		<device name="Console">
-			<key id="KEY_ASCII" mapto="gotAsciiCode" flags="mr" />
-		</device>
-	</map>
 
 	<map context="InputBoxActions">
 		<key id="KEY_LEFT" mapto="left" flags="mr" />
@@ -176,13 +233,15 @@
 		<!--key id="KEY_BLUE" mapto="showTv" flags="m" /-->
 	</map>
 
-
 	<!--map context="InfobarExtendedAudioSelectionActions">
 		<key id="KEY_YELLOW" mapto="audioSelection" flags="m" />
 	</map-->
 
 	<map context="InfobarAudioSelectionActions">
+		<key id="KEY_RED" mapto="audioSelection" flags="m" /> <!-- downmix on/off-->
+		<key id="KEY_GREEN" mapto="audioSelection" flags="m" /> <!-- select audio channel -->
 		<key id="KEY_YELLOW" mapto="audioSelection" flags="m" />
+		<key id="KEY_F9" mapto="audioSelection" flags="m" /> <!-- SUBT -->
 	</map>
 
 	<map context="InfobarAspectSelectionActions">
@@ -190,8 +249,8 @@
 	</map>
 
 	<map context="InfobarSubserviceSelectionActions">
-		<key id="KEY_F11" mapto="subserviceSelection" flags="b" />
-	<!--<key id="KEY_GREEN" mapto="subserviceSelection" flags="b" /> -->
+		<key id="KEY_F11" mapto="subserviceSelection" flags="b" /> <!-- FEED -->
+		<!--<key id="KEY_GREEN" mapto="subserviceSelection" flags="b" /> -->
 	</map>
 
 	<map context="InfobarSubserviceQuickzapActions">
@@ -200,7 +259,6 @@
 		<key id="KEY_BACK" mapto="prevSubservice" flags="m" />
 		<key id="KEY_FORWARD" mapto="nextSubservice" flags="m" />
 		<key id="KEY_EXIT" mapto="exit" flags="m" />
-
 	</map>
 
 	<map context="GlobalActions">
@@ -301,19 +359,22 @@
 	<map context="InfobarCueSheetActions">
 		<key id="KEY_LEFT" mapto="jumpPreviousMark" flags="m" />
 		<key id="KEY_0" mapto="toggleMark" flags="m" />
+		<key id="KEY_F5" mapto="toggleMark" flags="m" /> <!-- BOOK.M -->
 		<key id="KEY_RIGHT" mapto="jumpNextMark" flags="m" />
+		<key id="KEY_F6" mapto="jumpNextMark" flags="m" /> <!-- BOOK.J -->
 	</map>
 	
 	<map context="MediaPlayerCueSheetActions">
 		<key id="KEY_0" mapto="toggleMark" flags="m" />
+		<key id="KEY_F5" mapto="toggleMark" flags="m" /> <!-- BOOK.M -->
 	</map>
 
 	<map context="VirtualKeyboardActions">
-		<key id="KEY_F8" mapto="showVirtualKeyboard" flags="m" />
+		<key id="KEY_F8" mapto="showVirtualKeyboard" flags="m" /> <!-- TEXT -->
 	</map>
 	
 	<map context="InfobarTeletextActions">
-		<key id="KEY_F8" mapto="startTeletext" flags="m" />
+		<key id="KEY_F8" mapto="startTeletext" flags="m" /> <!-- TEXT -->
 	</map>
 
 	<map context="TeletextActions">
@@ -453,19 +514,16 @@
 	
 	<map context="HelpActions">
 		<key id="KEY_HELP" mapto="displayHelp" flags="m" />
+		<key id="KEY_F1" mapto="displayHelp" flags="m" />
 	</map>
 
 	<map context="ShortcutActions">
-		<key id="KEY_F1" mapto="red" flags="mr" />
-		<key id="KEY_F2" mapto="yellow" flags="mr" />
-		<key id="KEY_F3" mapto="green" flags="mr" />
-		<key id="KEY_F4" mapto="blue" flags="mr" />
-
 		<key id="KEY_RED" mapto="red" flags="mr" />
 		<key id="KEY_YELLOW" mapto="yellow" flags="mr" />
 		<key id="KEY_GREEN" mapto="green" flags="mr" />
 		<key id="KEY_BLUE" mapto="blue" flags="mr" />
 	</map>
+
 	<map context="StandbyActions">
 		<key id="KEY_POWER" mapto="power" flags="m" />
 	</map>
@@ -531,35 +589,6 @@
 		<key id="KEY_RED" mapto="showRedL" flags="l" />
 		<key id="KEY_BLUE" mapto="extensions_PKT" flags="b" />
 		<key id="KEY_BLUE" mapto="blueLong" flags="l" />
+		<key id="KEY_F8" mapto="subtitles" flags="m" /> <!-- SUBT -->
 	</map>
-
-	<map context="pktActions">
-		<key id="KEY_BLUE" mapto="extensions" flags="m" /> 
-		<key id="KEY_GREEN" mapto="subtitles" flags="m" /> 
-		<key id="KEY_YELLOW" mapto="sleeptimer" flags="m" /> 
-		<key id="KEY_RED" mapto="mplayer" flags="m" /> 
-	</map>
-
-	<map context="PKTinforBarSetup">
-		<key id="KEY_EPG" mapto="solveEPG" flags="m" /> 
-		<key id="KEY_GREEN" mapto="save" flags="m" /> 
-		<key id="KEY_RED" mapto="cancel" flags="m" /> 
-		<key id="KEY_BLUE" mapto="undoEPG" flags="m" /> 
-		<key id="KEY_OK" mapto="save" flags="m" /> 
-		<key id="KEY_EXIT" mapto="cancel" flags="m" />
-	</map>
-	
-	<map context="PKTIMAdvancedSetup">
-		<key id="KEY_GREEN" mapto="save" flags="m" /> 
-		<key id="KEY_RED" mapto="cancel" flags="m" /> 
-		<key id="KEY_OK" mapto="save" flags="m" /> 
-		<key id="KEY_EXIT" mapto="cancel" flags="m" />
-		<key id="KEY_BLUE" mapto="uninstall" flags="m" />
-	</map>
-
-	<map context="PKTInfobar">
-		<key id="KEY_ARCHIVE" mapto="plugins" flags="m" />           
-		<key id="KEY_MEDIA" mapto="mediacenter" flags="m" />
-	</map>
-
 </keymap>
