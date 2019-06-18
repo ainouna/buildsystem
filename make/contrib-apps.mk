@@ -452,9 +452,8 @@ $(D)/util_linux: $(D)/bootstrap $(D)/zlib $(ARCHIVE)/$(UTIL_LINUX_SOURCE)
 		$(MAKE) sfdisk; \
 		install -D -m 755 sfdisk $(TARGET_DIR)/sbin/sfdisk; \
 		install -D -m 755 mkfs $(TARGET_DIR)/sbin/mkfs
-	$(REMOVE)/util-linux-$(UTIL_LINUX_VER)
+	$(REMOVE)/util-linux-$(UTIL_LINUX_MAJOR)
 	$(TOUCH)
-#			--disable-tunelp
 
 #
 # dosfstools
