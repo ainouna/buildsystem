@@ -200,7 +200,7 @@ everything: $(shell sed -n 's/^\$$.D.\/\(.*\):.*/\1/p' make/*.mk)
 # print all present targets...
 print-targets:
 	@sed -n 's/^\$$.D.\/\(.*\):.*/\1/p; s/^\([a-z].*\):\( \|$$\).*/\1/p;' \
-		`ls -1 make/*.mk|grep -v make/buildenv.mk|grep -v make/neutrino-release.mk|grep -v make/enigma2-release.mk`|grep -v make/tvheadend-release.mk` | \
+		`ls -1 make/*.mk|grep -v make/buildenv.mk|grep -v make/neutrino-release.mk|grep -v make/enigma2-release.mk|grep -v make/tvheadend-release.mk` | \
 		sort -u | fold -s -w 65
 
 # for local extensions, e.g. special plugins or similar...
