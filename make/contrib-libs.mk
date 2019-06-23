@@ -302,7 +302,7 @@ $(D)/libarchive: $(D)/bootstrap $(ARCHIVE)/$(LIBARCHIVE_SOURCE)
 #
 # readline
 #
-READLINE_VER = 6.2
+READLINE_VER = 8.0
 READLINE_SOURCE = readline-$(READLINE_VER).tar.gz
 
 $(ARCHIVE)/$(READLINE_SOURCE):
