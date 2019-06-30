@@ -392,7 +392,7 @@ PYTHON_PYASN1_SOURCE = pyasn1-$(PYTHON_PYASN1_VER).tar.gz
 $(ARCHIVE)/$(PYTHON_PYASN1_SOURCE):
 	$(WGET) https://pypi.python.org/packages/source/p/pyasn1/$(PYTHON_PYASN1_SOURCE)
 
-$(D)/python_pyasn1: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(ARCHIVE)/$(PYTHON_PYASN1_SOURCE)
+$(D)/python_pyasn1: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(D)/python_pyasn1_modules $(ARCHIVE)/$(PYTHON_PYASN1_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/pyasn1-$(PYTHON_PYASN1_VER)
 	$(UNTAR)/$(PYTHON_PYASN1_SOURCE)
@@ -471,7 +471,7 @@ PYTHON_SERVICE_IDENTITY_PATCH =
 $(ARCHIVE)/$(PYTHON_SERVICE_IDENTITY_SOURCE):
 	$(WGET) https://pypi.python.org/packages/source/s/service_identity/$(PYTHON_SERVICE_IDENTITY_SOURCE)
 
-$(D)/python_service_identity: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(ARCHIVE)/$(PYTHON_SERVICE_IDENTITY_SOURCE)
+$(D)/python_service_identity: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(D)/python_pyasn1 $(D)/python_attr $(D)/python_attrs $(D)/python_ipaddress $(ARCHIVE)/$(PYTHON_SERVICE_IDENTITY_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/service_identity-$(PYTHON_SERVICE_IDENTITY_VER)
 	$(UNTAR)/$(PYTHON_SERVICE_IDENTITY_SOURCE)
@@ -505,7 +505,7 @@ $(D)/python_attr: $(D)/bootstrap $(D)/python $(ARCHIVE)/$(PYTHON_ATTR_SOURCE)
 #
 # python_attrs
 #
-PYTHON_ATTRS_VER = 16.3.0
+PYTHON_ATTRS_VER = 19.1.0
 PYTHON_ATTRS_SOURCE = attrs-$(PYTHON_ATTRS_VER).tar.gz
 PYTHON_ATTRS_PARCH =
 
@@ -733,7 +733,6 @@ PYTHON_DEPS  = $(D)/host_python
 PYTHON_DEPS += $(D)/python
 PYTHON_DEPS += $(D)/python_twisted
 PYTHON_DEPS += $(D)/python_lxml
-PYTHON_DEPS += $(D)/python_pyopenssl
 PYTHON_DEPS += $(D)/python_service_identity
 ifeq ($(IMAGE), $(filter $(IMAGE), enigma2-wlandriver))
 PYTHON_DEPS += $(D)/python_wifi
@@ -743,15 +742,12 @@ ifneq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), small))
 #PYTHON_DEPS += $(D)/python_imaging
 #PYTHON_DEPS += $(D)/python_pyusb
 #PYTHON_DEPS += $(D)/python_pycrypto
-#PYTHON_DEPS += $(D)/python_pyasn1
 #PYTHON_DEPS += $(D)/python_mechanize
-#PYTHON_DEPS += $(D)/python_six
 #PYTHON_DEPS += $(D)/python_requests
 #PYTHON_DEPS += $(D)/python_futures
 #PYTHON_DEPS += $(D)/python_singledispatch
-#PYTHON_DEPS += $(D)/python_ipaddress
-#PYTHON_DEPS += $(D)/python_livestreamer
-#PYTHON_DEPS += $(D)/python_livestreamersrv
+PYTHON_DEPS += $(D)/python_livestreamer
+PYTHON_DEPS += $(D)/python_livestreamersrv
 endif
 
 python-all: $(PYTHON_DEPS)
