@@ -101,7 +101,7 @@ $(D)/neutrino-mp-plugin.do_compile: $(D)/neutrino-mp-plugin.config.status
 	$(MAKE) -C $(NP_OBJDIR) DESTDIR=$(TARGET_DIR)
 	@touch $@
 
-$(D)/neutrino-mp-plugin: $(D)/neutrino-mp-plugin.do_prepare $(D)/neutrino-mp-plugin.do_compile
+$(D)/neutrino-mp-plugin: $(D)/neutrino-mp $(D)/neutrino-mp-plugin.do_prepare $(D)/neutrino-mp-plugin.do_compile
 	$(MAKE) -C $(NP_OBJDIR) install DESTDIR=$(TARGET_DIR)
 	$(TOUCH)
 
@@ -255,7 +255,7 @@ $(D)/neutrino-hd2-plugin.do_compile: $(D)/neutrino-hd2-plugin.config.status
 	$(MAKE) -C $(SOURCE_DIR)/neutrino-hd2-plugins top_srcdir=$(SOURCE_DIR)/neutrino-hd2
 	@touch $@
 
-$(D)/neutrino-hd2-plugin: neutrino-hd2-plugin.do_prepare neutrino-hd2-plugin.do_compile
+$(D)/neutrino-hd2-plugin: $(D)/neutrino-hd2 neutrino-hd2-plugin.do_prepare neutrino-hd2-plugin.do_compile
 	$(MAKE) -C $(SOURCE_DIR)/neutrino-hd2-plugins install DESTDIR=$(TARGET_DIR) top_srcdir=$(SOURCE_DIR)/neutrino-hd2
 	$(TOUCH)
 

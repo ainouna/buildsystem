@@ -26,7 +26,7 @@ $(D)/enigma2_hotplug_e2_helper: $(D)/bootstrap
 #
 TUXTXTLIB_PATCH = build-enigma2/tuxtxtlib-1.0-fix-dbox-headers.patch
 
-$(D)/enigma2_tuxtxtlib: $(D)/bootstrap
+$(D)/enigma2_tuxtxtlib: $(D)/bootstrap $(D)/freetype
 	$(START_BUILD)
 	$(REMOVE)/tuxtxtlib
 	$(SILENT)if [ -d $(ARCHIVE)/tuxtxt.git ]; \
@@ -103,13 +103,17 @@ ifeq ($(MEDIAFW), gst-eplayer3-dual)
 E2_PLUGIN_DEPS = enigma2_serviceapp
 endif
 endif
+ifneq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), small size))
+E2_PLUGIN_DEPS ?= $(D)/enigma2_networkbrowser
+E2_PLUGIN_DEPS ?= $(D)/enigma2_openwebif
+endif
 
-$(D)/enigma2-plugins: $(D)/enigma2_networkbrowser $(D)/enigma2_openwebif $(E2_PLUGIN_DEPS)
+$(D)/enigma2-plugins: $(E2_PLUGIN_DEPS)
 
 #
 # enigma2-openwebif
 #
-$(D)/enigma2_openwebif: $(D)/bootstrap $(D)/python $(D)/python_cheetah $(D)/python_ipaddress
+$(D)/enigma2_openwebif: $(D)/bootstrap $(D)/enigma2 $(D)/python_cheetah $(D)/python_ipaddress
 	$(START_BUILD)
 	$(REMOVE)/e2openplugin-OpenWebif
 	$(SILENT)if [ -d $(ARCHIVE)/e2openplugin-OpenWebif.git ]; \
@@ -141,7 +145,7 @@ $(D)/enigma2_openwebif: $(D)/bootstrap $(D)/python $(D)/python_cheetah $(D)/pyth
 #
 ENIGMA2_NETWORBROWSER_PATCH = build-enigma2/enigma2-networkbrowser-support-autofs.patch
 
-$(D)/enigma2_networkbrowser: $(D)/bootstrap $(D)/python
+$(D)/enigma2_networkbrowser: $(D)/bootstrap $(D)/enigma2
 	$(START_BUILD)
 	$(REMOVE)/enigma2-networkbrowser
 	$(SILENT)if [ -d $(ARCHIVE)/enigma2-plugins.git ]; \

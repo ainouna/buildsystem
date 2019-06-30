@@ -9,7 +9,8 @@ GSTREAMER_PATCH += gstreamer-$(GSTREAMER_VER)-revert-use-new-gst-adapter-get-buf
 $(ARCHIVE)/$(GSTREAMER_SOURCE):
 	$(WGET) https://gstreamer.freedesktop.org/src/gstreamer/$(GSTREAMER_SOURCE)
 
-$(D)/gstreamer: $(D)/bootstrap $(D)/libglib2 $(D)/libxml2 $(D)/glib_networking $(ARCHIVE)/$(GSTREAMER_SOURCE)
+#$(D)/gstreamer: $(D)/bootstrap $(D)/libglib2 $(D)/libxml2 $(D)/glib_networking $(ARCHIVE)/$(GSTREAMER_SOURCE)
+$(D)/gstreamer: $(D)/bootstrap $(D)/libglib2 $(ARCHIVE)/$(GSTREAMER_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/gstreamer-$(GSTREAMER_VER)
 	$(UNTAR)/$(GSTREAMER_SOURCE)
@@ -62,7 +63,8 @@ GST_PLUGINS_BASE_PATCH += gst-plugins-base-$(GST_PLUGINS_BASE_VER)-taglist-not-s
 $(ARCHIVE)/$(GST_PLUGINS_BASE_SOURCE):
 	$(WGET) https://gstreamer.freedesktop.org/src/gst-plugins-base/$(GST_PLUGINS_BASE_SOURCE)
 
-$(D)/gst_plugins_base: $(D)/bootstrap $(D)/libglib2 $(D)/orc $(D)/gstreamer $(D)/alsa_lib $(D)/libogg $(D)/libvorbis $(ARCHIVE)/$(GST_PLUGINS_BASE_SOURCE)
+#$(D)/gst_plugins_base: $(D)/bootstrap $(D)/libglib2 $(D)/orc $(D)/gstreamer $(D)/alsa_lib $(D)/libogg $(D)/libvorbis $(ARCHIVE)/$(GST_PLUGINS_BASE_SOURCE)
+$(D)/gst_plugins_base: $(D)/bootstrap $(D)/gstreamer $(D)/libglib2 $(ARCHIVE)/$(GST_PLUGINS_BASE_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/gst-plugins-base-$(GST_PLUGINS_BASE_VER)
 	$(UNTAR)/$(GST_PLUGINS_BASE_SOURCE)
@@ -131,7 +133,8 @@ GST_PLUGINS_GOOD_PATCH =
 $(ARCHIVE)/$(GST_PLUGINS_GOOD_SOURCE):
 	$(WGET) https://gstreamer.freedesktop.org/src/gst-plugins-good/$(GST_PLUGINS_GOOD_SOURCE)
 
-$(D)/gst_plugins_good: $(D)/bootstrap $(D)/gstreamer $(D)/gst_plugins_base $(D)/orc $(D)/libsoup $(D)/flac $(ARCHIVE)/$(GST_PLUGINS_GOOD_SOURCE)
+#$(D)/gst_plugins_good: $(D)/bootstrap $(D)/gstreamer $(D)/gst_plugins_base $(D)/orc $(D)/libsoup $(D)/flac $(ARCHIVE)/$(GST_PLUGINS_GOOD_SOURCE)
+$(D)/gst_plugins_good: $(D)/bootstrap $(D)/gstreamer $(D)/gst_plugins_base $(D)/libglib2 $(ARCHIVE)/$(GST_PLUGINS_GOOD_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/gst-plugins-good-$(GST_PLUGINS_GOOD_VER)
 	$(UNTAR)/$(GST_PLUGINS_GOOD_SOURCE)
@@ -305,6 +308,39 @@ GST_LIBAV_SOURCE = gst-libav-$(GST_LIBAV_VER).tar.xz
 GST_LIBAV_PATCH  = gst-libav-$(GST_LIBAV_VER)-disable-yasm-for-libav-when-disable-yasm.patch
 GST_LIBAV_PATCH += gst-libav-$(GST_LIBAV_VER)-fix-sh4-compile-gcc48.patch
 GST_LIBAV_PATCH += gst-libav-$(GST_LIBAV_VER)-fix_aclocal_version.patch
+GST_LIBAV_CONF   = --enable-gpl
+GST_LIBAV_CONF  += --enable-static
+GST_LIBAV_CONF  += --enable-pic
+GST_LIBAV_CONF  += --disable-protocols
+GST_LIBAV_CONF  += --disable-devices
+GST_LIBAV_CONF  += --disable-network
+GST_LIBAV_CONF  += --disable-hwaccels
+GST_LIBAV_CONF  += --disable-filters
+GST_LIBAV_CONF  += --disable-doc
+GST_LIBAV_CONF  += --disable-gtk-doc
+GST_LIBAV_CONF  += --disable-gtk-doc-html
+GST_LIBAV_CONF  += --disable-gtk-doc-pdf
+GST_LIBAV_CONF  += --enable-optimizations
+GST_LIBAV_CONF  += --enable-cross-compile
+GST_LIBAV_CONF  += --target-os=linux
+GST_LIBAV_CONF  += --disable-x86asm
+GST_LIBAV_CONF  += --arch=sh4
+GST_LIBAV_CONF  += --cross-prefix=$(TARGET)-
+GST_LIBAV_CONF  += --disable-muxers
+GST_LIBAV_CONF  += --disable-encoders
+GST_LIBAV_CONF  += --disable-decoders
+GST_LIBAV_CONF  += --enable-decoder=ogg
+GST_LIBAV_CONF  += --enable-decoder=vorbis
+GST_LIBAV_CONF  += --enable-decoder=flac
+GST_LIBAV_CONF  += --disable-demuxers
+GST_LIBAV_CONF  += --enable-demuxer=ogg
+GST_LIBAV_CONF  += --enable-demuxer=vorbis
+GST_LIBAV_CONF  += --enable-demuxer=flac
+GST_LIBAV_CONF  += --enable-demuxer=mpegts
+GST_LIBAV_CONF  += --disable-debug
+GST_LIBAV_CONF  += --disable-bsfs
+GST_LIBAV_CONF  += --enable-pthreads
+GST_LIBAV_CONF  += --enable-bzlib
 
 $(ARCHIVE)/$(GST_LIBAV_SOURCE):
 	$(WGET) https://gstreamer.freedesktop.org/src/gst-libav/$(GST_LIBAV_SOURCE)
@@ -316,47 +352,11 @@ $(D)/gst_libav: $(D)/bootstrap $(D)/gstreamer $(D)/gst_plugins_base $(D)/libglib
 	$(CH_DIR)/gst-libav-$(GST_LIBAV_VER); \
 		if [ -e configure ]; then rm -f configure; fi; \
 		$(call apply_patches, $(GST_LIBAV_PATCH)); \
+		echo $(GST_LIBAV_CONF); \
 		$(CONFIGURE) \
 			--prefix=/usr \
 			--disable-fatal-warnings \
-			\
-			--with-libav-extra-configure=" \
-			--enable-gpl \
-			--enable-static \
-			--enable-pic \
-			--disable-protocols \
-			--disable-devices \
-			--disable-network \
-			--disable-hwaccels \
-			--disable-filters \
-			--disable-doc \
-			--disable-gtk-doc \
-			--disable-gtk-doc-html \
-			--disable-gtk-doc-pdf \
-			--enable-optimizations \
-			--enable-cross-compile \
-			--target-os=linux \
-			--disable-x86asm \
-			--arch=sh4 \
-			--cross-prefix=$(TARGET)- \
-			\
-			--disable-muxers \
-			--disable-encoders \
-			--disable-decoders \
-			--enable-decoder=ogg \
-			--enable-decoder=vorbis \
-			--enable-decoder=flac \
-			\
-			--disable-demuxers \
-			--enable-demuxer=ogg \
-			--enable-demuxer=vorbis \
-			--enable-demuxer=flac \
-			--enable-demuxer=mpegts \
-			\
-			--disable-debug \
-			--disable-bsfs \
-			--enable-pthreads \
-			--enable-bzlib" \
+			--enable_yasm=no \
 		; \
 		$(MAKE); \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)

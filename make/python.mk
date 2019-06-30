@@ -72,7 +72,8 @@ PYTHON_PATCH += python-$(PYTHON_VER)-xcompile.patch
 PYTHON_PATCH += python-$(PYTHON_VER)-revert_use_of_sysconfigdata.patch
 PYTHON_PATCH += python-$(PYTHON_VER)-pgettext.patch
 
-$(D)/python: $(D)/bootstrap $(D)/host_python $(D)/ncurses $(D)/zlib $(D)/openssl $(D)/libffi $(D)/bzip2 $(D)/readline $(D)/sqlite $(ARCHIVE)/$(PYTHON_SOURCE)
+#$(D)/python: $(D)/bootstrap $(D)/host_python $(D)/ncurses $(D)/zlib $(D)/openssl $(D)/libffi $(D)/bzip2 $(D)/readline $(D)/sqlite $(ARCHIVE)/$(PYTHON_SOURCE)
+$(D)/python: $(D)/bootstrap $(D)/host_python $(D)/libxml2 $(D)/libxslt $(D)/zlib $(ARCHIVE)/$(PYTHON_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/Python-$(PYTHON_VER)
 	$(UNTAR)/$(PYTHON_SOURCE)
@@ -80,7 +81,7 @@ $(D)/python: $(D)/bootstrap $(D)/host_python $(D)/ncurses $(D)/zlib $(D)/openssl
 		$(call apply_patches, $(PYTHON_PATCH)); \
 		CONFIG_SITE= \
 		$(BUILDENV) \
-		autoreconf -if Modules/_ctypes/libffi; \
+		autoreconf -vif Modules/_ctypes/libffi; \
 		autoconf $(SILENT_OPT); \
 		./configure $(SILENT_CONFIGURE) $(SILENT_OPT) \
 			--build=$(BUILD) \
@@ -209,7 +210,7 @@ $(ARCHIVE)/$(PYTHON_TWISTED_SOURCE):
 #	$(WGET) https://pypi.python.org/packages/source/T/Twisted/$(PYTHON_TWISTED_SOURCE)
 	$(WGET) https://twistedmatrix.com/Releases/Twisted/16.4/$(PYTHON_TWISTED_SOURCE)
 
-$(D)/python_twisted: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(ARCHIVE)/$(PYTHON_TWISTED_SOURCE)
+$(D)/python_twisted: $(D)/bootstrap $(D)/python $(D)/python_zope_interface $(D)/python_setuptools $(ARCHIVE)/$(PYTHON_TWISTED_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/Twisted-$(PYTHON_TWISTED_VER)
 	$(UNTAR)/$(PYTHON_TWISTED_SOURCE)
@@ -429,7 +430,7 @@ PYTHON_CRYPTOGRAPHY_SOURCE = cryptography-$(PYTHON_CRYPTOGRAPHY_VER).tar.gz
 $(ARCHIVE)/$(PYTHON_CRYPTOGRAPHY_SOURCE):
 	$(WGET) https://pypi.python.org/packages/source/c/cryptography/$(PYTHON_CRYPTOGRAPHY_SOURCE)
 
-$(D)/python_cryptography: $(D)/bootstrap $(D)/libffi $(D)/python $(D)/python_setuptools $(D)/python_pyopenssl $(D)/python_six $(ARCHIVE)/$(PYTHON_CRYPTOGRAPHY_SOURCE)
+$(D)/python_cryptography: $(D)/bootstrap $(D)/libffi $(D)/python $(D)/python_setuptools $(D)/python_pyopenssl $(ARCHIVE)/$(PYTHON_CRYPTOGRAPHY_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/cryptography-$(PYTHON_CRYPTOGRAPHY_VER)
 	$(UNTAR)/$(PYTHON_CRYPTOGRAPHY_SOURCE)
@@ -587,7 +588,7 @@ PYTHON_MECHANIZE_SOURCE = mechanize-$(PYTHON_MECHANIZE_VER).tar.gz
 $(ARCHIVE)/$(PYTHON_MECHANIZE_SOURCE):
 	$(WGET) https://pypi.python.org/packages/source/m/mechanize/$(PYTHON_MECHANIZE_SOURCE)
 
-$(D)/python_mechanize: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(ARCHIVE)/$(PYTHON_MECHANIZE_SOURCE)
+$(D)/python_mechanize: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(D)/openssl $(ARCHIVE)/$(PYTHON_MECHANIZE_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/mechanize-$(PYTHON_MECHANIZE_VER)
 	$(UNTAR)/$(PYTHON_MECHANIZE_SOURCE)
@@ -664,7 +665,7 @@ PYTHON_FUTURES_SOURCE = futures-$(PYTHON_FUTURES_VER).tar.gz
 $(ARCHIVE)/$(PYTHON_FUTURES_SOURCE):
 	$(WGET) https://pypi.python.org/packages/source/f/futures/$(PYTHON_FUTURES_SOURCE)
 
-$(D)/python_futures: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(ARCHIVE)/$(PYTHON_FUTURES_SOURCE)
+$(D)/python_futures: $(D)/bootstrap $(D)/python $(ARCHIVE)/$(PYTHON_FUTURES_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/futures-$(PYTHON_FUTURES_VER)
 	$(UNTAR)/$(PYTHON_FUTURES_SOURCE)
@@ -714,7 +715,7 @@ $(D)/python_livestreamer: $(D)/bootstrap $(D)/python $(D)/python_setuptools
 #
 # python_livestreamersrv
 #
-$(D)/python_livestreamersrv: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(D)/python_livestreamer
+$(D)/python_livestreamersrv: $(D)/bootstrap $(D)/python $(D)/python_livestreamer
 	$(START_BUILD)
 	$(REMOVE)/livestreamersrv
 	$(SET) -e; if [ -d $(ARCHIVE)/livestreamersrv.git ]; \
@@ -730,26 +731,29 @@ $(D)/python_livestreamersrv: $(D)/bootstrap $(D)/python $(D)/python_setuptools $
 
 PYTHON_DEPS  = $(D)/host_python
 PYTHON_DEPS += $(D)/python
-PYTHON_DEPS += $(D)/python_elementtree
-PYTHON_DEPS += $(D)/python_lxml
-PYTHON_DEPS += $(D)/python_zope_interface
-PYTHON_DEPS += $(D)/python_pyopenssl
 PYTHON_DEPS += $(D)/python_twisted
+PYTHON_DEPS += $(D)/python_lxml
+PYTHON_DEPS += $(D)/python_pyopenssl
+PYTHON_DEPS += $(D)/python_service_identity
+ifeq ($(IMAGE), $(filter $(IMAGE), enigma2-wlandriver))
 PYTHON_DEPS += $(D)/python_wifi
-PYTHON_DEPS += $(D)/python_imaging
-PYTHON_DEPS += $(D)/python_pyusb
-PYTHON_DEPS += $(D)/python_pycrypto
-PYTHON_DEPS += $(D)/python_pyasn1
-PYTHON_DEPS += $(D)/python_mechanize
-PYTHON_DEPS += $(D)/python_six
-PYTHON_DEPS += $(D)/python_requests
-PYTHON_DEPS += $(D)/python_futures
-PYTHON_DEPS += $(D)/python_singledispatch
-PYTHON_DEPS += $(D)/python_ipaddress
-PYTHON_DEPS += $(D)/python_livestreamer
-PYTHON_DEPS += $(D)/python_livestreamersrv
+endif
+ifneq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), small))
+#PYTHON_DEPS += $(D)/python_elementtree
+#PYTHON_DEPS += $(D)/python_imaging
+#PYTHON_DEPS += $(D)/python_pyusb
+#PYTHON_DEPS += $(D)/python_pycrypto
+#PYTHON_DEPS += $(D)/python_pyasn1
+#PYTHON_DEPS += $(D)/python_mechanize
+#PYTHON_DEPS += $(D)/python_six
+#PYTHON_DEPS += $(D)/python_requests
+#PYTHON_DEPS += $(D)/python_futures
+#PYTHON_DEPS += $(D)/python_singledispatch
+#PYTHON_DEPS += $(D)/python_ipaddress
+#PYTHON_DEPS += $(D)/python_livestreamer
+#PYTHON_DEPS += $(D)/python_livestreamersrv
+endif
 
 python-all: $(PYTHON_DEPS)
 
 PHONY += python-all
-

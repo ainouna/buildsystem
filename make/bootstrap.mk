@@ -52,6 +52,7 @@ HOST_MODULE_INIT_TOOLS_PATCH = module-init-tools-$(HOST_MODULE_INIT_TOOLS_VER).p
 
 $(D)/host_module_init_tools: $(ARCHIVE)/$(HOST_MODULE_INIT_TOOLS_SOURCE)
 	$(START_BUILD)
+	$(SILENT)if [ ! -d $(BUILD_TMP) ]; then mkdir $(BUILD_TMP); fi;
 	$(REMOVE)/module-init-tools-$(HOST_MODULE_INIT_TOOLS_VER)
 	$(UNTAR)/$(HOST_MODULE_INIT_TOOLS_SOURCE)
 	$(CH_DIR)/module-init-tools-$(HOST_MODULE_INIT_TOOLS_VER); \
@@ -220,6 +221,7 @@ $(DRIVER_DIR):
 		git clone $(SILENT_CONFIGURE) $(GITHUB)/$(GIT_NAME_DRIVER)/driver.git driver; \
 	fi; \
 	if test -d ~/pti_np; then \
+		echo -e "\nREMARK: Installing pti_np.\n"
 		mkdir $(DRIVER_DIR)/pti_np; \
 		cp -rf ~/pti_np/* $(DRIVER_DIR)/pti_np; \
 	fi

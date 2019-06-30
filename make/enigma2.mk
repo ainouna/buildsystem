@@ -1,25 +1,34 @@
 #
 # enigma2
 #
-ENIGMA2_DEPS  = $(D)/bootstrap $(D)/opkg $(D)/ncurses $(LIRC) $(D)/libcurl $(D)/libmad
-ENIGMA2_DEPS += $(D)/libpng $(D)/libjpeg $(D)/giflib $(D)/freetype $(D)/libfribidi $(D)/libglib2 $(D)/libdvbsi $(D)/libxml2
-ENIGMA2_DEPS += $(D)/openssl $(D)/enigma2_tuxtxt32bpp $(D)/enigma2_hotplug_e2_helper $(D)/parted $(D)/avahi
-ENIGMA2_DEPS += python-all $(D)/alsa_utils
+ENIGMA2_DEPS  = $(D)/bootstrap python-all $(D)/avahi $(D)/opkg $(D)/libpng 
+ENIGMA2_DEPS += $(D)/libglib2 $(D)/libxml2 $(D)/libfribidi $(D)/libdvbsi $(D)/giflib $(LIRC)
+ENIGMA2_DEPS += $(D)/enigma2_tuxtxt32bpp $(D)/enigma2_hotplug_e2_helper $(D)/tools-libmme_image
+ifneq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), small))
+ENIGMA2_DEPS += $(D)/ethtool
+ENIGMA2_DEPS += $(D)/alsa_utils
+ENIGMA2_DEPS += $(D)/libdreamdvd
+ENIGMA2_DEPS += $(D)/libcurl
+ENIGMA2_DEPS += $(D)/libmad
 ENIGMA2_DEPS += $(D)/libid3tag
-ENIGMA2_DEPS += $(D)/expat $(D)/libusb
-ENIGMA2_DEPS += $(D)/sdparm $(D)/minidlna $(D)/ethtool
-ENIGMA2_DEPS += $(D)/libdreamdvd $(D)/libudfread
+ENIGMA2_DEPS += $(D)/minidlna
+#ENIGMA2_DEPS += $(D)/sdparm
+#ENIGMA2_DEPS += $(D)/parted 
+endif
 ifneq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), small size))
 # required for DVDBurn plugin (adds ? Mbyte to image)
 #ENIGMA2_DEPS += $(D)/dvd+rw-tools $(D)/dvdauthor $(D)/mjpegtools $(D)/cdrkit $(D)/replex $(D)/python_imaging
+endif
+ifneq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), small size))
+# required for Blurayplayer plugin (adds ? Mbyte to image)
+#ENIGMA2_DEPS += $(D)/libudfread $(D)/libbluray $(D)/enigma2-blurayplayer
 endif
 ifeq ($(IMAGE), enigma2-wlandriver)
 ENIGMA2_DEPS += $(D)/wpa_supplicant $(D)/wireless_tools
 endif
 
-ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs7110 hs7119 hs7420 hs7429 hs7810a hs7819))
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs7110 hs7119 hs7420 hs7429 hs7810a hs7819 vitamin_hd5000))
 ifeq ($(DESTINATION), USB)
-#ENIGMA2_DEPS += $(D)/busybox_usb
 E_CONFIG_OPTS += --enable-run_from_usb
 endif
 endif
@@ -38,7 +47,7 @@ endif
 endif
 
 # determine requirements for media framework
-# Note: for diffs 0, 2, 3 & 4 there are no extra depencies;
+# Note: for diffs 0, 2, 3 & 4 there are no extra dependencies;
 # these are part of enigma2-plugins
 ifeq ($(E2_DIFF), $(filter $(E2_DIFF), 1)) # diff 1 (local)
 ifeq ($(MEDIAFW), eplayer3)
@@ -166,7 +175,7 @@ $(D)/enigma2.do_prepare: | $(ENIGMA2_DEPS)
 		if [ "$(MEDIAFW)" == "eplayer3" ]; then \
 			set -e; cd $(SOURCE_DIR)/enigma2 && patch -p1 $(SILENT_PATCH) < "$(PATCHES)/build-enigma2/eplayer3.$$DIFF.patch"; \
 		fi; \
-		if [ "$(E2_DIFF)" == "0" ] || [ "$(E2_DIFF)" == "2" ]; then \
+		if [ "$(E2_DIFF)" == "0" ] || [ "$(E2_DIFF)" == "2" ] || [ "$(E2_DIFF)" == "3" ] || [ "$(E2_DIFF)" == "4" ]; then \
 			if [ "$(BOXTYPE)" == "fortis_hdbox" ] || [ "$(BOXTYPE)" == "octagon1008" ] || [ "$(BOXTYPE)" == "cuberevo" ] || [ "$(BOXTYPE)" == "cuberevo_250hd" ] || [ "$(BOXTYPE)" == "cuberevo_mini_fta" ] || [ "$(BOXTYPE)" == "cuberevo_mini" ] || [ "$(BOXTYPE)" == "cuberevo_mini2" ] || [ "$(BOXTYPE)" == "tf7700" ]; then \
 				patch -p1 $(SILENT_PATCH) < "$(PATCHES)/build-enigma2/enigma2-no_hdmi_cec.$$DIFF.patch"; \
 			fi; \

@@ -499,7 +499,7 @@ $(TFINSTALLER_DIR)/tfpacker:
 	$(MAKE) -C $(TFINSTALLER_DIR) tfpacker
 	$(TOUCH)
 
-$(D)/tfkernel:
+$(D)/tfkernel: $(D)/kernel
 	$(START_BUILD)
 	$(SILENT)cd $(KERNEL_DIR); \
 		$(MAKE) $(if $(TF7700),TF7700=y) ARCH=sh CROSS_COMPILE=$(TARGET)- uImage

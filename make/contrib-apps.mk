@@ -54,7 +54,7 @@ $(D)/busybox_usb: $(D)/bootstrap $(ARCHIVE)/$(BUSYBOX_SOURCE) $(PATCHES)/$(BUSYB
 		sed -i -e 's#^CONFIG_PREFIX.*#CONFIG_PREFIX="$(TARGET_DIR)"#' .config; \
 		$(BUILDENV) \
 		$(MAKE) busybox ARCH=sh4 CROSS_COMPILE=$(TARGET)- CFLAGS_EXTRA="$(TARGET_CFLAGS)"; \
-		$(MAKE) install ARCH=sh4 CROSS_COMPILE=$(TARGET)- CFLAGS_EXTRA="$(TARGET_CFLAGS)" CONFIG_PREFIX=$(TARGET_DIR)
+		$(MAKE) install ARCH=sh4 CROSS_COMPILE=$(TARGET)- CFLAGS_EXTRA="$(TARGET_CFLAGS)" CONFIG_PREFIX=$(TARGET_DIR); \
 		cp -f $(BUILD_TMP)/busybox_usb-$(BUSYBOX_USB_VER)/busybox $(APPS_DIR)/tools/USB_boot
 	$(REMOVE)/busybox_usb-$(BUSYBOX_USB_VER)
 	$(TOUCH)
@@ -92,8 +92,9 @@ $(ARCHIVE)/$(MODULE_INIT_TOOLS_SOURCE):
 #	$(WGET) ftp.europeonline.com/pub/linux/utils/kernel/module-init-tools/$(MODULE_INIT_TOOLS_SOURCE)
 	$(WGET) http://ftp.devil-linux.org/pub/devel/sources/1.6/$(MODULE_INIT_TOOLS_SOURCE)
 
-$(D)/module_init_tools: $(D)/bootstrap $(D)/lsb $(ARCHIVE)/$(MODULE_INIT_TOOLS_SOURCE)
+$(D)/module_init_tools: $(D)/bootstrap $(ARCHIVE)/$(MODULE_INIT_TOOLS_SOURCE)
 	$(START_BUILD)
+	$(SILENT)if [ ! -d $(BUILD_TMP) ]; then mkdir $(BUILD_TMP); fi;
 	$(REMOVE)/module-init-tools-$(MODULE_INIT_TOOLS_VER)
 	$(UNTAR)/$(MODULE_INIT_TOOLS_SOURCE)
 	$(CH_DIR)/module-init-tools-$(MODULE_INIT_TOOLS_VER); \
@@ -155,6 +156,7 @@ $(ARCHIVE)/$(GDB_SOURCE):
 # gdb-remote built for local-PC or target
 $(D)/gdb-remote: $(ARCHIVE)/$(GDB_SOURCE)
 	$(START_BUILD)
+	$(SILENT)if [ ! -d $(BUILD_TMP) ]; then mkdir $(BUILD_TMP); fi;
 	$(REMOVE)/gdb-$(GDB_VER)
 	$(UNTAR)/$(GDB_SOURCE)
 	$(CH_DIR)/gdb-$(GDB_VER); \
@@ -174,7 +176,7 @@ $(D)/gdb-remote: $(ARCHIVE)/$(GDB_SOURCE)
 # gdb
 #
 # gdb built for target or local-PC
-$(D)/gdb: $(D)/bootstrap $(D)/ncurses $(D)/zlib $(ARCHIVE)/$(GDB_SOURCE)
+$(D)/gdb: $(D)/bootstrap $(D)/python $(D)/expat $(ARCHIVE)/$(GDB_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/gdb-$(GDB_VER)
 	$(UNTAR)/$(GDB_SOURCE)
@@ -315,7 +317,7 @@ E2FSPROGS_PATCH = e2fsprogs-$(E2FSPROGS_VER).patch
 $(ARCHIVE)/$(E2FSPROGS_SOURCE):
 	$(WGET) https://sourceforge.net/projects/e2fsprogs/files/e2fsprogs/v$(E2FSPROGS_VER)/$(E2FSPROGS_SOURCE)
 
-$(D)/e2fsprogs: $(D)/bootstrap $(D)/util_linux $(ARCHIVE)/$(E2FSPROGS_SOURCE)
+$(D)/e2fsprogs: $(D)/bootstrap $(ARCHIVE)/$(E2FSPROGS_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/e2fsprogs-$(E2FSPROGS_VER)
 	$(UNTAR)/$(E2FSPROGS_SOURCE)
@@ -389,6 +391,7 @@ $(D)/util_linux: $(D)/bootstrap $(D)/zlib $(ARCHIVE)/$(UTIL_LINUX_SOURCE)
 			--disable-nls \
 			--disable-rpath \
 			--enable-libblkid \
+			--enable-libuuid \
 			--disable-libmount \
 			--enable-libsmartcols \
 			--disable-mount \
@@ -449,9 +452,11 @@ $(D)/util_linux: $(D)/bootstrap $(D)/zlib $(ARCHIVE)/$(UTIL_LINUX_SOURCE)
 			--without-systemdsystemunitdir \
 		; \
 		$(MAKE); \
+		$(MAKE) libuuid; \
 		$(MAKE) sfdisk; \
 		install -D -m 755 sfdisk $(TARGET_DIR)/sbin/sfdisk; \
 		install -D -m 755 mkfs $(TARGET_DIR)/sbin/mkfs
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libuuid.pc
 	$(REMOVE)/util-linux-$(UTIL_LINUX_MAJOR)
 	$(TOUCH)
 
@@ -466,11 +471,11 @@ $(ARCHIVE)/$(DOSFSTOOLS_SOURCE):
 
 DOSFSTOOLS_CFLAGS = $(TARGET_CFLAGS) -D_GNU_SOURCE -fomit-frame-pointer -D_FILE_OFFSET_BITS=64
 
-$(D)/dosfstools: bootstrap $(ARCHIVE)/$(DOSFSTOOLS_SOURCE)
+$(D)/dosfstools: $(D)/bootstrap $(ARCHIVE)/$(DOSFSTOOLS_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/dosfstools-$(DOSFSTOOLS_VER)
 	$(UNTAR)/$(DOSFSTOOLS_SOURCE)
-	set -e; cd $(BUILD_TMP)/dosfstools-$(DOSFSTOOLS_VER); \
+	$(SILENT)set -e; cd $(BUILD_TMP)/dosfstools-$(DOSFSTOOLS_VER); \
 		autoreconf -fi $(SILENT_OPT); \
 		$(CONFIGURE) \
 			--prefix= \
@@ -596,7 +601,7 @@ NANO_SOURCE = nano-$(NANO_VER).tar.gz
 $(ARCHIVE)/$(NANO_SOURCE):
 	$(WGET) https://www.nano-editor.org/dist/v2.2/$(NANO_SOURCE)
 
-$(D)/nano: $(D)/bootstrap $(ARCHIVE)/$(NANO_SOURCE)
+$(D)/nano: $(D)/bootstrap $(D)/ncurses $(ARCHIVE)/$(NANO_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/nano-$(NANO_VER)
 	$(UNTAR)/$(NANO_SOURCE)
@@ -906,7 +911,7 @@ AUTOFS_PATCH = autofs-$(AUTOFS_VER).patch
 $(ARCHIVE)/$(AUTOFS_SOURCE):
 	$(WGET) https://www.kernel.org/pub/linux/daemons/autofs/v4/$(AUTOFS_SOURCE)
 
-$(D)/autofs: $(D)/bootstrap $(D)/e2fsprogs $(ARCHIVE)/$(AUTOFS_SOURCE)
+$(D)/autofs: $(D)/bootstrap $(ARCHIVE)/$(AUTOFS_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/autofs-$(AUTOFS_VER)
 	$(UNTAR)/$(AUTOFS_SOURCE)
@@ -931,12 +936,12 @@ $(D)/autofs: $(D)/bootstrap $(D)/e2fsprogs $(ARCHIVE)/$(AUTOFS_SOURCE)
 #
 # shairport
 #
-$(D)/shairport: $(D)/bootstrap $(D)/openssl $(D)/howl $(D)/alsa_lib
+$(D)/shairport: $(D)/bootstrap $(D)/openssl
 	$(START_BUILD)
 	$(REMOVE)/shairport
 	$(SET) -e; if [ -d $(ARCHIVE)/shairport.git ]; \
-		then cd $(ARCHIVE)/shairport.git; git pull; \
-		else cd $(ARCHIVE); git clone -b 1.0-dev git://github.com/abrasive/shairport.git shairport.git; \
+		then cd $(ARCHIVE)/shairport.git; git pull $(SILENT_CONFIGURE); \
+		else cd $(ARCHIVE); git clone $(SILENT_CONFIGURE) -b 1.0-dev git://github.com/abrasive/shairport.git shairport.git; \
 		fi
 	cp -ra $(ARCHIVE)/shairport.git $(BUILD_TMP)/shairport
 	$(CH_DIR)/shairport; \
@@ -955,6 +960,7 @@ $(D)/shairport-sync: $(D)/bootstrap $(D)/libdaemon $(D)/libpopt $(D)/libconfig $
 	$(START_BUILD)
 	$(REMOVE)/shairport-sync
 	$(SET) -e; if [ -d $(ARCHIVE)/shairport-sync.git ]; \
+		then cd $(ARCHIVE)/shairport-sync.git; git pull $(SILENT_CONFIGURE); \
 		else cd $(ARCHIVE); git clone $(SILENT_CONFIGURE) https://github.com/mikebrady/shairport-sync.git shairport-sync.git; \
 		fi
 	cp -ra $(ARCHIVE)/shairport-sync.git $(BUILD_TMP)/shairport-sync
@@ -1018,7 +1024,7 @@ AVAHI_SOURCE = avahi-$(AVAHI_VER).tar.gz
 $(ARCHIVE)/$(AVAHI_SOURCE):
 	$(WGET) https://github.com/lathiat/avahi/releases/download/v$(AVAHI_VER)/$(AVAHI_SOURCE)
 
-$(D)/avahi: $(D)/bootstrap $(D)/expat $(D)/libdaemon $(D)/dbus $(ARCHIVE)/$(AVAHI_SOURCE)
+$(D)/avahi: $(D)/bootstrap $(D)/libdaemon $(D)/dbus $(ARCHIVE)/$(AVAHI_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/avahi-$(AVAHI_VER)
 	$(UNTAR)/$(AVAHI_SOURCE)
@@ -1084,7 +1090,7 @@ WGET_SOURCE = wget-$(WGET_VER).tar.gz
 $(ARCHIVE)/$(WGET_SOURCE):
 	$(WGET) https://ftp.gnu.org/gnu/wget/$(WGET_SOURCE)
 
-$(D)/wget: $(D)/bootstrap $(D)/openssl $(ARCHIVE)/$(WGET_SOURCE)
+$(D)/wget: $(D)/bootstrap $(D)/openssl $(D)/libpsl $(ARCHIVE)/$(WGET_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/wget-$(WGET_VER)
 	$(UNTAR)/$(WGET_SOURCE)
@@ -1117,7 +1123,7 @@ COREUTILS_PATCH = coreutils-$(COREUTILS_VER).patch
 $(ARCHIVE)/$(COREUTILS_SOURCE):
 	$(WGET) https://ftp.gnu.org/gnu/coreutils/$(COREUTILS_SOURCE)
 
-$(D)/coreutils: $(D)/bootstrap $(D)/openssl $(ARCHIVE)/$(COREUTILS_SOURCE)
+$(D)/coreutils: $(D)/bootstrap $(ARCHIVE)/$(COREUTILS_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/coreutils-$(COREUTILS_VER)
 	$(UNTAR)/$(COREUTILS_SOURCE)
@@ -1201,7 +1207,7 @@ LIBEVENT_SOURCE = libevent-$(LIBEVENT_VER).tar.gz
 $(ARCHIVE)/$(LIBEVENT_SOURCE):
 	$(WGET) https://github.com/downloads/libevent/libevent/$(LIBEVENT_SOURCE)
 
-$(D)/libevent: $(D)/bootstrap $(ARCHIVE)/$(LIBEVENT_SOURCE)
+$(D)/libevent: $(D)/bootstrap $(D)/openssl $(ARCHIVE)/$(LIBEVENT_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/libevent-$(LIBEVENT_VER)
 	$(UNTAR)/$(LIBEVENT_SOURCE)
@@ -1284,7 +1290,7 @@ $(D)/procps_ng: $(D)/bootstrap $(D)/ncurses $(ARCHIVE)/$(PROCPS_NG_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/procps-ng-$(PROCPS_NG_VER)
 	$(UNTAR)/$(PROCPS_NG_SOURCE)
-	($SILENT)cd $(BUILD_TMP)/procps-ng-$(PROCPS_NG_VER); \
+	$(SILENT)cd $(BUILD_TMP)/procps-ng-$(PROCPS_NG_VER); \
 		export ac_cv_func_malloc_0_nonnull=yes; \
 		export ac_cv_func_realloc_0_nonnull=yes; \
 		$(CONFIGURE) \
@@ -1312,7 +1318,7 @@ $(D)/htop: $(D)/bootstrap $(D)/ncurses $(ARCHIVE)/$(HTOP_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/htop-$(HTOP_VER)
 	$(UNTAR)/$(HTOP_SOURCE)
-	cd $(BUILD_TMP)/htop-$(HTOP_VER); \
+	$(SILENT)cd $(BUILD_TMP)/htop-$(HTOP_VER); \
 		$(call apply_patches, $(HTOP_PATCH)); \
 		$(CONFIGURE) \
 			--prefix=/usr \
@@ -1494,7 +1500,7 @@ NTP_PATCH = ntp-$(NTP_VER).patch
 $(ARCHIVE)/$(NTP_SOURCE):
 	$(WGET) https://www.eecis.udel.edu/~ntp/ntp_spool/ntp4/ntp-4.2/$(NTP_SOURCE)
 
-$(D)/ntp: $(D)/bootstrap $(ARCHIVE)/$(NTP_SOURCE)
+$(D)/ntp: $(D)/bootstrap $(D)/libevent $(ARCHIVE)/$(NTP_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/ntp-$(NTP_VER)
 	$(UNTAR)/$(NTP_SOURCE)
@@ -1545,7 +1551,7 @@ LIBNL_SOURCE = libnl-$(LIBNL_VER).tar.gz
 $(ARCHIVE)/$(LIBNL_SOURCE):
 	$(WGET) https://www.infradead.org/~tgr/libnl/files/$(LIBNL_SOURCE)
 
-$(D)/libnl: $(D)/bootstrap $(D)/openssl $(ARCHIVE)/$(LIBNL_SOURCE)
+$(D)/libnl: $(D)/bootstrap $(ARCHIVE)/$(LIBNL_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/libnl-$(LIBNL_VER)
 	$(UNTAR)/$(LIBNL_SOURCE)
@@ -1869,7 +1875,7 @@ $(D)/ofgwrite: $(D)/bootstrap $(ARCHIVE)/$(OFGWRITE_SOURCE)
 	$(CH_DIR)/ofgwrite-git-$(OFGWRITE_VER); \
 		$(call apply_patches, $(OFGWRITE_PATCH)); \
 		$(BUILDENV) \
-		$(MAKE); \
+		$(MAKE)
 	$(SILENT)install -m 755 $(BUILD_TMP)/ofgwrite-git-$(OFGWRITE_VER)/ofgwrite_bin $(TARGET_DIR)/usr/bin
 	$(SILENT)install -m 755 $(BUILD_TMP)/ofgwrite-git-$(OFGWRITE_VER)/ofgwrite_tgz $(TARGET_DIR)/usr/bin
 	$(SILENT)install -m 755 $(BUILD_TMP)/ofgwrite-git-$(OFGWRITE_VER)/ofgwrite $(TARGET_DIR)/usr/bin
