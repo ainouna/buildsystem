@@ -10,7 +10,7 @@ tools-clean:
 	-$(MAKE) -C $(APPS_DIR)/tools/spf_tool distclean
 	-$(MAKE) -C $(APPS_DIR)/tools/devinit distclean
 	-$(MAKE) -C $(APPS_DIR)/tools/eplayer3 distclean
-	-$(MAKE) -C $(APPS_DIR)/tools/extplayer3 distclean
+	-$(MAKE) -C $(APPS_DIR)/tools/exteplayer3 distclean
 	-$(MAKE) -C $(APPS_DIR)/tools/evremote2 distclean
 	-$(MAKE) -C $(APPS_DIR)/tools/fp_control distclean
 	-$(MAKE) -C $(APPS_DIR)/tools/hotplug distclean
