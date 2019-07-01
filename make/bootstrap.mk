@@ -219,9 +219,9 @@ $(DRIVER_DIR):
 	@echo '===================================================================='
 	@if [ ! -e $(DRIVER_DIR)/.git ]; then \
 		git clone $(SILENT_CONFIGURE) $(GITHUB)/$(GIT_NAME_DRIVER)/driver.git driver; \
-	fi; \
-	if test -d ~/pti_np; then \
-		echo -e "\nREMARK: Installing pti_np.\n"
+	fi
+	@if [ -d ~/pti_np ]; then \
+		echo -e "\nREMARK: Installing pti_np.\n"; \
 		mkdir $(DRIVER_DIR)/pti_np; \
 		cp -rf ~/pti_np/* $(DRIVER_DIR)/pti_np; \
 	fi

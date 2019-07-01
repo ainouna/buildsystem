@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20190607.1
+# Version 20190701.1
 
 ##############################################
 
@@ -465,7 +465,7 @@ echo "MEDIAFW=$MEDIAFW" >> config
 case $7 in
 	[1-4]) REPLY=$7;;
 	*)	echo -e "\nExternal LCD support:"
-		echo "   1)  No external LCD"
+		echo "   1*) No external LCD"
 		echo "   2)  graphlcd for external LCD"
 		echo "   3)  lcd4linux for external LCD"
 		echo "   4)  graphlcd and lcd4linux for external LCD (both)"
@@ -473,7 +473,7 @@ case $7 in
 esac
 
 case "$REPLY" in
-	1) EXTERNAL_LCD="none";;
+#	1) EXTERNAL_LCD="none";;
 	2) EXTERNAL_LCD="graphlcd";;
 	3) EXTERNAL_LCD="lcd4linux";;
 	4) EXTERNAL_LCD="both";;
