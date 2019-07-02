@@ -1,7 +1,7 @@
 #
 # gstreamer
 #
-GSTREAMER_VER = 1.14.5
+GSTREAMER_VER = 1.16.0
 GSTREAMER_SOURCE = gstreamer-$(GSTREAMER_VER).tar.xz
 GSTREAMER_PATCH  = gstreamer-$(GSTREAMER_VER)-fix-crash-with-gst-inspect.patch
 GSTREAMER_PATCH += gstreamer-$(GSTREAMER_VER)-revert-use-new-gst-adapter-get-buffer.patch
@@ -64,7 +64,7 @@ $(ARCHIVE)/$(GST_PLUGINS_BASE_SOURCE):
 	$(WGET) https://gstreamer.freedesktop.org/src/gst-plugins-base/$(GST_PLUGINS_BASE_SOURCE)
 
 #$(D)/gst_plugins_base: $(D)/bootstrap $(D)/libglib2 $(D)/orc $(D)/gstreamer $(D)/alsa_lib $(D)/libogg $(D)/libvorbis $(ARCHIVE)/$(GST_PLUGINS_BASE_SOURCE)
-$(D)/gst_plugins_base: $(D)/bootstrap $(D)/gstreamer $(D)/libglib2 $(ARCHIVE)/$(GST_PLUGINS_BASE_SOURCE)
+$(D)/gst_plugins_base: $(D)/bootstrap $(D)/gstreamer $(D)/orc $(D)/alsa_lib $(D)/libogg $(D)/libvorbis $(D)/libglib2 $(ARCHIVE)/$(GST_PLUGINS_BASE_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/gst-plugins-base-$(GST_PLUGINS_BASE_VER)
 	$(UNTAR)/$(GST_PLUGINS_BASE_SOURCE)
@@ -134,7 +134,7 @@ $(ARCHIVE)/$(GST_PLUGINS_GOOD_SOURCE):
 	$(WGET) https://gstreamer.freedesktop.org/src/gst-plugins-good/$(GST_PLUGINS_GOOD_SOURCE)
 
 #$(D)/gst_plugins_good: $(D)/bootstrap $(D)/gstreamer $(D)/gst_plugins_base $(D)/orc $(D)/libsoup $(D)/flac $(ARCHIVE)/$(GST_PLUGINS_GOOD_SOURCE)
-$(D)/gst_plugins_good: $(D)/bootstrap $(D)/gstreamer $(D)/gst_plugins_base $(D)/libglib2 $(ARCHIVE)/$(GST_PLUGINS_GOOD_SOURCE)
+$(D)/gst_plugins_good: $(D)/bootstrap $(D)/gstreamer $(D)/gst_plugins_base $(D)/orc $(D)/flac $(D)/libglib2 $(ARCHIVE)/$(GST_PLUGINS_GOOD_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/gst-plugins-good-$(GST_PLUGINS_GOOD_VER)
 	$(UNTAR)/$(GST_PLUGINS_GOOD_SOURCE)
@@ -196,12 +196,10 @@ $(D)/gst_plugins_bad: $(D)/bootstrap $(D)/gstreamer $(D)/gst_plugins_base $(D)/o
 			--enable-decklink \
 			--enable-dts \
 			--enable-mpegdemux \
-			--disable-acm \
 			--disable-android_media \
 			--disable-apple_media \
 			--disable-avc \
 			--disable-chromaprint \
-			--disable-daala \
 			--disable-dc1394 \
 			--disable-direct3d \
 			--disable-directsound \
@@ -220,10 +218,8 @@ $(D)/gst_plugins_bad: $(D)/bootstrap $(D)/gstreamer $(D)/gst_plugins_base $(D)/o
 			--disable-resindvd \
 			--disable-soundtouch \
 			--disable-spandsp \
-			--disable-spc \
 			--disable-srtp \
 			--disable-teletextdec \
-			--disable-vcd \
 			--disable-vdpau \
 			--disable-voaacenc \
 			--disable-voamrwbenc \
@@ -243,7 +239,7 @@ $(D)/gst_plugins_bad: $(D)/bootstrap $(D)/gstreamer $(D)/gst_plugins_base $(D)/o
 		$(REWRITE_LIBTOOL_NQ)/gstreamer-1.0/$$i; done
 	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gstreamer-codecparsers-1.0.pc
 	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gstreamer-bad-audio-1.0.pc
-	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gstreamer-bad-video-1.0.pc
+#	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gstreamer-bad-video-1.0.pc
 	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gstreamer-insertbin-1.0.pc
 	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gstreamer-mpegts-1.0.pc
 	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/gstreamer-player-1.0.pc
@@ -253,14 +249,14 @@ $(D)/gst_plugins_bad: $(D)/bootstrap $(D)/gstreamer $(D)/gst_plugins_base $(D)/o
 	$(REWRITE_LIBTOOL)/libgstphotography-1.0.la
 	$(REWRITE_LIBTOOL)/libgstadaptivedemux-1.0.la
 	$(REWRITE_LIBTOOL)/libgstbadaudio-1.0.la
-	$(REWRITE_LIBTOOL)/libgstbadvideo-1.0.la
+#	$(REWRITE_LIBTOOL)/libgstbadvideo-1.0.la
 	$(REWRITE_LIBTOOL)/libgstinsertbin-1.0.la
 	$(REWRITE_LIBTOOL)/libgstmpegts-1.0.la
 	$(REWRITE_LIBTOOL)/libgstplayer-1.0.la
 	$(REWRITE_LIBTOOL)/libgsturidownloader-1.0.la
 	$(REWRITE_LIBTOOLDEP)/libgstbadaudio-1.0.la
 	$(REWRITE_LIBTOOLDEP)/libgstadaptivedemux-1.0.la
-	$(REWRITE_LIBTOOLDEP)/libgstbadvideo-1.0.la
+#	$(REWRITE_LIBTOOLDEP)/libgstbadvideo-1.0.la
 	$(REMOVE)/gst-plugins-bad-$(GST_PLUGINS_BAD_VER)
 	$(TOUCH)
 
@@ -356,12 +352,48 @@ $(D)/gst_libav: $(D)/bootstrap $(D)/gstreamer $(D)/gst_plugins_base $(D)/libglib
 		$(CONFIGURE) \
 			--prefix=/usr \
 			--disable-fatal-warnings \
-			--enable_yasm=no \
+			--enable-yasm=no \
+			--with-libav-extra-configure=" \
+			--enable-gpl \
+			--enable-static \
+			--enable-pic \
+			--disable-protocols \
+			--disable-devices \
+			--disable-network \
+			--disable-hwaccels \
+			--disable-filters \
+			--disable-doc \
+			--enable-optimizations \
+			--enable-cross-compile \
+			--target-os=linux \
+			--disable-x86asm \
+			--arch=sh4 \
+			--cross-prefix=sh4-linux- \
+			\
+			--disable-muxers \
+			--disable-encoders \
+			\
+			--disable-decoders \
+			--enable-decoder=ogg \
+			--enable-decoder=vorbis \
+			--enable-decoder=flac \
+			\
+			--disable-demuxers \
+			--enable-demuxer=ogg \
+			--enable-demuxer=vorbis \
+			--enable-demuxer=flac \
+			--enable-demuxer=mpegts \
+			\
+			--disable-debug \
+			--disable-bsfs \
+			--enable-pthreads \
+			--enable-bzlib" \
 		; \
 		$(MAKE); \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
 	$(REMOVE)/gst-libav-$(GST_LIBAV_VER)
 	$(TOUCH)
+#			--with_libav_extra_configure=$(GST_LIBAV_CONF)
 
 #
 # gmediarender
