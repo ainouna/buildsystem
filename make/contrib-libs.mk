@@ -378,12 +378,13 @@ $(D)/openssl: $(D)/bootstrap $(ARCHIVE)/$(OPENSSL_SOURCE)
 #
 # libbluray
 #
-LIBBLURAY_VER = 0.5.0
+LIBBLURAY_VER = 1.1.2
 LIBBLURAY_SOURCE = libbluray-$(LIBBLURAY_VER).tar.bz2
-LIBBLURAY_PATCH = libbluray-$(LIBBLURAY_VER).patch
+#LIBBLURAY_PATCH = libbluray-$(LIBBLURAY_VER).patch
 
 $(ARCHIVE)/$(LIBBLURAY_SOURCE):
-	$(WGET) ftp.videolan.org/pub/videolan/libbluray/$(LIBBLURAY_VER)/$(LIBBLURAY_SOURCE)
+#	$(WGET) ftp.videolan.org/pub/videolan/libbluray/$(LIBBLURAY_VER)/$(LIBBLURAY_SOURCE)
+	$(WGET) https://download.videolan.org/pub/videolan/libbluray/$(LIBBLURAY_VER)/$(LIBBLURAY_SOURCE)
 
 $(D)/libbluray: $(D)/bootstrap $(ARCHIVE)/$(LIBBLURAY_SOURCE)
 	$(START_BUILD)
@@ -395,6 +396,7 @@ $(D)/libbluray: $(D)/bootstrap $(ARCHIVE)/$(LIBBLURAY_SOURCE)
 			--prefix=/usr \
 			--enable-shared \
 			--disable-static \
+			--disable-bdjava-jar \
 			--disable-extra-warnings \
 			--disable-doxygen-doc \
 			--disable-doxygen-dot \
@@ -523,7 +525,7 @@ LUAFEEDPARSER_URL = git://github.com/slact/lua-feedparser.git
 $(ARCHIVE)/$(LUAFEEDPARSER_SOURCE):
 	$(SCRIPTS_DIR)/get-git-archive.sh $(LUAFEEDPARSER_URL) $(LUAFEEDPARSER_VER) $(notdir $@) $(ARCHIVE)
 
-$(D)/luafeedparser: $(D)/bootstrap $(D)/lua $(ARCHIVE)/$(LUAFEEDPARSER_SOURCE)
+$(D)/luafeedparser: $(D)/bootstrap $(D)/lua $(D)/luasocket $(D)/luaexpat $(ARCHIVE)/$(LUAFEEDPARSER_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/luafeedparser-git-$(LUAFEEDPARSER_VER)
 	$(UNTAR)/$(LUAFEEDPARSER_SOURCE)
@@ -543,7 +545,7 @@ LUASOAP_PATCH = luasoap-$(LUASOAP_VER).patch
 $(ARCHIVE)/$(LUASOAP_SOURCE):
 	$(WGET) https://github.com/downloads/tomasguisasola/luasoap/$(LUASOAP_SOURCE)
 
-$(D)/luasoap: $(D)/bootstrap $(ARCHIVE)/$(LUASOAP_SOURCE)
+$(D)/luasoap: $(D)/bootstrap $(D)/lua $(D)/luasocket $(D)/luaexpat $(ARCHIVE)/$(LUASOAP_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/luasoap-$(LUASOAP_VER)
 	$(UNTAR)/$(LUASOAP_SOURCE)
@@ -1017,8 +1019,8 @@ $(D)/ca-bundle: $(ARCHIVE)/cacert.pem
 $(ARCHIVE)/$(LIBCURL_SOURCE):
 	$(WGET) https://curl.haxx.se/download/$(LIBCURL_SOURCE)
 
-#$(D)/libcurl: $(D)/bootstrap $(D)/zlib $(D)/openssl $(D)/ca-bundle $(ARCHIVE)/$(LIBCURL_SOURCE)
-$(D)/libcurl: $(D)/bootstrap $(D)/openssl $(ARCHIVE)/$(LIBCURL_SOURCE)
+$(D)/libcurl: $(D)/bootstrap $(D)/zlib $(D)/openssl $(D)/ca-bundle $(ARCHIVE)/$(LIBCURL_SOURCE)
+#$(D)/libcurl: $(D)/bootstrap $(D)/openssl $(ARCHIVE)/$(LIBCURL_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/curl-$(LIBCURL_VER)
 	$(UNTAR)/$(LIBCURL_SOURCE)
@@ -2179,8 +2181,8 @@ LCD4LINUX_PATCH = lcd4linux-widget.patch
 $(ARCHIVE)/$(LCD4LINUX_SOURCE):
 	$(SCRIPTS_DIR)/get-git-archive.sh $(LCD4LINUX_URL) $(LCD4LINUX_VER) $(notdir $@) $(ARCHIVE)
 
-#$(D)/lcd4linux: $(D)/bootstrap $(D)/libusb_compat $(D)/gd $(D)/libusb $(D)/libdpf $(ARCHIVE)/$(LCD4LINUX_SOURCE)
-$(D)/lcd4linux: $(D)/bootstrap $(D)/libusb $(D)/libusb_compat $(ARCHIVE)/$(LCD4LINUX_SOURCE)
+$(D)/lcd4linux: $(D)/bootstrap $(D)/libusb_compat $(D)/gd $(D)/libusb $(D)/libdpf $(ARCHIVE)/$(LCD4LINUX_SOURCE)
+#$(D)/lcd4linux: $(D)/bootstrap $(D)/libusb $(D)/libusb_compat $(ARCHIVE)/$(LCD4LINUX_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/lcd4linux-git-$(LCD4LINUX_VER)
 	$(UNTAR)/$(LCD4LINUX_SOURCE)
@@ -2210,8 +2212,7 @@ GD_SOURCE = libgd-$(GD_VER).tar.xz
 $(ARCHIVE)/$(GD_SOURCE):
 	$(WGET) https://github.com/libgd/libgd/releases/download/gd-$(GD_VER)/$(GD_SOURCE)
 
-#$(D)/gd: $(D)/bootstrap $(D)/libpng $(D)/libjpeg $(D)/freetype $(ARCHIVE)/$(GD_SOURCE)
-$(D)/gd: $(D)/bootstrap $(ARCHIVE)/$(GD_SOURCE)
+$(D)/gd: $(D)/bootstrap $(D)/libpng $(D)/libjpeg $(D)/freetype $(ARCHIVE)/$(GD_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/libgd-$(GD_VER)
 	$(UNTAR)/$(GD_SOURCE)

@@ -1,19 +1,20 @@
 #
 # enigma2
 #
-ENIGMA2_DEPS  = $(D)/bootstrap python-all $(D)/avahi $(D)/opkg $(D)/libpng 
-ENIGMA2_DEPS += $(D)/libglib2 $(D)/libxml2 $(D)/libfribidi $(D)/libdvbsi $(D)/giflib $(LIRC)
-ENIGMA2_DEPS += $(D)/enigma2_tuxtxt32bpp $(D)/enigma2_hotplug_e2_helper $(D)/tools-libmme_image
+ENIGMA2_DEPS  = $(D)/bootstrap $(D)/opkg $(D)/ncurses $(LIRC)
+ENIGMA2_DEPS += $(D)/libpng $(D)/libjpeg $(D)/giflib $(D)/libfribidi $(D)/libglib2 $(D)/libdvbsi $(D)/libxml2
+ENIGMA2_DEPS += $(D)/openssl $(D)/enigma2_tuxtxt32bpp $(D)/enigma2_hotplug_e2_helper $(D)/avahi
+ENIGMA2_DEPS += python-all
 ifneq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), small))
 ENIGMA2_DEPS += $(D)/ethtool
 ENIGMA2_DEPS += $(D)/alsa_utils
 ENIGMA2_DEPS += $(D)/libdreamdvd
-ENIGMA2_DEPS += $(D)/libcurl
 ENIGMA2_DEPS += $(D)/libmad
+ENIGMA2_DEPS += $(D)/libusb
 ENIGMA2_DEPS += $(D)/libid3tag
 ENIGMA2_DEPS += $(D)/minidlna
-#ENIGMA2_DEPS += $(D)/sdparm
-#ENIGMA2_DEPS += $(D)/parted 
+ENIGMA2_DEPS += $(D)/sdparm
+ENIGMA2_DEPS += $(D)/parted 
 endif
 ifneq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), small size))
 # required for DVDBurn plugin (adds ? Mbyte to image)

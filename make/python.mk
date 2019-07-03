@@ -72,8 +72,8 @@ PYTHON_PATCH += python-$(PYTHON_VER)-xcompile.patch
 PYTHON_PATCH += python-$(PYTHON_VER)-revert_use_of_sysconfigdata.patch
 PYTHON_PATCH += python-$(PYTHON_VER)-pgettext.patch
 
-#$(D)/python: $(D)/bootstrap $(D)/host_python $(D)/ncurses $(D)/zlib $(D)/openssl $(D)/libffi $(D)/bzip2 $(D)/readline $(D)/sqlite $(ARCHIVE)/$(PYTHON_SOURCE)
-$(D)/python: $(D)/bootstrap $(D)/host_python $(D)/libxml2 $(D)/libxslt $(D)/zlib $(ARCHIVE)/$(PYTHON_SOURCE)
+$(D)/python: $(D)/bootstrap $(D)/host_python $(D)/ncurses $(D)/zlib $(D)/openssl $(D)/libffi $(D)/bzip2 $(D)/readline $(D)/sqlite $(ARCHIVE)/$(PYTHON_SOURCE)
+#$(D)/python: $(D)/bootstrap $(D)/host_python $(D)/libxml2 $(D)/libxslt $(D)/zlib $(ARCHIVE)/$(PYTHON_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/Python-$(PYTHON_VER)
 	$(UNTAR)/$(PYTHON_SOURCE)
@@ -430,7 +430,7 @@ PYTHON_CRYPTOGRAPHY_SOURCE = cryptography-$(PYTHON_CRYPTOGRAPHY_VER).tar.gz
 $(ARCHIVE)/$(PYTHON_CRYPTOGRAPHY_SOURCE):
 	$(WGET) https://pypi.python.org/packages/source/c/cryptography/$(PYTHON_CRYPTOGRAPHY_SOURCE)
 
-$(D)/python_cryptography: $(D)/bootstrap $(D)/libffi $(D)/python $(D)/python_setuptools $(D)/python_pyopenssl $(ARCHIVE)/$(PYTHON_CRYPTOGRAPHY_SOURCE)
+$(D)/python_cryptography: $(D)/bootstrap $(D)/libffi $(D)/python $(D)/python_setuptools $(D)/python_pyopenssl $(D)/python_six $(ARCHIVE)/$(PYTHON_CRYPTOGRAPHY_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/cryptography-$(PYTHON_CRYPTOGRAPHY_VER)
 	$(UNTAR)/$(PYTHON_CRYPTOGRAPHY_SOURCE)
@@ -588,7 +588,7 @@ PYTHON_MECHANIZE_SOURCE = mechanize-$(PYTHON_MECHANIZE_VER).tar.gz
 $(ARCHIVE)/$(PYTHON_MECHANIZE_SOURCE):
 	$(WGET) https://pypi.python.org/packages/source/m/mechanize/$(PYTHON_MECHANIZE_SOURCE)
 
-$(D)/python_mechanize: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(D)/openssl $(ARCHIVE)/$(PYTHON_MECHANIZE_SOURCE)
+$(D)/python_mechanize: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(ARCHIVE)/$(PYTHON_MECHANIZE_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/mechanize-$(PYTHON_MECHANIZE_VER)
 	$(UNTAR)/$(PYTHON_MECHANIZE_SOURCE)
@@ -665,7 +665,7 @@ PYTHON_FUTURES_SOURCE = futures-$(PYTHON_FUTURES_VER).tar.gz
 $(ARCHIVE)/$(PYTHON_FUTURES_SOURCE):
 	$(WGET) https://pypi.python.org/packages/source/f/futures/$(PYTHON_FUTURES_SOURCE)
 
-$(D)/python_futures: $(D)/bootstrap $(D)/python $(ARCHIVE)/$(PYTHON_FUTURES_SOURCE)
+$(D)/python_futures: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(ARCHIVE)/$(PYTHON_FUTURES_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/futures-$(PYTHON_FUTURES_VER)
 	$(UNTAR)/$(PYTHON_FUTURES_SOURCE)
@@ -715,7 +715,7 @@ $(D)/python_livestreamer: $(D)/bootstrap $(D)/python $(D)/python_setuptools
 #
 # python_livestreamersrv
 #
-$(D)/python_livestreamersrv: $(D)/bootstrap $(D)/python $(D)/python_livestreamer
+$(D)/python_livestreamersrv: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(D)/python_livestreamer
 	$(START_BUILD)
 	$(REMOVE)/livestreamersrv
 	$(SET) -e; if [ -d $(ARCHIVE)/livestreamersrv.git ]; \

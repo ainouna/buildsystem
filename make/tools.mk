@@ -199,7 +199,7 @@ $(D)/tools-libmme_image: $(D)/bootstrap $(D)/libjpeg
 #
 # minimon
 #
-$(D)/tools-minimon: $(D)/bootstrap $(D)/libjpeg
+$(D)/tools-minimon: $(D)/bootstrap $(D)/libjpeg $(D)/libusb
 	$(START_BUILD)
 	$(SET) -e; cd $(APPS_DIR)/tools/minimon; \
 		if [ ! -d m4 ]; then mkdir m4; fi; \
@@ -401,17 +401,11 @@ TOOLS  = $(D)/tools-devinit
 TOOLS += $(D)/tools-evremote2
 #TOOLS += $(D)/tools-exteplayer3
 TOOLS += $(D)/tools-showiframe
-ifeq ($(BOXTYPE), $(filter $(BOXTYPE), adb_box atemio520 atemio530 atevio7500 cuberevo cuberevo_250hd cuberevo_2000hd cuberevo_3000hd cuberevo_9500hd cuberevo_mini cuberevo_mini2 cuberevo_mini_fta fortis_hdbox hl101 hs5101 hs7110 hs7420 hs7810a hs7119 hs7429 hs7819 octagon1008 ufc960 ufs910 ufs912 ufs913 ufs922 spark spark7162 tf7700hdpvr vip1-v2 vip2-v1 vitamin_hd5000))
-TOOLS += $(D)/tools-fp_control
-endif
 TOOLS += $(D)/tools-hotplug
 TOOLS += $(D)/tools-stfbcontrol
 TOOLS += $(D)/tools-ustslave
-ifneq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), small size))
-TOOLS += $(D)/tools-aio-grab
-TOOLS += $(D)/tools-satfind
-#TOOLS += $(D)/tools-minimon
-TOOLS += $(D)/tools-streamproxy
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE), adb_box atemio520 atemio530 atevio7500 cuberevo cuberevo_250hd cuberevo_2000hd cuberevo_3000hd cuberevo_9500hd cuberevo_mini cuberevo_mini2 cuberevo_mini_fta fortis_hdbox hl101 hs5101 hs7110 hs7420 hs7810a hs7119 hs7429 hs7819 octagon1008 ufc960 ufs910 ufs912 ufs913 ufs922 spark spark7162 tf7700hdpvr vip1-v2 vip2-v1 vitamin_hd5000))
+TOOLS += $(D)/tools-fp_control
 endif
 ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs7110 hs7420 hs7810a hs7119 hs7249 hs7819))
 TOOLS += $(D)/tools-fortis_eeprom
@@ -426,7 +420,15 @@ endif
 ifeq ($(BOXTYPE), $(filter $(BOXTYPE), ufs910 ufs912 ufs913 spark7162))
 TOOLS += $(D)/tools-vfdctl
 endif
+ifneq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), small))
+TOOLS += $(D)/tools-streamproxy
 TOOLS += $(D)/tools-wait4button
+endif
+ifneq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), small size))
+TOOLS += $(D)/tools-aio-grab
+TOOLS += $(D)/tools-satfind
+#TOOLS += $(D)/tools-minimon
+endif
 ifeq ($(IMAGE), $(filter $(IMAGE), enigma2 enigma2-wlandriver))
 TOOLS += $(D)/tools-libmme_host
 TOOLS += $(D)/tools-libmme_image

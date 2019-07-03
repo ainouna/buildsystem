@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20190701.1
+# Version 20190702.1
 
 ##############################################
 
@@ -251,7 +251,7 @@ echo "KERNEL_STM=$KERNEL_STM" >> config
 case $3 in
 	[1-5]) REPLY=$3;;
 	*)	echo -e "\nOptimization:"
-		echo "   1)  optimization for smallest size"
+		echo "   1)  optimization for smallest, very basic image"
 		echo "   2*) optimization for size"
 		echo "   3)  optimization normal"
 		echo "   4)  Kernel debug"
@@ -384,29 +384,33 @@ case "$IMAGE" in
 		fi;;
 #	enigma*)
 	*)
-		case $6 in
-			[1-5]) REPLY=$6;;
-			*)	echo -e "\nMedia Framework:"
-				echo "   1)  None (E2 is built without a player)"
-				echo "   2)  eplayer3 (E2 player uses eplayer3 only)"
-				echo "   3)  gstreamer (E2 player uses gstreamer only)"
-				echo "   4*) gstreamer+eplayer3 (recommended, E2 player uses gstreamer + libeplayer3)"
-				echo "   5)  gstreamer/eplayer3 (E2 player is switchable between gstreamer & libeplayer3)"
-				read -p "Select media framework (1-5)? ";;
-		esac
+		if [ "$OPTIMIZATIONS" == "small" ]; then
+			MEDIAFW="buildinplayer"
+		else
+			case $6 in
+				[1-5]) REPLY=$6;;
+				*)	echo -e "\nMedia Framework:"
+					echo "   1)  None (E2 is built without a player)"
+					echo "   2)  eplayer3 (E2 player uses eplayer3 only)"
+					echo "   3)  gstreamer (E2 player uses gstreamer only)"
+					echo "   4*) gstreamer+eplayer3 (recommended, E2 player uses gstreamer + libeplayer3)"
+					echo "   5)  gstreamer/eplayer3 (E2 player is switchable between gstreamer & libeplayer3)"
+					read -p "Select media framework (1-5)? ";;
+			esac
 
-		case "$REPLY" in
-			1) MEDIAFW="buildinplayer";;
-			2) MEDIAFW="eplayer3";;
-			3) MEDIAFW="gstreamer";;
-#			4) MEDIAFW="gst-eplayer3";;
-			5) MEDIAFW="gst-eplayer3-dual";;
-			*) MEDIAFW="gst-eplayer3";;
-		esac
+			case "$REPLY" in
+				1) MEDIAFW="buildinplayer";;
+				2) MEDIAFW="eplayer3";;
+				3) MEDIAFW="gstreamer";;
+#				4) MEDIAFW="gst-eplayer3";;
+				5) MEDIAFW="gst-eplayer3-dual";;
+				*) MEDIAFW="gst-eplayer3";;
+			esac
+		fi
 
 		# Determine the OpenPLi diff-level
  		case $5 in
-			[0-6])	REPLY=$5;;
+			[0-5])	REPLY=$5;;
 			*)	echo
 				echo "Please select one of the following Enigma2 revisions (default = 2):"
 				echo "=================================================================================================="
