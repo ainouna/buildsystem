@@ -26,7 +26,7 @@ PYTHON_INSTALL = \
 # host_python
 #
 PYTHON_VER_MAJOR = 2.7
-PYTHON_VER_MINOR = 15
+PYTHON_VER_MINOR = 16
 PYTHON_VER = $(PYTHON_VER_MAJOR).$(PYTHON_VER_MINOR)
 PYTHON_SOURCE = Python-$(PYTHON_VER).tar.xz
 HOST_PYTHON_PATCH = python-$(PYTHON_VER).patch
@@ -73,7 +73,6 @@ PYTHON_PATCH += python-$(PYTHON_VER)-revert_use_of_sysconfigdata.patch
 PYTHON_PATCH += python-$(PYTHON_VER)-pgettext.patch
 
 $(D)/python: $(D)/bootstrap $(D)/host_python $(D)/ncurses $(D)/zlib $(D)/openssl $(D)/libffi $(D)/bzip2 $(D)/readline $(D)/sqlite $(ARCHIVE)/$(PYTHON_SOURCE)
-#$(D)/python: $(D)/bootstrap $(D)/host_python $(D)/libxml2 $(D)/libxslt $(D)/zlib $(ARCHIVE)/$(PYTHON_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/Python-$(PYTHON_VER)
 	$(UNTAR)/$(PYTHON_SOURCE)
@@ -188,7 +187,7 @@ PYTHON_LXML_SOURCE = lxml-$(PYTHON_LXML_VER).tgz
 $(ARCHIVE)/$(PYTHON_LXML_SOURCE):
 	$(WGET) http://launchpad.net/lxml/$(PYTHON_LXML_MAJOR)/$(PYTHON_LXML_VER)/+download/$(PYTHON_LXML_SOURCE)
 
-$(D)/python_lxml: $(D)/bootstrap $(D)/python $(D)/libxslt $(D)/python_setuptools $(ARCHIVE)/$(PYTHON_LXML_SOURCE)
+$(D)/python_lxml: $(D)/bootstrap $(D)/python $(D)/libxml2 $(D)/libxslt $(D)/python_setuptools $(ARCHIVE)/$(PYTHON_LXML_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/lxml-$(PYTHON_LXML_VER)
 	$(UNTAR)/$(PYTHON_LXML_SOURCE)
@@ -230,7 +229,7 @@ PYTHON_IMAGING_PATCH = python-imaging-$(PYTHON_IMAGING_VER).patch
 $(ARCHIVE)/$(PYTHON_IMAGING_SOURCE):
 	$(WGET) http://effbot.org/downloads/$(PYTHON_IMAGING_SOURCE)
 
-$(D)/python_imaging: $(D)/bootstrap $(D)/libjpeg $(D)/freetype $(D)/python $(D)/python_setuptools $(ARCHIVE)/$(PYTHON_IMAGING_SOURCE)
+$(D)/python_imaging: $(D)/bootstrap $(D)/libjpeg $(D)/freetype $(D)/zlib $(D)/python $(D)/python_setuptools $(ARCHIVE)/$(PYTHON_IMAGING_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/Imaging-$(PYTHON_IMAGING_VER)
 	$(UNTAR)/$(PYTHON_IMAGING_SOURCE)
@@ -335,7 +334,7 @@ PYTHON_CFFI_SOURCE = cffi-$(PYTHON_CFFI_VER).tar.gz
 $(ARCHIVE)/$(PYTHON_CFFI_SOURCE):
 	$(WGET) https://pypi.python.org/packages/source/c/cffi/$(PYTHON_CFFI_SOURCE)
 
-$(D)/python_cffi: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(D)/libffi $(ARCHIVE)/$(PYTHON_CFFI_SOURCE)
+$(D)/python_cffi: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(D)/libffi $(D)/python_pycparser $(ARCHIVE)/$(PYTHON_CFFI_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/cffi-$(PYTHON_CFFI_VER)
 	$(UNTAR)/$(PYTHON_CFFI_SOURCE)
@@ -430,7 +429,7 @@ PYTHON_CRYPTOGRAPHY_SOURCE = cryptography-$(PYTHON_CRYPTOGRAPHY_VER).tar.gz
 $(ARCHIVE)/$(PYTHON_CRYPTOGRAPHY_SOURCE):
 	$(WGET) https://pypi.python.org/packages/source/c/cryptography/$(PYTHON_CRYPTOGRAPHY_SOURCE)
 
-$(D)/python_cryptography: $(D)/bootstrap $(D)/libffi $(D)/python $(D)/python_setuptools $(D)/python_pyopenssl $(D)/python_six $(ARCHIVE)/$(PYTHON_CRYPTOGRAPHY_SOURCE)
+$(D)/python_cryptography: $(D)/bootstrap $(D)/python_cffi $(D)/python_pyasn1 $(D)/python_enum34 $(D)/python $(D)/python_setuptools $(D)/python_pyopenssl $(D)/python_six $(ARCHIVE)/$(PYTHON_CRYPTOGRAPHY_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/cryptography-$(PYTHON_CRYPTOGRAPHY_VER)
 	$(UNTAR)/$(PYTHON_CRYPTOGRAPHY_SOURCE)
@@ -471,7 +470,7 @@ PYTHON_SERVICE_IDENTITY_PATCH =
 $(ARCHIVE)/$(PYTHON_SERVICE_IDENTITY_SOURCE):
 	$(WGET) https://pypi.python.org/packages/source/s/service_identity/$(PYTHON_SERVICE_IDENTITY_SOURCE)
 
-$(D)/python_service_identity: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(D)/python_pyasn1 $(D)/python_attr $(D)/python_attrs $(D)/python_ipaddress $(ARCHIVE)/$(PYTHON_SERVICE_IDENTITY_SOURCE)
+$(D)/python_service_identity: $(D)/bootstrap $(D)/python_pyasn1 $(D)/python_attr $(D)/python_attrs $(D)/python_ipaddress $(D)/python $(D)/python_setuptools $(ARCHIVE)/$(PYTHON_SERVICE_IDENTITY_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/service_identity-$(PYTHON_SERVICE_IDENTITY_VER)
 	$(UNTAR)/$(PYTHON_SERVICE_IDENTITY_SOURCE)
@@ -485,7 +484,7 @@ $(D)/python_service_identity: $(D)/bootstrap $(D)/python $(D)/python_setuptools 
 #
 # python_attr
 #
-PYTHON_ATTR_VER = 0.1.0
+PYTHON_ATTR_VER = 0.3.1
 PYTHON_ATTR_SOURCE = attr-$(PYTHON_ATTR_VER).tar.gz
 PYTHON_ATTR_PATCH =
 
@@ -582,7 +581,7 @@ $(D)/python_cheetah: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(ARCHIVE
 #
 # python_mechanize
 #
-PYTHON_MECHANIZE_VER = 0.2.5
+PYTHON_MECHANIZE_VER = 0.4.2
 PYTHON_MECHANIZE_SOURCE = mechanize-$(PYTHON_MECHANIZE_VER).tar.gz
 
 $(ARCHIVE)/$(PYTHON_MECHANIZE_SOURCE):
@@ -605,8 +604,7 @@ PYTHON_GDATA_VER = 2.0.18
 PYTHON_GDATA_SOURCE = gdata-$(PYTHON_GDATA_VER).tar.gz
 
 $(ARCHIVE)/$(PYTHON_GDATA_SOURCE):
-#	$(WGET) https://gdata-python-client.googlecode.com/files/$(PYTHON_GDATA_SOURCE)
-	$(WGET) https://files.pythonhosted.org/packages/a8/70/bd554151443fe9e89d9a934a7891aaffc63b9cb5c7d608972919a002c03c/$(PYTHON_GDATA_SOURCE)
+	$(WGET) https://pypi.python.org/packages/source/g/gdata/$(PYTHON_GDATA_SOURCE)
 
 $(D)/python_gdata: $(D)/bootstrap $(D)/python $(ARCHIVE)/$(PYTHON_GDATA_SOURCE)
 	$(START_BUILD)
@@ -621,7 +619,7 @@ $(D)/python_gdata: $(D)/bootstrap $(D)/python $(ARCHIVE)/$(PYTHON_GDATA_SOURCE)
 #
 # python_zope_interface
 #
-PYTHON_ZOPE_INTERFACE_VER = 4.1.1
+PYTHON_ZOPE_INTERFACE_VER = 4.6.0
 PYTHON_ZOPE_INTERFACE_SOURCE = zope.interface-$(PYTHON_ZOPE_INTERFACE_VER).tar.gz
 
 $(ARCHIVE)/$(PYTHON_ZOPE_INTERFACE_SOURCE):
@@ -640,7 +638,7 @@ $(D)/python_zope_interface: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(
 #
 # python_requests
 #
-PYTHON_REQUESTS_VER = 2.7.0
+PYTHON_REQUESTS_VER = 2.22.0
 PYTHON_REQUESTS_SOURCE = requests-$(PYTHON_REQUESTS_VER).tar.gz
 
 $(ARCHIVE)/$(PYTHON_REQUESTS_SOURCE):
@@ -659,7 +657,7 @@ $(D)/python_requests: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(ARCHIV
 #
 # python_futures
 #
-PYTHON_FUTURES_VER = 2.1.6
+PYTHON_FUTURES_VER = 3.2.0
 PYTHON_FUTURES_SOURCE = futures-$(PYTHON_FUTURES_VER).tar.gz
 
 $(ARCHIVE)/$(PYTHON_FUTURES_SOURCE):
@@ -738,14 +736,16 @@ ifeq ($(IMAGE), $(filter $(IMAGE), enigma2-wlandriver))
 PYTHON_DEPS += $(D)/python_wifi
 endif
 ifneq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), small))
-#PYTHON_DEPS += $(D)/python_elementtree
-#PYTHON_DEPS += $(D)/python_imaging
-#PYTHON_DEPS += $(D)/python_pyusb
-#PYTHON_DEPS += $(D)/python_pycrypto
-#PYTHON_DEPS += $(D)/python_mechanize
-#PYTHON_DEPS += $(D)/python_requests
-#PYTHON_DEPS += $(D)/python_futures
-#PYTHON_DEPS += $(D)/python_singledispatch
+# TODO: are these necessary?
+PYTHON_DEPS += $(D)/python_elementtree
+PYTHON_DEPS += $(D)/python_imaging
+PYTHON_DEPS += $(D)/python_pyusb
+PYTHON_DEPS += $(D)/python_pycrypto
+PYTHON_DEPS += $(D)/python_mechanize
+PYTHON_DEPS += $(D)/python_requests
+PYTHON_DEPS += $(D)/python_futures
+PYTHON_DEPS += $(D)/python_singledispatch
+#----
 PYTHON_DEPS += $(D)/python_livestreamer
 PYTHON_DEPS += $(D)/python_livestreamersrv
 endif
