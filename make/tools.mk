@@ -142,7 +142,7 @@ $(D)/tools-ipbox_eeprom: $(D)/bootstrap
 #
 # libeplayer3
 # CAUTION: name is misleading; builds a library and an executable
-$(D)/tools-libeplayer3: $(D)/bootstrap $(D)/ffmpeg
+$(D)/tools-libeplayer3: $(D)/bootstrap $(D)/ffmpeg $(D)/libass
 	$(START_BUILD)
 	$(SET) -e; cd $(APPS_DIR)/tools/libeplayer3; \
 		if [ ! -d m4 ]; then mkdir m4; fi; \
@@ -427,7 +427,9 @@ endif
 ifneq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), small size))
 TOOLS += $(D)/tools-aio-grab
 TOOLS += $(D)/tools-satfind
+ifneq ($(EXTERNAL_LCD), none)
 #TOOLS += $(D)/tools-minimon
+endif
 endif
 ifeq ($(IMAGE), $(filter $(IMAGE), enigma2 enigma2-wlandriver))
 TOOLS += $(D)/tools-libmme_host
