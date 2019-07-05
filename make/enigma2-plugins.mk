@@ -240,6 +240,7 @@ $(D)/enigma2_servicemp3: | $(SERVICEMP3_DEPS)
 			--build=$(BUILD) \
 			--host=$(TARGET) \
 			--prefix=/usr \
+			--enable-silent-rules \
 			$(SERVICEMP3_CONF) \
 			CPPFLAGS="$(SERVICEMP3_CPPFLAGS)" \
 		; \
@@ -302,6 +303,7 @@ $(D)/enigma2_servicemp3epl: | $(SERVICEMP3EPL_DEPS)
 			--build=$(BUILD) \
 			--host=$(TARGET) \
 			--prefix=/usr \
+			--enable-silent-rules \
 			$(SERVICEMP3EPL_CONF) \
 			CPPFLAGS="$(SERVICEMP3EPL_CPPFLAGS)" \
 		; \
@@ -337,6 +339,7 @@ $(D)/enigma2_serviceapp: $(D)/bootstrap $(D)/enigma2 $(D)/enigma2_servicemp3epl 
 			--build=$(BUILD) \
 			--host=$(TARGET) \
 			--prefix=/usr \
+			--enable-silent-rules \
 			$(SERVICEAPP_CONF) \
 			CPPFLAGS="$(SERVICEAPP_CPPFLAGS)" \
 		; \
@@ -344,4 +347,5 @@ $(D)/enigma2_serviceapp: $(D)/bootstrap $(D)/enigma2 $(D)/enigma2_servicemp3epl 
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
 	$(REMOVE)/enigma2-serviceapp-$(SERVICEAPP_VER)
 	$(TOUCH)
+
 
