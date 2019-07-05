@@ -12,7 +12,7 @@
 +			BOXTYPE="duckbox"
 +			BOXMODEL="$withval"
 +		;;
- 		hd51|hd60|bre2ze4k|vusolo4k)
+ 		hd51|hd60|bre2ze4k|vusolo4k|vuduo4k)
  			BOXTYPE="armbox"
  			BOXMODEL="$withval"
 @@ -506,7 +514,7 @@
@@ -22,9 +22,9 @@
 -AS_HELP_STRING([], [valid for duckbox: ufs910, ufs912, ufs913, ufs922, atevio7500, fortis_hdbox, octagon1008, hs7110, hs7810a, hs7119, hs7819, dp7000, cuberevo, cuberevo_mini, cuberevo_mini2, cuberevo_250hd, cuberevo_2000hd, cuberevo_3000hd, ipbox9900, ipbox99, ipbox55, arivalink200, tf7700, hl101])
 +AS_HELP_STRING([], [valid for duckbox: ufs910, ufs912, ufs913, ufs922, atevio7500, fortis_hdbox, octagon1008, hs7110, hs7420, hs7810a, hs7119, hs7429, hs7819, cuberevo, cuberevo_mini, cuberevo_mini2, cuberevo_250hd, cuberevo_2000hd, cuberevo_3000hd, ipbox9900, ipbox99, ipbox55, arivalink200, tf7700, hl101, adb_box, vitamin_hd5000])
  AS_HELP_STRING([], [valid for spark: spark, spark7162])
+ AS_HELP_STRING([], [valid for armbox: hd51, hd60, vusolo4k, vuduo4k])
  AS_HELP_STRING([], [valid for mipsbox: vuduo])
- AS_HELP_STRING([], [valid for generic: raspi]),
-@@ -530,7 +538,7 @@
+@@ -531,7 +539,7 @@
  				AC_MSG_ERROR([unknown model $withval for boxtype $BOXTYPE])
  			fi
  		;;
@@ -33,7 +33,7 @@
  			if test "$BOXTYPE" = "duckbox"; then
  				BOXMODEL="$withval"
  			else
-@@ -595,8 +603,10 @@
+@@ -596,8 +604,10 @@
  AM_CONDITIONAL(BOXMODEL_FORTIS_HDBOX, test "$BOXMODEL" = "fortis_hdbox")
  AM_CONDITIONAL(BOXMODEL_OCTAGON1008, test "$BOXMODEL" = "octagon1008")
  AM_CONDITIONAL(BOXMODEL_HS7110, test "$BOXMODEL" = "hs7110")
@@ -44,7 +44,7 @@
  AM_CONDITIONAL(BOXMODEL_HS7819, test "$BOXMODEL" = "hs7819")
  AM_CONDITIONAL(BOXMODEL_DP7000, test "$BOXMODEL" = "dp7000")
  
-@@ -612,6 +622,8 @@
+@@ -613,6 +623,8 @@
  AM_CONDITIONAL(BOXMODEL_ARIVALINK200, test "$BOXMODEL" = "arivalink200")
  AM_CONDITIONAL(BOXMODEL_TF7700, test "$BOXMODEL" = "tf7700")
  AM_CONDITIONAL(BOXMODEL_HL101, test "$BOXMODEL" = "hl101")
@@ -53,7 +53,7 @@
  
  AM_CONDITIONAL(BOXMODEL_HD51, test "$BOXMODEL" = "hd51")
  AM_CONDITIONAL(BOXMODEL_HD60, test "$BOXMODEL" = "hd60")
-@@ -666,10 +678,14 @@
+@@ -668,10 +680,14 @@
  	AC_DEFINE(BOXMODEL_OCTAGON1008, 1, [octagon1008])
  elif test "$BOXMODEL" = "hs7110"; then
  	AC_DEFINE(BOXMODEL_HS7110, 1, [hs7110])
@@ -68,7 +68,7 @@
  elif test "$BOXMODEL" = "hs7819"; then
  	AC_DEFINE(BOXMODEL_HS7819, 1, [hs7819])
  elif test "$BOXMODEL" = "dp7000"; then
-@@ -698,6 +714,10 @@
+@@ -700,6 +716,10 @@
  	AC_DEFINE(BOXMODEL_TF7700, 1, [tf7700])
  elif test "$BOXMODEL" = "hl101"; then
  	AC_DEFINE(BOXMODEL_HL101, 1, [hl101])
@@ -79,42 +79,9 @@
  elif test "$BOXMODEL" = "hd51"; then
  	AC_DEFINE(BOXMODEL_HD51, 1, [hd51])
  	AC_DEFINE(ENABLE_CHANGE_OSD_RESOLUTION, 1, [enable change the osd resolution])
-#--- neutrino-mp-tangos.org/src/global.h
-#+++ neutrino-mp-tangos/src/global.h
-#@@ -57,7 +57,7 @@
-# #define LOGODIR		ICONSDIR "/logo"
-# #define LOGODIR_VAR	ICONSDIR_VAR "/logo"
-# 
-#-#define FLAGDIR		CONFIGDIR
-#+//#define FLAGDIR		CONFIGDIR
-# 
-# NEUTRINO_CPP  SNeutrinoSettings	g_settings;
-# NEUTRINO_CPP  SglobalInfo	g_info;
-#--- neutrino-mp-tangos.org/lib/hardware/ca.h
-#+++ neutrino-mp-tangos/lib/hardware/ca.h
-#@@ -1,7 +1,7 @@
-# #if HAVE_COOL_HARDWARE
-# #include <ca_cs.h>
-# #elif USE_STB_HAL
-#-#include <ca_hal.h>
-#+#include <ca_cs.h>
-# #else
-# #error neither HAVE_COOL_HARDWARE nor USE_STB_HAL defined.
-# #error do you need to include config.h?
-#--- neutrino-mp-tangos.org/lib/hardware/video.h
-#+++ neutrino-mp-tangos/lib/hardware/video.h
-#@@ -2,7 +2,7 @@
-# #include <cs_api.h>
-# #include <video_cs.h>
-# #elif USE_STB_HAL
-#-#include <init.h>
-#+#include <init_td.h>
-# #include <video_hal.h>
-# #else
-# #error neither HAVE_COOL_HARDWARE nor USE_STB_HAL defined.
 --- neutrino-mp-tangos.org/src/neutrino.cpp
 +++ neutrino-mp-tangos/src/neutrino.cpp
-@@ -4739,6 +4739,9 @@
+@@ -4740,6 +4740,9 @@
  
  		CVFD::getInstance()->Clear();
  		CVFD::getInstance()->setMode(CVFD::MODE_STANDBY);
@@ -124,7 +91,7 @@
  		CVFD::getInstance()->setBacklight(g_settings.backlight_standby);
  
  		InfoClock->enableInfoClock(false);
-@@ -4774,7 +4777,11 @@
+@@ -4775,7 +4778,11 @@
  		// Active standby off
  		powerManager->SetStandby(false, false);
  		CVFD::getInstance()->setMode(CVFD::MODE_TVRADIO);
@@ -1087,7 +1054,7 @@
  	}
  
  	if (p_movie_info) {
-@@ -2897,10 +2897,10 @@
+@@ -2903,10 +2903,10 @@
  		tuxtx_pause_subtitle(true);
  		frameBuffer->paintBackground();
  	}
@@ -1102,7 +1069,7 @@
  #endif
  }
  
-@@ -2938,9 +2938,9 @@
+@@ -2944,9 +2944,9 @@
  {
  #if HAVE_SH4_HARDWARE || HAVE_ARM_HARDWARE || HAVE_MIPS_HARDWARE
  	printf("[CMoviePlayerGui] %s: %s\n", __FUNCTION__, show ? "Show" : "Not show");

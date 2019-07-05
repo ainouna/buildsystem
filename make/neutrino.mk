@@ -13,6 +13,7 @@ $(TARGET_DIR)/.version:
 NEUTRINO_DEPS  = $(D)/bootstrap $(KERNEL) $(D)/system-tools $(D)/alsa_utils $(D)/ffmpeg $(D)/libopenthreads
 NEUTRINO_DEPS += $(LIRC) $(D)/libcurl $(D)/libsigc $(D)/pugixml $(D)/libdvbsi $(D)/giflib
 NEUTRINO_DEPS += $(D)/lua
+NEUTRINO_DEPS += $(D)/libpng $(D)/libjpeg $(D)/freetype
 #NEUTRINO_DEPS += $(D)/ncurses
 #NEUTRINO_DEPS += $(D)/libpng $(D)/libjpeg $(D)/freetype
 #NEUTRINO_DEPS += $(D)/libfribidi $(D)/libusb
