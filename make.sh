@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20190702.1
+# Version 20190704.1
 
 ##############################################
 
@@ -251,7 +251,7 @@ echo "KERNEL_STM=$KERNEL_STM" >> config
 case $3 in
 	[1-5]) REPLY=$3;;
 	*)	echo -e "\nOptimization:"
-		echo "   1)  optimization for smallest, very basic image"
+		echo "   1)  optimization for smallest, very basic image (E2 only)"
 		echo "   2*) optimization for size"
 		echo "   3)  optimization normal"
 		echo "   4)  Kernel debug"
@@ -267,7 +267,6 @@ case "$REPLY" in
 	5)  OPTIMIZATIONS="debug";;
 	*)  OPTIMIZATIONS="size";;
 esac
-echo "OPTIMIZATIONS=$OPTIMIZATIONS" >> config
 
 ##############################################
 
@@ -337,6 +336,10 @@ case "$IMAGE" in
 				fi;;
 		esac
 
+		if [ "$OPTIMIZATIONS" == "small" ]; then
+			OPTIMIZATIONS == "size"
+		fi
+
 		if [ "$LASTIMAGE1" ] || [ "$LASTIMAGE3" ] || [ ! "$LASTBOX" == "$BOXTYPE" ]; then
 			if [ -e ./.deps/ ]; then
 				echo -n -e "\nSettings changed, performing distclean..."
@@ -371,6 +374,10 @@ case "$IMAGE" in
 		echo "TVHEADEND_REVISION=$REVISION" >> config
 
 		echo "make yaud-tvheadend" >> $CURDIR/build
+
+		if [ "$OPTIMIZATIONS" == "small" ]; then
+			OPTIMIZATIONS == "size"
+		fi
 
 		if [ "$LASTIMAGE1" ] || [ "$LASTIMAGE2" ] || [ ! "$LASTBOX" == "$BOXTYPE" ]; then
 			if [ -e ./.deps/ ]; then
@@ -462,6 +469,7 @@ case "$IMAGE" in
 		fi;;
 	esac
 
+echo "OPTIMIZATIONS=$OPTIMIZATIONS" >> config
 echo "MEDIAFW=$MEDIAFW" >> config
 
 ##############################################
