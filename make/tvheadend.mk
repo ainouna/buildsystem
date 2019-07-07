@@ -40,9 +40,9 @@ $(D)/tvheadend.do_prepare: | $(TVHEADEND_DEPS)
 	echo "Diff       : "$$DIFF; \
 	echo ""; \
 	[ -d "$(ARCHIVE)/tvheadend.git" ] && \
-	(cd $(ARCHIVE)/tvheadend.git; echo -n "Updating archived Tvheadend git..."; git pull $(SILENT_CONFIGURE); echo -e -n " done.\nChecking out HEAD..."; git checkout -q HEAD; echo " done."; cd "$(BUILD_TMP)";); \
+	(cd $(ARCHIVE)/tvheadend.git; echo -n "Updating archived Tvheadend git..."; git pull $(MINUS_Q); echo -e -n " done.\nChecking out HEAD..."; git checkout -q HEAD; echo " done."; cd "$(BUILD_TMP)";); \
 	[ -d "$(ARCHIVE)/tvheadend.git" ] || \
-	(echo -n "Cloning remote Tvheadend git..."; git clone $(SILENT_CONFIGURE) -b $$HEAD $$REPO_0 $(ARCHIVE)/tvheadend.git; echo " done."); \
+	(echo -n "Cloning remote Tvheadend git..."; git clone $(MINUS_Q) -b $$HEAD $$REPO_0 $(ARCHIVE)/tvheadend.git; echo " done."); \
 	echo -n "Copying local git content to build environment..."; cp -ra $(ARCHIVE)//tvheadend.git $(SOURCE_DIR)/tvheadend; echo " done."; \
 	if [ "$$REVISION" != "newest" ]; then \
 		cd $(SOURCE_DIR)/tvheadend; echo -n "Checking out revision $$REVISION..."; git checkout -q "$$REVISION"; echo " done."; \
@@ -58,7 +58,7 @@ $(D)/tvheadend.do_prepare: | $(TVHEADEND_DEPS)
 $(SOURCE_DIR)/tvheadend/config.status:
 	$(SILENT)cd $(SOURCE_DIR)/tvheadend; \
 		$(BUILDENV) \
-		./configure $(SILENT_CONFIGURE) $(SILENT_OPT) \
+		./configure $(SILENT_CONFIGURE) \
 			--build=$(BUILD) \
 			--host=$(TARGET) \
 			--disable-hdhomerun_static \

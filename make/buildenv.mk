@@ -125,7 +125,9 @@ KBUILD_VERBOSE        = normal
 endif
 
 MAKEFLAGS            += --no-print-directory
+MINUS_Q               = -q
 ifeq ($(KBUILD_VERBOSE), verbose)
+MINUS_Q               =
 SILENT_CONFIGURE      =
 SILENT_PATCH          =
 SILENT_OPT            =
@@ -133,7 +135,7 @@ SILENT                =
 WGET_SILENT_OPT       =
 endif
 ifeq ($(KBUILD_VERBOSE), normal)
-SILENT_CONFIGURE      = -q
+SILENT_CONFIGURE      = $(MINUS_Q)
 SILENT_PATCH          =
 SILENT_OPT            =
 SILENT                = @
@@ -277,7 +279,7 @@ ifneq ($(KBUILD_VERBOSE), verbose)
 CONFIGURE = \
 	test -f ./configure || ./autogen.sh $(SILENT_OPT) && \
 	$(BUILDENV) \
-	./configure $(CONFIGURE_OPTS) $(SILENT_OPT)
+	./configure $(CONFIGURE_OPTS)
 else
 CONFIGURE = \
 	test -f ./configure || ./autogen.sh && \
@@ -288,7 +290,7 @@ endif
 CONFIGURE_TOOLS = \
 	./autogen.sh $(SILENT_OPT) && \
 	$(BUILDENV) \
-	./configure $(CONFIGURE_OPTS) $(SILENT_OPT)
+	./configure $(CONFIGURE_OPTS)
 
 MAKE_OPTS := \
 	CC=$(TARGET)-gcc \

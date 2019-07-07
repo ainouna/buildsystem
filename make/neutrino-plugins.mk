@@ -66,8 +66,8 @@ $(D)/neutrino-mp-plugin.do_prepare:
 	$(SILENT)rm -rf $(NP_OBJDIR)
 	$(SILENT)rm -rf $(NP_OBJDIR).org
 	$(SET) -e; if [ -d $(ARCHIVE)/neutrino-mp-plugins.git ]; \
-		then cd $(ARCHIVE)/neutrino-mp-plugins.git; git pull $(SILENT_CONFIGURE); \
-		else cd $(ARCHIVE); git clone $(SILENT_CONFIGURE) https://github.com/Duckbox-Developers/neutrino-mp-plugins.git neutrino-mp-plugins.git; \
+		then cd $(ARCHIVE)/neutrino-mp-plugins.git; git pull $(MINUS_Q); \
+		else cd $(ARCHIVE); git clone $(MINUS_Q) https://github.com/Duckbox-Developers/neutrino-mp-plugins.git neutrino-mp-plugins.git; \
 		fi
 	$(SILENT)cp -ra $(ARCHIVE)/neutrino-mp-plugins.git $(NP_OBJDIR)
 	$(SILENT)cp -ra $(NP_OBJDIR) $(NP_OBJDIR).org
@@ -126,8 +126,8 @@ $(D)/neutrino-mp-plugin-xupnpd: $(D)/bootstrap $(D)/lua $(D)/openssl $(D)/neutri
 	$(START_BUILD)
 	$(REMOVE)/xupnpd
 	$(SET) -e; if [ -d $(ARCHIVE)/xupnpd.git ]; \
-		then cd $(ARCHIVE)/xupnpd.git; git pull $(SILENT_CONFIGURE); \
-		else cd $(ARCHIVE); git clone $(SILENT_CONFIGURE) git://github.com/clark15b/xupnpd.git xupnpd.git; \
+		then cd $(ARCHIVE)/xupnpd.git; git pull $(MINUS_Q); \
+		else cd $(ARCHIVE); git clone $(MINUS_Q) git://github.com/clark15b/xupnpd.git xupnpd.git; \
 		fi
 	$(SILENT)cp -ra $(ARCHIVE)/xupnpd.git $(BUILD_TMP)/xupnpd
 	$(CH_DIR)/xupnpd; \
@@ -153,8 +153,8 @@ $(D)/neutrino-mp-plugin-scripts-lua: $(D)/bootstrap
 	$(START_BUILD)
 	$(REMOVE)/neutrino-mp-plugin-scripts-lua
 	$(SET) -e; if [ -d $(ARCHIVE)/plugin-scripts-lua.git ]; \
-		then cd $(ARCHIVE)/plugin-scripts-lua.git; git pull $(SILENT_CONFIGURE); \
-		else cd $(ARCHIVE); git clone $(SILENT_CONFIGURE) https://github.com/tuxbox-neutrino/plugin-scripts-lua.git plugin-scripts-lua.git; \
+		then cd $(ARCHIVE)/plugin-scripts-lua.git; git pull $(MINUS_Q); \
+		else cd $(ARCHIVE); git clone $(MINUS_Q) https://github.com/tuxbox-neutrino/plugin-scripts-lua.git plugin-scripts-lua.git; \
 		fi
 	$(SILENT)cp -ra $(ARCHIVE)/plugin-scripts-lua.git/plugins $(BUILD_TMP)/neutrino-mp-plugin-scripts-lua
 	$(CH_DIR)/neutrino-mp-plugin-scripts-lua; \
@@ -175,8 +175,8 @@ $(D)/neutrino-mp-plugin-mediathek:
 	$(START_BUILD)
 	$(REMOVE)/plugins-mediathek
 	$(SET) -e; if [ -d $(ARCHIVE)/plugins-mediathek.git ]; \
-		then cd $(ARCHIVE)/plugins-mediathek.git; git pull $(SILENT_CONFIGURE); \
-		else cd $(ARCHIVE); git clone $(SILENT_CONFIGURE) https://github.com/neutrino-mediathek/mediathek.git plugins-mediathek.git; \
+		then cd $(ARCHIVE)/plugins-mediathek.git; git pull $(MINUS_Q); \
+		else cd $(ARCHIVE); git clone $(MINUS_Q) https://github.com/neutrino-mediathek/mediathek.git plugins-mediathek.git; \
 		fi
 	$(SILENT)cp -ra $(ARCHIVE)/plugins-mediathek.git $(BUILD_TMP)/plugins-mediathek
 	$(SILENT)install -d $(TARGET_DIR)/var/tuxbox/plugins
@@ -196,8 +196,8 @@ $(D)/neutrino-mp-plugin-iptvplayer: $(D)/librtmp $(D)/python_twisted_small
 	$(START_BUILD)
 	$(REMOVE)/iptvplayer
 	set -e; if [ -d $(ARCHIVE)/iptvplayer.git ]; \
-		then cd $(ARCHIVE)/iptvplayer.git; git pull; \
-		else cd $(ARCHIVE); git clone https://github.com/TangoCash/crossplatform_iptvplayer.git iptvplayer.git; \
+		then cd $(ARCHIVE)/iptvplayer.git; git pull $(MINUS_Q); \
+		else cd $(ARCHIVE); git clone $(MINUS_Q) https://github.com/TangoCash/crossplatform_iptvplayer.git iptvplayer.git; \
 		fi
 	cp -ra $(ARCHIVE)/iptvplayer.git $(BUILD_TMP)/iptvplayer
 	@if [ "$@" = "$(D)/neutrino-mp-plugin-iptvplayer-nightly" ]; then \

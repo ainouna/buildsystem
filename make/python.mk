@@ -11,7 +11,7 @@ PYTHON_BUILD = \
 	LDSHARED="$(TARGET)-gcc -shared" \
 	PYTHONPATH=$(TARGET_DIR)/$(PYTHON_DIR)/site-packages \
 	CPPFLAGS="$(TARGET_CPPFLAGS) -I$(TARGET_DIR)/$(PYTHON_INCLUDE_DIR)" \
-	$(HOST_DIR)/bin/python ./setup.py -q build --executable=/usr/bin/python
+	$(HOST_DIR)/bin/python ./setup.py $(MINUS_Q) build --executable=/usr/bin/python
 
 PYTHON_INSTALL = \
 	CC="$(TARGET)-gcc" \
@@ -20,7 +20,7 @@ PYTHON_INSTALL = \
 	LDSHARED="$(TARGET)-gcc -shared" \
 	PYTHONPATH=$(TARGET_DIR)/$(PYTHON_DIR)/site-packages \
 	CPPFLAGS="$(TARGET_CPPFLAGS) -I$(TARGET_DIR)/$(PYTHON_INCLUDE_DIR)" \
-	$(HOST_DIR)/bin/python ./setup.py -q install --root=$(TARGET_DIR) --prefix=/usr
+	$(HOST_DIR)/bin/python ./setup.py $(MINUS_Q) install --root=$(TARGET_DIR) --prefix=/usr
 
 #
 # host_python
@@ -44,7 +44,7 @@ $(D)/host_python: $(ARCHIVE)/$(PYTHON_SOURCE)
 		autoconf; \
 		CONFIG_SITE= \
 		OPT="$(HOST_CFLAGS)" \
-		./configure $(SILENT_CONFIGURE) $(SILENT_OPT) \
+		./configure $(SILENT_CONFIGURE) \
 			--without-cxx-main \
 			--with-threads \
 		; \
@@ -53,7 +53,7 @@ $(D)/host_python: $(ARCHIVE)/$(PYTHON_SOURCE)
 		mv Parser/pgen ./hostpgen; \
 		\
 		$(MAKE) distclean; \
-		./configure $(SILENT_CONFIGURE) $(SILENT_OPT) \
+		./configure $(SILENT_CONFIGURE) \
 			--prefix=$(HOST_DIR) \
 			--sysconfdir=$(HOST_DIR)/etc \
 			--without-cxx-main \
@@ -80,9 +80,9 @@ $(D)/python: $(D)/bootstrap $(D)/host_python $(D)/ncurses $(D)/zlib $(D)/openssl
 		$(call apply_patches, $(PYTHON_PATCH)); \
 		CONFIG_SITE= \
 		$(BUILDENV) \
-		autoreconf -vif Modules/_ctypes/libffi; \
+		autoreconf -vif Modules/_ctypes/libffi $(SILENT_OPT); \
 		autoconf $(SILENT_OPT); \
-		./configure $(SILENT_CONFIGURE) $(SILENT_OPT) \
+		./configure $(SILENT_CONFIGURE) \
 			--build=$(BUILD) \
 			--host=$(TARGET) \
 			--target=$(TARGET) \
@@ -699,8 +699,8 @@ $(D)/python_livestreamer: $(D)/bootstrap $(D)/python $(D)/python_setuptools
 	$(START_BUILD)
 	$(REMOVE)/livestreamer
 	$(SET) -e; if [ -d $(ARCHIVE)/livestreamer.git ]; \
-		then cd $(ARCHIVE)/livestreamer.git; git pull $(SILENT_CONFIGURE); \
-		else cd $(ARCHIVE); git clone $(SILENT_CONFIGURE) https://github.com/chrippa/livestreamer.git livestreamer.git; \
+		then cd $(ARCHIVE)/livestreamer.git; git pull $(MINUS_Q); \
+		else cd $(ARCHIVE); git clone $(MINUS_Q) https://github.com/chrippa/livestreamer.git livestreamer.git; \
 		fi
 	$(SILENT)cp -ra $(ARCHIVE)/livestreamer.git $(BUILD_TMP)/livestreamer
 	$(CH_DIR)/livestreamer; \
@@ -717,8 +717,8 @@ $(D)/python_livestreamersrv: $(D)/bootstrap $(D)/python $(D)/python_setuptools $
 	$(START_BUILD)
 	$(REMOVE)/livestreamersrv
 	$(SET) -e; if [ -d $(ARCHIVE)/livestreamersrv.git ]; \
-		then cd $(ARCHIVE)/livestreamersrv.git; git pull $(SILENT_CONFIGURE); \
-		else cd $(ARCHIVE); git clone $(SILENT_CONFIGURE) https://github.com/athoik/livestreamersrv.git livestreamersrv.git; \
+		then cd $(ARCHIVE)/livestreamersrv.git; git pull $(MINUS_Q); \
+		else cd $(ARCHIVE); git clone $(MINUS_Q) https://github.com/athoik/livestreamersrv.git livestreamersrv.git; \
 		fi
 	$(SILENT)cp -ra $(ARCHIVE)/livestreamersrv.git $(BUILD_TMP)/livestreamersrv
 	$(CH_DIR)/livestreamersrv; \

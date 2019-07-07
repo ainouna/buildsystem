@@ -26,7 +26,7 @@ DIR=$(mktemp -d $PWD/git_archive.XXXXXX)
 trap "rm -rf $DIR" EXIT
 # exit on error
 set -e
-git clone $GIT_URL $DIR
+git clone $MINUS_Q $GIT_URL $DIR
 cd $DIR
 git archive -o $TAR_PATH.tar --prefix=$TAR_PATH/ $GIT_TAG
 bzip2 $TAR_PATH.tar

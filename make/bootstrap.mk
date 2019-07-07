@@ -58,7 +58,7 @@ $(D)/host_module_init_tools: $(ARCHIVE)/$(HOST_MODULE_INIT_TOOLS_SOURCE)
 	$(CH_DIR)/module-init-tools-$(HOST_MODULE_INIT_TOOLS_VER); \
 		$(call apply_patches,$(HOST_MODULE_INIT_TOOLS_PATCH)); \
 		autoreconf -fi $(SILENT_OPT); \
-		./configure $(SILENT_CONFIGURE) $(SILENT_OPT) \
+		./configure $(SILENT_CONFIGURE) \
 			--prefix=$(HOST_DIR) \
 			--sbindir=$(HOST_DIR)/bin \
 		; \
@@ -231,7 +231,7 @@ $(APPS_DIR):
 	@echo '      Cloning $(GIT_NAME_APPS)-apps git repository'
 	@echo '===================================================================='
 	@if [ ! -e $(APPS_DIR)/.git ]; then \
-		git clone $(SILENT_CONFIGURE) $(GITHUB)/$(GIT_NAME_APPS)/apps.git apps; \
+		git clone $(MINUS_Q) $(GITHUB)/$(GIT_NAME_APPS)/apps.git apps; \
 	fi
 
 $(FLASH_DIR):
@@ -239,7 +239,7 @@ $(FLASH_DIR):
 	@echo '      Cloning $(GIT_NAME_FLASH)-flash git repository'
 	@echo '===================================================================='
 	@if [ ! -e $(FLASH_DIR)/.git ]; then \
-		git clone $(SILENT_CONFIGURE) $(GITHUB)/$(GIT_NAME_FLASH)/flash.git flash; \
+		git clone $(MINUS_Q) $(GITHUB)/$(GIT_NAME_FLASH)/flash.git flash; \
 	fi
 	@echo ''
 

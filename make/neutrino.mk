@@ -161,12 +161,12 @@ $(D)/$(LIBSTB_HAL).do_prepare: | $(NEUTRINO_DEPS)
 	$(SILENT)if [ -d "$(ARCHIVE)/$(LIBSTB_HAL).git" ]; then \
 		echo -n "Update local git..."; \
 		cd $(ARCHIVE)/$(LIBSTB_HAL).git; \
-		git pull $(SILENT_CONFIGURE); \
+		git pull $(MINUS_Q); \
 		cd $(SOURCE_DIR); \
 		echo " done."; \
 	else \
 		echo -n "Cloning git..."; \
-		git clone $(SILENT_CONFIGURE) $(GIT_URL)/$(LIBSTB_HAL).git $(ARCHIVE)/$(LIBSTB_HAL).git; \
+		git clone $(MINUS_Q) $(GIT_URL)/$(LIBSTB_HAL).git $(ARCHIVE)/$(LIBSTB_HAL).git; \
 		echo " done."; \
 	fi
 	$(SILENT)cp -ra $(ARCHIVE)/$(LIBSTB_HAL).git $(SOURCE_DIR)/$(LIBSTB_HAL)
@@ -231,12 +231,12 @@ $(D)/$(NEUTRINO_MP).do_prepare: | $(NEUTRINO_DEPS) $(D)/$(LIBSTB_HAL)
 	$(SILENT)if [ -d "$(ARCHIVE)/$(NEUTRINO_MP).git" ]; then \
 		echo -n "Update local git..."; \
 		cd $(ARCHIVE)/$(NEUTRINO_MP).git; \
-		git pull $(SILENT_CONFIGURE); \
+		git pull $(MINUS_Q); \
 		cd $(SOURCE_DIR); \
 		echo " done."; \
 	else \
 		echo -n "Cloning git..."; \
-		git clone $(SILENT_CONFIGURE) $(GIT_URL)/$(NEUTRINO_MP).git $(ARCHIVE)/$(NEUTRINO_MP).git; \
+		git clone $(MINUS_Q) $(GIT_URL)/$(NEUTRINO_MP).git $(ARCHIVE)/$(NEUTRINO_MP).git; \
 		echo " done."; \
 	fi
 	$(SILENT)cp -ra $(ARCHIVE)/$(NEUTRINO_MP).git $(SOURCE_DIR)/$(NEUTRINO_MP)
@@ -387,11 +387,11 @@ $(D)/neutrino-hd2.do_prepare: | $(NEUTRINO_DEPS) $(NEUTRINO_DEPS2)
 	$(SILENT)if [ -d "$(ARCHIVE)/neutrino-hd2.git" ]; then \
 			echo -n "Update local git..."; \
 			cd $(ARCHIVE)/neutrino-hd2.git; \
-			git pull $(SILENT_CONFIGURE); \
+			git pull $(MINUS_Q); \
 			echo " done."; \
 		else \
 			echo -n "Cloning git..."; \
-			git clone $(SILENT_CONFIGURE) https://github.com/mohousch/neutrinohd2.git $(ARCHIVE)/neutrino-hd2.git; \
+			git clone $(MINUS_Q) https://github.com/mohousch/neutrinohd2.git $(ARCHIVE)/neutrino-hd2.git; \
 			echo " done."; \
 		fi
 	$(SILENT)cp -ra $(ARCHIVE)/neutrino-hd2.git $(SOURCE_DIR)/neutrino-hd2.git

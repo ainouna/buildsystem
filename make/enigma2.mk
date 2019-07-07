@@ -20,10 +20,6 @@ ifneq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), small size))
 # required for DVDBurn plugin (adds ? Mbyte to image)
 #ENIGMA2_DEPS += $(D)/dvd+rw-tools $(D)/dvdauthor $(D)/mjpegtools $(D)/cdrkit $(D)/replex $(D)/python_imaging
 endif
-ifneq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), small size))
-# required for Blurayplayer plugin (adds ? Mbyte to image)
-#ENIGMA2_DEPS += $(D)/libudfread $(D)/libbluray $(D)/enigma2-blurayplayer
-endif
 ifeq ($(IMAGE), enigma2-wlandriver)
 ENIGMA2_DEPS += $(D)/wpa_supplicant $(D)/wireless_tools
 endif
@@ -205,7 +201,7 @@ $(SOURCE_DIR)/enigma2/config.status:
 		./autogen.sh $(SILENT_OPT); \
 		sed -e 's|#!/usr/bin/python|#!$(HOST_DIR)/bin/python|' -i po/xml2po.py; \
 		$(BUILDENV) \
-		./configure $(SILENT_CONFIGURE) $(SILENT_OPT) \
+		./configure $(SILENT_CONFIGURE) \
 			--build=$(BUILD) \
 			--host=$(TARGET) \
 			$(E_CONFIG_OPTS) \

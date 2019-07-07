@@ -67,6 +67,7 @@ $(D)/gmp: $(D)/bootstrap $(ARCHIVE)/$(GMP_SOURCE)
 		$(CONFIGURE) \
 			--prefix=/usr \
 			--infodir=/.remove \
+			--enable-silent-rules \
 		; \
 		$(MAKE); \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
@@ -90,7 +91,7 @@ $(D)/host_libffi: $(ARCHIVE)/$(LIBFFI_SOURCE)
 	$(REMOVE)/libffi-$(LIBFFI_VER)
 	$(UNTAR)/$(LIBFFI_SOURCE)
 	$(CH_DIR)/libffi-$(LIBFFI_VER); \
-		./configure $(SILENT_CONFIGURE) $(SILENT_OPT) \
+		./configure $(SILENT_CONFIGURE) \
 			--prefix=$(HOST_DIR) \
 			--disable-static \
 		; \
@@ -108,7 +109,7 @@ $(D)/libffi: $(D)/bootstrap $(ARCHIVE)/$(LIBFFI_SOURCE)
 	$(UNTAR)/$(LIBFFI_SOURCE)
 	$(CH_DIR)/libffi-$(LIBFFI_VER); \
 		$(call apply_patches, $(LIBFFI_PATCH)); \
-		$(CONFIGURE) $(SILENT_OPT) \
+		$(CONFIGURE) \
 			--target=$(TARGET) \
 			--prefix=/usr \
 			--mandir=/.remove \
@@ -144,7 +145,7 @@ $(D)/host_libglib2_genmarshal: $(D)/bootstrap $(D)/host_libffi $(ARCHIVE)/$(LIBG
 		export PKG_CONFIG=/usr/bin/pkg-config; \
 		export PKG_CONFIG_PATH=$(HOST_DIR)/lib/pkgconfig; \
 		$(call apply_patches, $(LIBGLIB2_HOST_PATCH)); \
-		./configure $(SILENT_CONFIGURE) $(SILENT_OPT) \
+		./configure $(SILENT_CONFIGURE) \
 			--prefix=`pwd`/out \
 			--enable-static=yes \
 			--enable-shared=no \
@@ -187,6 +188,7 @@ $(D)/libglib2: $(D)/bootstrap $(D)/host_libglib2_genmarshal $(D)/zlib $(D)/libff
 			--with-threads="posix" \
 			--with-html-dir=/.remove \
 			--with-pcre=internal \
+			--enable-silent-rules \
 		; \
 		$(MAKE) all; \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
@@ -261,7 +263,7 @@ $(D)/host_libarchive: $(D)/bootstrap $(ARCHIVE)/$(LIBARCHIVE_SOURCE)
 	$(REMOVE)/libarchive-$(LIBARCHIVE_VER)
 	$(UNTAR)/$(LIBARCHIVE_SOURCE)
 	$(CH_DIR)/libarchive-$(LIBARCHIVE_VER); \
-		./configure $(SILENT_CONFIGURE) $(SILENT_OPT) \
+		./configure $(SILENT_CONFIGURE) \
 			--build=$(BUILD) \
 			--host=$(BUILD) \
 			--prefix= \
@@ -280,7 +282,7 @@ $(D)/libarchive: $(D)/bootstrap $(ARCHIVE)/$(LIBARCHIVE_SOURCE)
 	$(REMOVE)/libarchive-$(LIBARCHIVE_VER)
 	$(UNTAR)/$(LIBARCHIVE_SOURCE)
 	$(CH_DIR)/libarchive-$(LIBARCHIVE_VER); \
-		$(CONFIGURE) $(SILENT_OPT) \
+		$(CONFIGURE) \
 			--prefix=/usr \
 			--mandir=/.remove \
 			--enable-static=no \
@@ -919,6 +921,7 @@ $(D)/libpng: $(D)/bootstrap $(D)/zlib $(ARCHIVE)/$(LIBPNG_SOURCE)
 			--disable-mips-msa \
 			--disable-powerpc-vsx \
 			--mandir=/.remove \
+			--enable-silent-rules \
 		; \
 		$(MAKE) all; \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
@@ -1212,6 +1215,7 @@ $(D)/libid3tag: $(D)/bootstrap $(D)/zlib $(ARCHIVE)/$(LIBID3TAG_SOURCE)
 		$(CONFIGURE) \
 			--prefix=/usr \
 			--enable-shared=yes \
+			--enable-silent-rules \
 		; \
 		$(MAKE) all; \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
@@ -1240,6 +1244,7 @@ $(D)/libvorbis: $(D)/bootstrap $(D)/libogg $(ARCHIVE)/$(LIBVORBIS_SOURCE)
 			--mandir=/.remove \
 			--disable-docs \
 			--disable-examples \
+			--enable-silent-rules \
 		; \
 		$(MAKE); \
 		$(MAKE) install DESTDIR=$(TARGET_DIR) docdir=/.remove
@@ -1469,16 +1474,16 @@ $(D)/libdreamdvd: $(D)/bootstrap $(D)/libdvdnav
 	$(START_BUILD)
 	$(REMOVE)/libdreamdvd
 	$(SET) -e; if [ -d $(ARCHIVE)/libdreamdvd.git ]; \
-		then cd $(ARCHIVE)/libdreamdvd.git; git pull $(SILENT_CONFIGURE); \
-		else cd $(ARCHIVE); git clone $(SILENT_CONFIGURE) git://github.com/mirakels/libdreamdvd.git libdreamdvd.git; \
+		then cd $(ARCHIVE)/libdreamdvd.git; git pull $(MINUS_Q); \
+		else cd $(ARCHIVE); git clone $(MINUS_Q) git://github.com/mirakels/libdreamdvd.git libdreamdvd.git; \
 		fi
 	$(SILENT)cp -ra $(ARCHIVE)/libdreamdvd.git $(BUILD_TMP)/libdreamdvd
 	$(CH_DIR)/libdreamdvd; \
 		$(call apply_patches, $(LIBDREAMDVD_PATCH)); \
 		$(BUILDENV) \
 		libtoolize --copy --ltdl --force --quiet; \
-		autoreconf --verbose --force --install; \
-		./configure $(SILENT_CONFIGURE) $(SILENT_OPT) \
+		autoreconf --verbose --force --install $(SILENT_OPT); \
+		./configure $(SILENT_CONFIGURE) \
 			--build=$(BUILD) \
 			--host=$(TARGET) \
 			--prefix=/usr \
@@ -1842,8 +1847,8 @@ $(D)/libpsl: $(D)/bootstrap $(D)/host_python
 	$(START_BUILD)
 	$(REMOVE)/libpsl
 	$(SET) -e; if [ -d $(ARCHIVE)/libpsl.git ]; \
-		then cd $(ARCHIVE)/libpsl.git; git pull $(SILENT_CONFIGURE); \
-		else cd $(ARCHIVE); git clone $(SILENT_CONFIGURE) git://github.com/rockdaboot/libpsl.git libpsl.git; \
+		then cd $(ARCHIVE)/libpsl.git; git pull $(MINUS_Q); \
+		else cd $(ARCHIVE); git clone $(MINUS_Q) git://github.com/rockdaboot/libpsl.git libpsl.git; \
 		fi
 	$(SILENT)cp -ra $(ARCHIVE)/libpsl.git $(BUILD_TMP)/libpsl
 	$(CH_DIR)/libpsl; \
@@ -1881,6 +1886,7 @@ $(D)/libogg: $(D)/bootstrap $(ARCHIVE)/$(LIBOGG_SOURCE)
 			--docdir=/.remove \
 			--enable-shared \
 			--disable-static \
+			--enable-silent-rules \
 		; \
 		$(MAKE); \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
@@ -2190,7 +2196,7 @@ $(D)/lcd4linux: $(D)/bootstrap $(D)/libusb_compat $(D)/gd $(D)/libusb $(D)/libdp
 		if [ ! -d m4 ]; then mkdir m4; fi; \
 		$(call apply_patches, $(LCD4LINUX_PATCH)); \
 		$(BUILDENV) ./bootstrap $(SILENT_OPT); \
-		$(BUILDENV) ./configure $(CONFIGURE_OPTS) $(SILENT_OPT) \
+		$(BUILDENV) ./configure $(CONFIGURE_OPTS) \
 			--prefix=/usr \
 			--with-drivers='DPF,SamsungSPF$(LCD4LINUX_DRV),PNG' \
 			--with-plugins='all,!apm,!asterisk,!dbus,!dvb,!gps,!hddtemp,!huawei,!imon,!isdn,!kvv,!mpd,!mpris_dbus,!mysql,!pop3,!ppp,!python,!qnaplog,!raspi,!sample,!seti,!w1retap,!wireless,!xmms' \
@@ -2550,6 +2556,7 @@ $(D)/libexif: $(D)/bootstrap $(ARCHIVE)/$(LIBEXIF_SOURCE)
 	$(CH_DIR)/libexif-$(LIBEXIF_VER); \
 		$(CONFIGURE) \
 			--prefix=/usr \
+			--enable-silent-rules \
 		; \
 		$(MAKE); \
 		$(MAKE) install prefix=/usr DESTDIR=$(TARGET_DIR)
@@ -2889,8 +2896,8 @@ $(D)/libudfread: $(D)/bootstrap
 	$(START_BUILD)
 	$(REMOVE)/libudfread-$(LIBUDFREAD_VER)
 	$(SET) -e; if [ -d $(ARCHIVE)/libudfread.git ]; \
-		then cd $(ARCHIVE)/libudfread.git; git pull $(SILENT_CONFIGURE); \
-		else cd $(ARCHIVE); git clone $(SILENT_CONFIGURE) $(LIBUDFREAD_URL) libudfread.git; \
+		then cd $(ARCHIVE)/libudfread.git; git pull $(MINUS_Q); \
+		else cd $(ARCHIVE); git clone $(MINUS_Q) $(LIBUDFREAD_URL) libudfread.git; \
 		fi
 	$(SILENT)cp -ra $(ARCHIVE)/libudfread.git $(BUILD_TMP)/libudfread-$(LIBUDFREAD_VER)
 	$(CH_DIR)/libudfread-$(LIBUDFREAD_VER); \

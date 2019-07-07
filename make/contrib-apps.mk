@@ -160,7 +160,7 @@ $(D)/gdb-remote: $(ARCHIVE)/$(GDB_SOURCE)
 	$(REMOVE)/gdb-$(GDB_VER)
 	$(UNTAR)/$(GDB_SOURCE)
 	$(CH_DIR)/gdb-$(GDB_VER); \
-		./configure $(SILENT_CONFIGURE) $(SILENT_OPT) \
+		./configure $(SILENT_CONFIGURE) \
 			--nfp --disable-werror \
 			--prefix=$(HOST_DIR) \
 			--build=$(BUILD) \
@@ -183,7 +183,7 @@ $(D)/gdb: $(D)/bootstrap $(D)/ncurses $(D)/zlib $(ARCHIVE)/$(GDB_SOURCE)
 	$(UNTAR)/$(GDB_SOURCE)
 	$(CH_DIR)/gdb-$(GDB_VER); \
 		$(call apply_patches, $(GDB_PATCH)); \
-		./configure $(SILENT_CONFIGURE) $(SILENT_OPT) \
+		./configure $(SILENT_CONFIGURE) \
 			--host=$(BUILD) \
 			--build=$(BUILD) \
 			--target=$(TARGET) \
@@ -220,7 +220,7 @@ $(D)/host_opkg: directories $(D)/host_libarchive $(ARCHIVE)/$(OPKG_SOURCE)
 		./autogen.sh $(SILENT_OPT); \
 		CFLAGS="-I$(HOST_DIR)/include" \
 		LDFLAGS="-L$(HOST_DIR)/lib" \
-		./configure $(SILENT_CONFIGURE) $(SILENT_OPT) \
+		./configure $(SILENT_CONFIGURE) \
 			PKG_CONFIG_PATH=$(HOST_DIR)/lib/pkgconfig \
 			--prefix= \
 			--disable-curl \
@@ -721,6 +721,7 @@ $(D)/sdparm: $(D)/bootstrap $(ARCHIVE)/$(SDPARM_SOURCE)
 			--prefix= \
 			--bindir=/sbin \
 			--mandir=/.remove \
+			--enable-silent-rules \
 		; \
 		$(MAKE); \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
@@ -860,6 +861,7 @@ $(D)/parted: $(D)/bootstrap $(D)/e2fsprogs $(ARCHIVE)/$(PARTED_SOURCE)
 			--target=$(TARGET) \
 			--prefix=/usr \
 			--mandir=/.remove \
+			--enable-silent-rules \
 			--infodir=/.remove \
 			--without-readline \
 			--disable-shared \
@@ -938,8 +940,8 @@ $(D)/shairport: $(D)/bootstrap $(D)/openssl $(D)/howl $(D)/alsa_lib
 	$(START_BUILD)
 	$(REMOVE)/shairport
 	$(SET) -e; if [ -d $(ARCHIVE)/shairport.git ]; \
-		then cd $(ARCHIVE)/shairport.git; git pull $(SILENT_CONFIGURE); \
-		else cd $(ARCHIVE); git clone $(SILENT_CONFIGURE) -b 1.0-dev git://github.com/abrasive/shairport.git shairport.git; \
+		then cd $(ARCHIVE)/shairport.git; git pull $(MINUS_Q); \
+		else cd $(ARCHIVE); git clone $(MINUS_Q) -b 1.0-dev git://github.com/abrasive/shairport.git shairport.git; \
 		fi
 	cp -ra $(ARCHIVE)/shairport.git $(BUILD_TMP)/shairport
 	$(CH_DIR)/shairport; \
@@ -958,15 +960,15 @@ $(D)/shairport-sync: $(D)/bootstrap $(D)/libdaemon $(D)/libpopt $(D)/libconfig $
 	$(START_BUILD)
 	$(REMOVE)/shairport-sync
 	$(SET) -e; if [ -d $(ARCHIVE)/shairport-sync.git ]; \
-		then cd $(ARCHIVE)/shairport-sync.git; git pull $(SILENT_CONFIGURE); \
-		else cd $(ARCHIVE); git clone $(SILENT_CONFIGURE) https://github.com/mikebrady/shairport-sync.git shairport-sync.git; \
+		then cd $(ARCHIVE)/shairport-sync.git; git pull $(MINUS_Q); \
+		else cd $(ARCHIVE); git clone $(MINUS_Q) https://github.com/mikebrady/shairport-sync.git shairport-sync.git; \
 		fi
 	cp -ra $(ARCHIVE)/shairport-sync.git $(BUILD_TMP)/shairport-sync
 	set -e; cd $(BUILD_TMP)/shairport-sync; \
 		autoreconf -fi; \
 		PKG_CONFIG=$(PKG_CONFIG) \
 		$(BUILDENV) \
-		$(CONFIGURE)  $(SILENT_OPT) \
+		$(CONFIGURE) \
 			--prefix=/usr \
 			--with-alsa \
 			--with-ssl=openssl \
@@ -1185,6 +1187,7 @@ $(D)/nfs_utils: $(D)/bootstrap $(D)/e2fsprogs $(ARCHIVE)/$(NFS_UTILS_SOURCE)
 			--disable-tirpc \
 			--disable-nfsv4 \
 			--without-tcp-wrappers \
+			--enable-silent-rules \
 		; \
 		$(MAKE); \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
@@ -1417,7 +1420,7 @@ $(D)/samba: $(D)/bootstrap $(ARCHIVE)/$(SAMBA_SOURCE)
 		ac_cv_path_PYTHON_CONFIG="" \
 		libreplace_cv_HAVE_GETADDRINFO=no \
 		libreplace_cv_READDIR_NEEDED=no \
-		./configure $(SILENT_CONFIGURE) $(SILENT_OPT) \
+		./configure $(SILENT_CONFIGURE) \
 			--build=$(BUILD) \
 			--host=$(TARGET) \
 			--prefix= \
@@ -1713,7 +1716,7 @@ $(D)/openssh: $(D)/bootstrap $(D)/zlib $(D)/openssl $(ARCHIVE)/$(OPENSSH_SOURCE)
 	$(UNTAR)/$(OPENSSH_SOURCE)
 	$(CH_DIR)/openssh-$(OPENSSH_VER); \
 		CC=$(TARGET)-gcc; \
-		./configure $(SILENT_CONFIGURE) $(SILENT_OPT) \
+		./configure $(SILENT_CONFIGURE) \
 			$(CONFIGURE_OPTS) \
 			--prefix=/usr \
 			--mandir=/.remove \

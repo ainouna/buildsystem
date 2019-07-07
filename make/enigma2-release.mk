@@ -762,7 +762,11 @@ endif
 	$(SILENT)if test -d $(TARGET_DIR)/usr/local/lib/enigma2; then \
 		cp -a $(TARGET_DIR)/usr/local/lib/enigma2/* $(RELEASE_DIR)/usr/lib/enigma2; \
 	fi
-#
+	$(SILENT)if test -d $(RELEASE_DIR)/$(PYTHON_DIR)/site-packages/Extensions; then \
+		cp -rf $(RELEASE_DIR)/$(PYTHON_DIR)/site-packages/Extensions/* $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions; \
+		rmdir --ignore-fail-on-non-empty $(RELEASE_DIR)/$(PYTHON_DIR)/site-packages/Extensions/; \
+	fi
+
 # copy root_enigma2
 #
 	$(SILENT)cp -aR $(SKEL_ROOT)/root_enigma2/etc/* $(RELEASE_DIR)/etc/

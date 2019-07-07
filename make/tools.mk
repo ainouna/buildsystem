@@ -160,9 +160,10 @@ $(D)/tools-libeplayer3_new: $(D)/bootstrap $(D)/ffmpeg
 	$(START_BUILD)
 	$(SET) -e; cd $(APPS_DIR)/tools/libeplayer3_new; \
 		if [ ! -d m4 ]; then mkdir m4; fi; \
-		autoreconf -fi; \
+		autoreconf -fi $(SILENT_OPT); \
 		$(CONFIGURE) \
 			--prefix=/usr \
+			--enable-silent-rules \
 		; \
 		$(MAKE); \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)

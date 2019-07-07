@@ -409,8 +409,8 @@ $(D)/gst_gmediarender: $(D)/bootstrap $(D)/gst_plugins_multibox_dvbmediasink $(D
 	$(START_BUILD)
 	$(REMOVE)/gmrender-resurrect
 	$(SET) -e; if [ -d $(ARCHIVE)/gmrender-resurrect.git ]; \
-		then cd $(ARCHIVE)/gmrender-resurrect.git; git pull $(SILENT_CONFIGURE); \
-		else cd $(ARCHIVE); git clone $(SILENT_CONFIGURE) https://github.com/hzeller/gmrender-resurrect.git gmrender-resurrect.git; \
+		then cd $(ARCHIVE)/gmrender-resurrect.git; git pull $(MINUS_Q); \
+		else cd $(ARCHIVE); git clone $(MINUS_Q) https://github.com/hzeller/gmrender-resurrect.git gmrender-resurrect.git; \
 		fi
 	$(SILENT)cp -ra $(ARCHIVE)/gmrender-resurrect.git $(BUILD_TMP)/gmrender-resurrect
 	$(CH_DIR)/gmrender-resurrect; \
@@ -494,15 +494,15 @@ $(D)/gst_plugin_subsink: $(D)/bootstrap $(D)/gstreamer $(D)/gst_plugins_base
 	$(START_BUILD)
 	$(REMOVE)/gstreamer-$(GST_PLUGIN_SUBSINK_VER)-plugin-subsink
 	$(SET) -e; if [ -d $(ARCHIVE)/gstreamer$(GST_PLUGIN_SUBSINK_VER)-plugin-subsink.git ]; \
-		then cd $(ARCHIVE)/gstreamer$(GST_PLUGIN_SUBSINK_VER)-plugin-subsink.git; git pull $(SILENT_CONFIGURE); \
-		else cd $(ARCHIVE); git clone $(SILENT_CONFIGURE) git://github.com/christophecvr/gstreamer$(GST_PLUGIN_SUBSINK_VER)-plugin-subsink.git gstreamer$(GST_PLUGIN_SUBSINK_VER)-plugin-subsink.git; \
+		then cd $(ARCHIVE)/gstreamer$(GST_PLUGIN_SUBSINK_VER)-plugin-subsink.git; git pull $(MINUS_Q); \
+		else cd $(ARCHIVE); git clone $(MINUS_Q) git://github.com/christophecvr/gstreamer$(GST_PLUGIN_SUBSINK_VER)-plugin-subsink.git gstreamer$(GST_PLUGIN_SUBSINK_VER)-plugin-subsink.git; \
 		fi
 	$(SILENT)cp -ra $(ARCHIVE)/gstreamer$(GST_PLUGIN_SUBSINK_VER)-plugin-subsink.git $(BUILD_TMP)/gstreamer$(GST_PLUGIN_SUBSINK_VER)-plugin-subsink
 	$(CH_DIR)/gstreamer$(GST_PLUGIN_SUBSINK_VER)-plugin-subsink; \
 		$(call apply_patches, $(GST_PLUGIN_SUBSINK_PATCH)); \
 		aclocal --force -I m4; \
-		libtoolize --copy --ltdl --force; \
-		autoconf --force; \
+		libtoolize --copy --ltdl --force $(SILENT_OPT); \
+		autoconf --force $(SILENT_OPT); \
 		autoheader --force; \
 		automake --add-missing --copy --force-missing --foreign; \
 		$(CONFIGURE) \
@@ -525,15 +525,15 @@ $(D)/gst_plugins_dvbmediasink: $(D)/bootstrap $(D)/gstreamer $(D)/gst_plugins_ba
 	$(START_BUILD)
 	$(REMOVE)/gstreamer$(GST_PLUGINS_DVBMEDIASINK_VER)-plugin-dvbmediasink
 	$(SET) -e; if [ -d $(ARCHIVE)/gstreamer$(GST_PLUGINS_DVBMEDIASINK_VER)-plugin-dvbmediasink.git ]; \
-		then cd $(ARCHIVE)/gstreamer$(GST_PLUGINS_DVBMEDIASINK_VER)-plugin-dvbmediasink.git; git pull $(SILENT_CONFIGURE); \
-		else cd $(ARCHIVE); git clone $(SILENT_CONFIGURE) -b gst-1.0 git://github.com/OpenPLi/gst-plugin-dvbmediasink.git gstreamer$(GST_PLUGINS_DVBMEDIASINK_VER)-plugin-dvbmediasink.git; \
+		then cd $(ARCHIVE)/gstreamer$(GST_PLUGINS_DVBMEDIASINK_VER)-plugin-dvbmediasink.git; git pull $(MINUS_Q); \
+		else cd $(ARCHIVE); git clone $(MINUS_Q) -b gst-1.0 git://github.com/OpenPLi/gst-plugin-dvbmediasink.git gstreamer$(GST_PLUGINS_DVBMEDIASINK_VER)-plugin-dvbmediasink.git; \
 		fi
 	$(SILENT)cp -ra $(ARCHIVE)/gstreamer$(GST_PLUGINS_DVBMEDIASINK_VER)-plugin-dvbmediasink.git $(BUILD_TMP)/gstreamer$(GST_PLUGINS_DVBMEDIASINK_VER)-plugin-dvbmediasink
 	$(CH_DIR)/gstreamer$(GST_PLUGINS_DVBMEDIASINK_VER)-plugin-dvbmediasink; \
 		$(call apply_patches, $(GST_PLUGINS_DVBMEDIASINK_PATCH)); \
 		aclocal --force -I m4; \
-		libtoolize --copy --force; \
-		autoconf --force; \
+		libtoolize --copy --force $(SILENT_OPT); \
+		autoconf --force $(SILENT_OPT); \
 		autoheader --force; \
 		automake --add-missing --copy --force-missing --foreign; \
 		$(CONFIGURE) \
@@ -568,8 +568,8 @@ $(D)/gst_plugins_multibox_dvbmediasink: $(D)/bootstrap $(D)/gstreamer $(D)/gst_p
 	$(START_BUILD)
 	$(REMOVE)/gstreamer$(GST_PLUGINS_MULTIBOX_DVBMEDIASINK_VER)-plugin-multibox-dvbmediasink
 	$(SET) -e; if [ -d $(ARCHIVE)/gstreamer$(GST_PLUGINS_MULTIBOX_DVBMEDIASINK_VER)-plugin-multibox-dvbmediasink.git ]; \
-		then cd $(ARCHIVE)/gstreamer$(GST_PLUGINS_MULTIBOX_DVBMEDIASINK_VER)-plugin-multibox-dvbmediasink.git; git pull $(SILENT_CONFIGURE); \
-		else cd $(ARCHIVE); git clone $(SILENT_CONFIGURE) -b openatv-dev git://github.com/christophecvr/gstreamer$(GST_PLUGINS_MULTIBOX_DVBMEDIASINK_VER)-plugin-multibox-dvbmediasink.git gstreamer$(GST_PLUGINS_MULTIBOX_DVBMEDIASINK_VER)-plugin-multibox-dvbmediasink.git; \
+		then cd $(ARCHIVE)/gstreamer$(GST_PLUGINS_MULTIBOX_DVBMEDIASINK_VER)-plugin-multibox-dvbmediasink.git; git pull $(MINUS_Q); \
+		else cd $(ARCHIVE); git clone $(MINUS_Q) -b openatv-dev git://github.com/christophecvr/gstreamer$(GST_PLUGINS_MULTIBOX_DVBMEDIASINK_VER)-plugin-multibox-dvbmediasink.git gstreamer$(GST_PLUGINS_MULTIBOX_DVBMEDIASINK_VER)-plugin-multibox-dvbmediasink.git; \
 		fi
 	$(SILENT)cp -ra $(ARCHIVE)/gstreamer$(GST_PLUGINS_MULTIBOX_DVBMEDIASINK_VER)-plugin-multibox-dvbmediasink.git $(BUILD_TMP)/gstreamer$(GST_PLUGINS_DVBMEDIASINK_VER)-plugin-multibox-dvbmediasink
 	$(CH_DIR)/gstreamer$(GST_PLUGINS_MULTIBOX_DVBMEDIASINK_VER)-plugin-multibox-dvbmediasink; \
