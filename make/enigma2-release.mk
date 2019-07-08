@@ -766,7 +766,7 @@ endif
 		cp -rf $(RELEASE_DIR)/$(PYTHON_DIR)/site-packages/Extensions/* $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions; \
 		rmdir --ignore-fail-on-non-empty $(RELEASE_DIR)/$(PYTHON_DIR)/site-packages/Extensions/; \
 	fi
-
+#
 # copy root_enigma2
 #
 	$(SILENT)cp -aR $(SKEL_ROOT)/root_enigma2/etc/* $(RELEASE_DIR)/etc/
@@ -929,7 +929,6 @@ endif
 ifeq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), small size))
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/DVDBurn
 endif
-
 #
 # delete unnecessary remote control files and VFD plugins
 #
@@ -986,8 +985,6 @@ endif
 		rmdir $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/ufs912; \
 	fi
 #
-	@echo " done."
-#
 # Do not remove pyo files, remove pyc instead
 #
 	$(SILENT)find $(RELEASE_DIR)/usr/lib/enigma2/ -name '*.pyc' -exec rm -f {} \;
@@ -1010,6 +1007,7 @@ endif
 	$(SILENT)find $(RELEASE_DIR)/$(PYTHON_DIR)/ -name '*.pyx' -exec rm -f {} \;
 	$(SILENT)find $(RELEASE_DIR)/$(PYTHON_DIR)/ -name '*.o' -exec rm -f {} \;
 	$(SILENT)find $(RELEASE_DIR)/$(PYTHON_DIR)/ -name '*.la' -exec rm -f {} \;
+	@echo " done."
 #
 # The main target depends on the model.
 #
