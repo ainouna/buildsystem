@@ -1324,7 +1324,7 @@ $(D)/libiconv: $(D)/bootstrap $(ARCHIVE)/$(LIBICONV_SOURCE)
 #
 # expat
 #
-EXPAT_VER = 2.2.6
+EXPAT_VER = 2.2.7
 EXPAT_SOURCE = expat-$(EXPAT_VER).tar.bz2
 
 $(ARCHIVE)/$(EXPAT_SOURCE):
@@ -1504,6 +1504,7 @@ FFMPEG_PATCH  = ffmpeg-$(FFMPEG_VER)-buffer-size.patch
 FFMPEG_PATCH += ffmpeg-$(FFMPEG_VER)-hds-libroxml.patch
 FFMPEG_PATCH += ffmpeg-$(FFMPEG_VER)-aac.patch
 #FFMPEG_PATCH += ffmpeg-$(FFMPEG_VER)-kodi.patch
+FFMPEG_PATCH += ffmpeg-$(FFMPEG_VER)-remove_avpriv_request_sample.patch
 
 FFMPEG_DEPS =
 FFMPEG_CONF_OPTS = 
