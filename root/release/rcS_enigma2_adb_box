@@ -1,204 +1,358 @@
 #!/bin/sh
+#Version 190526.1
+
+echo "ADB ITI-5800S(X) Enigma2"
 
 MODDIR=/lib/modules
-boxtype=`cat /etc/boxtype`
+insmod $MODDIR/e2_proc.ko
+insmod $MODDIR/boxtype.ko
+boxtype=`cat /proc/boxtype`
+echo "[rcS] boxtype: $boxtype"
+echo "$boxtype" > /etc/boxtype
 
-if [ $boxtype == 'bska' ]; then
-  echo "Init VFD bialy"
+echo "[rcS] Init frontpanel"
+if [ $boxtype == 'bska' ] || [ $boxtype == 'bzxb' ]; then
+  echo "[rcS] Init VFD white"
   insmod $MODDIR/vfd.ko rec=0
 else
-  echo "Init VFD czarny"
+  echo "[rcS] Init VFD black"
   insmod $MODDIR/vfd.ko rec=1
 fi
-
+insmod $MODDIR/simu_button.ko
 
 if [ -e /var/etc/.firstboot ]; then
    echo "WAIT 1st start" >/dev/vfd
-   echo "WAIT 1st start"
+   echo "[rcS] WAIT 1st start"
    rm /var/etc/.firstboot
+   sleep 1
    touch /dev/.devfsd
+else
+   echo "LOAD 10" > /dev/vfd
+   echo "[rcS] Start (LOAD 10)"
 fi
 
-   /etc/init.d/mountvirtfs start
-   /etc/init.d/portmap start
+/etc/init.d/mountvirtfs start
 
+# Start automounter with umount timeout of 5 seconds
+echo "[rcS] Starting automounter"
 /etc/init.d/autofs start
 
-if [ ! -e /var/etc/.firstboot ]; then
+echo "[rcS] Starting DEBUG Interface"
+/etc/init.d/mountall start
+/etc/init.d/hostname start
 
-    insmod $MODDIR/boxtype.ko
-    boxtype=`cat /proc/boxtype`
-    echo "boxtype $boxtype"
-    echo "$boxtype" > /etc/boxtype
-
-   insmod $MODDIR/e2_proc.ko
-
-   echo "Starting DEBUG Interface"
-   /etc/init.d/mountall start
-   /etc/init.d/hostname start
-
-   echo "starting telnetd"
+echo -n "[rcS] Starting telnetd"
+autologin=`cat /etc/enigma2/settings | grep systemoptions.autologin | cut -d "=" -f2`
+if [ ! $autologin ]; then
+   /usr/sbin/telnetd -l /bin/autologin
+   echo "with autologin"
+else
    /usr/sbin/telnetd -l /bin/login
-
-   echo "init stmfb"
-   insmod $MODDIR/stmcore-display-stx7100.ko
-    if grep -q "config.av.videoport=Scart" /etc/enigma2/settings; then
-        insmod $MODDIR/stmfb.ko display0=720x576-32@50i:12m:pal:yuv:rgb;
-        echo "VIDEO:scart"
-        VIDEO=scart
-   else
-        insmod $MODDIR/stmfb.ko display0=1280x720-32@50:12m:pal:yuv:yuv;
-        echo "VIDEO:hdmi_component"
-        VIDEO=hdmi_component
-    fi
-
-   echo "LOADING MODULES"   
-   echo "LOADING MODULES" >/dev/vfd
-
-   if [ ! -e /boot/audio.elf ]; then
-      echo "FW MISSING!!!"
-   fi
-   echo "load a firmware"
-   /bin/ustslave /dev/st231-1 /boot/audio.elf
-   echo "load v firmware"
-   /bin/ustslave /dev/st231-0 /boot/video.elf
-
-   echo "init embx"
-   insmod $MODDIR/embxshell.ko
-   insmod $MODDIR/embxmailbox.ko mailbox0=0xb9211000:136:set2 mailbox1=0xb9212000:0 ;
-   insmod $MODDIR/embxshm.ko mailbox0=shm:0:7:0x60000000:0:16:16:0:1024:0xa4000000:0x10000000 ;
-   insmod $MODDIR/mme_host.ko transport0=shm
-   
-   if [ $boxtype == 'bsla' ]; then
-    echo "init Cooler"
-    insmod $MODDIR/cooler.ko
-   fi
-
-   echo "init AVS"
-   if [ $boxtype == 'bxzb' ]; then
-      insmod $MODDIR/avs.ko type=fake_avs
-   else
-      insmod $MODDIR/avs.ko type=stv6412
-
-   echo "init player"
-   player=`cat /proc/stb/player/version`
-   player=`cat /proc/stb/player/version | awk '{ print substr( $0, length($0) - 2, length($0) ) }'`
-   echo "init player $player"
-   insmod $MODDIR/mmelog.ko
-   insmod $MODDIR/mpeg2hw.ko mmeName=MPEG2_TRANSFORMER0;
-   insmod $MODDIR/ksound.ko
-   insmod $MODDIR/p2div64.ko
-   insmod $MODDIR/stm_v4l2.ko
-   insmod $MODDIR/pseudocard.ko
-   insmod $MODDIR/cec_ctrl.ko
-  
-    if [ $boxtype == 'bska' ] || [ $boxtype == 'bxzb' ]; then
-         echo "init frontends bialy"
-         insmod $MODDIR/fe-core.ko
-    elif [ $boxtype == 'bsla' ]; then
-         echo "init frontends czarny"
-	 insmod $MODDIR/fe-core-twin1.ko
-    else
-	 insmod $MODDIR/fe-core-twin2.ko
-    fi
-
-   echo "init drivers"
-   if [ $player -gt 131 ]; then
-	insmod $MODDIR/pti.ko
-	insmod $MODDIR/stm_monitor.ko
-	insmod $MODDIR/stmsysfs.ko
-	if [ $boxtype == 'bzzb' ]; then
-	  insmod $MODDIR/stmdvb.ko TSIS_mode=serial NIMS=twin ;
-	elif [ $boxtype == 'bsla' ]; then
-	  insmod $MODDIR/stmdvb.ko TSIS_mode=parallel NIMS=twin ;
-	else
-	  insmod $MODDIR/stmdvb.ko TSIS_mode=parallel NIMS=single ;
-	fi
-   else
-	insmod $MODDIR/pti.ko
-	insmod $MODDIR/stmdvb.ko
-	insmod $MODDIR/stm_monitor.ko
-   fi	
-   insmod $MODDIR/player2.ko
-   insmod $MODDIR/sth264pp.ko
-   insmod $MODDIR/stmalloc.ko
-   insmod $MODDIR/platform.ko
-   insmod $MODDIR/smartcard.ko
-
-#       echo "init dvb-t as102"
-#       /var/config/dvbt &
-#       insmod $MODDIR/dvb-as102.ko
-
-  if [ $boxtype == 'bxzb' ]; then
-      echo "bxzb" > /proc/stb/video/switch_type
-  else
-      echo "bska" > /proc/stb/video/switch_type
-  fi
-
-  if [ "$VIDEO" = "scart" ]; then
-      echo "VIDEO:scart"
-      echo "scart" > /proc/stb/video/switch
-  else
-      echo "VIDEO:hdmi_component"
-      echo "component720p" > /proc/stb/video/switch
-  fi
-
-   showiframe -p /var/boot/bootlogo.mvi &
-   stfbcontrol a 0
-
-   echo "init frontpanel"
-   insmod $MODDIR/simu_button.ko
-
-   echo "init lircd"
-   mkdir -p /var/run/lirc
-   /usr/bin/lircd
-
-   /bin/evremote2 &
-
-   echo "starting vsftpd"
-   /etc/init.d/vsftpd start
-   /usr/sbin/inetd
-
-   until false
-   do
-      echo "starting e2->"
-      /usr/local/bin/enigma2
-      rtv=$?
-      echo "e2 ended <- RTV: " $rtv
-      case "$rtv" in
-		0) echo "0"
-		   echo "E2 ERROR" > /dev/vfd
-		   sync
-		   init 6;;
-		1) echo "1"
-		   echo "SHUTDOWN" > /dev/vfd
-		   sync
-		   init 6
-		   umount -a;;
-		2) echo "2"
-		   echo "REBOOT" > /dev/vfd
-		   sync
-		   init 6;;
-		3) echo "3"
-		   echo "E2 RESTART" > /dev/vfd
-		   echo "0" > /proc/progress
-		   showiframe -p /var/boot/bootlogo.mvi &;;
-		6) echo "6"
-		   echo "E2 DEBUG RESTART"
-		   echo "0" > /proc/progress
-		   showiframe -p /boot/bootlogo.mvi &;;
-		*) echo "*"
-		   echo "ERROR" > /dev/vfd
-		   sync
-		   echo "0" > /proc/progress
-		   showiframe -p /var/boot/bootlogo.mvi &;;
-      esac
-   done 
- fi
+   echo "with normal login"
 fi
+
+echo "[rcS] Init stmfb (LOAD 9)"
+echo "LOAD 9" > /dev/vfd
+insmod $MODDIR/stmcore-display-stx7100.ko
+
+#if grep -q "config.av.videoport=Scart" /etc/enigma2/settings; then
+#   insmod $MODDIR/stmfb.ko display0=720x576i-32@50:1m::pal:rgb:rgb #SCART
+#   echo "VIDEO:scart"
+#   VIDEO=scart
+#else
+   insmod $MODDIR/stmfb.ko display0=1280x720-32@50:16m::pal:rgb:rgb #HDMI
+#   echo "[rcS] VIDEO: hdmi_component"
+   VIDEO=hdmi_component
+#fi
+
+echo "[rcS] Loading modules"
+
+if [ ! -e /boot/audio.elf ] || [ ! -e /boot/video.elf ]; then
+   echo "[rcS] Firmware(s) missing!"
+   echo "FW MISSING!" > /dev/vfd
+   sleep 5
+fi
+
+echo "[rcS] Load audio firmware (LOAD 8)"
+echo "LOAD 8" > /dev/vfd
+dtsdown=`cat /etc/enigma2/settings | grep systemoptions.dtsdownmix | cut -d "=" -f2`
+if [ ! $dtsdown ] && [ -e /boot/audio_dts.elf ]; then
+   /bin/ustslave /dev/st231-1 /boot/audio_dts.elf > /dev/null
+else
+   /bin/ustslave /dev/st231-1 /boot/audio.elf > /dev/null
+fi
+
+echo "[rcS] Load video firmware (LOAD 7)"
+echo "LOAD 7" > /dev/vfd
+/bin/ustslave /dev/st231-0 /boot/video.elf > /dev/null
+
+echo "[rcS] Init embx (LOAD 6)"
+echo "LOAD 6" > /dev/vfd
+insmod $MODDIR/embxshell.ko
+insmod $MODDIR/embxmailbox.ko mailbox0=0xb9211000:136:set2 mailbox1=0xb9212000:0
+insmod $MODDIR/embxshm.ko mailbox0=shm:0:7:0x60000000:0:16:16:0:1024:0xa4000000:0x10000000
+insmod $MODDIR/mme_host.ko transport0=shm
+   
+if [ $boxtype == 'bsla' ] || [ $boxtype == 'bzzb' ]; then
+   echo "[rcS] Init fan"
+   insmod $MODDIR/cooler.ko
+fi
+
+echo "[rcS] Init AVS (LOAD 5)"
+echo "LOAD 5" > /dev/vfd
+if [ $boxtype == 'bxzb' ]; then
+   insmod $MODDIR/avs.ko type=fake_avs
+else
+   insmod $MODDIR/avs.ko type=stv6412
+fi
+
+player=`cat /proc/stb/player/version | awk '{ print substr( $0, length($0) - 2, length($0) ) }'`
+echo "[rcS] Init player $player (LOAD 4)"
+echo "LOAD 4" > /dev/vfd
+insmod $MODDIR/mmelog.ko
+insmod $MODDIR/mpeg2hw.ko mmeName=MPEG2_TRANSFORMER0;
+insmod $MODDIR/ksound.ko
+insmod $MODDIR/p2div64.ko
+insmod $MODDIR/stm_v4l2.ko
+insmod $MODDIR/pseudocard.ko
+
+echo "[rcS] Init frontend(s)"
+if [ $boxtype == 'bska' ] || [ $boxtype == 'bxzb' ]; then
+   echo "[rcS] init frontends white version"
+   insmod $MODDIR/fe-core.ko
+else
+   echo "[rcS] init frontends black version"
+   if [ $boxtype == 'bsla' ]; then
+      insmod $MODDIR/fe-core-twin1.ko
+   else
+      insmod $MODDIR/fe-core-twin2.ko
+   fi
+fi
+
+echo "[rcS] Init CI & cardreader"
+insmod $MODDIR/pti.ko waitMS=20 videoMem=4096
+if [ $? -ne 0 ]; then
+   insmod $MODDIR/pti.ko
+   echo "[rcS] Simple pti"
+else
+   echo "[rcS] Full feature pti"
+fi
+insmod $MODDIR/stm_monitor.ko
+insmod $MODDIR/stmsysfs.ko
+if [ $boxtype == 'bzzb' ]; then
+   insmod $MODDIR/stmdvb.ko TSIS_mode=serial NIMS=twin
+elif [ $boxtype == 'bsla' ]; then
+   insmod $MODDIR/stmdvb.ko TSIS_mode=parallel NIMS=twin
+else
+   insmod $MODDIR/stmdvb.ko TSIS_mode=parallel NIMS=single
+fi
+
+echo "[rcS] Init player2 (LOAD 3)"
+echo "LOAD 3" > /dev/vfd
+insmod $MODDIR/player2.ko
+insmod $MODDIR/sth264pp.ko
+insmod $MODDIR/stmalloc.ko
+insmod $MODDIR/platform.ko
+insmod $MODDIR/smartcard.ko
+
+#   echo "init dvb-t as102"
+#   /var/config/dvbt &
+#   insmod $MODDIR/dvb-as102.ko
+
+if [ $boxtype == 'bxzb' ]; then
+   echo "bxzb" > /proc/stb/video/switch_type
+else
+   echo "bska" > /proc/stb/video/switch_type
+fi
+
+if [ "$VIDEO" = "scart" ]; then
+#   echo "VIDEO:scart"
+   echo "scart" > /proc/stb/video/switch
+else
+#   echo "VIDEO:hdmi_component"
+   echo "component720p" > /proc/stb/video/switch
+fi
+
+if [ -e /boot/bootlogo.mvi ]; then
+   showiframe -p boot/bootlogo.mvi &
+fi
+
+stfbcontrol a 0
+
+if [ -e $MODDIR/cec_ctrl.ko ];then
+   echo "[rcS] Init HDMI-CEC"
+   insmod $MODDIR/cec_ctrl.ko
+fi
+
+if [ -e $MODDIR/exportfs.ko ]; then
+   echo "[rcS] Init exportfs"
+   insmod $MODDIR/exportfs.ko
+fi
+
+if [ -e $MODDIR/cifs.ko ]; then
+echo "[rcS] Init CIFS support"
+   insmod $MODDIR/cifs.ko
+fi
+
+if [ -e $MODDIR/ntfs.ko ]; then
+   echo "[rcS] Init NTFS support"
+   insmod $MODDIR/ntfs.ko
+fi
+
+if [ -e $MODDIR/tun.ko ]; then
+echo "[rcS] Init tun support"
+   insmod $MODDIR/tun.ko
+fi
+
+if [ -e $MODDIR/usbserial.ko ]; then
+   insmod $MODDIR/usbserial.ko
+   if [ -e $MODDIR/ftdi.ko ]; then
+   echo "[rcS] Init FTDI USB serial support"
+      insmod $MODDIR/ftdi.ko
+   fi
+   if [ -e $MODDIR/pl2303.ko ]; then
+   echo "[rcS] Init PL2303 USB serial support"
+      insmod $MODDIR/pl2303.ko
+   fi
+fi
+
+echo "[rcS] Init remote control (LOAD 2)"
+echo "LOAD 2" > /dev/vfd
+mkdir -p /var/run/lirc
+/usr/bin/lircd
+/bin/evremote2 &
+
+stfbcontrol a 255
+
+NFS=`grep -c nfs /proc/cmdline`
+if [ "$NFS" -eq "1" ]; then
+   echo "[rcS] Booting from NFS, don't set network"
+else
+   if [ -e /etc/network/interfaces ]; then
+      ip addr flush eth0
+      /etc/init.d/networking stop
+      DHCP=`grep -c 'iface eth0 inet dhcp' /etc/network/interfaces`
+      if [ "$DHCP" -eq "1" ]; then
+         echo "[rcS] Starting DHCP"
+         /etc/init.d/udhcpc start
+      fi
+      /etc/init.d/networking start
+   fi
+fi
+#Allow network to wake up and initialize
+sleep 2
+#Show IP address on frontpanel
+#ip=`ifconfig eth0 | sed -n '/inet addr/s/.*addr.\([^ ]*\) .*/\1/p'`
+#echo "IP $ip" > /dev/vfd
+#sleep 3
+
+echo -n "[rcS] Init WLAN: "
+wlan=`cat /etc/enigma2/settings | grep systemoptions.wlan | cut -d "=" -f2`
+if [ ! $wlan ] || [ ! -e $MODDIR/$wlan.ko ]; then
+   echo "None."
+else
+   insmod $MODDIR/$wlan.ko
+   echo "$wlan"
+#   echo "$wlan WLAN" > /dev/vfd
+#   sleep 3
+fi
+
+# Handle SWAPPART and RECORD labels and USB devices
+if [ -e /usr/sbin/amount.sh ]; then
+   (sleep 20; /usr/sbin/amount.sh) &
+fi
+
+echo "[rcS] Apply various E2 settings(LOAD 1)"
+echo "LOAD 1" > /dev/vfd
+# inadyn
+inadyn=`cat /etc/enigma2/settings | grep systemoptions.inadyn | cut -d "=" -f2`
+if [ ! $inadyn ] ||  [ ! -e /usr/bin/inadyn ]; then
+   echo "[rcS] No inadyn"
+else
+   if [ -e /usr/bin/inadyn ]; then
+      /usr/bin/inadyn &
+   fi
+fi
+
+# OpenSSh daemon
+openssh=`cat /etc/enigma2/settings | grep systemoptions.openssh | cut -d "=" -f2`
+if [ ! $openssh ] || [ ! -e /etc/init.d/sshd ]; then
+   echo "[rcS] No OpenSSH"
+else
+   if [ -e /etc/init.d/sshd ]; then
+      (sleep 30; /etc/init.d/sshd start) &
+   fi
+fi
+
+# Enable PKT plugins
+if [ ! -e /tmp/reference.dat ] && [ -e /var/bin/reference.dat ]; then
+   cp /var/bin/reference.dat /tmp
+fi
+
+# Try and synchronise time
+echo "[rcS] Set internet time"
+ntpd -n -p 0.europe.pool.ntp.org -q
+/bin/fp_control -sst
+
+echo "[rcS] Init portmap & ftp"
+/etc/init.d/portmap start
+/etc/init.d/vsftpd start
+/usr/sbin/inetd
+
+# Do own extras
+if [ -e /etc/ownscript.sh ]; then
+   /etc/ownscript.sh &
+fi
+
+echo "Loading E2" > /dev/vfd
+echo "[rcS] Loading E2"
+
+until false
+do
+   echo "[rcS] Entering Enigma2 main loop"
+   if [ -e /usr/local/share/enigma2/backdrop.mvi ]; then
+      showiframe -p /usr/local/share/enigma2/backdrop.mvi &
+   fi
+   /usr/local/bin/enigma2
+   rtv=$?
+   echo "[rcS] Enigma2 ended <- return value: " $rtv
+   case "$rtv" in
+      0) echo "[rcS] E2 ERROR"
+         echo "E2 ERROR" > /dev/vfd
+         sync
+         init 6;;
+      1) echo "[rcS] SHUTDOWN"
+         echo "SHUTDOWN" > /dev/vfd
+         if [ -e /usr/local/share/enigma2/shutdown.mvi ]; then
+            showiframe -p /usr/local/share/enigma2/shutdown.mvi &
+         fi
+         sync
+         init 6
+         umount -a;;
+      2) echo "[rcS] REBOOT"
+         echo "REBOOT" > /dev/vfd
+         sync
+         init 6;;
+      3) echo "[rcS] E2 START"
+         echo "E2 RESTART" > /dev/vfd
+         echo "0" > /proc/progress
+         if [ -e /usr/local/share/enigma2/backdrop.mvi ]; then
+            showiframe -p /usr/local/share/enigma2/backdrop.mvi &
+         else
+            showiframe -p /boot/bootlogo.mvi &
+         fi
+         echo -n " ";;
+      *) echo "[rcS] ERROR"
+         echo "ERROR" > /dev/vfd
+         sync
+         echo "0" > /proc/progress
+         showiframe -p /var/boot/bootlogo.mvi &
+         init 6;;
+   esac
+done
 
 #never reached
 echo "REBOOT" > /dev/vfd
-echo "REBOOT"
+echo "[rcS] REBOOT ADB_BOX"
 sync
-reboot
+reboot -f
