@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 190526.1
+#Version 190722.1
 
 echo "ADB ITI-5800S(X) Enigma2"
 
@@ -11,11 +11,11 @@ echo "[rcS] boxtype: $boxtype"
 echo "$boxtype" > /etc/boxtype
 
 echo "[rcS] Init frontpanel"
-if [ $boxtype == 'bska' ] || [ $boxtype == 'bzxb' ]; then
-  echo "[rcS] Init VFD white"
+if [ $boxtype == 'bska' ] || [ $boxtype == 'bxzb' ]; then
+  echo "[rcS] Init LED display"
   insmod $MODDIR/vfd.ko rec=0
 else
-  echo "[rcS] Init VFD black"
+  echo "[rcS] Init VFD display"
   insmod $MODDIR/vfd.ko rec=1
 fi
 insmod $MODDIR/simu_button.ko
@@ -27,7 +27,11 @@ if [ -e /var/etc/.firstboot ]; then
    sleep 1
    touch /dev/.devfsd
 else
-   echo "LOAD 10" > /dev/vfd
+   if [ $boxtype == 'bska' ] || [ $boxtype == 'bxzb' ]; then
+      echo "Ld10" > /dev/vfd
+   else
+      echo "LOAD 10" > /dev/vfd
+   fi
    echo "[rcS] Start (LOAD 10)"
 fi
 
@@ -52,7 +56,11 @@ else
 fi
 
 echo "[rcS] Init stmfb (LOAD 9)"
-echo "LOAD 9" > /dev/vfd
+if [ $boxtype == 'bska' ] || [ $boxtype == 'bxzb' ]; then
+   echo "Ld 9" > /dev/vfd
+else
+   echo "LOAD 9" > /dev/vfd
+fi
 insmod $MODDIR/stmcore-display-stx7100.ko
 
 #if grep -q "config.av.videoport=Scart" /etc/enigma2/settings; then
@@ -74,20 +82,27 @@ if [ ! -e /boot/audio.elf ] || [ ! -e /boot/video.elf ]; then
 fi
 
 echo "[rcS] Load audio firmware (LOAD 8)"
-echo "LOAD 8" > /dev/vfd
-dtsdown=`cat /etc/enigma2/settings | grep systemoptions.dtsdownmix | cut -d "=" -f2`
-if [ ! $dtsdown ] && [ -e /boot/audio_dts.elf ]; then
-   /bin/ustslave /dev/st231-1 /boot/audio_dts.elf > /dev/null
+if [ $boxtype == 'bska' ] || [ $boxtype == 'bxzb' ]; then
+   echo "Ld 8" > /dev/vfd
 else
-   /bin/ustslave /dev/st231-1 /boot/audio.elf > /dev/null
+   echo "LOAD 8" > /dev/vfd
 fi
+/bin/ustslave /dev/st231-1 /boot/audio.elf > /dev/null
 
 echo "[rcS] Load video firmware (LOAD 7)"
-echo "LOAD 7" > /dev/vfd
+if [ $boxtype == 'bska' ] || [ $boxtype == 'bxzb' ]; then
+   echo "Ld 7" > /dev/vfd
+else
+   echo "LOAD 7" > /dev/vfd
+fi
 /bin/ustslave /dev/st231-0 /boot/video.elf > /dev/null
 
 echo "[rcS] Init embx (LOAD 6)"
-echo "LOAD 6" > /dev/vfd
+if [ $boxtype == 'bska' ] || [ $boxtype == 'bxzb' ]; then
+   echo "Ld 6" > /dev/vfd
+else
+   echo "LOAD 6" > /dev/vfd
+fi
 insmod $MODDIR/embxshell.ko
 insmod $MODDIR/embxmailbox.ko mailbox0=0xb9211000:136:set2 mailbox1=0xb9212000:0
 insmod $MODDIR/embxshm.ko mailbox0=shm:0:7:0x60000000:0:16:16:0:1024:0xa4000000:0x10000000
@@ -99,7 +114,11 @@ if [ $boxtype == 'bsla' ] || [ $boxtype == 'bzzb' ]; then
 fi
 
 echo "[rcS] Init AVS (LOAD 5)"
-echo "LOAD 5" > /dev/vfd
+if [ $boxtype == 'bska' ] || [ $boxtype == 'bxzb' ]; then
+   echo "Ld 5" > /dev/vfd
+else
+   echo "LOAD 5" > /dev/vfd
+fi
 if [ $boxtype == 'bxzb' ]; then
    insmod $MODDIR/avs.ko type=fake_avs
 else
@@ -108,7 +127,11 @@ fi
 
 player=`cat /proc/stb/player/version | awk '{ print substr( $0, length($0) - 2, length($0) ) }'`
 echo "[rcS] Init player $player (LOAD 4)"
-echo "LOAD 4" > /dev/vfd
+if [ $boxtype == 'bska' ] || [ $boxtype == 'bxzb' ]; then
+   echo "Ld 4" > /dev/vfd
+else
+   echo "LOAD 4" > /dev/vfd
+fi
 insmod $MODDIR/mmelog.ko
 insmod $MODDIR/mpeg2hw.ko mmeName=MPEG2_TRANSFORMER0;
 insmod $MODDIR/ksound.ko
@@ -118,10 +141,10 @@ insmod $MODDIR/pseudocard.ko
 
 echo "[rcS] Init frontend(s)"
 if [ $boxtype == 'bska' ] || [ $boxtype == 'bxzb' ]; then
-   echo "[rcS] init frontends white version"
+   echo "[rcS] init frontends (single tuner)"
    insmod $MODDIR/fe-core.ko
 else
-   echo "[rcS] init frontends black version"
+   echo "[rcS] init frontends (twin tuner)"
    if [ $boxtype == 'bsla' ]; then
       insmod $MODDIR/fe-core-twin1.ko
    else
@@ -148,7 +171,11 @@ else
 fi
 
 echo "[rcS] Init player2 (LOAD 3)"
-echo "LOAD 3" > /dev/vfd
+if [ $boxtype == 'bska' ] || [ $boxtype == 'bxzb' ]; then
+   echo "Ld 3" > /dev/vfd
+else
+   echo "LOAD 3" > /dev/vfd
+fi
 insmod $MODDIR/player2.ko
 insmod $MODDIR/sth264pp.ko
 insmod $MODDIR/stmalloc.ko
@@ -178,11 +205,6 @@ if [ -e /boot/bootlogo.mvi ]; then
 fi
 
 stfbcontrol a 0
-
-if [ -e $MODDIR/cec_ctrl.ko ];then
-   echo "[rcS] Init HDMI-CEC"
-   insmod $MODDIR/cec_ctrl.ko
-fi
 
 if [ -e $MODDIR/exportfs.ko ]; then
    echo "[rcS] Init exportfs"
@@ -217,7 +239,11 @@ if [ -e $MODDIR/usbserial.ko ]; then
 fi
 
 echo "[rcS] Init remote control (LOAD 2)"
-echo "LOAD 2" > /dev/vfd
+if [ $boxtype == 'bska' ] || [ $boxtype == 'bxzb' ]; then
+   echo "Ld 2" > /dev/vfd
+else
+   echo "LOAD 2" > /dev/vfd
+fi
 mkdir -p /var/run/lirc
 /usr/bin/lircd
 /bin/evremote2 &
@@ -263,7 +289,11 @@ if [ -e /usr/sbin/amount.sh ]; then
 fi
 
 echo "[rcS] Apply various E2 settings(LOAD 1)"
-echo "LOAD 1" > /dev/vfd
+if [ $boxtype == 'bska' ] || [ $boxtype == 'bxzb' ]; then
+   echo "Ld 1" > /dev/vfd
+else
+   echo "LOAD 1" > /dev/vfd
+fi
 # inadyn
 inadyn=`cat /etc/enigma2/settings | grep systemoptions.inadyn | cut -d "=" -f2`
 if [ ! $inadyn ] ||  [ ! -e /usr/bin/inadyn ]; then
@@ -306,6 +336,11 @@ fi
 
 echo "Loading E2" > /dev/vfd
 echo "[rcS] Loading E2"
+if [ $boxtype == 'bska' ] || [ $boxtype == 'bxzb' ]; then
+   echo "LdE2" > /dev/vfd
+else
+   echo "Loading E2" > /dev/vfd
+fi
 
 until false
 do
@@ -318,11 +353,19 @@ do
    echo "[rcS] Enigma2 ended <- return value: " $rtv
    case "$rtv" in
       0) echo "[rcS] E2 ERROR"
-         echo "E2 ERROR" > /dev/vfd
+         if [ $boxtype == 'bska' ] || [ $boxtype == 'bxzb' ]; then
+           echo "E2Er" > /dev/vfd
+         else
+            echo "E2 ERROR" > /dev/vfd
+         fi
          sync
          init 6;;
       1) echo "[rcS] SHUTDOWN"
-         echo "SHUTDOWN" > /dev/vfd
+         if [ $boxtype == 'bska' ] || [ $boxtype == 'bxzb' ]; then
+           echo "Shdn" > /dev/vfd
+         else
+            echo "SHUTDOWN" > /dev/vfd
+         fi
          if [ -e /usr/local/share/enigma2/shutdown.mvi ]; then
             showiframe -p /usr/local/share/enigma2/shutdown.mvi &
          fi
@@ -330,11 +373,19 @@ do
          init 6
          umount -a;;
       2) echo "[rcS] REBOOT"
-         echo "REBOOT" > /dev/vfd
+         if [ $boxtype == 'bska' ] || [ $boxtype == 'bxzb' ]; then
+           echo "REbt" > /dev/vfd
+         else
+            echo "REBOOT" > /dev/vfd
+         fi
          sync
          init 6;;
-      3) echo "[rcS] E2 START"
-         echo "E2 RESTART" > /dev/vfd
+      3) echo "[rcS] E2 RESTART"
+         if [ $boxtype == 'bska' ] || [ $boxtype == 'bxzb' ]; then
+           echo "E2RS" > /dev/vfd
+         else
+            echo "E2 RESTART" > /dev/vfd
+         fi
          echo "0" > /proc/progress
          if [ -e /usr/local/share/enigma2/backdrop.mvi ]; then
             showiframe -p /usr/local/share/enigma2/backdrop.mvi &
@@ -343,7 +394,11 @@ do
          fi
          echo -n " ";;
       *) echo "[rcS] ERROR"
-         echo "ERROR" > /dev/vfd
+         if [ $boxtype == 'bska' ] || [ $boxtype == 'bxzb' ]; then
+           echo "Err" > /dev/vfd
+         else
+            echo "ERROR" > /dev/vfd
+         fi
          sync
          echo "0" > /proc/progress
          showiframe -p /var/boot/bootlogo.mvi &
