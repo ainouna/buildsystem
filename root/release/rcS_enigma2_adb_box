@@ -1,11 +1,14 @@
 #!/bin/sh
-#Version 190722.1
+#Version 190723.3
 
 echo "ADB ITI-5800S(X) Enigma2"
 
 MODDIR=/lib/modules
 insmod $MODDIR/e2_proc.ko
 insmod $MODDIR/boxtype.ko
+sleep 1
+ls /proc
+sleep 1
 boxtype=`cat /proc/boxtype`
 echo "[rcS] boxtype: $boxtype"
 echo "$boxtype" > /etc/boxtype
@@ -13,10 +16,10 @@ echo "$boxtype" > /etc/boxtype
 echo "[rcS] Init frontpanel"
 if [ $boxtype == 'bska' ] || [ $boxtype == 'bxzb' ]; then
   echo "[rcS] Init LED display"
-  insmod $MODDIR/vfd.ko rec=0
+  insmod $MODDIR/adb_fp.ko rec=0 paramDebug=100
 else
   echo "[rcS] Init VFD display"
-  insmod $MODDIR/vfd.ko rec=1
+  insmod $MODDIR/adb_fp.ko rec=1 paramDebug=100
 fi
 insmod $MODDIR/simu_button.ko
 
@@ -205,6 +208,11 @@ if [ -e /boot/bootlogo.mvi ]; then
 fi
 
 stfbcontrol a 0
+
+if [ -e $MODDIR/cec_ctrl.ko ];then
+   echo "[rcS] Init HDMI-CEC"
+   insmod $MODDIR/cec_ctrl.ko
+fi
 
 if [ -e $MODDIR/exportfs.ko ]; then
    echo "[rcS] Init exportfs"
