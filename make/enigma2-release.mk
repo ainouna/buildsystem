@@ -478,7 +478,7 @@ enigma2_release_hl101:
 #
 enigma2_release_adb_box:
 	$(SILENT)install -m 0755 $(SKEL_ROOT)/release/halt_adb_box $(RELEASE_DIR)/etc/init.d/halt
-	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/frontcontroller/adb_box_fp/adb_fp.ko $(RELEASE_DIR)/lib/modules/
+	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/frontcontroller/adb_5800_fp/adb_5800_fp.ko $(RELEASE_DIR)/lib/modules/
 	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/frontends/*.ko $(RELEASE_DIR)/lib/modules/
 	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/stgfb/stmfb/stmcore-display-stx7100.ko $(RELEASE_DIR)/lib/modules/
 	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/adb_box_fan/adb_fan.ko $(RELEASE_DIR)/lib/modules/
@@ -494,6 +494,7 @@ enigma2_release_adb_box:
 	$(SILENT)cp -dp $(SKEL_ROOT)/release/lircd_adb_box.conf $(RELEASE_DIR)/etc/lircd.conf
 	$(SILENT)mkdir -p $(RELEASE_DIR)/var/run/lirc
 	$(SILENT)rm -f $(RELEASE_DIR)/bin/vdstandby
+	$(SILENT)cp -f $(SKEL_ROOT)/release/rc1_adb_box.png $(RELEASE_DIR)/usr/local/share/enigma2/skin_default/rc.png
 	$(SILENT)cp -f $(SKEL_ROOT)/root_enigma2/usr/local/share/enigma2/keymap_adb_box.xml $(RELEASE_DIR)/usr/local/share/enigma2/keymap.xml
 
 #
@@ -936,6 +937,7 @@ ifneq ($(BOXTYPE), $(filter $(BOXTYPE), cuberevo cuberevo_mini_fta cuberevo_250h
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/CuberevoVFD
 endif
 #
+	$(SILENT)cp -f $(SKEL_ROOT)/release/rc1_adb_box.png $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/adb.png
 	$(SILENT)cp -f $(SKEL_ROOT)/release/rc_cuberevo_uni.png $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/cuberevo_uni.png
 	$(SILENT)cp -f $(SKEL_ROOT)/release/rc_fs9000.png $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/fs9000.png
 	$(SILENT)cp -f $(SKEL_ROOT)/release/rc_hs9510.png $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/hs9510.png
@@ -956,6 +958,10 @@ endif
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/hd2400.*
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/vu*.*
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/xp1000.*
+	$(SILENT)if [[ ! ENABLE_ADB_BOX ]]; then \
+		rm -rf $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/adb/*; \
+		rmdir $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/adb; \
+	fi
 	$(SILENT)if [[ ! ENABLE_CUBEREVO && ! ENABLE_CUBEREVO_MINI_FTA && ! ENABLE_CUBEREVO_250HD && ! ENABLE_CUBEREVO_MINI && ! CUBEREVO_MINI2 && ! CUBEREVO_2000HD && ! CUBEREVO_3000HD && ! CUBEREVO_9500HD ]]; then \
 		rm -rf $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/cuberevo_uni/*; \
 		rmdir $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/cuberevo_uni; \
