@@ -4,10 +4,10 @@
  #endif
  #endif
  
-+	{
++	{  // change command line supplied by boot loader to desired one; inserted suplied MAC
 +		int command_line_len = strlen(command_line);
 +		char org_command_line[] = "console=ttyAS0,115200 root=/dev/mtdblock0 rw rootfstype=jffs2";
-+		char new_command_line[] = "console=ttyAS0,115200 root=/dev/mtdblock2 rw rootfstype=jffs2 init=/bin/devinit mem=128m coprocessor_mem=4m@0x10000000,4m@0x10400000 nwhwconf=device:eth0,hwaddr:";
++		char new_command_line[] = "console=ttyAS0,115200 root=/dev/mtdblock3 rw rootfstype=jffs2 init=/bin/devinit mem=128m coprocessor_mem=4m@0x10000000,4m@0x10400000 nwhwconf=device:eth0,hwaddr:";
 +		char mac[] = "12:34:56:78:9A:BC";
 +		int org_command_line_len = strlen(org_command_line);
 +		int i;
@@ -43,9 +43,43 @@
  	if (c->cut_major == -1)
  		seq_printf(m, "cut\t\t: unknown\n");
  	else if (c->cut_minor == -1)
+--- a/arch/sh/boards/mach-mb442/mach.c.org
++++ b/arch/sh/boards/mach-mb442/mach.c
+@@ -43,16 +43,16 @@
+ 	/* Set the ILC to route external interrupts to the the INTC */
+ 	/* Outputs 0-3 are the interrupt pins, 4-7 are routed to the INTC */
+ 	/* Inputs sys-irq2 and 3 are unused (pulled high) */
+-	ilc_route_external(ILC_EXT_IRQ0, 4, 0);		/* SMC Ethernet */
+-	ilc_route_external(ILC_EXT_IRQ1, 5, 0);		/* ATA */
+-	ilc_route_external(ILC_EXT_IRQ2, 6, 0);		/* Unused */
+-	ilc_route_external(ILC_EXT_MDINT, 7, 0);	/* STe100 PHY */
++//	ilc_route_external(ILC_EXT_IRQ0, 4, 0);		/* SMC Ethernet */
++	ilc_route_external(ILC_EXT_IRQ1, 5, 0);		/* SMC Ethernet nBox (was ATA)*/
++//	ilc_route_external(ILC_EXT_IRQ2, 6, 0);		/* Unused */
++//	ilc_route_external(ILC_EXT_MDINT, 7, 0);	/* STe100 PHY */
+ }
+ 
+ void __init mb442_setup(char**);
+ 
+ static struct sh_machine_vector mv_mb442 __initmv = {
+-	.mv_name		= "STb7100 Reference board",
++	.mv_name		= "ADB ITI-5800S(X) board",
+ 	.mv_setup		= mb442_setup,
+ 	.mv_nr_irqs		= NR_IRQS,
+ 	.mv_init_irq		= mb442_init_irq,
 --- a/arch/sh/boards/mach-mb442/setup.c.org
 +++ b/arch/sh/boards/mach-mb442/setup.c
-@@ -18,100 +18,182 @@
+@@ -8,6 +8,9 @@
+  * License.  See linux/COPYING for more information.
+  *
+  * STMicroelectronics STb7100 Reference board support.
++ *
++ * Modified to support ADB ITI-5800S(X)
++ *
+  */
+ 
+ #include <linux/init.h>
+@@ -18,100 +21,186 @@
  #include <linux/delay.h>
  #include <linux/spi/spi.h>
  #include <linux/mtd/mtd.h>
@@ -114,11 +148,6 @@
 +		.hw_flow_control = 0,
 +		.is_console = 1,
 +	});
-+	stx7100_configure_asc(3, &(struct stx7100_asc_config)
-+	{
-+		.hw_flow_control = 0,
-+		.is_console = 0,
-+	});
 +
 +	bpa2_init(bpa2_parts_table, ARRAY_SIZE(bpa2_parts_table));
  }
@@ -128,7 +157,7 @@
 -		.start	= 0x02000300,
 -		.end	= 0x02000300 + 0xff,
 +/* Network */
-+static struct resource iti5800_smc91x_resources[] =
++static struct resource iti_5800_smc91x_resources[] =
 +{
 +	[0] =
 +	{
@@ -148,7 +177,7 @@
  };
  
 -static struct platform_device mb442_smc91x_device = {
-+static struct platform_device iti5800_smc91x_device =
++static struct platform_device iti_5800_smc91x_device =
 +{
  	.name		= "smc91x",
  	.id		= 0,
@@ -162,35 +191,9 @@
 -}
 -
 -static struct platform_device mb442_physmap_flash = {
-+	.num_resources	= ARRAY_SIZE(iti5800_smc91x_resources),
-+	.resource	= iti5800_smc91x_resources,
-+};
-+
-+/* NOR Flash */
-+static struct mtd_partition nor_parts[] =
-+{
-+	{
-+		.name = "uboot",                  // mtd0: U-boot from A0200000 to A022FFFF
-+		.size = 0x00030000,               // 192 kbyte (note hole of 64 kbyte until environment)
-+		.offset = 0x00000000,
-+	},
-+	{
-+		.name = "uboot env",              // mtd 1
-+		.size = 0x00010000,               //  64 kbyte
-+		.offset = 0x00040000,             // 256 kbyte
-+	},
-+//	{
-+//		.name = "nor_reserve",            // mtd 2
-+//		.size   = MTDPART_SIZ_FULL,	  // 4 Mbyte - 320 kbyte = 3,6875 Mbyte
-+//		.offset = 0x00050000,             // 320 kbyte
-+//	}
-+};
-+
-+static struct platform_device iti5800_nor_device =
-+{
- 	.name		= "physmap-flash",
- 	.id		= -1,
- 	.num_resources	= 1,
+-	.name		= "physmap-flash",
+-	.id		= -1,
+-	.num_resources	= 1,
 -	.resource	= (struct resource[]) {
 -		STM_PLAT_RESOURCE_MEM(0, 8*1024*1024),
 -	},
@@ -229,77 +232,115 @@
 -};
 -
 -static int __init mb442_device_init(void)
-+	.resource       = (struct resource[])
++	.num_resources	= ARRAY_SIZE(iti_5800_smc91x_resources),
++	.resource	= iti_5800_smc91x_resources,
++};
++
++/* NOR Flash */
++static struct mtd_partition iti_5800_nor_parts[] =
++{
 +	{
-+		STM_PLAT_RESOURCE_MEM(0, 4 * 1024 * 1024),
++		.name = "uboot",                  // mtd0: U-boot from A0200000 to A022FFFF
++		.size = 0x00030000,               // 192 kbyte (note hole of 64 kbyte until environment)
++		.offset = 0x00000000,
 +	},
-+	.dev.platform_data      = &(struct physmap_flash_data)
 +	{
-+		.width		= 2, 
-+		.nr_parts	= ARRAY_SIZE(nor_parts),
-+		.parts		= nor_parts, 
++		.name = "uboot env",              // mtd 1  // values for freebox/MAGUS loader
++		.size = 0x00010000,               //  64 kbyte
++		.offset = 0x00040000,             // 256 kbyte
++	},
++	{  // corrected because of A20 shorted to logic 1
++		.name = "nor_kernel",             // mtd 2
++		.size   = 0x001b0000,             // 2 Mbyte - 320 kbyte = 1,6875 Mbyte
++		.offset = 0x00050000,             // 320 kbyte
++	},
++#if 0
++	{  // wasted because of A20 shorted to logic 1
++		.name = "nor_unusable",           // (mtd 3)
++		.size   = MTDPART_SIZ_FULL,       // 2 Mbyte
++		.offset = 0x00200000,             // 2 Mbyte
++	}
++#endif
++};
++
++static struct platform_device iti_5800_nor_device =
++{
++	.name              = "physmap-flash",
++	.id                = -1,
++	.num_resources     = 1,
++	.resource          = (struct resource[])
++	{
++		STM_PLAT_RESOURCE_MEM(0, 4 * 1024 * 1024),  // 2 Mbyte usable because of A20 tied to logic 1
++	},
++	.dev.platform_data = &(struct physmap_flash_data)
++	{
++		.width         = 2,
++		.nr_parts      = ARRAY_SIZE(iti_5800_nor_parts),
++		.parts         = iti_5800_nor_parts, 
 +	},
 +};
 +
 +/* NAND Flash */
-+static struct mtd_partition iti5800_nand_parts[] =
++static struct mtd_partition iti_5800_nand_parts[] =
 +{
 +	{
-+		.name   = "rootfs",             // mtd 2 or 3
-+		.offset = 0,                    //
-+		.size   = 0x03C00000,           // 60 Mbyte
++		.name         = "rootfs",             // mtd 3
++		.offset       = 0,                    //
++		.size         = 0x03C00000,           // 60 Mbyte
 +	},
 +	{
-+		.name   = "kernel",     	// mtd 3 or 4
-+		.offset = MTDPART_OFS_APPEND,   // 60 Mbyte
-+		.size   = MTDPART_SIZ_FULL,	// 4 Mbyte
++		.name         = "kernel",            // mtd 4
++		.offset       = MTDPART_OFS_APPEND,  // 60 Mbyte
++		.size         = MTDPART_SIZ_FULL,    // 4 Mbyte
 +	},
 +};
 +
-+struct stm_nand_bank_data iti5800_nand_bank_data =
++struct stm_nand_bank_data iti_5800_nand_bank_data =
 +{
-+	.csn            = 1,
-+	.nr_partitions  = ARRAY_SIZE(iti5800_nand_parts),
-+	.partitions     = iti5800_nand_parts,
-+	.options        = NAND_NO_AUTOINCR,
-+	.timing_data    = &(struct stm_nand_timing_data)
-+	{  // TODO: check values (STM NAND512 chip)
-+		.sig_setup      = 40,	/* times in ns */
-+		.sig_hold       = 40,
-+		.CE_deassert    = 0,
-+		.WE_to_RBn      = 100,
-+		.wr_on          = 0,
-+		.wr_off         = 10,
-+		.rd_on          = 0,
-+		.rd_off         = 10,
-+		.chip_delay     = 25,	/* in us */
-+	},
-+	.emi_withinbankoffset   = 0,
++	.csn                  = 1,
++	.nr_partitions        = ARRAY_SIZE(iti_5800_nand_parts),
++	.partitions           = iti_5800_nand_parts,
++	.options              = NAND_NO_AUTOINCR,
++	.timing_spec          = &NAND_TSPEC_ST_NAND256W3A2BN6,
++	.emi_withinbankoffset = 0,
 +};
 +
-+static struct platform_device iti5800_nand_device =
++#if 0  // set to 1 if you want NAND configuration through a device
++static struct platform_device iti_5800_nand_device =
 +{
-+	.name                   = "stm-nand-emi",
-+	.dev.platform_data      = &(struct stm_plat_nand_emi_data)
++	.name                 = "stm-nand-emi",
++	.dev.platform_data    = &(struct stm_plat_nand_emi_data)
 +	{
-+		.nr_banks       = 1,
-+		.banks          = &iti5800_nand_bank_data,
-+		.emi_rbn_gpio   = stm_gpio(4, 5), 
++		.nr_banks         = 1,
++		.banks            = &iti_5800_nand_bank_data,
++		.emi_rbn_gpio     = stm_gpio(4, 5), 
++		.emi_nce_gpio     = stm_gpio(3, 6) 
 +	},
 +};
-+
-+static struct platform_device *iti5800_devices[] __initdata =
++#else
++static struct stm_nand_config iti_5800_nand_config =
 +{
-+	&iti5800_smc91x_device,
-+	&iti5800_nor_device,
-+	&iti5800_nand_device,
++	.driver       = stm_nand_emi,
++	.nr_banks     = 1,  // ARRAY_SIZE(iti_5800_nand_bank_data),
++	.banks        = &iti_5800_nand_bank_data,
++	.rbn.emi_gpio = stm_gpio(4, 5),	
++	.nce.emi_gpio = stm_gpio(3, 6)
++};
++#endif
++
++static struct platform_device *iti_5800_devices[] __initdata =
++{
++	&iti_5800_smc91x_device,
++	&iti_5800_nor_device,
++// uncomment next line if you want NAND configuration through a device
++//	&iti_5800_nand_device,
 +};
 +
-+static int __init iti5800_device_init(void)
++static int __init iti_5800_device_init(void)
  {
  	stx7100_configure_sata();
  
-@@ -120,8 +202,7 @@
+@@ -120,8 +209,7 @@
  			.out1_enabled = 1, });
  
  	stx7100_configure_ssc_i2c(0, NULL);
@@ -309,7 +350,7 @@
  
  	stx7100_configure_usb();
  
-@@ -130,34 +211,7 @@
+@@ -130,34 +218,10 @@
  			.tx_enabled = 0,
  			.tx_od_enabled = 0, });
  
@@ -342,23 +383,28 @@
 -
 -	return platform_add_devices(mb442_devices,
 -			ARRAY_SIZE(mb442_devices));
-+	return platform_add_devices(iti5800_devices,
-+			ARRAY_SIZE(iti5800_devices));
++// comment next line if you want NAND configuration through a device
++	stx7100_configure_nand(&iti_5800_nand_config);
++
++	return platform_add_devices(iti_5800_devices, ARRAY_SIZE(iti_5800_devices));
  }
 -device_initcall(mb442_device_init);
-+device_initcall(iti5800_device_init);
---- linux-sh4/drivers/ata/sata_stm.c.org
-+++ linux-sh4/drivers/ata/sata_stm.c
-@@ -871,6 +871,8 @@
++device_initcall(iti_5800_device_init);
++// vim:ts=4
+--- a/drivers/ata/sata_stm.c.org
++++ b/drivers/ata/sata_stm.c
+@@ -871,7 +871,9 @@
  	} else if (readl(mmio + DMAC_RAWERR) & 1) {
  		ata_port_printk(ap, KERN_ERR, "DMA error asserted\n");
  	}
-+	
-+	else handled = 0;
- 
+-
++	else {
++		handled = 0;
++	}
  	return handled;
  
-@@ -951,20 +953,20 @@
+ }
+@@ -951,20 +953,24 @@
  	struct ata_host *host = dev_instance;
  	unsigned int handled = 0;
  	unsigned int i;
@@ -372,11 +418,15 @@
 -		if (hpriv->shared_dma_host_irq)
 -			handled += stm_sata_dma_irq(host->ports[i]);
 -		handled += stm_sata_host_irq(host->ports[i]);
-+	for (i = 0; i < host->n_ports; i++) 
++	for (i = 0; i < host->n_ports; i++)
 +	{
 +		handled += stm_sata_dma_irq(host->ports[i]);
-+		if (!(handled)) handled += stm_sata_host_irq(host->ports[i]);
-+		else handled = 0;
++		if (!(handled)) {
++			handled += stm_sata_host_irq(host->ports[i]);
++		}
++		else {
++			handled = 0;
++		}
  	}
  
  	spin_unlock(&host->lock);
@@ -385,7 +435,7 @@
  	return IRQ_RETVAL(handled);
  }
  
-@@ -1230,6 +1232,9 @@
+@@ -1230,6 +1236,9 @@
  		sata_private_info->device_config);
  	if (!hpriv->device_state)
  		return -EBUSY;
@@ -395,64 +445,125 @@
  
  	mem_res = platform_get_resource(pdev,IORESOURCE_MEM,0);
  	phys_base = mem_res->start;
---- linux-sh4/drivers/mtd/nand/Kconfig.org
-+++ linux-sh4/drivers/mtd/nand/Kconfig
+--- a/drivers/char/lirc/lirc_stm.c.org
++++ b/drivers/char/lirc/lirc_stm.c
+@@ -882,7 +882,7 @@
+ 	rx.error = 0;
+ 	rx.off_rbuf = 0;
+ 	rx.sumUs = 0;
+-	memset(rx.rbuf, 0, LIRC_STM_BUFSIZE);
++	memset(rx.rbuf, 0, (LIRC_STM_BUFSIZE * 4));  // freebox
+ }
+ 
+ static void lirc_stm_rx_interrupt(int irq, void *dev_id)
+@@ -1376,7 +1376,7 @@
+ 	 */
+ 
+ 	if ((rx.rbuf = (lirc_t *) devm_kzalloc(dev,
+-					       LIRC_STM_BUFSIZE,
++					       (LIRC_STM_BUFSIZE * 4),  // freebox
+ 					       GFP_KERNEL)) == NULL)
+ 		return -ENOMEM;
+ 
+--- a/drivers/media/dvb/dvb-core/dvb_frontend.c.org
++++ b/drivers/media/dvb/dvb-core/dvb_frontend.c
+@@ -1253,6 +1253,8 @@
+ 
+ 	if ((c->delivery_system == SYS_ISDBT) || (c->delivery_system == SYS_DVBT2)) {
+ 		/* Fake out a generic DVB-T request so we pass validation in the ioctl */
++		p->frequency = c->frequency;
++		p->inversion = c->inversion;
+ 		p->u.ofdm.constellation = QAM_AUTO;
+ 		p->u.ofdm.code_rate_HP = FEC_AUTO;
+ 		p->u.ofdm.code_rate_LP = FEC_AUTO;
+--- a/drivers/mtd/nand/Kconfig.org
++++ b/drivers/mtd/nand/Kconfig
 @@ -499,4 +499,5 @@
 	depends on MTD_NAND
 +	depends on (CPU_SUBTYPE_STX7100)
 	help
 	  Enables the STMicroelectronics NAND driver for platforms in which the
 	  device is connected via an EMI bank.
---- linux-sh4/drivers/mtd/nand/stm_nand_emi.c.org
-+++ linux-sh4/drivers/mtd/nand/stm_nand_emi.c
-@@ -37,6 +37,7 @@
- #include <linux/stm/platform.h>
- #include <linux/stm/nand.h>
- #include <asm/dma.h>
-+#include <linux/stm/pio.h>
+--- a/drivers/mtd/nand/stm_nand_emi.c.org
++++ b/drivers/mtd/nand/stm_nand_emi.c
+@@ -58,6 +58,7 @@
+ 	unsigned int		emi_base;
+ 	unsigned int		emi_size;
  
- #include "stm_nand_bbt.h"
++	int			nce_gpio;	/* NAND CE control pin        */
+ 	int			rbn_gpio;	/* Ready not busy pin         */
  
-@@ -45,7 +46,7 @@
- #endif
+ 	void __iomem		*io_base;	/* EMI base for NAND chip     */
+@@ -86,6 +87,7 @@
+  * share some hardware (normally a single Ready/notBusy signal).
+  */
+ struct stm_nand_emi_group {
++	int nce_gpio;
+ 	int rbn_gpio;
+ 	int nr_banks;
+ 	struct stm_nand_emi *banks[0];
+@@ -454,13 +456,42 @@
+ #endif /* CONFIG_STM_NAND_EMI_CACHED */
  
- #define NAME	"stm-nand-emi"
--
-+struct stpio_pin *nand_ce_pin = NULL;
- /*
-  * Private data for stm_emi_nand driver.  Concurrency and device locking
-  * handled by MTD layers.
-@@ -463,12 +464,24 @@
+ /* Command control function for EMI 'bit-banging'.  AL and CL signals are
+- * toggled via EMI address lines emi_addr_17, emi_addr_18.
++ * toggled via EMI address lines emi_addr_17, emi_addr_16.
+  */
+ static void nand_cmd_ctrl_emi(struct mtd_info *mtd, int cmd, unsigned int ctrl)
+ {
+ 	struct nand_chip *this = mtd->priv;
+ 	struct stm_nand_emi *data = this->priv;
  
- 	if (ctrl & NAND_CTRL_CHANGE) {
- 		if (ctrl & NAND_CLE) {
--			this->IO_ADDR_W = data->io_cmd;
--		} else if (ctrl & NAND_ALE) {
--			this->IO_ADDR_W = data->io_addr;
--		} else {
--			this->IO_ADDR_W = data->io_base;
++#if 1
++	if (ctrl & NAND_CTRL_CHANGE)  // this implies ctrl != 0
++	{  // otherwise we do not come here
++		if (ctrl & NAND_CLE)  // ctrl != 0 !
++		{  // always true if NAND_CLE != 0
 +			this->IO_ADDR_W = (void *)((unsigned int)this->IO_ADDR_W | (unsigned int)(1 << 17));
- 		}
-+		else {
++		}
++		else  // so this is never true
++		{
 +			this->IO_ADDR_W = (void *)((unsigned int)this->IO_ADDR_W & ~(unsigned int)(1 << 17));
 +		}
-+
-+		if (ctrl & NAND_ALE) {
++		if (ctrl & NAND_ALE)  // ctrl !=0 !
++		{
 +			this->IO_ADDR_W = (void *)((unsigned int)this->IO_ADDR_W | (unsigned int)(1 << 16));
 +		}
-+		else {
++		else  // so this is never true
++		{
 +			this->IO_ADDR_W = (void *)((unsigned int)this->IO_ADDR_W & ~(unsigned int)(1 << 16));
 +		}
-+	if (ctrl & NAND_NCE) {
-+		    stpio_set_pin(nand_ce_pin, 0); 
-+			}
-+			else {
-+			stpio_set_pin(nand_ce_pin, 1); 
++		if (ctrl & NAND_NCE)  // ctrl !=0 !
++		{
++			gpio_set_value(stm_gpio(3, 6), 0);
++		}
++		else  // so this is never true
++		{
++			gpio_set_value(stm_gpio(3, 6), 1);
 +		}	
++	}
++#else  // original code
+ 	if (ctrl & NAND_CTRL_CHANGE) {
+ 		if (ctrl & NAND_CLE) {
+ 			this->IO_ADDR_W = data->io_cmd;
+@@ -470,6 +501,7 @@
+ 			this->IO_ADDR_W = data->io_base;
+ 		}
  	}
++#endif
  
  	if (cmd != NAND_CMD_NONE)
-@@ -730,10 +743,10 @@
+ 		writeb(cmd, this->IO_ADDR_W);
+@@ -721,7 +753,7 @@
+ #else
+ 	data->io_data = data->io_base;
+ #endif
+-	/* Map cmd and addr addresses (emi_addr_17 and emi_addr_18) */
++	/* Map cmd and addr addresses (emi_addr_17 and emi_addr_16) */
+ 	data->io_cmd = ioremap_nocache(data->emi_base | (1 << 17), 1);
+ 	if (!data->io_cmd) {
+ 		printk(KERN_ERR NAME ": ioremap failed for io_cmd 0x%08x\n",
+@@ -730,10 +762,10 @@
  		goto out4;
  	}
  
@@ -465,28 +576,69 @@
  		res = -ENOMEM;
  		goto out5;
  	}
-@@ -746,8 +759,8 @@
+@@ -746,8 +778,8 @@
  	/* Assign more sensible name (default is string from nand_ids.c!) */
  	data->mtd.name = dev_name(&pdev->dev);
  
 -	data->chip.IO_ADDR_R = data->io_base;
 -	data->chip.IO_ADDR_W = data->io_base;
-+	data->chip.IO_ADDR_R = 0xA0400000;
-+	data->chip.IO_ADDR_W = 0xA0800000;
++	data->chip.IO_ADDR_R = (void __iomem *)0xA0400000;
++	data->chip.IO_ADDR_W = (void __iomem *)0xA0800000;
  	data->rbn_gpio = -1;
  	data->chip.chip_delay = 50;
  	data->chip.cmd_ctrl = nand_cmd_ctrl_emi;
-@@ -913,7 +926,7 @@
- 			GFP_KERNEL);
+@@ -906,6 +938,7 @@
+ 	struct stm_nand_emi *emi;
+ 	int err;
+ 	int n;
++	int nce_gpio;
+ 	int rbn_gpio;
+ 
+ 	group = kzalloc(sizeof(struct stm_nand_emi_group) +
+@@ -914,6 +947,21 @@
  	if (!group)
  		return -ENOMEM;
--
-+	nand_ce_pin = stpio_request_set_pin(3, 6, "nand_sel", STPIO_OUT, 0);
+ 
++#if 0
++	gpio_request(stm_gpio(3, 6), "nand_ce");
++	gpio_direction_output(stm_gpio(3,6), 0);
++#else
++	nce_gpio = pdata->emi_nce_gpio;
++	if (gpio_is_valid(nce_gpio)) {
++		err = gpio_request(nce_gpio, "nand_CE");
++		if (err == 0) {
++			gpio_direction_output(nce_gpio, 0);
++		} else {
++			dev_err(&pdev->dev, "nand_ce unavailable.\n");
++			nce_gpio = -1;
++		}
++	}
++#endif
  	rbn_gpio = pdata->emi_rbn_gpio;
  	if (gpio_is_valid(rbn_gpio)) {
  		err = gpio_request(rbn_gpio, "nand_RBn");
---- linux-sh4/drivers/net/smc91x.c.org
-+++ linux-sh4/drivers/net/smc91x.c
+@@ -948,6 +996,9 @@
+ 	while (--n > 0)
+ 		nand_remove_bank(group->banks[n], &pdata->banks[n]);
+ 
++	if (gpio_is_valid(group->nce_gpio))
++		gpio_free(group->nce_gpio);
++
+ 	if (gpio_is_valid(group->rbn_gpio))
+ 		gpio_free(group->rbn_gpio);
+ 
+@@ -968,6 +1019,9 @@
+ 
+ 	for (n = 0; n < group->nr_banks; n++)
+ 		nand_remove_bank(group->banks[n], &pdata->banks[n]);
++
++	if (gpio_is_valid(group->nce_gpio))
++		gpio_free(group->nce_gpio);
+ 
+ 	if (gpio_is_valid(group->rbn_gpio))
+ 		gpio_free(group->rbn_gpio);
+--- a/drivers/net/smc91x.c.org
++++ b/drivers/net/smc91x.c
 @@ -234,7 +234,6 @@
  	}								\
  } while (0)
@@ -563,8 +715,8 @@
  #ifdef CONFIG_ARCH_PXA
  	{
  		struct smc_local *lp = netdev_priv(ndev);
---- linux-sh4/drivers/net/smc91x.h.org
-+++ linux-sh4/drivers/net/smc91x.h
+--- a/drivers/net/smc91x.h.org
++++ b/drivers/net/smc91x.h
 @@ -250,16 +250,19 @@
   * to do a SMC_outl, which on a 16 bit bus translates into two 16 bit writes.
   * This bypasses the special logic which would prevent this also updating
@@ -588,8 +740,8 @@
  #define SMC_IRQ_FLAGS		0
  
  #ifdef SMC_STEM_BS_MASK
---- linux-sh4/drivers/stm/stx7100_comms.c.org
-+++ linux-sh4/drivers/stm/stx7100_comms.c
+--- a/drivers/stm/stx7100_comms.c.org
++++ b/drivers/stm/stx7100_comms.c
 @@ -226,12 +226,12 @@
  			STM_PAD_PIO_BIDIR_NAMED(2, 0, 1, "SCL"),
  			STM_PAD_PIO_BIDIR_NAMED(2, 1, 1, "SDA"),
@@ -615,8 +767,8 @@
  	stx7100_ssc_devices[ssc].id = i2c_busnum;
  
  	plat_data = stx7100_ssc_devices[ssc].dev.platform_data;
---- linux-sh4/include/linux/libata.h.org
-+++ linux-sh4/include/linux/libata.h
+--- a/include/linux/libata.h.org
++++ b/include/linux/libata.h
 @@ -52,6 +52,7 @@
   * compile-time options: to be removed as soon as all the drivers are
   * converted to the new debugging mechanism
@@ -631,27 +783,27 @@
  
 +/* overwrite the original definition from io.h */
 +#undef __raw_readb
-+#define __raw_readb(a_)		readb(a_)
++#define __raw_readb(a_)     readb(a_)
 +#undef __raw_writeb
-+#define __raw_writeb(v_,a_)	writeb(v_,a_)
++#define __raw_writeb(v_,a_) writeb(v_,a_)
 +#undef __raw_readw
-+#define __raw_readw(a_)		readw(a_)
++#define __raw_readw(a_)     readw(a_)
 +#undef __raw_writew
-+#define __raw_writew(v_,a_)	writew(v_,a_)
++#define __raw_writew(v_,a_) writew(v_,a_)
 +
 +
 +
  struct ata_port_info {
  	unsigned long		flags;
  	unsigned long		link_flags;
---- linux-sh4/drivers/stm/stx7100_hispeed.c.org
-+++ linux-sh4/drivers/stm/stx7100_hispeed.c
+--- a/drivers/stm/stx7100_hispeed.c.org
++++ b/drivers/stm/stx7100_hispeed.c
 @@ -192,6 +192,12 @@
  	 */
  	stx7100_usb_pwr_gpio = stm_pad_gpio_request_output(state, "PWR", 1);
  	BUG_ON(stx7100_usb_pwr_gpio == STM_GPIO_INVALID);
 +
-+       //reset usb on boot - some DVB-T dongles (as102) need it to work properly.
++       // reset usb on boot - some DVB-T dongles (as102) need it to work properly.
 +       gpio_set_value(stx7100_usb_pwr_gpio, 0);
 +       mdelay(2000);
 +       gpio_set_value(stx7100_usb_pwr_gpio, 1);
@@ -659,3 +811,94 @@
  
  	return 0;
  }
+--- a/include/linux/stm/platform.h.org
++++ b/include/linux/stm/platform.h
+@@ -353,6 +353,7 @@
+ 	unsigned int nr_banks;
+ 	struct stm_nand_bank_data *banks;
+ 	int emi_rbn_gpio;
++	int emi_nce_gpio;
+ };
+ 
+ struct stm_nand_config {
+@@ -368,6 +369,9 @@
+ 		int emi_gpio;
+ 		int flex_connected;
+ 	} rbn;
++	union {
++		int emi_gpio;
++	} nce;
+ 	enum stm_nand_bch_ecc_config bch_ecc_cfg;
+ 	unsigned int bch_bitflip_threshold; /* See description in
+ 					     * 'stm_plat_nand_bch_data'.
+--- a/drivers/stm/stx7100.c.org
++++ b/drivers/stm/stx7100.c
+@@ -123,6 +123,58 @@
+ 	platform_device_register(&stx7100_pata_device);
+ }
+ 
++// following code taken from stx7105.c
++
++/* NAND Resources --------------------------------------------------------- */
++
++static struct platform_device stx7100_nand_emi_device = {
++	.name			= "stm-nand-emi",
++	.dev.platform_data	= &(struct stm_plat_nand_emi_data) {
++	},
++};
++
++static struct platform_device stx7100_nand_flex_device = {
++	.num_resources		= 2,
++	.resource		= (struct resource[]) {
++		STM_PLAT_RESOURCE_MEM_NAMED("nand_mem", 0xFE701000, 0x1000),  // !! values for stx7105
++		STM_PLAT_RESOURCE_IRQ_NAMED("nand_irq", evt2irq(0x14a0), -1),  // !! values for stx7105
++	},
++	.dev.platform_data	= &(struct stm_plat_nand_flex_data) {
++	},
++};
++
++void __init stx7100_configure_nand(struct stm_nand_config *config)
++{
++	struct stm_plat_nand_flex_data *flex_data;
++	struct stm_plat_nand_emi_data *emi_data;
++
++	switch (config->driver) {
++	case stm_nand_emi:
++		/* Configure device for stm-nand-emi driver */
++		emi_data = stx7100_nand_emi_device.dev.platform_data;
++		emi_data->nr_banks = config->nr_banks;
++		emi_data->banks = config->banks;
++		emi_data->emi_nce_gpio = config->nce.emi_gpio;
++		emi_data->emi_rbn_gpio = config->rbn.emi_gpio;
++		platform_device_register(&stx7100_nand_emi_device);
++		break;
++	case stm_nand_flex:
++	case stm_nand_afm:
++		/* Configure device for stm-nand-flex/afm driver */
++		flex_data = stx7100_nand_flex_device.dev.platform_data;
++		flex_data->nr_banks = config->nr_banks;
++		flex_data->banks = config->banks;
++		flex_data->flex_rbn_connected = config->rbn.flex_connected;
++		stx7100_nand_flex_device.name =
++			(config->driver == stm_nand_flex) ?
++			"stm-nand-flex" : "stm-nand-afm";
++		platform_device_register(&stx7100_nand_flex_device);
++		break;
++	default:
++		BUG();
++		return;
++	}
++}
+ 
+ 
+ /* FDMA resources --------------------------------------------------------- */
+--- a/include/linux/stm/stx7100.h.org
++++ b/include/linux/stm/stx7100.h
+@@ -91,5 +91,6 @@
+ };
+ void stx7100_configure_pata(struct stx7100_pata_config *config);
+ 
++void stx7100_configure_nand(struct stm_nand_config *config);
+ 
+ #endif
+
