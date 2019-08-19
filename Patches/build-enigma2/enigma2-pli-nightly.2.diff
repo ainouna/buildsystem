@@ -968,7 +968,7 @@
  		{
 --- enigma2.org/lib/driver/vfd.cpp
 +++ enigma2/lib/driver/vfd.cpp
-@@ -0,0 +1,869 @@
+@@ -0,0 +1,871 @@
 +/*
 + * vfd.cpp
 + *
@@ -1094,6 +1094,8 @@
 +   || defined (ENABLE_CUBEREVO_2000HD) \
 +   || defined (ENABLE_CUBEREVO_3000HD)
 +	#define VFDLENGTH 14
++#elif defined (ENABLE_ADB_BOX)
++	#define VFDLENGTH 15
 +#else
 +	#define VFDLENGTH 16
 +#endif
@@ -8503,7 +8505,7 @@
  
  def profile(id):
  	now = time.time() - profile_start
-@@ -41,7 +42,21 @@
+@@ -41,7 +42,25 @@
  				perc = PERCENTAGE_START
  			try:
  				open("/proc/progress", "w").write("%d \n" % perc)
@@ -8514,9 +8516,13 @@
 +					if perc > 20:
 +						if os.path.isfile('/proc/stb/info/model'):
 +							model = str(open("/proc/stb/info/model").read())
++							if model.startswith("adb_box"):
++								variant = str(open("/proc/stb/info/adb_variant").read())
 +							if model.startswith("spark7162") or model.startswith("tf7700hdpvr") or model.startswith("octagon1008") or model.startswith("hdbox") or model.startswith("atevio7500") or model.startswith("hs7420") or model.startswith("hs7429") or model.startswith("vitamin_hd5000"):
 +								evfd.getInstance().vfd_write_string("START %02d" % perc)
-+							elif model.startswith("spark") or model.startswith("hs7119") or model.startswith("hs7810a") or model.startswith("hs7819"):
++							if (model.startswith("adb_box") and (variant.startswith("bsla") or variant.startswith("bzzb"))):
++								evfd.getInstance().vfd_write_string("START E2: %02d" % perc)
++							elif (model.startswith("adb_box") and (variant.startswith("bska") or variant.startswith("bxzb"))) or model.startswith("spark") or model.startswith("hs7119") or model.startswith("hs7810a") or model.startswith("hs7819"):
 +								evfd.getInstance().vfd_write_string("St%02d" % perc)
 +				elif perc > 98:
 +					value = 0
@@ -9030,7 +9036,7 @@
  		KEYIDS["KEY_0"]: ("0",),
  		KEYIDS["KEY_1"]: ("1",),
  		KEYIDS["KEY_2"]: ("2",),
-@@ -173,63 +152,204 @@
+@@ -173,63 +152,405 @@
  		KEYIDS["KEY_7"]: ("7",),
  		KEYIDS["KEY_8"]: ("8",),
  		KEYIDS["KEY_9"]: ("9",),
@@ -9283,16 +9289,216 @@
 +		KEYIDS["KEY_DOWN"]: ("FP_MINUS",),
 +		KEYIDS["KEY_UP"]: ("FP_PLUS",),
 +		KEYIDS["KEY_OK"]: ("FP_TV_R",),
++	},
++	{  # for remotes with ID 7 (Cuberevo universal)
++		KEYIDS["KEY_POWER"]: ("STANDBY",),
++		KEYIDS["KEY_OK"]: ("OK",),
++		KEYIDS["KEY_LEFT"]: ("LEFT",),
++		KEYIDS["KEY_RIGHT"]: ("RIGHT",),
++		KEYIDS["KEY_UP"]: ("UP",),
++		KEYIDS["KEY_DOWN"]: ("DOWN",),
++		KEYIDS["KEY_MENU"]: ("MENU",),
++		KEYIDS["KEY_EXIT"]: ("EXIT",),
++		KEYIDS["KEY_INFO"]: ("INFO",),
++		KEYIDS["KEY_F11"]: ("",), # FEED
++		KEYIDS["KEY_F12"]: ("",), # RECALL
++		KEYIDS["KEY_FAVORITES"]: ("FAV",),
++		KEYIDS["KEY_EPG"]: ("EPG",),
++		KEYIDS["KEY_VOLUMEUP"]: ("VOLUMEUP",),
++		KEYIDS["KEY_VOLUMEDOWN"]: ("VOLUMEDOWN",),
++		KEYIDS["KEY_PAGEUP"]: ("CHANNELUP",),
++		KEYIDS["KEY_PAGEDOWN"]: ("CHANNELDOWN",),
++		KEYIDS["KEY_TV"]: ("TVRADIO",),
++		KEYIDS["KEY_F10"]: ("SAT",), # SAT LIST
++		KEYIDS["KEY_WWW"]: ("",), # WWW
++		KEYIDS["KEY_MEDIA"]: ("MEDIA",),
++		KEYIDS["KEY_RED"]: ("RED",),
++		KEYIDS["KEY_GREEN"]: ("GREEN",),
++		KEYIDS["KEY_YELLOW"]: ("YELLOW",),
++		KEYIDS["KEY_BLUE"]: ("BLUE",),
++		KEYIDS["KEY_0"]: ("0BUTTON",),
++		KEYIDS["KEY_1"]: ("1BUTTON",),
++		KEYIDS["KEY_2"]: ("2BUTTON",),
++		KEYIDS["KEY_3"]: ("3BUTTON",),
++		KEYIDS["KEY_4"]: ("40UTTON",),
++		KEYIDS["KEY_5"]: ("5BUTTON",),
++		KEYIDS["KEY_6"]: ("6BUTTON",),
++		KEYIDS["KEY_7"]: ("7BUTTON",),
++		KEYIDS["KEY_8"]: ("8BUTTON",),
++		KEYIDS["KEY_9"]: ("9BUTTON",),
++		KEYIDS["KEY_F1"]: ("F1",),
++		KEYIDS["KEY_F2"]: ("F2",),
++		KEYIDS["KEY_TV2"]: ("",), # TV/STB
++		KEYIDS["KEY_MUTE"]: ("MUTE",),
++		KEYIDS["KEY_F8"]: ("TEXT",),
++		KEYIDS["KEY_F9"]: ("LIST",),
++		KEYIDS["KEY_F3"]: ("F3",),
++		KEYIDS["KEY_F4"]: ("F4",), # CAPTURE
++		KEYIDS["KEY_F5"]: ("F5",), # BOOK_M
++		KEYIDS["KEY_F6"]: ("F6",), # BOOK_J
++		KEYIDS["KEY_PREVIOUS"]: ("LAST",),
++		KEYIDS["KEY_REWIND"]: ("REWIND",),
++		KEYIDS["KEY_FASTFORWARD"]: ("FASTFORWARD",),
++		KEYIDS["KEY_NEXT"]: ("NEXT",),
++		KEYIDS["KEY_F7"]: ("REPEAT",),
++		KEYIDS["KEY_PLAY"]: ("PLAY",),
++		KEYIDS["KEY_STOP"]: ("STOP",),
++		KEYIDS["KEY_RECORD"]: ("RECORD",),
++	},
++	{  # for remotes with ID 8 (ADB ITI-5800S(X)
++#		KEYIDS["KEY_POWER"]: ("STANDBY",),
++#		KEYIDS["KEY_AUX"]: ("OPEN",), # VOD
++#		KEYIDS["KEY_V"]: ("TVRADIO",), # N-KEY
++#		KEYIDS["KEY_EPG"]: ("EPG",),
++#		KEYIDS["KEY_BACK"]: ("EXIT",),
++#		KEYIDS["KEY_HOME"]: ("EXIT",),
++#		KEYIDS["KEY_INFO"]: ("INFO",),
++#		KEYIDS["KEY_MENU"]: ("MENU",), # OPT
++#		KEYIDS["KEY_VOLUMEUP"]: ("VOLUMEUP",),
++#		KEYIDS["KEY_VOLUMEDOWN"]: ("VOLUMEDOWN",),
++#		KEYIDS["KEY_PAGEUP"]: ("CHANNELUP",),
++#		KEYIDS["KEY_PAGEDOWN"]: ("CHANNELDOWN",),
++#		KEYIDS["KEY_OK"]: ("OK",),
++#		KEYIDS["KEY_UP"]: ("UP",),
++#		KEYIDS["KEY_DOWN"]: ("DOWN",),
++#		KEYIDS["KEY_LEFT"]: ("LEFT",),
++#		KEYIDS["KEY_RIGHT"]: ("RIGHT",),
++#		KEYIDS["KEY_STOP"]: ("STOP",),
++#		KEYIDS["KEY_REWIND"]: ("REWIND",),
++#		KEYIDS["KEY_FASTFORWARD"]: ("FASTFORWARD",),
++#		KEYIDS["KEY_PLAY"]: ("PLAY",),
++#		KEYIDS["KEY_PAUSE"]: ("PAUSE",),
++#		KEYIDS["KEY_RECORD"]: ("RECORD",),
++#		KEYIDS["KEY_MUTE"]: ("MUTE",),
++#		KEYIDS["KEY_TV2"]: ("",), # @
++#		KEYIDS["KEY_TEXT"]: ("TEXT",),
++#		KEYIDS["KEY_FAVORITES"]: ("FAV",),
++#		KEYIDS["KEY_RED"]: ("RED",),
++#		KEYIDS["KEY_GREEN"]: ("GREEN",),
++#		KEYIDS["KEY_YELLOW"]: ("YELLOW",),
++#		KEYIDS["KEY_BLUE"]: ("BLUE",),
++#		KEYIDS["KEY_1"]: ("1BUTTON",),
++#		KEYIDS["KEY_2"]: ("2BUTTON",),
++#		KEYIDS["KEY_3"]: ("3BUTTON",),
++#		KEYIDS["KEY_4"]: ("4BUTTON",),
++#		KEYIDS["KEY_5"]: ("5BUTTON",),
++#		KEYIDS["KEY_6"]: ("6BUTTON",),
++#		KEYIDS["KEY_7"]: ("7BUTTON",),
++#		KEYIDS["KEY_8"]: ("8BUTTON",),
++#		KEYIDS["KEY_9"]: ("9BUTTON",),
++#		KEYIDS["KEY_0"]: ("0BUTTON",),
++#		KEYIDS["KEY_AUDIO"]: ("MENU",),
++#		KEYIDS["KEY_TIME"]: ("TIME",),
++#		KEYIDS["KEY_HELP"]: ("HELP",),
++#---------------------------------------------------
++		KEYIDS["KEY_MEDIA"]: ("OPEN",),  # VOD
++		KEYIDS["KEY_POWER"]: ("STANDBY",),
++		KEYIDS["KEY_GOTO"]: ("RECALL",),  # N.Button
++		KEYIDS["KEY_EPG"]: ("EPG",),
++		KEYIDS["KEY_PVR"]: ("ARCHIVE",),  # HOME
++		KEYIDS["KEY_HELP"]: ("INFO",),  # INFO
++		KEYIDS["KEY_PROGRAM"]: ("TIME",),  # APP
++		KEYIDS["KEY_OPTION"]: ("MENU",), # OPT
++		KEYIDS["KEY_VOLUMEUP"]: ("VOLUMEUP",),
++		KEYIDS["KEY_UP"]: ("UP",),
++		KEYIDS["KEY_PAGEUP"]: ("CHANNELUP",),
++		KEYIDS["KEY_LEFT"]: ("LEFT",),
++		KEYIDS["KEY_OK"]: ("OK",),
++		KEYIDS["KEY_RIGHT"]: ("RIGHT",),
++		KEYIDS["KEY_VOLUMEDOWN"]: ("VOLUMEDOWN",),
++		KEYIDS["KEY_PAGEDOWN"]: ("CHANNELDOWN",),
++		KEYIDS["KEY_DOWN"]: ("DOWN",),
++		KEYIDS["KEY_HOME"]: ("EXIT",),  # BACK
++		KEYIDS["KEY_STOP"]: ("STOP",),
++		KEYIDS["KEY_RECORD"]: ("RECORD",),
++		KEYIDS["KEY_REWIND"]: ("REWIND",),
++		KEYIDS["KEY_PAUSE"]: ("PAUSE",),
++		KEYIDS["KEY_FASTFORWARD"]: ("FASTFORWARD",),
++		KEYIDS["KEY_PLAY"]: ("PLAY",),
++		KEYIDS["KEY_MUTE"]: ("MUTE",),
++		KEYIDS["KEY_MODE"]: ("TVRADIO",), # @-KEY
++		KEYIDS["KEY_TEXT"]: ("TEXT",),
++		KEYIDS["KEY_LIST"]: ("FAV",),  # LIST
++		KEYIDS["KEY_RED"]: ("RED",),
++		KEYIDS["KEY_GREEN"]: ("GREEN",),
++		KEYIDS["KEY_YELLOW"]: ("YELLOW",),
++		KEYIDS["KEY_BLUE"]: ("BLUE",),
++		KEYIDS["KEY_1"]: ("1BUTTON",),
++		KEYIDS["KEY_2"]: ("2BUTTON",),
++		KEYIDS["KEY_3"]: ("3BUTTON",),
++		KEYIDS["KEY_4"]: ("4BUTTON",),
++		KEYIDS["KEY_5"]: ("5BUTTON",),
++		KEYIDS["KEY_6"]: ("6BUTTON",),
++		KEYIDS["KEY_7"]: ("7BUTTON",),
++		KEYIDS["KEY_8"]: ("8BUTTON",),
++		KEYIDS["KEY_9"]: ("9BUTTON",),
++		KEYIDS["KEY_MENU"]: ("MENU",),
++		KEYIDS["KEY_0"]: ("0BUTTON",),
++		KEYIDS["KEY_SUBTITLE"]: ("SUBTITLE",),  # STAR
++	},
++	{  # for remotes with ID 9 (Vitamin HD5000) TODO!
++		KEYIDS["KEY_POWER"]: ("STANDBY",),
++		KEYIDS["KEY_OK"]: ("OK",),
++		KEYIDS["KEY_LEFT"]: ("LEFT",),
++		KEYIDS["KEY_RIGHT"]: ("RIGHT",),
++		KEYIDS["KEY_UP"]: ("UP",),
++		KEYIDS["KEY_DOWN"]: ("DOWN",),
++		KEYIDS["KEY_MENU"]: ("MENU",),
++		KEYIDS["KEY_EXIT"]: ("EXIT",),
++		KEYIDS["KEY_INFO"]: ("INFO",),
++		KEYIDS["KEY_F11"]: ("",), # FEED
++		KEYIDS["KEY_F12"]: ("",), # RECALL
++		KEYIDS["KEY_FAVORITES"]: ("FAV",),
++		KEYIDS["KEY_EPG"]: ("EPG",),
++		KEYIDS["KEY_VOLUMEUP"]: ("VOLUMEUP",),
++		KEYIDS["KEY_VOLUMEDOWN"]: ("VOLUMEDOWN",),
++		KEYIDS["KEY_PAGEUP"]: ("CHANNELUP",),
++		KEYIDS["KEY_PAGEDOWN"]: ("CHANNELDOWN",),
++		KEYIDS["KEY_TV"]: ("TVRADIO",),
++		KEYIDS["KEY_F10"]: ("SAT",), # SAT LIST
++		KEYIDS["KEY_WWW"]: ("",), # WWW
++		KEYIDS["KEY_MEDIA"]: ("MEDIA",),
++		KEYIDS["KEY_RED"]: ("RED",),
++		KEYIDS["KEY_GREEN"]: ("GREEN",),
++		KEYIDS["KEY_YELLOW"]: ("YELLOW",),
++		KEYIDS["KEY_BLUE"]: ("BLUE",),
++		KEYIDS["KEY_0"]: ("0BUTTON",),
++		KEYIDS["KEY_1"]: ("1BUTTON",),
++		KEYIDS["KEY_2"]: ("2BUTTON",),
++		KEYIDS["KEY_3"]: ("3BUTTON",),
++		KEYIDS["KEY_4"]: ("40UTTON",),
++		KEYIDS["KEY_5"]: ("5BUTTON",),
++		KEYIDS["KEY_6"]: ("6BUTTON",),
++		KEYIDS["KEY_7"]: ("7BUTTON",),
++		KEYIDS["KEY_8"]: ("8BUTTON",),
++		KEYIDS["KEY_9"]: ("9BUTTON",),
++		KEYIDS["KEY_F1"]: ("F1",),
++		KEYIDS["KEY_F2"]: ("F2",),
++		KEYIDS["KEY_TV2"]: ("",), # TV/STB
++		KEYIDS["KEY_MUTE"]: ("MUTE",),
++		KEYIDS["KEY_F8"]: ("TEXT",),
++		KEYIDS["KEY_F9"]: ("LIST",),
++		KEYIDS["KEY_F3"]: ("F3",),
++		KEYIDS["KEY_F4"]: ("F4",), # CAPTURE
++		KEYIDS["KEY_F5"]: ("F5",), # BOOK_M
++		KEYIDS["KEY_F6"]: ("F6",), # BOOK_J
++		KEYIDS["KEY_PREVIOUS"]: ("LAST",),
++		KEYIDS["KEY_REWIND"]: ("REWIND",),
++		KEYIDS["KEY_FASTFORWARD"]: ("FASTFORWARD",),
++		KEYIDS["KEY_NEXT"]: ("NEXT",),
++		KEYIDS["KEY_F7"]: ("REPEAT",),
++		KEYIDS["KEY_PLAY"]: ("PLAY",),
++		KEYIDS["KEY_STOP"]: ("STOP",),
++		KEYIDS["KEY_RECORD"]: ("RECORD",),
  	},
  ]
  
-@@ -248,10 +368,28 @@
+@@ -248,10 +569,27 @@
  		idx = config.misc.rcused.value
  	else:
  		rctype = config.plugins.remotecontroltype.rctype.value
 -		if rctype == 14:	# XP1000
 +		print "[Keybindings.py] RC type is:", rctype
-+		rctype = 11
 +		if rctype == 10:	# Spark
  			idx = 3
 -		elif rctype == 18:	# F1
@@ -9517,7 +9723,7 @@
 -h9combo zgemma
 -lc sh1
 -sh1 sh1
-+adb_box           adb
++adb-box           adb
 +hdbox             fs9000
 +octagon1008       hs9510
 +atevio7500        fs9000
@@ -9540,7 +9746,7 @@
 +cuberevo-2000hd   cuberevo_uni
 +cuberevo-3000hd   cuberevo_uni
 +cuberevo-9500hd   cuberevo_uni
-+vitamin_hd5000    vitamin
++vitamin-hd5000    vitamin
 --- enigma2.org/data/rc_models/Makefile.am
 +++ enigma2/data/rc_models/Makefile.am
 @@ -2,13 +2,9 @@
