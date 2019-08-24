@@ -989,7 +989,7 @@ endif
 #
 	$(SILENT)find $(RELEASE_DIR)/usr/lib/enigma2/ -name '*.pyc' -exec rm -f {} \;
 ifeq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), small size))
-ifneq ($(BOXTYPE), atevio7500)
+ifneq ($(BOXTYPE), $(filter $(BOXTYPE), adb_box atevio7500))
 	$(SILENT)find $(RELEASE_DIR)/usr/lib/enigma2/ -not -name 'mytest.py' -name '*.py' -exec rm -f {} \;
 else
 	$(SILENT)find $(RELEASE_DIR)/usr/lib/enigma2/ -not -name 'mytest.py' -not -name 'Language.py' -name '*.py' -exec rm -f {} \;
