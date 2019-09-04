@@ -670,6 +670,21 @@
  	base/i18n.h \
  	base/itssource.h \
  	base/init.h \
+--- a/lib/base/eerror.cpp.org
++++ b/lib/base/eerror.cpp
+@@ -189,10 +189,10 @@
+ 
+ void ePythonOutput(const char *string, int lvl)
+ {
+-#ifdef DEBUG
++//#ifdef DEBUG
+ 	if (debugLvl >= lvl)
+ 		eDebugImpl(_DBGFLG_NONEWLINE, "%s", string);
+-#endif
++//#endif
+ }
+ 
+ int eGetEnigmaDebugLvl()
 --- enigma2.org/lib/base/encoding.cpp
 +++ enigma2/lib/base/encoding.cpp
 @@ -70,8 +70,19 @@
@@ -968,7 +983,7 @@
  		{
 --- enigma2.org/lib/driver/vfd.cpp
 +++ enigma2/lib/driver/vfd.cpp
-@@ -0,0 +1,869 @@
+@@ -0,0 +1,873 @@
 +/*
 + * vfd.cpp
 + *
@@ -1094,6 +1109,8 @@
 +   || defined (ENABLE_CUBEREVO_2000HD) \
 +   || defined (ENABLE_CUBEREVO_3000HD)
 +	#define VFDLENGTH 14
++#elif defined (ENABLE_ADB_BOX)
++	#define VFDLENGTH 15
 +#else
 +	#define VFDLENGTH 16
 +#endif
@@ -1747,6 +1764,8 @@
 +		for (id = 1; id < 28; id++)
 +	#elif defined (ENABLE_CUBEREVO_MINI) || defined (ENABLE_CUBEREVO_MINI2) || defined (ENABLE_CUBEREVO_2000HD) || defined (ENABLE_CUBEREVO_3000HD)
 +		for (id = 1; id < 7; id++)
++	#elif defined (ENABLE_ADB_BOX)
++		for (id = 1; id < 22; id++)
 +	#elif defined (ENABLE_VITAMIN_HD5000)
 +		for (id = 1; id < 17; id++)
 +	#else
@@ -8503,7 +8522,7 @@
  
  def profile(id):
  	now = time.time() - profile_start
-@@ -41,7 +42,21 @@
+@@ -41,7 +42,25 @@
  				perc = PERCENTAGE_START
  			try:
  				open("/proc/progress", "w").write("%d \n" % perc)
@@ -8514,9 +8533,13 @@
 +					if perc > 20:
 +						if os.path.isfile('/proc/stb/info/model'):
 +							model = str(open("/proc/stb/info/model").read())
++							if model.startswith("adb_box"):
++								variant = str(open("/proc/stb/info/adb_variant").read())
 +							if model.startswith("spark7162") or model.startswith("tf7700hdpvr") or model.startswith("octagon1008") or model.startswith("hdbox") or model.startswith("atevio7500") or model.startswith("hs7420") or model.startswith("hs7429") or model.startswith("vitamin_hd5000"):
 +								evfd.getInstance().vfd_write_string("START %02d" % perc)
-+							elif model.startswith("spark") or model.startswith("hs7119") or model.startswith("hs7810a") or model.startswith("hs7819"):
++							if (model.startswith("adb_box") and (variant.startswith("bsla") or variant.startswith("bzzb"))):
++								evfd.getInstance().vfd_write_string("START E2: %02d" % perc)
++							elif (model.startswith("adb_box") and (variant.startswith("bska") or variant.startswith("bxzb"))) or model.startswith("spark") or model.startswith("hs7119") or model.startswith("hs7810a") or model.startswith("hs7819"):
 +								evfd.getInstance().vfd_write_string("St%02d" % perc)
 +				elif perc > 98:
 +					value = 0
@@ -8777,7 +8800,7 @@
  
  	// get enigma2 debug level settings
 -	debugLvl = getenv("ENIGMA_DEBUG_LVL") ? atoi(getenv("ENIGMA_DEBUG_LVL")) : 3;
-+	debugLvl = getenv("ENIGMA_DEBUG_LVL") ? atoi(getenv("ENIGMA_DEBUG_LVL")) : 4;
++	debugLvl = getenv("ENIGMA_DEBUG_LVL") ? atoi(getenv("ENIGMA_DEBUG_LVL")) : 5;
  	if (debugLvl < 0)
  		debugLvl = 0;
  	printf("ENIGMA_DEBUG_LVL=%d\n", debugLvl);
@@ -8959,7 +8982,7 @@
  from Components.RcModel import rc_model
  
 -keyDescriptions = [{
-+keyDescriptions = [{ # for remotes with ID 0 (DMM)
++keyDescriptions = [{  # for remotes with ID 0 (DMM)
  		KEYIDS["BTN_0"]: ("UP", "fp"),
  		KEYIDS["BTN_1"]: ("DOWN", "fp"),
  		KEYIDS["KEY_OK"]: ("OK", ""),
@@ -8984,7 +9007,7 @@
 +		KEYIDS["KEY_REWIND"]: ("REWIND",),
 +		KEYIDS["KEY_FASTFORWARD"]: ("FASTFORWARD",)
 +	},
-+	{ # for remotes with ID 2 (default)
++	{  # for remotes with ID 2 (default)
  		KEYIDS["BTN_0"]: ("UP", "fp"),
  		KEYIDS["BTN_1"]: ("DOWN", "fp"),
  		KEYIDS["KEY_OK"]: ("OK", ""),
@@ -9030,7 +9053,7 @@
  		KEYIDS["KEY_0"]: ("0",),
  		KEYIDS["KEY_1"]: ("1",),
  		KEYIDS["KEY_2"]: ("2",),
-@@ -173,63 +152,204 @@
+@@ -173,63 +152,360 @@
  		KEYIDS["KEY_7"]: ("7",),
  		KEYIDS["KEY_8"]: ("8",),
  		KEYIDS["KEY_9"]: ("9",),
@@ -9283,16 +9306,171 @@
 +		KEYIDS["KEY_DOWN"]: ("FP_MINUS",),
 +		KEYIDS["KEY_UP"]: ("FP_PLUS",),
 +		KEYIDS["KEY_OK"]: ("FP_TV_R",),
++	},
++	{  # for remotes with ID 7 (CubeRevo universal)
++		KEYIDS["KEY_POWER"]: ("STANDBY",),
++		KEYIDS["KEY_OK"]: ("OK",),
++		KEYIDS["KEY_LEFT"]: ("LEFT",),
++		KEYIDS["KEY_RIGHT"]: ("RIGHT",),
++		KEYIDS["KEY_UP"]: ("UP",),
++		KEYIDS["KEY_DOWN"]: ("DOWN",),
++		KEYIDS["KEY_MENU"]: ("MENU",),
++		KEYIDS["KEY_EXIT"]: ("EXIT",),
++		KEYIDS["KEY_INFO"]: ("INFO",),
++		KEYIDS["KEY_F11"]: ("",), # FEED
++		KEYIDS["KEY_F12"]: ("",), # RECALL
++		KEYIDS["KEY_FAVORITES"]: ("FAV",),
++		KEYIDS["KEY_EPG"]: ("EPG",),
++		KEYIDS["KEY_VOLUMEUP"]: ("VOLUMEUP",),
++		KEYIDS["KEY_VOLUMEDOWN"]: ("VOLUMEDOWN",),
++		KEYIDS["KEY_PAGEUP"]: ("CHANNELUP",),
++		KEYIDS["KEY_PAGEDOWN"]: ("CHANNELDOWN",),
++		KEYIDS["KEY_TV"]: ("TVRADIO",),
++		KEYIDS["KEY_F10"]: ("SAT",), # SAT LIST
++		KEYIDS["KEY_WWW"]: ("",), # WWW
++		KEYIDS["KEY_MEDIA"]: ("MEDIA",),
++		KEYIDS["KEY_RED"]: ("RED",),
++		KEYIDS["KEY_GREEN"]: ("GREEN",),
++		KEYIDS["KEY_YELLOW"]: ("YELLOW",),
++		KEYIDS["KEY_BLUE"]: ("BLUE",),
++		KEYIDS["KEY_0"]: ("0BUTTON",),
++		KEYIDS["KEY_1"]: ("1BUTTON",),
++		KEYIDS["KEY_2"]: ("2BUTTON",),
++		KEYIDS["KEY_3"]: ("3BUTTON",),
++		KEYIDS["KEY_4"]: ("40UTTON",),
++		KEYIDS["KEY_5"]: ("5BUTTON",),
++		KEYIDS["KEY_6"]: ("6BUTTON",),
++		KEYIDS["KEY_7"]: ("7BUTTON",),
++		KEYIDS["KEY_8"]: ("8BUTTON",),
++		KEYIDS["KEY_9"]: ("9BUTTON",),
++		KEYIDS["KEY_F1"]: ("F1",),
++		KEYIDS["KEY_F2"]: ("F2",),
++		KEYIDS["KEY_TV2"]: ("",), # TV/STB
++		KEYIDS["KEY_MUTE"]: ("MUTE",),
++		KEYIDS["KEY_F8"]: ("TEXT",),
++		KEYIDS["KEY_F9"]: ("LIST",),
++		KEYIDS["KEY_F3"]: ("F3",),
++		KEYIDS["KEY_F4"]: ("F4",), # CAPTURE
++		KEYIDS["KEY_F5"]: ("F5",), # BOOK_M
++		KEYIDS["KEY_F6"]: ("F6",), # BOOK_J
++		KEYIDS["KEY_PREVIOUS"]: ("LAST",),
++		KEYIDS["KEY_REWIND"]: ("REWIND",),
++		KEYIDS["KEY_FASTFORWARD"]: ("FASTFORWARD",),
++		KEYIDS["KEY_NEXT"]: ("NEXT",),
++		KEYIDS["KEY_F7"]: ("REPEAT",),
++		KEYIDS["KEY_PLAY"]: ("PLAY",),
++		KEYIDS["KEY_STOP"]: ("STOP",),
++		KEYIDS["KEY_RECORD"]: ("RECORD",),
++	},
++	{  # for remotes with ID 8 (ADB ITI-5800S(X) XMP)
++		KEYIDS["KEY_POWER"]: ("XMP_POWER",),
++		KEYIDS["KEY_ARCHIVE"]: ("XMP_VOD",),
++		KEYIDS["KEY_GOTO"]: ("XMP_GOTO",),  # N.Button
++		KEYIDS["KEY_EPG"]: ("XMP_EPG",),
++		KEYIDS["KEY_PVR"]: ("XMP_HOUSE",),
++		KEYIDS["KEY_INFO"]: ("XMP_INFO",),
++		KEYIDS["KEY_TIME"]: ("XMP_APP",),
++		KEYIDS["KEY_SUBTITLE"]: ("XMP_OPT",),
++		KEYIDS["KEY_VOLUMEUP"]: ("XMP_VOLUMEUP",),
++		KEYIDS["KEY_VOLUMEDOWN"]: ("XMP_VOLUMEDOWN",),
++		KEYIDS["KEY_PAGEUP"]: ("XMP_PAGEUP",),
++		KEYIDS["KEY_PAGEDOWN"]: ("XMP_PAGEDOWN",),
++		KEYIDS["KEY_OK"]: ("XMP_OK",),
++		KEYIDS["KEY_UP"]: ("XMP_UP",),
++		KEYIDS["KEY_DOWN"]: ("XMP_DOWN",),
++		KEYIDS["KEY_LEFT"]: ("XMP_LEFT",),
++		KEYIDS["KEY_RIGHT"]: ("XMP_RIGHT",),
++		KEYIDS["KEY_HOME"]: ("XMP_BACK",),  # BACK
++		KEYIDS["KEY_STOP"]: ("XMP_STOP",),
++		KEYIDS["KEY_REWIND"]: ("XMP_REWIND",),
++		KEYIDS["KEY_FASTFORWARD"]: ("XMP_FASTFORWARD",),
++		KEYIDS["KEY_PLAY"]: ("XMP_PLAY",),
++		KEYIDS["KEY_PAUSE"]: ("XMP_PAUSE",),
++		KEYIDS["KEY_RECORD"]: ("XMP_RECORD",),
++		KEYIDS["KEY_MUTE"]: ("XMP_MUTE",),
++		KEYIDS["KEY_TV2"]: ("XMP_ATSIGN",),
++		KEYIDS["KEY_TEXT"]: ("XMP_TEXT",),
++		KEYIDS["KEY_FAVORITES"]: ("XMP_LIST",),
++		KEYIDS["KEY_RED"]: ("XMP_RED",),
++		KEYIDS["KEY_GREEN"]: ("XMP_GREEN",),
++		KEYIDS["KEY_YELLOW"]: ("XMP_YELLOW",),
++		KEYIDS["KEY_BLUE"]: ("XMP_BLUE",),
++		KEYIDS["KEY_1"]: ("XMP_1",),
++		KEYIDS["KEY_2"]: ("XMP_2",),
++		KEYIDS["KEY_3"]: ("XMP_3",),
++		KEYIDS["KEY_4"]: ("XMP_4",),
++		KEYIDS["KEY_5"]: ("XMP_5",),
++		KEYIDS["KEY_6"]: ("XMP_6",),
++		KEYIDS["KEY_7"]: ("XMP_7",),
++		KEYIDS["KEY_8"]: ("XMP_8",),
++		KEYIDS["KEY_9"]: ("XMP_9",),
++		KEYIDS["KEY_0"]: ("XMP_0",),
++		KEYIDS["KEY_MENU"]: ("XMP_SETUP",),
++		KEYIDS["KEY_HELP"]: ("XMP_STAR",),  # STAR
++	},
++	{  # for remotes with ID 9 (Vitamin HD5000) TODO!
++		KEYIDS["KEY_POWER"]: ("STANDBY",),
++		KEYIDS["KEY_OK"]: ("OK",),
++		KEYIDS["KEY_LEFT"]: ("LEFT",),
++		KEYIDS["KEY_RIGHT"]: ("RIGHT",),
++		KEYIDS["KEY_UP"]: ("UP",),
++		KEYIDS["KEY_DOWN"]: ("DOWN",),
++		KEYIDS["KEY_MENU"]: ("MENU",),
++		KEYIDS["KEY_EXIT"]: ("EXIT",),
++		KEYIDS["KEY_INFO"]: ("INFO",),
++		KEYIDS["KEY_F11"]: ("",), # FEED
++		KEYIDS["KEY_F12"]: ("",), # RECALL
++		KEYIDS["KEY_FAVORITES"]: ("FAV",),
++		KEYIDS["KEY_EPG"]: ("EPG",),
++		KEYIDS["KEY_VOLUMEUP"]: ("VOLUMEUP",),
++		KEYIDS["KEY_VOLUMEDOWN"]: ("VOLUMEDOWN",),
++		KEYIDS["KEY_PAGEUP"]: ("CHANNELUP",),
++		KEYIDS["KEY_PAGEDOWN"]: ("CHANNELDOWN",),
++		KEYIDS["KEY_TV"]: ("TVRADIO",),
++		KEYIDS["KEY_F10"]: ("SAT",), # SAT LIST
++		KEYIDS["KEY_WWW"]: ("",), # WWW
++		KEYIDS["KEY_MEDIA"]: ("MEDIA",),
++		KEYIDS["KEY_RED"]: ("RED",),
++		KEYIDS["KEY_GREEN"]: ("GREEN",),
++		KEYIDS["KEY_YELLOW"]: ("YELLOW",),
++		KEYIDS["KEY_BLUE"]: ("BLUE",),
++		KEYIDS["KEY_0"]: ("0BUTTON",),
++		KEYIDS["KEY_1"]: ("1BUTTON",),
++		KEYIDS["KEY_2"]: ("2BUTTON",),
++		KEYIDS["KEY_3"]: ("3BUTTON",),
++		KEYIDS["KEY_4"]: ("40UTTON",),
++		KEYIDS["KEY_5"]: ("5BUTTON",),
++		KEYIDS["KEY_6"]: ("6BUTTON",),
++		KEYIDS["KEY_7"]: ("7BUTTON",),
++		KEYIDS["KEY_8"]: ("8BUTTON",),
++		KEYIDS["KEY_9"]: ("9BUTTON",),
++		KEYIDS["KEY_F1"]: ("F1",),
++		KEYIDS["KEY_F2"]: ("F2",),
++		KEYIDS["KEY_TV2"]: ("",), # TV/STB
++		KEYIDS["KEY_MUTE"]: ("MUTE",),
++		KEYIDS["KEY_F8"]: ("TEXT",),
++		KEYIDS["KEY_F9"]: ("LIST",),
++		KEYIDS["KEY_F3"]: ("F3",),
++		KEYIDS["KEY_F4"]: ("F4",), # CAPTURE
++		KEYIDS["KEY_F5"]: ("F5",), # BOOK_M
++		KEYIDS["KEY_F6"]: ("F6",), # BOOK_J
++		KEYIDS["KEY_PREVIOUS"]: ("LAST",),
++		KEYIDS["KEY_REWIND"]: ("REWIND",),
++		KEYIDS["KEY_FASTFORWARD"]: ("FASTFORWARD",),
++		KEYIDS["KEY_NEXT"]: ("NEXT",),
++		KEYIDS["KEY_F7"]: ("REPEAT",),
++		KEYIDS["KEY_PLAY"]: ("PLAY",),
++		KEYIDS["KEY_STOP"]: ("STOP",),
++		KEYIDS["KEY_RECORD"]: ("RECORD",),
  	},
  ]
  
-@@ -248,10 +368,28 @@
+@@ -248,10 +524,27 @@
  		idx = config.misc.rcused.value
  	else:
  		rctype = config.plugins.remotecontroltype.rctype.value
 -		if rctype == 14:	# XP1000
 +		print "[Keybindings.py] RC type is:", rctype
-+		rctype = 11
 +		if rctype == 10:	# Spark
  			idx = 3
 -		elif rctype == 18:	# F1
@@ -9308,7 +9486,7 @@
 +			idx = 6
 +		elif rctype == 13:	# CubeRevo Universal
 +			idx = 7
-+		elif rctype == 14:	# ADB type 1
++		elif rctype == 14:	# ADB XMP
 +			idx = 8
 +		elif rctype == 15:	# Vitamin HD5000
 +			idx = 9
@@ -9319,7 +9497,7 @@
  	if key in keyDescriptions[idx]:
 --- enigma2.org/lib/python/Screens/InputDeviceSetup.py
 +++ enigma2/lib/python/Screens/InputDeviceSetup.py
-@@ -299,57 +299,28 @@
+@@ -299,57 +299,43 @@
  	rcList = [
  			("0", _("Default")),
  			("4", _("DMM normal")),
@@ -9337,15 +9515,15 @@
 -			("20", _("Zgemma Star S/2S/H1/H2")),
 -			("21", _("Zgemma H.S/H.2S/H.2H/H5/H7")),
 -			("25", _("Zgemma H9/i55 Plus"))
-+			("7", _("fs9000")),
-+			("8", _("hs9510")),
-+			("9", _("hs7110")),
-+			("10", _("spark")),
-+			("11", _("tf7700")),
-+			("12", _("ufs912")),
-+			("13", _("cuberevo_uni")),
-+			("14", _("adb")),
-+			("15", _("vitamin")),
++			("7", _("Fortis large")),
++			("8", _("Fortis medium")),
++			("9", _("Fortis small")),
++			("10", _("Spark / Spark7162 (RC12)")),
++			("11", _("Topfield TF7700HDPVR")),
++			("12", _("UFS912")),
++			("13", _("CubeRevo uni")),
++			("14", _("ADB XMP")),
++			("15", _("Showbox Vitamin")),
  		]
  
  	defaultRcList = [
@@ -9383,21 +9561,44 @@
 -			("h7", 21),
 -			("h9", 25),
 -			("et7000mini", 16)
-+			("fs9000", 7),
-+			("hs9510", 8),
++			("hdbox", 7),
++			("atevio7500", 7),
++			("octagon1008", 8),
 +			("hs7110", 9),
++			("hs7119", 9),
++			("hs7420", 8),
++			("hs7429", 8),
++			("hs7810a", 8),
++			("hs7819", 8),
 +			("spark", 10),
-+			("tf7700", 11),
++			("spark7162", 10),
++			("tf7700hdpvr", 11),
++			("ufs910", 12),
 +			("ufs912", 12),
-+			("cuberevo_uni", 13),
++			("cuberevo", 13),
++			("cuberevo_mini_fta", 13),
++			("cuberevo_250hd", 13),
++			("cuberevo_mini", 13),
++			("cuberevo_mini2", 13),
++			("cuberevo_2000hd", 13),
++			("cuberevo_3000hd", 13),
++			("cuberevo_9500hd", 13),
 +			("adb", 14),
-+			("vitamin", 15),
++			("vitamin_hd5000", 15),
  		]
  
  	def __init__(self, session):
+@@ -379,6 +365,7 @@
+ 
+ 	def getDefaultRcType(self):
+ 		data = iRcTypeControl.getBoxType()
++		print("[InputDeviceSetup] data = ", data)
+ 		for x in self.defaultRcList:
+ 			if x[0] in data:
+ 				self.defaultRcType = x[1]
 --- enigma2.org/data/rc_models/rc_models.cfg
 +++ enigma2/data/rc_models/rc_models.cfg
-@@ -19,119 +19,27 @@
+@@ -19,119 +19,26 @@
  #
  # When no entry matches at all, 'default' will be used as remoteName
  #
@@ -9533,13 +9734,12 @@
 +ufs910            ufs912
 +ufs912            ufs912
 +cuberevo          cuberevo_uni
-+cuberevo-mini-fta cuberevo_uni
-+cuberevo-250hd    cuberevo_uni
-+cuberevo-mini     cuberevo_uni
-+cuberevo-mini2    cuberevo_uni
-+cuberevo-2000hd   cuberevo_uni
-+cuberevo-3000hd   cuberevo_uni
-+cuberevo-9500hd   cuberevo_uni
++cuberevo_250hd    cuberevo_uni
++cuberevo_mini     cuberevo_uni
++cuberevo_mini2    cuberevo_uni
++cuberevo_2000hd   cuberevo_uni
++cuberevo_3000hd   cuberevo_uni
++cuberevo_9500hd   cuberevo_uni
 +vitamin_hd5000    vitamin
 --- enigma2.org/data/rc_models/Makefile.am
 +++ enigma2/data/rc_models/Makefile.am

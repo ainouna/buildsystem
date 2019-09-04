@@ -1,27 +1,19 @@
 #!/bin/sh
-#Version 190723.3
+#Version 190819.1
 
 echo "ADB ITI-5800S(X) Enigma2"
 
 MODDIR=/lib/modules
 insmod $MODDIR/e2_proc.ko
-insmod $MODDIR/boxtype.ko
-sleep 1
-ls /proc
-sleep 1
-boxtype=`cat /proc/boxtype`
-echo "[rcS] boxtype: $boxtype"
-echo "$boxtype" > /etc/boxtype
 
 echo "[rcS] Init frontpanel"
-if [ $boxtype == 'bska' ] || [ $boxtype == 'bxzb' ]; then
-  echo "[rcS] Init LED display"
-  insmod $MODDIR/adb_fp.ko rec=0 paramDebug=100
-else
-  echo "[rcS] Init VFD display"
-  insmod $MODDIR/adb_fp.ko rec=1 paramDebug=100
-fi
+insmod $MODDIR/adb_5800_fp.ko #paramDebug=10
 insmod $MODDIR/simu_button.ko
+
+#boxtype=`cat /proc/stb/info/adb_variant` # TODO: fix, does not work
+boxtype=bska
+echo "[rcS] boxtype: $boxtype"
+echo "$boxtype" > /etc/boxtype
 
 if [ -e /var/etc/.firstboot ]; then
    echo "WAIT 1st start" >/dev/vfd
@@ -111,11 +103,6 @@ insmod $MODDIR/embxmailbox.ko mailbox0=0xb9211000:136:set2 mailbox1=0xb9212000:0
 insmod $MODDIR/embxshm.ko mailbox0=shm:0:7:0x60000000:0:16:16:0:1024:0xa4000000:0x10000000
 insmod $MODDIR/mme_host.ko transport0=shm
    
-if [ $boxtype == 'bsla' ] || [ $boxtype == 'bzzb' ]; then
-   echo "[rcS] Init fan"
-   insmod $MODDIR/cooler.ko
-fi
-
 echo "[rcS] Init AVS (LOAD 5)"
 if [ $boxtype == 'bska' ] || [ $boxtype == 'bxzb' ]; then
    echo "Ld 5" > /dev/vfd
@@ -184,10 +171,6 @@ insmod $MODDIR/sth264pp.ko
 insmod $MODDIR/stmalloc.ko
 insmod $MODDIR/platform.ko
 insmod $MODDIR/smartcard.ko
-
-#   echo "init dvb-t as102"
-#   /var/config/dvbt &
-#   insmod $MODDIR/dvb-as102.ko
 
 if [ $boxtype == 'bxzb' ]; then
    echo "bxzb" > /proc/stb/video/switch_type
@@ -342,7 +325,6 @@ if [ -e /etc/ownscript.sh ]; then
    /etc/ownscript.sh &
 fi
 
-echo "Loading E2" > /dev/vfd
 echo "[rcS] Loading E2"
 if [ $boxtype == 'bska' ] || [ $boxtype == 'bxzb' ]; then
    echo "LdE2" > /dev/vfd
@@ -401,6 +383,18 @@ do
             showiframe -p /boot/bootlogo.mvi &
          fi
          echo -n " ";;
+      6)  echo "[rcS] E2 DEBUG"
+         if [ $boxtype == 'bska' ] || [ $boxtype == 'bxzb' ]; then
+            echo "rdbg" > /dev/vfd
+         else
+            echo "Restart Dbg" > /dev/vfd
+         fi
+          echo "0" > /proc/progress
+          if [ -e /usr/local/share/enigma2/backdrop.mvi ]; then
+             showiframe -p /usr/local/share/enigma2/backdrop.mvi
+          else
+             showiframe -p /boot/bootlogo.mvi &
+          fi;;
       *) echo "[rcS] ERROR"
          if [ $boxtype == 'bska' ] || [ $boxtype == 'bxzb' ]; then
            echo "Err" > /dev/vfd
@@ -409,7 +403,7 @@ do
          fi
          sync
          echo "0" > /proc/progress
-         showiframe -p /var/boot/bootlogo.mvi &
+         showiframe -p /boot/bootlogo.mvi &
          init 6;;
    esac
 done
