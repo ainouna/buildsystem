@@ -7,7 +7,7 @@
 +	{  // change command line supplied by boot loader to desired one; inserted suplied MAC
 +		int command_line_len = strlen(command_line);
 +		char org_command_line[] = "console=ttyAS0,115200 root=/dev/mtdblock0 rw rootfstype=jffs2";
-+		char new_command_line[] = "console=ttyAS0,115200 root=/dev/mtdblock3 rw rootfstype=jffs2 init=/bin/devinit mem=128m coprocessor_mem=4m@0x10000000,4m@0x10400000 nwhwconf=device:eth0,hwaddr:";
++		char new_command_line[] = "console=ttyAS0,115200 ubi.mtd=3 root=ubi0:rootfs rootfstype=ubifs rw init=/bin/devinit mem=128m coprocessor_mem=4m@0x10000000,4m@0x10400000 nwhwconf=device:eth0,hwaddr:";
 +		char mac[] = "12:34:56:78:9A:BC";
 +		int org_command_line_len = strlen(org_command_line);
 +		int i;
@@ -124,7 +124,7 @@
 +            {
 +                .name  = "LMI_SYS",
 +                .start = 0,
-+                .size  = 0x01C00000,
++                .size  = 0x02600000,
 +                .flags = 0,
 +                .aka   = LMI_SYS_partalias
 +            }
