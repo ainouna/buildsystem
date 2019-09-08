@@ -495,6 +495,12 @@ enigma2_release_adb_box:
 	$(SILENT)mkdir -p $(RELEASE_DIR)/var/run/lirc
 	$(SILENT)rm -f $(RELEASE_DIR)/bin/vdstandby
 	$(SILENT)cp -f $(SKEL_ROOT)/release/rc_adb_box.png $(RELEASE_DIR)/usr/local/share/enigma2/skin_default/rc.png
+	$(SILENT)if [ -e $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/adb_5800VFD/plugin.py ]; then \
+		rm -f $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/SystemPlugins/VFD-Icons/*; \
+		cp -f $(SKEL_ROOT)/release/vfddisplay.png $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/adb_5800VFD; \
+		cp -rf $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/adb_5800VFD/* $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/SystemPlugins/VFD-Icons; \
+		rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/adb_5800VFD; \
+	fi
 	$(SILENT)cp -f $(SKEL_ROOT)/root_enigma2/usr/local/share/enigma2/keymap_adb_box.xml $(RELEASE_DIR)/usr/local/share/enigma2/keymap.xml
 
 #
