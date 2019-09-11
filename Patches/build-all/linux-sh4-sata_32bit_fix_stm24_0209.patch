@@ -1,6 +1,6 @@
 --- a/drivers/ata/sata_stm.c
 +++ b/drivers/ata/sata_stm.c
-@@ -1056,6 +1056,26 @@
+@@ -1178,6 +1178,26 @@
  	return 0;
  }
  
@@ -27,7 +27,7 @@
  static int __devinit stm_sata_probe(struct platform_device *pdev)
  {
  	struct stm_plat_sata_data *sata_private_info = pdev->dev.platform_data;
-@@ -1124,9 +1144,11 @@
+@@ -1251,9 +1271,11 @@
  	       hpriv->softsg ? "soft" : "hard");
  
  	if (sata_private_info->only_32bit) {
@@ -44,7 +44,7 @@
  	sata_rev = readl(mmio_base + SATA_VERSIONR);
 --- a/include/linux/libata.h
 +++ b/include/linux/libata.h
-@@ -883,8 +883,60 @@
+@@ -884,8 +884,60 @@
  	 * fields must be pointers.
  	 */
  	const struct ata_port_operations	*inherits;
