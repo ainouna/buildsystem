@@ -1,13 +1,26 @@
 #!/bin/sh
-#Version 190819.1
+#Version 1900914.1
 
 echo "ADB ITI-5800S(X) Enigma2"
 
 MODDIR=/lib/modules
 insmod $MODDIR/e2_proc.ko
 
+if [ -e $MODDIR/cpu_frequ.ko ]; then
+  insmod $MODDIR/cpu_frequ.ko
+  sleep 2
+  ls /proc/cpu_frequ
+  echo 22802 > /proc/cpu_frequ/pll0_ndiv_mdiv  # 267 MHz = 22802
+  echo 22793 > /proc/cpu_frequ/pll1_ndiv_mdiv  # 267 MHz = 22793
+fi
+
 echo "[rcS] Init frontpanel"
-insmod $MODDIR/adb_5800_fp.ko #paramDebug=10
+vfd_on=`cat /etc/enigma2/settings | grep vfdicon.vfd_enable | cut -d "=" -f2`
+if [ "$vfd_on" == "true" ]; then
+  insmod $MODDIR/adb_5800_fp.ko vfd_display=1 #paramDebug=10
+else
+  insmod $MODDIR/adb_5800_fp.ko #paramDebug=10
+fi
 insmod $MODDIR/simu_button.ko
 
 #boxtype=`cat /proc/stb/info/adb_variant` # TODO: fix, does not work
@@ -138,7 +151,7 @@ else
    if [ $boxtype == 'bsla' ]; then
       insmod $MODDIR/fe-core-twin1.ko
    else
-      insmod $MODDIR/fe-core-twin2.ko
+      insmod $MODDIR/fe-core-twin2.ko paramDebug=100
    fi
 fi
 
