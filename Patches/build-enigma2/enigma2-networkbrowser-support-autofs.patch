@@ -47,11 +47,12 @@
  	]
 --- enigma2-networkbrowser/src/AutoMount.py
 +++ enigma2-networkbrowser/src/AutoMount.py
-@@ -2,12 +2,12 @@
+@@ -2,13 +2,13 @@
  # for localized messages
  from __init__ import _
  import os
 +import re
+ import shlex
  from enigma import eTimer
  from Components.Console import Console
  from Components.Harddisk import harddiskmanager #global harddiskmanager
@@ -63,7 +64,7 @@
  
  def rm_rf(d): # only for removing the ipkg stuff from /media/hdd subdirs
  	try:
-@@ -24,14 +24,11 @@
+@@ -25,14 +25,11 @@
  	"""Manages Mounts declared in a XML-Document."""
  	def __init__(self):
  		self.automounts = {}
@@ -78,7 +79,7 @@
  
  		self.getAutoMountPoints()
  
-@@ -45,7 +42,7 @@
+@@ -46,7 +43,7 @@
  			return
  
  		try:
@@ -87,7 +88,7 @@
  		except Exception, e:
  			print "[MountManager] Error reading /etc/enigma2/automounts.xml:", e
  			try:
-@@ -61,54 +58,67 @@
+@@ -62,54 +59,67 @@
  			Len = len(definitions)
  			return Len > 0 and definitions[Len-1].text or default
  		# Config is stored in "mountmanager" element
@@ -116,13 +117,13 @@
 +						data['active'] = 'True'.encode("UTF-8")
 +
 +					if data["active"] == 'True':
- 						self.activeMountsCounter +=1
+						self.activeMountsCounter +=1
 -					data['hdd_replacement'] = getValue(mount.findall("hdd_replacement"), "False").encode("UTF-8")
 -					data['ip'] = getValue(mount.findall("ip"), "").encode("UTF-8")
 -					data['host'] = getValue(mount.findall("host"), "").encode("UTF-8")
 -					data['sharedir'] = getValue(mount.findall("sharedir"), "/media/").encode("UTF-8")
 -					data['sharename'] = getValue(mount.findall("sharename"), "MEDIA").encode("UTF-8")
--					data['options'] = getValue(mount.findall("options"), "rw,nolock,tcp").encode("UTF-8")
+-					data['options'] = getValue(mount.findall("options"), "").encode("UTF-8")
 +					fields = line.split("\t")
 +					data['sharename'] = fields[0].encode("UTF-8")
 +
@@ -152,9 +153,9 @@
 +						data['hdd_replacement'] = 'True'.encode("UTF-8")
 +					else:
 +						data['hdd_replacement'] = 'False'.encode("UTF-8")
- 					self.automounts[data['sharename']] = data
- 				except Exception, e:
- 					print "[MountManager] Error reading Mounts:", e
+					self.automounts[data['sharename']] = data
+				except Exception, e:
+					print "[MountManager] Error reading Mounts:", e
 -			# Read out CIFS Mounts
 -		for nfs in tree.findall("cifs"):
 -			for mount in nfs.findall("mount"):
@@ -170,7 +171,7 @@
 -					data['host'] = getValue(mount.findall("host"), "").encode("UTF-8")
 -					data['sharedir'] = getValue(mount.findall("sharedir"), "/media/").encode("UTF-8")
 -					data['sharename'] = getValue(mount.findall("sharename"), "MEDIA").encode("UTF-8")
--					data['options'] = getValue(mount.findall("options"), "rw,nolock").encode("UTF-8")
+-					data['options'] = getValue(mount.findall("options"), "").encode("UTF-8")
 -					data['username'] = getValue(mount.findall("username"), "guest").encode("UTF-8")
 -					data['password'] = getValue(mount.findall("password"), "").encode("UTF-8")
 -					self.automounts[data['sharename']] = data
@@ -189,8 +190,8 @@
 +			callback(True)
  
  	def sanitizeOptions(self, origOptions, cifs=False):
- 		options = origOptions.strip()
-@@ -127,75 +137,18 @@
+ 		# split the options into their components
+@@ -169,72 +179,18 @@
  
  	def CheckMountPoint(self, item, callback):
  		data = self.automounts[item]
@@ -212,24 +213,21 @@
 -				try:
 -					if not os.path.exists(path):
 -						os.makedirs(path)
--					
--					host = data['host']
+-
+-					host = data['ip']
 -					if not host:
--						host = data['ip'] 
--					
+-						host = data['host']
+-
 -					if data['mounttype'] == 'nfs':
 -						if not os.path.ismount(path):
--							if data['options']:
--								options = "tcp,noatime,retry=0" + data['options']
--							else:
--								options = "tcp,noatime,retry=0"
+-							options = self.sanitizeOptions(data['options'], false)
 -							tmpcmd = "mount -t nfs -o %s '%s' '%s'" % (options, host + ':/' + data['sharedir'], path)
 -							command = tmpcmd.encode("UTF-8")
 -
 -					elif data['mounttype'] == 'cifs':
 -						if not os.path.ismount(path):
--							tmpusername = data['username'].replace(" ", "\\ ")
--							options = data['options'] + ',noatime,noserverino,iocharset=utf8,username='+ tmpusername + ',password='+ data['password']
+-							options = self.sanitizeOptions(data['options'], true)
+-							options += "username="+ data['username'].replace(" ", "\\ ") + ",password="+ data['password']
 -							tmpcmd = "mount -t cifs -o %s '//%s/%s' '%s'" % (options, host, data['sharedir'], path)
 -							command = tmpcmd.encode("UTF-8")
 -				except Exception, ex:
@@ -273,7 +271,7 @@
  		if self.checkList:
  			# Go to next item in list...
  			self.CheckMountPoint(self.checkList.pop(), callback)
-@@ -226,13 +179,6 @@
+@@ -265,13 +221,6 @@
  			except Exception, ex:
  				print "[AutoMount.py] Failed to create ", movie, "Error:", ex
  
@@ -287,7 +285,7 @@
  
  	def getMountsList(self):
  		return self.automounts
-@@ -249,30 +195,31 @@
+@@ -288,30 +237,31 @@
  
  	def writeMountsConfig(self):
  		# Generate List in RAM
@@ -340,7 +338,7 @@
  
  		# Try Saving to Flash
  		try:
-@@ -280,9 +227,6 @@
+@@ -319,9 +269,6 @@
  		except Exception, e:
  			print "[AutoMount.py] Error Saving Mounts List:", e
  
@@ -350,7 +348,7 @@
  
  	def removeMount(self, mountpoint, callback = None):
  		print "[AutoMount.py] removing mount: ",mountpoint
-@@ -292,28 +236,6 @@
+@@ -331,28 +278,6 @@
  				self.newautomounts[sharename] = sharedata
  		self.automounts.clear()
  		self.automounts = self.newautomounts

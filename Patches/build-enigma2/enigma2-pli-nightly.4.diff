@@ -1,4 +1,4 @@
-# revision 12e2144c411d147e99694d24b8cffad231e6b4f9 10/12/2018 19:01
+# revision e2e791cf8426028d8cc225d5fa2bceb55df634f5 23/03/2019 19:40
 --- enigma2.org/configure.ac
 +++ enigma2/configure.ac
 @@ -18,6 +18,7 @@
@@ -9,7 +9,7 @@
  AX_PYTHON_DEVEL
  AX_PKG_SWIG
  AX_SWIG_ENABLE_CXX
-@@ -35,6 +36,240 @@
+@@ -35,6 +36,249 @@
  PKG_CHECK_MODULES(LIBDDVD, libdreamdvd, HAVE_LIBDDVD="yes", HAVE_LIBDDVD="no")
  AM_CONDITIONAL(HAVE_LIBDDVD, test "$HAVE_LIBDDVD" = "yes")
  PKG_CHECK_MODULES(AVAHI, avahi-client)
@@ -32,15 +32,6 @@
 +	AC_DEFINE(ENABLE_TF7700, 1, [enable tf7700 stuff])
 +fi
 +
-+AC_ARG_ENABLE(cuberevo,
-+	[  --enable-cuberevo       enable cuberevo stuff],
-+	[AC_DEFINE(ENABLE_CUBEREVO, 1, [enable cuberevo stuff])])
-+
-+AM_CONDITIONAL(ENABLE_CUBEREVO, test "$enable_cuberevo" = "yes")
-+if test "$enable_cuberevo" = "yes"; then
-+	AC_DEFINE(ENABLE_CUBEREVO, 1, [enable cuberevo stuff])
-+fi
-+
 +AC_ARG_ENABLE(cuberevo_250hd,
 +	[  --enable-cuberevo_250hd enable cuberevo_250d stuff],
 +	[AC_DEFINE(ENABLE_CUBEREVO_250HD, 1, [enable cuberevo_250hd stuff])])
@@ -57,6 +48,15 @@
 +AM_CONDITIONAL(ENABLE_CUBEREVO_2000HD, test "$enable_cuberevo_2000hd" = "yes")
 +if test "$enable_cuberevo_2000hd" = "yes"; then
 +	AC_DEFINE(ENABLE_CUBEREVO_2000HD, 1, [enable cuberevo_2000hd stuff])
++fi
++
++AC_ARG_ENABLE(cuberevo_3000hd,
++	[  --enable-cuberevo_3000hd enable cuberevo_3000d stuff],
++	[AC_DEFINE(ENABLE_CUBEREVO_3000HD, 1, [enable cuberevo_3000hd stuff])])
++
++AM_CONDITIONAL(ENABLE_CUBEREVO_3000HD, test "$enable_cuberevo_3000hd" = "yes")
++if test "$enable_cuberevo_3000hd" = "yes"; then
++	AC_DEFINE(ENABLE_CUBEREVO_3000HD, 1, [enable cuberevo_3000hd stuff])
 +fi
 +
 +AC_ARG_ENABLE(cuberevo_9500hd,
@@ -88,11 +88,20 @@
 +
 +AC_ARG_ENABLE(cuberevo_mini_fta,
 +	[  --enable-cuberevo_mini_fta enable cuberevo_mini stuff],
-+	[AC_DEFINE(ENABLE_CUBEREVO_MINI, 1, [enable cuberevo_mini_fta stuff])])
++	[AC_DEFINE(ENABLE_CUBEREVO_MINI_FTA, 1, [enable cuberevo_mini_fta stuff])])
 +
 +AM_CONDITIONAL(ENABLE_CUBEREVO_MINI_FTA, test "$enable_cuberevo_mini_fta" = "yes")
 +if test "$enable_cuberevo_mini_fta" = "yes"; then
 +	AC_DEFINE(ENABLE_CUBEREVO_MINI_FTA, 1, [enable cuberevo_mini_fta stuff])
++fi
++
++AC_ARG_ENABLE(cuberevo,
++	[  --enable-cuberevo       enable cuberevo stuff],
++	[AC_DEFINE(ENABLE_CUBEREVO, 1, [enable cuberevo stuff])])
++
++AM_CONDITIONAL(ENABLE_CUBEREVO, test "$enable_cuberevo" = "yes")
++if test "$enable_cuberevo" = "yes"; then
++	AC_DEFINE(ENABLE_CUBEREVO, 1, [enable cuberevo stuff])
 +fi
 +
 +AC_ARG_ENABLE(spark,
@@ -250,39 +259,18 @@
  
  AC_CHECK_LIB([udfread], [udfread_init])
  AC_CHECK_LIB([dl], [dlopen], [LIBDL_LIBS="-ldl"], [AC_MSG_ERROR([Could not find libdl])])
-@@ -48,11 +283,11 @@
- 	[  --with-crashlogemail=crash log email address],
- 	[CRASHLOGEMAIL="$withval"],[CRASHLOGEMAIL="the OpenPLi forum"])
- AC_SUBST(CRASHLOGEMAIL)
--AC_DEFINE_UNQUOTED(CRASH_EMAILADDR,"$CRASHLOGEMAIL",[crash log email address])
-+AC_DEFINE_UNQUOTED(CRASH_EMAILADDR,"$CRASHLOGEMAIL", [crash log email address])
+@@ -51,8 +295,8 @@
+ AC_DEFINE_UNQUOTED(CRASH_EMAILADDR,"$CRASHLOGEMAIL",[crash log email address])
  
  AC_ARG_WITH(boxtype,
- 	[  --with-boxtype=NAME box type [[none,dm7025,dm800...]]],
+-	[  --with-boxtype=NAME box type [[none,dm800...]]],
 -	[BOXTYPE="$withval"],[BOXTYPE="dm800"])
++	[  --with-boxtype=NAME box type [[none,atevio7500...]]],
 +	[BOXTYPE="$withval"],[BOXTYPE="atevio7500"])
  AC_SUBST(BOXTYPE)
  AC_DEFINE_UNQUOTED(BOXTYPE,"$BOXTYPE",[box type])
  
-@@ -60,7 +295,7 @@
- AM_CONDITIONAL(HAVE_TEMPFANCONTROL, test "$BOXTYPE" == dm8000 -o "$BOXTYPE" == dm800se -o "$BOXTYPE" == dm500hd)
- if test `echo "$BOXTYPE" | cut -b 1-2` == "dm"; then
- 	AC_DEFINE(DREAMBOX, 1, [Dreambox hardware])
--	AC_DEFINE(KEY_PLAY_ACTUALLY_IS_KEY_PLAYPAUSE, 1,[define when rc sends a KEY_PLAY event for its KEY_PLAYPAUSE key])
-+	AC_DEFINE(KEY_PLAY_ACTUALLY_IS_KEY_PLAYPAUSE, 1, [define when rc sends a KEY_PLAY event for its KEY_PLAYPAUSE key])
- fi
- 
- AC_ARG_WITH(textlcd,
-@@ -69,7 +304,7 @@
- 	[[withtextlcd=no]]
- )
- if test x"$withtextlcd" != xno ; then
--	AC_DEFINE(HAVE_TEXTLCD, 1,[Define when using an ascii based lcd device])
-+	AC_DEFINE(HAVE_TEXTLCD, 1, [Define when using an ASCII based lcd device])
- fi
- AM_CONDITIONAL(HAVE_TEXTLCD, test x"$withtextlcd" != xno)
- 
-@@ -79,19 +314,6 @@
+@@ -79,19 +323,6 @@
  	[[TEXTSKIN="default"]]
  )
  AC_SUBST(TEXTSKIN)
@@ -302,33 +290,7 @@
  
  AC_ARG_WITH(libsdl,
  	AS_HELP_STRING([--with-libsdl],[use libsdl, yes or no]),
-@@ -106,7 +328,7 @@
- 	[with_libxine=$withval],[with_libxine=no])
- if test "$with_libxine" = "yes"; then
- 	PKG_CHECK_MODULES(LIBXINE, libxine)
--	AC_DEFINE([WITH_XINE],[1],[Define to 1 if you have libxine])
-+	AC_DEFINE([WITH_XINE], 1, [Define to 1 if you have libxine])
- fi
- AM_CONDITIONAL(HAVE_LIBXINE, test "$with_libxine" = "yes")
- 
-@@ -114,14 +336,14 @@
- 	AS_HELP_STRING([--without-debug],[disable debugging code]),
- 	[with_debug="$withval"],[with_debug="yes"])
- if test "$with_debug" = "yes"; then
--	AC_DEFINE([DEBUG],[1],[Define to 1 to enable debugging code])
-+	AC_DEFINE([DEBUG], 1, [Define to 1 to enable debugging code])
- fi
- 
- AC_ARG_WITH(memcheck,
- 	AS_HELP_STRING([--with-memcheck],[enable memory leak checks]),
- 	[with_memcheck="$withval"],[with_memcheck="no"])
- if test "$with_memcheck" = "yes"; then
--	AC_DEFINE([MEMLEAK_CHECK],[1],[Define to 1 to enable memory leak checks])
-+	AC_DEFINE([MEMLEAK_CHECK], 1, [Define to 1 to enable memory leak checks])
- fi
- 
- AC_ARG_WITH(po,
-@@ -141,11 +363,11 @@
+@@ -141,8 +372,8 @@
  
  AC_ARG_WITH(alsa,
  	AC_HELP_STRING([--with-alsa], [Enable ALSA support]),
@@ -338,29 +300,9 @@
 +	[[with_alsa=no]]
  )
  if test x"$with_alsa" == xyes ; then
--	AC_DEFINE(HAVE_ALSA, 1,[Enables ALSA support])
-+	AC_DEFINE(HAVE_ALSA, 1, [Enables ALSA support])
- 	PKG_CHECK_MODULES(ALSA, alsa)
- fi
- 
-@@ -155,7 +377,7 @@
- 	[[with_alsacard=no]]
- )
- if test x"$with_alsacard" != xno ; then
--	AC_DEFINE_UNQUOTED(ALSA_CARD, "$withval",[Defines which alsa card to use])
-+	AC_DEFINE_UNQUOTED(ALSA_CARD, "$withval", [Defines which alsa card to use])
- fi
- 
- AC_ARG_WITH(alsamixer,
-@@ -192,12 +414,32 @@
- )
- AM_CONDITIONAL(HAVE_AMLOGIC, test x"$with_amlogic" = xyes)
- if test x"$with_amlogic" = xyes ; then
--	AC_DEFINE(HAVE_AMLOGIC, 1,[Enables AMLOGIC decoder support])
-+	AC_DEFINE(HAVE_AMLOGIC, 1, [Enables AMLOGIC decoder support])
- 	PKG_CHECK_MODULES(AMCODEC, libamcodec)
- 	PKG_CHECK_MODULES(AMADEC, libamadec)
- 	PKG_CHECK_MODULES(DVBCSA, libdvbcsa)
+ 	AC_DEFINE(HAVE_ALSA, 1,[Enables ALSA support])
+@@ -197,6 +428,26 @@
+ 	AC_DEFINE_UNQUOTED(FORCE_ALPHABLENDING_ACCELERATION, 1, [Accelerate alphablending blits])
  fi
  
 +AC_ARG_WITH(graphlcd,
@@ -369,7 +311,7 @@
 +	[[withgraphlcd=no]]
 +)
 +if test x"$withgraphlcd" != xno ; then
-+	AC_DEFINE(HAVE_GRAPHLCD, 1, [Define when using a GraphLCD color display device])
++	AC_DEFINE(HAVE_GRAPHLCD, 1,[Define when using a GraphLCD color display device])
 +fi
 +AM_CONDITIONAL(HAVE_GRAPHLCD, test x"$withgraphlcd" != xno)
 +
@@ -383,10 +325,10 @@
 +fi
 +AM_CONDITIONAL(HAVE_LCD4LINUX, test x"$withlcd4linux" != xno)
 + 
- AC_ARG_WITH(alphablendingacceleration,
- 	AC_HELP_STRING([--with-alphablendingacceleration=never/always/auto], [alphablending acceleration strategy: never accelerate / always accelerate / automatically decide when to accelerate (default)]),
- 	[[with_alphablendingacceleration=$withval]],
-@@ -313,8 +555,6 @@
+ AC_ARG_WITH(accelerationthreshold,
+ 	AC_HELP_STRING([--with-accelerationthreshold=n], [use acceleration threshold of n bytes]),
+ 	[[with_accelerationthreshold=$withval]],
+@@ -300,8 +551,6 @@
  lib/python/Plugins/Extensions/TuxboxPlugins/Makefile
  lib/python/Plugins/Extensions/TuxboxPlugins/meta/Makefile
  lib/python/Plugins/PLi/Makefile
@@ -395,7 +337,7 @@
  lib/python/Plugins/SystemPlugins/DefaultServicesScanner/Makefile
  lib/python/Plugins/SystemPlugins/DefaultServicesScanner/meta/Makefile
  lib/python/Plugins/SystemPlugins/DiseqcTester/Makefile
-@@ -344,6 +584,50 @@
+@@ -331,6 +580,50 @@
  lib/python/Plugins/SystemPlugins/Videomode/meta/Makefile
  lib/python/Plugins/SystemPlugins/WirelessLan/Makefile
  lib/python/Plugins/SystemPlugins/WirelessLan/meta/Makefile
@@ -446,6 +388,62 @@
  lib/python/Tools/Makefile
  po/Makefile
  main/Makefile
+--- enigma2.org/mytest.py
++++ enigma2/mytest.py
+@@ -297,6 +297,10 @@
+ 
+ 		self.pushCurrent()
+ 		dlg = self.current_dialog = self.instantiateDialog(screen, *arguments, **kwargs)
++
++		if dlg is None:
++			return
++
+ 		dlg.isTmp = True
+ 		dlg.callback = None
+ 		self.execBegin()
+@@ -501,10 +505,10 @@
+ 	if wakeupList:
+ 		from time import strftime
+ 		startTime = wakeupList[0]
+-		if (startTime[0] - nowTime) < 270: # no time to switch box back on
++		if (startTime[0] - nowTime) < 330: # no time to switch box back on
+ 			wptime = nowTime + 30  # so switch back on in 30 seconds
+ 		else:
+-			wptime = startTime[0] - 240
++			wptime = startTime[0] - 300
+ 		if not config.misc.useTransponderTime.value:
+ 			print "dvb time sync disabled... so set RTC now to current linux time!", strftime("%Y/%m/%d %H:%M", localtime(nowTime))
+ 			setRTCtime(nowTime)
+--- enigma2.org/data/Makefile.am
++++ enigma2/data/Makefile.am
+@@ -1,4 +1,4 @@
+-SUBDIRS = countries fonts extensions keymaps skin_default rc_models hw_info
++SUBDIRS = countries fonts extensions keymaps skin_default rc_models
+ 
+ dist_pkgdata_DATA = \
+ 	encoding.conf \
+--- enigma2.org/data/skin_default/Makefile.am
++++ enigma2/data/skin_default/Makefile.am
+@@ -1,4 +1,4 @@
+-SUBDIRS = menu icons buttons spinner LCDIcons
++SUBDIRS = menu icons buttons spinner
+ 
+ installdir = $(pkgdatadir)/skin_default
+ 
+--- enigma2.org/data/fonts/Makefile.am
++++ enigma2/data/fonts/Makefile.am
+@@ -14,9 +14,8 @@
+ 	LiberationSans-Bold.ttf \
+ 	LiberationSans-BoldItalic.ttf \
+ 	LiberationSans-Italic.ttf \
+-	LiberationSans-Regular.ttf \
+-	wqy-microhei.ttc
++	LiberationSans-Regular.ttf
+ 
+ install-data-hook:
+ 	cd $(DESTDIR)$(datadir)/fonts && \
+-	$(LN_S) wqy-microhei.ttc fallback.font
++	$(LN_S) -f md_khmurabi_10.ttf fallback.font
 --- enigma2.org/data/skin_display_default.xml
 +++ enigma2/data/skin_display_default.xml
 @@ -22,27 +22,29 @@
@@ -643,20 +641,6 @@
 +		<widget source="parent.selectedChoice" render="Label" position="bottom" size="*,44" font="FdLcD;44" halign="center" valign="center" />
  	</screen>
  </skin>
---- enigma2.org/data/fonts/Makefile.am
-+++ enigma2/data/fonts/Makefile.am
-@@ -14,9 +14,8 @@
- 	LiberationSans-Bold.ttf \
- 	LiberationSans-BoldItalic.ttf \
- 	LiberationSans-Italic.ttf \
--	LiberationSans-Regular.ttf \
--	wqy-microhei.ttc
-+	LiberationSans-Regular.ttf
- 
- install-data-hook:
- 	cd $(DESTDIR)$(datadir)/fonts && \
--	$(LN_S) wqy-microhei.ttc fallback.font
-+	$(LN_S) -f md_khmurabi_10.ttf fallback.font
 --- enigma2.org/lib/base/Makefile.inc
 +++ enigma2/lib/base/Makefile.inc
 @@ -42,7 +42,7 @@
@@ -668,9 +652,31 @@
  	base/i18n.h \
  	base/itssource.h \
  	base/init.h \
+--- enigma2.org/lib/base/encoding.cpp
++++ enigma2/lib/base/encoding.cpp
+@@ -70,8 +70,19 @@
+ 	{
+ 		size_t bufsize = 256;
+ 		char *line = (char*) malloc(bufsize);
++		if (line == NULL)
++		{
++			eDebug("[eDVBTextEncodingHandler] unable to allocate memory");
++			return;
++		}
+ 		char countrycode[bufsize];
+ 		char *s_table = (char*) malloc(bufsize);
++		if (s_table == NULL)
++		{
++			eDebug("[eDVBTextEncodingHandler] unable to allocate memory");
++			free(line);
++			return;
++		}
+ 		while (getline(&line, &bufsize, f) != -1)
+ 		{
+ 			int i, j = 0;	   // remove leading whitespace and control chars, and comments
 --- enigma2.org/lib/base/estring.cpp
 +++ enigma2/lib/base/estring.cpp
-@@ -634,10 +634,10 @@
+@@ -635,10 +635,10 @@
  		eLog(6, "[convertDVBUTF8] %d chars converted, and %d chars left..", convertedLen, len-convertedLen);
  	eLog(6, "[convertDVBUTF8] table=0x%02X twochar=%d output:%s\n", table, useTwoCharMapping, output.c_str());
  
@@ -685,6 +691,38 @@
  
  	return output;
  }
+@@ -923,13 +923,13 @@
+     return output;
+ }
+ 
+-std::string strip_non_graph(std::string s)
+-{
+-	s = std::regex_replace(s, std::regex("[[^:graph:]]"), " ");
+-	s = std::regex_replace(s, std::regex("\\s{2,}"), " ");
+-	s = std::regex_replace(s, std::regex("^\\s+|\\s+$"), "");
+-	return s;
+-}
++//std::string strip_non_graph(std::string s)
++//{
++//	s = std::regex_replace(s, std::regex("[[^:graph:]]"), (std::basic_string<char>)" ");
++//	s = std::regex_replace(s, std::regex("\\s{2,}"), (std::basic_string<char>)" ");
++//	s = std::regex_replace(s, std::regex("^\\s+|\\s+$"), (std::basic_string<char>)"");
++//	return s;
++//}
+ 
+ std::vector<std::string> split(std::string s, const std::string& separator)
+ {
+--- enigma2.org/lib/base/estring.h
++++ enigma2/lib/base/estring.h
+@@ -32,7 +32,7 @@
+ 
+ std::string urlDecode(const std::string &s);
+ std::string string_to_hex(const std::string& input);
+-std::string strip_non_graph(std::string s);
++//std::string strip_non_graph(std::string s);
+ std::vector<std::string> split(std::string s, const std::string& separator);
+ int strcasecmp(const std::string& s1, const std::string& s2);
+ 
 --- enigma2.org/lib/base/smartptr.h
 +++ enigma2/lib/base/smartptr.h
 @@ -4,6 +4,8 @@
@@ -760,14 +798,133 @@
  driver_libenigma_driver_a_SOURCES += \
 --- enigma2.org/lib/driver/hdmi_cec.cpp
 +++ enigma2/lib/driver/hdmi_cec.cpp
-@@ -153,6 +153,7 @@
- 	else
+@@ -126,22 +126,13 @@
+ 
+ 	if (!linuxCEC)
  	{
- 		eDebug("[eHdmiCEC] cannot open %s: %m", HDMIDEV);
-+		bool hdmicec_enabled = eConfigManager::getConfigBoolValue("config.hdmicec.enabled", false);
+-#ifdef DREAMBOX
+-#define HDMIDEV "/dev/misc/hdmi_cec0"
+-#else
+ #define HDMIDEV "/dev/hdmi_cec"
+-#endif
+ 
+ 		hdmiFd = ::open(HDMIDEV, O_RDWR | O_NONBLOCK | O_CLOEXEC);
+ 		if (hdmiFd >= 0)
+ 		{
+ 
+-#ifdef DREAMBOX
+-			unsigned int val = 0;
+-			::ioctl(hdmiFd, 4, &val);
+-#else
+ 			::ioctl(hdmiFd, 0); /* flush old messages */
+-#endif
+ 		}
  	}
  
- 	getAddressInfo();
+@@ -228,28 +219,6 @@
+ 			if (::ioctl(hdmiFd, 1, &addressinfo) >= 0)
+ 			{
+ 				hasdata = true;
+-#if DREAMBOX
+-				/* we do not get the device type, check the logical address to determine the type */
+-				switch (addressinfo.logical)
+-				{
+-				case 0x1:
+-				case 0x2:
+-				case 0x9:
+-					addressinfo.type = 1; /* recorder */
+-					break;
+-				case 0x3:
+-				case 0x6:
+-				case 0x7:
+-				case 0xa:
+-					addressinfo.type = 3; /* tuner */
+-					break;
+-				case 0x4:
+-				case 0x8:
+-				case 0xb:
+-					addressinfo.type = 4; /* playback */
+-					break;
+-				}
+-#endif
+ 			}
+ 		}
+ 		if (hasdata)
+@@ -348,14 +317,6 @@
+ 		}
+ 		else
+ 		{
+-#ifdef DREAMBOX
+-			if (::ioctl(hdmiFd, 2, &rxmessage) >= 0)
+-			{
+-				hasdata = true;
+-			}
+-			unsigned int val = 0;
+-			::ioctl(hdmiFd, 4, &val);
+-#else
+ 			if (::read(hdmiFd, &rxmessage, 2) == 2)
+ 			{
+ 				if (::read(hdmiFd, &rxmessage.data, rxmessage.length) == rxmessage.length)
+@@ -363,7 +324,6 @@
+ 					hasdata = true;
+ 				}
+ 			}
+-#endif
+ 		}
+ 		bool hdmicec_enabled = eConfigManager::getConfigBoolValue("config.hdmicec.enabled", false);
+ 		if (hasdata && hdmicec_enabled)
+@@ -540,12 +500,7 @@
+ 		}
+ 		else
+ 		{
+-#ifdef DREAMBOX
+-			message.flag = 1;
+-			::ioctl(hdmiFd, 3, &message);
+-#else
+ 			::write(hdmiFd, &message, 2 + message.length);
+-#endif
+ 		}
+ 	}
+ }
+--- enigma2.org/lib/driver/hdmi_cec.h
++++ enigma2/lib/driver/hdmi_cec.h
+@@ -39,28 +39,6 @@
+ {
+ #ifndef SWIG
+ public:
+-#ifdef DREAMBOX
+-	struct cec_message
+-	{
+-		unsigned char address;
+-		unsigned char data[16];
+-		unsigned char length;
+-		unsigned char flag;
+-	}__attribute__((packed));
+-	struct cec_rx_message
+-	{
+-		unsigned char address;
+-		unsigned char destination;
+-		unsigned char data[16];
+-		unsigned char length;
+-	}__attribute__((packed));
+-	struct addressinfo
+-	{
+-		unsigned char physical[2];
+-		unsigned char logical;
+-		unsigned char type;
+-	};
+-#else
+ 	struct cec_message
+ 	{
+ 		unsigned char address;
+@@ -89,7 +67,6 @@
+ 		int getData(char *data, int length);
+ 	};
+ 	void sendMessage(struct cec_message &message);
+-#endif
+ protected:
+ 	static eHdmiCEC *instance;
+ 	bool linuxCEC;
 --- enigma2.org/lib/driver/rc.cpp
 +++ enigma2/lib/driver/rc.cpp
 @@ -164,6 +164,9 @@
@@ -780,9 +937,20 @@
  	/* check whether the input device has KEY_A, in which case we assume it is a keyboard */
  	return hasCap(keyCaps, KEY_A);
  }
+--- enigma2.org/lib/driver/rcinput.cpp
++++ enigma2/lib/driver/rcinput.cpp
+@@ -40,7 +40,7 @@
+ 	if (km == eRCInput::kmAscii)
+ 	{
+ 		bool ignore = false;
+-		bool ascii = ev->code > 0 && ev->code < 59;
++		bool ascii = (ev->code > 0 && ev->code < 61);
+ 
+ 		switch (ev->code)
+ 		{
 --- enigma2.org/lib/driver/vfd.cpp
 +++ enigma2/lib/driver/vfd.cpp
-@@ -0,0 +1,811 @@
+@@ -0,0 +1,849 @@
 +/*
 + * vfd.cpp
 + *
@@ -825,6 +993,7 @@
 + * 20150316 Audioniek       Spark7162 circle spin on init removed.
 + * 20160101 Audioniek       Fortis HS7420 and HS7429 added.
 + * 20170313 Audioniek       Kathrein UFS910/912 added.
++ * 20190317 Audioniek       Several CubeRevo's added.
 + *
 + ****************************************************************************/
 +#include <stdarg.h>
@@ -841,7 +1010,7 @@
 +#include <lib/base/eerror.h>
 +#include <lib/driver/vfd.h>
 +
-+#ifdef ENABLE_TF7700
++#if defined (ENABLE_TF7700)
 +#include "../../../apps/tools/tffpctl/frontpanel.h"
 +#endif
 +
@@ -860,11 +1029,11 @@
 +static int led_onoff[7];
 +//static int led_onoff[LAST_LED];
 +static pthread_t thread_start_loop = 0;
-+void * start_loop (void *arg);
++void *start_loop (void *arg);
 +bool blocked    = false;
 +bool requested  = false;
 +bool VFD_CENTER = false;
-+int VFD_SCROLL  = 1;  // 1=scroll once
++int  VFD_SCROLL = 1;  // 1=scroll once
 +bool scoll_loop = false;
 +
 +char chars[64];
@@ -883,16 +1052,26 @@
 +#elif defined (ENABLE_HS7810A) \
 +   || defined (ENABLE_HS7819) \
 +   || defined (ENABLE_HS7119) \
-+   || defined (ENABLE_SPARK)
++   || defined (ENABLE_SPARK) \
++   || defined (ENABLE_CUBEREVO_MINI_FTA) \
++   || defined (ENABLE_CUBEREVO_250HD)
 +	#define VFDLENGTH 4
 +#elif defined (ENABLE_OCTAGON1008) \
-+   || defined(ENABLE_HS7420) \
-+   || defined(ENABLE_HS7429) \
++   || defined (ENABLE_HS7420) \
++   || defined (ENABLE_HS7429) \
 +   || defined (ENABLE_SPARK7162)
 +	#define VFDLENGTH 8
 +#elif defined (ENABLE_FORTIS_HDBOX) \
-+   || defined (ENABLE_ATEVIO7500)
++   || defined (ENABLE_ATEVIO7500) \
++   || defined (ENABLE_CUBEREVO)
 +	#define VFDLENGTH 12
++#elif defined (ENABLE_CUBEREVO_9500HD)
++	#define VFDLENGTH 13
++#elif defined (ENABLE_CUBEREVO_MINI) \
++   || defined (ENABLE_CUBEREVO_MINI2) \
++   || defined (ENABLE_CUBEREVO_2000HD) \
++   || defined (ENABLE_CUBEREVO_3000HD)
++	#define VFDLENGTH 14
 +#else
 +	#define VFDLENGTH 16
 +#endif
@@ -911,25 +1090,36 @@
 +evfd::evfd()
 +{
 +	file_vfd = 0;
-+	memset ( chars, ' ', 63 );
-+#if defined(ENABLE_SPARK)
++	memset (chars, ' ', 63);
++#if defined (ENABLE_SPARK)
 +	vfd_type = 4;
-+#elif defined(ENABLE_ATEVIO7500)
++#elif defined (ENABLE_ATEVIO7500)
 +	vfd_type = 5;
-+#elif defined(ENABLE_FORTIS_HDBOX)
++#elif defined (ENABLE_FORTIS_HDBOX)
 +	vfd_type = 6;
-+#elif defined(ENABLE_OCTAGON1008)
++#elif defined (ENABLE_OCTAGON1008)
 +	vfd_type = 7;
-+#elif defined(ENABLE_SPARK7162)
++#elif defined (ENABLE_SPARK7162)
 +	vfd_type = 8;
-+#elif defined(ENABLE_HS7810A) || defined(ENABLE_HS7819) || defined(ENABLE_HS7119)
++#elif defined (ENABLE_HS7810A) || defined (ENABLE_HS7819) || defined (ENABLE_HS7119)
 +	vfd_type = 9;
-+#elif defined(ENABLE_HS7110)
++#elif defined (ENABLE_HS7110)
 +	vfd_type = 10;
-+#elif defined(ENABLE_HS7420) || defined(ENABLE_HS7429)
++#elif defined (ENABLE_HS7420) || defined (ENABLE_HS7429)
 +	vfd_type = 11;
-+#elif defined(ENABLE_UFS912) || defined(ENABLE_UFS913)
++#elif defined (ENABLE_UFS912) || defined (ENABLE_UFS913)
 +	vfd_type = 12;
++#elif defined (ENABLE_CUBEREVO)
++	vfd_type = 13;
++#elif defined (ENABLE_CUBEREVO_MINI_FTA) || defined (ENABLE_CUBEREVO_250HD)
++	vfd_type = 14;
++#elif defined (ENABLE_CUBEREVO_MINI) \
++   || defined (ENABLE_CUBEREVO_MINI2) \
++   || defined (ENABLE_CUBEREVO_2000HD) \
++   || defined (ENABLE_CUBEREVO_3000HD)
++	vfd_type = 15;
++#elif defined (ENABLE_CUBEREVO_9500HD)
++	vfd_type = 16;
 +#else
 +	vfd_type = -1;
 +#endif
@@ -945,7 +1135,7 @@
 +	//close (file_vfd);
 +}
 +
-+#ifdef ENABLE_TF7700
++#if defined (ENABLE_TF7700)
 +
 +char * getProgress()
 +{
@@ -1057,37 +1247,51 @@
 +
 +	return NULL;
 +}
-+#else  //next code for boxes other than Topfield TF7700HDPVR
++#else  //next code for boxes other than Topfield TF77X0HDPVR
 +
 +void * start_loop (void *arg)
 +{
 +	evfd vfd;
 +	blocked = true;
-+	#if defined ENABLE_SPARK7162
++	#if defined (ENABLE_SPARK7162)
 +		char str[] = "SPARK7162 ENIGMA2";
-+	#elif defined ENABLE_SPARK
++	#elif defined (ENABLE_SPARK)
 +		char str[] = "SPARK ENIGMA2";
-+	#elif defined ENABLE_FORTIS_HDBOX
++	#elif defined (ENABLE_CUBEREVO)
++		char str[] = "CubeRevo Enigma2";
++	#elif defined (ENABLE_CUBEREVO_MINI_FTA)
++		char str[] = "CubeRevo 200HD Enigma2";
++	#elif defined (ENABLE_CUBEREVO_250HD)
++		char str[] = "CubeRevo 250HD Enigma2";
++	#elif defined (ENABLE_CUBEREVO_MINI)
++		char str[] = "CubeRevo Mini Enigma2";
++	#elif defined (ENABLE_CUBEREVO_MINI2)
++		char str[] = "CubeRevo Mini II Enigma2";
++	#elif defined (ENABLE_CUBEREVO_2000HD)
++		char str[] = "CubeRevo 2000HD Enigma2";
++	#elif defined (ENABLE_CUBEREVO_3000HD)
++		char str[] = "CubeRevo 3000HD Enigma2";
++	#elif defined (ENABLE_FORTIS_HDBOX)
 +		char str[] = "FS9000/9200 Enigma2";
-+	#elif defined ENABLE_OCTAGON1008
++	#elif defined (ENABLE_OCTAGON1008)
 +		char str[] = "HS9510 Enigma2";
-+	#elif defined ENABLE_ATEVIO7500
++	#elif defined (ENABLE_ATEVIO7500)
 +		char str[] = "HS8200 Enigma2";
-+	#elif defined ENABLE_HS7119
++	#elif defined (ENABLE_HS7119)
 +		char str[] = "7119 Enigma2";
-+	#elif defined ENABLE_HS7420
++	#elif defined (ENABLE_HS7420)
 +		char str[] = "HS7420 Enigma2";
-+	#elif defined ENABLE_HS7810A
++	#elif defined (ENABLE_HS7810A)
 +		char str[] = "7810 Enigma2";
-+	#elif defined ENABLE_HS7429
++	#elif defined (ENABLE_HS7429)
 +		char str[] = "HS7429 Enigma2";
-+	#elif defined ENABLE_HS7819
++	#elif defined (ENABLE_HS7819)
 +		char str[] = "7819 Enigma2";
-+	#elif defined ENABLE_UFS910
++	#elif defined (ENABLE_UFS910)
 +		char str[] = "UFS910 Enigma2";
-+	#elif defined ENABLE_UFS912
++	#elif defined (ENABLE_UFS912)
 +		char str[] = "UFS912 Enigma2";
-+	#elif defined ENABLE_UFS913
++	#elif defined (ENABLE_UFS913)
 +		char str[] = "UFS913 Enigma2";
 +	#else
 +		char str[] = "SH4 Git Enigma2";
@@ -1097,24 +1301,25 @@
 +	close(vfddev);
 +
 +	/*these boxes can control display brightness*/
-+	#if !defined(ENABLE_FORTIS_HDBOX) \
-+	 && !defined(ENABLE_OCTAGON1008) \
-+	 && !defined(ENABLE_ATEVIO7500) \
-+	 && !defined(ENABLE_CUBEREVO) \
-+	 && !defined(ENABLE_CUBEREVO_MINI) \
-+	 && !defined(ENABLE_CUBEREVO_MINI2) \
-+	 && !defined(ENABLE_CUBEREVO_MINI_FTA) \
-+	 && !defined(ENABLE_CUBEREVO_250HD) \
-+	 && !defined(ENABLE_CUBEREVO_2000HD) \
-+	 && !defined(ENABLE_CUBEREVO_9500HD) \
-+	 && !defined(ENABLE_SPARK7162) \
-+	 && !defined ENABLE_UFS912 \
-+	 && !defined ENABLE_UFS913 \
-+	 && !defined(ENABLE_HS7119) \
-+	 && !defined(ENABLE_HS7420) \
-+	 && !defined(ENABLE_HS7429) \
-+	 && !defined(ENABLE_HS7810A) \
-+	 && !defined(ENABLE_HS7819)
++	#if !defined (ENABLE_FORTIS_HDBOX) \
++	 && !defined (ENABLE_OCTAGON1008) \
++	 && !defined (ENABLE_ATEVIO7500) \
++	 && !defined (ENABLE_CUBEREVO) \
++	 && !defined (ENABLE_CUBEREVO_MINI) \
++	 && !defined (ENABLE_CUBEREVO_MINI2) \
++	 && !defined (ENABLE_CUBEREVO_MINI_FTA) \
++	 && !defined (ENABLE_CUBEREVO_250HD) \
++	 && !defined (ENABLE_CUBEREVO_2000HD) \
++	 && !defined (ENABLE_CUBEREVO_3000HD) \
++	 && !defined (ENABLE_CUBEREVO_9500HD) \
++	 && !defined (ENABLE_SPARK7162) \
++	 && !defined (ENABLE_UFS912) \
++	 && !defined (ENABLE_UFS913) \
++	 && !defined (ENABLE_HS7119) \
++	 && !defined (ENABLE_HS7420) \
++	 && !defined (ENABLE_HS7429) \
++	 && !defined (ENABLE_HS7810A) \
++	 && !defined (ENABLE_HS7819)
 +	/* Others cycle their icons */
 +	for (int vloop = 0; vloop < 128; vloop++)
 +	{
@@ -1189,17 +1394,18 @@
 +	vfd.vfd_set_brightness(7); // set final brightness
 +	#endif
 +	vfd.vfd_clear_icons();
-+	#if !defined(ENABLE_FORTIS_HDBOX) \
-+	 && !defined(ENABLE_OCTAGON1008) \
-+	 && !defined(ENABLE_ATEVIO7500) \
-+	 && !defined(ENABLE_CUBEREVO) \
-+	 && !defined(ENABLE_CUBEREVO_MINI) \
-+	 && !defined(ENABLE_CUBEREVO_MINI2) \
-+	 && !defined(ENABLE_CUBEREVO_MINI_FTA) \
-+	 && !defined(ENABLE_CUBEREVO_250HD) \
-+	 && !defined(ENABLE_CUBEREVO_2000HD) \
-+	 && !defined(ENABLE_CUBEREVO_9500HD) \
-+	 && !defined(ENABLE_SPARK7162)
++	#if !defined (ENABLE_FORTIS_HDBOX) \
++	 && !defined (ENABLE_OCTAGON1008) \
++	 && !defined (ENABLE_ATEVIO7500) \
++	 && !defined (ENABLE_CUBEREVO) \
++	 && !defined (ENABLE_CUBEREVO_MINI) \
++	 && !defined (ENABLE_CUBEREVO_MINI2) \
++	 && !defined (ENABLE_CUBEREVO_MINI_FTA) \
++	 && !defined (ENABLE_CUBEREVO_250HD) \
++	 && !defined (ENABLE_CUBEREVO_2000HD) \
++	 && !defined (ENABLE_CUBEREVO_3000HD) \
++	 && !defined (ENABLE_CUBEREVO_9500HD) \
++	 && !defined (ENABLE_SPARK7162)
 +	//set all blocked icons
 +	for (int id = 0x10; id < 0x20; id++)
 +	{
@@ -1211,23 +1417,24 @@
 +}
 +#endif
 +
-+#if defined(ENABLE_FORTIS_HDBOX) \
-+ || defined(ENABLE_OCTAGON1008) \
-+ || defined(ENABLE_ATEVIO7500) \
-+ || defined(ENABLE_CUBEREVO) \
-+ || defined(ENABLE_CUBEREVO_MINI) \
-+ || defined(ENABLE_CUBEREVO_MINI2) \
-+ || defined(ENABLE_CUBEREVO_MINI_FTA) \
-+ || defined(ENABLE_CUBEREVO_250HD) \
-+ || defined(ENABLE_CUBEREVO_2000HD) \
-+ || defined(ENABLE_CUBEREVO_9500HD) \
-+ || defined(ENABLE_SPARK) \
-+ || defined(ENABLE_SPARK7162) \
-+ || defined(ENABLE_HS7420) \
-+ || defined(ENABLE_HS7429) \
-+ || defined(ENABLE_HS7119) \
-+ || defined(ENABLE_HS7810A) \
-+ || defined(ENABLE_HS7819)
++#if defined (ENABLE_FORTIS_HDBOX) \
++ || defined (ENABLE_OCTAGON1008) \
++ || defined (ENABLE_ATEVIO7500) \
++ || defined (ENABLE_CUBEREVO) \
++ || defined (ENABLE_CUBEREVO_MINI) \
++ || defined (ENABLE_CUBEREVO_MINI2) \
++ || defined (ENABLE_CUBEREVO_MINI_FTA) \
++ || defined (ENABLE_CUBEREVO_250HD) \
++ || defined (ENABLE_CUBEREVO_2000HD) \
++ || defined (ENABLE_CUBEREVO_3000HD) \
++ || defined (ENABLE_CUBEREVO_9500HD) \
++ || defined (ENABLE_SPARK) \
++ || defined (ENABLE_SPARK7162) \
++ || defined (ENABLE_HS7420) \
++ || defined (ENABLE_HS7429) \
++ || defined (ENABLE_HS7119) \
++ || defined (ENABLE_HS7810A) \
++ || defined (ENABLE_HS7819)
 +void evfd::vfd_write_string_scrollText(char* text)
 +{
 +	return;
@@ -1292,7 +1499,7 @@
 +		}
 +		else
 +		{
-+			sleep(1); //1 sec delay between loops
++			sleep(1); // 1 sec delay between loops
 +		}
 +	}
 +	blocked = false;
@@ -1331,7 +1538,7 @@
 +	{
 +		if (i < VFDLENGTH)
 +		{
-+			ws=(VFDLENGTH-i)/2;
++			ws = (VFDLENGTH - i) / 2;
 +		}
 +		else
 +		{
@@ -1384,7 +1591,7 @@
 +	}
 +	memset (chars, ' ', 63);
 +	memcpy (chars, str, i);
-+#ifdef ENABLE_TF7700
++#if defined (ENABLE_TF7700)
 +	// request the display to cancel the start loop
 +	requested = true;
 +	while(blocked)
@@ -1417,14 +1624,14 @@
 +		for (i = 0; i <= (len-63); i++)
 +		{ // scroll text until end
 +			memset(out, ' ', 63);
-+			memcpy(out, text+i, 63);
++			memcpy(out, text + i, 63);
 +			vfd_write_string(out);
 +			usleep(750000);
 +		}
 +		for (i = 1; i < 63; i++)
 +		{ // scroll text with whitespaces from right
 +			memset(out, ' ', 63);
-+			memcpy(out, text+len+i-63, 63-i);
++			memcpy(out, text + len +i - 63, 63 - i);
 +			vfd_write_string(out);
 +			usleep(750000);
 +		}
@@ -1491,16 +1698,20 @@
 +{
 +	int id;
 +
-+	#if defined ENABLE_SPARK7162
++	#if defined (ENABLE_SPARK7162)
 +		for (id = 1; id < 46; id++)
-+	#elif defined ENABLE_FORTIS_HDBOX
++	#elif defined (ENABLE_FORTIS_HDBOX)
 +		for (id = 1; id < 40; id++)
-+	#elif defined ENABLE_OCTAGON1008
++	#elif defined (ENABLE_OCTAGON1008)
 +		for (id = 1; id < 29; id++)
-+	#elif defined ENABLE_ATEVIO7500
++	#elif defined (ENABLE_ATEVIO7500)
 +		for (id = 1; id < 23; id++);
-+	#elif defined ENABLE_UFS912 || defined ENABLE_UFS913
++	#elif defined (ENABLE_UFS912) || defined (ENABLE_UFS913)
 +		for (id = 1; id < 16; id++)
++	#elif defined (ENABLE_CUBEREVO)
++		for (id = 1; id < 28; id++)
++	#elif defined (ENABLE_CUBEREVO_MINI) || defined (ENABLE_CUBEREVO_MINI2) || defined (ENABLE_CUBEREVO_2000HD) || defined (ENABLE_CUBEREVO_3000HD)
++		for (id = 1; id < 7; id++)
 +	#else
 +		for (id = 0x10; id < 0x20; id++)
 +	#endif
@@ -1548,13 +1759,8 @@
 +
 +void evfd::vfd_set_fan(bool onoff)
 +{
-+#if defined(ENABLE_CUBEREVO) \
-+ || defined(ENABLE_CUBEREVO_MINI) \
-+ || defined(ENABLE_CUBEREVO_MINI2) \
-+ || defined(ENABLE_CUBEREVO_MINI_FTA) \
-+ || defined(ENABLE_CUBEREVO_250HD) \
-+ || defined(ENABLE_CUBEREVO_2000HD) \
-+ || defined(ENABLE_CUBEREVO_9500HD)
++#if defined (ENABLE_CUBEREVO) \
++ || defined (ENABLE_CUBEREVO_9500HD)
 +	struct vfd_ioctl_data data;
 +
 +	memset(&data, 0, sizeof(struct vfd_ioctl_data));
@@ -1603,7 +1809,7 @@
 +#define ICON_ON  1
 +#define ICON_OFF 0
 +
-+//#if !defined(ENABLE_FORTIS_HDBOX)
++//#if !defined (ENABLE_FORTIS_HDBOX)
 +typedef enum { USB = 0x10, HD, HDD, LOCK, BT, MP3, MUSIC, DD, MAIL, MUTE, PLAY, PAUSE, FF, FR, REC, CLOCK } tvfd_icon;
 +typedef enum { RED_LED = 0, GREEN_LED } tvfd_led;
 +//#else
@@ -1651,16 +1857,27 @@
 +#endif
 --- enigma2.org/lib/dvb/decoder.cpp
 +++ enigma2/lib/dvb/decoder.cpp
-@@ -76,14 +76,19 @@
+@@ -44,12 +44,10 @@
+ 		m_fd_demux = -1;
+ 	}
+ 
+-#ifndef DREAMBOX
+ 	if (m_fd >= 0)
+ 	{
+ 		::ioctl(m_fd, AUDIO_SELECT_SOURCE, demux ? AUDIO_SOURCE_DEMUX : AUDIO_SOURCE_HDMI);
+ 	}
+-#endif
+ }
+ 
+ int eDVBAudio::startPid(int pid, int type)
+@@ -76,21 +74,16 @@
  			pes.pes_type = DMX_PES_AUDIO3;
  			break;
  		}
-+#if defined(__sh__) // increases zapping speed
-+		pes.flags    = DMX_IMMEDIATE_START;
-+#else
- 		pes.flags    = 0;
+-		pes.flags    = 0;
 -		eDebugNoNewLineStart("[eDVBAudio%d] DMX_SET_PES_FILTER pid=0x%04x ", m_dev, pid);
-+#endif
++// increases zapping speed
++		pes.flags    = DMX_IMMEDIATE_START;
 +//		eDebugNoNewLineStart("[eDVBAudio%d] DMX_SET_PES_FILTER pid=0x%04x ", m_dev, pid);
  		if (::ioctl(m_fd_demux, DMX_SET_PES_FILTER, &pes) < 0)
  		{
@@ -1668,133 +1885,155 @@
  			return -errno;
  		}
  		eDebugNoNewLine("ok\n");
-+#if not defined(__sh__) // already started because of DMX_IMMEDIATE_START
- 		eDebugNoNewLineStart("[eDVBAudio%d] DEMUX_START ", m_dev);
- 		if (::ioctl(m_fd_demux, DMX_START) < 0)
- 		{
-@@ -91,6 +96,7 @@
- 			return -errno;
- 		}
- 		eDebugNoNewLine("ok\n");
-+#endif
++// already started because of DMX_IMMEDIATE_START
+-		eDebugNoNewLineStart("[eDVBAudio%d] DEMUX_START ", m_dev);
+-		if (::ioctl(m_fd_demux, DMX_START) < 0)
+-		{
+-			eDebugNoNewLine("failed: %m\n");
+-			return -errno;
+-		}
+-		eDebugNoNewLine("ok\n");
  	}
  
  	if (m_fd >= 0)
-@@ -134,7 +140,9 @@
+@@ -125,11 +118,7 @@
+ 			bypass = 0x40;
+ 			break;
+ 		case aDDP:
+-#ifdef DREAMBOX
+-		bypass = 7;
+-#else
+ 		bypass = 0x22;
+-#endif
+ 		break;
+ 		}
+ 
+@@ -138,7 +127,6 @@
  			eDebugNoNewLine("failed: %m\n");
  		else
  			eDebugNoNewLine("ok\n");
-+#if not defined(__sh__) // this is a hack which only matters for dm drivers
- 		freeze();  // why freeze here?!? this is a problem when only a pid change is requested... because of the unfreeze logic in Decoder::setState
-+#endif
+-		freeze();  // why freeze here?!? this is a problem when only a pid change is requested... because of the unfreeze logic in Decoder::setState
  		eDebugNoNewLineStart("[eDVBAudio%d] AUDIO_PLAY ", m_dev);
  		if (::ioctl(m_fd, AUDIO_PLAY) < 0)
  			eDebugNoNewLine("failed: %m\n");
-@@ -370,7 +378,11 @@
+@@ -235,7 +223,7 @@
+ 
+ eDVBAudio::~eDVBAudio()
+ {
+-	unfreeze();  // why unfreeze here... but not unfreeze video in ~eDVBVideo ?!?
++	//unfreeze();  // why unfreeze here... but not unfreeze video in ~eDVBVideo ?!?
+ 	if (m_fd >= 0)
+ 		::close(m_fd);
+ 	if (m_fd_demux >= 0)
+@@ -276,12 +264,10 @@
+ 		m_fd_demux = -1;
+ 	}
+ 
+-#ifndef DREAMBOX
+ 	if (m_fd >= 0)
+ 	{
+ 		::ioctl(m_fd, VIDEO_SELECT_SOURCE, demux ? VIDEO_SOURCE_DEMUX : VIDEO_SOURCE_HDMI);
+ 	}
+-#endif
+ 	if (m_close_invalidates_attributes < 0)
+ 	{
+ 		/*
+@@ -374,7 +360,8 @@
  			pes.pes_type = DMX_PES_VIDEO3;
  			break;
  		}
-+#if defined(__sh__) // increases zapping speed
+-		pes.flags    = 0;
++// increases zapping speed
 +		pes.flags    = DMX_IMMEDIATE_START;
-+#else
- 		pes.flags    = 0;
-+#endif
  		eDebugNoNewLineStart("[eDVBVideo%d] DMX_SET_PES_FILTER pid=0x%04x ", m_dev, pid);
  		if (::ioctl(m_fd_demux, DMX_SET_PES_FILTER, &pes) < 0)
  		{
-@@ -378,6 +390,7 @@
+@@ -382,18 +369,11 @@
  			return -errno;
  		}
  		eDebugNoNewLine("ok\n");
-+#if not defined(__sh__) // already started because of DMX_IMMEDIATE_START
- 		eDebugNoNewLineStart("[eDVBVideo%d] DEMUX_START ", m_dev);
- 		if (::ioctl(m_fd_demux, DMX_START) < 0)
- 		{
-@@ -385,11 +398,14 @@
- 			return -errno;
- 		}
- 		eDebugNoNewLine("ok\n");
-+#endif
- 	}
- 
- 	if (m_fd >= 0)
- 	{
-+#if not defined(__sh__) // this is a hack which only matters for dm drivers
- 		freeze();  // why freeze here?!? this is a problem when only a pid change is requested... because of the unfreeze logic in Decoder::setState
-+#endif
++// already started because of DMX_IMMEDIATE_START
+-		eDebugNoNewLineStart("[eDVBVideo%d] DEMUX_START ", m_dev);
+-		if (::ioctl(m_fd_demux, DMX_START) < 0)
+-		{
+-			eDebugNoNewLine("failed: %m\n");
+-			return -errno;
+-		}
+-		eDebugNoNewLine("ok\n");
+-	}
+-
+-	if (m_fd >= 0)
+-	{
+-		freeze();  // why freeze here?!? this is a problem when only a pid change is requested... because of the unfreeze logic in Decoder::setState
++	}
++
++	if (m_fd >= 0)
++	{
  		eDebugNoNewLineStart("[eDVBVideo%d] VIDEO_PLAY ", m_dev);
  		if (::ioctl(m_fd, VIDEO_PLAY) < 0)
  			eDebugNoNewLine("failed: %m\n");
-@@ -707,7 +723,11 @@
+@@ -711,7 +691,8 @@
  		pes.pes_type = DMX_PES_PCR3;
  		break;
  	}
-+#if defined(__sh__) // increases zapping speed
+-	pes.flags    = 0;
++// increases zapping speed
 +	pes.flags    = DMX_IMMEDIATE_START;
-+#else
- 	pes.flags    = 0;
-+#endif
  	eDebugNoNewLineStart("[eDVBPCR%d] DMX_SET_PES_FILTER pid=0x%04x ", m_dev, pid);
  	if (::ioctl(m_fd_demux, DMX_SET_PES_FILTER, &pes) < 0)
  	{
-@@ -715,6 +735,7 @@
+@@ -719,13 +700,7 @@
  		return -errno;
  	}
  	eDebugNoNewLine("ok\n");
-+#if not defined(__sh__) // already started because of DMX_IMMEDIATE_START
- 	eDebugNoNewLineStart("[eDVBPCR%d] DEMUX_START ", m_dev);
- 	if (::ioctl(m_fd_demux, DMX_START) < 0)
- 	{
-@@ -722,6 +743,7 @@
- 		return -errno;
- 	}
- 	eDebugNoNewLine("ok\n");
-+#endif
++// already started because of DMX_IMMEDIATE_START
+-	eDebugNoNewLineStart("[eDVBPCR%d] DEMUX_START ", m_dev);
+-	if (::ioctl(m_fd_demux, DMX_START) < 0)
+-	{
+-		eDebugNoNewLine("failed: %m\n");
+-		return -errno;
+-	}
+-	eDebugNoNewLine("ok\n");
  	return 0;
  }
  
-@@ -777,7 +799,11 @@
+@@ -781,7 +756,8 @@
  		pes.pes_type = DMX_PES_TELETEXT3;
  		break;
  	}
-+#if defined(__sh__) // increases zapping speed
+-	pes.flags    = 0;
++// increases zapping speed
 +	pes.flags    = DMX_IMMEDIATE_START;
-+#else
- 	pes.flags    = 0;
-+#endif
  
  	eDebugNoNewLineStart("[eDVBText%d] DMX_SET_PES_FILTER pid=0x%04x ", m_dev, pid);
  	if (::ioctl(m_fd_demux, DMX_SET_PES_FILTER, &pes) < 0)
-@@ -786,6 +812,7 @@
+@@ -790,13 +766,7 @@
  		return -errno;
  	}
  	eDebugNoNewLine("ok\n");
-+#if not defined(__sh__) // already started because of DMX_IMMEDIATE_START
- 	eDebugNoNewLineStart("[eDVBText%d] DEMUX_START ", m_dev);
- 	if (::ioctl(m_fd_demux, DMX_START) < 0)
- 	{
-@@ -793,6 +820,7 @@
- 		return -errno;
- 	}
- 	eDebugNoNewLine("ok\n");
-+#endif
++// already started because of DMX_IMMEDIATE_START
+-	eDebugNoNewLineStart("[eDVBText%d] DEMUX_START ", m_dev);
+-	if (::ioctl(m_fd_demux, DMX_START) < 0)
+-	{
+-		eDebugNoNewLine("failed: %m\n");
+-		return -errno;
+-	}
+-	eDebugNoNewLine("ok\n");
  	return 0;
  }
  
-@@ -929,12 +957,28 @@
+@@ -933,12 +903,23 @@
  		int *s = state_table[m_state];
  		if (changed & (changeState|changeVideo) && m_video)
  		{
-+#if not defined(__sh__) // see comment below
- 			m_video->setSlowMotion(s[1]);
- 			m_video->setFastForward(s[2]);
-+#endif
++// see comment below
+-			m_video->setSlowMotion(s[1]);
+-			m_video->setFastForward(s[2]);
  			if (s[0])
  				m_video->unfreeze();
  			else
  				m_video->freeze();
-+#if defined(__sh__)
-+// the VIDEO_CONTINUE would reset the FASTFORWARD  command so we
++// the VIDEO_CONTINUE would reset the FASTFORWARD command so we
 +// execute the FASTFORWARD after the VIDEO_CONTINUE
 +			if (s[1])
 +			{
@@ -1806,45 +2045,106 @@
 +				m_video->setSlowMotion(s[1]);
 +				m_video->setFastForward(s[2]);
 +			}
-+#endif
  		}
  		if (changed & (changeState|changeAudio) && m_audio)
  		{
-@@ -1235,6 +1279,10 @@
+@@ -1239,6 +1220,9 @@
  		{
  			struct stat s;
  			fstat(f, &s);
-+#if defined(__sh__) // our driver has a different behaviour for iframes
++// our driver has a different behaviour for iframes
 +			if (m_video_clip_fd >= 0)
 +				finishShowSinglePic();
-+#endif
  			if (m_video_clip_fd == -1)
  				m_video_clip_fd = open("/dev/dvb/adapter0/video0", O_WRONLY);
  			if (m_video_clip_fd >= 0)
-@@ -1255,8 +1303,10 @@
+@@ -1259,8 +1243,6 @@
  
  				if (ioctl(m_video_clip_fd, VIDEO_SELECT_SOURCE, VIDEO_SOURCE_MEMORY) < 0)
  					eDebug("[eTSMPEGDecoder] VIDEO_SELECT_SOURCE MEMORY failed: %m");
-+#if not defined(__sh__)
- 				if (ioctl(m_video_clip_fd, VIDEO_SET_STREAMTYPE, streamtype) < 0)
- 					eDebug("[eTSMPEGDecoder] VIDEO_SET_STREAMTYPE failed: %m");
-+#endif
+-				if (ioctl(m_video_clip_fd, VIDEO_SET_STREAMTYPE, streamtype) < 0)
+-					eDebug("[eTSMPEGDecoder] VIDEO_SET_STREAMTYPE failed: %m");
  				if (ioctl(m_video_clip_fd, VIDEO_PLAY) < 0)
  					eDebug("[eTSMPEGDecoder] VIDEO_PLAY failed: %m");
  				if (ioctl(m_video_clip_fd, VIDEO_CONTINUE) < 0)
-@@ -1273,7 +1323,9 @@
+@@ -1276,8 +1258,7 @@
+ 				writeAll(m_video_clip_fd, iframe, s.st_size);
  				if (!seq_end_avail)
  					write(m_video_clip_fd, seq_end, sizeof(seq_end));
- 				writeAll(m_video_clip_fd, stuffing, 8192);
-+#if not defined(__sh__)
- 				m_showSinglePicTimer->start(150, true);
-+#endif
+-				writeAll(m_video_clip_fd, stuffing, 8192);
+-				m_showSinglePicTimer->start(150, true);
++				writeAll(m_video_clip_fd, stuffing, sizeof(stuffing));
  			}
  			close(f);
  		}
+--- enigma2.org/lib/dvb/demux.cpp
++++ enigma2/lib/dvb/demux.cpp
+@@ -260,6 +260,7 @@
+ 	notifier->start();
+ 
+ 	dmx_sct_filter_params sct;
++	memset(&sct, 0, sizeof(sct));
+ 	sct.pid     = mask.pid;
+ 	sct.timeout = 0;
+ 	sct.flags   = DMX_IMMEDIATE_START;
+@@ -372,6 +373,7 @@
+ 	m_notifier->start();
+ 
+ 	dmx_pes_filter_params flt;
++	memset(&flt, 0, sizeof(flt));
+ 	flt.pes_type = DMX_PES_OTHER;
+ 	flt.pid     = pid;
+ 	flt.input   = DMX_IN_FRONTEND;
+@@ -735,6 +737,7 @@
+ 	setBufferSize(1024*1024);
+ 
+ 	dmx_pes_filter_params flt;
++	memset(&flt, 0, sizeof(flt));
+ 	flt.pes_type = DMX_PES_OTHER;
+ 	flt.output  = DMX_OUT_TSDEMUX_TAP;
+ 	flt.pid     = i->first;
 --- enigma2.org/lib/dvb/dvb.cpp
 +++ enigma2/lib/dvb/dvb.cpp
-@@ -316,19 +316,6 @@
+@@ -114,7 +114,38 @@
+ 
+ 	m_fbcmng = new eFBCTunerManager(instance);
+ 
++	/*
++	 * this is a strange hack: the drivers seem to only work correctly after
++	 * demux0 has been used once. After that, we can use demux1,2,...
++	 */
++	initDemux(0);
++	/* for pip demux1 also be used once */
++	initDemux(1);
++
+ 	CONNECT(m_releaseCachedChannelTimer->timeout, eDVBResourceManager::releaseCachedChannel);
++}
++
++void eDVBResourceManager::initDemux(int num_demux)
++{
++	char filename[32];
++	sprintf(filename, "/dev/dvb/adapter0/demux%d", num_demux);
++	int dmx = open(filename, O_RDWR | O_CLOEXEC);
++	if (dmx < 0)
++	{
++		eDebug("cannot open %s (%m)", filename);
++	}
++	else
++	{
++		struct dmx_pes_filter_params filter;
++		memset(&filter, 0, sizeof(filter));
++		filter.output = DMX_OUT_DECODER;
++		filter.input  = DMX_IN_FRONTEND;
++		filter.flags  = DMX_IMMEDIATE_START;
++		filter.pes_type = DMX_PES_VIDEO;
++		ioctl(dmx, DMX_SET_PES_FILTER, &filter);
++		ioctl(dmx, DMX_STOP);
++		close(dmx);
++	}
+ }
+ 
+ void eDVBResourceManager::feStateChanged()
+@@ -317,19 +348,6 @@
  		frontend = -1;
  		goto error;
  	}
@@ -1864,101 +2164,54 @@
  	::close(frontend);
  	frontend = -1;
  
-@@ -416,9 +403,6 @@
- #define VTUNER_SET_ADAPTER 33
+@@ -418,8 +436,6 @@
  	ioctl(vtunerFd, VTUNER_SET_NAME, name);
  	ioctl(vtunerFd, VTUNER_SET_TYPE, type);
--	ioctl(vtunerFd, VTUNER_SET_FE_INFO, &fe_info);
+ 	ioctl(vtunerFd, VTUNER_SET_FE_INFO, &fe_info);
 -	if (prop[0].u.buffer.len > 0)
 -		ioctl(vtunerFd, VTUNER_SET_DELSYS, prop[0].u.buffer.data);
  	ioctl(vtunerFd, VTUNER_SET_HAS_OUTPUTS, "no");
  	ioctl(vtunerFd, VTUNER_SET_ADAPTER, nr);
  
-@@ -959,12 +943,13 @@
- 	if (i == m_demux.end())
- 		return -1;
- 
--	iDVBAdapter *adapter = fe ? fe->m_adapter : m_adapter.begin();
--	int fesource = fe ? fe->m_frontend->getDVBID() : -1;
-+//	iDVBAdapter *adapter = fe ? fe->m_adapter : m_adapter.begin();
-+//	int fesource = fe ? fe->m_frontend->getDVBID() : -1;
+@@ -974,6 +990,7 @@
  	ePtr<eDVBRegisteredDemux> unused;
  	uint8_t d, a;
  
--#ifdef HAVE_AMLOGIC
-+#if not defined(__sh__)
-+//#ifdef HAVE_AMLOGIC
- 	// find first unused demux which is on same adapter as frontend
- 	while (i != m_demux.end())
- 	{
-@@ -992,52 +977,49 @@
++#if 1
+ 	/*
+ 	 * For pvr playback, start with the last demux.
+ 	 * On some hardware, there are less ca devices than demuxes, so try to leave
+@@ -1021,15 +1038,61 @@
+ 			--i;
  		}
- 		i++;
  	}
--#else
--	/*
--	 * For pvr playback, start with the last demux.
--	 * On some hardware, there are less ca devices than demuxes, so try to leave
--	 * the first demuxes for live tv, and start with the last for pvr playback
--	 */
--	bool use_decode_demux = (fe || (cap & iDVBChannel::capDecode));
 -
--	if (!use_decode_demux)
--	{
--		i = m_demux.end();
--		--i;
--	}
--
--	while (i != m_demux.end())
--	{
--		if (i->m_adapter == adapter)
-+#else // we use our own algo for demux detection
++#else
++// we use our own algo for demux detection
 +	int n = 0;
 +	for (; i != m_demux.end(); ++i, ++n)
 +	{
-+		if(fe)
- 		{
- 			if (!i->m_inuse)
- 			{
--				// mark the first unused demux and use that when no better match is found
- 				if (!unused)
++		if (fe)
++ 		{
++ 			if (!i->m_inuse)
++ 			{
++ 				if (!unused)
 +				{
 +					// take the first unused
 +					//eDebug("\nallocate demux b = %d\n",n);
- 					unused = i;
--			}
--			else
--			{
--				// demux is in use, see if it can be shared
--				if (fesource >= 0 && i->m_demux->getSource() == fesource)
--				{
--					i->m_demux->getCAAdapterID(a);
--					i->m_demux->getCADemuxID(d);
--					eDebug("[eDVBResourceManager] allocating shared demux adapter=%d, demux=%d, source=%d", a, d, i->m_demux->getSource());
--					demux = new eDVBAllocatedDemux(i);
--					return 0;
- 				}
- 			}
--		}
--		if (use_decode_demux)
--		{
--			++i;
--		}
--		else
--		{
--			if (i == m_demux.begin())
--				break;
--			--i;
++ 					unused = i;
++				}
++			}
 +			else if (i->m_adapter == fe->m_adapter && i->m_demux->getSource() == fe->m_frontend->getDVBID())
 +			{
 +				// take the demux allocated to the same
-+				// frontend,  just create a new reference
++				// frontend, just create a new reference
 +				demux = new eDVBAllocatedDemux(i);
 +				//eDebug("\nallocate demux b = %d\n",n);
 +				return 0;
 +			}
 +		}
-+		else if(n == ((int)m_demux.size() - 1))
++		else if (n == ((int)m_demux.size() - 1))
 +		{
 +			// Always use the last demux for PVR
 +			// it is assumed that the last demux is not
@@ -1977,107 +2230,85 @@
 +			unused = i;
 +			//eDebug("\nallocate demux d = %d\n", n);
 +			break;
- 		}
- 	}
- #endif
-@@ -1046,10 +1028,10 @@
++		}
++	}
++#endif
+ 	if (unused)
  	{
  		unused->m_demux->getCAAdapterID(a);
  		unused->m_demux->getCADemuxID(d);
 -		eDebug("[eDVBResourceManager] allocating demux adapter=%d, demux=%d, source=%d fesource=%d", a, d, unused->m_demux->getSource(), fesource);
--		demux = new eDVBAllocatedDemux(unused);
 +		eDebug("[eDVBResourceManager] allocating demux adapter=%d, demux=%d, source=%d fesource=%d", a, d, unused->m_demux->getSource(), fe ? fe->m_frontend->getDVBID() : -1);
-+			demux = new eDVBAllocatedDemux(unused);
+ 		demux = new eDVBAllocatedDemux(unused);
  		if (fe)
 -			demux->get().setSourceFrontend(fesource);
 +			demux->get().setSourceFrontend(fe->m_frontend->getDVBID());
  		else
  			demux->get().setSourcePVR(0);
  		return 0;
-@@ -1089,14 +1071,14 @@
- 	if (!simulate && m_cached_channel)
- 	{
- 		eDVBChannel *cache_chan = (eDVBChannel*)&(*m_cached_channel);
--#ifndef HAVE_AMLOGIC
-+//#ifndef HAVE_AMLOGIC
- 		if(channelid==cache_chan->getChannelID())
- 		{
- 			eDebug("[eDVBResourceManager] use cached_channel");
- 			channel = m_cached_channel;
- 			return 0;
- 		}
--#endif
-+//#endif
- 		m_cached_channel_state_changed_conn.disconnect();
- 		m_cached_channel=0;
- 		m_releaseCachedChannelTimer->stop();
-@@ -2172,6 +2154,12 @@
+@@ -2150,21 +2213,11 @@
  
  	if (m_pvr_fd_dst < 0)
  	{
-+#if defined(__sh__) // our pvr device is called dvr
+-		ePtr<eDVBAllocatedDemux> &demux = m_demux ? m_demux : m_decoder_demux;
+-		if (demux)
+-		{
+-			m_pvr_fd_dst = demux->get().openDVR(O_WRONLY);
+-			if (m_pvr_fd_dst < 0)
+-			{
+-				eDebug("[eDVBChannel] can't open /dev/dvb/adapterX/dvrX: %m");
+-				return -ENODEV;
+-			}
+-		}
+-		else
+-		{
+-			eDebug("[eDVBChannel] no demux allocated yet.. so its not possible to open the dvr device!!");
+-			return -ENODEV;
+-		}
++// our pvr device is called dvr
 +		char dvrDev[128];
 +		int dvrIndex = m_mgr->m_adapter.begin()->getNumDemux() - 1;
 +		sprintf(dvrDev, "/dev/dvb/adapter0/dvr%d", dvrIndex);
 +		m_pvr_fd_dst = open(dvrDev, O_WRONLY);
-+#else
- 		ePtr<eDVBAllocatedDemux> &demux = m_demux ? m_demux : m_decoder_demux;
- 		if (demux)
- 		{
-@@ -2187,6 +2175,7 @@
- 			eDebug("[eDVBChannel] no demux allocated yet.. so its not possible to open the dvr device!!");
- 			return -ENODEV;
- 		}
-+#endif
  	}
  
  	m_pvr_thread = new eDVBChannelFilePush(m_source->getPacketSize());
 --- enigma2.org/lib/dvb/dvb.h
 +++ enigma2/lib/dvb/dvb.h
-@@ -270,6 +270,9 @@
+@@ -243,6 +243,8 @@
+ 	bool frontendIsMultistream(int index);
+ 	std::string getFrontendCapabilities(int index);
+ 	void setFrontendType(int index, const char *types);
++protected:
++	void initDemux(int num_demux);
+ };
+ SWIG_TEMPLATE_TYPEDEF(ePtr<eDVBResourceManager>, eDVBResourceManager);
+ SWIG_EXTEND(ePtr<eDVBResourceManager>,
+@@ -270,6 +272,8 @@
  		/* cannot be used for PVR channels. */
  	RESULT setChannel(const eDVBChannelID &id, ePtr<iDVBFrontendParameters> &feparam);
  	eDVBChannelID getChannelID() { return m_channel_id; }
-+#if defined(__sh__) //see filepush.h
++//see filepush.h
 +	int getSkipMode() { return m_skipmode_m; }
-+#endif
  
  	RESULT connectStateChange(const sigc::slot1<void,iDVBChannel*> &stateChange, ePtr<eConnection> &connection);
  	RESULT connectEvent(const sigc::slot2<void,iDVBChannel*,int> &eventChange, ePtr<eConnection> &connection);
---- enigma2.org/lib/dvb/frontend.cpp
-+++ enigma2/lib/dvb/frontend.cpp
-@@ -16,6 +16,10 @@
- 
- #ifndef I2C_SLAVE_FORCE
- #define I2C_SLAVE_FORCE	0x0706
-+#endif
-+
-+#ifndef SYS_DVBC_ANNEX_A
-+#define SYS_DVBC_ANNEX_A SYS_DVBC_ANNEX_AC
- #endif
- 
- #define eDebugNoSimulate(x...) \
-@@ -3034,10 +3038,10 @@
- 		case SYS_ISDBT:		ss << " ISDBT"; break;
- 		case SYS_UNDEFINED:	ss << " UNDEFINED"; break;
- 		case SYS_DVBC_ANNEX_A:	ss << " DVBC_ANNEX_A"; break;
--		case SYS_DVBC_ANNEX_C:	ss << " DVBC_ANNEX_C"; break;
-+//		case SYS_DVBC_ANNEX_C:	ss << " DVBC_ANNEX_C"; break;
- 		case SYS_DVBT2:		ss << " DVBT2"; break;
--		case SYS_TURBO:		ss << " TURBO"; break;
--		case SYS_DTMB:		ss << " DTMB"; break;
-+//		case SYS_TURBO:		ss << " TURBO"; break;
-+//		case SYS_DTMB:		ss << " DTMB"; break;
- 		}
- 	}
- 
+--- enigma2.org/lib/dvb/dvbtime.cpp
++++ enigma2/lib/dvb/dvbtime.cpp
+@@ -178,6 +178,7 @@
+ void TDT::start()
+ {
+ 	eDVBTableSpec spec;
++	memset(&spec, 0, sizeof(spec));
+ 	spec.pid = TimeAndDateSection::PID;
+ 	spec.tid = TimeAndDateSection::TID;
+ 	spec.tid_mask = 0xFC;
 --- enigma2.org/lib/dvb/epgcache.cpp
 +++ enigma2/lib/dvb/epgcache.cpp
-@@ -2159,6 +2159,45 @@
+@@ -2166,6 +2166,42 @@
  {
  	int map;
  	iDVBSectionReader *reader = NULL;
-+#ifdef __sh__
 +/* Dagobert: this is still very hacky, but currently I cannot find
 + * the origin of the readData call. I think the caller is
 + * responsible for the unaligned data pointer in this call.
@@ -2096,12 +2327,11 @@
 +
 +	if (isNotAligned)
 +	{
-+		/* see HILO macro and eit.h */
-+		int len = ((data[1] & 0x0F) << 8 | data[2]) -1;
++		int len = ((data[1] & 0x0F) << 8 | data[2]) - 1;
 +
 +		/*eDebug("len %d %x, %x %x\n", len, len, data[1], data[2]);*/
 +
-+		if ( EIT_SIZE >= len )
++		if (EIT_SIZE >= len)
 +			return;
 +
 +		aligned_data = (const __u8 *) malloc(len);
@@ -2115,11 +2345,10 @@
 +		memcpy((void *) aligned_data, (const __u8 *) data, len);
 +		data = aligned_data;
 +	}
-+#endif
  	switch (source)
  	{
  		case NOWNEXT:
-@@ -2283,6 +2322,10 @@
+@@ -2290,6 +2326,10 @@
  			cache->sectionRead(data, source, this);
  		}
  	}
@@ -2132,11 +2361,11 @@
  #if ENABLE_FREESAT
 --- enigma2.org/lib/dvb/filepush.cpp
 +++ enigma2/lib/dvb/filepush.cpp
-@@ -4,6 +4,15 @@
+@@ -3,6 +3,14 @@
+ #include <errno.h>
  #include <fcntl.h>
  #include <sys/ioctl.h>
- 
-+#if defined(__sh__) // this allows filesystem tasks to be prioritised
++// this allows filesystem tasks to be prioritised
 +#include <sys/vfs.h>
 +#define USBDEVICE_SUPER_MAGIC 0x9fa2
 +#define EXT2_SUPER_MAGIC      0xEF53
@@ -2144,27 +2373,35 @@
 +#define SMB_SUPER_MAGIC       0x517B
 +#define NFS_SUPER_MAGIC       0x6969
 +#define MSDOS_SUPER_MAGIC     0x4d44 /* MD */
-+#endif
+ 
  //#define SHOW_WRITE_TIME
  
- DEFINE_REF(eFilePushThread);
-@@ -57,11 +66,30 @@
- 	size_t bytes_read = 0;
+@@ -27,7 +35,10 @@
+ eFilePushThread::~eFilePushThread()
+ {
+ 	stop(); /* eThread is borked, always call stop() from d'tor */
+-	free(m_buffer);
++	if (m_buffer)
++	{
++		free(m_buffer);
++	}
+ }
+ 
+ static void signal_handler(int x)
+@@ -58,10 +69,27 @@
  	off_t current_span_offset = 0;
  	size_t current_span_remaining = 0;
-+#if defined(__sh__)
+ 
 +// opens video device for the reverse playback workaround
-+// Changes in this file are cause e2 does not tell the player to play reverse
++// Changes in this file are because E2 does not tell the player to play reverse
 +	int fd_video = open("/dev/dvb/adapter0/video0", O_RDONLY);
 +// Fix to ensure that event evtEOF is called at end of playbackl part 1/3
 +	bool already_empty = false;
-+#endif
- 
  	while (!m_stop)
  	{
  		if (m_sg && !current_span_remaining)
  		{
-+#if defined(__sh__) // tells the player to play in reverse
++// tells the player to play in reverse
 +#define VIDEO_DISCONTINUITY                   _IO('o', 84)
 +#define DVB_DISCONTINUITY_SKIP                0x01
 +#define DVB_DISCONTINUITY_CONTINUOUS_REVERSE  0x02
@@ -2175,15 +2412,16 @@
 +				int param = DVB_DISCONTINUITY_SKIP; // | DVB_DISCONTINUITY_CONTINUOUS_REVERSE;
 +				int rc = ioctl(fd_video, VIDEO_DISCONTINUITY, (void*)param);
 +			}
-+#endif
++
  			m_sg->getNextSourceSpan(m_current_position, bytes_read, current_span_offset, current_span_remaining, m_blocksize);
  			ASSERT(!(current_span_remaining % m_blocksize));
  			m_current_position = current_span_offset;
-@@ -128,7 +156,19 @@
+@@ -128,7 +156,16 @@
  				{
  					case 0:
  						eDebug("[eFilePushThread] wait for driver eof timeout");
-+#if defined(__sh__) // Fix to ensure that event evtEOF is called at end of playbackl part 2/3
+-						continue;
++// Fix to ensure that event evtEOF is called at end of playbackl part 2/3
 +						if (already_empty)
 +						{
 +							break;
@@ -2193,47 +2431,140 @@
 +							already_empty = true;
 +							continue;
 +						}
-+#else
- 						continue;
-+#endif
  					case 1:
  						eDebug("[eFilePushThread] wait for driver eof ok");
  						break;
-@@ -191,12 +231,18 @@
+@@ -170,6 +207,10 @@
+ 			filterRecordData(m_buffer, buf_end);
+ 			while ((buf_start != buf_end) && !m_stop)
+ 			{
++				struct pollfd pfd;
++                                pfd.fd = m_fd_dest;
++                                pfd.events = POLLOUT;
++                                if (0 == poll(&pfd, 1, 250)) continue;
+ 				int w = write(m_fd_dest, m_buffer + buf_start, buf_end - buf_start);
+ 
+ 				if (w <= 0)
+@@ -191,12 +232,18 @@
  			}
  
  			eofcount = 0;
-+#if defined(__sh__) // Fix to ensure that event evtEOF is called at end of playbackl part 3/3
++// Fix to ensure that event evtEOF is called at end of playbackl part 3/3
 +			already_empty = false;
-+#endif
  			m_current_position += buf_end;
++			if (m_sg)
++			{
++				current_span_remaining -= buf_end;
  			bytes_read += buf_end;
- 			if (m_sg)
- 				current_span_remaining -= buf_end;
- 		}
- 	}
-+#if defined(__sh__) // closes video device for the reverse playback workaround
+-			if (m_sg)
+-				current_span_remaining -= buf_end;
+-		}
+-	}
++			}
++		}
++	}
++// closes video device for the reverse playback workaround
 +	close(fd_video);
-+#endif
  	sendEvent(evtStopped);
  
  	{ /* mutex lock scope */
 --- enigma2.org/lib/dvb/filepush.h
 +++ enigma2/lib/dvb/filepush.h
-@@ -13,6 +13,10 @@
+@@ -13,6 +13,8 @@
  public:
  	virtual void getNextSourceSpan(off_t current_offset, size_t bytes_read, off_t &start, size_t &size, int blocksize)=0;
  	virtual ~iFilePushScatterGather() {}
-+#if defined(__sh__)
-+	//Changes in this file are cause e2 doesnt tell the player to play reverse
++	//Changes in this file are because E2 does not tell the player to play reverse
 +	virtual int getSkipMode() = 0;
-+#endif
  };
  
  class eFilePushThread: public eThread, public sigc::trackable, public iObject
+@@ -23,6 +25,8 @@
+ 	~eFilePushThread();
+ 	void thread();
+ 	void stop();
++// our own thread to prioritise and split the files
++	void start(int sourcefd, int destfd, const char *filename);
+ 	void start(ePtr<iTsSource> &source, int destfd);
+ 
+ 	void pause();
+--- enigma2.org/lib/dvb/frontend.cpp
++++ enigma2/lib/dvb/frontend.cpp
+@@ -16,6 +16,10 @@
+ 
+ #ifndef I2C_SLAVE_FORCE
+ #define I2C_SLAVE_FORCE	0x0706
++#endif
++
++#ifndef SYS_DVBC_ANNEX_A
++#define SYS_DVBC_ANNEX_A SYS_DVBC_ANNEX_AC
+ #endif
+ 
+ #define eDebugNoSimulate(x...) \
+@@ -714,7 +718,11 @@
+ 		}
+ 	}
+ 
++#if DVB_API_VERSION > 5 || DVB_API_VERSION == 5 && DVB_API_VERSION_MINOR >= 6
+ 	m_multitype = m_delsys[SYS_DVBS] && (m_delsys[SYS_DVBT] || m_delsys[SYS_DVBC_ANNEX_A]);
++#else
++	m_multitype = m_delsys[SYS_DVBS] && (m_delsys[SYS_DVBT] || m_delsys[SYS_DVBC_ANNEX_AC]);
++#endif
+ 
+ 	if (!m_multitype)
+ 		m_type = feSatellite;
+@@ -920,12 +928,16 @@
+ 	int ter_max = 2900;
+ 	int atsc_max = 4200;
+ 
+-	if (!strcmp(m_description, "AVL2108")) // ET9000
++	if (strstr(m_description, "STV090x Multistandard"))
++	{
++		ret = (int)(snr / 32.768);
++	}
++	else if (!strcmp(m_description, "AVL2108"))
+ 	{
+ 		ret = (int)(snr / 40.5);
+ 		sat_max = 1618;
+ 	}
+-	if (!strcmp(m_description, "AVL6211")) // ET10000
++	else if (!strcmp(m_description, "AVL6211"))
+ 	{
+ 		ret = (int)(snr / 37.5);
+ 		sat_max = 1700;
+@@ -2903,7 +2915,11 @@
+ 	}
+ 	else if (!strcmp(type, "DVB-C"))
+ 	{
++#if DVB_API_VERSION > 5 || DVB_API_VERSION == 5 && DVB_API_VERSION_MINOR >= 6
+ 		p[0].u.data = SYS_DVBC_ANNEX_A;
++#else
++		p[0].u.data = SYS_DVBC_ANNEX_AC;
++#endif
+ 		fetype = feCable;
+ 	}
+ 	else if (!strcmp(type, "ATSC"))
+@@ -3033,11 +3049,16 @@
+ 		case SYS_ISDBS:		ss << " ISDBS"; break;
+ 		case SYS_ISDBT:		ss << " ISDBT"; break;
+ 		case SYS_UNDEFINED:	ss << " UNDEFINED"; break;
++#if DVB_API_VERSION > 5 || DVB_API_VERSION == 5 && DVB_API_VERSION_MINOR >= 6
+ 		case SYS_DVBC_ANNEX_A:	ss << " DVBC_ANNEX_A"; break;
+ 		case SYS_DVBC_ANNEX_C:	ss << " DVBC_ANNEX_C"; break;
+-		case SYS_DVBT2:		ss << " DVBT2"; break;
+ 		case SYS_TURBO:		ss << " TURBO"; break;
+ 		case SYS_DTMB:		ss << " DTMB"; break;
++#else
++		case SYS_DVBC_ANNEX_AC:	ss << " DVBC_ANNEX_AC"; break;
++		case SYS_DMBTH:         ss << " DMBTH"; break;
++#endif
++		case SYS_DVBT2:		ss << " DVBT2"; break;
+ 		}
+ 	}
+ 
 --- enigma2.org/lib/dvb/pmt.cpp
 +++ enigma2/lib/dvb/pmt.cpp
-@@ -864,6 +864,11 @@
+@@ -909,6 +909,11 @@
  			eDVBCIInterfaces::getInstance()->addPMTHandler(this);
  	} else if (!simulate) // no simulation of playback services
  	{
@@ -2245,6 +2576,47 @@
  		if (!ref.getServiceID().get() /* incorrect sid in meta file or recordings.epl*/ )
  		{
  			eDVBTSTools tstools;
+--- enigma2.org/lib/dvb/pmt.h
++++ enigma2/lib/dvb/pmt.h
+@@ -32,7 +32,10 @@
+ 		: LongCrcSection(buffer)
+ 		{
+ 			data = malloc(getSectionLength());
+-			memcpy(data, buffer, getSectionLength());
++			if (data != NULL)
++			{
++				memcpy(data, buffer, getSectionLength());
++			}
+ 		}
+ 		~OCSection()
+ 		{
+--- enigma2.org/lib/dvb/scan.cpp
++++ enigma2/lib/dvb/scan.cpp
+@@ -1104,9 +1104,9 @@
+ 			if( m_chid_current )
+ 				tsonid = ( m_chid_current.transport_stream_id.get() << 16 )
+ 					| m_chid_current.original_network_id.get();
+-			service->m_service_name = strip_non_graph(convertDVBUTF8(sname,-1,tsonid,0));
++			service->m_service_name = convertDVBUTF8(sname,-1,tsonid,0);
+ 			service->genSortName();
+-			service->m_provider_name = strip_non_graph(convertDVBUTF8(pname,-1,tsonid,0));
++			service->m_provider_name = convertDVBUTF8(pname,-1,tsonid,0);
+ 		}
+ 
+ 		if (!(m_flags & scanOnlyFree) || !m_pmt_in_progress->second.scrambled) {
+@@ -1539,10 +1539,10 @@
+ 
+ 					ref.setServiceType(servicetype);
+ 					int tsonid=(sdt.getTransportStreamId() << 16) | sdt.getOriginalNetworkId();
+-					service->m_service_name = strip_non_graph(convertDVBUTF8(d.getServiceName(),-1,tsonid,0));
++					service->m_service_name = convertDVBUTF8(d.getServiceName(),-1,tsonid,0);
+ 					service->genSortName();
+ 
+-					service->m_provider_name = strip_non_graph(convertDVBUTF8(d.getServiceProviderName(),-1,tsonid,0));
++					service->m_provider_name = convertDVBUTF8(d.getServiceProviderName(),-1,tsonid,0);
+ 					SCAN_eDebug("[eDVBScan]   name '%s', provider_name '%s'", service->m_service_name.c_str(), service->m_provider_name.c_str());
+ 					break;
+ 				}
 --- enigma2.org/lib/dvb/streamserver.h
 +++ enigma2/lib/dvb/streamserver.h
 @@ -4,6 +4,8 @@
@@ -2299,35 +2671,38 @@
  int eDVBVolumecontrol::openMixer()
 --- enigma2.org/lib/dvb_ci/dvbci_appmgr.cpp
 +++ enigma2/lib/dvb_ci/dvbci_appmgr.cpp
-@@ -94,6 +94,9 @@
+@@ -94,6 +94,7 @@
  	eDebug("[CI AM] in appmanager -> startmmi()");
  	const unsigned char tag[3]={0x9F, 0x80, 0x22};  // Tenter_menu
  	sendAPDU(tag);
-+#ifdef __sh__
 +	slot->mmiOpened();
-+#endif
  	return 0;
  }
  
 --- enigma2.org/lib/dvb_ci/dvbci.cpp
 +++ enigma2/lib/dvb_ci/dvbci.cpp
-@@ -25,6 +25,11 @@
+@@ -25,6 +25,9 @@
  
  #include <dvbsi++/ca_program_map_section.h>
  
-+#ifdef __sh__
 +#include <linux/dvb/ca.h>
 +//#define x_debug
-+#endif
 +
  //#define CIDEBUG 1
  
  #ifdef CIDEBUG
-@@ -146,6 +151,232 @@
+@@ -34,7 +37,6 @@
+ #endif
+ 
+ eDVBCIInterfaces *eDVBCIInterfaces::instance = 0;
+-
+ 
+ eCIClient::eCIClient(eDVBCIInterfaces *handler, int socket) : eUnixDomainSocket(socket, 1, eApp), parent(handler)
+ {
+@@ -146,6 +148,257 @@
  
  #define CIPLUS_SERVER_SOCKET "/tmp/.listen.ciplus.socket"
  
-+#ifdef __sh__
 +bool eDVBCISlot::checkQueueSize()
 +{
 +	return (sendqueue.size() > 0);
@@ -2340,27 +2715,35 @@
 +	uint8_t length_field;
 +
 +	if (asn_1_array_len < 1)
++	{
 +		return -1;
-+	length_field = asn_1_array[0];
++	}
++		length_field = asn_1_array[0];
 +
-+	if (length_field < 0x80) {
++	if (length_field < 0x80)
++	{
 +		// there is only one word
 +		*length = length_field & 0x7f;
 +		return 1;
-+	} else if (length_field == 0x81) {
++	}
++	else if (length_field == 0x81)
++	{
 +		if (asn_1_array_len < 2)
++		{
 +			return -1;
-+
++		}
 +		*length = asn_1_array[1];
 +		return 2;
-+	} else if (length_field == 0x82) {
++	}
++	else if (length_field == 0x82)
++	{
 +		if (asn_1_array_len < 3)
++		{
 +			return -1;
-+
++		}
 +		*length = (asn_1_array[1] << 8) | asn_1_array[2];
 +		return 3;
 +	}
-+
 +	return -1;
 +}
 +
@@ -2388,9 +2771,13 @@
 +			d[1] = connection_id;
 +			d[2] = T_DATA_LAST;
 +			if (len > 127)
++			{
 +				d[3] = 4;	/* pointer to next length */
++			}
 +			else
++			{
 +				d[3] = len + 1;	/* len */
++			}
 +			d[4] = connection_id; 	/* transport connection identifier*/
 +			len += 5;
 +		}
@@ -2408,8 +2795,10 @@
 +
 +#ifdef x_debug
 +	printf("write (%d): > ", getSlotID());
-+	for (int i=0; i < len; i++)
++	for (int i = 0; i < len; i++)
++	{
 +		printf("%02x ",d[i]);
++	}
 +	printf("\n");
 +#endif
 +
@@ -2432,7 +2821,7 @@
 +bool eDVBCISlot::sendCreateTC()
 +{
 +	//printf("%s:%s >\n", FILENAME, __FUNCTION__);
-+	unsigned char* data = (unsigned char*) malloc(sizeof(char) * 5);
++	unsigned char *data = (unsigned char *)malloc(sizeof(char) * 5);
 +	tx_time.tv_sec = 0;
 +	data[0] = getSlotID();
 +	data[1] = getSlotID() + 1; 	/* conid */
@@ -2444,11 +2833,12 @@
 +	return true;
 +}
 +
-+void eDVBCISlot::process_tpdu(unsigned char tpdu_tag, __u8* data, int asn_data_length, int con_id)
++void eDVBCISlot::process_tpdu(unsigned char tpdu_tag, __u8 *data, int asn_data_length, int con_id)
 +{
 +	switch (tpdu_tag)
 +	{
 +		case T_C_T_C_REPLY:
++		{
 +			printf("Got CTC Replay (slot %d, con %d)\n", getSlotID(), connection_id);
 +
 +			tx_time.tv_sec = 0;
@@ -2459,22 +2849,29 @@
 +			sendData(NULL, 0);
 +
 +			break;
++		}
 +		case T_DELETE_T_C:
++		{
 +//FIXME: close sessions etc; reset ?
 +//we must answer here with t_c_replay
 +			printf("Got \"Delete Transport Connection\" from module ->currently not handled!\n");
 +			break;
++		}
 +		case T_D_T_C_REPLY:
++		{
 +			printf("Got \"Delete Transport Connection Replay\" from module!\n");
 +			break;
++		}
 +		case T_REQUEST_T_C:
++		{
 +			printf("Got \"Request Transport Connection\" from Module ->currently not handled!\n");
 +			break;
++		}
 +		case T_DATA_MORE:
 +		{
 +			int new_data_length = receivedLen + asn_data_length;
 +			printf("Got \"Data More\" from Module\n");
-+			__u8 *new_data_buffer = (__u8*) realloc(receivedData, new_data_length);
++			__u8 *new_data_buffer = (__u8 *)realloc(receivedData, new_data_length);
 +			receivedData = new_data_buffer;
 +			memcpy(receivedData + receivedLen, data, asn_data_length);
 +			receivedLen = new_data_length;
@@ -2482,6 +2879,7 @@
 +			break;
 +		}
 +		case T_DATA_LAST:
++		{
 +#ifdef x_debug
 +			printf("Got \"Data Last\" from Module\n");
 +#endif
@@ -2493,7 +2891,9 @@
 +#ifdef x_debug
 +				printf("calling receiveData with data (len %d)> ", asn_data_length);
 +				for (int i = 0;i < asn_data_length; i++)
++				{
 +					printf("%02x ", data[i]);
++				}
 +				printf("\n");
 +#endif
 +				eDVBCISession::receiveData(this, data, asn_data_length);
@@ -2504,14 +2904,16 @@
 +				/* chained package */
 +				int new_data_length = receivedLen + asn_data_length;
 +				printf("->chained data\n");
-+				__u8 *new_data_buffer = (__u8*) realloc(receivedData, new_data_length);
++				__u8 *new_data_buffer = (__u8 *)realloc(receivedData, new_data_length);
 +				receivedData = new_data_buffer;
 +				memcpy(receivedData + receivedLen, data, asn_data_length);
 +				receivedLen = new_data_length;
 +#ifdef x_debug
 +				printf("calling receiveData with data (len %d)> ", asn_data_length);
-+				for (int i = 0;i < receivedLen; i++)
++				for (int i = 0; i < receivedLen; i++)
++				{
 +					printf("%02x ", receivedData[i]);
++				}
 +				printf("\n");
 +#endif
 +				eDVBCISession::receiveData(this, receivedData, receivedLen);
@@ -2522,6 +2924,7 @@
 +				receivedLen = 0;
 +			}
 +			break;
++		}
 +		case T_SB:
 +		{
 +#ifdef x_debug
@@ -2551,50 +2954,86 @@
 +	}
 +}
 +
-+#endif
-+
  eDVBCIInterfaces::eDVBCIInterfaces()
   : eServerSocket(CIPLUS_SERVER_SOCKET, eApp)
  {
-@@ -163,7 +394,11 @@
+@@ -163,7 +416,7 @@
  	{
  		path.str("");
  		path.clear();
-+#ifdef __sh__
+-		path << "/dev/ci" << num_ci;
 +		path << "/dev/dvb/adapter0/ci" << num_ci;
-+#else
-		path << "/dev/ci" << num_ci;
-+#endif
  
  		if(::access(path.str().c_str(), R_OK) < 0)
  			break;
-@@ -1093,8 +1328,13 @@
+@@ -1093,7 +1346,7 @@
  	{
  		unsigned char *d = new unsigned char[len];
  		memcpy(d, data, len);
-+#ifdef __sh__
+-		sendqueue.push( queueData(d, len) );
 +		sendData(d, len);
-+		notifier->setRequested(eSocketNotifier::Read | eSocketNotifier::Priority | eSocketNotifier::Write);
-+#else
- 		sendqueue.push( queueData(d, len) );
  		notifier->setRequested(eSocketNotifier::Read | eSocketNotifier::Priority | eSocketNotifier::Write);
-+#endif
  	}
  
- 	return res;
-@@ -1103,6 +1328,7 @@
+@@ -1103,61 +1356,168 @@
  void eDVBCISlot::data(int what)
  {
  	eDebugCI("[CI] Slot %d what %d\n", getSlotID(), what);
-+#ifndef __sh__
- 	if(what == eSocketNotifier::Priority) {
- 		if(state != stateRemoved) {
- 			state = stateRemoved;
-@@ -1158,6 +1343,166 @@
- 		else
- 			notifier->setRequested(eSocketNotifier::Read|eSocketNotifier::Priority);
- 	}
-+#else
+-	if(what == eSocketNotifier::Priority) {
+-		if(state != stateRemoved) {
+-			state = stateRemoved;
+-			while(sendqueue.size())
+-			{
+-				delete [] sendqueue.top().data;
+-				sendqueue.pop();
+-			}
+-			eDVBCISession::deleteSessions(this);
+-			eDVBCIInterfaces::getInstance()->ciRemoved(this);
+-			notifier->setRequested(eSocketNotifier::Read);
+-			eDVBCI_UI::getInstance()->setState(getSlotID(),0);
+-		}
+-		return;
+-	}
+-
+-	if (state == stateInvalid)
+-		reset();
+-
+-	if(state != stateInserted) {
+-		eDebug("[CI] ci inserted in slot %d", getSlotID());
+-		state = stateInserted;
+-		eDVBCI_UI::getInstance()->setState(getSlotID(),1);
+-		notifier->setRequested(eSocketNotifier::Read|eSocketNotifier::Priority);
+-		/* enable PRI to detect removal or errors */
+-	}
+-
+-	if (what & eSocketNotifier::Read) {
+-		uint8_t data[4096];
+-		int r;
+-		r = ::read(fd, data, 4096);
+-		if(r > 0) {
+-//			int i;
+-//			eDebugNoNewLineStart("> ");
+-//			for(i=0;i<r;i++)
+-//				eDebugNoNewLine("%02x ",data[i]);
+-//			eDebugNoNewLine("\n");
+-			eDVBCISession::receiveData(this, data, r);
+-			eDVBCISession::pollAll();
+-			return;
+-		}
+-	}
+-	else if (what & eSocketNotifier::Write) {
+-		if (!sendqueue.empty()) {
+-			const queueData &qe = sendqueue.top();
+-			int res = ::write(fd, qe.data, qe.len);
+-			if (res >= 0 && (unsigned int)res == qe.len)
+-			{
+-				delete [] qe.data;
+-				sendqueue.pop();
+-			}
+-		}
+-		else
+-			notifier->setRequested(eSocketNotifier::Read|eSocketNotifier::Priority);
+-	}
 +	unsigned char data[1024];
 +	int len = 1024;
 +	unsigned char* d;
@@ -2616,6 +3055,10 @@
 +	{
 +		eDebugCI("eSocketNotifier::Priority\n");
 +		status = eDataStatusChanged;
++	}
++	else
++	{
++		status = eDataError;
 +	}
 +
 +	switch (getState())
@@ -2753,100 +3196,81 @@
 +		break;
 +	}
 +	notifier->setRequested(eSocketNotifier::Read | eSocketNotifier::Priority | eSocketNotifier::Write);
-+#endif
  }
  
  DEFINE_REF(eDVBCISlot);
-@@ -1176,7 +1577,11 @@
+@@ -1176,7 +1536,7 @@
  
  	slotid = nr;
  
-+#ifdef __sh__
+-	sprintf(filename, "/dev/ci%d", nr);
 +	sprintf(filename, "/dev/dvb/adapter0/ci%d", nr);
-+#else
- 	sprintf(filename, "/dev/ci%d", nr);
-+#endif
  
  //	possible_caids.insert(0x1702);
  //	possible_providers.insert(providerPair("PREMIERE", 0xC00000));
-@@ -1187,10 +1592,24 @@
+@@ -1187,10 +1547,18 @@
  	eDebugCI("[CI] Slot %d has fd %d", getSlotID(), fd);
  	state = stateInvalid;
  
-+#ifdef __sh__
 +	receivedLen = 0;
 +	receivedData = NULL;
-+#endif
  	if (fd >= 0)
  	{
-+#ifdef __sh__
 +		connection_id = slotid + 1;
 +		tx_time.tv_sec = 0;
 +		tx_time.tv_usec = 0;
 +		last_poll_time.tv_sec = 0;
 +		last_poll_time.tv_nsec = 0;
-+#endif
  		notifier = eSocketNotifier::create(context, fd, eSocketNotifier::Read | eSocketNotifier::Priority | eSocketNotifier::Write);
  		CONNECT(notifier->activated, eDVBCISlot::data);
-+#ifdef __sh__
 +		reset();
-+#endif
  	} else
  	{
  		perror(filename);
-@@ -1226,6 +1645,13 @@
+@@ -1226,13 +1594,11 @@
  {
  	eDebug("[CI] Slot %d: reset requested", getSlotID());
  
-+#ifdef __sh__
+-	if (state == stateInvalid)
+-	{
+-		unsigned char buf[256];
+-		eDebug("[CI] flush");
+-		while(::read(fd, buf, 256)>0);
+-		state = stateResetted;
+-	}
 +	state = stateInvalid;
 +	mmi_active = false;
 +	eDVBCI_UI::getInstance()->setAppName(getSlotID(), "");
 +	eDVBCISession::deleteSessions(this);
 +	eDVBCIInterfaces::getInstance()->ciRemoved(this);
-+#else
- 	if (state == stateInvalid)
- 	{
- 		unsigned char buf[256];
-@@ -1233,6 +1659,7 @@
- 		while(::read(fd, buf, 256)>0);
- 		state = stateResetted;
- 	}
-+#endif
  
  	while(sendqueue.size())
  	{
-@@ -1240,7 +1667,12 @@
+@@ -1240,7 +1606,8 @@
  		sendqueue.pop();
  	}
  
-+#ifdef __sh__
+-	ioctl(fd, 0);
 +	if (ioctl(fd, CA_RESET, getSlotID()) < 0)
 +		eDebug("IOCTL CA_RESET failed for slot %d\n", slotid);
-+#else
- 	ioctl(fd, 0);
-+#endif
  
  	return 0;
  }
 --- enigma2.org/lib/dvb_ci/dvbci.h
 +++ enigma2/lib/dvb_ci/dvbci.h
-@@ -5,6 +5,9 @@
+@@ -5,6 +5,7 @@
  
  #include <lib/base/ebase.h>
  #include <lib/service/iservice.h>
-+#ifdef __sh__
 +#include <lib/base/thread.h>
-+#endif
  #include <lib/python/python.h>
  #include <set>
  #include <queue>
-@@ -39,6 +42,42 @@
+@@ -39,6 +40,40 @@
  typedef std::set<providerPair> providerSet;
  typedef std::set<uint16_t> caidSet;
  typedef std::set<eServiceReference> serviceSet;
 +
-+#ifdef __sh__
 +/* ********************************** */
 +/* constants taken from dvb-apps 
 + */
@@ -2880,29 +3304,25 @@
 +	// check
 +	return nowtime_ms > oldtime_ms;
 +}
-+#endif
  
  class eDVBCISlot: public iObject, public sigc::trackable
  {
-@@ -63,6 +102,13 @@
+@@ -63,6 +98,11 @@
  	bool user_mapped;
  	void data(int);
  	bool plugged;
-+#ifdef __sh__
 +	//dagobert
 +	char connection_id;
 +	bool mmi_active;
 +	int receivedLen;
 +	unsigned char* receivedData;
-+#endif
  public:
  	enum {stateRemoved, stateInserted, stateInvalid, stateResetted};
  	eDVBCISlot(eMainloop *context, int nr);
-@@ -92,6 +138,17 @@
+@@ -92,6 +132,15 @@
  	int getNumOfServices() { return running_services.size(); }
  	int setSource(const std::string &source);
  	int setClockRate(int);
-+#ifdef __sh__
 +	bool checkQueueSize();
 +	void thread();
 +	void mmiOpened() { mmi_active = true; };
@@ -2912,89 +3332,124 @@
 +	eData sendData(unsigned char* data, int len);
 +	struct timeval tx_time;
 +	struct timespec last_poll_time;
-+#endif
  	static std::string getTunerLetter(int tuner_no) { return std::string(1, char(65 + tuner_no)); }
  };
  
 --- enigma2.org/lib/dvb_ci/dvbci_session.cpp
 +++ enigma2/lib/dvb_ci/dvbci_session.cpp
-@@ -297,6 +297,12 @@
+@@ -297,6 +297,10 @@
  		if ((!session_nb) || (session_nb >= SLMS))
  		{
  			eDebug("[CI SESS] PROTOCOL: illegal session number %x", session_nb);
-+#ifdef __sh__
 +			//Dagobert during start-up we seem to have some problems
 +			//on some modules which "lose" the connection. So reset it
 +			deleteSessions(slot);
 +			slot->reset();
-+#endif
  			return;
  		}
  
 --- enigma2.org/lib/gdi/accel.cpp
 +++ enigma2/lib/gdi/accel.cpp
-@@ -15,8 +15,25 @@
+@@ -15,25 +15,19 @@
  // #define ACCEL_DEBUG
  
  gAccel *gAccel::instance;
-+#if not defined(__sh__)
- #define BCM_ACCEL
-+#else
+-#define BCM_ACCEL
+-
+-#ifdef BCM_ACCEL
+-extern int bcm_accel_init(void);
+-extern void bcm_accel_close(void);
+-extern void bcm_accel_blit(
 +#define STMFB_ACCEL
-+#endif
- 
-+#ifdef STMFB_ACCEL
++
 +extern int stmfb_accel_init(void);
 +extern void stmfb_accel_close(void);
 +extern void stmfb_accel_blit(
-+		int src_addr, int src_width, int src_height, int src_stride, int src_format,
-+		int dst_addr, int dst_width, int dst_height, int dst_stride,
-+		int src_x, int src_y, int width, int height,
+ 		int src_addr, int src_width, int src_height, int src_stride, int src_format,
+ 		int dst_addr, int dst_width, int dst_height, int dst_stride,
+ 		int src_x, int src_y, int width, int height,
+-		int dst_x, int dst_y, int dwidth, int dheight,
+-		int pal_addr, int flags);
+-extern void bcm_accel_fill(
 +		int dst_x, int dst_y, int dwidth, int dheight);
 +extern void stmfb_accel_fill(
-+		int dst_addr, int dst_width, int dst_height, int dst_stride,
-+		int x, int y, int width, int height,
-+		unsigned long color);
-+#endif
- #ifdef ATI_ACCEL
- extern int ati_accel_init(void);
- extern void ati_accel_close(void);
-@@ -55,6 +72,9 @@
+ 		int dst_addr, int dst_width, int dst_height, int dst_stride,
+ 		int x, int y, int width, int height,
+ 		unsigned long color);
+-extern bool bcm_accel_has_alphablending();
+-extern int bcm_accel_accumulate();
+-extern int bcm_accel_sync();
+-#endif
+ 
+ gAccel::gAccel():
+ 	m_accel_addr(0),
+@@ -41,17 +35,12 @@
+ 	m_accel_size(0)
  {
  	instance = this;
- 
-+#ifdef STMFB_ACCEL
+-
+-#ifdef BCM_ACCEL
+-	m_bcm_accel_state = bcm_accel_init();
+-#endif
 +	stmfb_accel_init();
-+#endif
- #ifdef ATI_ACCEL
- 	ati_accel_init();
- #endif
-@@ -65,6 +85,9 @@
+ }
  
  gAccel::~gAccel()
  {
-+#ifdef STMFB_ACCEL
+-#ifdef BCM_ACCEL
+-	bcm_accel_close();
+-#endif
 +	stmfb_accel_close();
-+#endif
- #ifdef ATI_ACCEL
- 	ati_accel_close();
- #endif
-@@ -148,6 +171,69 @@
+ 	instance = 0;
+ }
+ 
+@@ -120,52 +109,88 @@
+ 
+ bool gAccel::hasAlphaBlendingSupport()
+ {
+-#ifdef BCM_ACCEL
+-	return bcm_accel_has_alphablending();
+-#else
+ 	return false;
+-#endif
+ }
  
  int gAccel::blit(gUnmanagedSurface *dst, gUnmanagedSurface *src, const eRect &p, const eRect &area, int flags)
  {
-+#ifdef STMFB_ACCEL
+-#ifdef BCM_ACCEL
+-	if (!m_bcm_accel_state)
+-	{
+-		unsigned int pal_addr = 0;
+-		int src_format = 0;
+-		if (src->bpp == 32)
+-			src_format = 0;
+-		else if ((src->bpp == 8) && src->clut.data)
+-		{
+-			src_format = 1;
+-			/* sync pal */
+-			if (src->clut.data_phys == 0)
+-			{
+-				/* sync pal */
+-				pal_addr = src->stride * src->y;
+-				unsigned int *pal = (unsigned int*)(((unsigned char*)src->data) + pal_addr);
+-				pal_addr += src->data_phys;
+-				for (int i = 0; i < src->clut.colors; ++i)
+-					*pal++ = src->clut.data[i].argb() ^ 0xFF000000;
+-				src->clut.data_phys = pal_addr;
 +	int src_format = 0;
 +	gUnmanagedSurface *surfaceTmp = new gUnmanagedSurface(area.width(), area.height(), dst->bpp);
 +
 +	if (src->bpp == 32)
++	{
 +		src_format = 0;
++	}
 +	else if ((src->bpp == 8) && (dst->bpp == 32))
 +	{
 +		src_format = 1;
 +		if (accelAlloc(surfaceTmp))
++		{
 +			return -1;
-+
++		}
 +		__u8 *srcptr = (__u8*)src->data;
 +		__u8 *dstptr = (__u8*)surfaceTmp->data;
 +		__u32 pal[256];
@@ -3002,30 +3457,47 @@
 +		for (int i = 0; i < 256; ++i)
 +		{
 +			if (src->clut.data && (i < src->clut.colors))
-+				pal[i] = (src->clut.data[i].a<<24)|(src->clut.data[i].r<<16)|(src->clut.data[i].g<<8)|(src->clut.data[i].b);
-+			else
-+				pal[i] = 0x010101*i;
++			{
++				pal[i] = (src->clut.data[i].a << 24)|(src->clut.data[i].r << 16)|(src->clut.data[i].g << 8)|(src->clut.data[i].b);
+ 			}
+ 			else
+ 			{
+-				pal_addr = src->clut.data_phys;
+-			}
+-		} else
+-			return -1; /* unsupported source format */
+-
+-		bcm_accel_blit(
++				pal[i] = 0x010101 * i;
++			}
 +			if ((pal[i]&0xFF000000) >= 0xE0000000)
++			{
 +				pal[i] = 0xFF000000;
++			}
 +			pal[i] ^= 0xFF000000;
 +		}
-+		srcptr+=area.left()*src->bypp+area.top()*src->stride;
++		srcptr += area.left() * src->bypp + area.top() * src->stride;
 +
 +		for (int y = 0; y < area.height(); y++)
 +		{
-+			int width=area.width();
-+			unsigned char *psrc=(unsigned char*)srcptr;
-+			__u32 *pdst=(__u32*)dstptr;
++			int width = area.width();
++			unsigned char *psrc = (unsigned char*)srcptr;
++			__u32 *pdst = (__u32*)dstptr;
 +
 +			while (width--)
-+				*pdst++=pal[*psrc++];
-+
-+			srcptr+=src->stride;
-+			dstptr+=area.width() * 4;
++			{
++				*pdst ++= pal[*psrc++];
++			}
++			srcptr += src->stride;
++			dstptr += area.width() * 4;
 +		}
-+	} else {
++	}
++	else
++	{
 +		if (surfaceTmp->data_phys)
++		{
 +			accelFree(surfaceTmp);
++		}
 +		return -1;
 +	}
 +
@@ -3037,155 +3509,263 @@
 +			0, 0, area.width(), area.height(),
 +			p.x(), p.y(), p.width(), p.height());
 +		accelFree(surfaceTmp);
-+	} else {
++	}
++	else
++	{
 +		stmfb_accel_blit(
-+			src->data_phys, src->x, src->y, src->stride, src_format,
-+			dst->data_phys, dst->x, dst->y, dst->stride,
-+			area.left(), area.top(), area.width(), area.height(),
+ 			src->data_phys, src->x, src->y, src->stride, src_format,
+ 			dst->data_phys, dst->x, dst->y, dst->stride,
+ 			area.left(), area.top(), area.width(), area.height(),
+-			p.x(), p.y(), p.width(), p.height(),
+-			pal_addr, flags);
+-		return 0;
+-	}
+-#endif
 +			p.x(), p.y(), p.width(), p.height());
 +	}
 +	return 0;
-+#endif
- #ifdef ATI_ACCEL
- 	ati_accel_blit(
- 		src->data_phys, src->x, src->y, src->stride,
-@@ -298,9 +384,9 @@
+ 	return -1;
+ }
+ 
+@@ -174,37 +199,16 @@
+ #ifdef FORCE_NO_FILL_ACCELERATION
+ 	return -1;
+ #endif
+-#ifdef BCM_ACCEL
+-	if (!m_bcm_accel_state) {
+-		bcm_accel_fill(
+-			dst->data_phys, dst->x, dst->y, dst->stride,
+-			area.left(), area.top(), area.width(), area.height(),
+-			col);
+-		return 0;
+-	}
+-#endif
+ 	return -1;
+ }
+ 
+ int gAccel::accumulate()
+ {
+-#ifdef BCM_ACCEL
+-	if (!m_bcm_accel_state)
+-	{
+-		return bcm_accel_accumulate();
+-	}
+-#endif
+ 	return -1;
+ }
+ 
+ int gAccel::sync()
+ {
+-#ifdef BCM_ACCEL
+-	if (!m_bcm_accel_state)
+-	{
+-		return bcm_accel_sync();
+-	}
+-#endif
+ 	return -1;
+ }
+ 
+@@ -264,9 +268,9 @@
  
  void gAccel::accelFree(gUnmanagedSurface* surface)
  {
 -	int phys_addr = surface->data_phys;
 -	if (phys_addr != 0)
-+	if(surface != 0 && surface->data_phys != 0)
- 	{
+-	{
++	if (surface != 0 && surface->data_phys != 0)
++	{
 +		int phys_addr = surface->data_phys;
  #ifdef ACCEL_DEBUG
  		eDebug("[gAccel] [%s] %p->%x %dx%d:%d", __func__, surface, surface->data_phys, surface->x, surface->y, surface->bpp);
  #endif
+--- enigma2.org/lib/gdi/accel.h
++++ enigma2/lib/gdi/accel.h
+@@ -48,7 +48,6 @@
+ 	int m_accel_phys_addr;
+ 	int m_accel_size; // in blocks
+ 	MemoryBlockList m_accel_allocation;
+-	int m_bcm_accel_state;
+ 
+ 	static gAccel *instance;
+ };
 --- enigma2.org/lib/gdi/epng.cpp
 +++ enigma2/lib/gdi/epng.cpp
-@@ -11,6 +11,7 @@
+@@ -11,6 +11,9 @@
  #include <lib/base/elock.h>
  
  extern "C" {
++#if defined HAVE_STDLIB_H
 +#undef HAVE_STDLIB_H
++#endif
  #include <jpeglib.h>
  }
  
 --- enigma2.org/lib/gdi/fb.cpp
 +++ enigma2/lib/gdi/fb.cpp
-@@ -8,6 +8,9 @@
+@@ -8,6 +8,7 @@
  #include <linux/kd.h>
  
  #include <lib/gdi/fb.h>
-+#ifdef __sh__
 +#include <linux/stmfb.h>
-+#endif
  
  #ifndef FBIO_WAITFORVSYNC
  #define FBIO_WAITFORVSYNC _IOW('F', 0x20, uint32_t)
-@@ -47,11 +50,13 @@
+@@ -47,12 +48,6 @@
  	}
  
  
-+#if not defined(__sh__)
- 	if (ioctl(fbFd, FBIOGET_VSCREENINFO, &screeninfo)<0)
- 	{
- 		eDebug("[fb] FBIOGET_VSCREENINFO: %m");
- 		goto nolfb;
- 	}
-+#endif
- 
+-	if (ioctl(fbFd, FBIOGET_VSCREENINFO, &screeninfo)<0)
+-	{
+-		eDebug("[fb] FBIOGET_VSCREENINFO: %m");
+-		goto nolfb;
+-	}
+-
  	fb_fix_screeninfo fix;
  	if (ioctl(fbFd, FBIOGET_FSCREENINFO, &fix)<0)
-@@ -62,8 +67,17 @@
+ 	{
+@@ -62,17 +57,17 @@
  
  	available=fix.smem_len;
  	m_phys_mem = fix.smem_start;
-+#if defined(__sh__)
-+	eDebug("[fb] %dk total video mem", available/1024);
+-	eDebug("[fb] %s: %dk video mem", fb, available/1024);
+-	lfb=(unsigned char*)mmap(0, available, PROT_WRITE|PROT_READ, MAP_SHARED, fbFd, 0);
++	eDebug("[fb] %dk total video memory", available / 1024);
 +	// The first 1920x1080x4 bytes are reserved
 +	// After that we can take 1280x720x4 bytes for our virtual framebuffer
-+	available -= 1920*1080*4;
-+	eDebug("%dk usable video mem", available/1024);
-+	lfb=(unsigned char*)mmap(0, available, PROT_WRITE|PROT_READ, MAP_SHARED, fbFd, 1920*1080*4);
-+#else
- 	eDebug("[fb] %s: %dk video mem", fb, available/1024);
- 	lfb=(unsigned char*)mmap(0, available, PROT_WRITE|PROT_READ, MAP_SHARED, fbFd, 0);
-+#endif
++	available -= 1920 * 1080 * 4;
++	eDebug("%dk usable video memory", available / 1024);
++	lfb = (unsigned char *)mmap(0, available, PROT_WRITE | PROT_READ, MAP_SHARED, fbFd, 1920 * 1080 * 4);
  	if (!lfb)
  	{
  		eDebug("[fb] mmap: %m");
-@@ -86,6 +100,7 @@
- 
- int fbClass::showConsole(int state)
- {
-+#if not defined(__sh__)
- 	int fd=open("/dev/tty0", O_RDWR);
- 	if(fd>=0)
- 	{
-@@ -95,11 +110,19 @@
- 		}
- 		close(fd);
+ 		goto nolfb;
  	}
-+#endif
- 	return 0;
+-
+-	showConsole(0);
+-
+-	enableManualBlit();
+ 	return;
+ nolfb:
+ 	if (fbFd >= 0)
+@@ -84,99 +79,27 @@
+ 	return;
  }
  
+-int fbClass::showConsole(int state)
+-{
+-	int fd=open("/dev/tty0", O_RDWR);
+-	if(fd>=0)
+-	{
+-		if(ioctl(fd, KDSETMODE, state?KD_TEXT:KD_GRAPHICS)<0)
+-		{
+-			eDebug("[fb] setting /dev/tty0 status failed.");
+-		}
+-		close(fd);
+-	}
+-	return 0;
+-}
+-
  int fbClass::SetMode(int nxRes, int nyRes, int nbpp)
  {
-+#if defined(__sh__)
+-	if (fbFd < 0) return -1;
+-	screeninfo.xres_virtual=screeninfo.xres=nxRes;
+-	screeninfo.yres_virtual=(screeninfo.yres=nyRes)*2;
+-	screeninfo.height=0;
+-	screeninfo.width=0;
+-	screeninfo.xoffset=screeninfo.yoffset=0;
+-	screeninfo.bits_per_pixel=nbpp;
+-
+-	switch (nbpp) {
+-	case 16:
+-		// ARGB 1555
+-		screeninfo.transp.offset = 15;
+-		screeninfo.transp.length = 1;
+-		screeninfo.red.offset = 10;
+-		screeninfo.red.length = 5;
+-		screeninfo.green.offset = 5;
+-		screeninfo.green.length = 5;
+-		screeninfo.blue.offset = 0;
+-		screeninfo.blue.length = 5;
+-		break;
+-	case 32:
+-		// ARGB 8888
+-		screeninfo.transp.offset = 24;
+-		screeninfo.transp.length = 8;
+-		screeninfo.red.offset = 16;
+-		screeninfo.red.length = 8;
+-		screeninfo.green.offset = 8;
+-		screeninfo.green.length = 8;
+-		screeninfo.blue.offset = 0;
+-		screeninfo.blue.length = 8;
+-		break;
+-	}
+-
+-	if (ioctl(fbFd, FBIOPUT_VSCREENINFO, &screeninfo)<0)
+-	{
+-		// try single buffering
+-		screeninfo.yres_virtual=screeninfo.yres=nyRes;
+-
+-		if (ioctl(fbFd, FBIOPUT_VSCREENINFO, &screeninfo)<0)
+-		{
+-			eDebug("[fb] FBIOPUT_VSCREENINFO: %m");
+-			return -1;
+-		}
+-		eDebug("[fb] double buffering not available.");
+-	} else
+-		eDebug("[fb] double buffering available!");
+-
+-	m_number_of_pages = screeninfo.yres_virtual / nyRes;
+-
 +	xRes = nxRes;
 +	yRes = nyRes;
 +	bpp = 32;
 +	m_number_of_pages = 1;
 +	topDiff = bottomDiff = leftDiff = rightDiff = 0;
-+#else
- 	if (fbFd < 0) return -1;
- 	screeninfo.xres_virtual=screeninfo.xres=nxRes;
- 	screeninfo.yres_virtual=(screeninfo.yres=nyRes)*2;
-@@ -149,8 +172,14 @@
- 
- 	m_number_of_pages = screeninfo.yres_virtual / nyRes;
- 
-+#endif
  	ioctl(fbFd, FBIOGET_VSCREENINFO, &screeninfo);
  
-+#if defined(__sh__)
+-	if ((screeninfo.xres != (unsigned int)nxRes) || (screeninfo.yres != (unsigned int)nyRes) ||
+-		(screeninfo.bits_per_pixel != (unsigned int)nbpp))
+-	{
+-		eDebug("[fb] SetMode failed: wanted: %dx%dx%d, got %dx%dx%d",
+-			nxRes, nyRes, nbpp,
+-			screeninfo.xres, screeninfo.yres, screeninfo.bits_per_pixel);
+-	}
+-	xRes=screeninfo.xres;
+-	yRes=screeninfo.yres;
+-	bpp=screeninfo.bits_per_pixel;
+-	fb_fix_screeninfo fix;
+-	if (ioctl(fbFd, FBIOGET_FSCREENINFO, &fix)<0)
+-	{
+-		eDebug("[fb] FBIOGET_FSCREENINFO: %m");
+-	}
+-	stride=fix.line_length;
+-	memset(lfb, 0, stride*yRes);
 +	xResSc = screeninfo.xres;
 +	yResSc = screeninfo.yres;
 +	stride = xRes*4;
-+#else
- 	if ((screeninfo.xres != (unsigned int)nxRes) || (screeninfo.yres != (unsigned int)nyRes) ||
- 		(screeninfo.bits_per_pixel != (unsigned int)nbpp))
- 	{
-@@ -168,15 +197,22 @@
- 	}
- 	stride=fix.line_length;
- 	memset(lfb, 0, stride*yRes);
-+#endif
  	blit();
  	return 0;
  }
  
  void fbClass::getMode(int &xres, int &yres, int &bpp)
  {
-+#if defined(__sh__)
+-	xres = screeninfo.xres;
+-	yres = screeninfo.yres;
+-	bpp = screeninfo.bits_per_pixel;
 +	xres = xRes;
 +	yres = yRes;
 +	bpp = 32;
-+#else
- 	xres = screeninfo.xres;
- 	yres = screeninfo.yres;
- 	bpp = screeninfo.bits_per_pixel;
-+#endif
  }
  
  int fbClass::setOffset(int off)
-@@ -196,11 +232,94 @@
+@@ -196,10 +119,85 @@
  
  void fbClass::blit()
  {
-+#if defined(__sh__)
+-	if (fbFd < 0) return;
+-	if (m_manual_blit == 1) {
+-		if (ioctl(fbFd, FBIO_BLIT) < 0)
+-			eDebug("[fb] FBIO_BLIT: %m");
 +	int modefd = open("/proc/stb/video/3d_mode", O_RDWR);
 +	char buf[16] = "off";
 +	if (modefd > 0)
@@ -3198,10 +3778,10 @@
 +	STMFBIO_BLT_DATA     bltData;
 +	memset(&bltData, 0, sizeof(STMFBIO_BLT_DATA));
 +	bltData.operation  = BLT_OP_COPY;
-+	bltData.srcOffset  = 1920*1080*4;
++	bltData.srcOffset  = 1920 * 1080 * 4;
 +	bltData.srcPitch   = xRes * 4;
 +	bltData.dstOffset  = 0;
-+	bltData.dstPitch   = xResSc*4;
++	bltData.dstPitch   = xResSc * 4;
 +	bltData.src_top    = 0;
 +	bltData.src_left   = 0;
 +	bltData.src_right  = xRes;
@@ -3211,40 +3791,40 @@
 +	bltData.srcMemBase = STMFBGP_FRAMEBUFFER;
 +	bltData.dstMemBase = STMFBGP_FRAMEBUFFER;
 +
-+	if (strncmp(buf,"sbs",3)==0)
++	if (strncmp(buf, "sbs", 3) == 0)
 +	{
 +		bltData.dst_top    = 0 + topDiff;
-+		bltData.dst_left   = 0 + leftDiff/2;
-+		bltData.dst_right  = xResSc/2 + rightDiff/2;
++		bltData.dst_left   = 0 + leftDiff / 2;
++		bltData.dst_right  = xResSc / 2 + rightDiff / 2;
 +		bltData.dst_bottom = yResSc + bottomDiff;
 +		if (ioctl(fbFd, STMFBIO_BLT, &bltData ) < 0)
 +		{
 +			perror("STMFBIO_BLT");
 +		}
 +		bltData.dst_top    = 0 + topDiff;
-+		bltData.dst_left   = xResSc/2 + leftDiff/2;
-+		bltData.dst_right  = xResSc + rightDiff/2;
++		bltData.dst_left   = xResSc / 2 + leftDiff / 2;
++		bltData.dst_right  = xResSc + rightDiff / 2;
 +		bltData.dst_bottom = yResSc + bottomDiff;
-+		if (ioctl(fbFd, STMFBIO_BLT, &bltData ) < 0)
++		if (ioctl(fbFd, STMFBIO_BLT, &bltData) < 0)
 +		{
 +			perror("STMFBIO_BLT");
 +		}
 +	}
-+	else if (strncmp(buf,"tab",3)==0)
++	else if (strncmp(buf, "tab", 3) == 0)
 +	{
-+		bltData.dst_top    = 0 + topDiff/2;
++		bltData.dst_top    = 0 + topDiff / 2;
 +		bltData.dst_left   = 0 + leftDiff;
 +		bltData.dst_right  = xResSc + rightDiff;
-+		bltData.dst_bottom = yResSc/2 + bottomDiff/2;
-+		if (ioctl(fbFd, STMFBIO_BLT, &bltData ) < 0)
++		bltData.dst_bottom = yResSc / 2 + bottomDiff / 2;
++		if (ioctl(fbFd, STMFBIO_BLT, &bltData) < 0)
 +		{
 +			perror("STMFBIO_BLT");
 +		}
-+		bltData.dst_top    = yResSc/2 + topDiff/2;
++		bltData.dst_top    = yResSc / 2 + topDiff / 2;
 +		bltData.dst_left   = 0 + leftDiff;
 +		bltData.dst_right  = xResSc + rightDiff;
-+		bltData.dst_bottom = yResSc + bottomDiff/2;
-+		if (ioctl(fbFd, STMFBIO_BLT, &bltData ) < 0)
++		bltData.dst_bottom = yResSc + bottomDiff / 2;
++		if (ioctl(fbFd, STMFBIO_BLT, &bltData) < 0)
 +		{
 +			perror("STMFBIO_BLT");
 +		}
@@ -3255,7 +3835,7 @@
 +		bltData.dst_left   = 0 + leftDiff;
 +		bltData.dst_right  = xResSc + rightDiff;
 +		bltData.dst_bottom = yResSc + bottomDiff;
-+		if (ioctl(fbFd, STMFBIO_BLT, &bltData ) < 0)
++		if (ioctl(fbFd, STMFBIO_BLT, &bltData) < 0)
 +		{
 +			perror("STMFBIO_BLT");
 +		}
@@ -3265,117 +3845,116 @@
 +	if (ioctl(fbFd, STMFBIO_SYNC_BLITTER) < 0)
 +	{
 +		perror("STMFBIO_SYNC_BLITTER");
-+	}
-+#else
- 	if (fbFd < 0) return;
- 	if (m_manual_blit == 1) {
- 		if (ioctl(fbFd, FBIO_BLIT) < 0)
- 			eDebug("[fb] FBIO_BLIT: %m");
  	}
-+#endif
  }
  
- fbClass::~fbClass()
-@@ -236,6 +355,25 @@
+@@ -210,8 +208,6 @@
+ 		msync(lfb, available, MS_SYNC);
+ 		munmap(lfb, available);
  	}
- 	else
- 		locked = 1;
-+#if defined(__sh__)
+-	showConsole(1);
+-	disableManualBlit();
+ 	if (fbFd >= 0)
+ 	{
+ 		::close(fbFd);
+@@ -229,13 +225,24 @@
+ {
+ 	if (locked)
+ 		return -1;
+-	if (m_manual_blit == 1)
+-	{
+-		locked = 2;
+-		disableManualBlit();
+-	}
+-	else
+-		locked = 1;
++	locked = 1;
 +	outcfg.outputid = STMFBIO_OUTPUTID_MAIN;
-+	if (ioctl( fbFd, STMFBIO_GET_OUTPUT_CONFIG, &outcfg ) < 0)
++	if (ioctl(fbFd, STMFBIO_GET_OUTPUT_CONFIG, &outcfg) < 0)
 +		perror("STMFBIO_GET_OUTPUT_CONFIG\n");
 +
 +	outinfo.outputid = STMFBIO_OUTPUTID_MAIN;
-+	if (ioctl( fbFd, STMFBIO_GET_OUTPUTINFO, &outinfo ) < 0)
++	if (ioctl(fbFd, STMFBIO_GET_OUTPUTINFO, &outinfo) < 0)
 +		perror("STMFBIO_GET_OUTPUTINFO\n");
 +
-+	//if (ioctl( fbFd, STMFBIO_GET_VAR_SCREENINFO_EX, &infoex ) < 0)
++	//if (ioctl(fbFd, STMFBIO_GET_VAR_SCREENINFO_EX, &infoex) < 0)
 +	//	printf("ERROR\n");
 +
 +	planemode.layerid = 0;
-+	if (ioctl( fbFd, STMFBIO_GET_PLANEMODE, &planemode ) < 0)
++	if (ioctl(fbFd, STMFBIO_GET_PLANEMODE, &planemode) < 0)
 +		perror("STMFBIO_GET_PLANEMODE\n");
 +
-+	if (ioctl( fbFd, STMFBIO_GET_VAR_SCREENINFO_EX, &infoex ) < 0)
++	if (ioctl(fbFd, STMFBIO_GET_VAR_SCREENINFO_EX, &infoex) < 0)
 +		perror("STMFBIO_GET_VAR_SCREENINFO_EX\n");
-+#endif
  	return fbFd;
  }
  
-@@ -246,27 +384,89 @@
- 	if (locked == 2)  // re-enable manualBlit
- 		enableManualBlit();
+@@ -243,30 +250,62 @@
+ {
+ 	if (!locked)
+ 		return;
+-	if (locked == 2)  // re-enable manualBlit
+-		enableManualBlit();
  	locked=0;
 +
-+#if defined(__sh__)
-+	if (ioctl( fbFd, STMFBIO_SET_VAR_SCREENINFO_EX, &infoex ) < 0)
++	if (ioctl(fbFd, STMFBIO_SET_VAR_SCREENINFO_EX, &infoex) < 0)
 +		perror("STMFBIO_SET_VAR_SCREENINFO_EX\n");
 +
-+	if (ioctl( fbFd, STMFBIO_SET_PLANEMODE, &planemode ) < 0)
++	if (ioctl(fbFd, STMFBIO_SET_PLANEMODE, &planemode) < 0)
 +		perror("STMFBIO_SET_PLANEMODE\n");
 +
-+	if (ioctl( fbFd, STMFBIO_SET_VAR_SCREENINFO_EX, &infoex ) < 0)
++	if (ioctl(fbFd, STMFBIO_SET_VAR_SCREENINFO_EX, &infoex) < 0)
 +		perror("STMFBIO_SET_VAR_SCREENINFO_EX\n");
 +
-+	if (ioctl( fbFd, STMFBIO_SET_OUTPUTINFO, &outinfo ) < 0)
++	if (ioctl(fbFd, STMFBIO_SET_OUTPUTINFO, &outinfo) < 0)
 +		perror("STMFBIO_SET_OUTPUTINFO\n");
 +
-+	if (ioctl( fbFd, STMFBIO_SET_OUTPUT_CONFIG, &outcfg ) < 0)
++	if (ioctl(fbFd, STMFBIO_SET_OUTPUT_CONFIG, &outcfg) < 0)
 +		perror("STMFBIO_SET_OUTPUT_CONFIG\n");
 +
-+	memset(lfb, 0, stride*yRes);
-+#endif
++	memset(lfb, 0, stride * yRes);
 +
  	SetMode(xRes, yRes, bpp);
  	PutCMAP();
  }
  
- void fbClass::enableManualBlit()
- {
-+#if not defined(__sh__)
- 	unsigned char tmp = 1;
- 	if (fbFd < 0) return;
- 	if (ioctl(fbFd,FBIO_SET_MANUAL_BLIT, &tmp)<0)
- 		eDebug("[fb] enable FBIO_SET_MANUAL_BLIT: %m");
- 	else
- 		m_manual_blit = 1;
-+#endif
- }
- 
- void fbClass::disableManualBlit()
- {
-+#if not defined(__sh__)
- 	unsigned char tmp = 0;
- 	if (fbFd < 0) return;
- 	if (ioctl(fbFd,FBIO_SET_MANUAL_BLIT, &tmp)<0)
- 		eDebug("[fb] disable FBIO_SET_MANUAL_BLIT: %m");
- 	else
- 		m_manual_blit = 0;
--}
--
-+#endif
-+}
-+
-+#if defined(__sh__)
+-void fbClass::enableManualBlit()
+-{
+-	unsigned char tmp = 1;
+-	if (fbFd < 0) return;
+-	if (ioctl(fbFd,FBIO_SET_MANUAL_BLIT, &tmp)<0)
+-		eDebug("[fb] enable FBIO_SET_MANUAL_BLIT: %m");
 +void fbClass::clearFBblit()
 +{
 +	//set real frambuffer transparent
 +//	memset(lfb, 0x00, xRes * yRes * 4);
 +	blit();
-+#endif
 +}
 +
 +int fbClass::getFBdiff(int ret)
 +{
-+	if(ret == 0)
++	if (ret == 0)
 +		return topDiff;
-+	else if(ret == 1)
++	else if (ret == 1)
 +		return leftDiff;
-+	else if(ret == 2)
++	else if (ret == 2)
 +		return rightDiff;
-+	else if(ret == 3)
++	else if (ret == 3)
 +		return bottomDiff;
-+	else
+ 	else
+-		m_manual_blit = 1;
+-}
+-
+-void fbClass::disableManualBlit()
+-{
+-	unsigned char tmp = 0;
+-	if (fbFd < 0) return;
+-	if (ioctl(fbFd,FBIO_SET_MANUAL_BLIT, &tmp)<0)
+-		eDebug("[fb] disable FBIO_SET_MANUAL_BLIT: %m");
+-	else
+-		m_manual_blit = 0;
+-}
+-
 +		return -1;
 +}
 +
@@ -3396,21 +3975,18 @@
 +}
 --- enigma2.org/lib/gdi/fb.h
 +++ enigma2/lib/gdi/fb.h
-@@ -3,6 +3,9 @@
+@@ -3,6 +3,7 @@
  
  #include <lib/base/eerror.h>
  #include <linux/fb.h>
-+#if defined(__sh__)
-+	#include <linux/stmfb.h>
-+#endif
++#include <linux/stmfb.h>
  
  #ifndef FB_DEV
  # define FB_DEV "/dev/fb0"
-@@ -12,6 +15,15 @@
+@@ -12,6 +13,13 @@
  {
  	int fbFd;
  	int xRes, yRes, stride, bpp;
-+#if defined(__sh__)
 +	struct stmfbio_output_configuration outcfg;
 +	struct stmfbio_outputinfo outinfo;
 +	struct stmfbio_planeinfo planemode;
@@ -3418,54 +3994,50 @@
 +
 +	int xResSc, yResSc;
 +	int topDiff, leftDiff, rightDiff, bottomDiff;
-+#endif
  	int available;
  	struct fb_var_screeninfo screeninfo;
  	fb_cmap cmap;
-@@ -53,6 +65,18 @@
+@@ -29,9 +37,6 @@
+ #else
+ public:
+ 	unsigned char *lfb;
+-	void enableManualBlit();
+-	void disableManualBlit();
+-	int showConsole(int state);
+ 	int SetMode(int xRes, int yRes, int bpp);
+ 	void getMode(int &xres, int &yres, int &bpp);
+ 	int Available() { return available; }
+@@ -53,6 +58,16 @@
  	int PutCMAP();
  #endif
  	static fbClass *getInstance();
-+#ifdef ENABLE_LIBEPLAYER3
++//#if defined ENABLE_LIBEPLAYER3
 +//	"hack" for libeplayer3 fb access
 +	int getFD() { return fbFd; }
 +	unsigned char * getLFB_Direct() { return lfb; }
 +	int getScreenResX() { return xRes; }
 +	int getScreenResY() { return yRes; }
-+#endif
-+#if defined(__sh__)
++//#endif
 +	void clearFBblit();
 +	int getFBdiff(int ret);
 +	void setFBdiff(int top, int right, int left, int bottom);
-+#endif
  
  	int lock();
  	void unlock();
 --- enigma2.org/lib/gdi/font.cpp
 +++ enigma2/lib/gdi/font.cpp
-@@ -26,6 +26,9 @@
+@@ -26,6 +26,11 @@
  #include <lib/base/init.h>
  #include <lib/base/init_num.h>
  
 +// undefine macro to fix build
 +// against fribidi 0.19.7+
++#if defined HAVE_CONFIG_H
 +#undef HAVE_CONFIG_H
++#endif
  #include <fribidi/fribidi.h>
  
  #include <map>
---- enigma2.org/lib/gdi/font.h
-+++ enigma2/lib/gdi/font.h
-@@ -152,8 +152,8 @@
- 	void calc_bbox();
- public:
- 	eTextPara(eRect area, ePoint start=ePoint(-1, -1))
--		: current_font(0), replacement_font(0), current_face(0), replacement_face(0),
--		fallback_font(0), fallback_face(0),
-+		: current_font(0), replacement_font(0), fallback_font(0),
-+		current_face(0), replacement_face(0), fallback_face(0),
- 		area(area), cursor(start), maximum(0, 0), left(start.x()), charCount(0), totalheight(0),
- 		bboxValid(0), doTopBottomReordering(false)
- 	{
 --- enigma2.org/lib/gdi/gfbdc.cpp
 +++ enigma2/lib/gdi/gfbdc.cpp
 @@ -25,8 +25,8 @@
@@ -3474,16 +4046,16 @@
  		/* fallback to a decent default */
 -		xres = 720;
 -		yres = 576;
-+		xres = 1280; //j00zek lets make HD our default for OpenPLi
++		xres = 1280; //j00zek let us make HD our default for OpenPLi
 +		yres = 720;
  	}
  
  	surface.clut.data = 0;
-@@ -177,14 +177,35 @@
+@@ -177,14 +177,30 @@
  
  void gFBDC::setResolution(int xres, int yres, int bpp)
  {
-+#if defined(__sh__)
+-	if (m_pixmap && (surface.x == xres) && (surface.y == yres) && (surface.bpp == bpp))
 +	/* if xres and yres are negative call SetMode with the latest xres and yres
 +	 * we need that to read the new screen dimensions after a resolution change
 +	 * without changing the framebuffer dimensions
@@ -3493,31 +4065,34 @@
 +	int m_bpp;
 +	fb->getMode(m_xres, m_yres, m_bpp);
 +
-+	if (xres<0 && yres<0 ) {
++	if (xres < 0 && yres < 0)
++	{
 +		fb->SetMode(m_xres, m_yres, bpp);
-+		return;
-+	}
-+#else
- 	if (m_pixmap && (surface.x == xres) && (surface.y == yres) && (surface.bpp == bpp))
  		return;
-+#endif
++	}
  
  	if (gAccel::getInstance())
  		gAccel::getInstance()->releaseAccelMemorySpace();
  
  	fb->SetMode(xres, yres, bpp);
  
-+#if defined(__sh__)
-+	for (int y = 0; y<yres; y++) { // make whole screen transparent
++	for (int y = 0; y < yres; y++)
++	{ // make whole screen transparent
 +		memset(fb->lfb+y*fb->Stride(), 0x00, fb->Stride());
 +	}
-+#endif
  	surface.x = xres;
  	surface.y = yres;
  	surface.bpp = bpp;
 --- enigma2.org/lib/gdi/glcddc.cpp
 +++ enigma2/lib/gdi/glcddc.cpp
-@@ -6,6 +6,21 @@
+@@ -1,19 +1,40 @@
+ #include <lib/gdi/glcddc.h>
+ #include <lib/gdi/lcd.h>
++#ifndef NO_LCD
+ #include <lib/gdi/fblcd.h>
++#endif
+ #include <lib/base/init.h>
+ #include <lib/base/init_num.h>
  
  gLCDDC *gLCDDC::instance;
  
@@ -3538,8 +4113,20 @@
 +
  gLCDDC::gLCDDC()
  {
++#ifndef NO_LCD
  	lcd = new eFbLCD();
-@@ -39,11 +54,18 @@
+ 	if (!lcd->detected())
+ 	{
+ 		delete lcd;
+ 		lcd = new eDBoxLCD();
+ 	}
++#else
++	lcd = new eDBoxLCD();
++#endif
+ 	instance = this;
+ 
+ 	update = 1;
+@@ -39,11 +60,18 @@
  	eDebug("[gLCDDC] resolution: %dx%dx%d stride=%d", surface.x, surface.y, surface.bpp, surface.stride);
  
  	m_pixmap = new gPixmap(&surface);
@@ -3558,9 +4145,28 @@
  	if (surface.clut.data)
  		delete[] surface.clut.data;
  	instance = 0;
-@@ -70,7 +92,15 @@
+@@ -53,6 +81,7 @@
+ {
+ 	switch (o->opcode)
+ 	{
++#ifndef NO_LCD
+ 	case gOpcode::setPalette:
+ 	{
+ 		gDC::exec(o);
+@@ -69,8 +98,26 @@
+ 		delete o->parm.renderText;
  		break;
  #endif
++#else
++	case gOpcode::renderText:
++		if (o->parm.renderText->text)
++		{
++			lcd->renderText(o->parm.renderText->text);
++			free(o->parm.renderText->text);
++		}
++		delete o->parm.renderText;
++		break;
++#endif
  	case gOpcode::flush:
 +#ifdef HAVE_GRAPHLCD
 +		if (update)
@@ -3576,19 +4182,39 @@
  		break;
 --- enigma2.org/lib/gdi/glcddc.h
 +++ enigma2/lib/gdi/glcddc.h
-@@ -10,6 +10,9 @@
- 	static gLCDDC *instance;
+@@ -11,6 +11,9 @@
  	int update;
  	void exec(const gOpcode *opcode);
+ 	gUnmanagedSurface surface;
 +#ifdef HAVE_GRAPHLCD
 +	struct timespec last_update;
 +#endif
- 	gUnmanagedSurface surface;
  public:
  	gLCDDC();
+ 	~gLCDDC();
 --- enigma2.org/lib/gdi/gpixmap.cpp
 +++ enigma2/lib/gdi/gpixmap.cpp
-@@ -222,11 +222,13 @@
+ static bool is_a_candidate_for_accel(const gUnmanagedSurface* surface)
+ {
+ 	if (surface->stride < 48)
++	{
+ 		return false;
++	}
+ 	switch (surface->bpp)
+ 	{
+ 		case 8:
+ 		case 32:
++		{
+ 			return (surface->y * surface->stride) >= GFX_SURFACE_ACCELERATION_THRESHOLD;
++		}
+ 		default:
++		{
+ 			return false;
++		}
+ 	}
+ }
+ 
+@@ -222,11 +228,13 @@
  	if (data)
  	{
  		delete [] (unsigned char*)data;
@@ -3602,27 +4228,49 @@
  	}
  }
  
-@@ -270,6 +272,9 @@
+@@ -242,8 +250,9 @@
+ 		if (surface->bpp == 8)
+ 		{
+ 			for (int y=area.top(); y<area.bottom(); y++)
+-		 		memset(((__u8*)surface->data)+y*surface->stride+area.left(), color.color, area.width());
+-		} else if (surface->bpp == 16)
++		 		memset(((__u8 *)surface->data) + y * surface->stride + area.left(), color.color, area.width());
++		}
++	 else if (surface->bpp == 16)
+ 		{
+ 			uint32_t icol;
+ 
+@@ -270,9 +279,14 @@
  			if (surface->clut.data && color < surface->clut.colors)
  				col = surface->clut.data[color].argb();
  			else
-+#if defined(__sh__)
-+if ((col&0xFF000000) == 0xFF000000) col = 0xFF000000;
-+#endif
++			{
++				if ((col&0xFF000000) == 0xFF000000)
++				{
++					col = 0xFF000000;
++				}
  				col = 0x10101 * color;
+-
+-			col^=0xFF000000;
++			}
++			col ^= 0xFF000000;
  
- 			col^=0xFF000000;
-@@ -327,6 +332,9 @@
+ #ifdef GPIXMAP_DEBUG
+ 			Stopwatch s;
+@@ -327,7 +341,11 @@
  			uint32_t col;
  
  			col = color.argb();
-+#if defined(__sh__)
-+if ((col&0xFF000000) == 0xFF000000) col = 0xFF000000;
-+#endif
- 			col^=0xFF000000;
+-			col^=0xFF000000;
++			if ((col & 0xFF000000) == 0xFF000000)
++			{
++				col = 0xFF000000;
++			}
++			col ^= 0xFF000000;
  
  #ifdef GPIXMAP_DEBUG
-@@ -590,7 +598,8 @@
+ 			Stopwatch s;
+@@ -615,7 +633,8 @@
  		Stopwatch s;
  #endif
  		if (accel) {
@@ -3632,7 +4280,7 @@
  #ifdef GPIXMAP_DEBUG
  				s.stop();
  				eDebug("[gPixmap] [BLITBENCH] accel blit (%d bytes) took %u us", srcarea.surface() * src.surface->bypp, s.elapsed_us());
-@@ -979,6 +988,7 @@
+@@ -1004,6 +1023,7 @@
  	}
  
  	delete [] lookup;
@@ -3642,19 +4290,83 @@
  static inline int sgn(int a)
 --- enigma2.org/lib/gdi/lcd.cpp
 +++ enigma2/lib/gdi/lcd.cpp
-@@ -69,6 +69,7 @@
+@@ -57,6 +57,7 @@
+ 	locked = 0;
+ }
+ 
++#ifndef NO_LCD
+ #ifdef HAVE_TEXTLCD
+ void eLCD::renderText(ePoint start, const char *text)
+ {
+@@ -71,10 +72,18 @@
+ 	}
  }
  #endif
- 
+-
++#else
++void eLCD::renderText(const char *text)
++{
++	//eDebug("[LCD] text: %s", text);
++	vfd->vfd_write_string(text, true);
++}
++#endif
++
 +#ifndef HAVE_GRAPHLCD
  eDBoxLCD::eDBoxLCD()
  {
- 	int xres = 132, yres = 64, bpp = 8;
-@@ -301,3 +302,128 @@
+-	int xres = 132, yres = 64, bpp = 8;
++	int xres = 32, yres = 32, bpp = 8;
+ 	flipped = false;
+ 	inverted = 0;
+ 	lcd_type = 0;
+@@ -133,6 +142,12 @@
+ 		setSize(xres, yres, bpp);
+ 	}
+ #endif
++	instance = this;
++
++	setSize(xres, yres, bpp);
++#ifdef NO_LCD
++	vfd = new evfd;
++#endif
+ }
+ 
+ void eDBoxLCD::setInverted(unsigned char inv)
+@@ -210,15 +225,20 @@
+ 
+ eDBoxLCD::~eDBoxLCD()
+ {
++#ifndef NO_LCD
+ 	if (lcdfd >= 0)
+ 	{
+ 		close(lcdfd);
+ 		lcdfd = -1;
+ 	}
++#else
++	delete vfd;
++#endif
+ }
+ 
+ void eDBoxLCD::update()
+ {
++#ifndef NO_LCD
+ #ifndef HAVE_TEXTLCD
+ 	if (lcdfd < 0)
+ 		return;
+@@ -298,9 +318,148 @@
+ 		write(lcdfd, raw, 64 * 64);
+ 	}
+ #endif
++#endif
+ }
+ 
+ void eDBoxLCD::dumpLCD(bool png)
  {
  	return;
  }
++
 +#else
++
 +void eDBoxLCD::setFlipped(bool onoff)
 +{
 +	flipped = onoff;
@@ -3744,6 +4456,17 @@
 +	return(0);
 +}
 +
++eDBoxLCD::~eDBoxLCD()
++{
++	eDebug("eDBoxLCD::~eDBoxLCD");
++}
++
++eDBoxLCD *eDBoxLCD::getInstance()
++{
++	eDebug("eDBoxLCD::getInstance");
++	return instance;
++}
++
 +void eDBoxLCD::update()
 +{
 +	if (lcdfd == 1)
@@ -3752,11 +4475,11 @@
 +		for (int x = 0; x < width; x++)
 +			for (int y = 0; y < height; y++)
 +			{
-+				__u16 *buf16  = (__u16*) _buffer;
++				__u16 *buf16  = (__u16 *) _buffer;
 +#if BYTE_ORDER == LITTLE_ENDIAN
-+				__u16 col16 = bswap_16(*((__u16*)(((__u16*)buf16) + y * width + x)));
++				__u16 col16 = bswap_16(*((__u16 *)(((__u16*)buf16) + y * width + x)));
 +#else
-+				__u16 col16 = *((__u16*)(((__u16*)buf16) + y * width + x));
++				__u16 col16 = *((__u16*)(((__u16 *)buf16) + y * width + x));
 +#endif
 +				__u8 red, green, blue, alpha; 
 +				__u32 color32;
@@ -3781,10 +4504,11 @@
 +#endif
 --- enigma2.org/lib/gdi/lcd.h
 +++ enigma2/lib/gdi/lcd.h
-@@ -6,6 +6,17 @@
+@@ -5,6 +5,21 @@
+ #include <lib/gdi/esize.h>
  #include <lib/gdi/erect.h>
  #include "gpixmap.h"
- 
++
 +#ifdef HAVE_GRAPHLCD
 +#include <glcdgraphics/bitmap.h>
 +#include <glcdgraphics/glcd.h>
@@ -3796,10 +4520,36 @@
 +#include <byteswap.h>
 +#endif
 +
++#ifdef NO_LCD
++#include <lib/driver/vfd.h>
++#endif
+ 
  #define LCD_CONTRAST_MIN 0
  #define LCD_CONTRAST_MAX 63
- #define LCD_BRIGHTNESS_MIN 0
-@@ -59,6 +70,13 @@
+@@ -26,6 +41,9 @@
+ 	int locked;
+ 	static eLCD *instance;
+ 	void setSize(int xres, int yres, int bpp);
++#ifdef NO_LCD
++	evfd *vfd;
++#endif
+ #endif
+ public:
+ 	static eLCD *getInstance();
+@@ -49,8 +67,12 @@
+ 	int stride() { return _stride; };
+ 	virtual eSize size() { return res; };
+ 	virtual void update()=0;
++#ifndef NO_LCD
+ #ifdef HAVE_TEXTLCD
+ 	virtual void renderText(ePoint start, const char *text);
++#endif
++#else
++	virtual void renderText(const char *text);
+ #endif
+ #endif
+ };
+@@ -59,6 +81,13 @@
  {
  	unsigned char inverted;
  	bool flipped;
@@ -3815,7 +4565,15 @@
  	~eDBoxLCD();
 --- enigma2.org/lib/gdi/Makefile.inc
 +++ enigma2/lib/gdi/Makefile.inc
-@@ -20,7 +20,8 @@
+@@ -4,7 +4,6 @@
+ 
+ gdi_libenigma_gdi_a_SOURCES = \
+ 	gdi/accel.cpp \
+-	gdi/bcm.cpp \
+ 	gdi/compositing.cpp \
+ 	gdi/epng.cpp \
+ 	gdi/erect.cpp \
+@@ -20,7 +19,8 @@
  	gdi/lcd.cpp \
  	gdi/picexif.cpp \
  	gdi/picload.cpp \
@@ -3825,11 +4583,301 @@
  
  gdiincludedir = $(pkgincludedir)/lib/gdi
  gdiinclude_HEADERS = \
+--- enigma2.org/lib/gdi/picload.cpp
++++ enigma2/lib/gdi/picload.cpp
+@@ -4,13 +4,19 @@
+ 
+ #include <lib/base/cfile.h>
+ #include <lib/gdi/picload.h>
++#include <libmme_image/libmmeimage.h>
+ 
+ extern "C" {
+ #define HAVE_BOOLEAN
+ #define boolean int
++#if defined HAVE_STDLIB_H
++#undef HAVE_STDLIB_H
++#endif
+ #include <jpeglib.h>
+ #include <gif_lib.h>
+ }
++
++//#define HARDWARE_DECODING
+ 
+ extern const uint32_t crc32_table[256];
+ 
+@@ -35,7 +41,7 @@
+ 		return orgin;
+ 	}
+ 	const int stride = 3 * dx;
+-	#pragma omp parallel for
++//	#pragma omp parallel for
+ 	for (int j = 0; j < dy; j++)
+ 	{
+ 		unsigned char* p = cr + (j * stride);
+@@ -528,12 +534,9 @@
+ 	ColorMapObject *cmap;
+ 	int cmaps;
+ 	int extcode;
+-
+-#if GIFLIB_MAJOR > 5 || GIFLIB_MAJOR == 5 && GIFLIB_MINOR >= 1
+-	gft = DGifOpenFileName(filepara->file, &extcode);
+-#else
+-	gft = DGifOpenFileName(filepara->file);
+-#endif
++	int GifLastError; 
++
++	gft = DGifOpenFileName(filepara->file, &GifLastError); 
+ 	if (gft == NULL)
+ 		return;
+ 	do
+@@ -623,19 +626,11 @@
+ 	}
+ 	while (rt != TERMINATE_RECORD_TYPE);
+ 
+-#if GIFLIB_MAJOR > 5 || GIFLIB_MAJOR == 5 && GIFLIB_MINOR >= 1
+-	DGifCloseFile(gft, &extcode);
+-#else
+-	DGifCloseFile(gft);
+-#endif
++	DGifCloseFile(gft, &GifLastError);
+ 	return;
+ ERROR_R:
+ 	eDebug("[ePicLoad] <Error gif>");
+-#if GIFLIB_MAJOR > 5 || GIFLIB_MAJOR == 5 && GIFLIB_MINOR >= 1
+-	DGifCloseFile(gft, &extcode);
+-#else
+-	DGifCloseFile(gft);
+-#endif
++	DGifCloseFile(gft, &GifLastError);
+ }
+ 
+ //---------------------------------------------------------------------------------------------
+@@ -700,9 +695,10 @@
+ 
+ void ePicLoad::decodePic()
+ {
++	getExif(m_filepara->file, m_filepara->id);
++#ifndef HARDWARE_DECODING
+ 	eDebug("[ePicLoad] decode picture... %s", m_filepara->file);
+ 
+-	getExif(m_filepara->file, m_filepara->id);
+ 	switch(m_filepara->id)
+ 	{
+ 		case F_PNG:	png_load(m_filepara, m_conf.background);
+@@ -714,6 +710,37 @@
+ 		case F_GIF:	gif_load(m_filepara);
+ 				break;
+ 	}
++#else
++	if (m_filepara->id == F_JPEG)
++	{
++		eDebug("[ePicLoad] hardware decode picture... %s", m_filepara->file);
++		m_filepara->pic_buffer = NULL;
++		FILE *fp;
++
++		if (!(fp = fopen(m_filepara->file, "rb")))
++			return; // software decode won't find the file either...
++
++		if (get_jpeg_img_size(fp, (unsigned int *)&m_filepara->ox, (unsigned int *)&m_filepara->oy) == LIBMMEIMG_SUCCESS)
++		{
++			// to get the best picture quality even if it rotated later
++			float scale = (float)(m_filepara->max_x > m_filepara->max_y ? m_filepara->max_x : m_filepara->max_y) / (m_filepara->ox > m_filepara->oy ? m_filepara->ox : m_filepara->oy);
++			int imx = (int)(m_filepara->ox * scale);
++			int imy = (int)(m_filepara->oy * scale);
++
++			if (decode_jpeg(fp, m_filepara->ox, m_filepara->oy, imx, imy, (char **)&m_filepara->pic_buffer) == LIBMMEIMG_SUCCESS)
++			{
++				m_filepara->ox = imx;
++				m_filepara->oy = imy;
++				fclose(fp);
++				return;
++			}
++		}
++		eDebug("[ePicLoad] hardware decode error");
++		fclose(fp);
++		m_filepara->pic_buffer = NULL;
++	}
++
++#endif
+ }
+ 
+ void ePicLoad::decodeThumb()
+@@ -726,6 +753,7 @@
+ 	std::string cachedir = "/.Thumbnails";
+ 
+ 	getExif(m_filepara->file, m_filepara->id, 1);
++
+ 	if (m_exif && m_exif->m_exifinfo->IsExif)
+ 	{
+ 		if (m_exif->m_exifinfo->Thumnailstate == 2)
+@@ -782,8 +810,53 @@
+ 		}
+ 	}
+ 
+-	switch (m_filepara->id)
+-	{
++#if defined HARDWARE_DECODING
++	int hw_decoded = 0;
++	if (m_filepara->id == F_JPEG)
++	{
++		eDebug("[Picload] hardware decode picture... %s",m_filepara->file);
++		m_filepara->pic_buffer = NULL;
++		FILE *fp;
++
++		if (!(fp = fopen(m_filepara->file, "rb")))
++			return; // software decode won't find the file either...
++		
++		if (get_jpeg_img_size(fp, (unsigned int *)&m_filepara->ox, (unsigned int *)&m_filepara->oy) == LIBMMEIMG_SUCCESS)
++		{
++			int imx, imy;
++			if (m_filepara->ox <= m_filepara->oy)
++			{
++				imy = m_conf.thumbnailsize;
++				imx = (int)( (m_conf.thumbnailsize * ((double)m_filepara->ox)) / ((double)m_filepara->oy) );
++			}
++			else
++			{
++				imx = m_conf.thumbnailsize;
++				imy = (int)( (m_conf.thumbnailsize * ((double)m_filepara->oy)) / ((double)m_filepara->ox) );
++			}
++			
++			if (decode_jpeg(fp, m_filepara->ox, m_filepara->oy, imx, imy, (char **)&m_filepara->pic_buffer) == LIBMMEIMG_SUCCESS)
++			{
++				m_filepara->ox = imx;
++				m_filepara->oy = imy;
++				fclose(fp);
++				hw_decoded = 1;
++			}
++		}
++
++		if (!hw_decoded)
++		{
++			eDebug("hardware decode error");
++		
++			fclose(fp);
++		}
++	}
++
++	if (!hw_decoded)
++#endif
++	{
++		switch(m_filepara->id)
++		{
+ 		case F_PNG:	png_load(m_filepara, m_conf.background, true);
+ 				break;
+ 		case F_JPEG:	m_filepara->pic_buffer = jpeg_load(m_filepara->file, &m_filepara->ox, &m_filepara->oy, m_filepara->max_x, m_filepara->max_y);
+@@ -792,6 +865,7 @@
+ 				break;
+ 		case F_GIF:	gif_load(m_filepara, true);
+ 				break;
++		}
+ 	}
+ 	//eDebug("[ePicLoad] getThumb picture loaded %s", m_filepara->file);
+ 
+@@ -807,25 +881,32 @@
+ 				::mkdir(cachedir.c_str(), 0755);
+ 
+ 			// Resize for Thumbnail
+-			int imx, imy;
+-			if (m_filepara->ox <= m_filepara->oy)
+-			{
+-				imy = m_conf.thumbnailsize;
+-				imx = (int)( (m_conf.thumbnailsize * ((double)m_filepara->ox)) / ((double)m_filepara->oy) );
+-			}
+-			else
+-			{
+-				imx = m_conf.thumbnailsize;
+-				imy = (int)( (m_conf.thumbnailsize * ((double)m_filepara->oy)) / ((double)m_filepara->ox) );
+-			}
+-
+-			// eDebug("[ePicLoad] getThumb resize from %dx%d to %dx%d", m_filepara->ox, m_filepara->oy, imx, imy);
+-			m_filepara->pic_buffer = color_resize(m_filepara->pic_buffer, m_filepara->ox, m_filepara->oy, imx, imy);
+-			m_filepara->ox = imx;
+-			m_filepara->oy = imy;
++#if defined HARDWARE_DECODING
++			if (!hw_decoded)
++#endif
++			{
++				int imx, imy;
++				if (m_filepara->ox <= m_filepara->oy)
++				{
++					imy = m_conf.thumbnailsize;
++					imx = (int)((m_conf.thumbnailsize * ((double)m_filepara->ox)) / ((double)m_filepara->oy));
++				}
++				else
++				{
++					imx = m_conf.thumbnailsize;
++					imy = (int)((m_conf.thumbnailsize * ((double)m_filepara->oy)) / ((double)m_filepara->ox));
++				}
++
++				// eDebug("[ePicLoad] getThumb resize from %dx%d to %dx%d", m_filepara->ox, m_filepara->oy, imx, imy);
++				m_filepara->pic_buffer = color_resize(m_filepara->pic_buffer, m_filepara->ox, m_filepara->oy, imx, imy);
++				m_filepara->ox = imx;
++				m_filepara->oy = imy;
++			}
+ 
+ 			if (jpeg_save(cachefile.c_str(), m_filepara->ox, m_filepara->oy, m_filepara->pic_buffer))
++			{
+ 				eDebug("[ePicLoad] getThumb: error saving cachefile");
++			}
+ 		}
+ 	}
+ }
+@@ -936,7 +1017,7 @@
+ {
+ 	ePyObject list;
+ 
+-	// FIXME : m_filepara destroyed by getData. Need refactor this but plugins rely in it :(
++	// FIXME : m_filepara destroyed by getData. Need refactor this but plugins rely on it :(
+ 	getExif(filename, m_filepara ? m_filepara->id : -1);
+ 	if(m_exif && m_exif->m_exifinfo->IsExif)
+ 	{
+@@ -1095,11 +1176,11 @@
+ 					*row_buffer++ = background;
+ 			}
+ 			int y;
+-			#pragma omp parallel for
++//			#pragma omp parallel for
+ 			for (y = 1; y < yoff; ++y) // copy from first line
+ 				memcpy(tmp_buffer + y*surface->stride, tmp_buffer,
+ 					m_filepara->max_x * surface->bypp);
+-			#pragma omp parallel for
++//			#pragma omp parallel for
+ 			for (y = yoff + scry; y < m_filepara->max_y; ++y)
+ 				memcpy(tmp_buffer + y * surface->stride, tmp_buffer,
+ 					m_filepara->max_x * surface->bypp);
+@@ -1124,7 +1205,7 @@
+ 				for (x = xoff + scrx; x < m_filepara->max_x; ++x) // fill right side of first line
+ 					*row_buffer++ = background;
+ 			}
+-			#pragma omp parallel for
++//			#pragma omp parallel for
+ 			for (int y = yoff + 1; y < scry; ++y) { // copy from first line
+ 				memcpy(tmp_buffer + y*surface->stride,
+ 					tmp_buffer + yoff * surface->stride,
+@@ -1207,7 +1288,7 @@
+ 	// Fill surface with image data, resize and correct for orientation on the fly
+ 	if (m_filepara->bits == 8)
+ 	{
+-		#pragma omp parallel for
++//		#pragma omp parallel for
+ 		for (int y = 0; y < scry; ++y) {
+ 			const unsigned char *irow, *irowy = origin + iyfac * (int)(y * yscale);
+ 			unsigned char *srow = tmp_buffer + surface->stride * y;
+@@ -1221,7 +1302,7 @@
+ 	}
+ 	else // 24-bit images
+ 	{
+-		#pragma omp parallel for
++//		#pragma omp parallel for
+ 		for (int y = 0; y < scry; ++y) {
+ 			const unsigned char *irow, *irowy = origin + iyfac * (int)(yscale * y);
+ 			unsigned char *srow = tmp_buffer + surface->stride * y;
 --- enigma2.org/lib/gdi/stmfb.cpp
 +++ enigma2/lib/gdi/stmfb.cpp
-@@ -0,0 +1,75 @@
+@@ -0,0 +1,73 @@
 +/*
-+  Interface to the Dreambox dm800/dm8000 proprietary accel interface.
++  Interface to the STM Framebuffer proprietary accel interface.
 +*/
 +
 +#include <stdio.h>
@@ -3845,7 +4893,6 @@
 +#include <lib/base/ebase.h>
 +
 +static int fb_fd;
-+//static int exec_list(void);
 +
 +int stmfb_accel_init(void)
 +{
@@ -3901,24 +4948,77 @@
 +		int x, int y, int width, int height,
 +		unsigned long color)
 +{
-+//	printf("unimplemented bcm_accel_fill\n");
 +}
+--- enigma2.org/lib/gui/ewidget.cpp
++++ enigma2/lib/gui/ewidget.cpp
+@@ -106,7 +106,10 @@
+ 	res.moveBy(abspos);
+ //	eDebug("[eWidget] region to invalidate:");
+ //	dumpRegion(res);
+-	root->m_desktop->invalidate(res, this, target_layer);
++	if (root && root->m_desktop)
++	{
++		root->m_desktop->invalidate(res, this, target_layer);
++	}
+ }
+ 
+ void eWidget::show()
+@@ -140,11 +143,14 @@
+ 		abspos += root->position();
+ 	}
+ 
+-	root->m_desktop->recalcClipRegions(root);
+-
+-	gRegion abs = m_visible_with_childs;
+-	abs.moveBy(abspos);
+-	root->m_desktop->invalidate(abs, this, target_layer);
++	if (root && root->m_desktop)
++	{
++		root->m_desktop->recalcClipRegions(root);
++
++		gRegion abs = m_visible_with_childs;
++		abs.moveBy(abspos);
++		root->m_desktop->invalidate(abs, this, target_layer);
++	}
+ }
+ 
+ void eWidget::hide()
+@@ -174,11 +180,14 @@
+ 	}
+ 	ASSERT(root->m_desktop);
+ 
+-	gRegion abs = m_visible_with_childs;
+-	abs.moveBy(abspos);
+-
+-	root->m_desktop->recalcClipRegions(root);
+-	root->m_desktop->invalidate(abs);
++        if (root && root->m_desktop)
++	{
++		gRegion abs = m_visible_with_childs;
++		abs.moveBy(abspos);
++
++		root->m_desktop->recalcClipRegions(root);
++		root->m_desktop->invalidate(abs);
++	}
+ }
+ 
+ void eWidget::raise()
 --- enigma2.org/lib/python/Components/Converter/RemainingToText.py
 +++ enigma2/lib/python/Components/Converter/RemainingToText.py
-@@ -8,6 +8,9 @@
- 	IN_SECONDS = 3
+@@ -9,6 +9,9 @@
  	PROGRESS = 4
  	WITH_SECONDSPROGRESS = 5
+ 	ONLY_MINUTES = 6
 +#+++>
-+	FOLLOW = 6
++	FOLLOW = 7
 +#+++<
  
  	def __init__(self, type):
  		Converter.__init__(self, type)
-@@ -21,6 +24,10 @@
- 			self.type = self.PROGRESS
- 		elif type == "WithSecondsProgress":
+@@ -24,6 +27,10 @@
  			self.type = self.WITH_SECONDSPROGRESS
+ 		elif type == "OnlyMinutes":
+ 			self.type = self.ONLY_MINUTES
 +#+++>
 +		elif type == "FOLLOW":
 +			self.type = self.FOLLOW
@@ -3926,7 +5026,7 @@
  		else:
  			self.type = self.DEFAULT
  
-@@ -52,6 +59,13 @@
+@@ -56,6 +63,13 @@
  					return "%s%d:%02d" % (prefix, hours, minutes)
  				elif self.type == self.IN_SECONDS:
  					return prefix+str(tsecs)
@@ -3937,7 +5037,7 @@
 +					else:
 +						return "%d min" % (duration / 60)
 +#+++<
- 				elif self.type == self.DEFAULT:
+ 				elif self.type == self.DEFAULT or self.type == self.ONLY_MINUTES:
  					if remaining <= duration:
  						prefix = "+"
 --- enigma2.org/lib/python/Components/Harddisk.py
@@ -4227,7 +5327,7 @@
  		return job
  
  	def initialize(self):
-@@ -650,16 +718,19 @@
+@@ -650,16 +724,19 @@
  				self.devices_scanned_on_init.append((blockdev, removable, is_cdrom, medium_found))
  
  	def getAutofsMountpoint(self, device):
@@ -4251,7 +5351,7 @@
  		return None
  
  	def addHotplugPartition(self, device, physdev = None):
-@@ -675,6 +746,10 @@
+@@ -675,6 +752,10 @@
  		error, blacklisted, removable, is_cdrom, partitions, medium_found = self.getBlockDevInfo(device)
  		if not blacklisted and medium_found:
  			description = self.getUserfriendlyDeviceName(device, physdev)
@@ -4262,7 +5362,7 @@
  			p = Partition(mountpoint = self.getMountpoint(device), description = description, force_mounted = True, device = device)
  			self.partitions.append(p)
  			if p.mountpoint: # Plugins won't expect unmounted devices
-@@ -767,7 +842,7 @@
+@@ -767,7 +848,7 @@
  		try:
  			description = readFile("/sys" + phys + "/model")
  		except IOError, s:
@@ -4271,7 +5371,7 @@
  		# not wholedisk and not partition 1
  		if part and part != 1:
  			description += _(" (Partition %d)") % part
-@@ -808,7 +883,7 @@
+@@ -808,7 +889,7 @@
  			dev = self.hdd.disk_path.split('/')[-1]
  			open('/dev/nomount.%s' % dev, "wb").close()
  		except Exception, e:
@@ -4280,7 +5380,7 @@
  		self.setTool('umount')
  		self.args.append('-f')
  		for dev in self.hdd.enumMountDevices():
-@@ -816,7 +891,7 @@
+@@ -816,7 +897,7 @@
  			self.postconditions.append(Task.ReturncodePostcondition())
  			self.mountpoints.append(dev)
  		if not self.mountpoints:
@@ -4289,7 +5389,7 @@
  			self.cmd = 'true'
  			self.args = [self.cmd]
  	def afterRun(self):
-@@ -824,7 +899,7 @@
+@@ -824,7 +905,7 @@
  			try:
  				os.rmdir(path)
  			except Exception, ex:
@@ -4298,7 +5398,7 @@
  
  class MountTask(Task.LoggingTask):
  	def __init__(self, job, hdd):
-@@ -835,7 +910,7 @@
+@@ -835,7 +916,7 @@
  			dev = self.hdd.disk_path.split('/')[-1]
  			os.unlink('/dev/nomount.%s' % dev)
  		except Exception, e:
@@ -4307,7 +5407,7 @@
  		# try mounting through fstab first
  		if self.hdd.mount_device is None:
  			dev = self.hdd.partitionPath("1")
-@@ -864,7 +939,7 @@
+@@ -864,7 +945,7 @@
  	def prepare(self):
  		self.fsck_state = None
  	def processOutput(self, data):
@@ -4388,7 +5488,7 @@
  
  		if 'ip' not in data:
  			data['dhcp'] = True
-@@ -567,16 +575,18 @@
+@@ -568,16 +576,18 @@
  			return True
  
  		# r871x_usb_drv on kernel 2.6.12 is not identifiable over /sys/class/net/'ifacename'/wireless so look also inside /proc/net/wireless
@@ -4432,37 +5532,81 @@
  		if x[0] == orbpos:
 --- enigma2-nightly.org/lib/python/Components/SystemInfo.py
 +++ enigma2-nightly/lib/python/Components/SystemInfo.py
-@@ -61,7 +61,7 @@
+@@ -37,28 +37,28 @@
+ SystemInfo["ZapMode"] = fileCheck("/proc/stb/video/zapmode") or fileCheck("/proc/stb/video/zapping_mode")
+ SystemInfo["NumFrontpanelLEDs"] = countFrontpanelLEDs()
+ SystemInfo["FrontpanelDisplay"] = fileExists("/dev/dbox/oled0") or fileExists("/dev/dbox/lcd0")
+-SystemInfo["LCDsymbol_circle_recording"] = fileCheck("/proc/stb/lcd/symbol_circle") or HardwareInfo().get_device_model() in ("hd51", "vs1500") and fileCheck("/proc/stb/lcd/symbol_recording")
++SystemInfo["LCDsymbol_circle_recording"] = fileCheck("/proc/stb/lcd/symbol_circle")
+ SystemInfo["LCDsymbol_timeshift"] = fileCheck("/proc/stb/lcd/symbol_timeshift")
+ SystemInfo["LCDshow_symbols"] = (HardwareInfo().get_device_model().startswith("et9") or HardwareInfo().get_device_model() in ("hd51", "vs1500")) and fileCheck("/proc/stb/lcd/show_symbols")
+ SystemInfo["LCDsymbol_hdd"] = HardwareInfo().get_device_model() in ("hd51", "vs1500") and fileCheck("/proc/stb/lcd/symbol_hdd")
+ SystemInfo["FrontpanelDisplayGrayscale"] = fileExists("/dev/dbox/oled0")
+-SystemInfo["DeepstandbySupport"] = HardwareInfo().get_device_name() != "dm800"
++SystemInfo["DeepstandbySupport"] = True
+ SystemInfo["Fan"] = fileCheck("/proc/stb/fp/fan")
+ SystemInfo["FanPWM"] = SystemInfo["Fan"] and fileCheck("/proc/stb/fp/fan_pwm")
+ SystemInfo["PowerLED"] = fileCheck("/proc/stb/power/powerled")
+ SystemInfo["StandbyLED"] = fileCheck("/proc/stb/power/standbyled")
+ SystemInfo["SuspendLED"] = fileCheck("/proc/stb/power/suspendled")
+ SystemInfo["Display"] = SystemInfo["FrontpanelDisplay"] or SystemInfo["StandbyLED"]
+-SystemInfo["PowerOffDisplay"] = HardwareInfo().get_device_model() not in "formuler1" and fileCheck("/proc/stb/power/vfd") or fileCheck("/proc/stb/lcd/vfd")
++SystemInfo["PowerOffDisplay"] = fileCheck("/proc/stb/power/vfd") or fileCheck("/proc/stb/lcd/vfd")
+ SystemInfo["WakeOnLAN"] = not HardwareInfo().get_device_model().startswith("et8000") and fileCheck("/proc/stb/power/wol") or fileCheck("/proc/stb/fp/wol")
+ SystemInfo["HasExternalPIP"] = not (HardwareInfo().get_device_model().startswith("et9") or HardwareInfo().get_device_model() in ('e4hd',)) and fileCheck("/proc/stb/vmpeg/1/external")
+ SystemInfo["VideoDestinationConfigurable"] = fileExists("/proc/stb/vmpeg/0/dst_left")
+ SystemInfo["hasPIPVisibleProc"] = fileCheck("/proc/stb/vmpeg/1/visible")
+ SystemInfo["MaxPIPSize"] = HardwareInfo().get_device_model() in ('hd51', 'h7', 'vs1500', 'e4hd') and (360, 288) or (540, 432)
+-SystemInfo["VFD_scroll_repeats"] = not HardwareInfo().get_device_model().startswith("et8500") and fileCheck("/proc/stb/lcd/scroll_repeats")
+-SystemInfo["VFD_scroll_delay"] = not HardwareInfo().get_device_model().startswith("et8500") and fileCheck("/proc/stb/lcd/scroll_delay")
+-SystemInfo["VFD_initial_scroll_delay"] = not HardwareInfo().get_device_model().startswith("et8500") and fileCheck("/proc/stb/lcd/initial_scroll_delay")
+-SystemInfo["VFD_final_scroll_delay"] = not HardwareInfo().get_device_model().startswith("et8500") and fileCheck("/proc/stb/lcd/final_scroll_delay")
++SystemInfo["VFD_scroll_repeats"] = fileCheck("/proc/stb/lcd/scroll_repeats")
++SystemInfo["VFD_scroll_delay"] = fileCheck("/proc/stb/lcd/scroll_delay")
++SystemInfo["VFD_initial_scroll_delay"] = fileCheck("/proc/stb/lcd/initial_scroll_delay")
++SystemInfo["VFD_final_scroll_delay"] = fileCheck("/proc/stb/lcd/final_scroll_delay")
+ SystemInfo["LcdLiveTV"] = fileCheck("/proc/stb/fb/sd_detach") or fileCheck("/proc/stb/lcd/live_enable")
+ SystemInfo["LcdLiveTVMode"] = fileCheck("/proc/stb/lcd/mode")
+ SystemInfo["LcdLiveDecoder"] = fileCheck("/proc/stb/lcd/live_decoder")
+@@ -67,7 +67,7 @@
  SystemInfo["3DZNorm"] = fileCheck("/proc/stb/fb/znorm") or fileCheck("/proc/stb/fb/primary/zoffset")
  SystemInfo["Blindscan_t2_available"] = fileCheck("/proc/stb/info/vumodel")
  SystemInfo["RcTypeChangable"] = not(HardwareInfo().get_device_model().startswith('et8500') or HardwareInfo().get_device_model().startswith('et7')) and pathExists('/proc/stb/ir/rc/type')
 -SystemInfo["HasFullHDSkinSupport"] = HardwareInfo().get_device_model() not in ("et4000", "et5000", "sh1", "hd500c", "hd1100", "xp1000", "lc")
-+SystemInfo["HasFullHDSkinSupport"] = HardwareInfo().get_device_model() in ("spark", "spark7162", "atevio7500", "fortis_hdbox", "hs7110", "hs7420", "hs7810a", "hs7119", "hs7429", "hs7819")
- SystemInfo["HasForceLNBOn"] = fileCheck("/proc/stb/frontend/fbc/force_lnbon")
- SystemInfo["HasForceToneburst"] = fileCheck("/proc/stb/frontend/fbc/force_toneburst")
++SystemInfo["HasFullHDSkinSupport"] = HardwareInfo().get_device_model() in ("atevio7500", "cuberevo", "cuberevo_mini-fta", "cuberevo-250hd", "cuberevo-mini", "cuberevo-mini2", "cuberevo-2000hd", "cuberevo-3000hd", "cuberevo-9500hd", "hdbox", "hs7110", "hs7420", "hs7810a", "hs7119", "hs7429", "hs7819", "octagon1008", "spark", "spark7162", "tf7700hdpvr", "ufs912", "ufs913")
  SystemInfo["HasBypassEdidChecking"] = fileCheck("/proc/stb/hdmi/bypass_edid_checking")
-@@ -75,15 +75,15 @@
- SystemInfo["HasColordepth"] = fileCheck("/proc/stb/video/hdmi_colordepth")
- SystemInfo["HasFrontDisplayPicon"] = HardwareInfo().get_device_model() in ("vusolo4k", "et8500")
- SystemInfo["Has24hz"] = fileCheck("/proc/stb/video/videomode_24hz")
--SystemInfo["Has2160p"] = fileHas("/proc/stb/video/videomode_preferred", "2160p50")
-+SystemInfo["Has2160p"] = False
+ SystemInfo["HasColorspace"] = fileCheck("/proc/stb/video/hdmi_colorspace")
+ SystemInfo["HasColorspaceSimple"] = SystemInfo["HasColorspace"] and HardwareInfo().get_device_model() in "vusolo4k"
+@@ -83,11 +83,11 @@
  SystemInfo["HasHDMIpreemphasis"] = fileCheck("/proc/stb/hdmi/preemphasis")
  SystemInfo["HasColorimetry"] = fileCheck("/proc/stb/video/hdmi_colorimetry")
  SystemInfo["HasHdrType"] = fileCheck("/proc/stb/video/hdmi_hdrtype")
--SystemInfo["HasHDMI-CEC"] = HardwareInfo().has_hdmi() and fileExists("/usr/lib/enigma2/python/Plugins/SystemPlugins/HdmiCEC/plugin.pyo")
-+SystemInfo["HasHDMI-CEC"] = fileExists("/lib/modules/cec.ko") and fileExists("proc/stb/cec/send")
+-SystemInfo["HasHDMI-CEC"] = HardwareInfo().has_hdmi() and fileExists("/usr/lib/enigma2/python/Plugins/SystemPlugins/HdmiCEC/plugin.pyo") and (fileExists("/dev/cec0") or fileExists("/dev/hdmi_cec") or fileExists("/dev/misc/hdmi_cec0"))
 -SystemInfo["HasYPbPr"] = HardwareInfo().get_device_model() in ("dm8000", "et5000", "et6000", "et6500", "et9000", "et9200", "et9500", "et10000", "formuler1", "mbtwinplus", "spycat", "vusolo", "vuduo", "vuduo2", "vuultimo")
 -SystemInfo["HasScart"] = HardwareInfo().get_device_model() in ("dm8000", "et4000", "et6500", "et8000", "et9000", "et9200", "et9500", "et10000", "formuler1", "hd1100", "hd1200", "hd1265", "hd2400", "vusolo", "vusolo2", "vuduo", "vuduo2", "vuultimo", "vuuno", "xp1000")
 -SystemInfo["HasSVideo"] = HardwareInfo().get_device_model() in ("dm8000")
 -SystemInfo["HasComposite"] = HardwareInfo().get_device_model() not in ("i55", "gbquad4k", "gbue4k", "hd1500", "osnino", "osninoplus", "purehd", "purehdse", "revo4k", "vusolo4k", "vuzero4k")
-+SystemInfo["HasYPbPr"] = HardwareInfo().get_device_model() in ("atevio7500", "cuberevo", "cuberevo_mini", "cuberevo_mini2", "cuberevo_2000hd", "cuberevo_3000hd", "fortis_hdbox", "octagon1008", "hs7420", "hs7429", "ufs912", "ufs913")
-+SystemInfo["HasScart"] = True
++SystemInfo["HasHDMI-CEC"] = fileExists("/lib/modules/cec.ko") and fileExists("proc/stb/cec/send")
++SystemInfo["HasYPbPr"] = HardwareInfo().get_device_model() in ("atevio7500", "cuberevo", "cuberevo-mini-fta", "cuberevo-250hd", "cuberevo-mini", "cuberevo-mini2", "cuberevo-2000hd", "cuberevo-3000hd", "cuberevo-9500hd", "hdbox", "octagon1008", "hs7420", "hs7429", "tf7700hdpvr", "ufs912", "ufs913")
++SystemInfo["HasScart"] = HardwareInfo().get_device_model() not in ("hs7110", "hs7119")
 +SystemInfo["HasSVideo"] = HardwareInfo().get_device_model() in ("cuberevo")
-+SystemInfo["HasComposite"] = HardwareInfo().get_device_model() not in ("cuberevo_mini_fta", "cuberevo_250hd")
++SystemInfo["HasComposite"] = HardwareInfo().get_device_model() not in ("cuberevo-mini-fta", "cuberevo-250hd")
  SystemInfo["HasAutoVolume"] = fileExists("/proc/stb/audio/avl_choices") and fileCheck("/proc/stb/audio/avl")
  SystemInfo["HasAutoVolumeLevel"] = fileExists("/proc/stb/audio/autovolumelevel_choices") and fileCheck("/proc/stb/audio/autovolumelevel")
  SystemInfo["Has3DSurround"] = fileExists("/proc/stb/audio/3d_surround_choices") and fileCheck("/proc/stb/audio/3d_surround")
+@@ -96,9 +96,9 @@
+ SystemInfo["Has3DSurroundSoftLimiter"] = fileExists("/proc/stb/audio/3dsurround_softlimiter_choices") and fileCheck("/proc/stb/audio/3dsurround_softlimiter")
+ SystemInfo["hasXcoreVFD"] = HardwareInfo().get_device_model() in ('osmega','spycat4k','spycat4kmini','spycat4kcombo') and fileCheck("/sys/module/brcmstb_%s/parameters/pt6302_cgram" % HardwareInfo().get_device_model())
+ SystemInfo["HasOfflineDecoding"] = HardwareInfo().get_device_model() not in ('osmini', 'osminiplus', 'et7000mini', 'et11000', 'mbmicro', 'mbtwinplus', 'mbmicrov2', 'et7000', 'et8500')
+-SystemInfo["canFlashWithOfgwrite"] = not(HardwareInfo().get_device_model().startswith("dm") or HardwareInfo().get_device_model() in ("hd60", "hd61"))
+-SystemInfo["canMultiBoot"] = HardwareInfo().get_device_model() in ('hd51', 'h7', 'vs1500', 'e4hd') and (1, 4, "mmcblk0", False) or HardwareInfo().get_device_model() in ('gbue4k', 'gbquad4k') and (3, 3, "mmcblk0", True) or HardwareInfo().get_device_model() in ('osmio4k') and (1, 4, "mmcblk1", True)
+-SystemInfo["canMode12"] = HardwareInfo().get_device_model() in ("hd51", "vs1500") and '192M' or HardwareInfo().get_device_model() in ("h7") and '200M'
++SystemInfo["canFlashWithOfgwrite"] = True
++SystemInfo["canMultiBoot"] = False
++SystemInfo["canMode12"] = False
+ SystemInfo["HDRSupport"] = fileExists("/proc/stb/hdmi/hlg_support_choices") and fileCheck("/proc/stb/hdmi/hlg_support")
+ SystemInfo["CanDownmixAC3"] = fileHas("/proc/stb/audio/ac3_choices", "downmix")
+ SystemInfo["CanDownmixDTS"] = fileHas("/proc/stb/audio/dts_choices", "downmix")
 --- enigma2.org/lib/python/Components/Renderer/Makefile.am
 +++ enigma2/lib/python/Components/Renderer/Makefile.am
 @@ -3,4 +3,4 @@
@@ -4568,7 +5712,7 @@
 +		self.text = text
 --- enigma2.org/lib/python/Components/UsageConfig.py
 +++ enigma2/lib/python/Components/UsageConfig.py
-@@ -283,7 +283,7 @@
+@@ -287,7 +287,7 @@
  
  	config.misc.disable_background_scan = ConfigYesNo(default = False)
  	config.misc.use_ci_assignment = ConfigYesNo(default = False)
@@ -4651,7 +5795,7 @@
 +	plugin.py
 --- enigma2.org/lib/python/Plugins/Extensions/CuberevoVFD/plugin.py
 +++ enigma2/lib/python/Plugins/Extensions/CuberevoVFD/plugin.py
-@@ -0,0 +1,317 @@
+@@ -0,0 +1,338 @@
 +from Screens.Screen import Screen
 +from Screens.MessageBox import MessageBox
 +from Plugins.Plugin import PluginDescriptor
@@ -4672,11 +5816,32 @@
 +from re import compile as re_compile, search as re_search
 +
 +import os
++#Version 190317.1
++
++try:
++	DisplayType = evfd.getInstance().getVfdType()
++	if DisplayType < 13 or DisplayType > 16:
++		DisplayType = None
++except:
++	DisplayType = None
++DisplayTypevfd = DisplayType
++
++if DisplayTypevfd is None:
++	if stb.lower() == 'cuberevo': # 12 character VFD
++		DisplayType = 13
++	elif stb.lower() == 'cuberevo_mini_fta' or stb.lower() == 'cuberevo_250hd': # LED models
++		DisplayType = 14
++	elif stb.lower() == 'cuberevo_mini' or stb.lower() == 'cuberevo_mini2' or stb.lower() == 'cuberevo_2000hd' or stb.lower() == 'cuberevo_3000hd': # 14 character VFD
++		DisplayType = 15
++	elif stb.lower() == 'cuberevo_9500hd': # 13 character VFD
++		DisplayType = 16
++	else:
++		DisplayType = None
 +
 +my_global_session = None
 +
 +config.plugins.CuberevoVFD = ConfigSubsection()
-+config.plugins.CuberevoVFD.scroll = ConfigSelection(default = "once", choices = [("never"), ("once"), ("always")])
++#config.plugins.CuberevoVFD.scroll = ConfigSelection(default = "once", choices = [("never"), ("once"), ("always")])
 +config.plugins.CuberevoVFD.brightness = ConfigSelection(default = "bright", choices = [("dark"), ("medium"), ("bright")])
 +config.plugins.CuberevoVFD.showClock = ConfigEnableDisable(default = True)
 +#config.plugins.CuberevoVFD.setDaylight = ConfigEnableDisable(default = False)
@@ -4704,7 +5869,7 @@
 +		self.list.append(getConfigListEntry(_("Time mode"), config.plugins.CuberevoVFD.timeMode))
 +		self.list.append(getConfigListEntry(_("Set led"), config.plugins.CuberevoVFD.setLed))
 +		self.list.append(getConfigListEntry(_("Brightness"), config.plugins.CuberevoVFD.brightness))
-+		self.list.append(getConfigListEntry(_("Scroll long strings"), config.plugins.CuberevoVFD.scroll))
++#		self.list.append(getConfigListEntry(_("Scroll long strings"), config.plugins.CuberevoVFD.scroll))
 +		self.list.append(getConfigListEntry(_("Set fan"), config.plugins.CuberevoVFD.setFan))
 +		ConfigListScreen.__init__(self, self.list)
 +
@@ -4808,12 +5973,12 @@
 +
 +	def handleTimer(self):
 +		global showmenuorpanel
-+		try:
-+			from Plugins.Extensions.Aafpanel.plugin import inAAFPanel
-+			showPanel = inAAFPanel
-+		except:
-+			#print '[CuberevoVFD] Error showPanel'
-+			showPanel = None
++#		try:
++#			from Plugins.Extensions.Aafpanel.plugin import inAAFPanel
++#			showPanel = inAAFPanel
++#		except:
++#			#print '[CuberevoVFD] Error showPanel'
++		showPanel = None
 +		try:
 +			from Screens.Menu import inMenu
 +			showMenu = inMenu
@@ -4834,7 +5999,7 @@
 +					servicename =subservice[1].replace('\xc2\x87', '').replace('\xc3\x9f', 'ss').replace('\xc2\x86', '').ljust(16)
 +				else:
 +					servicename=servicename
-+				evfd.getInstance().vfd_write_string(servicename[0:17])
++				evfd.getInstance().vfd_write_string(servicename)
 +
 +	def setshowmenuorpanel(self):
 +		global showmenuorpanel
@@ -4971,7 +6136,7 @@
 +		PluginDescriptor(where = [PluginDescriptor.WHERE_SESSIONSTART, PluginDescriptor.WHERE_AUTOSTART], fnc = autostart) ]
 --- enigma2.org/lib/python/Plugins/Extensions/Makefile.am
 +++ enigma2/lib/python/Plugins/Extensions/Makefile.am
-@@ -1,6 +1,14 @@
+@@ -1,6 +1,42 @@
  installdir = $(pkglibdir)/python/Plugins/Extensions
  
 -SUBDIRS = TuxboxPlugins CutListEditor PicturePlayer MediaScanner MediaPlayer GraphMultiEPG SocketMMI DVDBurn
@@ -4979,6 +6144,34 @@
 +
 +if ENABLE_TF7700
 +SUBDIRS += TopfieldVFD
++endif
++
++if ENABLE_CUBEREVO_MINI_FTA
++SUBDIRS += CuberevoVFD
++endif
++
++if ENABLE_CUBEREVO_250HD
++SUBDIRS += CuberevoVFD
++endif
++
++if ENABLE_CUBEREVO_MINI
++SUBDIRS += CuberevoVFD
++endif
++
++if ENABLE_CUBEREVO_MINI2
++SUBDIRS += CuberevoVFD
++endif
++
++if ENABLE_CUBEREVO_2000HD
++SUBDIRS += CuberevoVFD
++endif
++
++if ENABLE_CUBEREVO_3000HD
++SUBDIRS += CuberevoVFD
++endif
++
++if ENABLE_CUBEREVO_9500HD
++SUBDIRS += CuberevoVFD
 +endif
 +
 +if ENABLE_CUBEREVO
@@ -5558,7 +6751,7 @@
 +		<packagename>enigma2-plugin-systemplugins-vfd-icons</packagename>
 +		<packagetype>public</packagetype> <!-- internal/public , public is default, internal metas are not displayed inside plugin manager -->
 +		<shortdescription>Displays text on VFD</shortdescription>
-+		<description>Displays text on VFDvfd.
++		<description>Displays text on VFD.
 +		</description>
 +	</info>
 +
@@ -5620,17 +6813,17 @@
 +			self.service = self.session.nav.getCurrentlyPlayingServiceReference()
 +			if not self.service is None:
 +				service = self.service.toCompareString()
-+				servicename = ServiceReference.ServiceReference(service).getServiceName().replace('\xc2\x87', '').replace('\xc2\x86', '').ljust(16)
++				servicename = ServiceReference.ServiceReference(service).getServiceName().replace('\xc2\x87', '').replace('\xc2\x86', '')
 +				subservice = self.service.toString().split("::")
 +				if subservice[0].count(':') == 9:
-+					servicename = subservice[1].replace('\xc2\x87', '').replace('\xc3\x9f', 'ss').replace('\xc2\x86', '').ljust(16)
++					servicename = subservice[1].replace('\xc2\x87', '').replace('\xc3\x9f', 'ss').replace('\xc2\x86', '')
 +				else:
 +					servicename=servicename
 +			else:
 +				print "no Service found"
 +
-+		print "vfd display text:", servicename[0:63]
-+		evfd.getInstance().vfd_write_string(servicename[0:63])
++#		print "[VFD-Icons] vfd display text:", servicename
++		evfd.getInstance().vfd_write_string(servicename)
 +		return 1
 +
 +	def showCrypted(self):
@@ -5925,11 +7118,10 @@
  			policy = policy_choices[config.av.policy_43.value]
  			policy2_choices = {"letterbox": "letterbox", "panscan": "panscan", "scale": "bestfit", "full": "full", "auto": "auto"}
  			policy2 = policy2_choices[config.av.policy_169.value]
-@@ -383,5 +366,32 @@
+@@ -383,5 +366,30 @@
  		except IOError:
  			pass
  
-+#+++>
 +	def set3DMode(self, configElement):
 +		open("/proc/stb/video/3d_mode", "w").write(configElement.value)
 +
@@ -5954,7 +7146,6 @@
 +			map = {"cvbs": 0, "rgb": 1, "svideo": 2, "yuv": 3}
 +			from enigma import eAVSwitch
 +			eAVSwitch.getInstance().setColorFormat(map[config.av.colorformat.value])
-+#+++<
 +
  video_hw = VideoHardware()
  video_hw.setConfiguredMode()
@@ -6016,6 +7207,129 @@
  	config.av.generalAC3delay = ConfigSelectionNumber(-1000, 1000, 5, default = 0)
  	config.av.generalPCMdelay = ConfigSelectionNumber(-1000, 1000, 5, default = 0)
  	config.av.vcrswitch = ConfigEnableDisable(default = False)
+--- enigma2.org/lib/python/Plugins/SystemPlugins/Videomode/VideoWizard.py
++++ enigma2.patched/lib/python/Plugins/SystemPlugins/Videomode/VideoWizard.py
+@@ -9,6 +9,7 @@
+ 
+ from Tools.Directories import resolveFilename, SCOPE_PLUGINS
+ from Tools.HardwareInfo import HardwareInfo
++from enigma import evfd
+ 
+ config.misc.showtestcard = ConfigBoolean(default = False)
+ 
+@@ -71,6 +72,7 @@
+ 		config.misc.videowizardenabled.value = 0
+ 		config.misc.videowizardenabled.save()
+ 		configfile.save()
++		evfd.getInstance().vfd_write_string("                ")
+ 
+ 	def listInputChannels(self):
+ 		hw_type = HardwareInfo().get_device_name()
+--- enigma2.org/lib/python/Plugins/SystemPlugins/Videomode/videowizard.xml
++++ enigma2.patched/lib/python/Plugins/SystemPlugins/Videomode/videowizard.xml
+@@ -1,6 +1,6 @@
+ <wizard>
+-	<step id="inputselection" nextstep="modeselection" timeout="20" timeoutaction="selectnext">
+-		<text value="Video input selection\n\nPlease press OK if you can see this page on your TV (or select a different input port).\n\nThe next input port will be automatically probed in 20 seconds." />
++	<step id="inputselection" nextstep="modeselection" timeout="10" timeoutaction="selectnext">
++		<text value="Video input selection\n\nPlease press OK if you can see this page on your TV (or select a different input port).\n\nThe next input port will be automatically probed in 10 seconds." />
+ 		<displaytext value="Select video input with up/down buttons" />
+ 		<list type="dynamic" source="listInputChannels" evaluation="inputSelectionMade" onselect="inputSelectionMoved" />
+ 		<code>
+@@ -9,7 +9,7 @@
+ self.selectKey("OK")
+ 		</code>
+ 	</step>
+-	<step id="modeselection" nextstep="rateselection" timeout="20" timeoutaction="selectnext">
++	<step id="modeselection" nextstep="rateselection" timeout="10" timeoutaction="selectnext">
+ 		<text value="Video mode selection." />
+ 		<displaytext value="Select video mode" />
+ 		<list type="dynamic" source="listModes" evaluation="modeSelectionMade" onselect="modeSelectionMoved" />
+@@ -20,7 +20,7 @@
+ self["portpic"].hide()
+ 		</code>
+ 	</step>
+-	<step id="rateselection" timeout="20" timeoutaction="selectnext">
++	<step id="rateselection" timeout="10" timeoutaction="selectnext">
+ 		<condition>
+ self.condition = (self.port != "DVI" and not self.port == "RCA" or self.mode == "PC")
+ 		</condition>
+--- enigma2.org/lib/python/Plugins/SystemPlugins/OSDPositionSetup/overscanwizard.py
++++ enigma2/lib/python/Plugins/SystemPlugins/OSDPositionSetup/overscanwizard.py
+@@ -83,7 +83,7 @@
+ 			self.yes_no = ConfigYesNo(default = True, graphic = False)
+ 			self.list.append(getConfigListEntry(_("Did you see all eight arrow heads?"), self.yes_no))
+ 			self.save_new_position = False
+-			setPosition(0, 720, 0, 576)
++			setPosition(0, 0, 0, 0)
+ 		elif self.step == 2:
+ 			self.Timer.stop()
+ 			self["title"].setText(_("Overscan wizard"))
+@@ -94,17 +94,17 @@
+ 			self.list.append(getConfigListEntry(_("Did you see all eight arrow heads?"), self.yes_no))
+ 			self.yes_no.value = True
+ 			self.save_new_position = False
+-			setPosition(0, 720, 0, 576)
++			setPosition(0, 0, 0, 0)
+ 		elif self.step == 3:
+ 			self["introduction"].setText(_("You did not see all eight arrow heads. This means your TV has overscan enabled "
+ 				"and presents you with a zoomed-in picture, causing you to loose part of a full HD screen. In addition to this "
+ 				"you may also miss parts of the user interface, for example volume bars and more.\n\n"
+ 				"You can now try to resize and change the position of the user interface until you see the eight arrow heads.\n\n"
+ 				"When done press OK.\n\n"))
+-			self.dst_left = ConfigSlider(default = config.plugins.OSDPositionSetup.dst_left.value, increment = 1, limits = (0, 720))
+-			self.dst_right = ConfigSlider(default = config.plugins.OSDPositionSetup.dst_left.value + config.plugins.OSDPositionSetup.dst_width.value, increment = 1, limits = (0, 720))
+-			self.dst_top = ConfigSlider(default = config.plugins.OSDPositionSetup.dst_top.value, increment = 1, limits = (0, 576))
+-			self.dst_bottom = ConfigSlider(default = config.plugins.OSDPositionSetup.dst_top.value + config.plugins.OSDPositionSetup.dst_height.value, increment = 1, limits = (0, 576))
++			self.dst_left = ConfigSlider(default = config.plugins.OSDPositionSetup.dst_left.value, increment = 1, limits = (0, 150))
++			self.dst_right = ConfigSlider(default = config.plugins.OSDPositionSetup.dst_right.value + 150, increment = 1, limits = (0, 150))
++			self.dst_top = ConfigSlider(default = config.plugins.OSDPositionSetup.dst_top.value, increment = 1, limits = (0, 150))
++			self.dst_bottom = ConfigSlider(default = config.plugins.OSDPositionSetup.dst_bottom.value + 150, increment = 1, limits = (0, 150))
+ 			self.list.append(getConfigListEntry(_("left"), self.dst_left))
+ 			self.list.append(getConfigListEntry(_("right"), self.dst_right))
+ 			self.list.append(getConfigListEntry(_("top"), self.dst_top))
+@@ -171,7 +171,7 @@
+ 		if self.step == 1:
+ 			self.step = self.yes_no.value and 5 or 2
+ 		elif self.step == 2:
+-			self.step = self.yes_no.value and 5 or os.path.exists("/proc/stb/fb/dst_left") and 3 or 4
++			self.step = self.yes_no.value and 5 or os.path.exists("/proc/stb/vmpeg/0/dst_left") and 3 or 4
+ 		elif self.step == 3:
+ 			self.save_new_position = True
+ 			self.step = 5
+@@ -181,14 +181,14 @@
+ 			if self.yes_no.value:
+ 				if self.save_new_position:
+ 					config.plugins.OSDPositionSetup.dst_left.value = self.dst_left.value
+-					config.plugins.OSDPositionSetup.dst_width.value = self.dst_right.value - self.dst_left.value
++					config.plugins.OSDPositionSetup.dst_right.value = self.dst_right.value - 150
+ 					config.plugins.OSDPositionSetup.dst_top.value = self.dst_top.value
+-					config.plugins.OSDPositionSetup.dst_height.value = self.dst_bottom.value - self.dst_top.value
++					config.plugins.OSDPositionSetup.dst_bottom.value = self.dst_bottom.value -150
+ 				else:
+ 					config.plugins.OSDPositionSetup.dst_left.value = 0
+-					config.plugins.OSDPositionSetup.dst_width.value = 720
++					config.plugins.OSDPositionSetup.dst_right.value = 0
+ 					config.plugins.OSDPositionSetup.dst_top.value = 0
+-					config.plugins.OSDPositionSetup.dst_height.value = 576
++					config.plugins.OSDPositionSetup.dst_bottom.value = 0
+ 				config.misc.do_overscanwizard.value = False
+ 				config.save()
+ 				setConfiguredPosition()
+@@ -198,12 +198,8 @@
+ 		self.setScreen()
+ 
+ 	def setPreviewPosition(self):
+-		if self.dst_left.value > self.dst_right.value:
+-			self.dst_left.value = self.dst_right.value
+-		if self.dst_top.value > self.dst_bottom.value:
+-			self.dst_top.value = self.dst_bottom.value
+ 		self["config"].l.setList(self.list)
+-		setPosition(int(self.dst_left.value), int(self.dst_right.value) - int(self.dst_left.value), int(self.dst_top.value), int(self.dst_bottom.value) - int(self.dst_top.value))
++		setPosition(int(self.dst_left.value), int(self.dst_right.value) -150, int(self.dst_top.value), int(self.dst_bottom.value)- 150)
+ 
+ 	def keyCancel(self):
+ 		self.step = self.step in (2, 5) and 1 or self.step in (3, 4) and 2
 --- enigma2.org/lib/python/Screens/ChannelSelection.py
 +++ enigma2/lib/python/Screens/ChannelSelection.py
 @@ -6,6 +6,11 @@
@@ -6214,7 +7528,7 @@
  			self.close()
  
  	def addServiceToBouquetOrAlternative(self):
-@@ -475,7 +480,7 @@
+@@ -477,7 +482,7 @@
  		self.close()
  
  	def removeParentalProtection(self, service):
@@ -6223,7 +7537,7 @@
  
  	def pinEntered(self, service, answer):
  		if answer:
-@@ -484,13 +489,13 @@
+@@ -486,13 +491,13 @@
  				self.csel.servicelist.resetRoot()
  			self.close()
  		elif answer is not None:
@@ -6239,7 +7553,7 @@
  		else:
  			self.unhideParentalServicesCallback(True)
  
-@@ -503,7 +508,7 @@
+@@ -505,7 +510,7 @@
  			self.csel.servicelist.setCurrent(service)
  			self.close()
  		elif answer is not None:
@@ -6248,7 +7562,7 @@
  		else:
  			self.close()
  
-@@ -857,6 +862,9 @@
+@@ -859,6 +864,9 @@
  		self.saved_title = None
  		self.saved_root = None
  		self.current_ref = None
@@ -6258,7 +7572,7 @@
  		self.editMode = False
  		self.confirmRemove = True
  
-@@ -957,7 +965,7 @@
+@@ -959,7 +967,7 @@
  				if mutableAlternatives:
  					mutableAlternatives.setListName(name)
  					if mutableAlternatives.addService(cur_service.ref):
@@ -6267,7 +7581,7 @@
  					mutableAlternatives.flushChanges()
  					self.servicelist.addService(new_ref.ref, True)
  					self.servicelist.removeCurrent()
-@@ -968,7 +976,7 @@
+@@ -970,7 +978,7 @@
  					if self.startServiceRef and cur_service.ref == self.startServiceRef:
  						self.startServiceRef = new_ref.ref
  				else:
@@ -6276,7 +7590,7 @@
  			else:
  				print "add", str, "to", cur_root.getServiceName(), "failed"
  		else:
-@@ -992,10 +1000,10 @@
+@@ -994,10 +1002,10 @@
  					if services is not None:
  						for service in services:
  							if mutableBouquet.addService(service):
@@ -6289,7 +7603,7 @@
  				# do some voodoo to check if current_root is equal to bouquet_root
  				cur_root = self.getRoot()
  				str1 = cur_root and cur_root.toString()
-@@ -1005,9 +1013,9 @@
+@@ -1007,9 +1015,9 @@
  					self.servicelist.addService(new_bouquet_ref)
  					self.servicelist.resetRoot()
  			else:
@@ -6302,7 +7616,7 @@
  
  	def copyCurrentToBouquetList(self):
  		provider = ServiceReference(self.getCurrentSelection())
-@@ -1033,11 +1041,11 @@
+@@ -1035,11 +1043,11 @@
  					if self.startServiceRef and cur_service.ref == self.startServiceRef:
  						self.startServiceRef = first_in_alternative
  				else:
@@ -6319,7 +7633,7 @@
  		self.removeBouquet()
  		if not end:
  			self.servicelist.moveUp()
-@@ -1119,6 +1127,9 @@
+@@ -1121,6 +1129,9 @@
  			else:
  				new_title += ' ' + _("[favourite edit]")
  		self.setTitle(new_title)
@@ -6329,7 +7643,7 @@
  		self.__marked = self.servicelist.getRootServices()
  		for x in self.__marked:
  			self.servicelist.addMarked(eServiceReference(x))
-@@ -1146,6 +1157,9 @@
+@@ -1148,6 +1159,9 @@
  		self.bouquet_mark_edit = OFF
  		self.mutableList = None
  		self.setTitle(self.saved_title)
@@ -6339,7 +7653,7 @@
  		self.saved_title = None
  		# self.servicePath is just a reference to servicePathTv or Radio...
  		# so we never ever do use the asignment operator in self.servicePath
-@@ -1222,6 +1236,9 @@
+@@ -1224,6 +1238,9 @@
  			self.mutableList.flushChanges() # FIXME add check if changes was made
  			self.mutableList = None
  			self.setTitle(self.saved_title)
@@ -6349,7 +7663,7 @@
  			self.saved_title = None
  			self.servicelist.resetRoot()
  			self.servicelist.l.setHideNumberMarker(config.usage.hide_number_markers.value)
-@@ -1233,6 +1250,9 @@
+@@ -1235,6 +1252,9 @@
  			self.saved_title = self.getTitle()
  			pos = self.saved_title.find(')')
  			self.setTitle(self.saved_title[:pos+1] + ' ' + _("[move mode]") + self.saved_title[pos+1:])
@@ -6359,7 +7673,7 @@
  			self.servicelist.l.setHideNumberMarker(False)
  			self.setCurrentSelection(self.servicelist.getCurrent())
  		self["Service"].editmode = True
-@@ -1288,6 +1308,11 @@
+@@ -1290,6 +1310,11 @@
  
  		self["list"] = ServiceList(self)
  		self.servicelist = self["list"]
@@ -6371,7 +7685,7 @@
  
  		self.numericalTextInput = NumericalTextInput(handleTimeout=False)
  		self.numericalTextInput.setUseableChars(u'1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ')
-@@ -1381,6 +1406,9 @@
+@@ -1383,6 +1408,9 @@
  			title = title[:pos]
  		title += _(" (TV)")
  		self.setTitle(title)
@@ -6381,7 +7695,7 @@
  
  	def setRadioMode(self):
  		self.mode = MODE_RADIO
-@@ -1392,6 +1420,9 @@
+@@ -1394,6 +1422,9 @@
  			title = title[:pos]
  		title += _(" (Radio)")
  		self.setTitle(title)
@@ -6391,7 +7705,7 @@
  
  	def setRoot(self, root, justSet=False):
  		if self.startRoot is None:
-@@ -1446,6 +1477,9 @@
+@@ -1448,6 +1479,9 @@
  					end_ref = None
  				nameStr = self.getServiceName(base_ref)
  				titleStr += ' - ' + nameStr
@@ -6401,7 +7715,7 @@
  				if end_ref is not None:
  					if Len > 2:
  						titleStr += '/../'
-@@ -1453,7 +1487,13 @@
+@@ -1455,7 +1489,13 @@
  						titleStr += '/'
  					nameStr = self.getServiceName(end_ref)
  					titleStr += nameStr
@@ -6559,10 +7873,10 @@
  				if 'selectedevent' not in p.__call__.func_code.co_varnames] or []
  		from Components.ServiceEventTracker import InfoBarCount
  		if getAll or InfoBarCount == 1:
--			pluginlist.append((_("Show EPG for current channel..."), self.openSingleServiceEPG, "current_channel"))
-+			pluginlist.append((_("Show EPG for current channel"), self.openSingleServiceEPG, "current_channel"))
- 		pluginlist.append((_("Multi EPG"), self.openMultiServiceEPG, "multi_epg"))
- 		pluginlist.append((_("Current event EPG"), self.openEventView, "event_epg"))
+-			pluginlist.append((_("Show EPG for current channel..."), self.openSingleServiceEPG, _("Display EPG list for current channel")))
++			pluginlist.append((_("Show EPG for current channel"), self.openSingleServiceEPG, _("Display EPG list for current channel")))
+ 		pluginlist.append((_("Multi EPG"), self.openMultiServiceEPG, _("Display EPG as MultiEPG")))
+ 		pluginlist.append((_("Current event EPG"), self.openEventView, _("Display EPG info for current event")))
  		return pluginlist
 @@ -1156,7 +1205,7 @@
  	def showEventInfoPlugins(self):
@@ -6847,9 +8161,20 @@
 +	def sleepTimer(self):
 +		from Screens.SleepTimerEdit import SleepTimerEdit
 +		self.session.open(SleepTimerEdit)
+--- enigma2.org/lib/python/Screens/InstallWizard.py
++++ enigma2/lib/python/Screens/InstallWizard.py
+@@ -35,7 +35,7 @@
+ 			self.adapters = [adapter for adapter in iNetwork.getAdapterList() if adapter in ('eth0', 'eth1')]
+ 			self.checkNetwork()
+ 		elif self.index == self.STATE_CHOISE_CHANNELLIST:
+-			self.enabled = ConfigYesNo(default = True, graphic = False)
++			self.enabled = ConfigYesNo(default = False, graphic = False)
+ 			modes = {"19e-23e-basis": "Astra1 Astra3 basis", "19e-23e": "Astra 1 Astra 3", "19e-23e-28e": "Astra 1 Astra 2 Astra 3", "13e-19e-23e-28e": "Astra 1 Astra 2 Astra 3 Hotbird", "kabelnl": "Kabel-NL"}
+ 			self.channellist_type = ConfigSelection(choices = modes, default = "19e-23e-basis")
+ 			self.createMenu()
 --- enigma2.org/lib/python/Screens/ScanSetup.py
 +++ enigma2/lib/python/Screens/ScanSetup.py
-@@ -1229,7 +1229,7 @@
+@@ -1217,7 +1217,7 @@
  		self.cable_toggle = {"single_transponder":"complete", "complete":"single_transponder"}
  		self.scan_typeterrestrial = ConfigSelection(default = defaultTerrSearchType, choices = [("single_transponder", _("User defined transponder")), ("predefined_transponder", _("Predefined transponder")), ("complete", _("Complete"))])
  		self.scan_type_atsc = ConfigSelection(default = defaultATSCSearchType, choices = [("single_transponder", _("User defined transponder")), ("predefined_transponder", _("Predefined transponder")), ("complete", _("Complete"))])
@@ -6860,9 +8185,10 @@
  		self.scan_onlyfree = ConfigYesNo(default = False)
 --- enigma2.org/lib/python/Screens/Standby.py
 +++ enigma2/lib/python/Screens/Standby.py
-@@ -15,11 +15,50 @@
- from enigma import eDVBVolumecontrol, eTimer, eDVBLocalTimeHandler, eServiceReference
- from Tools.HardwareInfo import HardwareInfo
+@@ -15,11 +15,51 @@
+ from enigma import eDVBVolumecontrol, eTimer, eDVBLocalTimeHandler, eServiceReference, eStreamServer
+ from Components.Sources.StreamService import StreamServiceList
++from Tools.HardwareInfo import HardwareInfo
  
 +pll0 = '/proc/cpu_frequ/pll0_ndiv_mdiv'
 +stb = HardwareInfo().get_device_name()
@@ -6911,7 +8237,7 @@
  		self.close(True)
  
  	def setMute(self):
-@@ -61,6 +100,40 @@
+@@ -61,6 +101,40 @@
  		self.timeHandler = None
  
  		self.setMute()
@@ -6952,7 +8278,7 @@
  
  		self.paused_service = self.paused_action = False
  
-@@ -91,6 +164,9 @@
+@@ -91,6 +165,9 @@
  			self.avswitch.setInput("SCART")
  		else:
  			self.avswitch.setInput("AUX")
@@ -6962,7 +8288,7 @@
  
  		gotoShutdownTime = int(config.usage.standby_to_shutdown_timer.value)
  		if gotoShutdownTime:
-@@ -206,6 +284,7 @@
+@@ -206,6 +283,7 @@
  			4: _("Your frontprocessor will be upgraded\nPlease wait until your receiver reboots\nThis may take a few minutes"),
  			5: _("The user interface of your receiver is restarting\ndue to an error in mytest.py"),
  			6: _("The user interface of your receiver is restarting in debug mode"),
@@ -6970,14 +8296,14 @@
  			42: _("Unattended upgrade in progress\nPlease wait until your receiver reboots\nThis may take a few minutes") }.get(retvalue)
  		self["text"] = Label(text)
  
-@@ -235,6 +312,7 @@
+@@ -243,6 +321,7 @@
  				3: _("Really restart now?"),
  				4: _("Really upgrade the frontprocessor and reboot now?"),
-				6: _("Really restart in debug mode now?"),
+ 				6: _("Really restart in debug mode now?"),
 +				10: _('Really reboot to Spark now?'),
-				42: _("Really upgrade your settop box and reboot now?") }.get(retvalue)
-			if text:
- 				MessageBox.__init__(self, session, reason+text, type = MessageBox.TYPE_YESNO, timeout = timeout, default = default_yes)
+ 				42: _("Really upgrade your settop box and reboot now?") }.get(retvalue, None)
+ 			if text:
+ 				MessageBox.__init__(self, session, "%s\n%s" % (reason, text), type=MessageBox.TYPE_YESNO, timeout=timeout, default=default_yes)
 --- enigma2.org/lib/python/Screens/Wizard.py
 +++ enigma2/lib/python/Screens/Wizard.py
 @@ -13,6 +13,9 @@
@@ -7035,6 +8361,62 @@
 +	os.system("rm /tmp/command.txt")
 +	return comandline
 +
+--- enigma2.org/lib/python/Tools/HardwareInfo.py
++++ enigma2/lib/python/Tools/HardwareInfo.py
+@@ -7,7 +7,7 @@
+ 	device_model = None
+ 	device_version = ""
+ 	device_revision = ""
+-	device_hdmi = False
++	device_hdmi = True
+ 
+ 	def __init__(self):
+ 		global hw_info
+@@ -35,37 +35,19 @@
+ 			pass
+ 
+ 		# Model
+-		for line in open((resolveFilename(SCOPE_SKIN, 'hw_info/hw_info.cfg')), 'r'):
+-			if not line.startswith('#') and not line.isspace():
+-				l = line.strip().replace('\t', ' ')
+-				if ' ' in l:
+-					infoFname, prefix = l.split()
+-				else:
+-					infoFname = l
+-					prefix = ""
+-				try:
+-					self.device_model = prefix + open("/proc/stb/info/" + infoFname).read().strip()
+-					break
+-				except:
+-					pass
++		try:
++			self.device_model = open("/proc/stb/info/boxtype").read().strip()
++		except:
++			pass
+ 
+ 		self.device_model = self.device_model or self.device_name
+ 
+-		# map for Xtrend device models to machine names
+-		if self.device_model.startswith(("et9", "et4", "et5", "et6", "et7")):
+-			self.machine_name = "%sx00" % self.device_model[:3]
+-		else:
+-			self.machine_name = self.device_model
++		self.machine_name = self.device_model
+ 
+-		if self.device_revision:
+-			self.device_string = "%s (%s-%s)" % (self.device_model, self.device_revision, self.device_version)
+-		elif self.device_version:
+-			self.device_string = "%s (%s)" % (self.device_model, self.device_version)
+-		else:
+-			self.device_string = self.device_model
++		self.device_string = self.device_model
+ 
+ 		# only some early DMM boxes do not have HDMI hardware
+-		self.device_hdmi =  self.device_model not in ("dm800", "dm8000")
++#		self.device_hdmi =  self.device_model not in ("dm800", "dm8000")
+ 
+ 		print "Detected: " + self.get_device_string()
+ 
 --- enigma2.org/lib/python/Tools/Makefile.am
 +++ enigma2/lib/python/Tools/Makefile.am
 @@ -5,5 +5,5 @@
@@ -7066,7 +8448,7 @@
  	profile_file = open(resolveFilename(SCOPE_CONFIG, "profile"), "w")
  except IOError:
 -	print "WARNING: couldn't open profile file!"
-+	print "[Profile.py] WARNING: couldn't open profile file!"
++	print "[Profile.py] WARNING: could not open profile file!"
  
  def profile(id):
  	now = time.time() - profile_start
@@ -7081,7 +8463,7 @@
 +					if perc > 20:
 +						if os.path.isfile('/proc/stb/info/model'):
 +							model = str(open("/proc/stb/info/model").read())
-+							if model.startswith("spark7162") or model.startswith("tf7700hdpvr") or model.startswith("octagon1008") or model.startswith("atevio7500") or model.startswith("hs7420") or model.startswith("hs7429"):
++							if model.startswith("spark7162") or model.startswith("tf7700hdpvr") or model.startswith("octagon1008") or model.startswith("hdbox") or model.startswith("atevio7500") or model.startswith("hs7420") or model.startswith("hs7429"):
 +								evfd.getInstance().vfd_write_string("START %02d" % perc)
 +							elif model.startswith("spark") or model.startswith("hs7119") or model.startswith("hs7810a") or model.startswith("hs7819"):
 +								evfd.getInstance().vfd_write_string("St%02d" % perc)
@@ -7123,70 +8505,98 @@
  	return cursorResolve(index);
 --- enigma2.org/lib/service/servicedvb.cpp
 +++ enigma2/lib/service/servicedvb.cpp
-@@ -646,6 +646,9 @@
+@@ -646,6 +646,8 @@
  	if (sc)
  	{
  		std::list<std::string> extensions;
-+#if defined(__sh__) //Topfield original recording extension
++//Topfield original recording extension
 +		extensions.push_back("rec");
-+#endif
  		extensions.push_back("ts");
  		extensions.push_back("trp");
  		sc->addServiceFactory(eServiceFactoryDVB::id, this, extensions);
+@@ -1213,7 +1215,8 @@
+ 		break;
+ 	}
+ 	case eDVBServicePMTHandler::eventPreStart:
+-		loadCuesheet();
++		if (!m_is_stream)
++			 loadCuesheet();
+ 		break;
+ 	case eDVBServicePMTHandler::eventEOF:
+ 		m_event((iPlayableService*)this, evEOF);
+@@ -1366,6 +1369,8 @@
+ 			scrambled = true;
+ 
+ 		type = eDVBServicePMTHandler::streamclient;
++		//will skip on calling findPMT() for streams, as it is not needed
++		service.setServiceID(eServiceFactoryDVB::id);
+ 	}
+ 
+ 	m_first_program_info = 1;
+@@ -1737,9 +1742,9 @@
+ 				return -2;
+ 			}
+ 
+-			if (((off_t)fs.f_bavail) * ((off_t)fs.f_bsize) < 200*1024*1024LL)
+-			{
+-				eDebug("[eDVBServicePlay] timeshift not enough diskspace for timeshift! (less than 200MB)");
++			if (((off_t)fs.f_bavail) * ((off_t)fs.f_bsize) < 1024 * 1024 * 1024LL)
++			{
++				eDebug("[eDVBServicePlay] timeshift: not enough diskspace for timeshift! (less than 1 GB)");
+ 				return -3;
+ 			}
+ 		}
 --- enigma2.org/lib/service/servicedvbrecord.cpp
 +++ enigma2/lib/service/servicedvbrecord.cpp
-@@ -11,6 +11,10 @@
+@@ -10,6 +10,9 @@
+ 	/* for cutlist */
  #include <byteswap.h>
  #include <netinet/in.h>
- 
-+#if defined(__sh__)
++
 +#include <sys/vfs.h>
 +#include <linux/magic.h>
-+#endif
+ 
  DEFINE_REF(eDVBServiceRecord);
  
- eDVBServiceRecord::eDVBServiceRecord(const eServiceReferenceDVB &ref, bool isstreamclient): m_ref(ref)
-@@ -286,9 +290,43 @@
+@@ -286,9 +289,40 @@
  
  	if (!m_record && m_tuned && !m_streaming && !m_simulate)
  	{
-+#if defined(__sh__)
-+		int flags = O_WRONLY|O_CREAT|O_LARGEFILE;
++		int flags = O_WRONLY|O_CREAT|O_LARGEFILE|O_CLOEXEC;
 +		struct statfs sbuf;
-+#endif
++
  		eDebug("[eDVBServiceRecord] Recording to %s...", m_filename.c_str());
  		::remove(m_filename.c_str());
-+#if defined(__sh__)
+-		int fd = ::open(m_filename.c_str(), O_WRONLY | O_CREAT | O_LARGEFILE | O_CLOEXEC, 0666);
 +		//we must create a file for statfs
- 		int fd = ::open(m_filename.c_str(), O_WRONLY | O_CREAT | O_LARGEFILE | O_CLOEXEC, 0666);
++		int fd = ::open(m_filename.c_str(), flags, 0666);
 +		::close(fd);
 +		if (statfs(m_filename.c_str(), &sbuf) < 0)
 +		{
 +			eDebug("eDVBServiceRecord - can't get fs type assuming none NFS!");
-+		} else
-+		{
-+			if (sbuf.f_type == EXT3_SUPER_MAGIC)
-+				eDebug("eDVBServiceRecord - Ext2/3/4 Filesystem\n");
-+			else
-+			if (sbuf.f_type == NFS_SUPER_MAGIC)
-+			{
-+				eDebug("eDVBServiceRecord - NFS Filesystem; add O_DIRECT to flags\n");
-+				flags |= O_DIRECT;
-+			}
-+			else
-+			if (sbuf.f_type == USBDEVICE_SUPER_MAGIC)
-+				eDebug("eDVBServiceRecord - USB Device\n");
-+			else
-+			if (sbuf.f_type == SMB_SUPER_MAGIC)
-+				eDebug("eDVBServiceRecord - SMBs Device\n");
-+			else 
-+			if (sbuf.f_type == MSDOS_SUPER_MAGIC)
-+				eDebug("eDVBServiceRecord - MSDOS Device\n");
 +		}
-+		fd = ::open(m_filename.c_str(), flags, 0644);
-+#else
-+		int fd = ::open(m_filename.c_str(), O_WRONLY | O_CREAT | O_LARGEFILE | O_CLOEXEC, 0666);
-+#endif
++		else if (sbuf.f_type == EXT3_SUPER_MAGIC)
++		{
++			eDebug("eDVBServiceRecord - Ext2/3/4 Filesystem\n");
++		}
++		else if (sbuf.f_type == NFS_SUPER_MAGIC)
++		{
++			eDebug("[eDVBServiceRecord] NFS Filesystem; add O_DIRECT to flags\n");
++			flags |= O_DIRECT;
++		}
++		else if (sbuf.f_type == USBDEVICE_SUPER_MAGIC)
++		{
++			eDebug("[eDVBServiceRecord] USB Device\n");
++		}
++		else if (sbuf.f_type == SMB_SUPER_MAGIC)
++		{
++			eDebug("[eDVBServiceRecord] SMBs Device\n");
++		}
++		else if (sbuf.f_type == MSDOS_SUPER_MAGIC)
++		{
++			eDebug("[eDVBServiceRecord] MSDOS Device\n");
++		}
++		fd = ::open(m_filename.c_str(), flags, 0666);
  		if (fd == -1)
  		{
  			eDebug("[eDVBServiceRecord] can't open recording file: %m");
@@ -7225,7 +8635,41 @@
  	AC_SUBST([PYTHON_SITE_PKG])
 --- enigma2.org/main/bsod.cpp
 +++ enigma2/main/bsod.cpp
-@@ -198,7 +198,7 @@
+@@ -10,22 +10,20 @@
+ #include <lib/base/nconfig.h>
+ #include <lib/gdi/gmaindc.h>
+ 
+-#if defined(__MIPSEL__)
+-#include <asm/ptrace.h>
+-#else
+-#warning "no oops support!"
++//#warning "no oops support!"
+ #define NO_OOPS_SUPPORT
+-#endif
+ 
+ #include "version_info.h"
+ 
+ /************************************************/
+ 
++#if 0
+ static const char *crash_emailaddr =
+ #ifndef CRASH_EMAILADDR
+ 	"the OpenPLi forum";
+ #else
+ 	CRASH_EMAILADDR;
++#endif
+ #endif
+ 
+ /* Defined in bsod.cpp */
+@@ -172,7 +170,6 @@
+ 			component);
+ 
+ 		stringFromFile(f, "stbmodel", "/proc/stb/info/boxtype");
+-		stringFromFile(f, "stbmodel", "/proc/stb/info/vumodel");
+ 		stringFromFile(f, "stbmodel", "/proc/stb/info/model");
+ 		stringFromFile(f, "kernelcmdline", "/proc/cmdline");
+ 		stringFromFile(f, "nimsockets", "/proc/bus/nim_sockets");
+@@ -198,7 +195,7 @@
  	gPainter p(my_dc);
  	p.resetOffset();
  	p.resetClip(eRect(ePoint(0, 0), my_dc->size()));
@@ -7234,7 +8678,7 @@
  	p.setForegroundColor(gRGB(0xFFFFFF));
  
  	int hd =  my_dc->size().width() == 1920;
-@@ -212,14 +212,14 @@
+@@ -212,14 +209,14 @@
  	os.clear();
  	os << "We are really sorry. Your STB encountered "
  		"a software problem, and needs to be restarted.\n"
@@ -7252,7 +8696,7 @@
  	
  	if (logp2)
  	{
-@@ -263,12 +263,12 @@
+@@ -263,12 +260,12 @@
  
  	if (!logtail.empty())
  	{
@@ -7269,17 +8713,15 @@
  	 * When 'component' is NULL, we are called because of a python exception.
 --- enigma2.org/main/enigma.cpp
 +++ enigma2/main/enigma.cpp
-@@ -32,6 +32,9 @@
+@@ -31,6 +31,7 @@
+ #include <lib/python/python.h>
  #include <lib/python/pythonconfig.h>
  #include <lib/service/servicepeer.h>
++#include <lib/driver/vfd.h> // vfd class
  
-+#if defined(__sh__) // vfd class
-+#include <lib/driver/vfd.h>
-+#endif
  #include "bsod.h"
  #include "version_info.h"
- 
-@@ -201,7 +204,7 @@
+@@ -201,7 +202,7 @@
  	printf("DVB_API_VERSION %d DVB_API_VERSION_MINOR %d\n", DVB_API_VERSION, DVB_API_VERSION_MINOR);
  
  	// get enigma2 debug level settings
@@ -7288,19 +8730,20 @@
  	if (debugLvl < 0)
  		debugLvl = 0;
  	printf("ENIGMA_DEBUG_LVL=%d\n", debugLvl);
-@@ -232,6 +235,11 @@
+@@ -232,6 +233,12 @@
  	eWidgetDesktop dsk_lcd(my_lcd_dc->size());
  
  	dsk.setStyleID(0);
++
 +#ifdef HAVE_GRAPHLCD
 +	dsk_lcd.setStyleID(my_lcd_dc->size().width() == 320 ? 1 : 2);
 +#else
-+ 	dsk_lcd.setStyleID(my_lcd_dc->size().width() == 96 ? 2 : 1);
++	dsk_lcd.setStyleID(my_lcd_dc->size().width() == 96 ? 2 : 1);
 +#endif
  	dsk_lcd.setStyleID(1);
  
  /*	if (double_buffer)
-@@ -276,16 +284,22 @@
+@@ -276,16 +283,20 @@
  				break;
  			}
  		}
@@ -7317,12 +8760,10 @@
  	gRC::getInstance()->setSpinnerDC(my_dc);
  
  	eRCInput::getInstance()->keyEvent.connect(sigc::ptr_fun(&keyEvent));
-+
-+#if defined(__sh__) // initialise the vfd class
++// initialise the vfd class
 +	evfd * vfd = new evfd;
 +	vfd->init();
 +	delete vfd;
-+#endif
  
  	printf("[MAIN] executing main\n");
  
@@ -7337,211 +8778,52 @@
  
  enigma2_SOURCES = \
  	bsod.cpp \
-@@ -50,6 +52,10 @@
+@@ -45,7 +47,12 @@
+ 	@ALSA_LIBS@ \
+ 	@AVAHI_LIBS@ \
  	@LIBDL_LIBS@ \
- 	-ltuxtxt32bpp
- 
+-	-ltuxtxt32bpp
++	-ltuxtxt32bpp \
++	-lpthread -lresolv -lmmeimage
++
 +if HAVE_GRAPHLCD
 +enigma2_LDADD += -lglcddrivers -lglcdgraphics -lglcdskin
 +endif
-+
+ 
  enigma2_LDFLAGS = -Wl,--export-dynamic
  
- if HAVE_GIT_DIR
---- enigma2.org/mytest.py
-+++ enigma2/mytest.py
-@@ -297,6 +297,10 @@
- 
- 		self.pushCurrent()
- 		dlg = self.current_dialog = self.instantiateDialog(screen, *arguments, **kwargs)
+--- enigma2.org/tools/enigma2.sh.in
++++ enigma2/tools/enigma2.sh.in
+@@ -3,6 +3,29 @@
+ prefix=@prefix@
+ exec_prefix=@exec_prefix@
+ datarootdir=@datarootdir@
 +
-+		if dlg is None:
-+			return
-+
- 		dlg.isTmp = True
- 		dlg.callback = None
- 		self.execBegin()
-@@ -501,10 +505,10 @@
- 	if wakeupList:
- 		from time import strftime
- 		startTime = wakeupList[0]
--		if (startTime[0] - nowTime) < 270: # no time to switch box back on
-+		if (startTime[0] - nowTime) < 330: # no time to switch box back on
- 			wptime = nowTime + 30  # so switch back on in 30 seconds
- 		else:
--			wptime = startTime[0] - 240
-+			wptime = startTime[0] - 300
- 		if not config.misc.useTransponderTime.value:
- 			print "dvb time sync disabled... so set RTC now to current linux time!", strftime("%Y/%m/%d %H:%M", localtime(nowTime))
- 			setRTCtime(nowTime)
---- enigma2.org/lib/gdi/picload.cpp
-+++ enigma2/lib/gdi/picload.cpp
-@@ -8,6 +8,7 @@
- extern "C" {
- #define HAVE_BOOLEAN
- #define boolean int
-+#undef HAVE_STDLIB_H
- #include <jpeglib.h>
- #include <gif_lib.h>
- }
-@@ -35,7 +36,7 @@
- 		return orgin;
- 	}
- 	const int stride = 3 * dx;
--	#pragma omp parallel for
-+//	#pragma omp parallel for
- 	for (int j = 0; j < dy; j++)
- 	{
- 		unsigned char* p = cr + (j * stride);
-@@ -528,12 +529,9 @@
- 	ColorMapObject *cmap;
- 	int cmaps;
- 	int extcode;
--
--#if GIFLIB_MAJOR > 5 || GIFLIB_MAJOR == 5 && GIFLIB_MINOR >= 1
--	gft = DGifOpenFileName(filepara->file, &extcode);
--#else
--	gft = DGifOpenFileName(filepara->file);
--#endif
-+	int GifLastError; 
-+
-+	gft = DGifOpenFileName(filepara->file, &GifLastError); 
- 	if (gft == NULL)
- 		return;
- 	do
-@@ -623,19 +621,11 @@
- 	}
- 	while (rt != TERMINATE_RECORD_TYPE);
++if [ -e @libdir@/enigma2/python/Plugins/SystemPlugins/SH4BoosterControl/plugin.pyo ]; then
++	cpufreq=`cat /etc/enigma2/settings | grep config.plugins.booster.normalfrequenz | cut -d "=" -f2`
++	case $cpufreq in
++		200) overclk=5123;;
++		300) overclk=2561;;
++		450) overclk=3841;;
++		500) overclk=12803;;
++		540) overclk=4609;;
++		600) overclk=5121;;
++		630) overclk=5377;;
++		650) overclk=16643;;
++		700) overclk=17923;;
++		710) overclk=18179;;
++		750) overclk=19203;;
++		775) overclk=39686;;
++		800) overclk=20483;;
++		*) cpufreq=450
++		overclk=3841;;
++	esac
++	echo $overclk > /proc/cpu_frequ/pll0_ndiv_mdiv
++	echo "[enigma2] Setting CPU clock speed to $cpufreq MHz (overclk=$overclk)"
++fi
  
--#if GIFLIB_MAJOR > 5 || GIFLIB_MAJOR == 5 && GIFLIB_MINOR >= 1
--	DGifCloseFile(gft, &extcode);
--#else
--	DGifCloseFile(gft);
--#endif
-+	DGifCloseFile(gft, &GifLastError);
- 	return;
- ERROR_R:
- 	eDebug("[ePicLoad] <Error gif>");
--#if GIFLIB_MAJOR > 5 || GIFLIB_MAJOR == 5 && GIFLIB_MINOR >= 1
--	DGifCloseFile(gft, &extcode);
--#else
--	DGifCloseFile(gft);
--#endif
-+	DGifCloseFile(gft, &GifLastError);
- }
- 
- //---------------------------------------------------------------------------------------------
-@@ -1079,7 +1069,7 @@
- 		else {
- 			background = m_conf.background;
- 		}
--		unsigned int* row_buffer;
-+//		unsigned int* row_buffer;
- 		if (yoff != 0) {
- 			if (m_filepara->bits == 8)
- 			{
-@@ -1096,11 +1086,11 @@
- 					*row_buffer++ = background;
- 			}
- 			int y;
--			#pragma omp parallel for
-+//			#pragma omp parallel for
- 			for (y = 1; y < yoff; ++y) // copy from first line
- 				memcpy(tmp_buffer + y*surface->stride, tmp_buffer,
- 					m_filepara->max_x * surface->bypp);
--			#pragma omp parallel for
-+//			#pragma omp parallel for
- 			for (y = yoff + scry; y < m_filepara->max_y; ++y)
- 				memcpy(tmp_buffer + y * surface->stride, tmp_buffer,
- 					m_filepara->max_x * surface->bypp);
-@@ -1125,7 +1115,7 @@
- 				for (x = xoff + scrx; x < m_filepara->max_x; ++x) // fill right side of first line
- 					*row_buffer++ = background;
- 			}
--			#pragma omp parallel for
-+//			#pragma omp parallel for
- 			for (int y = yoff + 1; y < scry; ++y) { // copy from first line
- 				memcpy(tmp_buffer + y*surface->stride,
- 					tmp_buffer + yoff * surface->stride,
-@@ -1208,7 +1198,7 @@
- 	// Fill surface with image data, resize and correct for orientation on the fly
- 	if (m_filepara->bits == 8)
- 	{
--		#pragma omp parallel for
-+//		#pragma omp parallel for
- 		for (int y = 0; y < scry; ++y) {
- 			const unsigned char *irow, *irowy = origin + iyfac * (int)(y * yscale);
- 			unsigned char *srow = tmp_buffer + surface->stride * y;
-@@ -1222,7 +1212,7 @@
- 	}
- 	else // 24-bit images
- 	{
--		#pragma omp parallel for
-+//		#pragma omp parallel for
- 		for (int y = 0; y < scry; ++y) {
- 			const unsigned char *irow, *irowy = origin + iyfac * (int)(yscale * y);
- 			unsigned char *srow = tmp_buffer + surface->stride * y;
---- enigma2.org/lib/python/Screens/InstallWizard.py
-+++ enigma2.patched/lib/python/Screens/InstallWizard.py
-@@ -35,7 +35,7 @@
- 			self.adapters = [adapter for adapter in iNetwork.getAdapterList() if adapter in ('eth0', 'eth1')]
- 			self.checkNetwork()
- 		elif self.index == self.STATE_CHOISE_CHANNELLIST:
--			self.enabled = ConfigYesNo(default = True, graphic = False)
-+			self.enabled = ConfigYesNo(default = False, graphic = False)
- 			modes = {"19e-23e-basis": "Astra1 Astra3 basis", "19e-23e": "Astra 1 Astra 3", "19e-23e-28e": "Astra 1 Astra 2 Astra 3", "13e-19e-23e-28e": "Astra 1 Astra 2 Astra 3 Hotbird", "kabelnl": "Kabel-NL"}
- 			self.channellist_type = ConfigSelection(choices = modes, default = "19e-23e-basis")
- 			self.createMenu()
---- enigma2.org/lib/python/Plugins/SystemPlugins/Videomode/VideoWizard.py
-+++ enigma2.patched/lib/python/Plugins/SystemPlugins/Videomode/VideoWizard.py
-@@ -10,6 +10,7 @@
- from Tools.Directories import resolveFilename, SCOPE_PLUGINS
- from Tools.HardwareInfo import HardwareInfo
-+from enigma import evfd
- 
--config.misc.showtestcard = ConfigBoolean(default = False)
-+config.misc.showtestcard = ConfigBoolean(default = True)
- 
- class VideoWizardSummary(WizardSummary):
-@@ -71,6 +72,7 @@
- 		config.misc.videowizardenabled.value = 0
- 		config.misc.videowizardenabled.save()
- 		configfile.save()
-+		evfd.getInstance().vfd_write_string("                ")
- 
- 	def listInputChannels(self):
- 		hw_type = HardwareInfo().get_device_name()
---- enigma2.org/lib/python/Plugins/SystemPlugins/Videomode/videowizard.xml
-+++ enigma2.patched/lib/python/Plugins/SystemPlugins/Videomode/videowizard.xml
-@@ -1,6 +1,6 @@
- <wizard>
--	<step id="inputselection" nextstep="modeselection" timeout="20" timeoutaction="selectnext">
--		<text value="Video input selection\n\nPlease press OK if you can see this page on your TV (or select a different input port).\n\nThe next input port will be automatically probed in 20 seconds." />
-+	<step id="inputselection" nextstep="modeselection" timeout="10" timeoutaction="selectnext">
-+		<text value="Video input selection\n\nPlease press OK if you can see this page on your TV (or select a different input port).\n\nThe next input port will be automatically probed in 10 seconds." />
- 		<displaytext value="Select video input with up/down buttons" />
- 		<list type="dynamic" source="listInputChannels" evaluation="inputSelectionMade" onselect="inputSelectionMoved" />
- 		<code>
-@@ -9,7 +9,7 @@
- self.selectKey("OK")
- 		</code>
- 	</step>
--	<step id="modeselection" nextstep="rateselection" timeout="20" timeoutaction="selectnext">
-+	<step id="modeselection" nextstep="rateselection" timeout="10" timeoutaction="selectnext">
- 		<text value="Video mode selection." />
- 		<displaytext value="Select video mode" />
- 		<list type="dynamic" source="listModes" evaluation="modeSelectionMade" onselect="modeSelectionMoved" />
-@@ -20,7 +20,7 @@
- self["portpic"].hide()
- 		</code>
- 	</step>
--	<step id="rateselection" timeout="20" timeoutaction="selectnext">
-+	<step id="rateselection" timeout="10" timeoutaction="selectnext">
- 		<condition>
- self.condition = (self.port != "DVI" and not self.port == "RCA" or self.mode == "PC")
- 		</condition>
---- enigma2.org/lib/python/Components/About.py
-+++ enigma2/lib/python/Components/About.py
+ if [ -d /home/root ]; then
+ 	export HOME=/home/root
 --- enigma2.org/lib/python/Components/About.py
 +++ enigma2/lib/python/Components/About.py
 @@ -50,12 +50,15 @@
@@ -7571,11 +8853,11 @@
  
  def getHardwareTypeString():
 -	return HardwareInfo().get_device_string()
-+	return HardwareInfo().get_device_string().capitalize()
++	return HardwareInfo().get_device_string().upper()
  
  def getImageTypeString():
  	try:
-@@ -76,29 +79,19 @@
+@@ -76,29 +76,19 @@
  def getCPUInfoString():
  	try:
  		cpu_count = 0
@@ -7973,8 +9255,8 @@
 +			idx = 5
 +		elif rctype == 12:	# Kathrein UFS912
 +			idx = 6
-+#		elif rctype == 13:	# Cuberevo
-+#			idx = 7
++		elif rctype == 13:	# CubeRevo Universal
++			idx = 7
 +#		elif rctype == 14:	# ...
 +#			idx = 8
  		else:
@@ -7982,7 +9264,7 @@
  	if key in keyDescriptions[idx]:
 --- enigma2.org/lib/python/Screens/InputDeviceSetup.py
 +++ enigma2/lib/python/Screens/InputDeviceSetup.py
-@@ -299,57 +299,22 @@
+@@ -299,57 +299,24 @@
  	rcList = [
  			("0", _("Default")),
  			("4", _("DMM normal")),
@@ -8006,6 +9288,7 @@
 +			("10", _("spark")),
 +			("11", _("tf7700")),
 +			("12", _("ufs912")),
++			("13", _("cuberevo_uni")),
  		]
  
  	defaultRcList = [
@@ -8049,12 +9332,13 @@
 +			("spark", 10),
 +			("tf7700", 11),
 +			("ufs912", 12),
++			("cuberevo_uni", 13),
  		]
  
  	def __init__(self, session):
 --- enigma2.org/data/rc_models/rc_models.cfg
 +++ enigma2/data/rc_models/rc_models.cfg
-@@ -19,115 +19,17 @@
+@@ -19,117 +19,26 @@
  #
  # When no entry matches at all, 'default' will be used as remoteName
  #
@@ -8108,6 +9392,7 @@
 -# Qviart
 -lunix	qviart
 -lunix3-4k	qviart
+-lunix4k	lunix4k
 -# Spycat
 -spycat spycat
 -spycatmini spycat
@@ -8168,41 +9453,52 @@
 -h6 zgemma
 -h7 zgemma
 -h9 zgemma
+-h9combo zgemma
 -lc sh1
 -sh1 sh1
-+hdbox       fs9000
-+octagon1008 hs9510
-+atevio7500  fs9000
-+hs7110      hs7110
-+hs7119      hs7110
-+hs7420      hs9510
-+hs7429      hs9510
-+hs7810a     hs9510
-+hs7819      hs9510
-+spark       spark
-+spark7162   spark
-+tf7700hdpvr tf7700
-+ufs910      ufs912
-+ufs912      ufs912
++hdbox             fs9000
++octagon1008       hs9510
++atevio7500        fs9000
++hs7110            hs7110
++hs7119            hs7110
++hs7420            hs9510
++hs7429            hs9510
++hs7810a           hs9510
++hs7819            hs9510
++spark             spark
++spark7162         spark
++tf7700hdpvr       tf7700
++ufs910            ufs912
++ufs912            ufs912
++cuberevo          cuberevo_uni
++cuberevo-mini-fta cuberevo_uni
++cuberevo-250hd    cuberevo_uni
++cuberevo-mini     cuberevo_uni
++cuberevo-mini2    cuberevo_uni
++cuberevo-2000hd   cuberevo_uni
++cuberevo-3000hd   cuberevo_uni
++cuberevo-9500hd   cuberevo_uni
++vitamin_hd5000    vitamin
 --- enigma2.org/data/rc_models/Makefile.am
 +++ enigma2/data/rc_models/Makefile.am
-@@ -3,12 +3,8 @@
+@@ -2,13 +2,9 @@
+ 
  dist_install_DATA = \
  	rc_models.cfg \
 -	dmmadv.png amiko.png amiko1.png edision1.png et4x00.png et8000.png et9x00.png vu.png xp1000.png \
 -	dmm.png et6x00.png et9500.png vuduo2.png vuultimo.png vu2.png et7x00.png formuler1.png \
 -	hd2400.png hd-gen.png vs1x00.png wetekplay.png osmini.png zgemma.png miraclebox.png miraclebox2.png \
 -	spycat.png xpeedlx.png revo4k.png sab.png sh1.png i55.png qviart.png gb7252.png e4hd.png \
--	edision2.png edision3.png edision4.png hd60.png \
+-	edision2.png edision3.png edision4.png hd60.png lunix4k.png \
 -	dmmadv.xml edision1.xml et4x00.xml et8000.xml et9x00.xml vuultimo.xml xp1000.xml dmm.xml amiko.xml \
 -	amiko1.xml et6x00.xml et9500.xml et7x00.xml vuduo2.xml vu.xml vu2.xml formuler1.xml hd2400.xml hd-gen.xml \
 -	vs1x00.xml xsarius.xml xsarius.png wetekplay.xml osmini.xml zgemma.xml miraclebox.xml miraclebox2.xml \
 -	spycat.xml xpeedlx.xml et7000mini.png et7000mini.xml revo4k.xml sab.xml sh1.xml i55.xml qviart.xml \
--	gb7252.xml e4hd.xml edision2.xml edision3.xml edision4.xml hd60.xml
+-	gb7252.xml e4hd.xml edision2.xml edision3.xml edision4.xml hd60.xml lunix4k.xml
 +	dmmadv.png \
-+	fs9000.png  hs7110.png  hs9510.png  spark.png tf7700.png ufs912.png \
++	cuberevo_uni.png fs9000.png  hs7110.png  hs9510.png  spark.png tf7700.png ufs912.png vitamin.png \
 +	dmm.png \
 +	dmmadv.xml  \
-+	fs9000.xml  hs7110.xml  hs9510.xml  spark.xml tf7700.xml ufs912.xml \
++	cuberevo_uni.xml fs9000.xml  hs7110.xml  hs9510.xml  spark.xml tf7700.xml ufs912.xml vitamin.xml \
 +	dmm.xml
 
