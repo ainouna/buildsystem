@@ -117,7 +117,7 @@
 +						data['active'] = 'True'.encode("UTF-8")
 +
 +					if data["active"] == 'True':
-						self.activeMountsCounter +=1
+ 						self.activeMountsCounter +=1
 -					data['hdd_replacement'] = getValue(mount.findall("hdd_replacement"), "False").encode("UTF-8")
 -					data['ip'] = getValue(mount.findall("ip"), "").encode("UTF-8")
 -					data['host'] = getValue(mount.findall("host"), "").encode("UTF-8")
@@ -153,9 +153,9 @@
 +						data['hdd_replacement'] = 'True'.encode("UTF-8")
 +					else:
 +						data['hdd_replacement'] = 'False'.encode("UTF-8")
-					self.automounts[data['sharename']] = data
-				except Exception, e:
-					print "[MountManager] Error reading Mounts:", e
+ 					self.automounts[data['sharename']] = data
+ 				except Exception, e:
+ 					print "[MountManager] Error reading Mounts:", e
 -			# Read out CIFS Mounts
 -		for nfs in tree.findall("cifs"):
 -			for mount in nfs.findall("mount"):
@@ -189,9 +189,9 @@
 +		if callback is not None:
 +			callback(True)
  
- 	def sanitizeOptions(self, origOptions, cifs=False):
+ 	def sanitizeOptions(self, origOptions, cifs=False, username=None, password=None):
  		# split the options into their components
-@@ -169,72 +179,18 @@
+@@ -175,72 +185,19 @@
  
  	def CheckMountPoint(self, item, callback):
  		data = self.automounts[item]
@@ -226,8 +226,7 @@
 -
 -					elif data['mounttype'] == 'cifs':
 -						if not os.path.ismount(path):
--							options = self.sanitizeOptions(data['options'], True)
--							options += "username="+ data['username'].replace(" ", "\\ ") + ",password="+ data['password']
+-							options = self.sanitizeOptions(data['options'], True, data['username'].replace(" ", "\\ "), data['password'])
 -							tmpcmd = "mount -t cifs -o %s '//%s/%s' '%s'" % (options, host, data['sharedir'], path)
 -							command = tmpcmd.encode("UTF-8")
 -				except Exception, ex:
@@ -262,16 +261,18 @@
 -							harddiskmanager.removeMountedPartition(path)
 -						except Exception, ex:
 -						        print "Failed to remove", path, "Error:", ex
+-		if self.checkList:
 +		if self.automounts.has_key(data['sharename']):
 +			self.automounts[data['sharename']]['isMounted'] = True
 +			desc = data['sharename']
 +			if self.automounts[data['sharename']]['hdd_replacement'] == 'True': #hdd replacement hack
 +				self.makeHDDlink(path)
 +			harddiskmanager.addMountedPartition(path, desc)
- 		if self.checkList:
++ 		if self.checkList:
  			# Go to next item in list...
  			self.CheckMountPoint(self.checkList.pop(), callback)
-@@ -265,13 +221,6 @@
+ 		if self.MountConsole:
+@@ -270,13 +227,6 @@
  			except Exception, ex:
  				print "[AutoMount.py] Failed to create ", movie, "Error:", ex
  
@@ -285,7 +286,7 @@
  
  	def getMountsList(self):
  		return self.automounts
-@@ -288,30 +237,31 @@
+@@ -293,30 +243,31 @@
  
  	def writeMountsConfig(self):
  		# Generate List in RAM
@@ -338,7 +339,7 @@
  
  		# Try Saving to Flash
  		try:
-@@ -319,9 +269,6 @@
+@@ -324,9 +275,6 @@
  		except Exception, e:
  			print "[AutoMount.py] Error Saving Mounts List:", e
  
@@ -348,7 +349,7 @@
  
  	def removeMount(self, mountpoint, callback = None):
  		print "[AutoMount.py] removing mount: ",mountpoint
-@@ -331,28 +278,6 @@
+@@ -336,28 +284,6 @@
  				self.newautomounts[sharename] = sharedata
  		self.automounts.clear()
  		self.automounts = self.newautomounts
@@ -377,5 +378,4 @@
  
  
  iAutoMount = AutoMount()
-
 
