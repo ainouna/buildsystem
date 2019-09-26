@@ -8704,7 +8704,22 @@
  #endif
  
  /* Defined in bsod.cpp */
-@@ -172,7 +170,6 @@
+@@ -105,7 +103,14 @@
+ {
+ 	/* show no more than one bsod while shutting down/crashing */
+ 	if (bsodhandled)
++	{
++		if (component)
++		{
++			sleep(1);
++			raise(SIGKILL);
++		}
+ 		return;
++	}
+ 	bsodhandled = true;
+ 
+ 	if (!component)
+@@ -172,7 +177,6 @@
  			component);
  
  		stringFromFile(f, "stbmodel", "/proc/stb/info/boxtype");
@@ -8712,7 +8727,7 @@
  		stringFromFile(f, "stbmodel", "/proc/stb/info/model");
  		stringFromFile(f, "kernelcmdline", "/proc/cmdline");
  		stringFromFile(f, "nimsockets", "/proc/bus/nim_sockets");
-@@ -198,7 +195,7 @@
+@@ -198,7 +202,7 @@
  	gPainter p(my_dc);
  	p.resetOffset();
  	p.resetClip(eRect(ePoint(0, 0), my_dc->size()));
@@ -8721,7 +8736,7 @@
  	p.setForegroundColor(gRGB(0xFFFFFF));
  
  	int hd =  my_dc->size().width() == 1920;
-@@ -212,14 +209,14 @@
+@@ -212,14 +216,14 @@
  	os.clear();
  	os << "We are really sorry. Your STB encountered "
  		"a software problem, and needs to be restarted.\n"
@@ -8739,7 +8754,7 @@
  	
  	if (logp2)
  	{
-@@ -263,12 +260,12 @@
+@@ -263,12 +267,12 @@
  
  	if (!logtail.empty())
  	{
