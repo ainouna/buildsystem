@@ -49,10 +49,9 @@ $(D)/links: $(D)/bootstrap $(D)/libpng $(D)/openssl $(ARCHIVE)/links-$(LINKS_VER
 	$(TOUCH)
 
 #
-# neutrino-mp-plugins
+# neutrino-mp-plugin
 #
-NEUTRINO_PLUGINS  = $(D)/neutrino-mp-plugin
-NEUTRINO_PLUGINS += $(D)/neutrino-mp-plugin-scripts-lua
+NEUTRINO_PLUGINS  = $(D)/neutrino-mp-plugin-scripts-lua
 NEUTRINO_PLUGINS += $(D)/neutrino-mp-plugin-mediathek
 NEUTRINO_PLUGINS += $(D)/neutrino-mp-plugin-xupnpd
 NEUTRINO_PLUGINS += $(LOCAL_NEUTRINO_PLUGINS)
@@ -101,7 +100,7 @@ $(D)/neutrino-mp-plugin.do_compile: $(D)/neutrino-mp-plugin.config.status
 	$(MAKE) -C $(NP_OBJDIR) DESTDIR=$(TARGET_DIR)
 	@touch $@
 
-$(D)/neutrino-mp-plugin: $(D)/neutrino-mp $(D)/neutrino-mp-plugin.do_prepare $(D)/neutrino-mp-plugin.do_compile
+$(D)/neutrino-mp-plugin: $(D)/$(NEUTRINO_MP) $(D)/neutrino-mp-plugin.do_prepare $(D)/neutrino-mp-plugin.do_compile
 	$(MAKE) -C $(NP_OBJDIR) install DESTDIR=$(TARGET_DIR)
 	$(TOUCH)
 
@@ -219,7 +218,7 @@ $(D)/neutrino-mp-plugin-iptvplayer: $(D)/librtmp $(D)/python_twisted_small
 	$(TOUCH)
 
 #
-# neutrino-hd2 plugins
+# neutrino-hd2 plugin
 #
 NEUTRINO_HD2_PLUGINS_PATCHES =
 
@@ -259,13 +258,13 @@ $(D)/neutrino-hd2-plugin: $(D)/neutrino-hd2 neutrino-hd2-plugin.do_prepare neutr
 	$(MAKE) -C $(SOURCE_DIR)/neutrino-hd2-plugins install DESTDIR=$(TARGET_DIR) top_srcdir=$(SOURCE_DIR)/neutrino-hd2
 	$(TOUCH)
 
-neutrino-hd2-plugins-clean:
+neutrino-hd2-plugin-clean:
 	$(SILENT)cd $(SOURCE_DIR)/neutrino-hd2-plugins
 	$(MAKE) clean
 	$(SILENT)rm -f $(D)/neutrino-hd2-plugin
 	$(SILENT)rm -f $(D)/neutrino-hd2-plugin.config.status
 
-neutrino-hd2-plugins-distclean:
+neutrino-hd2-plugin-distclean:
 	rm -f $(D)/neutrino-hd2-plugin
 	rm -f $(D)/neutrino-hd2-plugin.config.status
 	rm -f $(D)/neutrino-hd2-plugin.do_prepare

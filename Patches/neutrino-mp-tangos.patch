@@ -1,20 +1,20 @@
 --- neutrino-mp-tangos.org/acinclude.m4
 +++ neutrino-mp-tangos/acinclude.m4
-@@ -490,6 +490,14 @@
- 			BOXTYPE="duckbox"
+@@ -487,6 +487,14 @@
  			BOXMODEL="$withval"
  		;;
+ 		hl101)
++			BOXTYPE="duckbox"
++			BOXMODEL="$withval"
++		;;
 +		adb_box)
 +			BOXTYPE="duckbox"
 +			BOXMODEL="$withval"
 +		;;
 +		vitamin_hd5000)
-+			BOXTYPE="duckbox"
-+			BOXMODEL="$withval"
-+		;;
- 		hd51|hd60|bre2ze4k|vusolo4k|vuduo4k)
- 			BOXTYPE="armbox"
+ 			BOXTYPE="duckbox"
  			BOXMODEL="$withval"
+ 		;;
 @@ -506,7 +514,7 @@
  
  AC_ARG_WITH(boxmodel,
@@ -22,7 +22,7 @@
 -AS_HELP_STRING([], [valid for duckbox: ufs910, ufs912, ufs913, ufs922, atevio7500, fortis_hdbox, octagon1008, hs7110, hs7810a, hs7119, hs7819, dp7000, cuberevo, cuberevo_mini, cuberevo_mini2, cuberevo_250hd, cuberevo_2000hd, cuberevo_3000hd, ipbox9900, ipbox99, ipbox55, arivalink200, tf7700, hl101])
 +AS_HELP_STRING([], [valid for duckbox: ufs910, ufs912, ufs913, ufs922, atevio7500, fortis_hdbox, octagon1008, hs7110, hs7420, hs7810a, hs7119, hs7429, hs7819, cuberevo, cuberevo_mini, cuberevo_mini2, cuberevo_250hd, cuberevo_2000hd, cuberevo_3000hd, ipbox9900, ipbox99, ipbox55, arivalink200, tf7700, hl101, adb_box, vitamin_hd5000])
  AS_HELP_STRING([], [valid for spark: spark, spark7162])
- AS_HELP_STRING([], [valid for armbox: hd51, hd60, vusolo4k, vuduo4k])
+ AS_HELP_STRING([], [valid for armbox: hd51, hd60, hd61, bre2ze4k, vusolo4k, vuduo4k, vuultimo4k, vuzero4k, vuuno4kse, vuuno4k])
  AS_HELP_STRING([], [valid for mipsbox: vuduo])
 @@ -531,7 +539,7 @@
  				AC_MSG_ERROR([unknown model $withval for boxtype $BOXTYPE])
@@ -81,7 +81,7 @@
  	AC_DEFINE(ENABLE_CHANGE_OSD_RESOLUTION, 1, [enable change the osd resolution])
 --- neutrino-mp-tangos.org/src/neutrino.cpp
 +++ neutrino-mp-tangos/src/neutrino.cpp
-@@ -4740,6 +4740,9 @@
+@@ -4760,6 +4760,9 @@
  
  		CVFD::getInstance()->Clear();
  		CVFD::getInstance()->setMode(CVFD::MODE_STANDBY);
@@ -91,7 +91,7 @@
  		CVFD::getInstance()->setBacklight(g_settings.backlight_standby);
  
  		InfoClock->enableInfoClock(false);
-@@ -4775,7 +4778,11 @@
+@@ -4795,7 +4798,11 @@
  		// Active standby off
  		powerManager->SetStandby(false, false);
  		CVFD::getInstance()->setMode(CVFD::MODE_TVRADIO);
@@ -972,7 +972,7 @@
  #include <gui/widget/stringinput_ext.h>
  #include <gui/screensetup.h>
  #include <gui/widget/msgbox.h>
-@@ -1444,15 +1444,15 @@
+@@ -1446,15 +1446,15 @@
  #if HAVE_SH4_HARDWARE
  	old3dmode = frameBuffer->get3DMode();
  #endif
@@ -997,7 +997,7 @@
  	pthread_t thrStartHint = 0;
  	if (is_file_player) {
  		showStartingHint = true;
-@@ -1670,14 +1670,14 @@
+@@ -1672,14 +1672,14 @@
  
  	while (playstate >= CMoviePlayerGui::PLAY)
  	{
@@ -1020,7 +1020,7 @@
  		if (update_lcd || g_settings.movieplayer_display_playtime) {
  			update_lcd = false;
  			updateLcd(g_settings.movieplayer_display_playtime);
-@@ -2247,12 +2247,12 @@
+@@ -2254,12 +2254,12 @@
  	CScreenSetup cSS;
  	cSS.showBorder(CZapit::getInstance()->GetCurrentChannelID());
  #endif
@@ -1039,7 +1039,7 @@
  	if (iso_file) {
  		iso_file = false;
  		if (umount2(ISO_MOUNT_POINT, MNT_FORCE))
-@@ -2372,10 +2372,10 @@
+@@ -2379,10 +2379,10 @@
  		}
  		if (!movie_info.channelName.empty() || !movie_info.epgTitle.empty())
  			p_movie_info = &movie_info;
@@ -1054,7 +1054,7 @@
  	}
  
  	if (p_movie_info) {
-@@ -2903,10 +2903,10 @@
+@@ -2910,10 +2910,10 @@
  		tuxtx_pause_subtitle(true);
  		frameBuffer->paintBackground();
  	}
@@ -1069,7 +1069,7 @@
  #endif
  }
  
-@@ -2944,9 +2944,9 @@
+@@ -2951,9 +2951,9 @@
  {
  #if HAVE_SH4_HARDWARE || HAVE_ARM_HARDWARE || HAVE_MIPS_HARDWARE
  	printf("[CMoviePlayerGui] %s: %s\n", __FUNCTION__, show ? "Show" : "Not show");
