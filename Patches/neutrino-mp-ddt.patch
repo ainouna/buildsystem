@@ -1,37 +1,48 @@
 --- neutrino-mp-ddt.org/acinclude.m4
 +++ neutrino-mp-ddt/acinclude.m4
-@@ -384,7 +384,7 @@
+@@ -368,6 +368,10 @@
+ 			BOXTYPE="duckbox"
+ 			BOXMODEL="$withval"
+ 		;;
++		adb_box)
++			BOXTYPE="duckbox"
++			BOXMODEL="$withval"
++		;;
+ 		hd51|hd60|vusolo4k|vuduo4k|vuultimo4k|vuzero4k|vuuno4kse|vuuno4k)
+ 			BOXTYPE="armbox"
+ 			BOXMODEL="$withval"
+@@ -384,7 +388,7 @@
  
  AC_ARG_WITH(boxmodel,
  	AS_HELP_STRING([--with-boxmodel], [valid for coolstream: hd1, hd2])
 -AS_HELP_STRING([], [valid for duckbox: ufs910, ufs912, ufs913, ufs922, atevio7500, fortis_hdbox, octagon1008, hs7110, hs7810a, hs7119, hs7819, dp7000, cuberevo, cuberevo_mini, cuberevo_mini2, cuberevo_250hd, cuberevo_2000hd, cuberevo_3000hd, ipbox9900, ipbox99, ipbox55, arivalink200, tf7700, hl101])
-+AS_HELP_STRING([], [valid for duckbox: ufs910, ufs912, ufs913, ufs922, atevio7500, fortis_hdbox, octagon1008, hs7110, hs7420, hs7810a, hs7119, hs7429, hs7819, cuberevo, cuberevo_mini, cuberevo_mini2, cuberevo_250hd, cuberevo_2000hd, cuberevo_3000hd, ipbox9900, ipbox99, ipbox55, arivalink200, tf7700, hl101])
++AS_HELP_STRING([], [valid for duckbox: adb_box ufs910, ufs912, ufs913, ufs922, atevio7500, fortis_hdbox, octagon1008, hs7110, hs7420, hs7810a, hs7119, hs7429, hs7819, cuberevo, cuberevo_mini, cuberevo_mini2, cuberevo_250hd, cuberevo_2000hd, cuberevo_3000hd, ipbox9900, ipbox99, ipbox55, arivalink200, tf7700, hl101])
  AS_HELP_STRING([], [valid for spark: spark, spark7162])
- AS_HELP_STRING([], [valid for armbox: hd51, hd60, vusolo4k, vuduo4k])
+ AS_HELP_STRING([], [valid for armbox: hd51, hd60, vusolo4k, vuduo4k, vuultimo4k, vuzero4k, vuuno4kse, vuuno4k])
  AS_HELP_STRING([], [valid for mipsbox: vuduo])
-@@ -409,7 +409,7 @@
+@@ -409,7 +413,7 @@
  				AC_MSG_ERROR([unknown model $withval for boxtype $BOXTYPE])
  			fi
  		;;
 -		ufs910|ufs912|ufs913|ufs922|atevio7500|fortis_hdbox|octagon1008|hs7110|hs7810a|hs7119|hs7819|dp7000|cuberevo|cuberevo_mini|cuberevo_mini2|cuberevo_250hd|cuberevo_2000hd|cuberevo_3000hd|ipbox9900|ipbox99|ipbox55|arivalink200|tf7700|hl101)
-+		ufs910|ufs912|ufs913|ufs922|atevio7500|fortis_hdbox|octagon1008|hs7110|hs7420|hs7810a|hs7119|hs7429|hs7819|cuberevo|cuberevo_mini|cuberevo_mini2|cuberevo_250hd|cuberevo_2000hd|cuberevo_3000hd|ipbox9900|ipbox99|ipbox55|arivalink200|tf7700|hl101)
++		adb_box|ufs910|ufs912|ufs913|ufs922|atevio7500|fortis_hdbox|octagon1008|hs7110|hs7420|hs7810a|hs7119|hs7429|hs7819|cuberevo|cuberevo_mini|cuberevo_mini2|cuberevo_250hd|cuberevo_2000hd|cuberevo_3000hd|ipbox9900|ipbox99|ipbox55|arivalink200|tf7700|hl101)
  			if test "$BOXTYPE" = "duckbox"; then
  				BOXMODEL="$withval"
  			else
-@@ -474,10 +474,11 @@
+@@ -474,10 +478,11 @@
  AM_CONDITIONAL(BOXMODEL_FORTIS_HDBOX, test "$BOXMODEL" = "fortis_hdbox")
  AM_CONDITIONAL(BOXMODEL_OCTAGON1008, test "$BOXMODEL" = "octagon1008")
  AM_CONDITIONAL(BOXMODEL_HS7110, test "$BOXMODEL" = "hs7110")
-+AM_CONDITIONAL(BOXMODEL_HS7810A, test "$BOXMODEL" = "hs7420")
++AM_CONDITIONAL(BOXMODEL_HS7420, test "$BOXMODEL" = "hs7420")
  AM_CONDITIONAL(BOXMODEL_HS7810A, test "$BOXMODEL" = "hs7810a")
  AM_CONDITIONAL(BOXMODEL_HS7119, test "$BOXMODEL" = "hs7119")
-+AM_CONDITIONAL(BOXMODEL_HS7810A, test "$BOXMODEL" = "hs7429")
++AM_CONDITIONAL(BOXMODEL_HS7429, test "$BOXMODEL" = "hs7429")
  AM_CONDITIONAL(BOXMODEL_HS7819, test "$BOXMODEL" = "hs7819")
 -AM_CONDITIONAL(BOXMODEL_DP7000, test "$BOXMODEL" = "dp7000")
  
  AM_CONDITIONAL(BOXMODEL_CUBEREVO, test "$BOXMODEL" = "cuberevo")
  AM_CONDITIONAL(BOXMODEL_CUBEREVO_MINI, test "$BOXMODEL" = "cuberevo_mini")
-@@ -545,14 +546,16 @@
+@@ -550,14 +555,16 @@
  	AC_DEFINE(BOXMODEL_OCTAGON1008, 1, [octagon1008])
  elif test "$BOXMODEL" = "hs7110"; then
  	AC_DEFINE(BOXMODEL_HS7110, 1, [hs7110])
@@ -52,18 +63,6 @@
  elif test "$BOXMODEL" = "cuberevo"; then
  	AC_DEFINE(BOXMODEL_CUBEREVO, 1, [cuberevo])
  elif test "$BOXMODEL" = "cuberevo_mini"; then
---- neutrino-mp-ddt.org/src/driver/simple_display.cpp
-+++ neutrino-mp-ddt/src/driver/simple_display.cpp
-@@ -39,6 +39,9 @@
- #include <sys/stat.h>
- 
- #if HAVE_SPARK_HARDWARE
-+struct semaphore {
-+	int dummy;
-+};
- #include <aotom_main.h>
- #define DISPLAY_DEV "/dev/vfd"
- #include <zapit/zapit.h>
 --- neutrino-mp-ddt.org/src/driver/vfd.cpp
 +++ neutrino-mp-ddt/src/driver/vfd.cpp
 @@ -52,21 +52,38 @@

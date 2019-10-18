@@ -1,5 +1,18 @@
---- libstb-hal-cst-next.org/include/cs_frontpanel.h
-+++ libstb-hal-cst-next/include/cs_frontpanel.h
+--- libstb-hal-ddt.org/acinclude.m4
++++ libstb-hal-ddt/acinclude.m4
+@@ -208,6 +208,10 @@
+ 			BOXMODEL="$withval"
+ 		;;
+ 		hl101)
++			BOXTYPE="duckbox"
++			BOXMODEL="$withval"
++		;;
++		adb_box)
+ 			BOXTYPE="duckbox"
+ 			BOXMODEL="$withval"
+ 		;;
+--- libstb-hal-ddt.org/include/cs_frontpanel.h
++++ libstb-hal-ddt/include/cs_frontpanel.h
 @@ -28,7 +28,7 @@
  
  typedef enum {
@@ -420,8 +433,8 @@
  		avfc->probesize = 131072;
  	}
  #if 0
---- libstb-hal-cst-next.org/libduckbox/hardware_caps.c
-+++ libstb-hal-cst-next/libduckbox/hardware_caps.c
+--- libstb-hal-ddt.org/libduckbox/hardware_caps.c
++++ libstb-hal-ddt/libduckbox/hardware_caps.c
 @@ -138,6 +138,15 @@
  			caps.can_cec = 1;
  			caps.has_fan = 0;
@@ -454,8 +467,8 @@
  			strcpy(caps.boxvendor, "DUCKBOX");
  			strcpy(caps.boxname, buf);
  			caps.can_shutdown = 1;
---- libstb-hal-cst-next/tools/spark_fp.c.org
-+++ libstb-hal-cst-next/tools/spark_fp.c
+--- libstb-hal-ddt/tools/spark_fp.c.org
++++ libstb-hal-ddt/tools/spark_fp.c
 @@ -30,6 +30,10 @@
  #include <time.h>
  #include <unistd.h>
@@ -505,8 +518,8 @@
  				}
  				break;
  // Reminder to myself, here's a semi-sane default for Pingulux boxes:
---- libstb-hal-cst-next/libspark/hardware_caps.c.org
-+++ libstb-hal-cst-next/libspark/hardware_caps.c
+--- libstb-hal-ddt/libspark/hardware_caps.c.org
++++ libstb-hal-ddt/libspark/hardware_caps.c
 @@ -14,6 +14,10 @@
  #include <string.h>
  #include <unistd.h>
