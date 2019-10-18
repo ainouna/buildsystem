@@ -1007,7 +1007,7 @@ $(D)/libconfig: $(D)/bootstrap $(ARCHIVE)/$(LIBCONFIG_SOURCE)
 #
 # libcurl
 #
-LIBCURL_VER = 7.61.1
+LIBCURL_VER = 7.65.3
 LIBCURL_SOURCE = curl-$(LIBCURL_VER).tar.bz2
 LIBCURL_PATCH = libcurl-$(LIBCURL_VER).patch
 
@@ -1510,6 +1510,9 @@ FFMPEG_DEPS =
 FFMPEG_CONF_OPTS = 
 FFMPEG_EXTRA_CFLAGS = -I$(TARGET_DIR)/usr/include
 
+ifneq ($(BOXTYPE), $(filter $(BOXTYPE), ufs910 ufs922))
+FFMPEG_CONF_OPTS = --enable-muxer=hevc --enable-parser=hevc --enable-decoder=hevc
+endif
 $(ARCHIVE)/$(FFMPEG_SOURCE):
 	$(WGET) http://www.ffmpeg.org/releases/$(FFMPEG_SOURCE)
 
