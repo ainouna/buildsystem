@@ -522,6 +522,8 @@ $(D)/jfsutils: $(D)/bootstrap $(D)/e2fsprogs $(ARCHIVE)/$(JFSUTILS_SOURCE)
 #
 NTFS_3G_VER = 2017.3.23
 NTFS_3G_SOURCE = ntfs-3g_ntfsprogs-$(NTFS_3G_VER).tgz
+NTFS_3G_PATCH = ntfs-3g-fuseint-fix-path-mounted-on-musl.patch
+NTFS_3G_PATCH += ntfs-3g-sysmacros.patch
 
 $(ARCHIVE)/$(NTFS_3G_SOURCE):
 	$(WGET) https://tuxera.com/opensource/$(NTFS_3G_SOURCE)
@@ -531,6 +533,7 @@ $(D)/ntfs_3g: $(D)/bootstrap $(ARCHIVE)/$(NTFS_3G_SOURCE)
 	$(REMOVE)/ntfs-3g_ntfsprogs-$(NTFS_3G_VER)
 	$(UNTAR)/$(NTFS_3G_SOURCE)
 	set -e; cd $(BUILD_TMP)/ntfs-3g_ntfsprogs-$(NTFS_3G_VER); \
+		$(call apply_patches, $(NTFS_3G_PATCH)); \
 		$(CONFIGURE) \
 			--prefix=/usr \
 			--exec-prefix=/usr \
@@ -759,7 +762,7 @@ $(D)/hddtemp: $(D)/bootstrap $(ARCHIVE)/$(HDDTEMP_SOURCE)
 #
 # hdparm
 #
-HDPARM_VER = 9.54
+HDPARM_VER = 9.58
 HDPARM_SOURCE = hdparm-$(HDPARM_VER).tar.gz
 
 $(ARCHIVE)/$(HDPARM_SOURCE):
@@ -1142,7 +1145,7 @@ $(D)/coreutils: $(D)/bootstrap $(D)/openssl $(ARCHIVE)/$(COREUTILS_SOURCE)
 #
 # smartmontools
 #
-SMARTMONTOOLS_VER = 6.6
+SMARTMONTOOLS_VER = 7.0
 SMARTMONTOOLS_SOURCE = smartmontools-$(SMARTMONTOOLS_VER).tar.gz
 
 $(ARCHIVE)/$(SMARTMONTOOLS_SOURCE):
@@ -1157,7 +1160,7 @@ $(D)/smartmontools: $(D)/bootstrap $(ARCHIVE)/$(SMARTMONTOOLS_SOURCE)
 			--prefix=/usr \
 		; \
 		$(MAKE); \
-		$(MAKE) install prefix=$(TARGET_DIR)/usr
+		$(MAKE) install prefix=$(TARGET_DIR)/usr mandir=./remove
 	$(REMOVE)/smartmontools-$(SMARTMONTOOLS_VER)
 	$(TOUCH)
 
