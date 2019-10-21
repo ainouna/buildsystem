@@ -1,26 +1,20 @@
 #!/bin/sh
-#Version 1901018.1
+#Version 1901021.1
 
 echo "ADB ITI-5800S(X) Neutrino"
 
 MODDIR=/lib/modules
 insmod $MODDIR/e2_proc.ko
 
-if [ -e $MODDIR/cpu_frequ.ko ]; then
-  insmod $MODDIR/cpu_frequ.ko
-  sleep 2
-  ls /proc/cpu_frequ
-  echo 22802 > /proc/cpu_frequ/pll0_ndiv_mdiv  # 267 MHz = 22802
-  echo 22793 > /proc/cpu_frequ/pll1_ndiv_mdiv  # 267 MHz = 22793
-fi
+#if [ -e $MODDIR/cpu_frequ.ko ]; then
+#  insmod $MODDIR/cpu_frequ.ko
+#  sleep 2
+#  echo 22802 > /proc/cpu_frequ/pll0_ndiv_mdiv  # 267 MHz = 22802
+#  echo 22793 > /proc/cpu_frequ/pll1_ndiv_mdiv  # 267 MHz = 22793
+#fi
 
 echo "[rcS] Init frontpanel"
-vfd_on=`cat /etc/enigma2/settings | grep vfdicon.vfd_enable | cut -d "=" -f2`
-if [ "$vfd_on" == "true" ]; then
-  insmod $MODDIR/adb_5800_fp.ko vfd_display=1 #paramDebug=10
-else
-  insmod $MODDIR/adb_5800_fp.ko #paramDebug=10
-fi
+insmod $MODDIR/adb_5800_fp.ko #paramDebug=10
 insmod $MODDIR/simu_button.ko
 
 #boxtype=`cat /proc/stb/info/adb_variant` # TODO: fix, does not work
@@ -64,11 +58,11 @@ else
    echo "LOAD 9" > /dev/vfd
 fi
 insmod $MODDIR/stmcore-display-stx7100.ko
-   insmod $MODDIR/stmfb.ko display0=1280x720-32@50:16m::pal:rgb:rgb #HDMI
+   insmod $MODDIR/stmfb.ko display0=1280x720-32@50:16m::pal:rgb:rgb display1=720x576i-32@50:1m::pal:cvbs:rgb
 
 echo "[rcS] Loading modules"
 
-if [ ! -e /boot/audio.elf ] || [ ! -e /boot/video.elf ]; then
+if [ ! -e /lib/firmware/audio.elf ] || [ ! -e /lib/firmware/video.elf ]; then
    echo "[rcS] Firmware(s) missing!"
    echo "FW MISSING!" > /dev/vfd
    sleep 5
@@ -80,7 +74,7 @@ if [ $boxtype == 'bska' ] || [ $boxtype == 'bxzb' ]; then
 else
    echo "LOAD 8" > /dev/vfd
 fi
-/bin/ustslave /dev/st231-1 /boot/audio.elf > /dev/null
+/bin/ustslave /dev/st231-1 /lib/firmware/audio.elf > /dev/null
 
 echo "[rcS] Load video firmware (LOAD 7)"
 if [ $boxtype == 'bska' ] || [ $boxtype == 'bxzb' ]; then
@@ -88,7 +82,7 @@ if [ $boxtype == 'bska' ] || [ $boxtype == 'bxzb' ]; then
 else
    echo "LOAD 7" > /dev/vfd
 fi
-/bin/ustslave /dev/st231-0 /boot/video.elf > /dev/null
+/bin/ustslave /dev/st231-0 /lib/firmware/video.elf > /dev/null
 
 echo "[rcS] Init embx (LOAD 6)"
 if [ $boxtype == 'bska' ] || [ $boxtype == 'bxzb' ]; then
@@ -97,7 +91,7 @@ else
    echo "LOAD 6" > /dev/vfd
 fi
 insmod $MODDIR/embxshell.ko
-insmod $MODDIR/embxmailbox.ko mailbox0=0xb9211000:136:set2 mailbox1=0xb9212000:0
+insmod $MODDIR/embxmailbox.ko mailbox0=0xb9211000:136:set2 mailbox1=0xb9212000:137:set2
 insmod $MODDIR/embxshm.ko mailbox0=shm:0:7:0x60000000:0:256:256:0:1024:0xa4000000:0x10000000
 insmod $MODDIR/mme_host.ko transport0=shm
    
@@ -221,18 +215,34 @@ mkdir -p /var/run/lirc
 /bin/evremote2 &
 
 # OpenSSh daemon
-openssh=`cat /etc/enigma2/settings | grep systemoptions.openssh | cut -d "=" -f2`
-if [ ! $openssh ] || [ ! -e /etc/init.d/sshd ]; then
-   echo "[rcS] No OpenSSH"
-else
-   if [ -e /etc/init.d/sshd ]; then
-      (sleep 30; /etc/init.d/sshd start) &
-   fi
+if [ -e /etc/init.d/sshd ]; then
+   (sleep 30; /etc/init.d/sshd start) &
 fi
 
 # Module aus modules.extra laden
-   [ -f /var/etc/modules.extra ] && eval `sed -e 's/#.*//' -e '/^\s*$/d' -e 's/^\(.*\)/insmod \0;/' < /var/etc/modules.extra`
+[ -f /var/etc/modules.extra ] && eval `sed -e 's/#.*//' -e '/^\s*$/d' -e 's/^\(.*\)/insmod \0;/' < /var/etc/modules.extra`
 
+NFS=`grep -c nfs /proc/cmdline`
+if [ "$NFS" -eq "1" ]; then
+   echo "[rcS] Booting from nfs, don't set network"
+else
+   if [ -e /etc/network/interfaces ]; then
+      ip addr flush eth0
+      /etc/init.d/networking stop
+      DHCP=`grep -c dhcp /etc/network/interfaces`
+      if [ "$DHCP" -eq "1" ]; then
+         echo "[rcS] Starting DHCP"
+         /etc/init.d/udhcpc start
+      fi
+      /etc/init.d/networking start
+   fi
+fi
+
+if [ $boxtype == 'bska' ] || [ $boxtype == 'bxzb' ]; then
+   echo "Ld 1" > /dev/vfd
+else
+   echo "LOAD 1" > /dev/vfd
+fi
 # Try and synchronise time
 echo "[rcS] Set internet time"
 ntpd -n -p 0.europe.pool.ntp.org -q
@@ -248,9 +258,6 @@ if [ -e /etc/ownscript.sh ]; then
    /etc/ownscript.sh &
 fi
 
-   echo "LOADING neutrino" > /dev/vfd
-   echo "LOADING neutrino"
-
 echo "[rcS] Loading Neutrino"
 if [ $boxtype == 'bska' ] || [ $boxtype == 'bxzb' ]; then
    echo "LdNE" > /dev/vfd
@@ -259,9 +266,7 @@ else
 fi
 until false
 do
-   echo "starting neutrino->"
-   /etc/init.d/networking restart
-   /usr/bin/start-emu.sh
+   echo "[rcS] Starting Neutrino->"
    /usr/bin/neutrino
    rtv=$?
    echo "neutrino ended <- RTV: " $rtv
