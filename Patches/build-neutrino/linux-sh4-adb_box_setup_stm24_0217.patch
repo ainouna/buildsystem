@@ -7,7 +7,7 @@
 +	{  // change command line supplied by boot loader to desired one; inserted suplied MAC
 +		int command_line_len = strlen(command_line);
 +		char org_command_line[] = "console=ttyAS0,115200 root=/dev/mtdblock0 rw rootfstype=jffs2";
-+		char new_command_line[] = "console=ttyAS0,115200 ubi.mtd=3 root=ubi0:rootfs rootfstype=ubifs rw init=/bin/devinit mem=128m coprocessor_mem=4m@0x10000000,4m@0x10400000 nwhwconf=device:eth0,hwaddr:";
++		char new_command_line[] = "console=ttyAS0,115200 ubi.mtd=0 root=ubi0:rootfs rootfstype=ubifs rw init=/bin/devinit mem=128m coprocessor_mem=4m@0x10000000,4m@0x10400000 nwhwconf=device:eth0,hwaddr:";
 +		char mac[] = "12:34:56:78:9A:BC";
 +		int org_command_line_len = strlen(org_command_line);
 +		int i;
@@ -111,7 +111,7 @@
 + 0x10000000 - 0x103FFFFF - cocpu 1 ram ( 4mb)
 + 0x10400000 - 0x107FFFFF - cocpu 2 ram ( 4mb)
 + 0x10800000 - 0x13FFFFFF - lmi_vid     (56mb)
-+ 0x14000000 - 0x15BFFFFF - lmi_sys     (28mb)
++ 0x14000000 - 0x163FFFFF - lmi_sys     (36mb)
 +*/
 +static struct bpa2_partition_desc bpa2_parts_table[] = {
 +      {
@@ -124,7 +124,7 @@
 +            {
 +                .name  = "LMI_SYS",
 +                .start = 0,
-+                .size  = 0x01C00000,  // 28Mbyte
++                .size  = 0x02400000,  // 36Mbyte
 +                .flags = 0,
 +                .aka   = LMI_SYS_partalias
 +            }
@@ -331,7 +331,7 @@
 +static struct platform_device *iti_5800_devices[] __initdata =
 +{
 +	&iti_5800_smc91x_device,
-+	&iti_5800_nor_device,
++//	&iti_5800_nor_device,
 +// uncomment next line if you want NAND configuration through a device
 +//	&iti_5800_nand_device,
 +};

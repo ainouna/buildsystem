@@ -79,7 +79,7 @@
   */
  
  #include <linux/init.h>
-@@ -18,100 +21,186 @@
+@@ -18,100 +21,193 @@
  #include <linux/delay.h>
  #include <linux/spi/spi.h>
  #include <linux/mtd/mtd.h>
@@ -104,31 +104,38 @@
 +#include <linux/stm/gpio.h> 
 +
 +const char *LMI_VID_partalias[] = { "BPA2_Region1", "coredisplay-video", "gfx-memory", "v4l2-video-buffers", "v4l2-coded-video-buffers", NULL };
-+
++//const char *gfx-memory_partalias[] = { "BPA2_Region1", "coredisplay-video", "v4l2-video-buffers", "v4l2-coded-video-buffers", NULL };
 +const char *LMI_SYS_partalias[] = { "BPA2_Region0", "bigphysarea", NULL };
 +
 +/*
 + 0x10000000 - 0x103FFFFF - cocpu 1 ram ( 4mb)
 + 0x10400000 - 0x107FFFFF - cocpu 2 ram ( 4mb)
 + 0x10800000 - 0x13FFFFFF - lmi_vid     (56mb)
-+ 0x14000000 - 0x15BFFFFF - lmi_sys     (28mb)
++ 0x14000000 - 0x15FFFFFF - lmi_sys     (32mb)
 +*/
 +static struct bpa2_partition_desc bpa2_parts_table[] = {
-+      {
-+                .name  = "LMI_VID",
-+                .start = 0x10800000,
-+                .size  = 0x03800000,
-+                .flags = 0,
-+                .aka   = LMI_VID_partalias
-+            },
-+            {
-+                .name  = "LMI_SYS",
-+                .start = 0,
-+                .size  = 0x03000000,
-+                .flags = 0,
-+                .aka   = LMI_SYS_partalias
-+            }
-+        };
++	{
++		.name  = "LMI_VID",
++		.start = 0x10800000,
++		.size  = 0x03800000,  // 56 Mbyte
++		.flags = 0,
++		.aka   = LMI_VID_partalias
++	},
++//	{
++//		.name  = "gfx-memory",
++//		.start = 0,
++//		.size  = 0x01000000,  // 16Mbyte (64Mbyte aligned)
++//		.flags = 0,
++//		.aka   = gfx-memory_partalias
++//	},
++	{
++		.name  = "LMI_SYS",
++		.start = 0x00000000,
++		.size  = 0x02000000,  // 32Mbyte
++		.flags = 0,
++		.aka   = LMI_SYS_partalias
++	}
++};
  
  void __init mb442_setup(char** cmdline_p)
  {
@@ -313,7 +320,7 @@
 +	{
 +		.nr_banks         = 1,
 +		.banks            = &iti_5800_nand_bank_data,
-+		.emi_rbn_gpio     = stm_gpio(4, 5), 
++		.emi_rbn_gpio     = stm_gpio(4, 5),
 +		.emi_nce_gpio     = stm_gpio(3, 6) 
 +	},
 +};
