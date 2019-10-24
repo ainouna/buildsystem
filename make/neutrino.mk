@@ -95,32 +95,38 @@ NEUTRINO_DEPS += $(D)/lcd4linux
 endif
 
 ifeq ($(FLAVOUR), neutrino-mp-max)
-GIT_URL      = https://bitbucket.org/max_10
-NEUTRINO_MP  = neutrino-mp-max
-LIBSTB_HAL   = libstb-hal-max
-NMP_BRANCH  ?= master
-HAL_BRANCH  ?= master
-NMP_PATCHES  = $(NEUTRINO_MP_MAX_PATCHES)
-HAL_PATCHES  = $(NEUTRINO_MP_LIBSTB_MAX_PATCHES)
-else ifeq  ($(FLAVOUR), neutrino-mp-tangos)
-GIT_URL      = https://github.com/TangoCash
-NEUTRINO_MP  = neutrino-mp-tangos
-LIBSTB_HAL   = libstb-hal-tangos
-NMP_BRANCH  ?= master
-HAL_BRANCH  ?= master
-NMP_PATCHES  = $(NEUTRINO_MP_TANGOS_PATCHES)
-HAL_PATCHES  = $(NEUTRINO_MP_LIBSTB_TANGOS_PATCHES)
-else ifeq  ($(FLAVOUR), neutrino-mp-ddt)
-GIT_URL      = https://github.com/Duckbox-Developers
-NEUTRINO_MP  = neutrino-mp-ddt
-LIBSTB_HAL   = libstb-hal-ddt
-NMP_BRANCH  ?= master
-HAL_BRANCH  ?= master
-NMP_PATCHES  = $(NEUTRINO_MP_DDT_PATCHES)
-HAL_PATCHES  = $(NEUTRINO_MP_LIBSTB_DDT_PATCHES)
+GIT_URL       = https://bitbucket.org/max_10
+NEUTRINO_MP   = neutrino-mp-max
+LIBSTB_HAL    = libstb-hal-max
+NMP_BRANCH   ?= master
+NMP_CHECKOUT ?= 
+HAL_BRANCH   ?= master
+HAL_CHECKOUT ?= 
+NMP_PATCHES   = $(NEUTRINO_MP_MAX_PATCHES)
+HAL_PATCHES   = $(NEUTRINO_MP_LIBSTB_MAX_PATCHES)
+else ifeq ($(FLAVOUR), neutrino-mp-tangos)
+GIT_URL       = https://github.com/TangoCash
+NEUTRINO_MP   = neutrino-mp-tangos
+LIBSTB_HAL    = libstb-hal-tangos
+NMP_BRANCH   ?= master
+NMP_CHECKOUT ?= f5f2e6e066e99323695989f5cdf606b67256481d
+HAL_BRANCH   ?= master
+HAL_CHECKOUT ?= e64294ac2f42d0bddb5c297decd75d4161ab72b7
+NMP_PATCHES   = $(NEUTRINO_MP_TANGOS_PATCHES)
+HAL_PATCHES   = $(NEUTRINO_MP_LIBSTB_TANGOS_PATCHES)
+else ifeq ($(FLAVOUR), neutrino-mp-ddt)
+GIT_URL       = https://github.com/Duckbox-Developers
+NEUTRINO_MP   = neutrino-mp-ddt
+LIBSTB_HAL    = libstb-hal-ddt
+NMP_BRANCH   ?= master
+NMP_CHECKOUT ?= 89e0ceb8a4018ad94365d71f90acf9e5293ef6cf
+HAL_BRANCH   ?= master
+HAL_CHECKOUT ?= bb724c38a8f3508c586518c54f3f04ab5931a5c4
+NMP_PATCHES   = $(NEUTRINO_MP_DDT_PATCHES)
+HAL_PATCHES   = $(NEUTRINO_MP_LIBSTB_DDT_PATCHES)
 else
-NEUTRINO_MP  = dummy
-LIBSTB_HAL   = dummy2
+NEUTRINO_MP   = dummy
+LIBSTB_HAL    = dummy2
 endif
 
 N_OBJDIR = $(SOURCE_DIR)/$(NEUTRINO_MP)
@@ -166,11 +172,13 @@ $(D)/$(LIBSTB_HAL).do_prepare: | $(NEUTRINO_DEPS)
 		echo " done."; \
 	else \
 		echo -n "Cloning git..."; \
-		git clone $(MINUS_Q) $(GIT_URL)/$(LIBSTB_HAL).git $(ARCHIVE)/$(LIBSTB_HAL).git; \
+		git clone $(MINUS_Q) -b $(HAL_BRANCH) $(GIT_URL)/$(LIBSTB_HAL).git $(ARCHIVE)/$(LIBSTB_HAL).git; \
 		echo " done."; \
 	fi
 	$(SILENT)cp -ra $(ARCHIVE)/$(LIBSTB_HAL).git $(SOURCE_DIR)/$(LIBSTB_HAL)
-	$(SILENT)(cd $(SOURCE_DIR)/$(LIBSTB_HAL); git checkout -q $(HAL_BRANCH);)
+	$(SILENT)echo -n "Checking out commit $(HAL_CHECKOUT)..."
+	$(SILENT)(cd $(SOURCE_DIR)/$(LIBSTB_HAL); git checkout $(MINUS_Q) $(HAL_CHECKOUT))
+	$(SILENT)echo " done."
 	$(SILENT)cp -ra $(SOURCE_DIR)/$(LIBSTB_HAL) $(SOURCE_DIR)/$(LIBSTB_HAL).org
 	$(SET) -e; cd $(SOURCE_DIR)/$(LIBSTB_HAL); \
 		$(call apply_patches, $(HAL_PATCHES))
@@ -232,16 +240,16 @@ $(D)/$(NEUTRINO_MP).do_prepare: | $(NEUTRINO_DEPS) $(D)/$(LIBSTB_HAL)
 		echo -n "Update local git..."; \
 		cd $(ARCHIVE)/$(NEUTRINO_MP).git; \
 		git pull $(MINUS_Q); \
-		cd $(SOURCE_DIR); \
 		echo " done."; \
 	else \
 		echo -n "Cloning git..."; \
-		git clone $(MINUS_Q) $(GIT_URL)/$(NEUTRINO_MP).git $(ARCHIVE)/$(NEUTRINO_MP).git; \
+		git clone $(MINUS_Q) -b $(NMP_BRANCH) $(GIT_URL)/$(NEUTRINO_MP).git $(ARCHIVE)/$(NEUTRINO_MP).git; \
 		echo " done."; \
 	fi
 	$(SILENT)cp -ra $(ARCHIVE)/$(NEUTRINO_MP).git $(SOURCE_DIR)/$(NEUTRINO_MP)
-	$(SILENT)cd $(SOURCE_DIR)/$(NEUTRINO_MP)
-	$(SILENT)git checkout -q $(NMP_BRANCH)
+	$(SILENT)echo -n "Checking out commit $(NMP_CHECKOUT)..."
+	$(SILENT)(cd $(SOURCE_DIR)/$(NEUTRINO_MP); git checkout $(MINUS_Q) $(NMP_CHECKOUT))
+	$(SILENT)echo " done."
 	$(SILENT)cp -ra $(SOURCE_DIR)/$(NEUTRINO_MP) $(SOURCE_DIR)/$(NEUTRINO_MP).org
 	$(SET) -e; cd $(SOURCE_DIR)/$(NEUTRINO_MP); \
 		$(call apply_patches, $(NMP_PATCHES))
@@ -343,15 +351,17 @@ $(NEUTRINO_MP)-plugins-distclean: neutrino-cdkroot-clean
 # neutrino-hd2
 #
 ifeq ($(BOXTYPE), spark)
-NHD2_OPTS = --enable-4digits --enable-scart
+NHD2_OPTS      = --enable-4digits --enable-scart
 else ifeq ($(BOXTYPE), spark7162)
-NHD2_OPTS = --enable-scart
+NHD2_OPTS      = --enable-scart
 #else ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs7119, hs7810a, hs7819))
-#NHD2_OPTS = --enable-ci --enable-4digits
+#NHD2_OPTS     = --enable-ci --enable-4digits
 else
-NHD2_OPTS = --enable-ci --enable-scart
+NHD2_OPTS      = --enable-ci --enable-scart
 endif
 
+NHD2_BRANCH   ?= master
+NHD2_CHECKOUT = d2ec257482e841563ad8c29e1aa5253145e4bd21
 #
 # yaud-neutrino-hd2
 #
@@ -391,11 +401,14 @@ $(D)/neutrino-hd2.do_prepare: | $(NEUTRINO_DEPS) $(NEUTRINO_DEPS2)
 			echo " done."; \
 		else \
 			echo -n "Cloning git..."; \
-			git clone $(MINUS_Q) https://github.com/mohousch/neutrinohd2.git $(ARCHIVE)/neutrino-hd2.git; \
+			git clone $(MINUS_Q) -b $(NHD2_BRANCH) https://github.com/mohousch/neutrinohd2.git $(ARCHIVE)/neutrino-hd2.git; \
 			echo " done."; \
 		fi
 	$(SILENT)cp -ra $(ARCHIVE)/neutrino-hd2.git $(SOURCE_DIR)/neutrino-hd2.git
 	$(SILENT)ln -sf $(SOURCE_DIR)/neutrino-hd2.git/nhd2-exp $(SOURCE_DIR)/neutrino-hd2
+	$(SILENT)echo -n "Checking out commit $(NHD2_CHECKOUT)..."
+	$(SILENT)(cd $(SOURCE_DIR)/neutrino-hd2; git checkout $(MINUS_Q) $(NHD2_CHECKOUT))
+	$(SILENT)echo " done."
 	$(SILENT)cp -ra $(SOURCE_DIR)/neutrino-hd2.git/nhd2-exp $(SOURCE_DIR)/neutrino-hd2.org
 	$(SET) -e; cd $(SOURCE_DIR)/neutrino-hd2; \
 		$(call apply_patches, $(NEUTRINO_HD2_PATCHES))
