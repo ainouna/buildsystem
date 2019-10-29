@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 1901021.1
+#Version 1901027.1
 
 echo "ADB ITI-5800S(X) Neutrino"
 
@@ -18,7 +18,7 @@ insmod $MODDIR/adb_5800_fp.ko #paramDebug=10
 insmod $MODDIR/simu_button.ko
 
 #boxtype=`cat /proc/stb/info/adb_variant` # TODO: fix, does not work
-boxtype=bska
+boxtype=bsla
 echo "[rcS] boxtype: $boxtype"
 echo "$boxtype" > /etc/boxtype
 
@@ -280,14 +280,20 @@ do
          init 0;;
       1) echo "[rcS] REBOOT"
          if [ $boxtype == 'bska' ] || [ $boxtype == 'bxzb' ]; then
-           echo "REbt" > /dev/vfd
+           echo "Rebt" > /dev/vfd
          else
             echo "REBOOT" > /dev/vfd
          fi
          init 6;;
+      3) echo "[rcS] RESTART"
+         if [ $boxtype == 'bska' ] || [ $boxtype == 'bxzb' ]; then
+           echo "ReSt" > /dev/vfd
+         else
+            echo "RESTART" > /dev/vfd
+         fi;;
       *) echo "[rcS] Neutrino ERROR"
          if [ $boxtype == 'bska' ] || [ $boxtype == 'bxzb' ]; then
-           echo "NEEr" > /dev/vfd
+           echo "NeEr" > /dev/vfd
          else
             echo "Neutrino ERROR" > /dev/vfd
          fi
