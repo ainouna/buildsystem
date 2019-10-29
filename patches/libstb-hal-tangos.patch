@@ -53,7 +53,23 @@
  elif test "$BOXMODEL" = "vusolo4k"; then
 --- libstb-hal-tangos.org/include/cs_frontpanel.h
 +++ libstb-hal-tangos/include/cs_frontpanel.h
-@@ -28,7 +28,7 @@
+@@ -9,9 +9,14 @@
+ #define VFDICONDISPLAYONOFF  0xc0425a0a
+ #define VFDDISPLAYWRITEONOFF 0xc0425a05
+ 
++#define VFDSETRF             0xc0425af7
++#if !defined (BOXMODEL_ADB_BOX)
+ #define VFDCLEARICONS        0xc0425af6
+-#define VFDSETRF             0xc0425af7
+ #define VFDSETFAN            0xc0425af8
++#else
++#define VFDSETFAN            0xc0425af6
++#define VFDLEDBRIGHTNESS     0xc0425af8
++#endif
+ #define VFDGETWAKEUPMODE     0xc0425af9
+ #define VFDGETTIME           0xc0425afa
+ #define VFDSETTIME           0xc0425afb
+@@ -28,7 +33,7 @@
  
  typedef enum {
  #if defined(BOXMODEL_OCTAGON1008)
@@ -62,7 +78,7 @@
  	ICON_DTS,
  	ICON_VIDEO,
  	ICON_AUDIO,
-@@ -49,6 +49,7 @@
+@@ -49,6 +54,7 @@
  	ICON_PLAY,
  	ICON_REWIND,
  	ICON_PAUSE,
@@ -70,7 +86,7 @@
  	ICON_FF,
  	ICON_REC,
  	ICON_ARROW,
-@@ -56,15 +57,16 @@
+@@ -56,15 +62,16 @@
  	ICON_COLON2,
  	ICON_COLON3,
  	ICON_MAX,
@@ -91,7 +107,7 @@
  	FP_ICON_MUTE = ICON_TIME,
  	FP_ICON_PLAY = ICON_PLAY,
  	FP_ICON_PAUSE = ICON_PAUSE,
-@@ -72,18 +74,153 @@
+@@ -72,18 +79,153 @@
  	FP_ICON_FR = ICON_REWIND,
  	FP_ICON_REC = ICON_REC,
  	FP_ICON_CLOCK = ICON_TIMER,
@@ -247,7 +263,7 @@
  	ICON_SCRAMBLED,
  	ICON_DOLBY,
  	ICON_MUTE,
-@@ -92,15 +229,6 @@
+@@ -92,15 +234,6 @@
  	ICON_MP3,
  	ICON_REPEAT,
  	ICON_Play,
@@ -263,7 +279,7 @@
  	ICON_Circ0,
  	ICON_Circ1,
  	ICON_Circ2,
-@@ -110,6 +238,15 @@
+@@ -110,6 +243,15 @@
  	ICON_Circ6,
  	ICON_Circ7,
  	ICON_Circ8,
@@ -279,7 +295,7 @@
  	ICON_COLON1,
  	ICON_COLON2,
  	ICON_COLON3,
-@@ -117,6 +254,7 @@
+@@ -117,6 +259,7 @@
  	ICON_TV,
  	ICON_RADIO,
  	ICON_MAX,
@@ -287,7 +303,7 @@
  	FP_ICON_USB = ICON_USB,
  	FP_ICON_REC = ICON_REC,
  	FP_ICON_CAM1 = ICON_REC,
-@@ -138,8 +276,87 @@
+@@ -138,8 +281,87 @@
  	FP_ICON_TV = ICON_TV,
  	FP_ICON_MUSIC = ICON_RADIO,
  	FP_ICON_MAX = ICON_MAX
@@ -376,7 +392,7 @@
  	FP_ICON_HD,
  	FP_ICON_HDD,
  	FP_ICON_LOCK,
-@@ -162,7 +379,8 @@
+@@ -162,7 +384,8 @@
  	FP_ICON_RECORD = FP_ICON_REC,
  	FP_ICON_DOWNLOAD = 0,
  	FP_ICON_TIMESHIFT = 0
@@ -386,7 +402,7 @@
  	ICON_STANDBY,
  	ICON_SAT,
  	ICON_REC,
-@@ -218,9 +436,55 @@
+@@ -218,9 +441,55 @@
  	FP_ICON_TV = 0,
  	FP_ICON_MAIL = 0,
  	FP_ICON_BT = 0,
@@ -443,7 +459,7 @@
  	FP_ICON_HD,
  	FP_ICON_HDD,
  	FP_ICON_LOCK,
-@@ -242,8 +506,21 @@
+@@ -242,8 +511,21 @@
  	FP_ICON_RECORD = FP_ICON_REC,
  	FP_ICON_DOWNLOAD,
  	FP_ICON_TIMESHIFT,
@@ -466,7 +482,7 @@
  	FP_ICON_MAX
  #endif
  } fp_icon;
-@@ -251,7 +528,7 @@
+@@ -251,7 +533,7 @@
  typedef enum {
  	FP_FLAG_NONE			= 0x00,
  	FP_FLAG_SCROLL_ON		= 0x01,	/* switch scrolling on */
@@ -475,7 +491,7 @@
  	FP_FLAG_SCROLL_SIO		= 0x04,	/* start/stop scrolling with empty screen (scroll in/out) */
  	FP_FLAG_SCROLL_DELAY		= 0x08,	/* delayed scroll start */
  	FP_FLAG_ALIGN_LEFT		= 0x10,	/* align the text in display from the left (default) */
-@@ -259,7 +536,8 @@
+@@ -259,7 +541,8 @@
  	FP_FLAG_UPDATE_SCROLL_POS	= 0x40,	/* update the current position for scrolling */
  } fp_flag;
  
@@ -485,7 +501,7 @@
  	unsigned char		brightness;
  	unsigned char		flags;
  	unsigned char		current_hour;
-@@ -268,22 +546,27 @@
+@@ -268,22 +551,27 @@
  	unsigned char		timer_minutes_lo;
  } fp_standby_data_t;
  
@@ -516,7 +532,7 @@
  	FP_WAKEUP_SOURCE_TIMER  = 0x01,
  	FP_WAKEUP_SOURCE_BUTTON = 0x02,
  	FP_WAKEUP_SOURCE_REMOTE = 0x04,
-@@ -291,25 +574,29 @@
+@@ -291,25 +579,29 @@
  	FP_WAKEUP_SOURCE_POWER  = 0xFF
  } fp_wakeup_source;
  
