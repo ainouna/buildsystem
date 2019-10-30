@@ -116,7 +116,7 @@
  AM_CONDITIONAL(BOXTYPE_GENERIC, test "$BOXTYPE" = "generic")
  AM_CONDITIONAL(BOXTYPE_DGS, test "$BOXTYPE" = "dgs")
  AM_CONDITIONAL(BOXTYPE_GIGABLUE, test "$BOXTYPE" = "gigablue")
-@@ -614,8 +663,8 @@
+@@ -614,11 +663,12 @@
  AM_CONDITIONAL(BOXTYPE_KATHREIN, test "$BOXTYPE" = "kathrein")
  AM_CONDITIONAL(BOXTYPE_IPBOX, test "$BOXTYPE" = "ipbox")
  AM_CONDITIONAL(BOXTYPE_HL101, test "$BOXTYPE" = "hl101")
@@ -127,7 +127,11 @@
  AM_CONDITIONAL(BOXTYPE_OCTAGON, test "$BOXTYPE" = "octagon")
  AM_CONDITIONAL(BOXTYPE_ATEVIO, test "$BOXTYPE" = "atevio")
  AM_CONDITIONAL(BOXTYPE_ADB_BOX, test "$BOXTYPE" = "adb_box")
-@@ -647,6 +696,7 @@
++AM_CONDITIONAL(BOXTYPE_VITAMIN_HD5000, test "$BOXTYPE" = "vitamin_hd5000")
+ AM_CONDITIONAL(BOXTYPE_WHITEBOX, test "$BOXTYPE" = "whitebox")
+ AM_CONDITIONAL(BOXTYPE_VIP, test "$BOXTYPE" = "vip")
+ AM_CONDITIONAL(BOXTYPE_HOMECAST, test "$BOXTYPE" = "homecast")
+@@ -647,6 +697,7 @@
  AM_CONDITIONAL(BOXTYPE_XSARIUS, test "$BOXTYPE" = "xsarius")
  AM_CONDITIONAL(BOXTYPE_ZGEMMA, test "$BOXTYPE" = "zgemma")
  
@@ -135,7 +139,7 @@
  AM_CONDITIONAL(BOXMODEL_CUBEREVO, test "$BOXMODEL" = "cuberevo")
  AM_CONDITIONAL(BOXMODEL_CUBEREVO_MINI, test "$BOXMODEL" = "cuberevo_mini")
  AM_CONDITIONAL(BOXMODEL_CUBEREVO_MINI2, test "$BOXMODEL" = "cuberevo_mini2")
-@@ -687,6 +737,8 @@
+@@ -687,6 +738,8 @@
  AM_CONDITIONAL(BOXMODEL_SPARK,test "$BOXMODEL" = "spark")
  AM_CONDITIONAL(BOXMODEL_SPARK7162,test "$BOXMODEL" = "spark7162")
  
@@ -144,7 +148,7 @@
  AM_CONDITIONAL(BOXMODEL_UFS910, test "$BOXMODEL" = "ufs910")
  AM_CONDITIONAL(BOXMODEL_UFS912, test "$BOXMODEL" = "ufs912")
  AM_CONDITIONAL(BOXMODEL_UFS913, test "$BOXMODEL" = "ufs913")
-@@ -704,7 +756,15 @@
+@@ -704,7 +757,19 @@
  AM_CONDITIONAL(BOXMODEL_ATEVIO7500, test "$BOXMODEL" = "atevio7500")
  AM_CONDITIONAL(BOXMODEL_ATEVIO7600, test "$BOXMODEL" = "atevio7600")
  
@@ -157,10 +161,14 @@
 +AM_CONDITIONAL(BOXMODEL_HS7119, test "$BOXMODEL" = "hs7119")
 +AM_CONDITIONAL(BOXMODEL_HS7429, test "$BOXMODEL" = "hs7429")
 +AM_CONDITIONAL(BOXMODEL_HS7819, test "$BOXMODEL" = "hs7819")
++
++AM_CONDITIONAL(BOXMODEL_ADB_BOX, test "$BOXMODEL" = "adb_box")
++
++AM_CONDITIONAL(BOXMODEL_VITAMIN_HD5000, test "$BOXMODEL" = "vitamin_hd5000")
  
  AM_CONDITIONAL(BOXMODEL_VUSOLO2, test "$BOXMODEL" = "vusolo2")
  AM_CONDITIONAL(BOXMODEL_VUDUO2, test "$BOXMODEL" = "vuduo2")
-@@ -785,6 +845,7 @@
+@@ -785,6 +850,7 @@
  AM_CONDITIONAL(BOXMODEL_LC, test "$BOXMODEL" = "lc")
  AM_CONDITIONAL(BOXMODEL_SH1, test "$BOXMODEL" = "sh1")
  
@@ -168,7 +176,7 @@
  if test "$BOXTYPE" = "generic"; then
  	AC_DEFINE(PLATFORM_GENERIC, 1, [building for generic])
  elif test "$BOXTYPE" = "dgs"; then
-@@ -797,6 +858,8 @@
+@@ -797,6 +863,8 @@
  	AC_DEFINE(PLATFORM_XTREND, 1, [building for xtrend])
  elif test "$BOXTYPE" = "fulan"; then
  	AC_DEFINE(PLATFORM_FULAN, 1, [building for fulan])
@@ -177,7 +185,7 @@
  elif test "$BOXTYPE" = "kathrein"; then
  	AC_DEFINE(PLATFORM_KATHREIN, 1, [building for kathrein])
  elif test "$BOXTYPE" = "ipbox"; then
-@@ -805,12 +868,12 @@
+@@ -805,14 +873,16 @@
  	AC_DEFINE(HAVE_DUCKBOX_HARDWARE, 1, [building for a duckbox])	
  elif test "$BOXTYPE" = "topfield"; then
  	AC_DEFINE(PLATFORM_TF7700, 1, [building for topfield])
@@ -191,8 +199,12 @@
 +	AC_DEFINE(PLATFORM_FORTIS, 1, [building for fortis])
  elif test "$BOXTYPE" = "adb_box"; then
  	AC_DEFINE(PLATFORM_ADB_BOX, 1, [building for adb_box])
++elif test "$BOXTYPE" = "adb_box"; then
++	AC_DEFINE(PLATFORM_VITAMIN_HD5000, 1, [building for vitamin_hd5000])
  elif test "$BOXTYPE" = "whitebox"; then
-@@ -865,6 +928,7 @@
+ 	AC_DEFINE(PLATFORM_WHITEBOX, 1, [building for whitebox])
+ elif test "$BOXTYPE" = "vip"; then
+@@ -865,6 +935,7 @@
  	AC_DEFINE(PLATFORM_ZGEMMA, 1, [building for zgemma])
  fi
  
@@ -200,7 +212,7 @@
  if test "$BOXMODEL" = "cuberevo"; then
  	AC_DEFINE(PLATFORM_CUBEREVO, 1, [building for cuberevo])
  elif test "$BOXMODEL" = "cuberevo_mini"; then
-@@ -938,6 +1002,9 @@
+@@ -938,6 +1009,9 @@
  elif test "$BOXMODEL" = "spark7162"; then
  	AC_DEFINE(PLATFORM_SPARK7162, 1, [building for spark 7162])
  
@@ -210,7 +222,7 @@
  elif test "$BOXMODEL" = "ufs910"; then
  	AC_DEFINE(PLATFORM_UFS910, 1, [building for ufs910])
  elif test "$BOXMODEL" = "ufs912"; then
-@@ -968,8 +1035,23 @@
+@@ -968,8 +1042,29 @@
  elif test "$BOXMODEL" = "atevio7600"; then
  	AC_DEFINE(BOXMODEL_ATEVIO7600, 1, [building for atevio7600])
  
@@ -231,10 +243,16 @@
 +	AC_DEFINE(BOXMODEL_HS7429, 1, [building for hs7429])
 +elif test "$BOXMODEL" = "hs7819"; then
 +	AC_DEFINE(BOXMODEL_HS7819, 1, [building for hs7819])
++
++elif test "$BOXMODEL" = "adb_box"; then
++	AC_DEFINE(BOXMODEL_ADB_BOX, 1, [building for adb_box])
++
++elif test "$BOXMODEL" = "vitamin_hd5000"; then
++	AC_DEFINE(BOXMODEL_VITAMIN_HD5000, 1, [building for vitamin_hd5000])
  
  elif test "$BOXMODEL" = "vusolo2"; then
  	AC_DEFINE(BOXMODEL_VUSOLO2, 1, [vuplus solo2])
-@@ -2146,4 +2228,3 @@
+@@ -2146,4 +2241,3 @@
  ])
  
  
@@ -267,6 +285,405 @@
  #else
  	avcodec = avcodec_find_decoder(AV_CODEC_ID_DVB_SUBTITLE);
  #endif
+--- neutrino-hd2.org/src/driver/rcinput.h
++++ neutrino-hd2/src/driver/rcinput.h
+@@ -1,6 +1,6 @@
+ /*
+ 	Neutrino-GUI  -   DBoxII-Project
+-	
++
+ 	$Id: rcinput.h 2013/10/12 mohousch Exp $
+ 
+ 	Copyright (C) 2001 Steffen Hehn 'McClean'
+@@ -84,48 +84,48 @@
+ #define KEY_GAMES        0x1a1
+ #endif
+ 
+-// this values are token from cuberevo3000hd
+-#ifndef KEY_PIP	
++// this values are taken from cuberevo3000hd
++#ifndef KEY_PIP
+ #define KEY_PIP		0x041
+ #endif
+ 
+-#ifndef KEY_PIPPOS	
++#ifndef KEY_PIPPOS
+ #define KEY_PIPPOS	0x0BE
+ #endif
+ 
+-#ifndef KEY_PIPSWAP 
++#ifndef KEY_PIPSWAP
+ #define KEY_PIPSWAP	0x0BF
+ #endif
+ 
+-#ifndef __KEY_PIPSUBCH	
++#ifndef __KEY_PIPSUBCH
+ #define KEY_PIPSUBCH	0x0C0
+ #endif
+ 
+-#ifndef KEY_BOOKMARK	
++#ifndef KEY_BOOKMARK
+ #define	KEY_BOOKMARK	0x03f
+ #endif
+ 
+-#ifndef KEY_MUSIC	
++#ifndef KEY_MUSIC
+ #define KEY_MUSIC	0x0c1
+ #endif
+ 
+-#ifndef KEY_PICTURE	
++#ifndef KEY_PICTURE
+ #define KEY_PICTURE	0x03e
+ #endif
+ 
+-#ifndef KEY_REPEAT	
++#ifndef KEY_REPEAT
+ #define	KEY_REPEAT	0x040
+ #endif
+ 
+-#ifndef KEY_SLOW	
++#ifndef KEY_SLOW
+ #define KEY_SLOW	0x199
+ #endif
+ 
+-#ifndef KEY_MULTFEED	
++#ifndef KEY_MULTFEED
+ #define KEY_MULTIFEED	0x0bd
+ #endif
+ 
+-#ifndef KEY_DVBSUB	
++#ifndef KEY_DVBSUB
+ #define KEY_DVBSUB	0x172
+ #endif
+ 
+@@ -146,59 +146,60 @@
+ //
+ enum
+ {
+-	RC_0		= KEY_0,	    
+-	RC_1		= KEY_1,	    
+-	RC_2		= KEY_2,	    
+-	RC_3		= KEY_3,	    
+-	RC_4		= KEY_4,	    
+-	RC_5		= KEY_5,	    
+-	RC_6		= KEY_6,	    
+-	RC_7		= KEY_7,	    
+-	RC_8		= KEY_8,	    
++	RC_0		= KEY_0,
++	RC_1		= KEY_1,
++	RC_2		= KEY_2,
++	RC_3		= KEY_3,
++	RC_4		= KEY_4,
++	RC_5		= KEY_5,
++	RC_6		= KEY_6,
++	RC_7		= KEY_7,
++	RC_8		= KEY_8,
+ 	RC_9		= KEY_9,
+-	    		
+-	RC_up		= KEY_UP,	    
+-	RC_left		= KEY_LEFT,	    
+-	RC_right	= KEY_RIGHT,	    
+-	RC_down		= KEY_DOWN,	    		
+-	RC_spkr		= KEY_MUTE,	   		
+-	RC_minus        = KEY_VOLUMEDOWN,   
+-	RC_plus         = KEY_VOLUMEUP,     
+-
+-	RC_standby	= KEY_POWER,	    
+-			
+-	RC_home         = KEY_HOME,         
+-	RC_setup	= KEY_MENU,	    
+-			
+-	RC_page_up	= KEY_PAGEUP,	   
+-	RC_page_down	= KEY_PAGEDOWN,	    
+-			
+-	RC_ok		= KEY_OK,	    
+-			
+-	RC_red		= KEY_RED,	    
+-	RC_green	= KEY_GREEN,	    
+-	RC_yellow	= KEY_YELLOW,	    
+-	RC_blue		= KEY_BLUE,	    
++	    
++	RC_up		= KEY_UP,
++	RC_left		= KEY_LEFT,
++	RC_right	= KEY_RIGHT,
++	RC_down		= KEY_DOWN,	    
++	RC_spkr		= KEY_MUTE,	   
++	RC_minus        = KEY_VOLUMEDOWN,
++	RC_plus         = KEY_VOLUMEUP,
++
++	RC_standby	= KEY_POWER,
++
++	RC_home         = KEY_HOME,  // most receivers use this for EXIT
++	RC_exit         = KEY_EXIT,  // but some use this
++	RC_setup	= KEY_MENU,
++
++	RC_page_up	= KEY_PAGEUP,
++	RC_page_down	= KEY_PAGEDOWN,
++
++	RC_ok		= KEY_OK,
++
++	RC_red		= KEY_RED,
++	RC_green	= KEY_GREEN,
++	RC_yellow	= KEY_YELLOW,
++	RC_blue		= KEY_BLUE,
+ 
+ 	RC_audio	= KEY_AUDIO,		/* 0x188 */
+ 	RC_video	= KEY_VIDEO,		/* 0x189 */
+-			
++
+ 	RC_text		= KEY_TEXT,		/* 0x184 */
+-	RC_info		= KEY_INFO,		/* 0x166 */			
++	RC_info		= KEY_INFO,		/* 0x166 */
+ 	RC_epg		= KEY_EPG,		/* 0x16d */
+ 	RC_recall 	= KEY_BACK,		/* 0x9E */
+ 	RC_favorites	= KEY_FAVORITES,	/* 0x16c */
+ 	RC_sat		= KEY_SAT,		/* 0x17d */
+-			
++
+ 	RC_record	= KEY_RECORD,		/* 0xA7 */
+ 	RC_play		= KEY_PLAY,		/* 0xCF */
+ 	RC_pause	= KEY_PAUSE,		/* 0x77 */
+ 	RC_forward	= KEY_FASTFORWARD,	/* 0xD0 */
+ 	RC_rewind	= KEY_REWIND,		/* 0xA8 */
+ 	RC_stop		= KEY_STOP,		/* 0x80 */
+-			
++
+ 	RC_timeshift	= KEY_TIME,		/* 0x167 */
+-						
++
+ 	RC_mode		= KEY_MODE,		/* 0x175 */
+ 
+ 	RC_next		= 0xFFFFFFF0,
+@@ -206,11 +207,11 @@
+ 
+ 	/* added from cuberevo3000hd so fix it please */
+ 	RC_music	= KEY_MUSIC,
+-	RC_picture	= KEY_ARCHIVE,			
+-			
++	RC_picture	= KEY_ARCHIVE,
++
+ 	RC_loop		= KEY_REPEAT,
+ 	RC_slow		= KEY_SLOW,
+-			
++
+ 	RC_dvbsub	= KEY_DVBSUB,
+ 
+ 	RC_pip		= KEY_PIP,
+@@ -227,7 +228,7 @@
+ 	RC_f2		= KEY_F2,
+ 	RC_f3		= KEY_F3,
+ 	RC_f4		= KEY_F4,
+-			
++
+ 	//RC_aspect	= 0x40,
+ 
+ 	/* frontpanel */
+@@ -288,7 +289,7 @@
+ 		int fd_keyb;
+ 		int fd_event;
+ 		int fd_max;
+-		
++
+ 		__u16 rc_last_key;
+ 
+ 		void open();
+@@ -299,7 +300,7 @@
+ 
+ 		int checkTimers();
+ 
+-	public:		
++	public:
+ 		CConfigFile	configfile;
+ 
+ 		neutrino_msg_t key_0;
+@@ -312,26 +313,27 @@
+ 		neutrino_msg_t key_7;
+ 		neutrino_msg_t key_8;
+ 		neutrino_msg_t key_9;
+-			
++
+ 		neutrino_msg_t key_up;
+ 		neutrino_msg_t key_left;
+ 		neutrino_msg_t key_right;
+ 		neutrino_msg_t key_down;
+-			
++
+ 		neutrino_msg_t key_spkr;
+-						
++
+ 		neutrino_msg_t key_minus;
+-		neutrino_msg_t key_plus;			
++		neutrino_msg_t key_plus;
+ 
+ 		neutrino_msg_t key_standby;
+ 		neutrino_msg_t key_home;
+-		neutrino_msg_t key_setup;				
+-			
++		neutrino_msg_t key_exit;
++		neutrino_msg_t key_setup;
++
+ 		neutrino_msg_t key_page_up;
+-		neutrino_msg_t key_page_down;			
+-			
++		neutrino_msg_t key_page_down;
++
+ 		neutrino_msg_t key_ok;
+-			
++
+ 		neutrino_msg_t key_red;
+ 		neutrino_msg_t key_green;
+ 		neutrino_msg_t key_yellow;
+@@ -339,39 +341,39 @@
+ 
+ 		neutrino_msg_t key_audio;
+ 		neutrino_msg_t key_video;
+-			
++
+ 		neutrino_msg_t key_text;
+ 
+-		neutrino_msg_t key_info;				
+-			
++		neutrino_msg_t key_info;
++
+ 		neutrino_msg_t key_epg;
+-			
+-		neutrino_msg_t key_recall;		
++
++		neutrino_msg_t key_recall;
+ 
+ 		neutrino_msg_t key_favorites;
+ 
+ 		neutrino_msg_t key_sat;
+-			
++
+ 		neutrino_msg_t key_record;
+ 		neutrino_msg_t key_play;
+ 		neutrino_msg_t key_pause;
+ 		neutrino_msg_t key_forward;
+ 		neutrino_msg_t key_rewind;
+ 		neutrino_msg_t key_stop;
+-			
++
+ 		neutrino_msg_t key_timeshift;
+-						
+-		neutrino_msg_t key_mode;			
++
++		neutrino_msg_t key_mode;
+ 
+ 		neutrino_msg_t key_next;
+-		neutrino_msg_t key_prev;			
++		neutrino_msg_t key_prev;
+ 
+ 		//
+ 		neutrino_msg_t key_music;
+-		neutrino_msg_t key_picture;	
++		neutrino_msg_t key_picture;
+ 		neutrino_msg_t key_repeat;
+ 		neutrino_msg_t key_slow;
+-			
++
+ 		neutrino_msg_t key_dvbsub;
+ 
+ 		neutrino_msg_t key_pip;
+@@ -379,17 +381,17 @@
+ 		neutrino_msg_t key_pipswap;
+ 		neutrino_msg_t key_pipsubch;
+ 
+-		neutrino_msg_t key_net;	
++		neutrino_msg_t key_net;
+ 		neutrino_msg_t key_bookmark;
+ 		neutrino_msg_t key_multifeed;
+-					
++
+ 		neutrino_msg_t key_f1;
+ 		neutrino_msg_t key_f2;
+ 		neutrino_msg_t key_f3;
+ 		neutrino_msg_t key_f4;
+-		
++
+ 		//neutrino_msg_t key_aspect;
+-			
++
+ 		neutrino_msg_t key_vfdup;
+ 		neutrino_msg_t key_vfddown;
+ 		neutrino_msg_t key_vfdright;
+@@ -398,18 +400,18 @@
+ 		neutrino_msg_t key_vfdmenu;
+ 		neutrino_msg_t key_vfdexit;
+ 		neutrino_msg_t key_vfdok;
+-		
++
+ 		bool loadKeyMap(const char * const fileName);
+ 		bool saveKeyMap(const char * const fileName);
+-		
++
+ 		void stopInput();
+ 		void restartInput();
+ 
+ 		uint64_t repeat_block;
+ 		uint64_t repeat_block_generic;
+-		
++
+ 		void setRepeat(unsigned int delay, unsigned int period);
+-		
++
+ 		CRCInput();      //constructor - opens rc-device and starts needed threads
+ 		~CRCInput();     //destructor - closes rc-device
+ 
+@@ -471,7 +473,7 @@
+ 		* @return the last key calculated by #handleMsg(neutrino_msg_t)
+ 		*/
+ 		unsigned char getOldKey() const;
+-		
++
+ 		/**
+ 		* Returns time of last key push.
+ 		* resolution: usecs
+--- neutrino-hd2.org/src/driver/rcinput.cpp
++++ neutrino-hd2/src/driver/rcinput.cpp
+@@ -115,6 +115,7 @@
+ 			
+ #if defined (__sh__)
+ 	key_home = configfile.getInt32("key_home", KEY_HOME);
++	key_exit = configfile.getInt32("key_exit", KEY_EXIT);
+ #else
+ 	key_home = configfile.getInt32("key_home", 0xAE);
+ #endif			
+@@ -272,6 +273,7 @@
+ 	configfile.setInt32("key_standby", key_standby);
+ 			
+ 	configfile.setInt32("key_home", key_home);
++	configfile.setInt32("key_exit", key_exit);
+ 			
+ 	configfile.setInt32("key_setup", key_setup);
+ 				
+@@ -557,7 +559,7 @@
+ 	{
+ 		g_RCInput->getMsgAbsoluteTimeout( &msg, &data, &timeoutEnd );
+ 
+-		if ( ( msg == RC_timeout ) || ( msg == RC_home ) || ( msg == RC_ok ) )
++		if ( ( msg == RC_timeout ) || ( msg == RC_home ) || ( msg == RC_exit ) || ( msg == RC_ok ) )
+ 		{
+ 			doLoop = false;
+ 		}
+@@ -1653,6 +1655,9 @@
+ 		case RC_home:
+ 			return "RC_home";
+ 
++		case RC_exit:
++			return "RC_home";
++
+ 		case RC_setup:
+ 			return "RC_setup";
+ 
+@@ -1879,6 +1884,7 @@
+ 	else if (code == key_down) return RC_down;
+ 	else if (code == key_right) return RC_right;
+ 	else if (code == key_home) return RC_home;
++	else if (code == key_exit) return RC_home;
+ 			
+ 	/* special */
+ 	else if (code == key_recall) return RC_recall;
 --- nhd2-exp.org/src/neutrino.h
 +++ nhd2-exp/src/neutrino.h
 @@ -213,13 +213,13 @@
@@ -539,19 +956,27 @@
  							break;
 --- nhd2-exp.org/src/driver/vfd.h
 +++ nhd2-exp/src/driver/vfd.h
-@@ -37,11 +37,23 @@
+@@ -37,11 +37,31 @@
  #include <cs_vfd.h>
  #endif
  
 +// VFD/LED display width
-+#if defined(PLATFORM_SPARK7162) || defined(BOXMODEL_OCTAGON1008) || defined(BOXMODEL_HS7420) || defined(BOXMODEL_HS7429)
++#if defined(PLATFORM_SPARK7162) \
++ || defined(BOXMODEL_OCTAGON1008) \
++ || defined(BOXMODEL_HS7420) \
++ || defined(BOXMODEL_HS7429)
 +#define VFD_LENGTH 8
-+#elif defined(BOXMODEL_FORTIS_HDBOX) || defined(BOXMODEL_ATEVIO7500)
++#elif defined(BOXMODEL_FORTIS_HDBOX) \
++ ||   defined(BOXMODEL_ATEVIO7500)
 +#define VFD_LENGTH 12
-+#elif defined(BOXMODEL_HS7119) || defined(BOXMODEL_HS7810A) || defined(BOXMODEL_HS7819)
++#elif defined(BOXMODEL_HS7119) \
++ || defined(BOXMODEL_HS7810A) \
++ || defined(BOXMODEL_HS7819)
 +#define VFD_LENGTH 4
 +#elif defined(BOXMODEL_HS7110)
 +#define VFD_LENGTH 0
++#elif defined(BOXMODEL_ADB_BOX)
++#define VFD_LENGTH 15
 +#else
 +#define VFD_LENGTH 16
 +#endif
@@ -566,7 +991,7 @@
  typedef enum {
  //----------------------------------11G-------------------------------------
  	VFD_SPARK_PLAY_FASTBACKWARD = 1,		//11*16+1,
-@@ -92,7 +104,7 @@
+@@ -92,7 +112,7 @@
  	VFD_SPARK_DOT1 = 44,
  	VFD_SPARK_CAB = 45,	
  //----------------------------------end-------------------------------------
@@ -575,7 +1000,7 @@
  	VFD_ICON_MAX
  } spark7162_vfd_icon;
  
-@@ -131,9 +143,7 @@
+@@ -131,9 +151,7 @@
  	VFD_ICON_STANDBY	= VFD_SPARK_CYCLE	
  } vfd_icon;
  
@@ -586,7 +1011,7 @@
  typedef enum
  {
  	vfd_910_usb = 1,
-@@ -177,11 +187,307 @@
+@@ -177,11 +195,361 @@
  	VFD_ICON_HDD 		= vfd_910_hdd,	
  	VFD_ICON_CLOCK		= vfd_910_clock
  } vfd_icon;
@@ -772,7 +1197,8 @@
 +	VFD_ICON_STANDBY	= HS8200_ICON_STANDBY
 +} vfd_icon;
 +
-+#elif defined(BOXMODEL_HS7420) || defined(BOXMODEL_HS7429)
++#elif defined(BOXMODEL_HS7420) \
++ ||   defined(BOXMODEL_HS7429)
 +typedef enum //HS742X icon numbers and their names
 +{
 +	HS742X_ICON_DOT = 1,      // 01
@@ -835,7 +1261,8 @@
 +	VFD_ICON_STANDBY	= 0
 +} vfd_icon;
 +
-+#elif defined(BOXMODEL_HS7810A) || defined(BOXMODEL_HS7819)
++#elif defined(BOXMODEL_HS7810A) \
++ ||   defined(BOXMODEL_HS7819)
 +typedef enum //HS7810A & HS7819 icon numbers and their names
 +{
 +	HS7810A_ICON_COLON = 1,   // 01
@@ -893,13 +1320,65 @@
 +	VFD_ICON_STANDBY	= 0
 +} vfd_icon;
 +
++#elif defined(BOXMODEL_ADB_BOX)
++typedef enum //ADB ITI-5800SX icon numbers and their names
++{
++	ADB_ICON_MIN,       // 00
++	ADB_ICON_REC,       // 01
++	ADB_ICON_TIMESHIFT, // 02
++	ADB_ICON_TIMER,     // 03
++	ADB_ICON_HD,        // 04
++	ADB_ICON_USB,       // 05
++	ADB_ICON_SCRAMBLED, // 06
++	ADB_ICON_DOLBY,     // 07
++	ADB_ICON_MUTE,      // 08
++	ADB_ICON_TUNER1,    // 09
++	ADB_ICON_TUNER2,    // 10
++	ADB_ICON_MP3,       // 11
++	ADB_ICON_REPEAT,    // 12
++	ADB_ICON_PLAY,      // 13
++	ADB_ICON_STOP,      // 14
++	ADB_ICON_PAUSE,     // 15
++	ADB_ICON_REWIND,    // 16
++	ADB_ICON_FF,        // 17
++	ADB_ICON_STEP_BACK, // 18
++	ADB_ICON_STEP_FWD,  // 19
++	ADB_ICON_TV,        // 20
++	ADB_ICON_RADIO,     // 21
++	ADB_ICON_MAX,       // 22
++	ADB_ICON_SPINNER    // 23
++} adb_box_vfd_icon;
++
++typedef enum
++{
++	VFD_ICON_MUTE		= ADB_ICON_MUTE,
++	VFD_ICON_DOLBY		= ADB_ICON_DOLBY,
++	VFD_ICON_POWER		= 0,
++	VFD_ICON_TIMESHIFT	= ADB_ICON_TIMESHIFT,
++	VFD_ICON_TV		= ADB_ICON_TV,
++	VFD_ICON_RADIO		= ADB_ICON_RADIO,
++	VFD_ICON_HD		= ADB_ICON_HD,
++	VFD_ICON_1080P		= 0,
++	VFD_ICON_1080I		= 0,
++	VFD_ICON_720P		= 0,
++	VFD_ICON_480P		= 0,
++	VFD_ICON_480I		= 0,
++	VFD_ICON_USB		= ADB_ICON_USB,
++	VFD_ICON_MP3		= ADB_ICON_MP3,
++	VFD_ICON_PLAY		= ADB_ICON_PLAY,
++	VFD_ICON_PAUSE		= ADB_ICON_PAUSE,
++	VFD_ICON_LOCK 		= ADB_ICON_SCRAMBLED,
++	VFD_ICON_CLOCK		= ADB_ICON_TIMER,
++	VFD_ICON_STANDBY	= 0
++} vfd_icon;
++
 +#else
 +// generic duckbox
 +// taken from micom
  enum {
  	ICON_MIN,             // 0x00
  	ICON_STANDBY,
-@@ -212,7 +518,7 @@
+@@ -212,7 +580,7 @@
  	ICON_RADIO,   
  	ICON_TV,      
  	ICON_PAUSE,   
@@ -908,7 +1387,7 @@
  };
  
  // neutrino common
-@@ -236,11 +542,11 @@
+@@ -236,19 +604,24 @@
  	VFD_ICON_PAUSE		= ICON_PAUSE,
  	VFD_ICON_LOCK 		= ICON_SCRAMBLED
  } vfd_icon;
@@ -922,7 +1401,21 @@
  #define VFDDRIVERINIT         0xc0425a08
  #define VFDICONDISPLAYONOFF   0xc0425a0a
  #define VFDDISPLAYWRITEONOFF  0xc0425a05
-@@ -263,8 +569,9 @@
+ #define VFDDISPLAYCHARS       0xc0425a00
+ 
++#define VFDSETRF              0xc0425af7
++#if !defined (BOXMODEL_ADB_BOX)
+ #define VFDCLEARICONS	      0xc0425af6
+-#define VFDSETRF              0xc0425af7
+ #define VFDSETFAN             0xc0425af8
++#else
++#define VFDSETFAN             0xc0425af6
++#define VFDLEDBRIGHTNESS      0xc0425af8
++#endif
+ #define VFDGETWAKEUPMODE      0xc0425af9
+ #define VFDGETTIME            0xc0425afa
+ #define VFDSETTIME            0xc0425afb
+@@ -263,8 +636,9 @@
  #define VFDSETTIMEMODE        0xc0425b03
  #define VFDDISPLAYCLR	      0xc0425b00
  
@@ -934,7 +1427,7 @@
  struct set_mode_s {
  	int compat; /* 0 = compatibility mode to vfd driver; 1 = nuvoton mode */
  };
-@@ -308,31 +615,38 @@
+@@ -308,31 +682,38 @@
  		struct set_time_s time;
  	} u;
  };
@@ -990,7 +1483,7 @@
  };
  
  /* time must be given as follows:
-@@ -341,38 +655,49 @@
+@@ -341,38 +722,49 @@
   * time[3] = min
   * time[4] = sec
   */
@@ -1058,7 +1551,7 @@
  	unsigned char length;
 --- nhd2-exp.org/src/driver/vfd.cpp
 +++ nhd2-exp/src/driver/vfd.cpp
-@@ -47,15 +47,29 @@
+@@ -47,15 +47,30 @@
  
  
  #if defined (__sh__)
@@ -1084,7 +1577,8 @@
 +   || defined(PLATFORM_SPARK7162) \
 +   || defined(BOXMODEL_FORTIS_HDBOX) \
 +   || defined(BOXMODEL_OCTAGON1008) \
-+   || defined(BOXMODEL_ATEVIO7500)
++   || defined(BOXMODEL_ATEVIO7500) \
++   || defined(BOXMODEL_ADB_BOX)
  static bool usb_icon = false;
  static bool timer_icon = false;
  static bool hdd_icon = false;
@@ -1093,7 +1587,7 @@
  
  //konfetti: let us share the device with evremote and fp_control
  //it does currently not support more than one user (see e.g. micom)
-@@ -69,9 +83,11 @@
+@@ -69,9 +84,11 @@
  		if(fd < 0)
  		{
  			printf("failed to open vfd\n");
@@ -1105,7 +1599,7 @@
  		}
  		else
  			blocked = true;
-@@ -88,7 +104,7 @@
+@@ -88,7 +105,7 @@
  	
  	fd = -1;
  }
@@ -1114,7 +1608,7 @@
  
  // default: has_lcd:1, is4digits:0, has_led:0
  // constructor
-@@ -208,7 +224,11 @@
+@@ -208,7 +225,11 @@
  	}
  	else
  		setPower(1);
@@ -1127,7 +1621,40 @@
  }
  
  void * CVFD::TimeThread(void *)
-@@ -342,14 +362,23 @@
+@@ -245,7 +266,8 @@
+ 	}
+ 	
+ 	// set led color
+-#if defined (PLATFORM_GIGABLUE)
++#if defined (PLATFORM_GIGABLUE) \
++ || defined (BOXMODEL_ADB_BOX)
+ 	vfd_led(g_settings.lcd_ledcolor);  //0:off, 1:blue, 2:red, 3:purple
+ #elif defined (PLATFORM_VENTON)
+ 	vfd_symbol_network(0);
+@@ -277,15 +299,18 @@
+         struct vfd_ioctl_data data;
+ 	data.start_address = dimm;
+ 	
+-	if(dimm < 1)
+-		dimm = 1;
++	if (dimm < 0)
++	{
++		dimm = 0;
++	}
+ 	brightness = dimm;
+ 	
+ 	openDevice();
+ 	
+-	if( ioctl(fd, VFDBRIGHTNESS, &data) < 0)  
++	if (ioctl(fd, VFDBRIGHTNESS, &data) < 0)  
++	{
+ 		perror("VFDBRIGHTNESS");
+-	
++	}
+ 	closeDevice();
+ #elif defined (PLATFORM_COOLSTREAM)
+ 	int ret = ioctl(fd, IOC_VFD_SET_BRIGHT, dimm);
+@@ -342,14 +367,23 @@
  			{
  				hour = t->tm_hour;
  				minute = t->tm_min;
@@ -1154,7 +1681,7 @@
  	}
  
  	if (CNeutrinoApp::getInstance()->recordingstatus) 
-@@ -408,25 +437,86 @@
+@@ -408,25 +442,106 @@
  	switch(m) 
  	{
  		case AUDIO_MODE_PLAY:
@@ -1173,6 +1700,10 @@
 +#elif defined(PLATFORM_SPARK7162)
 +			ShowIcon((vfd_icon)VFD_SPARK_PLAY_FASTBACKWARD, false);
 +			ShowIcon((vfd_icon)VFD_SPARK_PLAY_FASTFORWARD, false);
++#elif defined(BOXMODEL_ADB_BOX)
++			ShowIcon((vfd_icon)ADB_ICON_REWIND, false);
++			ShowIcon((vfd_icon)ADB_ICON_FF, false);
++			ShowIcon((vfd_icon)ADB_ICON_PAUSE, false);
 +#endif
 +			break;
 +		}
@@ -1192,6 +1723,10 @@
 +#elif defined(PLATFORM_SPARK7162)
 +			ShowIcon((vfd_icon)VFD_SPARK_PLAY_FASTBACKWARD, false);
 +			ShowIcon((vfd_icon)VFD_SPARK_PLAY_FASTFORWARD, false);
++#elif defined(BOXMODEL_ADB_BOX)
++			ShowIcon((vfd_icon)ADB_ICON_REWIND, false);
++			ShowIcon((vfd_icon)ADB_ICON_FF, false);
++			ShowIcon((vfd_icon)ADB_ICON_PAUSE, false);
 +#endif
 +			break;
 +		}
@@ -1211,6 +1746,10 @@
 +#elif defined(PLATFORM_SPARK7162)
 +			ShowIcon((vfd_icon)VFD_SPARK_PLAY_FASTBACKWARD, false);
 +			ShowIcon((vfd_icon)VFD_SPARK_PLAY_FASTFORWARD, false);
++#elif defined(BOXMODEL_ADB_BOX)
++			ShowIcon((vfd_icon)ADB_ICON_REWIND, false);
++			ShowIcon((vfd_icon)ADB_ICON_FF, false);
++			ShowIcon((vfd_icon)ADB_ICON_PAUSE, true);
 +#endif
 +			break;
 +		}
@@ -1228,6 +1767,10 @@
 +#elif defined(PLATFORM_SPARK7162)
 +			ShowIcon((vfd_icon)VFD_SPARK_PLAY_FASTBACKWARD, false);
 +			ShowIcon((vfd_icon)VFD_SPARK_PLAY_FASTFORWARD, true);
++#elif defined(BOXMODEL_ADB_BOX)
++			ShowIcon((vfd_icon)ADB_ICON_REWIND, false);
++			ShowIcon((vfd_icon)ADB_ICON_FF, true);
++			ShowIcon((vfd_icon)ADB_ICON_PAUSE, false);
 +#endif
 +			break;
 +		}
@@ -1244,13 +1787,17 @@
 +#elif defined(PLATFORM_SPARK7162)
 +			ShowIcon((vfd_icon)VFD_SPARK_PLAY_FASTBACKWARD, true);
 +			ShowIcon((vfd_icon)VFD_SPARK_PLAY_FASTFORWARD, false);
++#elif defined(BOXMODEL_ADB_BOX)
++			ShowIcon((vfd_icon)ADB_ICON_REWIND, true);
++			ShowIcon((vfd_icon)ADB_ICON_FF, false);
++			ShowIcon((vfd_icon)ADB_ICON_PAUSE, false);
 +#endif
 +			break;
 +		}
  	}
  
  	wake_up();
-@@ -450,24 +540,28 @@
+@@ -450,34 +565,41 @@
  
  	switch (m) 
  	{
@@ -1275,6 +1822,8 @@
 +			ShowIcon(VFD_ICON_USB, usb_icon);	
 +			ShowIcon(VFD_ICON_STANDBY, false);	
  			showclock = true;
++#elif defined(BOX_MODEL_ADB_BOX)
++			ShowIcon(VFD_ICON_USB, usb_icon);	
 +#endif
  			//showTime();      /* "showclock = true;" implies that "showTime();" does a "displayUpdate();" */			
  			break;
@@ -1282,8 +1831,12 @@
 +		}
  		case MODE_AUDIO:
  		{
- #if defined(PLATFORM_SPARK7162)
-@@ -477,7 +571,7 @@
+-#if defined(PLATFORM_SPARK7162)
++#if defined(PLATFORM_SPARK7162) \
++ || defined(BOXMODEL_ADB_BOX)
+ 			ShowIcon(VFD_ICON_AC3, false);			
+ #endif		  
+ 			ShowIcon(VFD_ICON_MP3, true);			
  			ShowIcon(VFD_ICON_TV, false);			
  			showAudioPlayMode(AUDIO_MODE_STOP);			
  			showclock = true;
@@ -1292,7 +1845,7 @@
  			ShowIcon(VFD_ICON_LOCK, false);
  #endif			
  			ShowIcon(VFD_ICON_HD, false);
-@@ -485,21 +579,23 @@
+@@ -485,21 +607,23 @@
  			//showTime();      /* "showclock = true;" implies that "showTime();" does a "displayUpdate();" */
  			break;
  		}
@@ -1319,7 +1872,7 @@
  			//Clear();
  			/* clear all symbols */
  			ClearIcons();
-@@ -508,8 +604,9 @@
+@@ -508,8 +632,9 @@
  #endif			
  			showclock = false;
  			break;
@@ -1330,7 +1883,7 @@
  			ShowIcon(VFD_ICON_TV, false);
  			ClearIcons();
  #if defined(PLATFORM_SPARK7162)
-@@ -519,25 +616,29 @@
+@@ -519,25 +644,29 @@
  			showTime(true);      	/* "showclock = true;" implies that "showTime();" does a "displayUpdate();" */
  						/* "showTime()" clears the whole lcd in MODE_STANDBY */
  			break;
@@ -1363,7 +1916,7 @@
  	}
  
  	wake_up();
-@@ -587,13 +688,29 @@
+@@ -587,13 +716,32 @@
  
  #if defined (__sh__)
  	struct vfd_ioctl_data data;
@@ -1381,6 +1934,9 @@
 +   || defined(BOXMODEL_HS7819)
 +	data.data[0] = power ? 0 : 1;
 +	data.data[4] = power;
++#elif defined(BOXMODEL_ADB_BOX)
++	data.data[0] = 1;  // power LED
++	data.data[4] = power ? 1 : 2;  // colour
 +#else
 +	data.data[4] = power;
 +#endif
@@ -1398,7 +1954,7 @@
  	closeDevice();
  #endif
  }
-@@ -656,22 +773,25 @@
+@@ -656,22 +804,25 @@
  #if defined (ENABLE_4DIGITS)
  	ShowText("     "); // 5 empty digits
  #elif defined (__sh__)
@@ -1434,7 +1990,7 @@
  #elif (PLATFORM_COOLSTREAM)
  	int ret = ioctl(fd, IOC_VFD_CLEAR_ALL, 0);
  	if(ret < 0)
-@@ -683,20 +803,42 @@
+@@ -683,20 +834,57 @@
  #endif
  }
  
@@ -1451,9 +2007,9 @@
  	aotom_data.u.icon.icon_nr = SPARK_ICON_ALL;
  	aotom_data.u.icon.on = 0;
  	if (ioctl(fd, VFDICONDISPLAYONOFF, &aotom_data) <0)
++	{
  		perror("VFDICONDISPLAYONOFF");
- 	closeDevice();
--#else
++	}	closeDevice();
 +  #elif defined(BOXMODEL_FORTIS_HDBOX) \
 +     || defined(BOXMODEL_OCTAGON1008)  \
 +     || defined(BOXMODEL_ATEVIO7500)   \
@@ -1475,12 +2031,35 @@
 +	{
 +		perror("VFDICONDISPLAYONOFF");
 +	}
+ 	closeDevice();
+-#else
++  #elif defined(BOXMODEL_ADB_BOX)  /* using one command for switching off all Icons */
++
++	struct vfd_ioctl_data data;
++
++	openDevice();
++	data.start_address = 0;
++	data.data[0] = ADB_ICON_ALL;
++	data.data[4] = 0;
++	data.length = 5;
++	if (ioctl(fd, VFDICONDISPLAYONOFF, &data) < 0)
++	{
++		perror("VFDICONDISPLAYONOFF");
++	}
 +	closeDevice();
 +  #else
  	int i;
  	struct vfd_ioctl_data data;
  	
-@@ -712,14 +854,14 @@
+@@ -707,19 +895,21 @@
+ 		data.data[0] = i;
+ 		data.data[4] = 0;
+ 		
+-		if( ioctl(fd, VFDICONDISPLAYONOFF, &data) < 0)
++		if (ioctl(fd, VFDICONDISPLAYONOFF, &data) < 0)
++		{
+ 			perror("VFDICONDISPLAYONOFF");
++		}
  	}
  	
  	closeDevice();
@@ -1497,7 +2076,7 @@
  	int percent, digits, i, j;
  	uint64_t t, u;
  	
-@@ -752,13 +894,17 @@
+@@ -752,13 +942,18 @@
  
  void CVFD::ShowIcon(vfd_icon icon, bool show)
  {
@@ -1513,11 +2092,12 @@
 +   || defined(PLATFORM_SPARK7162) \
 +   || defined(BOXMODEL_FORTIS_HDBOX) \
 +   || defined(BOXMODEL_OCTAGON1008) \
-+   || defined(BOXMODEL_ATEVIO7500)
++   || defined(BOXMODEL_ATEVIO7500) \
++   || defined(BOXMODEL_ADB_BOX)
  	switch (icon)
  	{
  		case VFD_ICON_USB:
-@@ -767,31 +913,51 @@
+@@ -767,31 +962,53 @@
  		case VFD_ICON_CLOCK:
  			timer_icon = show;
  			break;
@@ -1540,8 +2120,11 @@
  	aotom_data.u.icon.icon_nr = icon;
  	aotom_data.u.icon.on = show ? 1 : 0;
  	
- 	if (ioctl(fd, VFDICONDISPLAYONOFF, &aotom_data) <0)
+-	if (ioctl(fd, VFDICONDISPLAYONOFF, &aotom_data) <0)
++	if (ioctl(fd, VFDICONDISPLAYONOFF, &aotom_data) < 0)
++	{
  		perror("VFDICONDISPLAYONOFF");	
++	}
 +  #elif defined(BOXMODEL_FORTIS_HDBOX) \
 +     || defined(BOXMODEL_OCTAGON1008) \
 +     || defined(BOXMODEL_ATEVIO7500) \
@@ -1549,8 +2132,8 @@
 +     || defined(BOXMODEL_HS7810A) \
 +     || defined(BOXMODEL_HS7119) \
 +     || defined(BOXMODEL_HS7429) \
-+     || defined(BOXMODEL_HS7819)
-+  //#elif defined(PLATFORM_FORTIS)
++     || defined(BOXMODEL_HS7819) \
++     || defined(BOXMODEL_ADB_BOX)
 +	struct vfd_ioctl_data data;
 +
 +	data.start_address = 0;
@@ -1575,7 +2158,7 @@
  	struct vfd_ioctl_data data;
  
  	data.data[0] = (icon - 1) & 0x1F;
-@@ -799,7 +965,7 @@
+@@ -799,7 +1016,7 @@
  	
  	if( ioctl(fd, VFDICONDISPLAYONOFF, &data) < 0)
  		perror("VFDICONDISPLAYONOFF");
@@ -1584,7 +2167,7 @@
  	closeDevice();
  #elif defined (PLATFORM_COOLSTREAM)
  	int ret = ioctl(fd, show ? IOC_VFD_SET_ICON : IOC_VFD_CLEAR_ICON, icon);
-@@ -816,6 +982,14 @@
+@@ -816,11 +1033,20 @@
  	dprintf(DEBUG_INFO, "CVFD::ShowText: [%s]\n", str);
  
  	int len = strlen(str);
@@ -1598,8 +2181,17 @@
 +	}
  	
  	//FIXME: some vfd treiber can not handle NULL string len
- 	if(len == 0)
-@@ -839,19 +1013,29 @@
+-	if(len == 0)
+-		return;
+-	
++	if (len == 0)
++	{
++		return;
++	}	
+ 	// replace
+ 	std::string text = str;
+ 
+@@ -839,32 +1065,43 @@
  	 
  #if defined (__sh__)	 
  	openDevice();
@@ -1628,7 +2220,20 @@
 +  #endif
  		perror("write to vfd failed");
 -	
--	closeDevice();
++#endif // __sh__
++}
++
++void CVFD::setFan(bool enable)
++{
++#if defined (__sh__)
++  #if defined(BOXMODEL_ADB_BOX)
++	 openDevice();
++	
++	if (ioctl(fd, VFDSETFAN, enable) < 0)  
++	{
++		perror("VFDSETFAN");
++	}
+ 	closeDevice();
 -#elif defined (PLATFORM_ODIN) || defined (PLATFORM_GIGABLUE)
 -	if( write(fd, text.c_str(), len > 5? 5 : len ) < 0)
 -		perror("write to vfd failed");
@@ -1637,11 +2242,37 @@
 -		perror("write to vfd failed");
 -	
 -#endif
-+#endif // __sh__
+-}
+-
+-void CVFD::setFan(bool enable)
+-{
+-#if defined (__sh__)
+-	/*
+-	 openDevice();
+-	
+-	if( ioctl(fd, VFDSETFAN, enable) < 0)  
+-		perror("VFDSETFAN");
+-	
+-	closeDevice();
+-	*/
++  #endif
+ #endif	
  }
  
- void CVFD::setFan(bool enable)
-@@ -949,14 +1133,14 @@
+@@ -919,7 +1156,11 @@
+ 	
+ 	dprintf(DEBUG_NORMAL, "CVFD::vfd_symbol_circle: %s\n", VFDCIRCLE[cir]);
+ 	
+-#if defined (PLATFORM_VENTON)	
++#if defined (PLATFORM_VENTON) \
++ || defined (BOXMODEL_ATEVIO7500) \
++ || defined (BOXMODEL_FORTIS_HDBOX) \
++ || defined (BOXMODEL_TF7700) \
++ || defined (BOXMODEL_ADB_BOX)
+ 	FILE *f;
+ 	if((f = fopen("/proc/stb/lcd/symbol_circle","w")) == NULL) 
+ 	{
+@@ -949,14 +1190,14 @@
  	timebuf[2]=now->tm_hour;
  	timebuf[3]=now->tm_mday;
  	timebuf[4]=now->tm_mon+1;
@@ -1658,9 +2289,14 @@
  	
  	closeDevice();
  #endif
+@@ -973,3 +1214,4 @@
+ 		ShowText(tmp); // UTF-8
+ 	}
+ }
++// vim:ts=4
 --- nhd2-exp.org/src/nhttpd/tuxboxapi/neutrinoyparser.cpp
 +++ nhd2-exp/src/nhttpd/tuxboxapi/neutrinoyparser.cpp
-@@ -679,6 +679,22 @@
+@@ -679,6 +679,26 @@
  	return "atevio7500";
  #elif defined (BOXMODEL_ATEVIO7600)
  	return "atevio7600";
@@ -1680,6 +2316,10 @@
 +	return "hs7429";
 +#elif defined (BOXMODEL_HS7819)
 +	return "hs7819";
++#elif defined (BOXMODEL_TF7700)
++	return "tf7700";
++#elif defined (BOXMODEL_ADB_BOX)
++	return "adb_box";
  #elif defined (BOXMODEL_AZBOXHD)
  	return "azboxhd";
  #elif defined (BOXMODEL_AZBOXME)

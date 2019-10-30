@@ -657,13 +657,20 @@ endif
 #
 # neutrino
 #
+ifeq ($(NEUTRINO_VARIANT), $(filter $(NEUTRINO_VARIANT), neutrino-hd2, neutrino-hd2 + plugins))
 #	$(SILENT)ln -sf /usr/share $(RELEASE_DIR)/usr/local/share
-#	$(SILENT)cp $(TARGET_DIR)/usr/local/bin/neutrino $(RELEASE_DIR)/usr/local/bin/
-#	$(SILENT)cp $(TARGET_DIR)/usr/local/bin/pzapit $(RELEASE_DIR)/usr/local/bin/
-#	$(SILENT)cp $(TARGET_DIR)/usr/local/bin/sectionsdcontrol $(RELEASE_DIR)/usr/local/bin/
-#	$(SILENT)if [ -e $(TARGET_DIR)/usr/local/bin/install.sh ]; then \
-#		cp -aR $(TARGET_DIR)/usr/local/bin/install.sh $(RELEASE_DIR)/bin/; \
-#	fi
+	$(SILENT)if [ -e $(TARGET_DIR)/usr/local/bin/neutrino ]; then \
+		cp $(TARGET_DIR)/usr/local/bin/neutrino $(RELEASE_DIR)/usr/bin/; \
+	fi
+	$(SILENT)if [ -e $(TARGET_DIR)/usr/local/bin/pzapit ]; then \
+		cp $(TARGET_DIR)/usr/local/bin/pzapit $(RELEASE_DIR)/usr/bin/; \
+	fi
+	$(SILENT)if [ -e $(TARGET_DIR)/usr/local/bin/sectionsdcontrol ]; then \
+		cp $(TARGET_DIR)/usr/local/bin/sectionsdcontrol $(RELEASE_DIR)/usr/bin/; \
+	fi
+	$(SILENT)if [ -e $(TARGET_DIR)/usr/local/bin/install.sh ]; then \
+		cp -aR $(TARGET_DIR)/usr/local/bin/install.sh $(RELEASE_DIR)/bin/; \
+	fi
 #	$(SILENT)if [ -e $(TARGET_DIR)/usr/local/bin/luaclient ]; then \
 #		cp $(TARGET_DIR)/usr/local/bin/luaclient $(RELEASE_DIR)/bin/; \
 #	fi
@@ -676,6 +683,8 @@ endif
 #	$(SILENT)if [ -e $(TARGET_DIR)/usr/local/bin/udpstreampes ]; then \
 #		cp $(TARGET_DIR)/usr/local/bin/udpstreampes $(RELEASE_DIR)/usr/local/bin/; \
 #	fi
+endif
+
 #
 # channellist / tuxtxt
 #
