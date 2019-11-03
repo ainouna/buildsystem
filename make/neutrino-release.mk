@@ -657,7 +657,7 @@ endif
 #
 # neutrino
 #
-ifeq ($(NEUTRINO_VARIANT), $(filter $(NEUTRINO_VARIANT), neutrino-hd2, neutrino-hd2 + plugins))
+ifeq ($(FLAVOUR), $(filter $(FLAVOUR), neutrino-hd2, neutrino-hd2 + plugins))
 #	$(SILENT)ln -sf /usr/share $(RELEASE_DIR)/usr/local/share
 	$(SILENT)if [ -e $(TARGET_DIR)/usr/local/bin/neutrino ]; then \
 		cp $(TARGET_DIR)/usr/local/bin/neutrino $(RELEASE_DIR)/usr/bin/; \
@@ -669,22 +669,9 @@ ifeq ($(NEUTRINO_VARIANT), $(filter $(NEUTRINO_VARIANT), neutrino-hd2, neutrino-
 		cp $(TARGET_DIR)/usr/local/bin/sectionsdcontrol $(RELEASE_DIR)/usr/bin/; \
 	fi
 	$(SILENT)if [ -e $(TARGET_DIR)/usr/local/bin/install.sh ]; then \
-		cp -aR $(TARGET_DIR)/usr/local/bin/install.sh $(RELEASE_DIR)/bin/; \
+		cp $(TARGET_DIR)/usr/local/bin/install.sh $(RELEASE_DIR)/bin/; \
 	fi
-#	$(SILENT)if [ -e $(TARGET_DIR)/usr/local/bin/luaclient ]; then \
-#		cp $(TARGET_DIR)/usr/local/bin/luaclient $(RELEASE_DIR)/bin/; \
-#	fi
-#	$(SILENT)if [ -e $(TARGET_DIR)/usr/local/bin/rcsim ]; then \
-#		cp $(TARGET_DIR)/usr/local/bin/rcsim $(RELEASE_DIR)/bin/; \
-#	fi
-#	$(SILENT)if [ -e $(TARGET_DIR)/usr/local/sbin/udpstreampes ]; then \
-#		cp $(TARGET_DIR)/usr/local/sbin/udpstreampes $(RELEASE_DIR)/usr/local/sbin/; \
-#	fi
-#	$(SILENT)if [ -e $(TARGET_DIR)/usr/local/bin/udpstreampes ]; then \
-#		cp $(TARGET_DIR)/usr/local/bin/udpstreampes $(RELEASE_DIR)/usr/local/bin/; \
-#	fi
 endif
-
 #
 # channellist / tuxtxt
 #
@@ -694,22 +681,17 @@ endif
 #
 	$(SILENT)cp -aR $(SKEL_ROOT)/root_neutrino/boot/* $(RELEASE_DIR)/boot
 	$(SILENT)cp -aR $(SKEL_ROOT)/root_neutrino/etc/* $(RELEASE_DIR)/etc
-ifeq ($(NEUTRINO_VARIANT), $(filter $(NEUTRINO_VARIANT), mp-ddt, mp-ddt + plugins))
+ifeq ($(FLAVOUR), $(filter $(FLAVOUR), neutrino-mp-ddt, neutrino-mp-ddt + plugins))
 	$(SILENT)cp -aR $(SKEL_ROOT)/root_neutrino/var_ddt/* $(RELEASE_DIR)/var/
 endif
-ifeq ($(NEUTRINO_VARIANT), $(filter $(NEUTRINO_VARIANT), mp-ni, mp-ni + plugins))
-	$(SILENT)cp -aR $(SKEL_ROOT)/root_neutrino/var_ni/* $(RELEASE_DIR)/var/
-endif
-ifeq ($(NEUTRINO_VARIANT), $(filter $(NEUTRINO_VARIANT), neutrino-hd2, neutrino-hd2 + plugins))
+ifeq ($(FLAVOUR), $(filter $(FLAVOUR), neutrino-hd2, neutrino-hd2 + plugins))
 	$(SILENT)cp -aR $(SKEL_ROOT)/root_neutrino/var_hd2/* $(RELEASE_DIR)/var/
 endif
-ifeq ($(NEUTRINO_VARIANT), $(filter $(NEUTRINO_VARIANT), mp-tangos, mp-tangos + plugins, mp-tangos + plugins + shairport))
+	echo "$(FLAVOUR)"
+ifeq ($(FLAVOUR), $(filter $(FLAVOUR), neutrino-mp-tangos, neutrino-mp-tangos + plugins))
 	$(SILENT)cp -aR $(SKEL_ROOT)/root_neutrino/var_tangos/* $(RELEASE_DIR)/var/
 endif
-ifeq ($(NEUTRINO_VARIANT), $(filter $(NEUTRINO_VARIANT), mp-max, mp-max + plugins))
-	$(SILENT)cp -aR $(SKEL_ROOT)/root_neutrino/var_max/* $(RELEASE_DIR)/var/
-endif
-ifneq ($(BOXTYPE), $(filter $(BOXTYPE), atevio7500 spark7162 cuberevo cuberevo_mini cuberevo_mini2 cuberevo_3000hd))
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE), atevio7500 spark7162 cuberevo cuberevo_mini cuberevo_mini2 cuberevo_3000hd))
 	$(SILENT)rm -f $(RELEASE_DIR)/var/tuxbox/config/cables.xml
 	$(SILENT)rm -f $(RELEASE_DIR)/var/tuxbox/config/terrestrial.xml
 endif
