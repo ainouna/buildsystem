@@ -11,16 +11,15 @@ $(TARGET_DIR)/.version:
 	$(SILENT)echo "git=`git log | grep "^commit" | wc -l`" >> $@
 
 NEUTRINO_DEPS  = $(D)/bootstrap $(KERNEL) $(D)/system-tools $(D)/alsa_utils $(D)/ffmpeg $(D)/libopenthreads
-NEUTRINO_DEPS += $(LIRC) $(D)/libcurl $(D)/libsigc $(D)/pugixml $(D)/libdvbsi $(D)/giflib
+NEUTRINO_DEPS += $(LIRC) $(D)/libcurl $(D)/libsigc $(D)/pugixml $(D)/libdvbsi $(D)/libfribidi $(D)/giflib
 NEUTRINO_DEPS += $(D)/lua
 NEUTRINO_DEPS += $(D)/libpng $(D)/libjpeg $(D)/freetype
 #NEUTRINO_DEPS += $(D)/ncurses
-#NEUTRINO_DEPS += $(D)/libpng $(D)/libjpeg $(D)/freetype
-#NEUTRINO_DEPS += $(D)/libfribidi $(D)/libusb
-#NEUTRINO_DEPS += $(D)/lua $(D)/luaexpat $(D)/luacurl $(D)/luasocket $(D)/luafeedparser $(D)/luasoap $(D)/luajson
+#NEUTRINO_DEPS += $(D)/libusb
+#NEUTRINO_DEPS += $(D)/luaexpat $(D)/luacurl $(D)/luasocket $(D)/luafeedparser $(D)/luasoap $(D)/luajson
 NEUTRINO_DEPS += $(LOCAL_NEUTRINO_DEPS)
 
-ifeq ($(NEUTRINO_VARIANT), mp-tangos + plugins + shairport)
+ifeq ($(FLAVOUR), mp-tangos + plugins + shairport)
 NEUTRINO_DEPS += $(D)/avahi
 endif
 ifeq ($(BOXTYPE), $(filter $(BOXTYPE), atevio7500 spark spark7162 ufs912 ufs913 ufs910))
@@ -30,7 +29,7 @@ NEUTRINO_DEPS += $(D)/parted
 NEUTRINO_DEPS += $(D)/mtd_utils
 NEUTRINO_DEPS += $(D)/gptfdisk
 endif
-#NEUTRINO_DEPS +=  $(D)/minidlna
+NEUTRINO_DEPS +=  $(D)/minidlna
 endif
 
 ifeq ($(IMAGE), neutrino-wlandriver)
@@ -71,10 +70,12 @@ endif
 N_CONFIG_OPTS  = $(LOCAL_NEUTRINO_BUILD_OPTIONS)
 N_CONFIG_OPTS += --with-boxtype=$(BOXTYPE)
 N_CONFIG_OPTS += --enable-freesatepg
-#N_CONFIG_OPTS += --enable-pip
+N_CONFIG_OPTS += --enable-pip
 #N_CONFIG_OPTS += --disable-webif
 #N_CONFIG_OPTS += --disable-upnp
-#N_CONFIG_OPTS += --disable-tangos
+ifeq ($(FLAVOUR), $(filter $(FLAVOUR), mp-tangos, mp-tangos + plugins))
+N_CONFIG_OPTS += --enable-tangos
+endif
 
 ifeq ($(EXTERNAL_LCD), graphlcd)
 N_CONFIG_OPTS += --enable-graphlcd
@@ -94,17 +95,7 @@ N_CONFIG_OPTS += --enable-lcd4linux
 NEUTRINO_DEPS += $(D)/lcd4linux
 endif
 
-ifeq ($(FLAVOUR), neutrino-mp-max)
-GIT_URL       = https://bitbucket.org/max_10
-NEUTRINO_MP   = neutrino-mp-max
-LIBSTB_HAL    = libstb-hal-max
-NMP_BRANCH   ?= master
-NMP_CHECKOUT ?= 
-HAL_BRANCH   ?= master
-HAL_CHECKOUT ?= 
-NMP_PATCHES   = $(NEUTRINO_MP_MAX_PATCHES)
-HAL_PATCHES   = $(NEUTRINO_MP_LIBSTB_MAX_PATCHES)
-else ifeq ($(FLAVOUR), neutrino-mp-tangos)
+ifeq ($(FLAVOUR), neutrino-mp-tangos)
 GIT_URL       = https://github.com/TangoCash
 NEUTRINO_MP   = neutrino-mp-tangos
 LIBSTB_HAL    = libstb-hal-tangos
@@ -272,6 +263,7 @@ $(SOURCE_DIR)/$(NEUTRINO_MP)/config.status:
 			--enable-giflib \
 			--enable-lua \
 			--enable-pugixml \
+			--enable-fastscan \
 			$(N_CONFIG_OPTS) \
 			\
 			--with-tremor \
@@ -351,13 +343,18 @@ $(NEUTRINO_MP)-plugins-distclean: neutrino-cdkroot-clean
 # neutrino-hd2
 #
 ifeq ($(BOXTYPE), spark)
-NHD2_OPTS      = --enable-4digits --enable-scart
+NHD2_OPTS     = --enable-4digits --enable-scart
 else ifeq ($(BOXTYPE), spark7162)
-NHD2_OPTS      = --enable-scart
-#else ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs7119, hs7810a, hs7819))
-#NHD2_OPTS     = --enable-ci --enable-4digits
+NHD2_OPTS     = --enable-scart
+#else ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs7110, hs7119, hs7420, hs7429, hs7810a, hs7819))
+##NHD2_OPTS     = --enable-ci --enable-4digits
+#NHD2_OPTS     = --enable-ci
+#else ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs7420, hs7429, hs7810a, hs7819))
+#NHD2_OPTS    += --enable-scart
+else ifeq ($(BOXTYPE), $(filter $(BOXTYPE), adb_box))
+NHD2_OPTS     = --enable-scart
 else
-NHD2_OPTS      = --enable-ci --enable-scart
+NHD2_OPTS     = --enable-ci --enable-scart
 endif
 
 NHD2_BRANCH   ?= master
