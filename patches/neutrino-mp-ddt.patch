@@ -1,30 +1,79 @@
 --- neutrino-mp-ddt.org/acinclude.m4
 +++ neutrino-mp-ddt/acinclude.m4
-@@ -368,6 +368,14 @@
- 			BOXTYPE="duckbox"
+@@ -313,61 +313,13 @@
+ AC_ARG_WITH(boxtype,
+ 	AS_HELP_STRING([--with-boxtype], [valid values: tripledragon, coolstream, spark, azbox, generic, armbox, duckbox, spark7162, mipsbox]),
+ 	[case "${withval}" in
+-		tripledragon|coolstream|azbox|generic|armbox)
++		tripledragon|coolstream|azbox|generic|armbox|duckbox)
+ 			BOXTYPE="$withval"
+ 		;;
+ 		spark|spark7162)
+ 			BOXTYPE="spark"
  			BOXMODEL="$withval"
  		;;
-+		adb_box)
-+			BOXTYPE="duckbox"
-+			BOXMODEL="$withval"
-+		;;
-+		vitamin_hd5000)
-+			BOXTYPE="duckbox"
-+			BOXMODEL="$withval"
-+		;;
+-		dm*)
+-			BOXTYPE="dreambox"
+-			BOXMODEL="$withval"
+-		;;
+-		ufs*)
+-			BOXTYPE="duckbox"
+-			BOXMODEL="$withval"
+-		;;
+-		atevio*)
+-			BOXTYPE="duckbox"
+-			BOXMODEL="$withval"
+-		;;
+-		fortis*)
+-			BOXTYPE="duckbox"
+-			BOXMODEL="$withval"
+-		;;
+-		octagon*)
+-			BOXTYPE="duckbox"
+-			BOXMODEL="$withval"
+-		;;
+-		hs7*)
+-			BOXTYPE="duckbox"
+-			BOXMODEL="$withval"
+-		;;
+-		dp*)
+-			BOXTYPE="duckbox"
+-			BOXMODEL="$withval"
+-		;;
+-		cuberevo*)
+-			BOXTYPE="duckbox"
+-			BOXMODEL="$withval"
+-		;;
+-		ipbox*)
+-			BOXTYPE="duckbox"
+-			BOXMODEL="$withval"
+-		;;
+-		arivalink200)
+-			BOXTYPE="duckbox"
+-			BOXMODEL="$withval"
+-		;;
+-		tf*)
+-			BOXTYPE="duckbox"
+-			BOXMODEL="$withval"
+-		;;
+-		hl101)
+-			BOXTYPE="duckbox"
+-			BOXMODEL="$withval"
+-		;;
  		hd51|hd60|vusolo4k|vuduo4k|vuultimo4k|vuzero4k|vuuno4kse|vuuno4k|h7)
  			BOXTYPE="armbox"
  			BOXMODEL="$withval"
-@@ -384,7 +392,7 @@
+@@ -384,8 +336,8 @@
  
  AC_ARG_WITH(boxmodel,
  	AS_HELP_STRING([--with-boxmodel], [valid for coolstream: hd1, hd2])
 -AS_HELP_STRING([], [valid for duckbox: ufs910, ufs912, ufs913, ufs922, atevio7500, fortis_hdbox, octagon1008, hs7110, hs7810a, hs7119, hs7819, dp7000, cuberevo, cuberevo_mini, cuberevo_mini2, cuberevo_250hd, cuberevo_2000hd, cuberevo_3000hd, ipbox9900, ipbox99, ipbox55, arivalink200, tf7700, hl101])
-+AS_HELP_STRING([], [valid for duckbox: ufs910, ufs912, ufs913, ufs922, atevio7500, fortis_hdbox, octagon1008, hs7110, hs7420, hs7810a, hs7119, hs7429, hs7819, cuberevo, cuberevo_mini, cuberevo_mini2, cuberevo_250hd, cuberevo_2000hd, cuberevo_3000hd, ipbox9900, ipbox99, ipbox55, arivalink200, tf7700, hl101, adb_box, vitamin_hd5000])
  AS_HELP_STRING([], [valid for spark: spark, spark7162])
++AS_HELP_STRING([], [valid for duckbox: ufs910, ufs912, ufs913, ufs922, atevio7500, fortis_hdbox, octagon1008, hs7110, hs7420, hs7810a, hs7119, hs7429, hs7819, cuberevo, cuberevo_mini, cuberevo_mini2, cuberevo_250hd, cuberevo_2000hd, cuberevo_3000hd, ipbox9900, ipbox99, ipbox55, arivalink200, tf7700, hl101, adb_box, vitamin_hd5000])
  AS_HELP_STRING([], [valid for armbox: hd51, hd60, vusolo4k, vuduo4k, vuultimo4k, vuzero4k, vuuno4kse, vuuno4k, h7])
  AS_HELP_STRING([], [valid for mipsbox: vuduo])
-@@ -409,7 +417,7 @@
+ AS_HELP_STRING([], [valid for generic: raspi]),
+@@ -409,7 +361,7 @@
  				AC_MSG_ERROR([unknown model $withval for boxtype $BOXTYPE])
  			fi
  		;;
@@ -33,7 +82,7 @@
  			if test "$BOXTYPE" = "duckbox"; then
  				BOXMODEL="$withval"
  			else
-@@ -474,10 +482,11 @@
+@@ -474,10 +426,11 @@
  AM_CONDITIONAL(BOXMODEL_FORTIS_HDBOX, test "$BOXMODEL" = "fortis_hdbox")
  AM_CONDITIONAL(BOXMODEL_OCTAGON1008, test "$BOXMODEL" = "octagon1008")
  AM_CONDITIONAL(BOXMODEL_HS7110, test "$BOXMODEL" = "hs7110")
@@ -46,7 +95,7 @@
  
  AM_CONDITIONAL(BOXMODEL_CUBEREVO, test "$BOXMODEL" = "cuberevo")
  AM_CONDITIONAL(BOXMODEL_CUBEREVO_MINI, test "$BOXMODEL" = "cuberevo_mini")
-@@ -491,6 +500,8 @@
+@@ -491,6 +444,8 @@
  AM_CONDITIONAL(BOXMODEL_ARIVALINK200, test "$BOXMODEL" = "arivalink200")
  AM_CONDITIONAL(BOXMODEL_TF7700, test "$BOXMODEL" = "tf7700")
  AM_CONDITIONAL(BOXMODEL_HL101, test "$BOXMODEL" = "hl101")
@@ -55,12 +104,14 @@
  
  AM_CONDITIONAL(BOXMODEL_HD51, test "$BOXMODEL" = "hd51")
  AM_CONDITIONAL(BOXMODEL_HD60, test "$BOXMODEL" = "hd60")
-@@ -583,6 +594,8 @@
+@@ -583,6 +538,10 @@
  	AC_DEFINE(BOXMODEL_TF7700, 1, [tf7700])
  elif test "$BOXMODEL" = "hl101"; then
  	AC_DEFINE(BOXMODEL_HL101, 1, [hl101])
 +elif test "$BOXMODEL" = "adb_box"; then
 +	AC_DEFINE(BOXMODEL_ADB_BOX, 1, [adb_box])
++elif test "$BOXMODEL" = "vitamin_hd5000"; then
++	AC_DEFINE(BOXMODEL_VITAMIN_HD5000, 1, [vitamin_hd5000])
  elif test "$BOXMODEL" = "hd51"; then
  	AC_DEFINE(BOXMODEL_HD51, 1, [hd51])
  	AC_DEFINE(ENABLE_CHANGE_OSD_RESOLUTION, 1, [enable change the osd resolution])

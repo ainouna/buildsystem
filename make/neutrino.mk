@@ -68,7 +68,12 @@ LH_CONFIG_OPTS += --enable-gstreamer_10=yes
 endif
 
 N_CONFIG_OPTS  = $(LOCAL_NEUTRINO_BUILD_OPTIONS)
-N_CONFIG_OPTS += --with-boxtype=$(BOXTYPE)
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE), spark spark7162))
+N_CONFIG_OPTS += --with-boxtype=spark
+else
+N_CONFIG_OPTS += --with-boxtype=duckbox
+endif
+N_CONFIG_OPTS += --with-boxmodel=$(BOXTYPE)
 N_CONFIG_OPTS += --enable-freesatepg
 N_CONFIG_OPTS += --enable-pip
 #N_CONFIG_OPTS += --disable-webif
@@ -115,6 +120,16 @@ HAL_BRANCH   ?= master
 HAL_CHECKOUT ?= bb724c38a8f3508c586518c54f3f04ab5931a5c4
 NMP_PATCHES   = $(NEUTRINO_MP_DDT_PATCHES)
 HAL_PATCHES   = $(NEUTRINO_MP_LIBSTB_DDT_PATCHES)
+else ifeq ($(FLAVOUR), gui-neutrino)
+GIT_URL       = https://github.com/tuxbox-neutrino
+NEUTRINO_MP   = gui-neutrino
+LIBSTB_HAL    = library-stb-hal
+NMP_BRANCH   ?= master
+NMP_CHECKOUT ?= fa951c883ca7e806b6b5d67e8fee21b32f8a0d4d
+HAL_BRANCH   ?= mpx
+HAL_CHECKOUT ?= 603fba2500ca074ebb12456466a6e9421b8870f7
+NMP_PATCHES   = $(GUI_NEUTRINO_PATCHES)
+HAL_PATCHES   = $(GUI_NEUTRINO_LIBRARYSTB_PATCHES)
 else
 NEUTRINO_MP   = dummy
 LIBSTB_HAL    = dummy2
@@ -190,7 +205,8 @@ $(SOURCE_DIR)/$(LIBSTB_HAL)/config.status:
 			\
 			--with-target=cdk \
 			--with-targetprefix=/usr \
-			--with-boxtype=$(BOXTYPE) \
+			--with-boxtype=duckbox \
+			--with-boxmodel=$(BOXTYPE) \
 			$(LH_CONFIG_OPTS) \
 			PKG_CONFIG=$(PKG_CONFIG) \
 			PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) \
@@ -219,7 +235,7 @@ $(LIBSTB_HAL)-distclean:
 
 ################################################################################
 #
-# neutrino-mp-ddt & neutrino-mp-tangos
+# neutrino-mp-ddt, gui-neutrino & neutrino-mp-tangos
 #
 $(D)/$(NEUTRINO_MP)-plugins.do_prepare \
 $(D)/$(NEUTRINO_MP).do_prepare: | $(NEUTRINO_DEPS) $(D)/$(LIBSTB_HAL)
