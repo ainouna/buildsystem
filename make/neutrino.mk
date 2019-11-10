@@ -67,11 +67,13 @@ N_CPPFLAGS     += $(shell $(PKG_CONFIG) --cflags --libs glib-2.0)
 LH_CONFIG_OPTS += --enable-gstreamer_10=yes
 endif
 
-N_CONFIG_OPTS  = $(LOCAL_NEUTRINO_BUILD_OPTIONS)
+N_CONFIG_OPTS   = $(LOCAL_NEUTRINO_BUILD_OPTIONS)
 ifeq ($(BOXTYPE), $(filter $(BOXTYPE), spark spark7162))
-N_CONFIG_OPTS += --with-boxtype=spark
+LH_CONFIG_OPTS += --with-boxtype=spark
+N_CONFIG_OPTS  += --with-boxtype=spark
 else
-N_CONFIG_OPTS += --with-boxtype=duckbox
+LH_CONFIG_OPTS += --with-boxtype=duckbox
+N_CONFIG_OPTS  += --with-boxtype=duckbox
 endif
 N_CONFIG_OPTS += --with-boxmodel=$(BOXTYPE)
 N_CONFIG_OPTS += --enable-freesatepg
@@ -205,7 +207,6 @@ $(SOURCE_DIR)/$(LIBSTB_HAL)/config.status:
 			\
 			--with-target=cdk \
 			--with-targetprefix=/usr \
-			--with-boxtype=duckbox \
 			--with-boxmodel=$(BOXTYPE) \
 			$(LH_CONFIG_OPTS) \
 			PKG_CONFIG=$(PKG_CONFIG) \
