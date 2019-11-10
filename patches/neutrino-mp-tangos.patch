@@ -137,7 +137,7 @@
  		CVFD::getInstance()->setBacklight(g_settings.backlight_standby);
  
  		InfoClock->enableInfoClock(false);
-@@ -4795,7 +4798,11 @@
+@@ -4795,7 +4798,13 @@
  		// Active standby off
  		powerManager->SetStandby(false, false);
  		CVFD::getInstance()->setMode(CVFD::MODE_TVRADIO);
@@ -145,7 +145,9 @@
 +#if defined (FORTIS_HDBOX) || defined (TF7700)
 +		CVFD::getInstance()->setlcdparameter(g_settings.lcd_setting[SNeutrinoSettings::LCD_BRIGHTNESS], 1);
 +#endif
++#ifdef HAVE_DUCKBOX_HARDWARE
 +		CVFD::getInstance()->ClearIcons();
++#endif
 +		CVFD::getInstance()->ShowText("Resume");
  		cpuFreq->SetCpuFreq(g_settings.cpufreq * 1000 * 1000);
  		videoDecoder->Standby(false);

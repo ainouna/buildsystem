@@ -1,15 +1,21 @@
 --- libstb-hal-tangos.org/acinclude.m4
 +++ libstb-hal-tangos/acinclude.m4
-@@ -156,7 +156,7 @@
+@@ -154,63 +154,15 @@
+ 
+ AC_DEFUN([TUXBOX_BOXTYPE], [
  AC_ARG_WITH(boxtype,
- 	AS_HELP_STRING([--with-boxtype], [valid values: tripledragon, spark, azbox, generic, armbox, duckbox, spark7162, mipsbox]),
+-	AS_HELP_STRING([--with-boxtype], [valid values: tripledragon, spark, azbox, generic, armbox, duckbox, spark7162, mipsbox]),
++	AS_HELP_STRING([--with-boxtype], [valid values: tripledragon, spark, azbox, generic, armbox, duckbox, mipsbox]),
  	[case "${withval}" in
 -		tripledragon|azbox|generic|armbox)
-+		tripledragon|azbox|generic|armbox|duckbox)
++		tripledragon|spark|azbox|generic|armbox|duckbox)
  			BOXTYPE="$withval"
+-		;;
+-		spark|spark7162)
+-			BOXTYPE="spark"
+-			BOXMODEL="$withval"
  		;;
- 		spark|spark7162)
-@@ -167,50 +167,6 @@
+ 		dm*)
  			BOXTYPE="dreambox"
  			BOXMODEL="$withval"
  		;;
@@ -60,7 +66,7 @@
  		hd51|hd60|hd61|bre2ze4k|vusolo4k|vuduo4k|vuultimo4k|vuzero4k|vuuno4kse|vuuno4k)
  			BOXTYPE="armbox"
  			BOXMODEL="$withval"
-@@ -227,12 +183,12 @@
+@@ -227,12 +179,12 @@
  
  AC_ARG_WITH(boxmodel,
  	AS_HELP_STRING([--with-boxmodel], [valid for generic: raspi])
@@ -75,7 +81,7 @@
  			if test "$BOXTYPE" = "duckbox"; then
  				BOXMODEL="$withval"
  			else
-@@ -310,6 +266,8 @@
+@@ -310,6 +262,8 @@
  AM_CONDITIONAL(BOXMODEL_ARIVALINK200, test "$BOXMODEL" = "arivalink200")
  AM_CONDITIONAL(BOXMODEL_TF7700, test "$BOXMODEL" = "tf7700")
  AM_CONDITIONAL(BOXMODEL_HL101, test "$BOXMODEL" = "hl101")
@@ -84,7 +90,7 @@
  
  AM_CONDITIONAL(BOXMODEL_HD51, test "$BOXMODEL" = "hd51")
  AM_CONDITIONAL(BOXMODEL_HD60, test "$BOXMODEL" = "hd60")
-@@ -400,6 +358,10 @@
+@@ -400,6 +354,10 @@
  	AC_DEFINE(BOXMODEL_TF7700, 1, [tf7700])
  elif test "$BOXMODEL" = "hl101"; then
  	AC_DEFINE(BOXMODEL_HL101, 1, [hl101])
