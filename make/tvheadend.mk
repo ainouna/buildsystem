@@ -49,7 +49,7 @@ $(D)/tvheadend.do_prepare: | $(TVHEADEND_DEPS)
 	fi; \
 	cp -ra $(SOURCE_DIR)/tvheadend $(SOURCE_DIR)/tvheadend.org; \
 	echo "Applying diff-$$DIFF patch..."; \
-	set -e; cd $(SOURCE_DIR)/tvheadend && patch -p1 $(SILENT_PATCH) < "$(PATCHES)/tvheadend.$$DIFF.diff"; \
+	set -e; cd $(SOURCE_DIR)/tvheadend && patch -p1 $(SILENT_PATCH) < "$(PATCHES)/build-tvheadend/tvheadend.$$DIFF.diff"; \
 	echo "Patching to diff-$$DIFF completed."; \
 	cd $(SOURCE_DIR)/tvheadend; \
 	echo "Build preparation for Tvheadend complete."; echo; \

@@ -1,3 +1,4 @@
+# revision 3b232b66e02fc46f1e7e97efb5ef48c6968cf779
 --- tvheadend.org/Makefile
 +++ tvheadend/Makefile
 @@ -99,8 +99,10 @@
@@ -6,8 +7,8 @@
  
 -FFMPEG_PREFIX := $(BUILDDIR)/ffmpeg/build/ffmpeg
 -FFMPEG_LIBDIR := $(FFMPEG_PREFIX)/lib
-+#FFMPEG_LIBDIR := $(FFMPEG_PREFIX)/lib
 +#FFMPEG_PREFIX := $(BUILDDIR)/ffmpeg/build/ffmpeg
++#FFMPEG_LIBDIR := $(FFMPEG_PREFIX)/lib
 +FFMPEG_PREFIX := ./ffmpeg
 +FFMPEG_LIBDIR := ../../tufsbox/cdkroot/usr/lib/pkgconfig
  FFMPEG_INCDIR := $(FFMPEG_PREFIX)/include
@@ -15,7 +16,7 @@
      PKG_CONFIG_LIBDIR=$(FFMPEG_LIBDIR)/pkgconfig $(PKG_CONFIG) \
 --- tvheadend.org/configure
 +++ tvheadend/configure
-@@ -117,6 +117,11 @@
+@@ -118,6 +118,11 @@
        opt=${opt#*-}
        disable $opt 1
        ;;
@@ -27,16 +28,7 @@
    esac
  done
  
-@@ -168,7 +173,7 @@
- 
- check_cc_snippet atomic64 '#include <stdint.h>
- uint64_t test(uint64_t *ptr){
--return __sync_fetch_and_add(ptr, 1);
-+return __sync_fetch_and_add(ptr, 1)
- }'
- 
- check_cc_snippet atomic_time_t '#include <stdint.h>
-@@ -729,6 +734,9 @@
+@@ -757,6 +762,9 @@
  
  # Output config
  print_config
@@ -48,7 +40,22 @@
  echo ""
 --- tvheadend.org/src/tvheadend.h
 +++ tvheadend/src/tvheadend.h
-@@ -70,12 +70,12 @@
+@@ -51,6 +51,14 @@
+ #define ERRNO_AGAIN(e) ((e) == EAGAIN || (e) == EINTR || (e) == EWOULDBLOCK)
+ 
+ #include "compat.h"
++
++#if defined(ENABLE_ATOMIC32)
++#undef ENABLE_ATOMIC32
++#endif
++
++#if defined(ENABLE_ATOMIC64)
++#undef ENABLE_ATOMIC64
++#endif
+ 
+ typedef struct {
+   const char     *name;
+@@ -70,12 +78,12 @@
  
  htsmsg_t *tvheadend_capabilities_list(int check);
  
@@ -63,7 +70,7 @@
  
  #define PTS_UNSET INT64_C(0x8000000000000000)
  #define PTS_MASK  INT64_C(0x00000001ffffffff)
-@@ -828,4 +828,18 @@
+@@ -833,4 +833,18 @@
  #define TVH_NAME_LEN 32
  #define TVH_TITLE_LEN 256
  
@@ -141,7 +148,7 @@
  #endif /* __TVH_SATIP_H__ */
 --- tvheadend.org/src/main.c
 +++ tvheadend/src/main.c
-@@ -88,6 +88,7 @@
+@@ -85,6 +85,7 @@
  #include <openssl/err.h>
  #include <openssl/rand.h>
  #include <openssl/engine.h>
@@ -149,7 +156,7 @@
  
  pthread_t main_tid;
  
-@@ -748,6 +749,10 @@
+@@ -745,6 +746,10 @@
    struct rlimit rl;
    extern int dvb_bouquets_parse;
  
@@ -160,7 +167,7 @@
    main_tid = pthread_self();
  
    /* Setup global mutexes */
-@@ -811,9 +816,9 @@
+@@ -808,9 +813,9 @@
               *opt_user_agent   = NULL,
               *opt_satip_bindaddr = NULL;
    static char *__opt_satip_xml[10];
@@ -172,7 +179,7 @@
    cmdline_opt_t cmdline_opts[] = {
      {   0, NULL,        N_("Generic options"),         OPT_BOOL, NULL         },
      { 'h', "help",      N_("Show this page"),          OPT_BOOL, &opt_help    },
-@@ -942,7 +947,7 @@
+@@ -939,7 +944,7 @@
      else if (opt->type == OPT_INT)
        *((int*)opt->param) = atoi(argv[i]);
      else if (opt->type == OPT_STR_LIST) {
@@ -181,7 +188,7 @@
        if (strl->num < strl->max)
          strl->str[strl->num++] = argv[i];
      }
-@@ -1275,6 +1280,31 @@
+@@ -1268,6 +1273,31 @@
           getpid(), getuid(), getgid(), getcwd(buf, sizeof(buf)),
           hts_settings_get_root());
  

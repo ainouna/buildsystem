@@ -1,21 +1,22 @@
+# revision 6c6e0e5103b874fdd926b0f1bcdaed4d7e8b464e
 --- tvheadend.org/Makefile
 +++ tvheadend/Makefile
-@@ -97,8 +97,10 @@
+@@ -110,8 +110,10 @@
  	$(MAKE) all
  endif
  
 -FFMPEG_PREFIX := $(BUILDDIR)/ffmpeg/build/ffmpeg
 -FFMPEG_LIBDIR := $(FFMPEG_PREFIX)/lib
-+#FFMPEG_PREFIX := $(BUILDDIR)/ffmpeg/build/ffmpeg
 +#FFMPEG_LIBDIR := $(FFMPEG_PREFIX)/lib
++#FFMPEG_PREFIX := $(BUILDDIR)/ffmpeg/build/ffmpeg
 +FFMPEG_PREFIX := ./ffmpeg
 +FFMPEG_LIBDIR := ../../tufsbox/cdkroot/usr/lib/pkgconfig
+ FFMPEG_INCDIR := $(FFMPEG_PREFIX)/include
  FFMPEG_CONFIG := \
      PKG_CONFIG_LIBDIR=$(FFMPEG_LIBDIR)/pkgconfig $(PKG_CONFIG) \
-     --define-variable=prefix=$(FFMPEG_PREFIX) --static
 --- tvheadend.org/configure
 +++ tvheadend/configure
-@@ -110,6 +110,11 @@
+@@ -117,6 +117,11 @@
        opt=${opt#*-}
        disable $opt 1
        ;;
@@ -27,7 +28,7 @@
    esac
  done
  
-@@ -156,7 +161,7 @@
+@@ -210,7 +215,7 @@
  
  check_cc_snippet atomic64 '#include <stdint.h>
  uint64_t test(uint64_t *ptr){
@@ -36,7 +37,7 @@
  }'
  
  check_cc_snippet atomic_time_t '#include <stdint.h>
-@@ -664,6 +669,9 @@
+@@ -792,6 +797,9 @@
  
  # Output config
  print_config
@@ -48,7 +49,7 @@
  echo ""
 --- tvheadend.org/src/tvheadend.h
 +++ tvheadend/src/tvheadend.h
-@@ -70,12 +70,12 @@
+@@ -64,12 +64,12 @@
  
  htsmsg_t *tvheadend_capabilities_list(int check);
  
@@ -63,8 +64,8 @@
  
  #define PTS_UNSET INT64_C(0x8000000000000000)
  #define PTS_MASK  INT64_C(0x00000001ffffffff)
-@@ -871,4 +871,18 @@
- #define PRItime_t       "ld"
+@@ -351,4 +351,18 @@
+ #define blacklisted_close close
  #endif
  
 +/* VFD output */
@@ -97,7 +98,7 @@
    idclass_register(&mpegts_network_class);
 --- tvheadend.org/src/input/mpegts.h
 +++ tvheadend/src/input/mpegts.h
-@@ -73,8 +73,8 @@
+@@ -75,8 +75,8 @@
   * Setup / Tear down
   * *************************************************************************/
  
@@ -110,7 +111,7 @@
  /* **************************************************************************
 --- tvheadend.org/src/input/mpegts/satip/satip.c
 +++ tvheadend/src/input/mpegts/satip/satip.c
-@@ -805,7 +805,7 @@
+@@ -874,7 +874,7 @@
  static mtimer_t satip_discovery_static_timer;
  static mtimer_t satip_discovery_timerq;
  static mtimer_t satip_discovery_msearch_timer;
@@ -119,7 +120,7 @@
  
  static void
  satip_discovery_destroy(satip_discovery_t *d, int unlink)
-@@ -1275,7 +1275,7 @@
+@@ -1352,7 +1352,7 @@
   * Initialization
   */
  
@@ -141,16 +142,16 @@
  #endif /* __TVH_SATIP_H__ */
 --- tvheadend.org/src/main.c
 +++ tvheadend/src/main.c
-@@ -82,6 +82,7 @@
- #include <openssl/err.h>
- #include <openssl/rand.h>
+@@ -92,6 +92,7 @@
+ #ifndef OPENSSL_NO_ENGINE
  #include <openssl/engine.h>
+ #endif
 +#include <stropts.h>
  
  pthread_t main_tid;
  
-@@ -742,6 +743,10 @@
-   } randseed;
+@@ -804,6 +805,10 @@
+   struct rlimit rl;
    extern int dvb_bouquets_parse;
  
 + /* for writing to VFD */
@@ -160,7 +161,7 @@
    main_tid = pthread_self();
  
    /* Setup global mutexes */
-@@ -805,9 +810,9 @@
+@@ -871,9 +876,9 @@
               *opt_user_agent   = NULL,
               *opt_satip_bindaddr = NULL;
    static char *__opt_satip_xml[10];
@@ -172,7 +173,7 @@
    cmdline_opt_t cmdline_opts[] = {
      {   0, NULL,        N_("Generic options"),         OPT_BOOL, NULL         },
      { 'h', "help",      N_("Show this page"),          OPT_BOOL, &opt_help    },
-@@ -936,7 +941,7 @@
+@@ -1004,7 +1009,7 @@
      else if (opt->type == OPT_INT)
        *((int*)opt->param) = atoi(argv[i]);
      else if (opt->type == OPT_STR_LIST) {
@@ -181,14 +182,14 @@
        if (strl->num < strl->max)
          strl->str[strl->num++] = argv[i];
      }
-@@ -1276,6 +1281,31 @@
+@@ -1354,6 +1359,31 @@
           getpid(), getuid(), getgid(), getcwd(buf, sizeof(buf)),
           hts_settings_get_root());
  
 +/* Sign on to VFD */
 +#if defined(OCTAGON1008) || defined(FORTIS_HDBOX) || defined(ATEVIO7500) || defined(HS7420) || defined(HS7429) || defined(SPARK7162) || defined(TF7700)
 +	char txtstr[] = "Tvheadend";
-+#elif defined(HS7810A) || defined(HS7119) || defined(HS7819) || defined(SPARK)
++#elif defined(ADB_BOX) || defined(HS7810A) || defined(HS7119) || defined(HS7819) || defined(SPARK)
 +	char txtstr[] = "tvHE";
 +#else
 +	char txtstr[] = "Tvhe";
@@ -205,7 +206,7 @@
 +	}
 +	if (file_vfd > -1)
 +	{
-+		write(file_vfd, vfddata.data, vfddata.length);
++		int ret = write(file_vfd, vfddata.data, vfddata.length);
 +		close(file_vfd);
 +		file_vfd = -1;
 +	}

@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20190929.1
+# Version 20191113.1
 
 ##############################################
 
@@ -23,7 +23,7 @@ if [ "$1" == -h ] || [ "$1" == --help ]; then
 	echo "Parameter 2       : kernel (1-2)"
 	echo "Parameter 3       : optimization (1-5)"
 	echo "Parameter 4       : image (Enigma=1/2 Neutrino=3/4 Tvheadend=5 (1-5)"
-	echo "Parameter 5       : Neutrino variant (1-6) or Enigma2/Tvheadend diff (0-5)"
+	echo "Parameter 5       : Neutrino variant (1-8) or Enigma2/Tvheadend diff (0-5)"
 	echo "Parameter 6       : media Framework (Enigma2: 1-5; Neutrino, Tvheadend: ignored)"
 	echo "Parameter 7       : external LCD (1=none, 2=graphlcd, 3=lcd4linux, 4=both)"
 	echo "Parameter 8       : destination (1-2, 1=flash, 2=USB)"
@@ -302,27 +302,30 @@ case "$IMAGE" in
 				echo "   4)  neutrino-mp-tangos + plugins"
 				echo "   5)  neutrino-hd2"
 				echo "   6)  neutrino-hd2 + plugins"
-				read -p "Select Neutrino variant to build (1-6)? ";;
+#				echo "   7)  gui-neutrino"
+#				echo "   8)  gui-neutrino + plugins"
+				read -p "Select Neutrino variant to build (1-8)? ";;
 		esac
 
 		case "$REPLY" in
 			[1-2]) FLAVOUR="neutrino-mp-ddt";;
 #			[3-4]) FLAVOUR="neutrino-mp-tangos";;
 			[5-6]) FLAVOUR="neutrino-hd2";;
+			[7-8]) FLAVOUR="gui-neutrino";;
 			*) FLAVOUR="neutrino-mp-tangos";;
 		esac
 
 		echo "FLAVOUR=$FLAVOUR" >> config
 
 		case "$REPLY" in
-			[2,4,6]) PLUGINS_NEUTRINO="Yes";;
+			[2,4,6,8]) PLUGINS_NEUTRINO="Yes";;
 			*) PLUGINS_NEUTRINO="No";;
 		esac
 		echo "PLUGINS_NEUTRINO=$PLUGINS_NEUTRINO" >> config
 		MEDIAFW="buildinplayer"
 
 		case "$FLAVOUR" in
-			neutrino-mp*)
+			neutrino-mp*|gui-neutrino*)
 				if [ $PLUGINS_NEUTRINO == "No" ]; then
 					echo "make yaud-neutrino-mp" >> $CURDIR/build
 				else
@@ -351,14 +354,15 @@ case "$IMAGE" in
 		MEDIAFW="buildinplayer"
 		# Determine the Tvheadend diff-level
 		case $5 in
-			[0-1])	REPLY=$5;;
+			[0-3])	REPLY=$5;;
 			*)	echo
 				echo "Please select one of the following Tvheadend revisions (default = 1):"
 				echo "=================================================================================================="
 				echo " 0)  Newest                 - Tvheadend  built-in player (CAUTION: may fail due to outdated patch)"
 				echo "=================================================================================================="
-				echo " 1*) Wed, 13 Dec 2017 22:23 - Tvheadend  built-in player  3b232b66e02fc46f1e7e97efb5ef48c6968cf779"
-				echo " 2)  Fri, 24 Feb 2017 18:23 - Tvheadend  built-in player  4931c0544885371b85146efad4eacd9683ba3dad"
+				echo " 1*) Fri, 26 Jul 2019 18:46 - Tvheadend  built-in player  6c6e0e5103b874fdd926b0f1bcdaed4d7e8b464e"
+				echo " 2)  Wed, 13 Dec 2017 22:23 - Tvheadend  built-in player  3b232b66e02fc46f1e7e97efb5ef48c6968cf779"
+				echo " 3)  Fri, 24 Feb 2017 18:23 - Tvheadend  built-in player  4931c0544885371b85146efad4eacd9683ba3dad"
 				echo "=================================================================================================="
 				echo "Media Framework         : $MEDIAFW"
 				read -p "Select Tvheadend revision : ";;
@@ -367,8 +371,12 @@ case "$IMAGE" in
 		case "$REPLY" in
 			0)	DIFF="0"
 				REVISION="newest";;
-			*)	DIFF="1"
+			2)	DIFF="2"
+				REVISION="3b232b66e02fc46f1e7e97efb5ef48c6968cf779";;
+			3)	DIFF="3"
 				REVISION="4931c0544885371b85146efad4eacd9683ba3dad";;
+			*)	DIFF="1"
+				REVISION="6c6e0e5103b874fdd926b0f1bcdaed4d7e8b464e";;
 		esac
 		echo "TVHEADEND_DIFF=$DIFF" >> config
 		echo "TVHEADEND_REVISION=$REVISION" >> config
