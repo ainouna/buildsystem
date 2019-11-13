@@ -822,7 +822,7 @@
  #include <aotom_main.h>
  
  #include <hardware_caps.h>
-@@ -44,30 +48,52 @@
+@@ -44,30 +48,53 @@
  	const char *tmp;
  	char buf[1024];
  	int len = -1, ret, val;
@@ -848,6 +848,7 @@
 +		else if (version.DisplayInfo == 3) /* DVFD = 3 */
 +		{
 +			caps.display_type = HW_DISPLAY_LINE_TEXT;
++ 			caps.display_can_set_brightness = 1;
 +			ret = ioctl(fd, VFDGETDISPLAYTIME, &val);
 +			if (val == 1)
 +			{
@@ -858,8 +859,8 @@
 +				caps.display_xres = 16;
 +			}
 +		}
- 	}
 +	close(fd);
+ 	}
  	fd = open("/proc/cmdline", O_RDONLY);
 -	if (fd != -1) {
 +	if (fd != -1)
@@ -883,7 +884,7 @@
  				case 0x090003:
  					tmp = "Truman Premier 1+";
  					break;
-@@ -155,7 +181,8 @@
+@@ -155,7 +182,8 @@
  				caps.boxtype = 7111;
  			else
  				caps.boxtype = 7162;
