@@ -59,7 +59,7 @@ endif
 
 LH_CONFIG_OPTS =
 ifeq ($(MEDIAFW), gstreamer)
-NEUTRINO_DEPS  += $(D)/gst_plugins_multibox_dvbmediasink
+#NEUTRINO_DEPS  += $(D)/gst_plugins_multibox_dvbmediasink
 N_CPPFLAGS     += $(shell $(PKG_CONFIG) --cflags --libs gstreamer-1.0)
 N_CPPFLAGS     += $(shell $(PKG_CONFIG) --cflags --libs gstreamer-audio-1.0)
 N_CPPFLAGS     += $(shell $(PKG_CONFIG) --cflags --libs gstreamer-video-1.0)
@@ -122,16 +122,6 @@ HAL_BRANCH   ?= master
 HAL_CHECKOUT ?= bb724c38a8f3508c586518c54f3f04ab5931a5c4
 NMP_PATCHES   = $(NEUTRINO_MP_DDT_PATCHES)
 HAL_PATCHES   = $(NEUTRINO_MP_LIBSTB_DDT_PATCHES)
-else ifeq ($(FLAVOUR), gui-neutrino)
-GIT_URL       = https://github.com/tuxbox-neutrino
-NEUTRINO_MP   = gui-neutrino
-LIBSTB_HAL    = library-stb-hal
-NMP_BRANCH   ?= master
-NMP_CHECKOUT ?= fa951c883ca7e806b6b5d67e8fee21b32f8a0d4d
-HAL_BRANCH   ?= mpx
-HAL_CHECKOUT ?= 603fba2500ca074ebb12456466a6e9421b8870f7
-NMP_PATCHES   = $(GUI_NEUTRINO_PATCHES)
-HAL_PATCHES   = $(GUI_NEUTRINO_LIBRARYSTB_PATCHES)
 else
 NEUTRINO_MP   = dummy
 LIBSTB_HAL    = dummy2
@@ -236,7 +226,7 @@ $(LIBSTB_HAL)-distclean:
 
 ################################################################################
 #
-# neutrino-mp-ddt, gui-neutrino & neutrino-mp-tangos
+# neutrino-mp-ddt & neutrino-mp-tangos
 #
 $(D)/$(NEUTRINO_MP)-plugins.do_prepare \
 $(D)/$(NEUTRINO_MP).do_prepare: | $(NEUTRINO_DEPS) $(D)/$(LIBSTB_HAL)
@@ -360,22 +350,39 @@ $(NEUTRINO_MP)-plugins-distclean: neutrino-cdkroot-clean
 # neutrino-hd2
 #
 ifeq ($(BOXTYPE), spark)
-NHD2_OPTS     = --enable-4digits --enable-scart
+NHD2_OPTS        = --enable-4digits --enable-scart
 else ifeq ($(BOXTYPE), spark7162)
-NHD2_OPTS     = --enable-scart
-#else ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs7110, hs7119, hs7420, hs7429, hs7810a, hs7819))
-##NHD2_OPTS     = --enable-ci --enable-4digits
-#NHD2_OPTS     = --enable-ci
-#else ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs7420, hs7429, hs7810a, hs7819))
-#NHD2_OPTS    += --enable-scart
+NHD2_OPTS        = --enable-scart
+else ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs7110, hs7119, hs7420, hs7429, hs7810a, hs7819))
+#NHD2_OPTS       = --enable-ci --enable-4digits
+NHD2_OPTS        = --enable-ci
+else ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs7420, hs7429, hs7810a, hs7819, adb_box, vitamin_hd5000))
+NHD2_OPTS       += --enable-scart
 else ifeq ($(BOXTYPE), $(filter $(BOXTYPE), adb_box))
-NHD2_OPTS     = --enable-scart
+NHD2_OPTS        = --enable-scart
 else
-NHD2_OPTS     = --enable-ci --enable-scart
+NHD2_OPTS        = --enable-ci --enable-scart
+endif
+
+#NHD2_OPTS      += --enable-lua
+
+ifeq ($(MEDIAFW), gstreamer)
+#ifeq ($(MEDIAFW), $(filter $(MEDIAFW), gstreamer, gst-eplayer3))
+NHD2_OPTS      += --enable-gstreamer
+NHD2_OPTS      += --with-gstversion=1.0
+NEUTRINO_DEPS2 += $(D)/gstreamer
+NEUTRINO_DEPS2 += $(D)/gst_plugins_multibox_dvbmediasink
+NEUTRINO_DEPS2 += $(D)/gst_plugins_good
+NEUTRINO_DEPS2 += $(D)/gst_plugins_bad
+NEUTRINO_DEPS2 += $(D)/gst_plugins_ugly
+endif
+
+ifeq ($(EXTERNAL_LCD), $(filter $(EXTERNAL_LCD), graphlcd, lcd4linux, both))
+NHD2_OPTS     += --enable-lcd
 endif
 
 NHD2_BRANCH   ?= master
-NHD2_CHECKOUT = d2ec257482e841563ad8c29e1aa5253145e4bd21
+NHD2_CHECKOUT  = d2ec257482e841563ad8c29e1aa5253145e4bd21
 #
 # yaud-neutrino-hd2
 #
@@ -391,11 +398,11 @@ yaud-neutrino-hd2: yaud-none $(D)/neutrino-hd2 $(D)/neutrino_release
 # yaud-neutrino-hd2-plugins
 #
 yaud-neutrino-hd2-plugins: yaud-none $(D)/neutrino-hd2 $(D)/neutrino-hd2-plugin $(D)/neutrino_release
-	@echo "***************************************************************"
+	@echo "*****************************************************************************"
 	@echo -e "$(TERM_GREEN_BOLD)"
-	@echo " Build of neutrino-hd2 for $(BOXTYPE) successfully completed."
+	@echo " Build of neutrino-hd2-plugins for $(BOXTYPE) successfully completed."
 	@echo -e "$(TERM_NORMAL)"
-	@echo "***************************************************************"
+	@echo "*****************************************************************************"
 	@touch $(D)/build_complete
 
 #
@@ -459,16 +466,6 @@ $(D)/neutrino-hd2: $(D)/neutrino-hd2.do_prepare $(D)/neutrino-hd2.do_compile
 	$(TOUCH)
 	$(TUXBOX_CUSTOMIZE)
 
-#nhd2 
-#$(D)/neutrino-hd2-plugins: $(D)/neutrino-hd2.do_prepare $(D)/neutrino-hd2.do_compile
-#	$(START_BUILD)
-#	$(MAKE) -C $(SOURCE_DIR)/neutrino-hd2 install DESTDIR=$(TARGET_DIR)
-#	$(SILENT)rm -f $(TARGET_DIR)/.version
-#	$(MAKE) $(TARGET_DIR)/.version
-#	$(SILENT)touch $(D)/$(notdir $@)
-#	$(TOUCH)
-#	$(TUXBOX_CUSTOMIZE)
-
 nhd2-clean \
 neutrino-hd2-clean: neutrino-cdkroot-clean
 	$(SILENT)rm -f $(D)/neutrino-hd2
@@ -479,7 +476,7 @@ neutrino-hd2-clean: neutrino-cdkroot-clean
 nhd2-distclean \
 neutrino-hd2-distclean: neutrino-cdkroot-clean
 	$(SILENT)rm -f $(D)/neutrino-hd2*
-	$(SILENT)rm -f $(D)/neutrino-hd2-plugins*
+#	$(SILENT)rm -f $(D)/neutrino-hd2-plugins*
 
 ################################################################################
 neutrino-cdkroot-clean:

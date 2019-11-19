@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20191113.1
+# Version 20191119.1
 
 ##############################################
 
@@ -23,7 +23,7 @@ if [ "$1" == -h ] || [ "$1" == --help ]; then
 	echo "Parameter 2       : kernel (1-2)"
 	echo "Parameter 3       : optimization (1-5)"
 	echo "Parameter 4       : image (Enigma=1/2 Neutrino=3/4 Tvheadend=5 (1-5)"
-	echo "Parameter 5       : Neutrino variant (1-8) or Enigma2/Tvheadend diff (0-5)"
+	echo "Parameter 5       : Neutrino variant (1-6) or Enigma2/Tvheadend diff (0-5)"
 	echo "Parameter 6       : media Framework (Enigma2: 1-5; Neutrino, Tvheadend: ignored)"
 	echo "Parameter 7       : external LCD (1=none, 2=graphlcd, 3=lcd4linux, 4=both)"
 	echo "Parameter 8       : destination (1-2, 1=flash, 2=USB)"
@@ -152,7 +152,7 @@ case $1 in
 		echo "   32)  Edision Argus VIP1 V2 [ 1 fixedtuner + 2 CI + 1 USB + plugin tuner (DVB-S2/T/C) ]"
 		echo "   33)  Edision Argus VIP2 V1 [ 2 plugin tuners ]"
 		echo "   34)  SpiderBox HL-101"
-		echo "   35)  B4Team ADB 5800S"
+		echo "   35)  ADB ITI-5800S(X) (nBox BSKA, BSLA, BXZB or BZZB)"
 		echo "   36)  Vitamin HD5000"
 		echo "   37)  SagemCom 88 series"
 		echo "   38)  Ferguson Ariva @Link 200"
@@ -302,30 +302,45 @@ case "$IMAGE" in
 				echo "   4)  neutrino-mp-tangos + plugins"
 				echo "   5)  neutrino-hd2"
 				echo "   6)  neutrino-hd2 + plugins"
-#				echo "   7)  gui-neutrino"
-#				echo "   8)  gui-neutrino + plugins"
-				read -p "Select Neutrino variant to build (1-8)? ";;
+				read -p "Select Neutrino variant to build (1-6)? ";;
 		esac
 
 		case "$REPLY" in
 			[1-2]) FLAVOUR="neutrino-mp-ddt";;
 #			[3-4]) FLAVOUR="neutrino-mp-tangos";;
 			[5-6]) FLAVOUR="neutrino-hd2";;
-			[7-8]) FLAVOUR="gui-neutrino";;
 			*) FLAVOUR="neutrino-mp-tangos";;
 		esac
 
 		echo "FLAVOUR=$FLAVOUR" >> config
 
 		case "$REPLY" in
-			[2,4,6,8]) PLUGINS_NEUTRINO="Yes";;
+			[2,4,6]) PLUGINS_NEUTRINO="Yes";;
 			*) PLUGINS_NEUTRINO="No";;
 		esac
 		echo "PLUGINS_NEUTRINO=$PLUGINS_NEUTRINO" >> config
-		MEDIAFW="buildinplayer"
 
 		case "$FLAVOUR" in
-			neutrino-mp*|gui-neutrino*)
+			neutrino-hd2*)
+				case $6 in
+					[1-2]) REPLY=$6;;
+					*)	echo -e "\nMedia Framework:"
+						echo "   1*) None (Neutrino uses it's built-in player based on ffmpeg)"
+						echo "   2)  Gstreamer (Neutrino also uses gstreamer)"
+						read -p "Select media framework (1-2)? ";;
+				esac
+
+				case "$REPLY" in
+#					1) MEDIAFW="buildinplayer";;
+					2) MEDIAFW="gstreamer";;
+					*) MEDIAFW="buildinplayer";;
+				esac;;
+			neutrino-mp*)
+					MEDIAFW="buildinplayer";
+		esac
+
+		case "$FLAVOUR" in
+			neutrino-mp*)
 				if [ $PLUGINS_NEUTRINO == "No" ]; then
 					echo "make yaud-neutrino-mp" >> $CURDIR/build
 				else

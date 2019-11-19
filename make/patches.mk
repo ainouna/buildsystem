@@ -14,18 +14,11 @@ libstb-hal%-patch:
 NEUTRINO_MP_DDT_PATCHES += $(PATCHES)/neutrino-mp-ddt.patch
 NEUTRINO_MP_LIBSTB_DDT_PATCHES += $(PATCHES)/libstb-hal-ddt.patch
 
-# Neutrino MP NI
-NEUTRINO_MP_NI_PATCHES += $(PATCHES)/neutrino-mp-ni.patch
-NEUTRINO_MP_LIBSTB_NI_PATCHES +=  $(PATCHES)/libstb-hal-ni.patch
-
 # Neutrino MP Tango
 NEUTRINO_MP_TANGOS_PATCHES += $(PATCHES)/neutrino-mp-tangos.patch
 NEUTRINO_MP_LIBSTB_TANGOS_PATCHES += $(PATCHES)/libstb-hal-tangos.patch
 
 # Neutrino HD2
 NEUTRINO_HD2_PATCHES += $(PATCHES)/nhd2-exp.patch
-NEUTRINO_HD2_PLUGINS_PATCHES +=
+NEUTRINO_HD2_PLUGINS_PATCHES += $(PATCHES)/nhd2-exp-plugins.patch
 
-# Neutrino MP Max
-NEUTRINO_LIBSTB_MAX_PATCHES += $(PATCHES)/libstb-hal-max.patch
-NEUTRINO_MP_MAX_PATCHES += $(PATCHES)/neutrino-mp-max.patch
