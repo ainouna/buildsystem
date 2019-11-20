@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20191119.1
+# Version 20191120.1
 
 ##############################################
 
@@ -355,7 +355,7 @@ case "$IMAGE" in
 		esac
 
 		if [ "$OPTIMIZATIONS" == "small" ]; then
-			OPTIMIZATIONS == "size"
+			OPTIMIZATIONS="size"
 		fi
 
 		if [ "$LASTIMAGE1" ] || [ "$LASTIMAGE3" ] || [ ! "$LASTBOX" == "$BOXTYPE" ]; then
@@ -399,7 +399,7 @@ case "$IMAGE" in
 		echo "make yaud-tvheadend" >> $CURDIR/build
 
 		if [ "$OPTIMIZATIONS" == "small" ]; then
-			OPTIMIZATIONS == "size"
+			OPTIMIZATIONS="size"
 		fi
 
 		if [ "$LASTIMAGE1" ] || [ "$LASTIMAGE2" ] || [ ! "$LASTBOX" == "$BOXTYPE" ]; then
