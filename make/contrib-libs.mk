@@ -2409,7 +2409,7 @@ $(D)/libopenthreads: $(D)/bootstrap $(ARCHIVE)/$(LIBOPENTHREADS_SOURCE)
 			-DCMAKE_INSTALL_PREFIX="/usr" \
 			-DCMAKE_C_COMPILER="$(TARGET)-gcc" \
 			-DCMAKE_CXX_COMPILER="$(TARGET)-g++" \
-			-D_OPENTHREADS_ATOMIC_USE_GCC_BUILTINS_EXITCODE=1 \
+			-D_OPENTHREADS_ATOMIC_USE_GCC_BUILTINS=0 \
 		; \
 		find . -name cmake_install.cmake -print0 | xargs -0 \
 		sed -i 's@SET(CMAKE_INSTALL_PREFIX "/usr/local")@SET(CMAKE_INSTALL_PREFIX "")@'; \
