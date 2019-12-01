@@ -644,8 +644,8 @@
  	unsigned int		segment_count;
 --- libstb-hal-tangos.org/libduckbox/hardware_caps.c
 +++ libstb-hal-tangos/libduckbox/hardware_caps.c
-@@ -149,6 +149,18 @@
- 			caps.has_CI = 2;
+@@ -138,6 +138,18 @@
+ 			caps.can_cec = 1;
  			caps.has_fan = 0;
  		}
 +		else if (!strncmp(buf, "hs7420", 6)) {
@@ -663,27 +663,19 @@
  		else if (!strncmp(buf, "hs7810a", 7)) {
  			strcpy(caps.boxvendor, "DUCKBOX");
  			strcpy(caps.boxname, buf);
-@@ -158,6 +170,7 @@
+@@ -146,6 +158,7 @@
+ 			caps.has_SCART = 1;
  			caps.can_cec = 1;
- 			caps.has_CI = 2;
  			caps.has_fan = 0;
 +			caps.display_can_set_brightness = 1;
  		}
  		else if (!strncmp(buf, "hs7119", 6)) {
  			strcpy(caps.boxvendor, "DUCKBOX");
-@@ -168,6 +181,7 @@
- 			caps.can_cec = 1;
- 			caps.has_CI = 1;
- 			caps.has_fan = 0;
-+			caps.display_can_set_brightness = 1;
- 		}
- 		else if (!strncmp(buf, "hs7429", 6)) {
- 			strcpy(caps.boxvendor, "DUCKBOX");
-@@ -176,8 +190,21 @@
+@@ -153,8 +166,22 @@
+ 			caps.can_shutdown = 1;
  			caps.has_HDMI = 1;
  			caps.has_SCART = 1;
- 			caps.can_cec = 1;
--			caps.has_CI = 2;
+-			caps.can_cec = 1;
 -			caps.has_fan = 0;
 +			caps.has_fan = 0;
 +			caps.display_type = HW_DISPLAY_LINE_TEXT;
@@ -700,18 +692,19 @@
 +			caps.has_CI = 2;
 +			caps.has_fan = 0;
 +			caps.display_can_set_brightness = 1;
++			caps.display_can_set_brightness = 1;
  		}
  		else if (!strncmp(buf, "hs7819", 6)) {
  			strcpy(caps.boxvendor, "DUCKBOX");
-@@ -188,6 +215,7 @@
+@@ -173,6 +200,7 @@
+ 			caps.has_SCART = 1;
  			caps.can_cec = 1;
- 			caps.has_CI = 2;
  			caps.has_fan = 0;
 +			caps.display_can_set_brightness = 1;
  		}
- 		else if (!strncmp(buf, "dp7000", 6)) {
+ 		else if (!strncmp(buf, "cuberevo-mini", 14)) {
  			strcpy(caps.boxvendor, "DUCKBOX");
-@@ -208,6 +236,9 @@
+@@ -183,6 +211,9 @@
  			caps.can_cec = 0;
  			caps.has_fan = 0;
  			caps.has_CI = 2;
@@ -721,7 +714,7 @@
  		}
  		else if (!strncmp(buf, "cuberevo-mini2", 14)) {
  			strcpy(caps.boxvendor, "DUCKBOX");
-@@ -251,6 +282,9 @@
+@@ -226,6 +257,9 @@
  			caps.can_cec = 0;
  			caps.has_fan = 1;
  			caps.has_CI = 2;
@@ -731,7 +724,7 @@
  		}
  		else if (!strncmp(buf, "cuberevo-3000hd", 14)) {
  			strcpy(caps.boxvendor, "DUCKBOX");
-@@ -301,6 +335,9 @@
+@@ -276,6 +310,9 @@
  			caps.can_cec = 0;
  			caps.has_fan = 0;
  			caps.has_CI = 2;
@@ -741,7 +734,7 @@
  		}
  		else if (!strncmp(buf, "hl101", 5)) {
  			strcpy(caps.boxvendor, "DUCKBOX");
-@@ -328,7 +365,7 @@
+@@ -303,7 +340,7 @@
  			caps.display_can_set_brightness = 0;
  		}
  		else if ((!strncasecmp(buf, "nbox", 4)) ||
@@ -750,7 +743,7 @@
  			strcpy(caps.boxvendor, "DUCKBOX");
  			strcpy(caps.boxname, buf);
  			caps.can_shutdown = 0;
-@@ -337,7 +374,9 @@
+@@ -326,7 +363,9 @@
  			caps.can_cec = 1;
  			caps.has_fan = 1;
  			caps.has_CI = 0;
@@ -759,8 +752,8 @@
 +			caps.display_can_set_brightness = 1;
 +			caps.display_xres = 15;
  		}
- 		else if ((!strncasecmp(buf, "sagemcom88", 10)) ||
- 			(!strncasecmp(buf, "esi_88", 6)) ||
+ 		else if (!strncasecmp(buf, "dsi87", 5)) {
+ 			strcpy(caps.boxvendor, "DUCKBOX");
 --- libstb-hal-tangos.org/libeplayer3-sh4/input.cpp
 +++ libstb-hal-tangos/libeplayer3-sh4/input.cpp
 @@ -452,14 +452,15 @@
@@ -860,42 +853,34 @@
  	caps.display_has_statusline = 0;
  	caps.has_HDMI = 1;
  	caps.has_SCART = 1;
-@@ -43,7 +48,8 @@
+@@ -43,15 +48,27 @@
  	strcpy(caps.boxvendor, "SPARK");
  	const char *tmp;
  	char buf[1024];
 -	int len = -1, ret, val;
 +	int len = -1, ret;
 +	YWPANEL_Version_t val;
++	YWPANEL_GetTimeMode_t time_mode;
++
  	int fd = open (FP_DEV, O_RDWR);
- 	if (fd != -1)
- 	{
-@@ -72,7 +78,7 @@
- 			}
+ 	if (fd != -1) {
+ 		ret = ioctl(fd, VFDGETVERSION, &val);
+ 		if (ret < 0)
+ 			fprintf(stderr, "[hardware_caps] %s: VFDGETVERSION %m\n", __func__);
+-		else if (val & 1) { /* VFD = 1, DVFD = 3 */
++		else if (val == 1) { /* VFD = 1 */
+ 			caps.display_type = HW_DISPLAY_LINE_TEXT;
+ 			caps.display_xres = 8;
++			caps.display_can_set_brightness = 1;
++		else if (val == 3) { /* = 3 */
++			caps.display_type = HW_DISPLAY_LINE_TEXT;
++			ret = ioctl(fd, VFDGETDISPLAYTIME, &time_mode);
++			caps.display_xres = (time_mode == 1 ? 10 : 16);
++			caps.display_can_set_brightness = 1;
++		else if (val == 4) { /* LED */
++			caps.display_type = HW_DISPLAY_LINE_TEXT;
++			caps.display_xres = 4;
  			caps.display_can_set_brightness = 1;
  		}
--		else if (val == 2) /* LED = 2 */
-+		else if (val == 4) /* LED = 4 */
- 		{
- 			caps.display_type = HW_DISPLAY_LINE_TEXT;
- 			caps.display_xres = 4;
-@@ -180,12 +186,18 @@
- 					tmp = p;
- 			}
- 			if ((sys_id & 0xff0000) == 0x090000)
-+			{
- 				caps.boxtype = 7111;
-+			}
- 			else
-+			{
- 				caps.boxtype = 7162;
-+			}
- 		}
- 		else
-+		{
- 			tmp = "(NO STB_ID FOUND)";
-+		}
- 		strcpy(caps.boxname, tmp);
- 	}
- 	strcpy(caps.boxarch,caps.boxname);
+ 		close(fd);
 
