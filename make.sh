@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20191120.1
+# Version 20191202.1
 
 ##############################################
 
@@ -375,9 +375,9 @@ case "$IMAGE" in
 				echo "=================================================================================================="
 				echo " 0)  Newest                 - Tvheadend  built-in player (CAUTION: may fail due to outdated patch)"
 				echo "=================================================================================================="
-				echo " 1*) Fri, 26 Jul 2019 18:46 - Tvheadend  built-in player  6c6e0e5103b874fdd926b0f1bcdaed4d7e8b464e"
+				echo " 1)  Fri, 26 Jul 2019 18:46 - Tvheadend  built-in player  6c6e0e5103b874fdd926b0f1bcdaed4d7e8b464e"
 				echo " 2)  Wed, 13 Dec 2017 22:23 - Tvheadend  built-in player  3b232b66e02fc46f1e7e97efb5ef48c6968cf779"
-				echo " 3)  Fri, 24 Feb 2017 18:23 - Tvheadend  built-in player  4931c0544885371b85146efad4eacd9683ba3dad"
+				echo " 3*) Fri, 24 Feb 2017 18:23 - Tvheadend  built-in player  4931c0544885371b85146efad4eacd9683ba3dad"
 				echo "=================================================================================================="
 				echo "Media Framework         : $MEDIAFW"
 				read -p "Select Tvheadend revision : ";;
@@ -386,12 +386,12 @@ case "$IMAGE" in
 		case "$REPLY" in
 			0)	DIFF="0"
 				REVISION="newest";;
+			1)	DIFF="1"
+				REVISION="6c6e0e5103b874fdd926b0f1bcdaed4d7e8b464e";;
 			2)	DIFF="2"
 				REVISION="3b232b66e02fc46f1e7e97efb5ef48c6968cf779";;
-			3)	DIFF="3"
+			*)	DIFF="3"
 				REVISION="4931c0544885371b85146efad4eacd9683ba3dad";;
-			*)	DIFF="1"
-				REVISION="6c6e0e5103b874fdd926b0f1bcdaed4d7e8b464e";;
 		esac
 		echo "TVHEADEND_DIFF=$DIFF" >> config
 		echo "TVHEADEND_REVISION=$REVISION" >> config
@@ -448,10 +448,10 @@ case "$IMAGE" in
 				echo "=================================================================================================="
 				echo " 1)  Use your own Enigma2 git dir without patchfile"
 				echo "=================================================================================================="
-				echo " 2*) Sun, 29 Sep 2019 14:07 - E2 OpenPLi  any framework  bf5ceafdfc684ceafd40a7286da094b0f5cb276f"
-				echo " 3)  Mon, 29 Jul 2019 21:38 - E2 OpenPLi  any framework  00bbffe27a09c274a5b0f7984034860ddf8bfd11"
-				echo " 4)  Sun, 26 May 2019 09:43 - E2 OpenPLi  any framework  5e9391033abcaa818d9969b0f282e55307693ebf"
-				echo " 5)  Sat, 23 Mar 2019 19:40 - E2 OpenPLi  any framework  e2e791cf8426028d8cc225d5fa2bceb55df634f5"
+				echo " 2*) Fri, 29 Nov 2019 19:41 - E2 OpenPLi  any framework  4d853c931badcca8d7851209c75db0a6dfe47e67"
+				echo " 3)  Sun, 29 Sep 2019 14:07 - E2 OpenPLi  any framework  bf5ceafdfc684ceafd40a7286da094b0f5cb276f"
+				echo " 4)  Mon, 29 Jul 2019 21:38 - E2 OpenPLi  any framework  00bbffe27a09c274a5b0f7984034860ddf8bfd11"
+				echo " 5)  Sun, 26 May 2019 09:43 - E2 OpenPLi  any framework  5e9391033abcaa818d9969b0f282e55307693ebf"
 				echo "=================================================================================================="
 				echo "Media Framework         : $MEDIAFW"
 				echo
@@ -462,15 +462,15 @@ case "$IMAGE" in
 			1)	DIFF="1"
 				REVISION="local";;
 			3)	DIFF="3"
-				REVISION="00bbffe27a09c274a5b0f7984034860ddf8bfd11";;
+				REVISION="bf5ceafdfc684ceafd40a7286da094b0f5cb276f";;
 			4)	DIFF="4"
-				REVISION="5e9391033abcaa818d9969b0f282e55307693ebf";;
+				REVISION="00bbffe27a09c274a5b0f7984034860ddf8bfd11";;
 			5)	DIFF="5"
-				REVISION="e2e791cf8426028d8cc225d5fa2bceb55df634f5";;
+				REVISION="5e9391033abcaa818d9969b0f282e55307693ebf";;
 			0)	DIFF="0"
 				REVISION="newest";;
 			*)	DIFF="2"
-				REVISION="bf5ceafdfc684ceafd40a7286da094b0f5cb276f";;
+				REVISION="4d853c931badcca8d7851209c75db0a6dfe47e67";;
 		esac
 
 		echo "E2_DIFF=$DIFF" >> config
