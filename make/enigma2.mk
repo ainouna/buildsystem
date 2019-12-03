@@ -32,7 +32,9 @@ endif
 
 # determine libsigc++ version
 ifeq ($(E2_DIFF), $(filter $(E2_DIFF), 1))
-ENIGMA2_DEPS  += $(D)/libsigc_e2 
+ENIGMA2_DEPS  += $(D)/libsigc_e2
+else
+ENIGMA2_DEPS  += $(D)/libsigc
 endif
 
 # determine requirements for media framework
