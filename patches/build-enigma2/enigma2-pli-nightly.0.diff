@@ -5828,7 +5828,7 @@
 +	plugin.py
 --- enigma2.org/lib/python/Plugins/Extensions/CuberevoVFD/plugin.py
 +++ enigma2/lib/python/Plugins/Extensions/CuberevoVFD/plugin.py
-@@ -0,0 +1,338 @@
+@@ -0,0 +1,339 @@
 +from Screens.Screen import Screen
 +from Screens.MessageBox import MessageBox
 +from Plugins.Plugin import PluginDescriptor
@@ -5849,7 +5849,7 @@
 +from re import compile as re_compile, search as re_search
 +
 +import os
-+#Version 190317.1
++#Version 191204.1
 +
 +try:
 +	DisplayType = evfd.getInstance().getVfdType()
@@ -6116,16 +6116,17 @@
 +		return True
 +
 +	def __evSeekableStatusChanged(self):
-+		tmp = self.getTimeshiftState()
-+		if tmp == self.tsEnabled:
-+			return
-+		if tmp:
-+			print "[Timeshift enabled]"
-+			evfd.getInstance().vfd_set_icon(0x1A,True)
-+		else:
-+			print "[Timeshift disabled]"
-+			evfd.getInstance().vfd_set_icon(0x1A,False)
-+		self.tsEnabled = tmp
++		if not os.path.exists('/proc/stb/lcd/symbol/timeshift'):
++			tmp = self.getTimeshiftState()
++			if tmp == self.tsEnabled:
++				return
++			if tmp:
++				print "[Timeshift enabled]"
++				evfd.getInstance().vfd_set_icon(0x1A,True)
++			else:
++				print "[Timeshift disabled]"
++				evfd.getInstance().vfd_set_icon(0x1A,False)
++			self.tsEnabled = tmp
 +		
 +	def shutdown(self):
 +		self.abort()
@@ -6228,7 +6229,7 @@
 +	plugin.py
 --- enigma2.org/lib/python/Plugins/Extensions/TopfieldVFD/plugin.py
 +++ enigma2/lib/python/Plugins/Extensions/TopfieldVFD/plugin.py
-@@ -0,0 +1,458 @@
+@@ -0,0 +1,459 @@
 +from Screens.Screen import Screen
 +from Screens.MessageBox import MessageBox
 +from Plugins.Plugin import PluginDescriptor
@@ -6252,7 +6253,7 @@
 +from re import compile as re_compile, search as re_search
 +from time import time, localtime, strftime
 +from Components.UsageConfig import defaultMoviePath
-+from os import statvfs
++import os
 +import array
 +
 +my_global_session = None
@@ -6595,22 +6596,23 @@
 +		return True
 +
 +	def __evSeekableStatusChanged(self):
-+		tmp = self.getTimeshiftState()
-+		if tmp == self.tsEnabled:
-+			return
-+		try:
-+			fd = open("/dev/fpc")
-+			if tmp:
-+				print "[Timeshift enabled]"
-+				fcntl.ioctl(fd.fileno(), ioIconCmd, ioTimeshiftOn)
-+			else:
-+				print "[Timeshift disabled]"
-+				fcntl.ioctl(fd.fileno(), ioIconCmd, ioTimeshiftOff)
-+			fd.close()
-+		except IOError,e:
-+			if debug:
-+				print "TopfieldVFD: __evSeekableStatusChanged ", e
-+			self.tsEnabled = tmp
++		if not os.path.exists('/proc/stb/lcd/symbol/timeshift'):
++			tmp = self.getTimeshiftState()
++			if tmp == self.tsEnabled:
++				return
++			try:
++				fd = open("/dev/fpc")
++				if tmp:
++					print "[Timeshift enabled]"
++					fcntl.ioctl(fd.fileno(), ioIconCmd, ioTimeshiftOn)
++				else:
++					print "[Timeshift disabled]"
++					fcntl.ioctl(fd.fileno(), ioIconCmd, ioTimeshiftOff)
++				fd.close()
++			except IOError,e:
++				if debug:
++					print "TopfieldVFD: __evSeekableStatusChanged ", e
++				self.tsEnabled = tmp
 +
 +	def gotRecordEvent(self, service, event):
 +		recs = self.session.nav.getRecordings()
