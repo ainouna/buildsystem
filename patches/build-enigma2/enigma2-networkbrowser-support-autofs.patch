@@ -241,7 +241,7 @@
 -
 -				# make sure the mount point exists
 -				if not os.path.exists(path):
--					os.mkdir(path)
+-					os.makedirs(path)
 -
 -				# host name goes before ip address
 -				host = data['host']
@@ -314,7 +314,7 @@
 +#		if command:
 +#			self.MountConsole.ePopen(command, self.CheckMountPointFinished, [data, callback])
 +#		else:
-+#			self.CheckMountPointFinished(command ,ret, [data, callback])
++#			self.CheckMountPointFinished(None, None, [data, callback])
  
  	def CheckMountPointFinished(self, result, retval, extra_args):
  		print "[AutoMount.py] CheckMountPointFinished", result, retval
