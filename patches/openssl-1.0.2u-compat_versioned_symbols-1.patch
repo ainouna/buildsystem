@@ -5,10 +5,10 @@ Upstream Status:         n/a
 Origin:                  https://git.archlinux.org/svntogit/packages.git/plain/trunk/openssl-1.0-versioned-symbols.patch?h=packages/openssl-1.0
 Description:             Use versioned symbols for OpenSSL binary compatibility.
 
-diff -Naurp openssl-1.0.2k-orig/Configure openssl-1.0.2k/Configure
---- openssl-1.0.2k-orig/Configure	2017-01-26 07:22:03.000000000 -0600
-+++ openssl-1.0.2k/Configure	2017-05-23 19:05:07.857304703 -0500
-@@ -1697,6 +1696,7 @@
+diff -Naurp openssl-1.0.2u-orig/Configure openssl-1.0.2u/Configure
+--- openssl-1.0.2u-orig/Configure	2017-01-26 07:22:03.000000000 -0600
++++ openssl-1.0.2u/Configure	2017-05-23 19:05:07.857304703 -0500
+@@ -1697,6 +1696,8 @@
  		}
  	}
  
@@ -17,9 +17,9 @@ diff -Naurp openssl-1.0.2k-orig/Configure openssl-1.0.2k/Configure
  open(IN,'<Makefile.org') || die "unable to read Makefile.org:$!\n";
  unlink("$Makefile.new") || die "unable to remove old $Makefile.new:$!\n" if -e "$Makefile.new";
  open(OUT,">$Makefile.new") || die "unable to create $Makefile.new:$!\n";
-diff -Naurp openssl-1.0.2k-orig/engines/ccgost/openssl.ld openssl-1.0.2k/engines/ccgost/openssl.ld
---- openssl-1.0.2k-orig/engines/ccgost/openssl.ld	1969-12-31 18:00:00.000000000 -0600
-+++ openssl-1.0.2k/engines/ccgost/openssl.ld	2017-05-23 19:05:07.857304703 -0500
+diff -Naurp openssl-1.0.2u-orig/engines/ccgost/openssl.ld openssl-1.0.2u/engines/ccgost/openssl.ld
+--- openssl-1.0.2u-orig/engines/ccgost/openssl.ld	1969-12-31 18:00:00.000000000 -0600
++++ openssl-1.0.2u/engines/ccgost/openssl.ld	2017-05-23 19:05:07.857304703 -0500
 @@ -0,0 +1,10 @@
 +OPENSSL_1.0.0 {
 +	global:
@@ -31,9 +31,9 @@ diff -Naurp openssl-1.0.2k-orig/engines/ccgost/openssl.ld openssl-1.0.2k/engines
 +		*;
 +};
 +
-diff -Naurp openssl-1.0.2k-orig/engines/openssl.ld openssl-1.0.2k/engines/openssl.ld
---- openssl-1.0.2k-orig/engines/openssl.ld	1969-12-31 18:00:00.000000000 -0600
-+++ openssl-1.0.2k/engines/openssl.ld	2017-05-23 19:05:07.857304703 -0500
+diff -Naurp openssl-1.0.2u-orig/engines/openssl.ld openssl-1.0.2u/engines/openssl.ld
+--- openssl-1.0.2u-orig/engines/openssl.ld	1969-12-31 18:00:00.000000000 -0600
++++ openssl-1.0.2u/engines/openssl.ld	2017-05-23 19:05:07.857304703 -0500
 @@ -0,0 +1,10 @@
 +OPENSSL_1.0.0 {
 +	global:
@@ -45,9 +45,9 @@ diff -Naurp openssl-1.0.2k-orig/engines/openssl.ld openssl-1.0.2k/engines/openss
 +		*;
 +};
 +
-diff -Naurp openssl-1.0.2k-orig/openssl.ld openssl-1.0.2k/openssl.ld
---- openssl-1.0.2k-orig/openssl.ld	1969-12-31 18:00:00.000000000 -0600
-+++ openssl-1.0.2k/openssl.ld	2017-05-23 19:05:07.857304703 -0500
+diff -Naurp openssl-1.0.2u-orig/openssl.ld openssl-1.0.2u/openssl.ld
+--- openssl-1.0.2u-orig/openssl.ld	1969-12-31 18:00:00.000000000 -0600
++++ openssl-1.0.2u/openssl.ld	2017-05-23 19:05:07.857304703 -0500
 @@ -0,0 +1,4620 @@
 +OPENSSL_1.0.0 {
 +	global:
