@@ -1,0 +1,19 @@
+--- parted-3.3/libparted/arch/linux.c.orig
++++ parted-3.3/libparted/arch/linux.c
+@@ -2414,6 +2414,7 @@
+ static char *
+ dm_canonical_path (PedDevice const *dev)
+ {
++#ifdef ENABLE_DEVICE_MAPPER
+         LinuxSpecific const *arch_specific = LINUX_SPECIFIC (dev);
+ 
+         /* Get map name from devicemapper */
+@@ -2431,6 +2432,7 @@
+         dm_task_destroy (task);
+         return dev_name;
+ err:
++#endif
+         return NULL;
+ }
+ #endif
+

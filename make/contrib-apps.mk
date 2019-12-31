@@ -847,7 +847,7 @@ $(D)/gptfdisk: $(D)/bootstrap $(D)/e2fsprogs $(D)/ncurses $(D)/libpopt $(ARCHIVE
 #
 # parted
 #
-PARTED_VER = 3.2
+PARTED_VER = 3.3
 PARTED_SOURCE = parted-$(PARTED_VER).tar.xz
 PARTED_PATCH = parted-$(PARTED_VER)-device-mapper.patch
 
@@ -868,7 +868,6 @@ $(D)/parted: $(D)/bootstrap $(D)/e2fsprogs $(ARCHIVE)/$(PARTED_SOURCE)
 			--infodir=/.remove \
 			--without-readline \
 			--disable-shared \
-			--disable-dynamic-loading \
 			--disable-debug \
 			--disable-device-mapper \
 			--disable-nls \
