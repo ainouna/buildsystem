@@ -1006,8 +1006,8 @@ $(D)/libconfig: $(D)/bootstrap $(ARCHIVE)/$(LIBCONFIG_SOURCE)
 
 #
 # libcurl
-#
-LIBCURL_VER = 7.65.3
+#7
+LIBCURL_VER = 7.67.0
 LIBCURL_SOURCE = curl-$(LIBCURL_VER).tar.bz2
 LIBCURL_PATCH = libcurl-$(LIBCURL_VER).patch
 
