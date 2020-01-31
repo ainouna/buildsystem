@@ -1,4 +1,4 @@
-# revision 5e9391033abcaa818d9969b0f282e55307693ebf 26/05/2019 09:43
+# revision 00bbffe27a09c274a5b0f7984034860ddf8bfd11 29/07/2019 21:38
 --- enigma2.org/configure.ac
 +++ enigma2/configure.ac
 @@ -18,6 +18,7 @@
@@ -30,15 +30,6 @@
 +AM_CONDITIONAL(ENABLE_TF7700, test "$enable_tf7700" = "yes")
 +if test "$enable_tf7700" = "yes"; then
 +	AC_DEFINE(ENABLE_TF7700, 1, [enable tf7700 stuff])
-+fi
-+
-+AC_ARG_ENABLE(adb_box,
-+	[  --enable-adb_box        enable adb_box stuff],
-+	[AC_DEFINE(ENABLE_ADB_BOX, 1, [enable adb_box stuff])])
-+
-+AM_CONDITIONAL(ENABLE_ADB_BOX, test "$enable_adb_box" = "yes")
-+if test "$enable_adb_box" = "yes"; then
-+	AC_DEFINE(ENABLE_ADB_BOX, 1, [enable adb_box stuff])
 +fi
 +
 +AC_ARG_ENABLE(cuberevo_250hd,
@@ -266,6 +257,15 @@
 +	AC_DEFINE(ENABLE_UFC960, 1, [enable ufc960 stuff])
 +fi
 +
++AC_ARG_ENABLE(adb_box,
++	[  --adb_box  enable adb_box stuff],
++	[AC_DEFINE(ENABLE_ADB_BOX, 1, [enable adb_box stuff])])
++
++AM_CONDITIONAL(ENABLE_ADB_BOX, test "$enable_adb_box" = "yes")
++if test "$enable_adb_box" = "yes"; then
++	AC_DEFINE(ENABLE_ADB_BOX, 1, [enable adb_box stuff])
++fi
++
 +AC_ARG_ENABLE(vitamin_hd5000,
 +	[  --enable-vitamin_hd5000  enable vitamin_hd5000 stuff],
 +	[AC_DEFINE(ENABLE_VITAMIN_HD5000, 1, [enable vitamin_hd5000 stuff])])
@@ -346,7 +346,7 @@
  
  AC_ARG_WITH(accelerationthreshold,
  	AC_HELP_STRING([--with-accelerationthreshold=n], [use acceleration threshold of n bytes]),
-@@ -300,8 +569,6 @@
+@@ -303,8 +572,6 @@
  lib/python/Plugins/Extensions/TuxboxPlugins/Makefile
  lib/python/Plugins/Extensions/TuxboxPlugins/meta/Makefile
  lib/python/Plugins/PLi/Makefile
@@ -355,7 +355,7 @@
  lib/python/Plugins/SystemPlugins/DefaultServicesScanner/Makefile
  lib/python/Plugins/SystemPlugins/DefaultServicesScanner/meta/Makefile
  lib/python/Plugins/SystemPlugins/DiseqcTester/Makefile
-@@ -331,6 +598,55 @@
+@@ -334,6 +601,55 @@
  lib/python/Plugins/SystemPlugins/Videomode/meta/Makefile
  lib/python/Plugins/SystemPlugins/WirelessLan/Makefile
  lib/python/Plugins/SystemPlugins/WirelessLan/meta/Makefile
@@ -440,8 +440,8 @@
 --- enigma2.org/data/Makefile.am
 +++ enigma2/data/Makefile.am
 @@ -1,4 +1,4 @@
--SUBDIRS = countries fonts extensions keymaps skin_default rc_models hw_info
-+SUBDIRS = countries fonts extensions keymaps skin_default rc_models
+-SUBDIRS = countries fonts extensions keymaps skin_default skin_fallback_1080 rc_models hw_info
++SUBDIRS = countries fonts extensions keymaps skin_default skin_fallback_1080 rc_models
  
  dist_pkgdata_DATA = \
  	encoding.conf \
@@ -664,32 +664,6 @@
 +		<widget source="parent.selectedChoice" render="Label" position="bottom" size="*,44" font="FdLcD;44" halign="center" valign="center" />
  	</screen>
  </skin>
---- enigma2.org/lib/base/Makefile.inc
-+++ enigma2/lib/base/Makefile.inc
-@@ -42,7 +42,7 @@
- 	base/encoding.h \
- 	base/eptrlist.h \
- 	base/estring.h \
--	base/freesatv2.cpp \
-+	base/freesatv2.h \
- 	base/i18n.h \
- 	base/itssource.h \
- 	base/init.h \
---- a/lib/base/eerror.cpp.org
-+++ b/lib/base/eerror.cpp
-@@ -189,10 +189,10 @@
- 
- void ePythonOutput(const char *string, int lvl)
- {
--#ifdef DEBUG
-+//#ifdef DEBUG
- 	if (debugLvl >= lvl)
- 		eDebugImpl(_DBGFLG_NONEWLINE, "%s", string);
--#endif
-+//#endif
- }
- 
- int eGetEnigmaDebugLvl()
 --- enigma2.org/lib/base/encoding.cpp
 +++ enigma2/lib/base/encoding.cpp
 @@ -70,8 +70,19 @@
@@ -988,7 +962,7 @@
  		{
 --- enigma2.org/lib/driver/vfd.cpp
 +++ enigma2/lib/driver/vfd.cpp
-@@ -0,0 +1,873 @@
+@@ -0,0 +1,861 @@
 +/*
 + * vfd.cpp
 + *
@@ -1033,7 +1007,6 @@
 + * 20170313 Audioniek       Kathrein UFS910/912 added.
 + * 20190317 Audioniek       Several CubeRevo's added.
 + * 20190518 Audioniek       vitamin_hd5000 added.
-+ * 20190712 Audioniek       adb_box added.
 + *
 + ****************************************************************************/
 +#include <stdarg.h>
@@ -1114,8 +1087,6 @@
 +   || defined (ENABLE_CUBEREVO_2000HD) \
 +   || defined (ENABLE_CUBEREVO_3000HD)
 +	#define VFDLENGTH 14
-+#elif defined (ENABLE_ADB_BOX)
-+	#define VFDLENGTH 15
 +#else
 +	#define VFDLENGTH 16
 +#endif
@@ -1166,8 +1137,6 @@
 +	vfd_type = 16;
 +#elif defined (ENABLE_VITAMIN_HD5000)
 +	vfd_type = 17;
-+#elif defined (ENABLE_ADB_BOX)
-+	vfd_type = 18;
 +#else
 +	vfd_type = -1;
 +#endif
@@ -1343,8 +1312,6 @@
 +		char str[] = "UFS913 Enigma2";
 +	#elif defined (ENABLE_VITAMIN_HD5000)
 +		char str[] = "Vitamin E2";
-+	#elif defined (ENABLE_ADB_BOX)
-+		char str[] = "nBox Enigma2";
 +	#else
 +		char str[] = "SH4 Git Enigma2";
 +	#endif
@@ -1372,8 +1339,7 @@
 +	 && !defined (ENABLE_HS7429) \
 +	 && !defined (ENABLE_HS7810A) \
 +	 && !defined (ENABLE_HS7819) \
-+	 && !defined (ENABLE_VITAMIN_HD5000) \
-+	 && !defined (ENABLE_ADB_BOX)
++	 && !defined (ENABLE_VITAMIN_HD5000)
 +	/* Others cycle their icons */
 +	for (int vloop = 0; vloop < 128; vloop++)
 +	{
@@ -1490,8 +1456,7 @@
 + || defined (ENABLE_HS7119) \
 + || defined (ENABLE_HS7810A) \
 + || defined (ENABLE_HS7819) \
-+ || defined (ENABLE_VITAMIN_HD5000) \
-+ || defined (ENABLE_ADB_BOX)
++ || defined (ENABLE_VITAMIN_HD5000)
 +void evfd::vfd_write_string_scrollText(char* text)
 +{
 +	return;
@@ -1769,8 +1734,6 @@
 +		for (id = 1; id < 28; id++)
 +	#elif defined (ENABLE_CUBEREVO_MINI) || defined (ENABLE_CUBEREVO_MINI2) || defined (ENABLE_CUBEREVO_2000HD) || defined (ENABLE_CUBEREVO_3000HD)
 +		for (id = 1; id < 7; id++)
-+	#elif defined (ENABLE_ADB_BOX)
-+		for (id = 1; id < 22; id++)
 +	#elif defined (ENABLE_VITAMIN_HD5000)
 +		for (id = 1; id < 17; id++)
 +	#else
@@ -1821,8 +1784,7 @@
 +void evfd::vfd_set_fan(bool onoff)
 +{
 +#if defined (ENABLE_CUBEREVO) \
-+ || defined (ENABLE_CUBEREVO_9500HD) \
-+ || defined (ENABLE_ADB_BOX)
++ || defined (ENABLE_CUBEREVO_9500HD)
 +	struct vfd_ioctl_data data;
 +
 +	memset(&data, 0, sizeof(struct vfd_ioctl_data));
@@ -2575,8 +2537,8 @@
  
  	if (!m_multitype)
  		m_type = feSatellite;
-@@ -932,12 +940,16 @@
- 	int ter_max = 2900;
+@@ -933,12 +941,16 @@
+ 	int cab_max = 4200;
  	int atsc_max = 4200;
  
 -	if (!strcmp(m_description, "AVL2108")) // ET9000
@@ -2594,7 +2556,7 @@
  	{
  		ret = (int)(snr / 37.5);
  		sat_max = 1700;
-@@ -2920,7 +2932,11 @@
+@@ -2926,7 +2938,11 @@
  	}
  	else if (!strcmp(type, "DVB-C"))
  	{
@@ -2606,7 +2568,7 @@
  		fetype = feCable;
  	}
  	else if (!strcmp(type, "ATSC"))
-@@ -3050,11 +3066,16 @@
+@@ -3056,11 +3072,16 @@
  		case SYS_ISDBS:		ss << " ISDBS"; break;
  		case SYS_ISDBT:		ss << " ISDBT"; break;
  		case SYS_UNDEFINED:	ss << " UNDEFINED"; break;
@@ -5785,7 +5747,7 @@
 +		self.text = text
 --- enigma2.org/lib/python/Components/UsageConfig.py
 +++ enigma2/lib/python/Components/UsageConfig.py
-@@ -286,7 +286,7 @@
+@@ -290,7 +290,7 @@
  
  	config.misc.disable_background_scan = ConfigYesNo(default = False)
  	config.misc.use_ci_assignment = ConfigYesNo(default = False)
@@ -7839,7 +7801,7 @@
  	except Exception, ex:
  		print "[InfoBar] Failed to load resumepoints:", ex
  		return {}
-@@ -226,6 +227,7 @@
+@@ -233,6 +234,7 @@
  	STATE_HIDING = 1
  	STATE_SHOWING = 2
  	STATE_SHOWN = 3
@@ -7847,7 +7809,7 @@
  	FLAG_CENTER_DVB_SUBS = 2048
  
  	def __init__(self):
-@@ -368,6 +370,12 @@
+@@ -375,6 +377,12 @@
  		else:
  			self.toggleShow()
  
@@ -7860,7 +7822,7 @@
  	def toggleShow(self):
  		if self.__state == self.STATE_HIDDEN:
  			self.showFirstInfoBar()
-@@ -382,7 +390,9 @@
+@@ -389,7 +397,9 @@
  			self.show()
  			self.actualSecondInfoBarScreen.show()
  			self.startHideTimer()
@@ -7871,7 +7833,7 @@
  			self.hide()
  			self.hideTimer.stop()
  
-@@ -678,6 +688,19 @@
+@@ -685,6 +695,19 @@
  				"historyNext": (self.historyNext, _("Switch to next channel in history")),
  				"keyChannelUp": (self.keyChannelUpCheck, self.getKeyChannelUpHelptext),
  				"keyChannelDown": (self.keyChannelDownCheck, self.getKeyChannelDownHelptext),
@@ -7891,7 +7853,7 @@
  			})
  
  	def showTvChannelList(self, zap=False):
-@@ -842,6 +865,32 @@
+@@ -849,6 +872,32 @@
  			self.servicelist.moveUp()
  		self.servicelist.zap(enable_pipzap = True)
  
@@ -7924,7 +7886,7 @@
  	def zapDown(self):
  		if self.servicelist.inBouquet():
  			prev = self.servicelist.getCurrentSelection()
-@@ -876,7 +925,7 @@
+@@ -883,7 +932,7 @@
  	def __init__(self):
  		self["MenuActions"] = HelpableActionMap(self, "InfobarMenuActions",
  			{
@@ -7933,7 +7895,7 @@
  			})
  		self.session.infobar = None
  
-@@ -991,7 +1040,7 @@
+@@ -998,7 +1047,7 @@
  
  		self["EPGActions"] = HelpableActionMap(self, "InfobarEPGActions",
  			{
@@ -7942,7 +7904,7 @@
  				"showEventInfoSingleEPG": (self.showSingleEPG, _("Show single service EPG")),
  				"showEventInfoMultiEPG": (self.showMultiEPG, _("Show multi channel EPG")),
  				"showInfobarOrEpgWhenInfobarAlreadyVisible": self.showEventInfoWhenNotVisible,
-@@ -1002,7 +1051,7 @@
+@@ -1009,7 +1058,7 @@
  				if 'selectedevent' not in p.__call__.func_code.co_varnames] or []
  		from Components.ServiceEventTracker import InfoBarCount
  		if getAll or InfoBarCount == 1:
@@ -7951,7 +7913,7 @@
  		pluginlist.append((_("Multi EPG"), self.openMultiServiceEPG, _("Display EPG as MultiEPG")))
  		pluginlist.append((_("Current event EPG"), self.openEventView, _("Display EPG info for current event")))
  		return pluginlist
-@@ -1156,7 +1205,7 @@
+@@ -1163,7 +1212,7 @@
  	def showEventInfoPlugins(self):
  		pluginlist = self.getEPGPluginList()
  		if pluginlist:
@@ -7960,7 +7922,7 @@
  		else:
  			self.openSingleServiceEPG()
  
-@@ -1229,7 +1278,7 @@
+@@ -1236,7 +1285,7 @@
  				self.eventView = self.session.openWithCallback(self.closed, EventViewEPGSelect, epglist[0], ServiceReference(ref), self.eventViewCallback, self.openSingleServiceEPG, self.openMultiServiceEPG, self.openSimilarList)
  				self.dlg_stack.append(self.eventView)
  		if not epglist:
@@ -7969,8 +7931,8 @@
  			self.openMultiServiceEPG(False)
  
  	def eventViewCallback(self, setEvent, setService, val): #used for now/next displaying
-@@ -2132,7 +2181,7 @@
- 		self.addExtension((lambda: _("Import channels from fallback tuner"), self.importChannels, lambda: config.usage.remote_fallback_extension_menu.value and config.usage.remote_fallback_import.value))
+@@ -2139,7 +2188,7 @@
+ 		self.addExtension((lambda: _("Manually import from fallback tuner"), self.importChannels, lambda: config.usage.remote_fallback_extension_menu.value and config.usage.remote_fallback_import.value))
  		self["InstantExtensionsActions"] = HelpableActionMap(self, "InfobarExtensions",
  			{
 -				"extensions": (self.showExtensionSelection, _("Show extensions...")),
@@ -7978,7 +7940,7 @@
  			}, 1) # lower priority
  
  	def openSoftcamSetup(self):
-@@ -2162,7 +2211,7 @@
+@@ -2169,7 +2218,7 @@
  
  	def updateExtensions(self):
  		self.extensionsList = []
@@ -7987,7 +7949,7 @@
  		self.extensionKeys = {}
  		for x in self.list:
  			if x[0] == self.EXTENSION_SINGLE:
-@@ -2189,7 +2238,7 @@
+@@ -2196,7 +2245,7 @@
  				else:
  					extensionsList.remove(extension)
  		list.extend([(x[0](), x) for x in extensionsList])
@@ -7996,7 +7958,7 @@
  
  	def extensionCallback(self, answer):
  		if answer is not None:
-@@ -2392,11 +2441,11 @@
+@@ -2399,11 +2448,11 @@
  
  class InfoBarInstantRecord:
  	"""Instant Record - handles the instantRecord action in order to
@@ -8010,7 +7972,7 @@
  			})
  		self.SelectedInstantServiceRef = None
  		if isStandardInfoBar(self):
-@@ -2479,7 +2528,7 @@
+@@ -2486,7 +2535,7 @@
  	def startInstantRecording(self, limitEvent = False):
  		begin = int(time())
  		end = begin + 3600      # dummy
@@ -8019,7 +7981,7 @@
  		info = { }
  
  		self.getProgramInfoAndEvent(info, name)
-@@ -2708,7 +2757,7 @@
+@@ -2715,7 +2764,7 @@
  	def __init__(self):
  		self["AudioSelectionAction"] = HelpableActionMap(self, "InfobarAudioSelectionActions",
  			{
@@ -8028,7 +7990,7 @@
  			})
  
  	def audioSelection(self):
-@@ -2722,7 +2771,7 @@
+@@ -2729,7 +2778,7 @@
  	def __init__(self):
  		self["SubserviceSelectionAction"] = HelpableActionMap(self, "InfobarSubserviceSelectionActions",
  			{
@@ -8258,16 +8220,19 @@
  		self.scan_onlyfree = ConfigYesNo(default = False)
 --- enigma2.org/lib/python/Screens/Standby.py
 +++ enigma2/lib/python/Screens/Standby.py
-@@ -15,11 +15,51 @@
+@@ -15,6 +15,11 @@
  from enigma import eDVBVolumecontrol, eTimer, eDVBLocalTimeHandler, eServiceReference, eStreamServer
  from Components.Sources.StreamService import StreamServiceList
-+from Tools.HardwareInfo import HardwareInfo
  
++from Tools.HardwareInfo import HardwareInfo
++ 
 +pll0 = '/proc/cpu_frequ/pll0_ndiv_mdiv'
 +stb = HardwareInfo().get_device_name()
 +
  inStandby = None
  
+ QUIT_SHUTDOWN = 1
+@@ -30,6 +35,42 @@
  class Standby(Screen):
  	def Power(self):
  		print "[Standby] leave standby"
@@ -8310,7 +8275,7 @@
  		self.close(True)
  
  	def setMute(self):
-@@ -61,6 +101,40 @@
+@@ -71,6 +112,40 @@
  		self.timeHandler = None
  
  		self.setMute()
@@ -8351,7 +8316,7 @@
  
  		self.paused_service = self.paused_action = False
  
-@@ -91,6 +165,9 @@
+@@ -101,6 +176,9 @@
  			self.avswitch.setInput("SCART")
  		else:
  			self.avswitch.setInput("AUX")
@@ -8361,22 +8326,22 @@
  
  		gotoShutdownTime = int(config.usage.standby_to_shutdown_timer.value)
  		if gotoShutdownTime:
-@@ -206,6 +283,7 @@
- 			4: _("Your frontprocessor will be upgraded\nPlease wait until your receiver reboots\nThis may take a few minutes"),
- 			5: _("The user interface of your receiver is restarting\ndue to an error in mytest.py"),
- 			6: _("The user interface of your receiver is restarting in debug mode"),
+@@ -217,6 +295,7 @@
+ 			QUIT_UPGRADE_FP: _("Your frontprocessor will be upgraded\nPlease wait until your receiver reboots\nThis may take a few minutes"),
+ 			QUIT_ERROR_RESTART: _("The user interface of your receiver is restarting\ndue to an error in mytest.py"),
+ 			QUIT_DEBUG_RESTART: _("The user interface of your receiver is restarting in debug mode"),
 +			10: _('Your receiver is rebooting to Spark now\nThis may take a while'),
- 			42: _("Unattended upgrade in progress\nPlease wait until your receiver reboots\nThis may take a few minutes") }.get(retvalue)
+ 			QUIT_UPGRADE_PROGRAM: _("Unattended upgrade in progress\nPlease wait until your receiver reboots\nThis may take a few minutes")
+ 		}.get(retvalue)
  		self["text"] = Label(text)
- 
-@@ -243,6 +321,7 @@
- 				3: _("Really restart now?"),
- 				4: _("Really upgrade the frontprocessor and reboot now?"),
- 				6: _("Really restart in debug mode now?"),
+@@ -256,6 +335,7 @@
+				QUIT_RESTART: _("Really restart now?"),
+				QUIT_UPGRADE_FP: _("Really upgrade the frontprocessor and reboot now?"),
+				QUIT_DEBUG_RESTART: _("Really restart in debug mode now?"),
 +				10: _('Really reboot to Spark now?'),
- 				42: _("Really upgrade your settop box and reboot now?") }.get(retvalue, None)
- 			if text:
- 				MessageBox.__init__(self, session, "%s\n%s" % (reason, text), type=MessageBox.TYPE_YESNO, timeout=timeout, default=default_yes)
+				QUIT_UPGRADE_PROGRAM: _("Really upgrade your settop box and reboot now?")
+			}.get(retvalue, None)
+			if text:
 --- enigma2.org/lib/python/Screens/Wizard.py
 +++ enigma2/lib/python/Screens/Wizard.py
 @@ -13,6 +13,9 @@
@@ -8527,7 +8492,7 @@
  
  def profile(id):
  	now = time.time() - profile_start
-@@ -41,7 +42,25 @@
+@@ -41,7 +42,21 @@
  				perc = PERCENTAGE_START
  			try:
  				open("/proc/progress", "w").write("%d \n" % perc)
@@ -8538,13 +8503,9 @@
 +					if perc > 20:
 +						if os.path.isfile('/proc/stb/info/model'):
 +							model = str(open("/proc/stb/info/model").read())
-+							if model.startswith("adb_box"):
-+								variant = str(open("/proc/stb/info/adb_variant").read())
 +							if model.startswith("spark7162") or model.startswith("tf7700hdpvr") or model.startswith("octagon1008") or model.startswith("hdbox") or model.startswith("atevio7500") or model.startswith("hs7420") or model.startswith("hs7429") or model.startswith("vitamin_hd5000"):
 +								evfd.getInstance().vfd_write_string("START %02d" % perc)
-+							if (model.startswith("adb_box") and (variant.startswith("bsla") or variant.startswith("bzzb"))):
-+								evfd.getInstance().vfd_write_string("START E2: %02d" % perc)
-+							elif (model.startswith("adb_box") and (variant.startswith("bska") or variant.startswith("bxzb"))) or model.startswith("spark") or model.startswith("hs7119") or model.startswith("hs7810a") or model.startswith("hs7819"):
++							elif model.startswith("spark") or model.startswith("hs7119") or model.startswith("hs7810a") or model.startswith("hs7819"):
 +								evfd.getInstance().vfd_write_string("St%02d" % perc)
 +				elif perc > 98:
 +					value = 0
@@ -8681,26 +8642,29 @@
  			eDebug("[eDVBServiceRecord] can't open recording file: %m");
 --- enigma2.org/m4/ax_python_devel.m4
 +++ enigma2/m4/ax_python_devel.m4
-@@ -154,7 +154,7 @@
- 		python_path=`$PYTHON -c "import distutils.sysconfig; \
- 			print (distutils.sysconfig.get_python_inc ());"`
+@@ -158,9 +158,9 @@
+ 			print (distutils.sysconfig.get_python_inc (plat_specific=1));"`
  		if test -n "${python_path}"; then
--			python_path="-I$python_path"
-+			python_path="-I$PY_PATH/include/python$PYTHON_VER_MAJOR"
+ 			if test "${plat_python_path}" != "${python_path}"; then
+-				python_path="-I$python_path -I$plat_python_path"
++				python_path="-I$PY_PATH/include/python$PYTHON_VER_MAJOR -I$plat_python_path"
+ 			else
+-				python_path="-I$python_path"
++				python_path="-I$PY_PATH/include/python$PYTHON_VER_MAJOR"
+ 			fi
  		fi
  		PYTHON_CPPFLAGS=$python_path
- 	fi
-@@ -235,7 +235,8 @@
+@@ -234,7 +234,8 @@
  			  "from distutils.sysconfig import get_python_lib as f; \
  			  import os; \
  			  print (os.path.join(f(plat_specific=1, standard_lib=1), 'config'));"`
--			PYTHON_LDFLAGS="-L$ac_python_libdir -lpython$ac_python_version"
-+			PYTHON_LDFLAGS="-L$PY_PATH/lib/python$PYTHON_VER_MAJOR -lpython$ac_python_version"
-+#			PYTHON_LDFLAGS="-L$ac_python_libdir -lpython$ac_python_version"
+-			PYTHON_LIBS="-L$ac_python_libdir -lpython$ac_python_version"
++#			PYTHON_LIBS="-L$ac_python_libdir -lpython$ac_python_version"
++			PYTHON_LIBS="-L$PY_PATH/lib/python$PYTHON_VER_MAJOR -lpython$ac_python_version"
  		fi
  
- 		if test -z "PYTHON_LDFLAGS"; then
-@@ -253,8 +254,9 @@
+ 		if test -z "PYTHON_LIBS"; then
+@@ -252,8 +253,9 @@
  	#
  	AC_MSG_CHECKING([for Python site-packages path])
  	if test -z "$PYTHON_SITE_PKG"; then
@@ -8740,7 +8704,22 @@
  #endif
  
  /* Defined in bsod.cpp */
-@@ -172,7 +170,6 @@
+@@ -105,7 +103,14 @@
+ {
+ 	/* show no more than one bsod while shutting down/crashing */
+ 	if (bsodhandled)
++	{
++		if (component)
++		{
++			sleep(1);
++			raise(SIGKILL);
++		}
+ 		return;
++	}
+ 	bsodhandled = true;
+ 
+ 	if (!component)
+@@ -172,7 +177,6 @@
  			component);
  
  		stringFromFile(f, "stbmodel", "/proc/stb/info/boxtype");
@@ -8748,7 +8727,7 @@
  		stringFromFile(f, "stbmodel", "/proc/stb/info/model");
  		stringFromFile(f, "kernelcmdline", "/proc/cmdline");
  		stringFromFile(f, "nimsockets", "/proc/bus/nim_sockets");
-@@ -198,7 +195,7 @@
+@@ -198,7 +202,7 @@
  	gPainter p(my_dc);
  	p.resetOffset();
  	p.resetClip(eRect(ePoint(0, 0), my_dc->size()));
@@ -8757,7 +8736,7 @@
  	p.setForegroundColor(gRGB(0xFFFFFF));
  
  	int hd =  my_dc->size().width() == 1920;
-@@ -212,14 +209,14 @@
+@@ -212,14 +216,14 @@
  	os.clear();
  	os << "We are really sorry. Your STB encountered "
  		"a software problem, and needs to be restarted.\n"
@@ -8775,7 +8754,7 @@
  	
  	if (logp2)
  	{
-@@ -263,12 +260,12 @@
+@@ -263,12 +267,12 @@
  
  	if (!logtail.empty())
  	{
@@ -8805,7 +8784,7 @@
  
  	// get enigma2 debug level settings
 -	debugLvl = getenv("ENIGMA_DEBUG_LVL") ? atoi(getenv("ENIGMA_DEBUG_LVL")) : 3;
-+	debugLvl = getenv("ENIGMA_DEBUG_LVL") ? atoi(getenv("ENIGMA_DEBUG_LVL")) : 5;
++	debugLvl = getenv("ENIGMA_DEBUG_LVL") ? atoi(getenv("ENIGMA_DEBUG_LVL")) : 4;
  	if (debugLvl < 0)
  		debugLvl = 0;
  	printf("ENIGMA_DEBUG_LVL=%d\n", debugLvl);
@@ -8908,13 +8887,13 @@
 @@ -50,12 +50,15 @@
  	return enigma_version
  
- def getGStreamerVersionString():
+ def getGStreamerVersionString(cpu):
 -	try:
 -		from glob import glob
 -		gst = [x.split("Version: ") for x in open(glob("/var/lib/opkg/info/gstreamer[0-9].[0-9].control")[0], "r") if x.startswith("Version:")][0]
 -		return "%s" % gst[1].split("+")[0].replace("\n","")
 -	except:
--		return _("unknown")
+-		return _("Not Required") if cpu.upper().startswith('HI') else _("Not Installed")
 +	from glob import glob
 +	if os.path.isfile('/usr/lib/pkgconfig/gstreamer-1.0.pc'):
 +		gstversion = [x.split("Version:") for x in open(glob("/usr/lib/pkgconfig/gstreamer-1.0.pc")[0], "r") if x.startswith("Version:")][0]
@@ -8971,12 +8950,12 @@
  		if os.path.isfile('/proc/stb/fp/temp_sensor_avs'):
 --- enigma2.org/lib/python/Screens/About.py
 +++ enigma2/lib/python/Screens/About.py
-@@ -47,7 +47,7 @@
+@@ -48,7 +48,7 @@
  
  		AboutText += _("DVB driver version: ") + about.getDriverInstalledDate() + "\n"
  
--		GStreamerVersion = _("GStreamer version: ") + about.getGStreamerVersionString().replace("GStreamer","")
-+		GStreamerVersion = "Media framework: " + about.getGStreamerVersionString()
+-		GStreamerVersion = _("GStreamer version: ") + about.getGStreamerVersionString(cpu).replace("GStreamer","")
++		GStreamerVersion = "Media framework: " + about.getGStreamerVersionString(cpu)
  		self["GStreamerVersion"] = StaticText(GStreamerVersion)
  		AboutText += GStreamerVersion + "\n"
  
@@ -8987,7 +8966,7 @@
  from Components.RcModel import rc_model
  
 -keyDescriptions = [{
-+keyDescriptions = [{  # for remotes with ID 0 (DMM)
++keyDescriptions = [{ # for remotes with ID 0 (DMM)
  		KEYIDS["BTN_0"]: ("UP", "fp"),
  		KEYIDS["BTN_1"]: ("DOWN", "fp"),
  		KEYIDS["KEY_OK"]: ("OK", ""),
@@ -9012,7 +8991,7 @@
 +		KEYIDS["KEY_REWIND"]: ("REWIND",),
 +		KEYIDS["KEY_FASTFORWARD"]: ("FASTFORWARD",)
 +	},
-+	{  # for remotes with ID 2 (default)
++	{ # for remotes with ID 2 (default)
  		KEYIDS["BTN_0"]: ("UP", "fp"),
  		KEYIDS["BTN_1"]: ("DOWN", "fp"),
  		KEYIDS["KEY_OK"]: ("OK", ""),
@@ -9058,7 +9037,7 @@
  		KEYIDS["KEY_0"]: ("0",),
  		KEYIDS["KEY_1"]: ("1",),
  		KEYIDS["KEY_2"]: ("2",),
-@@ -173,63 +152,360 @@
+@@ -173,63 +152,204 @@
  		KEYIDS["KEY_7"]: ("7",),
  		KEYIDS["KEY_8"]: ("8",),
  		KEYIDS["KEY_9"]: ("9",),
@@ -9311,171 +9290,16 @@
 +		KEYIDS["KEY_DOWN"]: ("FP_MINUS",),
 +		KEYIDS["KEY_UP"]: ("FP_PLUS",),
 +		KEYIDS["KEY_OK"]: ("FP_TV_R",),
-+	},
-+	{  # for remotes with ID 7 (CubeRevo universal)
-+		KEYIDS["KEY_POWER"]: ("STANDBY",),
-+		KEYIDS["KEY_OK"]: ("OK",),
-+		KEYIDS["KEY_LEFT"]: ("LEFT",),
-+		KEYIDS["KEY_RIGHT"]: ("RIGHT",),
-+		KEYIDS["KEY_UP"]: ("UP",),
-+		KEYIDS["KEY_DOWN"]: ("DOWN",),
-+		KEYIDS["KEY_MENU"]: ("MENU",),
-+		KEYIDS["KEY_EXIT"]: ("EXIT",),
-+		KEYIDS["KEY_INFO"]: ("INFO",),
-+		KEYIDS["KEY_F11"]: ("",), # FEED
-+		KEYIDS["KEY_F12"]: ("",), # RECALL
-+		KEYIDS["KEY_FAVORITES"]: ("FAV",),
-+		KEYIDS["KEY_EPG"]: ("EPG",),
-+		KEYIDS["KEY_VOLUMEUP"]: ("VOLUMEUP",),
-+		KEYIDS["KEY_VOLUMEDOWN"]: ("VOLUMEDOWN",),
-+		KEYIDS["KEY_PAGEUP"]: ("CHANNELUP",),
-+		KEYIDS["KEY_PAGEDOWN"]: ("CHANNELDOWN",),
-+		KEYIDS["KEY_TV"]: ("TVRADIO",),
-+		KEYIDS["KEY_F10"]: ("SAT",), # SAT LIST
-+		KEYIDS["KEY_WWW"]: ("",), # WWW
-+		KEYIDS["KEY_MEDIA"]: ("MEDIA",),
-+		KEYIDS["KEY_RED"]: ("RED",),
-+		KEYIDS["KEY_GREEN"]: ("GREEN",),
-+		KEYIDS["KEY_YELLOW"]: ("YELLOW",),
-+		KEYIDS["KEY_BLUE"]: ("BLUE",),
-+		KEYIDS["KEY_0"]: ("0BUTTON",),
-+		KEYIDS["KEY_1"]: ("1BUTTON",),
-+		KEYIDS["KEY_2"]: ("2BUTTON",),
-+		KEYIDS["KEY_3"]: ("3BUTTON",),
-+		KEYIDS["KEY_4"]: ("40UTTON",),
-+		KEYIDS["KEY_5"]: ("5BUTTON",),
-+		KEYIDS["KEY_6"]: ("6BUTTON",),
-+		KEYIDS["KEY_7"]: ("7BUTTON",),
-+		KEYIDS["KEY_8"]: ("8BUTTON",),
-+		KEYIDS["KEY_9"]: ("9BUTTON",),
-+		KEYIDS["KEY_F1"]: ("F1",),
-+		KEYIDS["KEY_F2"]: ("F2",),
-+		KEYIDS["KEY_TV2"]: ("",), # TV/STB
-+		KEYIDS["KEY_MUTE"]: ("MUTE",),
-+		KEYIDS["KEY_F8"]: ("TEXT",),
-+		KEYIDS["KEY_F9"]: ("LIST",),
-+		KEYIDS["KEY_F3"]: ("F3",),
-+		KEYIDS["KEY_F4"]: ("F4",), # CAPTURE
-+		KEYIDS["KEY_F5"]: ("F5",), # BOOK_M
-+		KEYIDS["KEY_F6"]: ("F6",), # BOOK_J
-+		KEYIDS["KEY_PREVIOUS"]: ("LAST",),
-+		KEYIDS["KEY_REWIND"]: ("REWIND",),
-+		KEYIDS["KEY_FASTFORWARD"]: ("FASTFORWARD",),
-+		KEYIDS["KEY_NEXT"]: ("NEXT",),
-+		KEYIDS["KEY_F7"]: ("REPEAT",),
-+		KEYIDS["KEY_PLAY"]: ("PLAY",),
-+		KEYIDS["KEY_STOP"]: ("STOP",),
-+		KEYIDS["KEY_RECORD"]: ("RECORD",),
-+	},
-+	{  # for remotes with ID 8 (ADB ITI-5800S(X) XMP)
-+		KEYIDS["KEY_POWER"]: ("XMP_POWER",),
-+		KEYIDS["KEY_ARCHIVE"]: ("XMP_VOD",),
-+		KEYIDS["KEY_MEMO"]: ("XMP_GOTO",),  # N.Button
-+		KEYIDS["KEY_EPG"]: ("XMP_EPG",),
-+		KEYIDS["KEY_PVR"]: ("XMP_HOUSE",),
-+		KEYIDS["KEY_INFO"]: ("XMP_INFO",),
-+		KEYIDS["KEY_TIME"]: ("XMP_APP",),
-+		KEYIDS["KEY_SUBTITLE"]: ("XMP_OPT",),
-+		KEYIDS["KEY_VOLUMEUP"]: ("XMP_VOLUMEUP",),
-+		KEYIDS["KEY_VOLUMEDOWN"]: ("XMP_VOLUMEDOWN",),
-+		KEYIDS["KEY_PAGEUP"]: ("XMP_PAGEUP",),
-+		KEYIDS["KEY_PAGEDOWN"]: ("XMP_PAGEDOWN",),
-+		KEYIDS["KEY_OK"]: ("XMP_OK",),
-+		KEYIDS["KEY_UP"]: ("XMP_UP",),
-+		KEYIDS["KEY_DOWN"]: ("XMP_DOWN",),
-+		KEYIDS["KEY_LEFT"]: ("XMP_LEFT",),
-+		KEYIDS["KEY_RIGHT"]: ("XMP_RIGHT",),
-+		KEYIDS["KEY_HOME"]: ("XMP_BACK",),  # BACK
-+		KEYIDS["KEY_STOP"]: ("XMP_STOP",),
-+		KEYIDS["KEY_REWIND"]: ("XMP_REWIND",),
-+		KEYIDS["KEY_FASTFORWARD"]: ("XMP_FASTFORWARD",),
-+		KEYIDS["KEY_PLAY"]: ("XMP_PLAY",),
-+		KEYIDS["KEY_PAUSE"]: ("XMP_PAUSE",),
-+		KEYIDS["KEY_RECORD"]: ("XMP_RECORD",),
-+		KEYIDS["KEY_MUTE"]: ("XMP_MUTE",),
-+		KEYIDS["KEY_TV2"]: ("XMP_ATSIGN",),
-+		KEYIDS["KEY_TEXT"]: ("XMP_TEXT",),
-+		KEYIDS["KEY_FAVORITES"]: ("XMP_LIST",),
-+		KEYIDS["KEY_RED"]: ("XMP_RED",),
-+		KEYIDS["KEY_GREEN"]: ("XMP_GREEN",),
-+		KEYIDS["KEY_YELLOW"]: ("XMP_YELLOW",),
-+		KEYIDS["KEY_BLUE"]: ("XMP_BLUE",),
-+		KEYIDS["KEY_1"]: ("XMP_1",),
-+		KEYIDS["KEY_2"]: ("XMP_2",),
-+		KEYIDS["KEY_3"]: ("XMP_3",),
-+		KEYIDS["KEY_4"]: ("XMP_4",),
-+		KEYIDS["KEY_5"]: ("XMP_5",),
-+		KEYIDS["KEY_6"]: ("XMP_6",),
-+		KEYIDS["KEY_7"]: ("XMP_7",),
-+		KEYIDS["KEY_8"]: ("XMP_8",),
-+		KEYIDS["KEY_9"]: ("XMP_9",),
-+		KEYIDS["KEY_0"]: ("XMP_0",),
-+		KEYIDS["KEY_MENU"]: ("XMP_SETUP",),
-+		KEYIDS["KEY_HELP"]: ("XMP_STAR",),  # STAR
-+	},
-+	{  # for remotes with ID 9 (Vitamin HD5000) TODO!
-+		KEYIDS["KEY_POWER"]: ("STANDBY",),
-+		KEYIDS["KEY_OK"]: ("OK",),
-+		KEYIDS["KEY_LEFT"]: ("LEFT",),
-+		KEYIDS["KEY_RIGHT"]: ("RIGHT",),
-+		KEYIDS["KEY_UP"]: ("UP",),
-+		KEYIDS["KEY_DOWN"]: ("DOWN",),
-+		KEYIDS["KEY_MENU"]: ("MENU",),
-+		KEYIDS["KEY_EXIT"]: ("EXIT",),
-+		KEYIDS["KEY_INFO"]: ("INFO",),
-+		KEYIDS["KEY_F11"]: ("",), # FEED
-+		KEYIDS["KEY_F12"]: ("",), # RECALL
-+		KEYIDS["KEY_FAVORITES"]: ("FAV",),
-+		KEYIDS["KEY_EPG"]: ("EPG",),
-+		KEYIDS["KEY_VOLUMEUP"]: ("VOLUMEUP",),
-+		KEYIDS["KEY_VOLUMEDOWN"]: ("VOLUMEDOWN",),
-+		KEYIDS["KEY_PAGEUP"]: ("CHANNELUP",),
-+		KEYIDS["KEY_PAGEDOWN"]: ("CHANNELDOWN",),
-+		KEYIDS["KEY_TV"]: ("TVRADIO",),
-+		KEYIDS["KEY_F10"]: ("SAT",), # SAT LIST
-+		KEYIDS["KEY_WWW"]: ("",), # WWW
-+		KEYIDS["KEY_MEDIA"]: ("MEDIA",),
-+		KEYIDS["KEY_RED"]: ("RED",),
-+		KEYIDS["KEY_GREEN"]: ("GREEN",),
-+		KEYIDS["KEY_YELLOW"]: ("YELLOW",),
-+		KEYIDS["KEY_BLUE"]: ("BLUE",),
-+		KEYIDS["KEY_0"]: ("0BUTTON",),
-+		KEYIDS["KEY_1"]: ("1BUTTON",),
-+		KEYIDS["KEY_2"]: ("2BUTTON",),
-+		KEYIDS["KEY_3"]: ("3BUTTON",),
-+		KEYIDS["KEY_4"]: ("40UTTON",),
-+		KEYIDS["KEY_5"]: ("5BUTTON",),
-+		KEYIDS["KEY_6"]: ("6BUTTON",),
-+		KEYIDS["KEY_7"]: ("7BUTTON",),
-+		KEYIDS["KEY_8"]: ("8BUTTON",),
-+		KEYIDS["KEY_9"]: ("9BUTTON",),
-+		KEYIDS["KEY_F1"]: ("F1",),
-+		KEYIDS["KEY_F2"]: ("F2",),
-+		KEYIDS["KEY_TV2"]: ("",), # TV/STB
-+		KEYIDS["KEY_MUTE"]: ("MUTE",),
-+		KEYIDS["KEY_F8"]: ("TEXT",),
-+		KEYIDS["KEY_F9"]: ("LIST",),
-+		KEYIDS["KEY_F3"]: ("F3",),
-+		KEYIDS["KEY_F4"]: ("F4",), # CAPTURE
-+		KEYIDS["KEY_F5"]: ("F5",), # BOOK_M
-+		KEYIDS["KEY_F6"]: ("F6",), # BOOK_J
-+		KEYIDS["KEY_PREVIOUS"]: ("LAST",),
-+		KEYIDS["KEY_REWIND"]: ("REWIND",),
-+		KEYIDS["KEY_FASTFORWARD"]: ("FASTFORWARD",),
-+		KEYIDS["KEY_NEXT"]: ("NEXT",),
-+		KEYIDS["KEY_F7"]: ("REPEAT",),
-+		KEYIDS["KEY_PLAY"]: ("PLAY",),
-+		KEYIDS["KEY_STOP"]: ("STOP",),
-+		KEYIDS["KEY_RECORD"]: ("RECORD",),
  	},
  ]
  
-@@ -248,10 +524,27 @@
+@@ -248,10 +368,24 @@
  		idx = config.misc.rcused.value
  	else:
  		rctype = config.plugins.remotecontroltype.rctype.value
 -		if rctype == 14:	# XP1000
 +		print "[Keybindings.py] RC type is:", rctype
++		rctype = 11
 +		if rctype == 10:	# Spark
  			idx = 3
 -		elif rctype == 18:	# F1
@@ -9491,18 +9315,14 @@
 +			idx = 6
 +		elif rctype == 13:	# CubeRevo Universal
 +			idx = 7
-+		elif rctype == 14:	# ADB XMP
-+			idx = 8
-+		elif rctype == 15:	# Vitamin HD5000
-+			idx = 9
-+#		elif rctype == 16:	# ...
-+#			idx = 10
++#		elif rctype == 14:	# ...
++#			idx = 8
  		else:
  			idx = 2
  	if key in keyDescriptions[idx]:
 --- enigma2.org/lib/python/Screens/InputDeviceSetup.py
 +++ enigma2/lib/python/Screens/InputDeviceSetup.py
-@@ -299,57 +299,43 @@
+@@ -299,57 +299,24 @@
  	rcList = [
  			("0", _("Default")),
  			("4", _("DMM normal")),
@@ -9520,15 +9340,13 @@
 -			("20", _("Zgemma Star S/2S/H1/H2")),
 -			("21", _("Zgemma H.S/H.2S/H.2H/H5/H7")),
 -			("25", _("Zgemma H9/i55 Plus"))
-+			("7", _("Fortis large")),
-+			("8", _("Fortis medium")),
-+			("9", _("Fortis small")),
-+			("10", _("Spark / Spark7162 (RC12)")),
-+			("11", _("Topfield TF7700HDPVR")),
-+			("12", _("UFS912")),
-+			("13", _("CubeRevo uni")),
-+			("14", _("ADB XMP")),
-+			("15", _("Showbox Vitamin")),
++			("7", _("fs9000")),
++			("8", _("hs9510")),
++			("9", _("hs7110")),
++			("10", _("spark")),
++			("11", _("tf7700")),
++			("12", _("ufs912")),
++			("13", _("cuberevo_uni")),
  		]
  
  	defaultRcList = [
@@ -9566,44 +9384,19 @@
 -			("h7", 21),
 -			("h9", 25),
 -			("et7000mini", 16)
-+			("hdbox", 7),
-+			("atevio7500", 7),
-+			("octagon1008", 8),
++			("fs9000", 7),
++			("hs9510", 8),
 +			("hs7110", 9),
-+			("hs7119", 9),
-+			("hs7420", 8),
-+			("hs7429", 8),
-+			("hs7810a", 8),
-+			("hs7819", 8),
 +			("spark", 10),
-+			("spark7162", 10),
-+			("tf7700hdpvr", 11),
-+			("ufs910", 12),
++			("tf7700", 11),
 +			("ufs912", 12),
-+			("cuberevo", 13),
-+			("cuberevo_mini_fta", 13),
-+			("cuberevo_250hd", 13),
-+			("cuberevo_mini", 13),
-+			("cuberevo_mini2", 13),
-+			("cuberevo_2000hd", 13),
-+			("cuberevo_3000hd", 13),
-+			("cuberevo_9500hd", 13),
-+			("adb", 14),
-+			("vitamin_hd5000", 15),
++			("cuberevo_uni", 13),
  		]
  
  	def __init__(self, session):
-@@ -379,6 +365,7 @@
- 
- 	def getDefaultRcType(self):
- 		data = iRcTypeControl.getBoxType()
-+		print("[InputDeviceSetup] data = ", data)
- 		for x in self.defaultRcList:
- 			if x[0] in data:
- 				self.defaultRcType = x[1]
 --- enigma2.org/data/rc_models/rc_models.cfg
 +++ enigma2/data/rc_models/rc_models.cfg
-@@ -19,119 +19,26 @@
+@@ -19,120 +19,26 @@
  #
  # When no entry matches at all, 'default' will be used as remoteName
  #
@@ -9611,6 +9404,7 @@
 -vipercombo amiko
 -vipert2c amiko
 -vipercombohdd amiko1
+-viperslim viperslim
 -#Axas
 -e4hd e4hd
 -# Edision
@@ -9723,7 +9517,6 @@
 -h9combo zgemma
 -lc sh1
 -sh1 sh1
-+adb_box           adb
 +hdbox             fs9000
 +octagon1008       hs9510
 +atevio7500        fs9000
@@ -9739,12 +9532,13 @@
 +ufs910            ufs912
 +ufs912            ufs912
 +cuberevo          cuberevo_uni
-+cuberevo_250hd    cuberevo_uni
-+cuberevo_mini     cuberevo_uni
-+cuberevo_mini2    cuberevo_uni
-+cuberevo_2000hd   cuberevo_uni
-+cuberevo_3000hd   cuberevo_uni
-+cuberevo_9500hd   cuberevo_uni
++cuberevo-mini-fta cuberevo_uni
++cuberevo-250hd    cuberevo_uni
++cuberevo-mini     cuberevo_uni
++cuberevo-mini2    cuberevo_uni
++cuberevo-2000hd   cuberevo_uni
++cuberevo-3000hd   cuberevo_uni
++cuberevo-9500hd   cuberevo_uni
 +vitamin_hd5000    vitamin
 --- enigma2.org/data/rc_models/Makefile.am
 +++ enigma2/data/rc_models/Makefile.am
@@ -9756,15 +9550,15 @@
 -	dmm.png et6x00.png et9500.png vuduo2.png vuultimo.png vu2.png et7x00.png formuler1.png \
 -	hd2400.png hd-gen.png vs1x00.png wetekplay.png osmini.png zgemma.png miraclebox.png miraclebox2.png \
 -	spycat.png xpeedlx.png revo4k.png sab.png sh1.png i55.png qviart.png gb7252.png e4hd.png \
--	edision2.png edision3.png edision4.png hd60.png lunix4k.png multibox.png \
+-	edision2.png edision3.png edision4.png hd60.png lunix4k.png multibox.png viperslim.png \
 -	dmmadv.xml edision1.xml et4x00.xml et8000.xml et9x00.xml vuultimo.xml xp1000.xml dmm.xml amiko.xml \
 -	amiko1.xml et6x00.xml et9500.xml et7x00.xml vuduo2.xml vu.xml vu2.xml formuler1.xml hd2400.xml hd-gen.xml \
 -	vs1x00.xml xsarius.xml xsarius.png wetekplay.xml osmini.xml zgemma.xml miraclebox.xml miraclebox2.xml \
 -	spycat.xml xpeedlx.xml et7000mini.png et7000mini.xml revo4k.xml sab.xml sh1.xml i55.xml qviart.xml \
--	gb7252.xml e4hd.xml edision2.xml edision3.xml edision4.xml hd60.xml lunix4k.xml multibox.xml
+-	gb7252.xml e4hd.xml edision2.xml edision3.xml edision4.xml hd60.xml lunix4k.xml multibox.xml viperslim.xml
 +	dmmadv.png \
-+	adb.png cuberevo_uni.png fs9000.png  hs7110.png  hs9510.png  spark.png tf7700.png ufs912.png vitamin.png \
++	cuberevo_uni.png fs9000.png  hs7110.png  hs9510.png  spark.png tf7700.png ufs912.png vitamin.png \
 +	dmm.png \
 +	dmmadv.xml  \
-+	adb.xml cuberevo_uni.xml fs9000.xml  hs7110.xml  hs9510.xml  spark.xml tf7700.xml ufs912.xml vitamin.xml \
++	cuberevo_uni.xml fs9000.xml  hs7110.xml  hs9510.xml  spark.xml tf7700.xml ufs912.xml vitamin.xml \
 +	dmm.xml
