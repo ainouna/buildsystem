@@ -1,7 +1,7 @@
 #
 # gstreamer
 #
-GSTREAMER_VER = 1.16.1
+GSTREAMER_VER = 1.16.2
 GSTREAMER_SOURCE = gstreamer-$(GSTREAMER_VER).tar.xz
 GSTREAMER_PATCH  = gstreamer-$(GSTREAMER_VER)-fix-crash-with-gst-inspect.patch
 GSTREAMER_PATCH += gstreamer-$(GSTREAMER_VER)-revert-use-new-gst-adapter-get-buffer.patch
@@ -428,6 +428,7 @@ $(D)/gst_gmediarender: $(D)/bootstrap $(D)/gst_plugins_multibox_dvbmediasink $(D
 #
 # orc
 #
+#ORC_VER = 0.4.31
 ORC_VER = 0.4.29
 ORC_SOURCE = orc-$(ORC_VER).tar.xz
 ORC_PATCH =
