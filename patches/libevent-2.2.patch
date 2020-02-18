@@ -1,0 +1,64 @@
+--- a/event.c.org
++++ b/event.c
+@@ -920,7 +920,7 @@
+ 
+ 	if (n_deleted)
+ 		event_debug(("%s: "EV_SIZE_FMT" events were still set in base",
+-			__func__, n_deleted));
++			__func__, (long unsigned int)n_deleted));
+ 
+ 	while (LIST_FIRST(&base->once_events)) {
+ 		struct event_once *eonce = LIST_FIRST(&base->once_events);
+--- a/test/regress_http.c.org
++++ b/test/regress_http.c
+@@ -5302,7 +5302,7 @@
+ 	    "POST /postit HTTP/1.1\r\n"
+ 	    "Host: somehost\r\n"
+ 	    "Content-Length: " EV_SIZE_FMT "\r\n"
+-	    "\r\n", strlen(POST_DATA));
++	    "\r\n", (long unsigned int)strlen(POST_DATA));
+ 
+ 	tv.tv_usec = 200000;
+ 	event_base_once(data->base, -1, EV_TIMEOUT, http_add_output_buffer, out, &tv);
+--- a/test/bench.c.org
++++ b/test/bench.c
+@@ -130,7 +130,7 @@
+ 
+ 		if (xcount != count)
+ 			fprintf(stderr, "Xcount: %d, Rcount: " EV_SSIZE_FMT "\n",
+-				xcount, count);
++				xcount, (long int)count);
+ 	}
+ 
+ 	evutil_timersub(&te, &ts, &te);
+--- a/test/regress_ssl.c.org
++++ b/test/regress_ssl.c
+@@ -835,9 +835,9 @@
+ 		"out: " EV_SIZE_FMT ", "
+ 		"got: " EV_SIZE_FMT "",
+ 		ctx->server ? "server" : "client", bev,
+-		evbuffer_get_length(in),
+-		evbuffer_get_length(out),
+-		ctx->get));
++		(long unsigned int)evbuffer_get_length(in),
++		(long unsigned int)evbuffer_get_length(out),
++		(long unsigned int)ctx->get));
+ 
+ 	evbuffer_add_buffer_reference(out, ctx->data);
+ }
+@@ -928,10 +928,10 @@
+ 		"wm_high = " EV_SIZE_FMT ", "
+ 		"limit = " EV_SIZE_FMT ", "
+ 		"to_read: " EV_SIZE_FMT "",
+-		payload_len,
+-		wm_high,
+-		server.limit,
+-		server.to_read));
++		(long unsigned int)payload_len,
++		(long unsigned int)wm_high,
++		(long unsigned int)server.limit,
++		(long unsigned int)server.to_read));
+ 
+ 	listener = evconnlistener_new_bind(base, wm_acceptcb, &server,
+ 	    LEV_OPT_CLOSE_ON_FREE|LEV_OPT_REUSEABLE,
+

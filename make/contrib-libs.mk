@@ -2976,3 +2976,39 @@ $(D)/libcap: $(D)/bootstrap $(D)/libglib2 $(ARCHIVE)/$(LIBCAP_SOURCE)
 	$(REMOVE)/libcap-$(LIBCAP_VER)
 	$(TOUCH)
 
+#
+# libevent
+#
+LIBEVENT_VER   = 2.2
+LIBEVENT_URL   = https://github.com/libevent/libevent.git
+LIBEVENT_PATCH = libevent-$(LIBEVENT_VER).patch
+
+$(D)/libevent: $(D)/bootstrap $(D)/openssl
+	$(START_BUILD)
+	$(REMOVE)/libevent-$(LIBEVENT_VER)
+	$(SET) -e; if [ -d $(ARCHIVE)/libevent.git ]; \
+		then cd $(ARCHIVE)/libevent.git; git pull $(MINUS_Q); \
+		else cd $(ARCHIVE); git clone $(MINUS_Q) $(LIBEVENT_URL) libevent.git; \
+		fi
+	$(SILENT)cp -ra $(ARCHIVE)/libevent.git $(BUILD_TMP)/libevent-$(LIBEVENT_VER)
+	$(CH_DIR)/libevent-$(LIBEVENT_VER); \
+		$(call apply_patches, $(LIBEVENT_PATCH)); \
+		autoreconf -fi $(SILENT_OPT); \
+		$(CONFIGURE) \
+			--prefix=/usr \
+			--enable-silent-rules \
+		; \
+		$(MAKE); \
+		$(MAKE) install DESTDIR=$(TARGET_DIR)
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libevent.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libevent_openssl.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libevent_pthreads.pc
+	$(REWRITE_LIBTOOL)/libevent_core.la
+	$(REWRITE_LIBTOOL)/libevent_extra.la
+	$(REWRITE_LIBTOOL)/libevent.la
+	$(REWRITE_LIBTOOL)/libevent_openssl.la
+	$(REWRITE_LIBTOOL)/libevent_pthreads.la
+#	$(REMOVE)/libevent-$(LIBEVENT_VER)
+#	$(TOUCH)
+
+

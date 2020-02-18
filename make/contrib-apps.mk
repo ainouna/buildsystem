@@ -1202,36 +1202,6 @@ $(D)/nfs_utils: $(D)/bootstrap $(D)/e2fsprogs $(ARCHIVE)/$(NFS_UTILS_SOURCE)
 	$(TOUCH)
 
 #
-# libevent
-#
-LIBEVENT_VER = 2.0.21-stable
-LIBEVENT_SOURCE = libevent-$(LIBEVENT_VER).tar.gz
-
-$(ARCHIVE)/$(LIBEVENT_SOURCE):
-	$(WGET) https://github.com/downloads/libevent/libevent/$(LIBEVENT_SOURCE)
-
-$(D)/libevent: $(D)/bootstrap $(ARCHIVE)/$(LIBEVENT_SOURCE)
-	$(START_BUILD)
-	$(REMOVE)/libevent-$(LIBEVENT_VER)
-	$(UNTAR)/$(LIBEVENT_SOURCE)
-	$(CH_DIR)/libevent-$(LIBEVENT_VER);\
-		$(CONFIGURE) \
-			--prefix=/usr \
-		; \
-		$(MAKE); \
-		$(MAKE) install DESTDIR=$(TARGET_DIR)
-	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libevent.pc
-	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libevent_openssl.pc
-	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libevent_pthreads.pc
-	$(REWRITE_LIBTOOL)/libevent_core.la
-	$(REWRITE_LIBTOOL)/libevent_extra.la
-	$(REWRITE_LIBTOOL)/libevent.la
-	$(REWRITE_LIBTOOL)/libevent_openssl.la
-	$(REWRITE_LIBTOOL)/libevent_pthreads.la
-	$(SILENT)$(REMOVE)/libevent-$(LIBEVENT_VER)
-	$(TOUCH)
-
-#
 # libnfsidmap
 #
 LIBNFSIDMAP_VER = 0.25
@@ -1496,14 +1466,14 @@ $(D)/samba: $(D)/bootstrap $(ARCHIVE)/$(SAMBA_SOURCE)
 #
 # ntp
 #
-NTP_VER = 4.2.8p10
+NTP_VER = 4.2.8p13
 NTP_SOURCE = ntp-$(NTP_VER).tar.gz
 NTP_PATCH = ntp-$(NTP_VER).patch
 
 $(ARCHIVE)/$(NTP_SOURCE):
 	$(WGET) https://www.eecis.udel.edu/~ntp/ntp_spool/ntp4/ntp-4.2/$(NTP_SOURCE)
 
-$(D)/ntp: $(D)/bootstrap $(ARCHIVE)/$(NTP_SOURCE)
+$(D)/ntp: $(D)/bootstrap $(D)/libevent $(ARCHIVE)/$(NTP_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/ntp-$(NTP_VER)
 	$(UNTAR)/$(NTP_SOURCE)
