@@ -1,4 +1,4 @@
-# revision dd6910ef508ad51d4101f5e8e28c83b89dffe2a2 31/01/2020 18:18
+# revision 45b3d11df39dac1367c95049bb784ece68558fba 05/03/2020 14:25
 --- enigma2.org/configure.ac
 +++ enigma2/configure.ac
 @@ -18,6 +18,7 @@
@@ -2431,7 +2431,7 @@
  		}
  
  		if (!(m_flags & scanOnlyFree) || !m_pmt_in_progress->second.scrambled) {
-@@ -1540,10 +1540,10 @@
+@@ -1542,10 +1542,10 @@
  
  					ref.setServiceType(servicetype);
  					int tsonid=(sdt.getTransportStreamId() << 16) | sdt.getOriginalNetworkId();
@@ -5346,7 +5346,7 @@
  
 --- enigma2.org/lib/python/Components/NimManager.py
 +++ enigma2/lib/python/Components/NimManager.py
-@@ -15,6 +15,10 @@
+@@ -16,6 +16,10 @@
  config.unicable = ConfigSubsection()
  
  def getConfigSatlist(orbpos, satlist):
@@ -5359,7 +5359,7 @@
  		if x[0] == orbpos:
 --- enigma2-nightly.org/lib/python/Components/SystemInfo.py
 +++ enigma2-nightly/lib/python/Components/SystemInfo.py
-@@ -42,28 +42,28 @@
+@@ -54,28 +54,28 @@
  SystemInfo["ZapMode"] = fileCheck("/proc/stb/video/zapmode") or fileCheck("/proc/stb/video/zapping_mode")
  SystemInfo["NumFrontpanelLEDs"] = countFrontpanelLEDs()
  SystemInfo["FrontpanelDisplay"] = fileExists("/dev/dbox/oled0") or fileExists("/dev/dbox/lcd0")
@@ -5380,10 +5380,10 @@
 -SystemInfo["PowerOffDisplay"] = model not in "formuler1" and fileCheck("/proc/stb/power/vfd") or fileCheck("/proc/stb/lcd/vfd")
 +SystemInfo["PowerOffDisplay"] = fileCheck("/proc/stb/power/vfd") or fileCheck("/proc/stb/lcd/vfd")
  SystemInfo["WakeOnLAN"] = not model.startswith("et8000") and fileCheck("/proc/stb/power/wol") or fileCheck("/proc/stb/fp/wol")
- SystemInfo["HasExternalPIP"] = not (model.startswith("et9") or model in ('e4hd',)) and fileCheck("/proc/stb/vmpeg/1/external")
+ SystemInfo["HasExternalPIP"] = not (model.startswith("et9") or model in ("e4hd",)) and fileCheck("/proc/stb/vmpeg/1/external")
  SystemInfo["VideoDestinationConfigurable"] = fileExists("/proc/stb/vmpeg/0/dst_left")
  SystemInfo["hasPIPVisibleProc"] = fileCheck("/proc/stb/vmpeg/1/visible")
- SystemInfo["MaxPIPSize"] = model in ('hd51', 'h7', 'vs1500', 'e4hd') and (360, 288) or (540, 432)
+ SystemInfo["MaxPIPSize"] = model in ("hd51", "h7", "vs1500", "e4hd") and (360, 288) or (540, 432)
 -SystemInfo["VFD_scroll_repeats"] = not model.startswith("et8500") and fileCheck("/proc/stb/lcd/scroll_repeats")
 -SystemInfo["VFD_scroll_delay"] = not model.startswith("et8500") and fileCheck("/proc/stb/lcd/scroll_delay")
 -SystemInfo["VFD_initial_scroll_delay"] = not model.startswith("et8500") and fileCheck("/proc/stb/lcd/initial_scroll_delay")
@@ -5395,17 +5395,17 @@
  SystemInfo["LcdLiveTV"] = fileCheck("/proc/stb/fb/sd_detach") or fileCheck("/proc/stb/lcd/live_enable")
  SystemInfo["LcdLiveTVMode"] = fileCheck("/proc/stb/lcd/mode")
  SystemInfo["LcdLiveDecoder"] = fileCheck("/proc/stb/lcd/live_decoder")
-@@ -72,7 +72,7 @@
+@@ -84,7 +84,7 @@
  SystemInfo["3DZNorm"] = fileCheck("/proc/stb/fb/znorm") or fileCheck("/proc/stb/fb/primary/zoffset")
  SystemInfo["Blindscan_t2_available"] = fileCheck("/proc/stb/info/vumodel")
- SystemInfo["RcTypeChangable"] = not(model.startswith('et8500') or model.startswith('et7')) and pathExists('/proc/stb/ir/rc/type')
+ SystemInfo["RcTypeChangable"] = not(model.startswith("et8500") or model.startswith("et7")) and pathExists("/proc/stb/ir/rc/type")
 -SystemInfo["HasFullHDSkinSupport"] = model not in ("et4000", "et5000", "sh1", "hd500c", "hd1100", "xp1000", "lc")
 +SystemInfo["HasFullHDSkinSupport"] = HardwareInfo().get_device_model() in ("adb_box", "atevio7500", "cuberevo", "cuberevo_mini-fta", "cuberevo-250hd", "cuberevo-mini", "cuberevo-mini2", "cuberevo-2000hd", "cuberevo-3000hd", "cuberevo-9500hd", "hdbox", "hs7110", "hs7420", "hs7810a", "hs7119", "hs7429", "hs7819", "octagon1008", "spark", "spark7162", "tf7700hdpvr", "ufs912", "ufs913, vitamin_hd5000")
  SystemInfo["HasBypassEdidChecking"] = fileCheck("/proc/stb/hdmi/bypass_edid_checking")
  SystemInfo["HasColorspace"] = fileCheck("/proc/stb/video/hdmi_colorspace")
  SystemInfo["HasColorspaceSimple"] = SystemInfo["HasColorspace"] and model in "vusolo4k"
-@@ -80,7 +80,7 @@
- SystemInfo["HasMMC"] = "root" in cmdline and cmdline["root"].startswith('/dev/mmcblk')
+@@ -92,7 +92,7 @@
+ SystemInfo["HasMMC"] = "root" in cmdline and cmdline["root"].startswith("/dev/mmcblk")
  SystemInfo["HasTranscoding"] = pathExists("/proc/stb/encoder/0") or fileCheck("/dev/bcm_enc0")
  SystemInfo["HasH265Encoder"] = fileHas("/proc/stb/encoder/0/vcodec_choices", "h265")
 -SystemInfo["CanNotDoSimultaneousTranscodeAndPIP"] = model in "vusolo4k"
@@ -5413,7 +5413,7 @@
  SystemInfo["HasColordepth"] = fileCheck("/proc/stb/video/hdmi_colordepth")
  SystemInfo["HasFrontDisplayPicon"] = model in ("vusolo4k", "et8500")
  SystemInfo["Has24hz"] = fileCheck("/proc/stb/video/videomode_24hz")
-@@ -88,11 +88,11 @@
+@@ -100,11 +100,11 @@
  SystemInfo["HasHDMIpreemphasis"] = fileCheck("/proc/stb/hdmi/preemphasis")
  SystemInfo["HasColorimetry"] = fileCheck("/proc/stb/video/hdmi_colorimetry")
  SystemInfo["HasHdrType"] = fileCheck("/proc/stb/video/hdmi_hdrtype")
@@ -5430,15 +5430,15 @@
  SystemInfo["HasAutoVolume"] = fileExists("/proc/stb/audio/avl_choices") and fileCheck("/proc/stb/audio/avl")
  SystemInfo["HasAutoVolumeLevel"] = fileExists("/proc/stb/audio/autovolumelevel_choices") and fileCheck("/proc/stb/audio/autovolumelevel")
  SystemInfo["Has3DSurround"] = fileExists("/proc/stb/audio/3d_surround_choices") and fileCheck("/proc/stb/audio/3d_surround")
-@@ -102,9 +102,9 @@
- SystemInfo["hasXcoreVFD"] = model in ('osmega','spycat4k','spycat4kmini','spycat4kcombo') and fileCheck("/sys/module/brcmstb_%s/parameters/pt6302_cgram" % model)
- SystemInfo["HasOfflineDecoding"] = model not in ('osmini', 'osminiplus', 'et7000mini', 'et11000', 'mbmicro', 'mbtwinplus', 'mbmicrov2', 'et7000', 'et8500')
- SystemInfo["HasRootSubdir"] = "rootsubdir" in cmdline
--SystemInfo["canMultiBoot"] = SystemInfo["HasRootSubdir"] and (1, 4, "mmcblk0", False) or "%s_4.boxmode" % model in cmdline and (1, 4, "mmcblk0", False) or model in ('gbue4k', 'gbquad4k') and (3, 3, "mmcblk0", True) or model in ('e4hd') and (1, 4, "mmcblk0", False) or model in ('osmio4k', 'osmio4kplus', 'osmini4k') and (1, 4, "mmcblk1", True)
--SystemInfo["canMode12"] = "%s_4.boxmode" % model in cmdline and cmdline["%s_4.boxmode" % model] in ("1","12") and "192M"
+@@ -114,9 +114,9 @@
+ SystemInfo["hasXcoreVFD"] = model in ("osmega", "spycat4k", "spycat4kmini", "spycat4kcombo") and fileCheck("/sys/module/brcmstb_%s/parameters/pt6302_cgram" % model)
+ SystemInfo["HasOfflineDecoding"] = model not in ("osmini", "osminiplus", "et7000mini", "et11000", "mbmicro", "mbtwinplus", "mbmicrov2", "et7000", "et8500")
+ SystemInfo["MultibootStartupDevice"] = getMultibootStartupDevice()
+-SystemInfo["canMode12"] = "%s_4.boxmode" % model in cmdline and cmdline["%s_4.boxmode" % model] in ("1", "12") and "192M"
+-SystemInfo["canMultiBoot"] = getMultibootslots()
 -SystemInfo["canFlashWithOfgwrite"] = not(model.startswith("dm"))
-+SystemInfo["canMultiBoot"] = False
 +SystemInfo["canMode12"] = False
++SystemInfo["canMultiBoot"] = False
 +SystemInfo["canFlashWithOfgwrite"] = False
  SystemInfo["HDRSupport"] = fileExists("/proc/stb/hdmi/hlg_support_choices") and fileCheck("/proc/stb/hdmi/hlg_support")
  SystemInfo["CanDownmixAC3"] = fileHas("/proc/stb/audio/ac3_choices", "downmix")
@@ -7968,7 +7968,7 @@
  			QUIT_DEBUG_RESTART: _("The user interface of your receiver is restarting in debug mode"),
 +			10: _('Your receiver is rebooting to Spark now\nThis may take a while'),
  			QUIT_UPGRADE_PROGRAM: _("Unattended update in progress\nPlease wait until your receiver reboots\nThis may take a few minutes"),
- 			QUIT_MANUFACTURER_RESET: _("Manufacturer reset in progress\nPease wait until enigma2 restarts")
+ 			QUIT_MANUFACTURER_RESET: _("Manufacturer reset in progress\nPlease wait until enigma2 restarts")
  		}.get(retvalue)
 @@ -258,6 +337,7 @@
  				QUIT_RESTART: _("Really restart now?"),

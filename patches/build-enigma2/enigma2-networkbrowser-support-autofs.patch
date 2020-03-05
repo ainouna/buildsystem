@@ -261,7 +261,7 @@
 -				# CIFS
 -				elif data['mounttype'] == 'cifs':
 -					# validate and client the mount options
--					options = self.sanitizeOptions(data['options'], data['mounttype'], data['username'].replace(" ", "\\ "), data['password'])
+-					options = self.sanitizeOptions(data['options'], data['mounttype'], data['username'], data['password'])
 -
 -					# version and/or security level given?
 -					if "vers=" in options or "sec=" in options:
@@ -304,7 +304,7 @@
 -
 -			except Exception, ex:
 -					print "[AutoMount.py] Failed to create", path, "Error:", ex
-+		self.CheckMountPointFinished(command ,ret, [data, callback])
++		self.CheckMountPointFinished(command, ret, [data, callback])
  
  		# execute any command constructed
 -		if command:
