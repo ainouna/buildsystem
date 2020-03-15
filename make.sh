@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20200131.1
+# Version 20200314.1
 
 ##############################################
 
@@ -296,20 +296,20 @@ case "$IMAGE" in
 		case $5 in
 			[1-6] ) REPLY=$5;;
 			*)	echo -e "\nWhich Neutrino variant do you want to build?"
-				echo "   1)  neutrino-mp-ddt"
-				echo "   2)  neutrino-mp-ddt + plugins"
-				echo "   3)  neutrino-mp-tangos"
-				echo "   4)  neutrino-mp-tangos + plugins"
+				echo "   1)  neutrino-ddt"
+				echo "   2)  neutrino-ddt + plugins"
+				echo "   3)  neutrino-tangos"
+				echo "   4)  neutrino-tangos + plugins"
 				echo "   5)  neutrino-hd2"
 				echo "   6)  neutrino-hd2 + plugins"
 				read -p "Select Neutrino variant to build (1-6)? ";;
 		esac
 
 		case "$REPLY" in
-			[1-2]) FLAVOUR="neutrino-mp-ddt";;
-#			[3-4]) FLAVOUR="neutrino-mp-tangos";;
+			[1-2]) FLAVOUR="neutrino-ddt";;
+#			[3-4]) FLAVOUR="neutrino-tangos";;
 			[5-6]) FLAVOUR="neutrino-hd2";;
-			*) FLAVOUR="neutrino-mp-tangos";;
+			*) FLAVOUR="neutrino-tangos";;
 		esac
 
 		echo "FLAVOUR=$FLAVOUR" >> config
@@ -335,16 +335,16 @@ case "$IMAGE" in
 					2) MEDIAFW="gstreamer";;
 					*) MEDIAFW="buildinplayer";;
 				esac;;
-			neutrino-mp*)
+			neutrino*)
 					MEDIAFW="buildinplayer";
 		esac
 
 		case "$FLAVOUR" in
-			neutrino-mp*)
+			neutrino*)
 				if [ $PLUGINS_NEUTRINO == "No" ]; then
-					echo "make yaud-neutrino-mp" >> $CURDIR/build
+					echo "make yaud-neutrino" >> $CURDIR/build
 				else
-					echo "make yaud-neutrino-mp-plugins" >> $CURDIR/build
+					echo "make yaud-neutrino-plugins" >> $CURDIR/build
 				fi;;
 			neutrino-hd2*)
 				if [ $PLUGINS_NEUTRINO == "No" ]; then

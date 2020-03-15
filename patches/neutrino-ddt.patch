@@ -1,6 +1,6 @@
 --- neutrino-mp-ddt.org/acinclude.m4
 +++ neutrino-mp-ddt/acinclude.m4
-@@ -313,61 +313,13 @@
+@@ -313,45 +313,13 @@
  AC_ARG_WITH(boxtype,
  	AS_HELP_STRING([--with-boxtype], [valid values: tripledragon, coolstream, spark, azbox, generic, armbox, duckbox, spark7162, mipsbox]),
  	[case "${withval}" in
@@ -12,10 +12,6 @@
  			BOXTYPE="spark"
  			BOXMODEL="$withval"
  		;;
--		dm*)
--			BOXTYPE="dreambox"
--			BOXMODEL="$withval"
--		;;
 -		ufs*)
 -			BOXTYPE="duckbox"
 -			BOXMODEL="$withval"
@@ -36,10 +32,6 @@
 -			BOXTYPE="duckbox"
 -			BOXMODEL="$withval"
 -		;;
--		dp*)
--			BOXTYPE="duckbox"
--			BOXMODEL="$withval"
--		;;
 -		cuberevo*)
 -			BOXTYPE="duckbox"
 -			BOXMODEL="$withval"
@@ -48,76 +40,92 @@
 -			BOXTYPE="duckbox"
 -			BOXMODEL="$withval"
 -		;;
--		arivalink200)
--			BOXTYPE="duckbox"
--			BOXMODEL="$withval"
--		;;
 -		tf*)
 -			BOXTYPE="duckbox"
 -			BOXMODEL="$withval"
 -		;;
--		hl101)
--			BOXTYPE="duckbox"
--			BOXMODEL="$withval"
--		;;
- 		hd51|hd60|vusolo4k|vuduo4k|vuultimo4k|vuzero4k|vuuno4kse|vuuno4k|h7)
+ 		hd51|hd60|hd61|bre2ze4k|vusolo4k|vuduo4k|vuultimo4k|vuzero4k|vuuno4kse|vuuno4k|h7|osmio4k|osmio4kplus)
  			BOXTYPE="armbox"
  			BOXMODEL="$withval"
-@@ -384,8 +336,8 @@
+@@ -368,7 +336,7 @@
  
  AC_ARG_WITH(boxmodel,
  	AS_HELP_STRING([--with-boxmodel], [valid for coolstream: hd1, hd2])
--AS_HELP_STRING([], [valid for duckbox: ufs910, ufs912, ufs913, ufs922, atevio7500, fortis_hdbox, octagon1008, hs7110, hs7810a, hs7119, hs7819, dp7000, cuberevo, cuberevo_mini, cuberevo_mini2, cuberevo_250hd, cuberevo_2000hd, cuberevo_3000hd, ipbox9900, ipbox99, ipbox55, arivalink200, tf7700, hl101])
- AS_HELP_STRING([], [valid for spark: spark, spark7162])
+-AS_HELP_STRING([], [valid for duckbox: ufs910, ufs912, ufs913, ufs922, atevio7500, fortis_hdbox, octagon1008, cuberevo, cuberevo_mini, cuberevo_mini2, cuberevo_250hd, cuberevo_2000hd, cuberevo_3000hd, ipbox9900, ipbox99, ipbox55, tf7700])
 +AS_HELP_STRING([], [valid for duckbox: ufs910, ufs912, ufs913, ufs922, atevio7500, fortis_hdbox, octagon1008, hs7110, hs7420, hs7810a, hs7119, hs7429, hs7819, cuberevo, cuberevo_mini, cuberevo_mini2, cuberevo_250hd, cuberevo_2000hd, cuberevo_3000hd, ipbox9900, ipbox99, ipbox55, arivalink200, tf7700, hl101, adb_box, vitamin_hd5000])
- AS_HELP_STRING([], [valid for armbox: hd51, hd60, vusolo4k, vuduo4k, vuultimo4k, vuzero4k, vuuno4kse, vuuno4k, h7])
+ AS_HELP_STRING([], [valid for spark: spark, spark7162])
+ AS_HELP_STRING([], [valid for armbox: bre2ze4k, hd51, vusolo4k, vuduo4k, vuultimo4k, vuzero4k, vuuno4kse, vuuno4k, h7])
  AS_HELP_STRING([], [valid for mipsbox: vuduo])
- AS_HELP_STRING([], [valid for generic: raspi]),
-@@ -409,7 +361,7 @@
+@@ -393,7 +361,7 @@
  				AC_MSG_ERROR([unknown model $withval for boxtype $BOXTYPE])
  			fi
  		;;
--		ufs910|ufs912|ufs913|ufs922|atevio7500|fortis_hdbox|octagon1008|hs7110|hs7810a|hs7119|hs7819|dp7000|cuberevo|cuberevo_mini|cuberevo_mini2|cuberevo_250hd|cuberevo_2000hd|cuberevo_3000hd|ipbox9900|ipbox99|ipbox55|arivalink200|tf7700|hl101)
+-		ufs910|ufs912|ufs913|ufs922|atevio7500|fortis_hdbox|octagon1008|cuberevo|cuberevo_mini|cuberevo_mini2|cuberevo_250hd|cuberevo_2000hd|cuberevo_3000hd|ipbox9900|ipbox99|ipbox55|tf7700)
 +		ufs910|ufs912|ufs913|ufs922|atevio7500|fortis_hdbox|octagon1008|hs7110|hs7420|hs7810a|hs7119|hs7429|hs7819|cuberevo|cuberevo_mini|cuberevo_mini2|cuberevo_250hd|cuberevo_2000hd|cuberevo_3000hd|ipbox9900|ipbox99|ipbox55|arivalink200|tf7700|hl101|adb_box|vitamin_hd5000)
  			if test "$BOXTYPE" = "duckbox"; then
  				BOXMODEL="$withval"
  			else
-@@ -474,10 +426,11 @@
+@@ -457,6 +425,13 @@
+ AM_CONDITIONAL(BOXMODEL_ATEVIO7500, test "$BOXMODEL" = "atevio7500")
  AM_CONDITIONAL(BOXMODEL_FORTIS_HDBOX, test "$BOXMODEL" = "fortis_hdbox")
  AM_CONDITIONAL(BOXMODEL_OCTAGON1008, test "$BOXMODEL" = "octagon1008")
- AM_CONDITIONAL(BOXMODEL_HS7110, test "$BOXMODEL" = "hs7110")
++AM_CONDITIONAL(BOXMODEL_HS7110, test "$BOXMODEL" = "hs7110")
 +AM_CONDITIONAL(BOXMODEL_HS7420, test "$BOXMODEL" = "hs7420")
- AM_CONDITIONAL(BOXMODEL_HS7810A, test "$BOXMODEL" = "hs7810a")
- AM_CONDITIONAL(BOXMODEL_HS7119, test "$BOXMODEL" = "hs7119")
++AM_CONDITIONAL(BOXMODEL_HS7810A, test "$BOXMODEL" = "hs7810a")
++AM_CONDITIONAL(BOXMODEL_HS7119, test "$BOXMODEL" = "hs7119")
 +AM_CONDITIONAL(BOXMODEL_HS7429, test "$BOXMODEL" = "hs7429")
- AM_CONDITIONAL(BOXMODEL_HS7819, test "$BOXMODEL" = "hs7819")
--AM_CONDITIONAL(BOXMODEL_DP7000, test "$BOXMODEL" = "dp7000")
++AM_CONDITIONAL(BOXMODEL_HS7819, test "$BOXMODEL" = "hs7819")
++AM_CONDITIONAL(BOXMODEL_DP7000, test "$BOXMODEL" = "dp7000")
  
  AM_CONDITIONAL(BOXMODEL_CUBEREVO, test "$BOXMODEL" = "cuberevo")
  AM_CONDITIONAL(BOXMODEL_CUBEREVO_MINI, test "$BOXMODEL" = "cuberevo_mini")
-@@ -491,6 +444,8 @@
- AM_CONDITIONAL(BOXMODEL_ARIVALINK200, test "$BOXMODEL" = "arivalink200")
+@@ -468,6 +443,9 @@
+ AM_CONDITIONAL(BOXMODEL_IPBOX99, test "$BOXMODEL" = "ipbox99")
+ AM_CONDITIONAL(BOXMODEL_IPBOX55, test "$BOXMODEL" = "ipbox55")
  AM_CONDITIONAL(BOXMODEL_TF7700, test "$BOXMODEL" = "tf7700")
- AM_CONDITIONAL(BOXMODEL_HL101, test "$BOXMODEL" = "hl101")
++AM_CONDITIONAL(BOXMODEL_HL101, test "$BOXMODEL" = "hl101")
 +AM_CONDITIONAL(BOXMODEL_ADB_BOX, test "$BOXMODEL" = "adb_box")
 +AM_CONDITIONAL(BOXMODEL_VITAMIN_HD5000, test "$BOXMODEL" = "vitamin_hd5000")
  
  AM_CONDITIONAL(BOXMODEL_HD51, test "$BOXMODEL" = "hd51")
  AM_CONDITIONAL(BOXMODEL_HD60, test "$BOXMODEL" = "hd60")
-@@ -583,6 +538,10 @@
+@@ -534,6 +512,20 @@
+ 	AC_DEFINE(BOXMODEL_FORTIS_HDBOX, 1, [fortis_hdbox])
+ elif test "$BOXMODEL" = "octagon1008"; then
+ 	AC_DEFINE(BOXMODEL_OCTAGON1008, 1, [octagon1008])
++elif test "$BOXMODEL" = "hs7110"; then
++	AC_DEFINE(BOXMODEL_HS7110, 1, [hs7110])
++elif test "$BOXMODEL" = "hs7420"; then
++	AC_DEFINE(BOXMODEL_HS7420, 1, [hs7420])
++elif test "$BOXMODEL" = "hs7810a"; then
++	AC_DEFINE(BOXMODEL_HS7810A, 1, [hs7810a])
++elif test "$BOXMODEL" = "hs7119"; then
++	AC_DEFINE(BOXMODEL_HS7119, 1, [hs7119])
++elif test "$BOXMODEL" = "hs7429"; then
++	AC_DEFINE(BOXMODEL_HS7429, 1, [hs7429])
++elif test "$BOXMODEL" = "hs7819"; then
++	AC_DEFINE(BOXMODEL_HS7819, 1, [hs7819])
++elif test "$BOXMODEL" = "dp7000"; then
++	AC_DEFINE(BOXMODEL_DP7000, 1, [dp7000])
+ elif test "$BOXMODEL" = "cuberevo"; then
+ 	AC_DEFINE(BOXMODEL_CUBEREVO, 1, [cuberevo])
+ elif test "$BOXMODEL" = "cuberevo_mini"; then
+@@ -554,6 +546,12 @@
+ 	AC_DEFINE(BOXMODEL_IPBOX55, 1, [ipbox55])
+ elif test "$BOXMODEL" = "tf7700"; then
  	AC_DEFINE(BOXMODEL_TF7700, 1, [tf7700])
- elif test "$BOXMODEL" = "hl101"; then
- 	AC_DEFINE(BOXMODEL_HL101, 1, [hl101])
++ elif test "$BOXMODEL" = "hl101"; then
++ 	AC_DEFINE(BOXMODEL_HL101, 1, [hl101])
 +elif test "$BOXMODEL" = "adb_box"; then
 +	AC_DEFINE(BOXMODEL_ADB_BOX, 1, [adb_box])
 +elif test "$BOXMODEL" = "vitamin_hd5000"; then
 +	AC_DEFINE(BOXMODEL_VITAMIN_HD5000, 1, [vitamin_hd5000])
+ elif test "$BOXMODEL" = "bre2ze4k"; then
+ 	AC_DEFINE(BOXMODEL_BRE2ZE4K, 1, [bre2ze4k])
  elif test "$BOXMODEL" = "hd51"; then
- 	AC_DEFINE(BOXMODEL_HD51, 1, [hd51])
- 	AC_DEFINE(ENABLE_CHANGE_OSD_RESOLUTION, 1, [enable change the osd resolution])
 --- neutrino-mp-ddt.org/src/driver/vfd.cpp
 +++ neutrino-mp-ddt/src/driver/vfd.cpp
-@@ -52,21 +52,40 @@
+@@ -52,19 +52,40 @@
  #include <stropts.h>
  #define VFD_DEVICE "/dev/vfd"
  
@@ -132,7 +140,7 @@
 + ||   defined (BOXMODEL_ATEVIO7500) \
 + ||   defined (BOXMODEL_CUBEREVO)
  #define VFDLENGTH 12
--#elif defined (BOXMODEL_HS7810A) || defined (BOXMODEL_HS7119) || defined (BOXMODEL_HS7819) || defined (BOXMODEL_CUBEREVO_250HD) || defined (BOXMODEL_IPBOX55)
+-#elif  defined (BOXMODEL_CUBEREVO_250HD) || defined (BOXMODEL_IPBOX55)
 +#elif defined (BOXMODEL_HS7810A) \
 + ||   defined (BOXMODEL_HS7119) \
 + ||   defined (BOXMODEL_HS7819) \
@@ -140,9 +148,9 @@
 + ||   defined (BOXMODEL_CUBEREVO_MINI_FTA) \
 + ||   defined (BOXMODEL_IPBOX55)
  #define VFDLENGTH 4
- #elif defined (BOXMODEL_HS7110)
- #define VFDLENGTH 0
 -#elif defined (BOXMODEL_IPBOX9900) || defined (BOXMODEL_IPBOX99)
++#elif defined (BOXMODEL_HS7110)
++#define VFDLENGTH 0
 +#elif defined (BOXMODEL_IPBOX9900) \
 + ||   defined (BOXMODEL_IPBOX99) \
 + ||   defined (BOXMODEL_CUBEREVO_MINI) \
@@ -163,7 +171,7 @@
  
  bool invert = false;
  char g_str[64];
-@@ -75,6 +94,7 @@
+@@ -73,6 +94,7 @@
  int blocked_counter = 0;
  int file_vfd = -1;
  bool active_icon[16] = { false };
@@ -171,7 +179,7 @@
  
  pthread_t vfd_scrollText;
  
-@@ -83,6 +103,33 @@
+@@ -81,6 +103,33 @@
  	unsigned char data[64];
  	unsigned char length;
  };
@@ -205,7 +213,7 @@
  
  static void write_to_vfd(unsigned int DevType, struct vfd_ioctl_data * data, bool force = false)
  {
-@@ -139,6 +186,17 @@
+@@ -137,6 +186,17 @@
  
  static void ShowNormalText(char * str, bool fromScrollThread = false)
  {
@@ -223,7 +231,7 @@
  	if (blocked)
  	{
  		printf("[CVFD] - blocked\n");
-@@ -158,32 +216,65 @@
+@@ -156,32 +216,65 @@
  			vfd_scrollText = 0;
  		}
  	}
@@ -301,7 +309,7 @@
  	write_to_vfd(VFDDISPLAYCHARS, &data);
  	return;
  }
-@@ -219,17 +310,18 @@
+@@ -217,17 +310,18 @@
  	int i;
  	char *str = (char *)arg;
  	int len = strlen(str);
@@ -326,7 +334,7 @@
  		memcpy(buf, str, len);
  
  		while(retries--)
-@@ -239,20 +331,20 @@
+@@ -237,20 +331,20 @@
  			for (i = 0; i <= (len-1); i++)
  			{
  				// scroll text until end
@@ -350,7 +358,7 @@
  
  CVFD::CVFD()
  {
-@@ -402,6 +494,9 @@
+@@ -400,6 +494,9 @@
  
  void CVFD::init(const char * /*fontfile*/, const char * /*fontname*/)
  {
@@ -360,7 +368,7 @@
  	//InitNewClock(); /FIXME
  
  	brightness = -1;
-@@ -430,7 +525,7 @@
+@@ -428,7 +525,7 @@
  
  	brightness = dimm;
  
@@ -369,11 +377,10 @@
  #if !HAVE_DUCKBOX_HARDWARE
  	int ret = ioctl(fd, IOC_FP_SET_BRIGHT, dimm);
  	if(ret < 0)
-@@ -438,51 +533,87 @@
+@@ -436,43 +533,87 @@
  #else
  // Brightness
  	struct vfd_ioctl_data data;
--#if !defined (BOXMODEL_HS7810A) && !defined (BOXMODEL_HS7119) && !defined (BOXMODEL_HS7819)
 +#if !defined (BOXMODEL_HS7810A) \
 + && !defined (BOXMODEL_HS7119) \
 + && !defined (BOXMODEL_HS7819)
@@ -423,20 +430,18 @@
  	data.data[4] = brightness*2;
  	data.length = 5;
 -	write_to_vfd(VFDPWRLED, &data);
--#elif defined (BOXMODEL_HS7810A) || defined (BOXMODEL_HS7819)
+-#elif !defined (BOXMODEL_UFS912) && !defined (BOXMODEL_UFS913) && !defined (BOXMODEL_OCTAGON1008)
 +	write_to_vfd(VFDSETLED, &data);
 +#elif defined (BOXMODEL_HS7420) \
 + ||   defined (BOXMODEL_HS7810A) \
 + ||   defined (BOXMODEL_HS7429) \
 + ||   defined (BOXMODEL_HS7819)
 +// TODO: FIX all models
- 	memset(&data, 0, sizeof(struct vfd_ioctl_data));
- 	data.start = 0;
- 	data.data[0] = 0x02; // logo
- 	data.data[4] = (brightness & 0x07);
- 	data.length = 5;
--	write_to_vfd(VFDPWRLED, &data);
--#elif !defined (BOXMODEL_UFS912) && !defined (BOXMODEL_UFS913) && !defined (BOXMODEL_OCTAGON1008)
++	memset(&data, 0, sizeof(struct vfd_ioctl_data));
++	data.start = 0;
++	data.data[0] = 0x02; // logo
++	data.data[4] = (brightness & 0x07);
++	data.length = 5;
 +	write_to_vfd(VFDSETLED, &data);
 +// TODO: Octagon1008
 +#elif defined (BOXMODEL_ADB_BOX)
@@ -472,7 +477,15 @@
  // Power on/off
  	if (power) {
  		data.start = 0x01;
-@@ -536,6 +667,10 @@
+@@ -482,6 +623,7 @@
+ 	data.length = 0;
+ 	write_to_vfd(VFDDISPLAYWRITEONOFF, &data, true);
+ #endif
++#endif
+ }
+ 
+ void CVFD::setlcdparameter(void)
+@@ -525,6 +667,10 @@
  		return;
  
  	int led1 = -1, led2 = -1;
@@ -483,7 +496,7 @@
  	if(on_off){//on
  		switch(g_settings.led_rec_mode) {
  			case 1:
-@@ -576,6 +711,9 @@
+@@ -565,6 +711,9 @@
  	if(fd < 0) return;
  
  	int led1 = -1, led2 = -1;
@@ -493,7 +506,7 @@
  	int select = 0;
  
  	if(mode == MODE_MENU_UTF8 || mode == MODE_TVRADIO  )
-@@ -603,21 +741,34 @@
+@@ -592,21 +741,34 @@
  }
  #endif
  
@@ -536,7 +549,7 @@
  	wake_up();
  }
  
-@@ -625,79 +776,117 @@
+@@ -614,66 +776,117 @@
  {
  	//unsigned int system_rev = cs_get_revision();
  	static int recstatus = 0;
@@ -568,11 +581,10 @@
 +			{
  				hour = t->tm_hour;
  				minute = t->tm_min;
--#if !defined (BOXMODEL_HS7810A) && !defined (BOXMODEL_HS7819)
 +				second = t->tm_sec;
  #if defined (BOXMODEL_OCTAGON1008)
 -				ShowIcon(ICON_COLON2, true);
--#elif defined (BOXMODEL_OCTAGON1008) || defined (BOXMODEL_HS7119) || defined (BOXMODEL_CUBEREVO_250HD)
+-#elif defined (BOXMODEL_OCTAGON1008) || defined (BOXMODEL_CUBEREVO_250HD)
 +
 +				ShowIcon(ICON_COLON2, second % 2 == 0 ? true : false);
  				strftime(timestr, 5, "%H%M", t);
@@ -611,15 +623,6 @@
 -				strftime(timestr, 6, "%H:%M", t);
 -#endif
 -				ShowText(timestr);
--#else //HS7810A or HS7819, string should not scroll
--				strftime(timestr, 6, "%H:%M", t);
--				struct vfd_ioctl_data data;
--				memset(data.data, ' ', 6);
--				memcpy (data.data, timestr, 6);
--				data.start = 0;
--				data.length = 5;
--				write_to_vfd(VFDDISPLAYCHARS, &data);
--#endif
 -				if (support_text) {
 +				if (support_text)
 +				{
@@ -630,9 +633,9 @@
 +				else if (support_numbers && has_led_segment)
 +				{
  					ShowNumber((t->tm_hour*100) + t->tm_min);
- #ifdef BOXMODEL_CS_HD2
- 					ioctl(fd, IOC_FP_SET_COLON, 0x01);
- #endif
++#ifdef BOXMODEL_CS_HD2
++					ioctl(fd, IOC_FP_SET_COLON, 0x01);
++#endif
  				}
 +#endif
  			}
@@ -682,7 +685,7 @@
  #if !HAVE_DUCKBOX_HARDWARE
  		setled();
  #endif
-@@ -715,7 +904,10 @@
+@@ -691,7 +904,10 @@
  		ShowIcon(FP_ICON_HD,chan->isHD());
  		ShowIcon(FP_ICON_LOCK,!chan->camap.empty());
  		if (chan->getAudioChannel() != NULL)
@@ -693,7 +696,7 @@
  	}
  }
  #endif
-@@ -755,7 +947,8 @@
+@@ -731,7 +947,8 @@
  		int pp = (int) round((double) vol / (double) 2);
  		if(oldpp != pp)
  		{
@@ -703,7 +706,7 @@
  			int i;
  			unsigned char speaker[5] = {0x1C, 0x1C, 0x1C, 0x3E, 0x7F}; // speaker symbol
  			writeCG(0, speaker);
-@@ -802,15 +995,44 @@
+@@ -778,15 +995,44 @@
  			char vol_chr[64] = "";
  			snprintf(vol_chr, sizeof(vol_chr)-1, "VOL: %d%%", (int)vol);
  			ShowText(vol_chr);
@@ -715,7 +718,7 @@
 -			snprintf(vol_chr, sizeof(vol_chr)-1, "VOL=%3d", (int)vol);
 +			snprintf(vol_chr, sizeof(vol_chr)-1, "VOL=%3d%%", (int)vol);
  			ShowText(vol_chr);
--#elif defined (BOXMODEL_HS7119) || defined (BOXMODEL_HS7810A) || defined (BOXMODEL_HS7819) || defined (BOXMODEL_CUBEREVO_250HD) || defined (BOXMODEL_IPBOX55)
+-#elif defined (BOXMODEL_CUBEREVO_250HD) || defined (BOXMODEL_IPBOX55)
 +#elif defined (BOXMODEL_HS7119) \
 + ||   defined (BOXMODEL_HS7810A) \
 + ||   defined (BOXMODEL_HS7819) \
@@ -752,7 +755,7 @@
  			char vol_chr[64] = "";
  			snprintf(vol_chr, sizeof(vol_chr)-1, "Volume: %d%%", (int)vol);
  			ShowText(vol_chr);
-@@ -820,17 +1042,23 @@
+@@ -796,17 +1042,23 @@
  #else
  		ShowIcon(FP_ICON_FRAME, true);
  		int pp = (int) round((double) vol * (double) 8 / (double) 100);
@@ -782,7 +785,7 @@
  				ShowIcon((fp_icon) j, false);
  				j /= 2;
  			}
-@@ -868,7 +1096,7 @@
+@@ -844,7 +1096,7 @@
  		if(pp > 8) pp = 8;
  
  		if(pp != ppold) {
@@ -791,7 +794,7 @@
  			int i;
  			int j = 0x00000200;
  			for(i = 0; i < pp; i++) {
-@@ -900,7 +1128,7 @@
+@@ -876,7 +1128,7 @@
  	if(fd < 0) return;
  	if (mode != MODE_AUDIO)
  		return;
@@ -800,7 +803,7 @@
  	ShowText(title.c_str());
  	wake_up();
  
-@@ -969,16 +1197,24 @@
+@@ -945,16 +1197,24 @@
  
  void CVFD::setMode(const MODES m, const char * const title)
  {
@@ -828,7 +831,7 @@
  #if 0
  	else if(mode == MODE_STANDBY) {
  		ShowIcon(FP_ICON_COL1, false);
-@@ -986,6 +1222,38 @@
+@@ -962,6 +1222,38 @@
  	}
  #endif
  
@@ -867,7 +870,7 @@
  	if(strlen(title))
  		ShowText(title);
  	mode = m;
-@@ -1007,6 +1275,10 @@
+@@ -983,6 +1275,10 @@
  			showPercentOver(percentOver, false);
  			break;
  #endif
@@ -878,7 +881,7 @@
  		}
  		showServicename(servicename);
  		showclock = true;
-@@ -1088,12 +1360,28 @@
+@@ -1064,12 +1360,28 @@
  int CVFD::getBrightness()
  {
  	//FIXME for old neutrino.conf
@@ -910,7 +913,7 @@
  #endif
  
  	return g_settings.lcd_setting[SNeutrinoSettings::LCD_BRIGHTNESS];
-@@ -1110,12 +1398,28 @@
+@@ -1086,12 +1398,28 @@
  int CVFD::getBrightnessStandby()
  {
  	//FIXME for old neutrino.conf
@@ -942,7 +945,7 @@
  #endif
  	return g_settings.lcd_setting[SNeutrinoSettings::LCD_STANDBY_BRIGHTNESS];
  }
-@@ -1131,12 +1435,28 @@
+@@ -1107,12 +1435,28 @@
  int CVFD::getBrightnessDeepStandby()
  {
  	//FIXME for old neutrino.conf
@@ -974,11 +977,11 @@
  #endif
  	return g_settings.lcd_setting[SNeutrinoSettings::LCD_DEEPSTANDBY_BRIGHTNESS];
  }
-@@ -1202,14 +1522,30 @@
+@@ -1178,14 +1522,32 @@
  	else
  		text.clear();
  #else
--#if defined (BOXMODEL_HS7810A) || defined (BOXMODEL_HS7119) || defined (BOXMODEL_HS7819) || defined (BOXMODEL_CUBEREVO_250HD) || defined (BOXMODEL_IPBOX55)
+-#if defined (BOXMODEL_CUBEREVO_250HD) || defined (BOXMODEL_IPBOX55)
 +#if defined (BOXMODEL_HS7810A) \
 + || defined (BOXMODEL_HS7119) \
 + || defined (BOXMODEL_HS7819) \
@@ -1006,10 +1009,12 @@
  	ShowText("              ");
 +#elif defined (BOXMODEL_ADB_BOX)
 +	ShowText("               ");
- #elif !defined (BOXMODEL_HS7110)
- 	ShowText("                ");
++#elif !defined (BOXMODEL_HS7110)
++	ShowText("                ");
  #endif
-@@ -1219,25 +1555,69 @@
+ #endif
+ }
+@@ -1193,25 +1555,69 @@
  void CVFD::ShowIcon(fp_icon icon, bool show)
  {
  #if !HAVE_DUCKBOX_HARDWARE
@@ -1027,7 +1032,7 @@
  		perror(show ? "IOC_FP_SET_ICON" : "IOC_FP_CLEAR_ICON");
 +	}
  #else
--#if defined (BOXMODEL_ATEVIO7500) || defined (BOXMODEL_HS7110) || defined (BOXMODEL_HS7810A) || defined (BOXMODEL_HS7119) || defined (BOXMODEL_HS7819)
+-#if defined (BOXMODEL_ATEVIO7500)
 +  #if defined (BOXMODEL_HS7110) \
 +   || defined (BOXMODEL_HS7420) \
 +   || defined (BOXMODEL_HS7810A) \
@@ -1087,11 +1092,11 @@
  	memset(&data, 0, sizeof(struct vfd_ioctl_data));
  	data.start = 0x00;
  	data.data[0] = icon;
-@@ -1251,10 +1631,20 @@
+@@ -1225,10 +1631,20 @@
  #ifdef HAVE_DUCKBOX_HARDWARE
  void CVFD::ClearIcons()
  {
--#if defined (BOXMODEL_ATEVIO7500) || defined (BOXMODEL_HS7110) || defined (BOXMODEL_HS7810A) || defined (BOXMODEL_HS7119) || defined (BOXMODEL_HS7819)
+-#if defined (BOXMODEL_ATEVIO7500)
 +#if defined (BOXMODEL_HS7110) \
 + || defined (BOXMODEL_HS7420) \
 + || defined (BOXMODEL_HS7810A) \
@@ -1110,7 +1115,7 @@
  #if defined (BOXMODEL_OCTAGON1008)
  		if (id != FP_ICON_USB && id != FP_ICON_HDD)
  #elif defined(BOXMODEL_FORTIS_HDBOX) || defined (BOXMODEL_TF7700)
-@@ -1262,18 +1652,26 @@
+@@ -1236,18 +1652,26 @@
  #else
  		if (id != 0x10 && id != 0x12)
  #endif
@@ -1138,34 +1143,43 @@
  		g_str[60] = '.';
  		g_str[61] = '.';
  		g_str[62] = '.';
-@@ -1282,14 +1680,15 @@
+@@ -1256,20 +1680,23 @@
  	}
  	ShowNormalText(g_str, false);
  }
 +
  void CVFD::repaintIcons()
  {
- 	char * model = g_info.hw_caps->boxname;
--	if(strstr(model, "ufs912") || strstr(model, "ufs913"))
-+	if (strstr(model, "ufs912") || strstr(model, "ufs913"))
- 	{
- 		bool tmp_icon[16] = {false};
- 		printf("VFD repaint icons boxmodel: %s\n", model);
--		for (int i = 0x10; i < FP_ICON_MAX; i++)
-+		for (int i = FP_ICON_MIN; i < FP_ICON_MAX; i++)
- 		{
- 			tmp_icon[i & 0x0F] = active_icon[i & 0x0F];
- 			active_icon[i & 0x0F] = false;
-@@ -1297,7 +1696,7 @@
- 		}
- 	}
- }
+-#if BOXMODEL_UFS912 || BOXMODEL_UFS913
+-	bool tmp_icon[16] = {false};
+-	printf("VFD repaint icons\n");
+-	for (int i = 0x10; i < FP_ICON_MAX; i++)
+-	{
+-		tmp_icon[i & 0x0F] = active_icon[i & 0x0F];
+-		active_icon[i & 0x0F] = false;
+-		ShowIcon((fp_icon)i, tmp_icon[i & 0x0F]);
+-	}
+-#endif
+-}
 -#else
++	char * model = g_info.hw_caps->boxname;
++	if (strstr(model, "ufs912") || strstr(model, "ufs913"))
++	{
++		bool tmp_icon[16] = {false};
++		printf("VFD repaint icons boxmodel: %s\n", model);
++		for (int i = FP_ICON_MIN; i < FP_ICON_MAX; i++)
++		{
++			tmp_icon[i & 0x0F] = active_icon[i & 0x0F];
++			active_icon[i & 0x0F] = false;
++			ShowIcon((fp_icon)i, tmp_icon[i & 0x0F]);
++		}
++	}
++}
 +#else  // non-duckbox
  void CVFD::ShowText(const char * str)
  {
  	if (fd < 0 || !support_text)
-@@ -1337,11 +1736,26 @@
+@@ -1309,11 +1736,26 @@
  	if (number < 0)
  		return;
  	
@@ -1193,7 +1207,7 @@
  	}
  #endif
  }
-@@ -1430,10 +1844,10 @@
+@@ -1402,10 +1844,10 @@
  /*****************************************************************************************/
  //showFilelist
  /*****************************************************************************************/
@@ -1208,7 +1222,7 @@
  
  void CVFD::showFilelist(int flist_pos,CFileList* flist,const char * const mainDir)
  {
-@@ -1670,5 +2084,4 @@
+@@ -1642,5 +2084,4 @@
  }
  /*****************************************************************************************/
  #endif // VFD_UPDATE

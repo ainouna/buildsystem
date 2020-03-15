@@ -49,30 +49,30 @@ $(D)/links: $(D)/bootstrap $(D)/libpng $(D)/openssl $(ARCHIVE)/links-$(LINKS_VER
 	$(TOUCH)
 
 #
-# neutrino-mp-plugin
+# neutrino-plugin
 #
-NEUTRINO_PLUGINS  = $(D)/neutrino-mp-plugin-scripts-lua
-NEUTRINO_PLUGINS += $(D)/neutrino-mp-plugin-mediathek
-NEUTRINO_PLUGINS += $(D)/neutrino-mp-plugin-xupnpd
+NEUTRINO_PLUGINS  = $(D)/neutrino-plugin-scripts-lua
+NEUTRINO_PLUGINS += $(D)/neutrino-plugin-mediathek
+NEUTRINO_PLUGINS += $(D)/neutrino-plugin-xupnpd
 NEUTRINO_PLUGINS += $(LOCAL_NEUTRINO_PLUGINS)
 
-NP_OBJDIR = $(SOURCE_DIR)/neutrino-mp-plugins
+NP_OBJDIR = $(SOURCE_DIR)/neutrino-plugins
 
-EXTRA_CPPFLAGS_MP_PLUGINS = -DMARTII
+EXTRA_CPPFLAGS_PLUGINS = -DMARTII
 
-$(D)/neutrino-mp-plugin.do_prepare:
+$(D)/neutrino-plugin.do_prepare:
 	$(START_BUILD)
 	$(SILENT)rm -rf $(NP_OBJDIR)
 	$(SILENT)rm -rf $(NP_OBJDIR).org
-	$(SET) -e; if [ -d $(ARCHIVE)/neutrino-mp-plugins.git ]; \
-		then cd $(ARCHIVE)/neutrino-mp-plugins.git; git pull $(MINUS_Q); \
+	$(SET) -e; if [ -d $(ARCHIVE)/neutrino-plugins.git ]; \
+		then cd $(ARCHIVE)/neutrino-plugins.git; git pull $(MINUS_Q); \
 		else cd $(ARCHIVE); git clone $(MINUS_Q) https://github.com/Duckbox-Developers/neutrino-mp-plugins.git neutrino-mp-plugins.git; \
 		fi
-	$(SILENT)cp -ra $(ARCHIVE)/neutrino-mp-plugins.git $(NP_OBJDIR)
+	$(SILENT)cp -ra $(ARCHIVE)/neutrino-plugins.git $(NP_OBJDIR)
 	$(SILENT)cp -ra $(NP_OBJDIR) $(NP_OBJDIR).org
 	@touch $@
 
-$(D)/neutrino-mp-plugin.config.status: $(D)/bootstrap
+$(D)/neutrino-plugin.config.status: $(D)/bootstrap
 	$(SILENT)cd $(NP_OBJDIR); \
 		if [ ! -d m4 ]; then mkdir -p m4; fi;\
 		./autogen.sh $(SILENT_OPT) && automake --add-missing $(SILENT_OPT); \
@@ -92,28 +92,28 @@ $(D)/neutrino-mp-plugin.config.status: $(D)/bootstrap
 			--with-fontdir=/usr/share/fonts \
 			PKG_CONFIG=$(PKG_CONFIG) \
 			PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) \
-			CPPFLAGS="$(N_CPPFLAGS) $(EXTRA_CPPFLAGS_MP_PLUGINS) -DNEW_LIBCURL" \
+			CPPFLAGS="$(N_CPPFLAGS) $(EXTRA_CPPFLAGS_PLUGINS) -DNEW_LIBCURL" \
 			LDFLAGS="$(TARGET_LDFLAGS) -L$(NP_OBJDIR)/fx2/lib/.libs"
 	@touch $@
 
-$(D)/neutrino-mp-plugin.do_compile: $(D)/neutrino-mp-plugin.config.status
+$(D)/neutrino-plugin.do_compile: $(D)/neutrino-plugin.config.status
 	$(MAKE) -C $(NP_OBJDIR) DESTDIR=$(TARGET_DIR)
 	@touch $@
 
-$(D)/neutrino-mp-plugin: $(D)/$(NEUTRINO_MP) $(D)/neutrino-mp-plugin.do_prepare $(D)/neutrino-mp-plugin.do_compile
+$(D)/neutrino-plugin: $(D)/$(NEUTRINO) $(D)/neutrino-plugin.do_prepare $(D)/neutrino-plugin.do_compile
 	$(MAKE) -C $(NP_OBJDIR) install DESTDIR=$(TARGET_DIR)
 	$(TOUCH)
 
-neutrino-mp-plugin-clean:
-	$(SILENT)rm -f $(D)/neutrino-mp-plugins
-	$(SILENT)rm -f $(D)/neutrino-mp-plugin
-	$(SILENT)rm -f $(D)/neutrino-mp-plugin.config.status
+neutrino-plugin-clean:
+	$(SILENT)rm -f $(D)/neutrino-plugins
+	$(SILENT)rm -f $(D)/neutrino-plugin
+	$(SILENT)rm -f $(D)/neutrino-plugin.config.status
 	$(SILENT)cd $(NP_OBJDIR); \
 		$(MAKE) -C $(NP_OBJDIR) clean
 
-neutrino-mp-plugin-distclean:
+neutrino-plugin-distclean:
 	$(SILENT)rm -rf $(NP_OBJDIR)
-	$(SILENT)rm -f $(D)/neutrino-mp-plugin*
+	$(SILENT)rm -f $(D)/neutrino-plugin*
 
 #
 # xupnpd
@@ -121,7 +121,7 @@ neutrino-mp-plugin-distclean:
 XUPNPD_PATCH = xupnpd.patch
 
 $(D)/xupnpd \
-$(D)/neutrino-mp-plugin-xupnpd: $(D)/bootstrap $(D)/lua $(D)/openssl $(D)/neutrino-mp-plugin-scripts-lua
+$(D)/neutrino-plugin-xupnpd: $(D)/bootstrap $(D)/lua $(D)/openssl $(D)/neutrino-plugin-scripts-lua
 	$(START_BUILD)
 	$(REMOVE)/xupnpd
 	$(SET) -e; if [ -d $(ARCHIVE)/xupnpd.git ]; \
@@ -148,21 +148,21 @@ $(D)/neutrino-mp-plugin-xupnpd: $(D)/bootstrap $(D)/lua $(D)/openssl $(D)/neutri
 #
 # neutrino-plugin-scripts-lua
 #
-$(D)/neutrino-mp-plugin-scripts-lua: $(D)/bootstrap
+$(D)/neutrino-plugin-scripts-lua: $(D)/bootstrap
 	$(START_BUILD)
-	$(REMOVE)/neutrino-mp-plugin-scripts-lua
+	$(REMOVE)/neutrino-plugin-scripts-lua
 	$(SET) -e; if [ -d $(ARCHIVE)/plugin-scripts-lua.git ]; \
 		then cd $(ARCHIVE)/plugin-scripts-lua.git; git pull $(MINUS_Q); \
 		else cd $(ARCHIVE); git clone $(MINUS_Q) https://github.com/tuxbox-neutrino/plugin-scripts-lua.git plugin-scripts-lua.git; \
 		fi
-	$(SILENT)cp -ra $(ARCHIVE)/plugin-scripts-lua.git/plugins $(BUILD_TMP)/neutrino-mp-plugin-scripts-lua
-	$(CH_DIR)/neutrino-mp-plugin-scripts-lua; \
+	$(SILENT)cp -ra $(ARCHIVE)/plugin-scripts-lua.git/plugins $(BUILD_TMP)/neutrino-plugin-scripts-lua
+	$(CH_DIR)/neutrino-plugin-scripts-lua; \
 		install -d $(TARGET_DIR)/var/tuxbox/plugins
-		cp -R $(BUILD_TMP)/neutrino-mp-plugin-scripts-lua/ard_mediathek/* $(TARGET_DIR)/var/tuxbox/plugins/
-		cp -R $(BUILD_TMP)/neutrino-mp-plugin-scripts-lua/favorites2bin/* $(TARGET_DIR)/var/tuxbox/plugins/
-		cp -R $(BUILD_TMP)/neutrino-mp-plugin-scripts-lua/mtv/* $(TARGET_DIR)/var/tuxbox/plugins/
-		cp -R $(BUILD_TMP)/neutrino-mp-plugin-scripts-lua/netzkino/* $(TARGET_DIR)/var/tuxbox/plugins/
-	$(REMOVE)/neutrino-mp-plugin-scripts-lua
+		cp -R $(BUILD_TMP)/neutrino-plugin-scripts-lua/ard_mediathek/* $(TARGET_DIR)/var/tuxbox/plugins/
+		cp -R $(BUILD_TMP)/neutrino-plugin-scripts-lua/favorites2bin/* $(TARGET_DIR)/var/tuxbox/plugins/
+		cp -R $(BUILD_TMP)/neutrino-plugin-scripts-lua/mtv/* $(TARGET_DIR)/var/tuxbox/plugins/
+		cp -R $(BUILD_TMP)/neutrino-plugin-scripts-lua/netzkino/* $(TARGET_DIR)/var/tuxbox/plugins/
+	$(REMOVE)/neutrino-plugin-scripts-lua
 	$(TOUCH)
 
 #
@@ -170,7 +170,7 @@ $(D)/neutrino-mp-plugin-scripts-lua: $(D)/bootstrap
 #
 NEUTRINO_MEDIATHEK_PATCH = neutrino-mediathek.patch
 
-$(D)/neutrino-mp-plugin-mediathek:
+$(D)/neutrino-plugin-mediathek:
 	$(START_BUILD)
 	$(REMOVE)/plugins-mediathek
 	$(SET) -e; if [ -d $(ARCHIVE)/plugins-mediathek.git ]; \
@@ -190,8 +190,8 @@ $(D)/neutrino-mp-plugin-mediathek:
 #
 # neutrino-iptvplayer
 #
-$(D)/neutrino-mp-plugin-iptvplayer-nightly \
-$(D)/neutrino-mp-plugin-iptvplayer: $(D)/librtmp $(D)/python_twisted_small
+$(D)/neutrino-plugin-iptvplayer-nightly \
+$(D)/neutrino-plugin-iptvplayer: $(D)/librtmp $(D)/python_twisted_small
 	$(START_BUILD)
 	$(REMOVE)/iptvplayer
 	set -e; if [ -d $(ARCHIVE)/iptvplayer.git ]; \
@@ -199,7 +199,7 @@ $(D)/neutrino-mp-plugin-iptvplayer: $(D)/librtmp $(D)/python_twisted_small
 		else cd $(ARCHIVE); git clone $(MINUS_Q) https://github.com/TangoCash/crossplatform_iptvplayer.git iptvplayer.git; \
 		fi
 	cp -ra $(ARCHIVE)/iptvplayer.git $(BUILD_TMP)/iptvplayer
-	@if [ "$@" = "$(D)/neutrino-mp-plugin-iptvplayer-nightly" ]; then \
+	@if [ "$@" = "$(D)/neutrino-plugin-iptvplayer-nightly" ]; then \
 		$(BUILD_TMP)/iptvplayer/SyncWithGitLab.sh $(BUILD_TMP)/iptvplayer; \
 	fi
 	install -d $(TARGET_DIR)/var/tuxbox/plugins

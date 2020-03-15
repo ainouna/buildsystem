@@ -681,13 +681,13 @@ endif
 #
 	$(SILENT)cp -aR $(SKEL_ROOT)/root_neutrino/boot/* $(RELEASE_DIR)/boot
 	$(SILENT)cp -aR $(SKEL_ROOT)/root_neutrino/etc/* $(RELEASE_DIR)/etc
-ifeq ($(FLAVOUR), $(filter $(FLAVOUR), neutrino-mp-ddt, neutrino-mp-ddt + plugins))
+ifeq ($(FLAVOUR), $(filter $(FLAVOUR), neutrino-ddt, neutrino-ddt + plugins))
 	$(SILENT)cp -aR $(SKEL_ROOT)/root_neutrino/var_ddt/* $(RELEASE_DIR)/var/
 endif
 ifeq ($(FLAVOUR), $(filter $(FLAVOUR), neutrino-hd2, neutrino-hd2 + plugins))
 	$(SILENT)cp -aR $(SKEL_ROOT)/root_neutrino/var_hd2/* $(RELEASE_DIR)/var/
 endif
-ifeq ($(FLAVOUR), $(filter $(FLAVOUR), neutrino-mp-tangos, neutrino-mp-tangos + plugins))
+ifeq ($(FLAVOUR), $(filter $(FLAVOUR), neutrino-tangos, neutrino-tangos + plugins))
 	$(SILENT)cp -aR $(SKEL_ROOT)/root_neutrino/var_tangos/* $(RELEASE_DIR)/var/
 endif
 ifeq ($(BOXTYPE), $(filter $(BOXTYPE), atevio7500 spark7162 cuberevo cuberevo_mini cuberevo_mini2 cuberevo_3000hd))
