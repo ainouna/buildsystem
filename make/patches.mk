@@ -11,14 +11,14 @@ libstb-hal%-patch:
 #
 
 # Neutrino DDT
-NEUTRINO_DDT_PATCHES += $(PATCHES)/neutrino-ddt.patch
-NEUTRINO_LIBSTB_DDT_PATCHES += $(PATCHES)/libstb-hal-ddt.patch
+NEUTRINO_DDT_PATCHES += $(PATCHES)/build-neutrino/neutrino-ddt.patch
+NEUTRINO_LIBSTB_DDT_PATCHES += $(PATCHES)/build-neutrino/libstb-hal-ddt.patch
 
 # Neutrino Tango
-NEUTRINO_TANGOS_PATCHES += $(PATCHES)/neutrino-tangos.patch
-NEUTRINO_LIBSTB_TANGOS_PATCHES += $(PATCHES)/libstb-hal-tangos.patch
+NEUTRINO_TANGOS_PATCHES += $(PATCHES)/build-neutrino/neutrino-tangos.patch
+NEUTRINO_LIBSTB_TANGOS_PATCHES += $(PATCHES)/build-neutrino/libstb-hal-tangos.patch
 
 # Neutrino HD2
-NEUTRINO_HD2_PATCHES += $(PATCHES)/nhd2-exp.patch
-NEUTRINO_HD2_PLUGINS_PATCHES += $(PATCHES)/nhd2-exp-plugins.patch
+NEUTRINO_HD2_PATCHES += $(PATCHES)/build-neutrino/nhd2-exp.patch
+NEUTRINO_HD2_PLUGINS_PATCHES += $(PATCHES)/build-neutrino/nhd2-exp-plugins.patch
 

@@ -133,7 +133,7 @@ $(D)/neutrino-plugin-xupnpd: $(D)/bootstrap $(D)/lua $(D)/openssl $(D)/neutrino-
 		$(call apply_patches, $(XUPNPD_PATCH))
 	$(CH_DIR)/xupnpd/src; \
 		$(BUILDENV) \
-		$(MAKE) -j1 embedded TARGET=$(TARGET) PKG_CONFIG=$(PKG_CONFIG) LUAFLAGS="$(TARGET_LDFLAGS) -I$(TARGET_INCLUDE_DIR)"; \
+		$(MAKE) -j1 TARGET=$(TARGET) PKG_CONFIG=$(PKG_CONFIG) LUAFLAGS="$(TARGET_LDFLAGS) -I$(TARGET_INCLUDE_DIR)"; \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
 	$(SILENT)install -m 755 $(SKEL_ROOT)/etc/init.d/xupnpd $(TARGET_DIR)/etc/init.d/
 	$(SILENT)mkdir -p $(TARGET_DIR)/usr/share/xupnpd/config
@@ -168,7 +168,7 @@ $(D)/neutrino-plugin-scripts-lua: $(D)/bootstrap
 #
 # neutrino-mediathek
 #
-NEUTRINO_MEDIATHEK_PATCH = neutrino-mediathek.patch
+NEUTRINO_MEDIATHEK_PATCH = build-neutrino/neutrino-mediathek.patch
 
 $(D)/neutrino-plugin-mediathek:
 	$(START_BUILD)

@@ -1,6 +1,6 @@
 --- neutrino-mp-tangos.org/acinclude.m4
 +++ neutrino-mp-tangos/acinclude.m4
-@@ -435,7 +435,7 @@
+@@ -435,45 +435,13 @@
  AC_ARG_WITH(boxtype,
  	AS_HELP_STRING([--with-boxtype], [valid values: tripledragon, coolstream, spark, azbox, generic, armbox, duckbox, spark7162, mipsbox]),
  	[case "${withval}" in
@@ -9,8 +9,7 @@
  			BOXTYPE="$withval"
  		;;
  		spark|spark7162)
-@@ -446,50 +446,6 @@
- 			BOXTYPE="dreambox"
+ 			BOXTYPE="spark"
  			BOXMODEL="$withval"
  		;;
 -		ufs*)
@@ -33,10 +32,6 @@
 -			BOXTYPE="duckbox"
 -			BOXMODEL="$withval"
 -		;;
--		dp*)
--			BOXTYPE="duckbox"
--			BOXMODEL="$withval"
--		;;
 -		cuberevo*)
 -			BOXTYPE="duckbox"
 -			BOXMODEL="$withval"
@@ -45,89 +40,99 @@
 -			BOXTYPE="duckbox"
 -			BOXMODEL="$withval"
 -		;;
--		arivalink200)
--			BOXTYPE="duckbox"
--			BOXMODEL="$withval"
--		;;
 -		tf*)
 -			BOXTYPE="duckbox"
 -			BOXMODEL="$withval"
 -		;;
--		hl101)
--			BOXTYPE="duckbox"
--			BOXMODEL="$withval"
--		;;
- 		hd51|hd60|hd61|bre2ze4k|vusolo4k|vuduo4k|vuultimo4k|vuzero4k|vuuno4kse|vuuno4k)
+ 		hd51|hd60|hd61|bre2ze4k|osmio4k|osmio4kplus|h7|vusolo4k|vuduo4k|vuultimo4k|vuzero4k|vuuno4kse|vuuno4k)
  			BOXTYPE="armbox"
  			BOXMODEL="$withval"
-@@ -506,8 +462,8 @@
+@@ -490,8 +458,8 @@
  
  AC_ARG_WITH(boxmodel,
  	AS_HELP_STRING([--with-boxmodel], [valid for coolstream: hd1, hd2])
--AS_HELP_STRING([], [valid for duckbox: ufs910, ufs912, ufs913, ufs922, atevio7500, fortis_hdbox, octagon1008, hs7110, hs7810a, hs7119, hs7819, dp7000, cuberevo, cuberevo_mini, cuberevo_mini2, cuberevo_250hd, cuberevo_2000hd, cuberevo_3000hd, ipbox9900, ipbox99, ipbox55, arivalink200, tf7700, hl101])
+-AS_HELP_STRING([], [valid for duckbox: ufs910, ufs912, ufs913, ufs922, atevio7500, fortis_hdbox, octagon1008, cuberevo, cuberevo_mini, cuberevo_mini2, cuberevo_250hd, cuberevo_2000hd, cuberevo_3000hd, ipbox9900, ipbox99, ipbox55, tf7700])
  AS_HELP_STRING([], [valid for spark: spark, spark7162])
-+AS_HELP_STRING([], [valid for duckbox: ufs910, ufs912, ufs913, ufs922, atevio7500, fortis_hdbox, octagon1008, hs7110, hs7420, hs7810a, hs7119, hs7429, hs7819, cuberevo, cuberevo_mini, cuberevo_mini2, cuberevo_250hd, cuberevo_2000hd, cuberevo_3000hd, ipbox9900, ipbox99, ipbox55, arivalink200, tf7700, hl101, adb_box, vitamin_hd5000])
- AS_HELP_STRING([], [valid for armbox: hd51, hd60, hd61, bre2ze4k, zgemmah7, vusolo4k, vuduo4k, vuultimo4k, vuzero4k, vuuno4kse, vuuno4k])
++AS_HELP_STRING([], [valid for duckbox: ufs910, ufs912, ufs913, ufs922, atevio7500, fortis_hdbox, octagon1008, hs7110, hs7420, hs7810a, hs7119, hs7429, hs7819, dp7000, cuberevo, cuberevo_mini, cuberevo_mini2, cuberevo_250hd, cuberevo_2000hd, cuberevo_3000hd, ipbox9900, ipbox99, ipbox55, arivalink200, tf7700, hl101, adb_box, vitamin_hd5000])
+ AS_HELP_STRING([], [valid for armbox: hd51, hd60, hd61, bre2ze4k, osmio4k, osmio4kplus, h7, vusolo4k, vuduo4k, vuultimo4k, vuzero4k, vuuno4kse, vuuno4k])
  AS_HELP_STRING([], [valid for mipsbox: vuduo])
  AS_HELP_STRING([], [valid for generic: raspi]),
-@@ -531,7 +487,7 @@
+@@ -515,7 +483,7 @@
  				AC_MSG_ERROR([unknown model $withval for boxtype $BOXTYPE])
  			fi
  		;;
--		ufs910|ufs912|ufs913|ufs922|atevio7500|fortis_hdbox|octagon1008|hs7110|hs7810a|hs7119|hs7819|dp7000|cuberevo|cuberevo_mini|cuberevo_mini2|cuberevo_250hd|cuberevo_2000hd|cuberevo_3000hd|ipbox9900|ipbox99|ipbox55|arivalink200|tf7700|hl101)
+-		ufs910|ufs912|ufs913|ufs922|atevio7500|fortis_hdbox|octagon1008|cuberevo|cuberevo_mini|cuberevo_mini2|cuberevo_250hd|cuberevo_2000hd|cuberevo_3000hd|ipbox9900|ipbox99|ipbox55|tf7700)
 +		ufs910|ufs912|ufs913|ufs922|atevio7500|fortis_hdbox|octagon1008|hs7110|hs7420|hs7810a|hs7119|hs7429|hs7819|dp7000|cuberevo|cuberevo_mini|cuberevo_mini2|cuberevo_250hd|cuberevo_2000hd|cuberevo_3000hd|ipbox9900|ipbox99|ipbox55|arivalink200|tf7700|hl101|adb_box|vitamin_hd5000)
  			if test "$BOXTYPE" = "duckbox"; then
  				BOXMODEL="$withval"
  			else
-@@ -596,8 +552,10 @@
+@@ -579,6 +547,13 @@
+ AM_CONDITIONAL(BOXMODEL_ATEVIO7500, test "$BOXMODEL" = "atevio7500")
  AM_CONDITIONAL(BOXMODEL_FORTIS_HDBOX, test "$BOXMODEL" = "fortis_hdbox")
  AM_CONDITIONAL(BOXMODEL_OCTAGON1008, test "$BOXMODEL" = "octagon1008")
- AM_CONDITIONAL(BOXMODEL_HS7110, test "$BOXMODEL" = "hs7110")
++AM_CONDITIONAL(BOXMODEL_HS7110, test "$BOXMODEL" = "hs7110")
 +AM_CONDITIONAL(BOXMODEL_HS7420,test "$BOXMODEL" = "hs7420")
- AM_CONDITIONAL(BOXMODEL_HS7810A, test "$BOXMODEL" = "hs7810a")
- AM_CONDITIONAL(BOXMODEL_HS7119, test "$BOXMODEL" = "hs7119")
++AM_CONDITIONAL(BOXMODEL_HS7810A, test "$BOXMODEL" = "hs7810a")
++AM_CONDITIONAL(BOXMODEL_HS7119, test "$BOXMODEL" = "hs7119")
 +AM_CONDITIONAL(BOXMODEL_HS7429,test "$BOXMODEL" = "hs7429")
- AM_CONDITIONAL(BOXMODEL_HS7819, test "$BOXMODEL" = "hs7819")
- AM_CONDITIONAL(BOXMODEL_DP7000, test "$BOXMODEL" = "dp7000")
++AM_CONDITIONAL(BOXMODEL_HS7819, test "$BOXMODEL" = "hs7819")
++AM_CONDITIONAL(BOXMODEL_DP7000, test "$BOXMODEL" = "dp7000")
  
-@@ -613,6 +571,8 @@
- AM_CONDITIONAL(BOXMODEL_ARIVALINK200, test "$BOXMODEL" = "arivalink200")
+ AM_CONDITIONAL(BOXMODEL_CUBEREVO, test "$BOXMODEL" = "cuberevo")
+ AM_CONDITIONAL(BOXMODEL_CUBEREVO_MINI, test "$BOXMODEL" = "cuberevo_mini")
+@@ -589,7 +564,11 @@
+ AM_CONDITIONAL(BOXMODEL_IPBOX9900, test "$BOXMODEL" = "ipbox9900")
+ AM_CONDITIONAL(BOXMODEL_IPBOX99, test "$BOXMODEL" = "ipbox99")
+ AM_CONDITIONAL(BOXMODEL_IPBOX55, test "$BOXMODEL" = "ipbox55")
++AM_CONDITIONAL(BOXMODEL_ARIVALINK200, test "$BOXMODEL" = "arivalink200")
  AM_CONDITIONAL(BOXMODEL_TF7700, test "$BOXMODEL" = "tf7700")
- AM_CONDITIONAL(BOXMODEL_HL101, test "$BOXMODEL" = "hl101")
++AM_CONDITIONAL(BOXMODEL_HL101, test "$BOXMODEL" = "hl101")
 +AM_CONDITIONAL(BOXMODEL_ADB_BOX, test "$BOXMODEL" = "adb_box")
 +AM_CONDITIONAL(BOXMODEL_VITAMIN_HD5000, test "$BOXMODEL" = "vitamin_hd5000")
  
  AM_CONDITIONAL(BOXMODEL_HD51, test "$BOXMODEL" = "hd51")
  AM_CONDITIONAL(BOXMODEL_HD60, test "$BOXMODEL" = "hd60")
-@@ -676,10 +636,14 @@
+@@ -657,6 +636,20 @@
+ 	AC_DEFINE(BOXMODEL_FORTIS_HDBOX, 1, [fortis_hdbox])
+ elif test "$BOXMODEL" = "octagon1008"; then
  	AC_DEFINE(BOXMODEL_OCTAGON1008, 1, [octagon1008])
- elif test "$BOXMODEL" = "hs7110"; then
- 	AC_DEFINE(BOXMODEL_HS7110, 1, [hs7110])
++elif test "$BOXMODEL" = "hs7110"; then
++	AC_DEFINE(BOXMODEL_HS7110, 1, [hs7110])
 +elif test "$BOXMODEL" = "hs7420"; then
 +	AC_DEFINE(BOXMODEL_HS7420, 1, [hs7420])
- elif test "$BOXMODEL" = "hs7810a"; then
- 	AC_DEFINE(BOXMODEL_HS7810A, 1, [hs7810a])
- elif test "$BOXMODEL" = "hs7119"; then
- 	AC_DEFINE(BOXMODEL_HS7119, 1, [hs7119])
++elif test "$BOXMODEL" = "hs7810a"; then
++	AC_DEFINE(BOXMODEL_HS7810A, 1, [hs7810a])
++elif test "$BOXMODEL" = "hs7119"; then
++	AC_DEFINE(BOXMODEL_HS7119, 1, [hs7119])
 +elif test "$BOXMODEL" = "hs7429"; then
 +	AC_DEFINE(BOXMODEL_HS7429, 1, [hs7429])
- elif test "$BOXMODEL" = "hs7819"; then
- 	AC_DEFINE(BOXMODEL_HS7819, 1, [hs7819])
- elif test "$BOXMODEL" = "dp7000"; then
-@@ -708,6 +672,10 @@
++elif test "$BOXMODEL" = "hs7819"; then
++	AC_DEFINE(BOXMODEL_HS7819, 1, [hs7819])
++elif test "$BOXMODEL" = "dp7000"; then
++	AC_DEFINE(BOXMODEL_DP7000, 1, [dp7000])
+ elif test "$BOXMODEL" = "cuberevo"; then
+ 	AC_DEFINE(BOXMODEL_CUBEREVO, 1, [cuberevo])
+ elif test "$BOXMODEL" = "cuberevo_mini"; then
+@@ -675,8 +668,16 @@
+ 	AC_DEFINE(BOXMODEL_IPBOX99, 1, [ipbox99])
+ elif test "$BOXMODEL" = "ipbox55"; then
+ 	AC_DEFINE(BOXMODEL_IPBOX55, 1, [ipbox55])
++elif test "$BOXMODEL" = "arivalink200"; then
++	AC_DEFINE(BOXMODEL_ARIVALINK200, 1, [arivalink200])
+ elif test "$BOXMODEL" = "tf7700"; then
  	AC_DEFINE(BOXMODEL_TF7700, 1, [tf7700])
- elif test "$BOXMODEL" = "hl101"; then
- 	AC_DEFINE(BOXMODEL_HL101, 1, [hl101])
++elif test "$BOXMODEL" = "hl101"; then
++	AC_DEFINE(BOXMODEL_HL101, 1, [hl101])
 +elif test "$BOXMODEL" = "adb_box"; then
 +	AC_DEFINE(BOXMODEL_ADB_BOX, 1, [adb_box])
 +elif test "$BOXMODEL" = "vitamin_hd5000"; then
 +	AC_DEFINE(BOXMODEL_VITAMIN_HD5000, 1, [vitamin_hd5000])
  elif test "$BOXMODEL" = "hd51"; then
  	AC_DEFINE(BOXMODEL_HD51, 1, [hd51])
- 	AC_DEFINE(ENABLE_CHANGE_OSD_RESOLUTION, 1, [enable change the osd resolution])
+ elif test "$BOXMODEL" = "hd60"; then
 --- neutrino-mp-tangos.org/src/neutrino.cpp
 +++ neutrino-mp-tangos/src/neutrino.cpp
-@@ -4760,6 +4760,9 @@
+@@ -4850,6 +4850,9 @@
  
  		CVFD::getInstance()->Clear();
  		CVFD::getInstance()->setMode(CVFD::MODE_STANDBY);
@@ -137,7 +142,7 @@
  		CVFD::getInstance()->setBacklight(g_settings.backlight_standby);
  
  		InfoClock->enableInfoClock(false);
-@@ -4795,7 +4798,13 @@
+@@ -4885,7 +4888,13 @@
  		// Active standby off
  		powerManager->SetStandby(false, false);
  		CVFD::getInstance()->setMode(CVFD::MODE_TVRADIO);
@@ -154,7 +159,7 @@
  		CEpgScan::getInstance()->Stop();
 --- neutrino-mp-tangos.org/src/driver/vfd.cpp
 +++ neutrino-mp-tangos/src/driver/vfd.cpp
-@@ -52,27 +52,39 @@
+@@ -52,25 +52,40 @@
  #include <stropts.h>
  #define VFD_DEVICE "/dev/vfd"
  
@@ -162,24 +167,25 @@
 +#if defined (BOXMODEL_OCTAGON1008) \
 + || defined (BOXMODEL_HS7420) \
 + || defined (BOXMODEL_HS7429) \
++ || defined (BOXMODEL_DP7000) \
 + || defined (BOXMODEL_TF7700)
  #define VFDLENGTH 8
 -#elif defined (BOXMODEL_FORTIS_HDBOX) || defined (BOXMODEL_ATEVIO7500)
 +#elif defined (BOXMODEL_FORTIS_HDBOX) \
-+ || defined (BOXMODEL_ATEVIO7500)
++ ||   defined (BOXMODEL_ATEVIO7500)
  #define VFDLENGTH 12
--#elif defined (BOXMODEL_HS7810A) || defined (BOXMODEL_HS7119) || defined (BOXMODEL_HS7819) || defined (BOXMODEL_CUBEREVO_250HD) || defined (BOXMODEL_IPBOX55)
+-#elif  defined (BOXMODEL_CUBEREVO_250HD) || defined (BOXMODEL_IPBOX55)
 +#elif defined (BOXMODEL_HS7810A) \
-+ || defined (BOXMODEL_HS7119) \
-+ || defined (BOXMODEL_HS7819) \
-+ || defined (BOXMODEL_CUBEREVO_250HD) \
-+ || defined (BOXMODEL_IPBOX55)
++ ||   defined (BOXMODEL_HS7119) \
++ ||   defined (BOXMODEL_HS7819) \
++ ||   defined (BOXMODEL_CUBEREVO_250HD) \
++ ||   defined (BOXMODEL_IPBOX55)
  #define VFDLENGTH 4
- #elif defined (BOXMODEL_HS7110)
- #define VFDLENGTH 0
 -#elif defined (BOXMODEL_IPBOX9900) || defined (BOXMODEL_IPBOX99)
++#elif defined (BOXMODEL_HS7110)
++#define VFDLENGTH 0
 +#elif defined (BOXMODEL_IPBOX9900) \
-+ || defined (BOXMODEL_IPBOX99)
++ ||   defined (BOXMODEL_IPBOX99)
  #define VFDLENGTH 14
 +#elif defined (BOXMODEL_ADB_BOX)
 +#define VFDLENGTH 15
@@ -199,7 +205,7 @@
  
  pthread_t vfd_scrollText;
  
-@@ -81,6 +93,33 @@
+@@ -79,6 +94,33 @@
  	unsigned char data[64];
  	unsigned char length;
  };
@@ -233,7 +239,7 @@
  
  static void write_to_vfd(unsigned int DevType, struct vfd_ioctl_data * data, bool force = false)
  {
-@@ -119,7 +158,8 @@
+@@ -117,7 +159,8 @@
  	}
  }
  
@@ -243,7 +249,7 @@
  static void writeCG (unsigned char adress, unsigned char pixeldata[5])
  {
  	struct vfd_ioctl_data data;
-@@ -137,7 +177,16 @@
+@@ -135,7 +178,16 @@
  
  static void ShowNormalText(char * str, bool fromScrollThread = false)
  {
@@ -261,7 +267,7 @@
  	{
  		printf("[CVFD] - blocked\n");
  		usleep(SCROLL_TIME);
-@@ -156,39 +205,49 @@
+@@ -154,39 +206,49 @@
  			vfd_scrollText = 0;
  		}
  	}
@@ -327,7 +333,7 @@
  	if (blocked)
  	{
  		printf("[CVFD] - blocked\n");
-@@ -217,17 +276,18 @@
+@@ -215,17 +277,18 @@
  	int i;
  	char *str = (char *)arg;
  	int len = strlen(str);
@@ -352,7 +358,7 @@
  		memcpy(buf, str, len);
  
  		while(retries--)
-@@ -237,13 +297,13 @@
+@@ -235,13 +298,13 @@
  			for (i = 0; i <= (len-1); i++)
  			{
  				// scroll text until end
@@ -368,7 +374,7 @@
  	ShowNormalText(out,true);
  
  	pthread_exit(0);
-@@ -341,47 +401,62 @@
+@@ -339,47 +402,62 @@
  	return lcdd;
  }
  
@@ -445,7 +451,7 @@
  }
  
  void* CVFD::TimeThread(void *)
-@@ -389,17 +464,24 @@
+@@ -387,17 +465,24 @@
  	while(1) {
  		sleep(1);
  		struct stat buf;
@@ -475,7 +481,7 @@
  	//InitNewClock(); /FIXME
  
  	brightness = -1;
-@@ -428,7 +510,7 @@
+@@ -426,7 +511,7 @@
  
  	brightness = dimm;
  
@@ -484,12 +490,7 @@
  #if !HAVE_DUCKBOX_HARDWARE
  	int ret = ioctl(fd, IOC_FP_SET_BRIGHT, dimm);
  	if(ret < 0)
-@@ -436,51 +518,81 @@
- #else
- // Brightness
- 	struct vfd_ioctl_data data;
--#if !defined (BOXMODEL_HS7810A) && !defined (BOXMODEL_HS7119) && !defined (BOXMODEL_HS7819)
- 	memset(&data, 0, sizeof(struct vfd_ioctl_data));
+@@ -438,39 +523,78 @@
  	data.start = brightness & 0x07;
  	data.length = 0;
  	write_to_vfd(VFDBRIGHTNESS, &data);
@@ -545,7 +546,8 @@
 +#elif defined (BOXMODEL_HS7420) \
 + || defined (BOXMODEL_HS7810A) \
 + || defined (BOXMODEL_HS7429) \
-+ || defined (BOXMODEL_HS7819)
++ || defined (BOXMODEL_HS7819) \
++ || defined (BOXMODEL_DP7000)
 +	memset(&data, 0, sizeof(struct vfd_ioctl_data));
 +	data.start = 0x02; // logo
 +	data.data[3] = (brightness & 0x07);
@@ -580,25 +582,26 @@
 -	data.data[4] = brightness*2;
 -	data.length = 5;
 -	write_to_vfd(VFDPWRLED, &data);
--#elif defined (BOXMODEL_HS7810A) || defined (BOXMODEL_HS7819)
--	memset(&data, 0, sizeof(struct vfd_ioctl_data));
--	data.start = 0;
--	data.data[0] = 0x02; // logo
--	data.data[4] = (brightness & 0x07);
--	data.length = 5;
--	write_to_vfd(VFDPWRLED, &data);
 -#elif !defined (BOXMODEL_UFS912) && !defined (BOXMODEL_UFS913) && !defined (BOXMODEL_OCTAGON1008)
 +		data.data[3] = 1;  // red
 +	}
 +	write_to_vfd(VFDSETLED, &data);
 +
 +#elif !defined (BOXMODEL_UFS912) \
-+ && !defined (BOXMODEL_UFS913) \
-+ && !defined (BOXMODEL_OCTAGON1008)
++ &&   !defined (BOXMODEL_UFS913) \
++ &&   !defined (BOXMODEL_OCTAGON1008)
  // Power on/off
  	if (power) {
  		data.start = 0x01;
-@@ -534,6 +646,10 @@
+@@ -480,6 +604,7 @@
+ 	data.length = 0;
+ 	write_to_vfd(VFDDISPLAYWRITEONOFF, &data, true);
+ #endif
++#endif
+ }
+ 
+ void CVFD::setlcdparameter(void)
+@@ -523,6 +648,10 @@
  		return;
  
  	int led1 = -1, led2 = -1;
@@ -609,7 +612,7 @@
  	if(on_off){//on
  		switch(g_settings.led_rec_mode) {
  			case 1:
-@@ -565,16 +681,18 @@
+@@ -554,16 +683,18 @@
  				break;
  	      }
  	}
@@ -632,7 +635,7 @@
  
  	if(mode == MODE_MENU_UTF8 || mode == MODE_TVRADIO  )
  		  select = g_settings.led_tv_mode;
-@@ -601,99 +719,140 @@
+@@ -590,21 +721,31 @@
  }
  #endif
  
@@ -663,11 +666,11 @@
 +	{
 +		printf("CVFD::showServicename(number): [%d]\n", service_number);
  		ShowNumber(service_number);
--	wake_up();
 +	}
+ 	wake_up();
  }
  
- void CVFD::showTime(bool force)
+@@ -612,64 +753,101 @@
  {
  	//unsigned int system_rev = cs_get_revision();
  	static int recstatus = 0;
@@ -701,32 +704,25 @@
 +			{
  				hour = t->tm_hour;
  				minute = t->tm_min;
--#if !defined (BOXMODEL_HS7810A) && !defined (BOXMODEL_HS7819)
-+				second = t->tm_sec;
- #if defined (BOXMODEL_OCTAGON1008)
+-#if defined (BOXMODEL_OCTAGON1008)
 -				ShowIcon(ICON_COLON2, true);
--#elif defined (BOXMODEL_OCTAGON1008) || defined (BOXMODEL_HS7119) || defined (BOXMODEL_CUBEREVO_250HD)
-+
-+				ShowIcon(ICON_COLON2, second % 2 == 0 ? true : false);
- 				strftime(timestr, 5, "%H%M", t);
-+				ShowText(timestr);
-+#elif defined (BOXMODEL_HS7420) \
-+ || defined (BOXMODEL_HS7429)
-+
+-#elif defined (BOXMODEL_OCTAGON1008) || defined (BOXMODEL_CUBEREVO_250HD)
++				second = t->tm_sec;
++#if defined (BOXMODEL_OCTAGON1008) \
++ || defined (BOXMODEL_HS7420) \
++ || defined (BOXMODEL_HS7429) \
++ || defined (BOXMODEL_DP7000)
 +				ShowIcon(ICON_COLON2, second % 2 == 0 ? true : false);
 +				strftime(timestr, 5, "%H%M", t);
-+				ShowText(timestr);
 +#elif defined (BOXMODEL_HS7119) \
 + || defined (BOXMODEL_HS7810A) \
 + || defined (BOXMODEL_HS7819)
 +
 +				strftime(timestr, 5, "%H%M", t);
-+				ShowText(timestr);
 +				ShowIcon(ICON_COLON, second % 2 == 0 ? true : false);
 +#elif defined (BOXMODEL_FORTIS_HDBOX)
 +				ShowIcon(ICON_COLON3, second % 2 == 0 ? true : false);
 +				strftime(timestr, 13, "        %H%M", t);
-+				ShowText(timestr);
 +#elif defined (BOXMODEL_ADB_BOX)
 +				if (adb_led)
 +				{
@@ -736,37 +732,23 @@
 +				{
 +					strftime(timestr, 6, (second % 2 == 0 ? "%H:%M" : "%H %M"), t);
 +				}
-+				ShowText(timestr);
-+#elif defined (BOXMODEL_CUBEREVO_250HD)
-+				strftime(timestr, 5, "%H%M", t);
-+				ShowText(timestr);
++#elif  defined (BOXMODEL_CUBEREVO_250HD)
+ 				strftime(timestr, 5, "%H%M", t);
  #else
--				strftime(timestr, 6, "%H:%M", t);
--#endif
--				ShowText(timestr);
--#else //HS7810A or HS7819, string should not scroll
--				strftime(timestr, 6, "%H:%M", t);
--				struct vfd_ioctl_data data;
--				memset(data.data, ' ', 6);
--				memcpy (data.data, timestr, 6);
--				data.start = 0;
--				data.length = 5;
--				write_to_vfd(VFDDISPLAYCHARS, &data);
--#endif
+ 				strftime(timestr, 6, "%H:%M", t);
+ #endif
+ 				ShowText(timestr);
 -				if (support_text) {
 +				if (support_text)
 +				{
  					strftime(timestr, 20, "%H:%M", t);
  					ShowText(timestr);
 -				} else if (support_numbers && has_led_segment) {
-+				} else if (support_numbers && has_led_segment)
++				}
++				else if (support_numbers && has_led_segment)
 +				{
  					ShowNumber((t->tm_hour*100) + t->tm_min);
- #ifdef BOXMODEL_CS_HD2
- 					ioctl(fd, IOC_FP_SET_COLON, 0x01);
- #endif
  				}
-+#endif
  			}
  		}
  	}
@@ -774,6 +756,7 @@
  	int tmp_recstatus = CNeutrinoApp::getInstance()->recordingstatus;
 -	if (tmp_recstatus) {
 -		if(clearClock) {
++
 +	if (tmp_recstatus)
 +	{
 +		if (clearClock)
@@ -807,7 +790,7 @@
  			ShowIcon(FP_ICON_CAM1, false);
  
  #if !HAVE_DUCKBOX_HARDWARE
-@@ -713,7 +872,9 @@
+@@ -689,7 +867,9 @@
  		ShowIcon(FP_ICON_HD,chan->isHD());
  		ShowIcon(FP_ICON_LOCK,!chan->camap.empty());
  		if (chan->getAudioChannel() != NULL)
@@ -817,7 +800,7 @@
  	}
  }
  #endif
-@@ -753,7 +914,8 @@
+@@ -729,7 +909,8 @@
  		int pp = (int) round((double) vol / (double) 2);
  		if(oldpp != pp)
  		{
@@ -827,44 +810,44 @@
  			int i;
  			unsigned char speaker[5] = {0x1C, 0x1C, 0x1C, 0x3E, 0x7F}; // speaker symbol
  			writeCG(0, speaker);
-@@ -800,15 +962,32 @@
+@@ -776,15 +957,32 @@
  			char vol_chr[64] = "";
  			snprintf(vol_chr, sizeof(vol_chr)-1, "VOL: %d%%", (int)vol);
  			ShowText(vol_chr);
 -#elif defined (BOXMODEL_OCTAGON1008)
 +#elif defined (BOXMODEL_OCTAGON1008) \
 + || defined (BOXMODEL_HS7420) \
-+ || defined (BOXMODEL_HS7429)
++ || defined (BOXMODEL_HS7429) \
++ || defined (BOXMODEL_DP7000)
  			char vol_chr[64] = "";
 -			snprintf(vol_chr, sizeof(vol_chr)-1, "VOL=%3d", (int)vol);
 +			snprintf(vol_chr, sizeof(vol_chr)-1, "VOL=%3d%%", (int)vol);
  			ShowText(vol_chr);
--#elif defined (BOXMODEL_HS7119) || defined (BOXMODEL_HS7810A) || defined (BOXMODEL_HS7819) || defined (BOXMODEL_CUBEREVO_250HD) || defined (BOXMODEL_IPBOX55)
+-#elif defined (BOXMODEL_CUBEREVO_250HD) || defined (BOXMODEL_IPBOX55)
 +#elif defined (BOXMODEL_HS7119) \
-+ || defined (BOXMODEL_HS7810A) \
-+ || defined (BOXMODEL_HS7819) \
-+ || defined (BOXMODEL_CUBEREVO_250HD) \
-+ || defined (BOXMODEL_IPBOX55) \
-+ || defined (BOXMODEL_ADB_BOX)
++ ||   defined (BOXMODEL_HS7810A) \
++ ||   defined (BOXMODEL_HS7819) \
++ ||   defined (BOXMODEL_CUBEREVO_250HD) \
++ ||   defined (BOXMODEL_IPBOX55)
  			char vol_chr[64] = "";
  			snprintf(vol_chr, sizeof(vol_chr)-1, "v%3d", (int)vol);
  			ShowText(vol_chr);
 -#elif defined (BOXMODEL_FORTIS_HDBOX) || defined (BOXMODEL_ATEVIO7500) || defined (BOXMODEL_UFS912) || defined (BOXMODEL_UFS913) || defined (BOXMODEL_CUBEREVO) || defined (BOXMODEL_CUBEREVO_MINI) || defined (BOXMODEL_CUBEREVO_MINI2) || defined (BOXMODEL_CUBEREVO_2000HD) || defined (BOXMODEL_CUBEREVO_3000HD) || defined (BOXMODEL_IPBOX9900) || defined (BOXMODEL_IPBOX99)
 +#elif defined (BOXMODEL_FORTIS_HDBOX) \
-+ || defined (BOXMODEL_ATEVIO7500) \
-+ || defined (BOXMODEL_UFS912) \
-+ || defined (BOXMODEL_UFS913) \
-+ || defined (BOXMODEL_CUBEREVO) \
-+ || defined (BOXMODEL_CUBEREVO_MINI) \
-+ || defined (BOXMODEL_CUBEREVO_MINI2) \
-+ || defined (BOXMODEL_CUBEREVO_2000HD) \
-+ || defined (BOXMODEL_CUBEREVO_3000HD) \
-+ || defined (BOXMODEL_IPBOX9900) \
-+ || defined (BOXMODEL_IPBOX99)
++ ||   defined (BOXMODEL_ATEVIO7500) \
++ ||   defined (BOXMODEL_UFS912) \
++ ||   defined (BOXMODEL_UFS913) \
++ ||   defined (BOXMODEL_CUBEREVO) \
++ ||   defined (BOXMODEL_CUBEREVO_MINI) \
++ ||   defined (BOXMODEL_CUBEREVO_MINI2) \
++ ||   defined (BOXMODEL_CUBEREVO_2000HD) \
++ ||   defined (BOXMODEL_CUBEREVO_3000HD) \
++ ||   defined (BOXMODEL_IPBOX9900) \
++ ||   defined (BOXMODEL_IPBOX99)
  			char vol_chr[64] = "";
  			snprintf(vol_chr, sizeof(vol_chr)-1, "Volume: %d%%", (int)vol);
  			ShowText(vol_chr);
-@@ -820,15 +999,18 @@
+@@ -796,15 +994,18 @@
  		int pp = (int) round((double) vol * (double) 8 / (double) 100);
  		if(pp > 8) pp = 8;
  
@@ -887,7 +870,7 @@
  				ShowIcon((fp_icon) j, false);
  				j /= 2;
  			}
-@@ -866,7 +1048,7 @@
+@@ -842,7 +1043,7 @@
  		if(pp > 8) pp = 8;
  
  		if(pp != ppold) {
@@ -896,7 +879,7 @@
  			int i;
  			int j = 0x00000200;
  			for(i = 0; i < pp; i++) {
-@@ -898,7 +1080,7 @@
+@@ -874,7 +1075,7 @@
  	if(fd < 0) return;
  	if (mode != MODE_AUDIO)
  		return;
@@ -905,7 +888,7 @@
  	ShowText(title.c_str());
  	wake_up();
  
-@@ -967,6 +1149,10 @@
+@@ -943,6 +1144,10 @@
  
  void CVFD::setMode(const MODES m, const char * const title)
  {
@@ -916,7 +899,7 @@
  	if(fd < 0) return;
  
  	// Clear colon in display if it is still there
-@@ -983,7 +1169,38 @@
+@@ -959,7 +1164,38 @@
  		ShowIcon(FP_ICON_COL2, false);
  	}
  #endif
@@ -956,7 +939,7 @@
  	if(strlen(title))
  		ShowText(title);
  	mode = m;
-@@ -1005,6 +1222,10 @@
+@@ -981,6 +1217,10 @@
  			showPercentOver(percentOver, false);
  			break;
  #endif
@@ -967,7 +950,7 @@
  		}
  		showServicename(servicename);
  		showclock = true;
-@@ -1086,7 +1307,16 @@
+@@ -1062,7 +1302,17 @@
  int CVFD::getBrightness()
  {
  	//FIXME for old neutrino.conf
@@ -981,11 +964,12 @@
 + || defined (BOXMODEL_HS7119) \
 + || defined (BOXMODEL_HS7429) \
 + || defined (BOXMODEL_HS7819) \
++ || defined (BOXMODEL_DP7000) \
 + || defined (BOXMODEL_ADB_BOX)
  	if(g_settings.lcd_setting[SNeutrinoSettings::LCD_BRIGHTNESS] > 7)
  		g_settings.lcd_setting[SNeutrinoSettings::LCD_BRIGHTNESS] = 7;
  #else
-@@ -1108,7 +1338,16 @@
+@@ -1084,7 +1334,17 @@
  int CVFD::getBrightnessStandby()
  {
  	//FIXME for old neutrino.conf
@@ -999,11 +983,12 @@
 + || defined (BOXMODEL_HS7119) \
 + || defined (BOXMODEL_HS7429) \
 + || defined (BOXMODEL_HS7819) \
++ || defined (BOXMODEL_DP7000) \
 + || defined (BOXMODEL_ADB_BOX)
  	if(g_settings.lcd_setting[SNeutrinoSettings::LCD_STANDBY_BRIGHTNESS] > 7)
  		g_settings.lcd_setting[SNeutrinoSettings::LCD_STANDBY_BRIGHTNESS] = 7;
  #else
-@@ -1129,7 +1368,16 @@
+@@ -1105,7 +1365,17 @@
  int CVFD::getBrightnessDeepStandby()
  {
  	//FIXME for old neutrino.conf
@@ -1017,15 +1002,16 @@
 + || defined (BOXMODEL_HS7119) \
 + || defined (BOXMODEL_HS7429) \
 + || defined (BOXMODEL_HS7819) \
++ || defined (BOXMODEL_DP7000) \
 + || defined (BOXMODEL_ADB_BOX)
  	if(g_settings.lcd_setting[SNeutrinoSettings::LCD_DEEPSTANDBY_BRIGHTNESS] > 7)
  		g_settings.lcd_setting[SNeutrinoSettings::LCD_DEEPSTANDBY_BRIGHTNESS] = 7;
  #else
-@@ -1200,14 +1448,25 @@
+@@ -1176,14 +1446,28 @@
  	else
  		text.clear();
  #else
--#if defined (BOXMODEL_HS7810A) || defined (BOXMODEL_HS7119) || defined (BOXMODEL_HS7819) || defined (BOXMODEL_CUBEREVO_250HD) || defined (BOXMODEL_IPBOX55)
+-#if defined (BOXMODEL_CUBEREVO_250HD) || defined (BOXMODEL_IPBOX55)
 +#if defined (BOXMODEL_HS7810A) \
 + || defined (BOXMODEL_HS7119) \
 + || defined (BOXMODEL_HS7819) \
@@ -1034,38 +1020,40 @@
  	ShowText("    ");
 -#elif defined (BOXMODEL_OCTAGON1008) || defined (BOXMODEL_TF7700)
 +#elif defined (BOXMODEL_OCTAGON1008) \
-+ || defined (BOXMODEL_HS7420) \
-+ || defined (BOXMODEL_HS7429) \
-+ || defined (BOXMODEL_TF7700)
++ ||   defined (BOXMODEL_HS7420) \
++ ||   defined (BOXMODEL_HS7429) \
++ ||   defined (BOXMODEL_DP7000) \
++ ||   defined (BOXMODEL_TF7700)
  	ShowText("        ");
 -#elif defined (BOXMODEL_FORTIS_HDBOX) || defined (BOXMODEL_ATEVIO7500)
 +#elif defined (BOXMODEL_FORTIS_HDBOX) \
-+ || defined (BOXMODEL_ATEVIO7500)
++ ||   defined (BOXMODEL_ATEVIO7500)
  	ShowText("            ");
 -#elif defined (BOXMODEL_IPBOX9900) || defined (BOXMODEL_IPBOX99)
 +#elif defined (BOXMODEL_IPBOX9900) \
-+ || defined (BOXMODEL_IPBOX99)
++ ||   defined (BOXMODEL_IPBOX99)
  	ShowText("              ");
 +#elif defined (BOXMODEL_ADB_BOX)
 +	ShowText("               ");
- #elif !defined (BOXMODEL_HS7110)
- 	ShowText("                ");
++#elif !defined (BOXMODEL_HS7110)
++	ShowText("                ");
  #endif
-@@ -1217,25 +1476,52 @@
+ #endif
+ }
+@@ -1191,25 +1475,52 @@
  void CVFD::ShowIcon(fp_icon icon, bool show)
  {
  #if !HAVE_DUCKBOX_HARDWARE
 -	if(!has_lcd || fd < 0) return;
 -//printf("CVFD::ShowIcon %s %x\n", show ? "show" : "hide", (int) icon);
-+	if(!has_lcd || fd < 0)
++	if (!has_lcd || fd < 0)
 +		return;
-+
 +//	printf("CVFD::ShowIcon %s %02d\n", show ? "show" : "hide", (int) icon);
  	int ret = ioctl(fd, show ? IOC_FP_SET_ICON : IOC_FP_CLEAR_ICON, icon);
  	if(ret < 0)
  		perror(show ? "IOC_FP_SET_ICON" : "IOC_FP_CLEAR_ICON");
  #else
--#if defined (BOXMODEL_ATEVIO7500) || defined (BOXMODEL_HS7110) || defined (BOXMODEL_HS7810A) || defined (BOXMODEL_HS7119) || defined (BOXMODEL_HS7819)
+-#if defined (BOXMODEL_ATEVIO7500)
 +    #if defined (BOXMODEL_HS7110)
  	return;
 -#endif
@@ -1082,6 +1070,7 @@
 +   && !defined (BOXMODEL_HS7119) \
 +   && !defined (BOXMODEL_HS7429) \
 +   && !defined (BOXMODEL_HS7819) \
++   && !defined (BOXMODEL_DP7000) \
 +   && !defined (BOXMODEL_ADB_BOX)
  	if (active_icon[icon & 0x0F] == show)
  		return;
@@ -1110,11 +1099,11 @@
  	memset(&data, 0, sizeof(struct vfd_ioctl_data));
  	data.start = 0x00;
  	data.data[0] = icon;
-@@ -1249,17 +1535,12 @@
+@@ -1223,17 +1534,12 @@
  #ifdef HAVE_DUCKBOX_HARDWARE
  void CVFD::ClearIcons()
  {
--#if defined (BOXMODEL_ATEVIO7500) || defined (BOXMODEL_HS7110) || defined (BOXMODEL_HS7810A) || defined (BOXMODEL_HS7119) || defined (BOXMODEL_HS7819)
+-#if defined (BOXMODEL_ATEVIO7500)
 +  #if defined (BOXMODEL_HS7110)
  	return;
 -#endif
@@ -1132,7 +1121,7 @@
  			ShowIcon((fp_icon)id, false);
  	}
  	return;
-@@ -1270,8 +1551,14 @@
+@@ -1244,8 +1550,14 @@
  	memset(g_str, 0, sizeof(g_str));
  	memcpy(g_str, str, sizeof(g_str)-1);
  
@@ -1148,34 +1137,31 @@
  		g_str[60] = '.';
  		g_str[61] = '.';
  		g_str[62] = '.';
-@@ -1280,14 +1567,15 @@
+@@ -1254,10 +1566,13 @@
  	}
  	ShowNormalText(g_str, false);
  }
 +
  void CVFD::repaintIcons()
  {
- 	char * model = g_info.hw_caps->boxname;
--	if(strstr(model, "ufs912") || strstr(model, "ufs913"))
-+	if (strstr(model, "ufs912") || strstr(model, "ufs913"))
+-#if BOXMODEL_UFS912 || BOXMODEL_UFS913
++#if BOXMODEL_UFS912 \
++ || BOXMODEL_UFS913
+ 	bool tmp_icon[16] = {false};
++
+ 	printf("VFD repaint icons\n");
+ 	for (int i = 0x10; i < FP_ICON_MAX; i++)
  	{
- 		bool tmp_icon[16] = {false};
- 		printf("VFD repaint icons boxmodel: %s\n", model);
--		for (int i = 0x10; i < FP_ICON_MAX; i++)
-+		for (int i = FP_ICON_MIN; i < FP_ICON_MAX; i++)
- 		{
- 			tmp_icon[i & 0x0F] = active_icon[i & 0x0F];
- 			active_icon[i & 0x0F] = false;
-@@ -1295,7 +1583,7 @@
- 		}
+@@ -1267,7 +1582,7 @@
  	}
+ #endif
  }
 -#else
 +#else // non-duckbox
  void CVFD::ShowText(const char * str)
  {
  	if (fd < 0 || !support_text)
-@@ -1335,11 +1623,26 @@
+@@ -1307,11 +1622,26 @@
  	if (number < 0)
  		return;
  	
@@ -1203,6 +1189,13 @@
  	}
  #endif
  }
+@@ -1640,5 +1970,4 @@
+ }
+ /*****************************************************************************************/
+ #endif // VFD_UPDATE
+-
+-
++//vim:ts=4
 #--- neutrino-mp-tangos/src/driver/pictureviewer/pictureviewer.cpp
 #+++ neutrino-mp-tangos/src/driver/pictureviewer/pictureviewer.cpp
 #@@ -566,8 +566,10 @@
@@ -1241,7 +1234,7 @@
   * portable conversion from/to string...
 --- neutrino-mp-tangos.org/src/gui/weather.h
 +++ neutrino-mp-tangos/src/gui/weather.h
-@@ -116,11 +116,11 @@
+@@ -115,11 +115,11 @@
  		};
  		std::string getCurrentPressure()
  		{
@@ -1255,7 +1248,7 @@
  		};
  		std::string getCurrentWindBearing()
  		{
-@@ -158,7 +158,7 @@
+@@ -157,7 +157,7 @@
  		{
  			if (i > (int)v_forecast.size())
  				i = (int)v_forecast.size();
@@ -1280,7 +1273,7 @@
  #include <gui/widget/stringinput_ext.h>
  #include <gui/screensetup.h>
  #include <gui/widget/msgbox.h>
-@@ -1446,15 +1446,15 @@
+@@ -1438,15 +1438,15 @@
  #if HAVE_SH4_HARDWARE
  	old3dmode = frameBuffer->get3DMode();
  #endif
@@ -1305,7 +1298,7 @@
  	pthread_t thrStartHint = 0;
  	if (is_file_player) {
  		showStartingHint = true;
-@@ -1672,14 +1672,14 @@
+@@ -1671,14 +1671,14 @@
  
  	while (playstate >= CMoviePlayerGui::PLAY)
  	{
@@ -1328,7 +1321,7 @@
  		if (update_lcd || g_settings.movieplayer_display_playtime) {
  			update_lcd = false;
  			updateLcd(g_settings.movieplayer_display_playtime);
-@@ -2254,12 +2254,12 @@
+@@ -2262,12 +2262,12 @@
  	CScreenSetup cSS;
  	cSS.showBorder(CZapit::getInstance()->GetCurrentChannelID());
  #endif
@@ -1347,7 +1340,7 @@
  	if (iso_file) {
  		iso_file = false;
  		if (umount2(ISO_MOUNT_POINT, MNT_FORCE))
-@@ -2379,10 +2379,10 @@
+@@ -2387,10 +2387,10 @@
  		}
  		if (!movie_info.channelName.empty() || !movie_info.epgTitle.empty())
  			p_movie_info = &movie_info;
@@ -1362,7 +1355,7 @@
  	}
  
  	if (p_movie_info) {
-@@ -2910,10 +2910,10 @@
+@@ -2905,10 +2905,10 @@
  		tuxtx_pause_subtitle(true);
  		frameBuffer->paintBackground();
  	}
@@ -1377,7 +1370,7 @@
  #endif
  }
  
-@@ -2951,9 +2951,9 @@
+@@ -2946,9 +2946,9 @@
  {
  #if HAVE_SH4_HARDWARE || HAVE_ARM_HARDWARE || HAVE_MIPS_HARDWARE
  	printf("[CMoviePlayerGui] %s: %s\n", __FUNCTION__, show ? "Show" : "Not show");
@@ -1390,4 +1383,549 @@
  
  	if(!show)
  		return;
+--- neutrino-mp-tangos.org/src/gui/components/cc_timer.h
++++ neutrino-mp-tangos/src/gui/components/cc_timer.h
+@@ -3,7 +3,7 @@
+ 	Copyright (C) 2001 by Steffen Hehn 'McClean'
+ 
+ 	Classes for generic GUI-related components.
+-	Copyright (C) 2013-2019, Thilo Graf 'dbt'
++	Copyright (C) 2013-2015, Thilo Graf 'dbt'
+ 
+ 	License: GPL
+ 
+@@ -30,9 +30,9 @@
+ #endif
+ 
+ #include <sigc++/signal.h>
+-#include <sigc++/adaptors/retype_return.h>
+-#include <thread>
+-#include <mutex>
++#include <OpenThreads/ScopedLock>
++#include <OpenThreads/Thread>
++#include <OpenThreads/Condition>
+ 
+ /**CComponentsTimer
+ * 	Member of CComponents. Provides a generic timer class
+@@ -43,85 +43,95 @@
+ {
+ 	private:
+ 		///thread
+-		std::thread  *tm_thread;
+-		std::mutex tm_mutex;
+-		///flag to control thread state
+-		bool tm_enable;
++		pthread_t  tm_thread;
+ 
+ 		///refresh interval in seconds
+-		int64_t tm_interval;
+-		uint64_t tm_ticks;
++		int tm_interval;
++		
++		bool tm_enable_nano;
+ 
+-		///runs shared timer action provided inside OnTimer() signal
+-		static void threadCallback(CComponentsTimer *tm);
+-
+-		sigc::slot<void> sl_cleanup_timer;
+-
+-		std::string tn;
+-
+-	protected: ///name for thread
+-		std::string tm_thread_name;
++		///init function to init shared timer action
++		static void* initThreadAction(void *arg);
+ 
+ 		///init function to start/stop timer in own thread
+ 		void initThread();
+ 		void stopThread();
+ 
++		///runs shared timer action provided inside OnTimer() signal
++		void runSharedTimerAction();
++
++		///flag to control thread state
++		bool tm_enable;
++
++		///name for the thread
++		std::string name;
++		std::string tn;
++		///mutex for timer
++		OpenThreads::Mutex tm_mutex;
++		///slot for restart signals
++		sigc::slot0<bool> sl_stop_timer;
++
++		///sleep generated with nanosleep
++		int getSleep(long miliseconds);
+ 	public:
+ 		/**Constructor for timer class
+ 		*
+ 		* @param[in]  interval
+-		* 	@li int64_t interval in miliseconds, default value=1000 ms (1 sec)
++		* 	@li int interval in seconds, default value=1 (1 sec)
++		* 	If init value for interval > 0, timer starts immediately
++		* 	@li bool default = false as seconds mode, true = nano seconds mode
+ 		* @see
+ 		* 	setTimerInterval();
+ 		*/
+-		CComponentsTimer(const int64_t& interval = 1000);
++		CComponentsTimer(const int& interval = 1, bool is_nano = false);
+ 
+ 		virtual ~CComponentsTimer();
+ 
+-		/**Acivate timer
++		/**Starts timer thread
++		* @return
++		*	bool
++		*	returns true, if timer is running in thread
+ 		* @see
+ 		* 	stopTimer()
+ 		*/
+-		void startTimer();
++		bool startTimer();
+ 
+-		/**Disable timer
++		/**Stops timer thread
++		* @return
++		*	bool
++		*	returns true, if timer thread stopped
+ 		* @see
+ 		* 	startTimer()
+ 		*/
+-		void stopTimer();
+-
+-		/**Cancel timer thread
+-		* @see
+-		* 	stopTimer()
+-		*/
+-		void cancelTimerThread(){stopThread();}
++		bool stopTimer();
+ 
+ 		/**get current timer status
+ 		* @return
+ 		*	bool
+-		*	returns true, if timer is active
++		*	returns true, if timer is running in thread
+ 		* @see
+ 		* 	startTimer()
+ 		* 	stopTimer()
+ 		*/
+-		bool isRun() const;
++		bool isRun() const {return tm_thread;};
+ 
+ 		/**set timer interval
+ 		* @param[in]  interval
+-		* 	@li int64_t default interval in miliseconds
++		* 	@li int default interval in seconds, if second parameter = true interval is used as nano seconds
++		* 	@li bool default = false as seconds mode, true = nano seconds mode
+ 		* @return
+ 		*	void
+ 		* @see
+ 		* 	tm_interval
+ 		*/
+-		void setTimerInterval(const int64_t& interval);
++		void setTimerInterval(const int& interval, bool is_nano = false);
+ 
+ 		/**set thread name
+ 		* @param[in] thread name
+ 		* @return
+ 		* 	void
+ 		*/
+-		void setThreadName(const std::string& n) { tm_thread_name = tn = n; }
++		void setThreadName(const std::string& n) { name = tn = n; }
+ 
+ 		/**Provides a signal handler to receive any function or methode.
+ 		* Use this in your class where ever you need time controled actions.
+--- neutrino-mp-tangos.org/src/gui/components/cc_frm.h
++++ neutrino-mp-tangos/src/gui/components/cc_frm.h
+@@ -25,24 +25,21 @@
+ #define __CC_FORM_H__
+ 
+ 
+-
+ #include "config.h"
+ #include "cc_base.h"
+ #include "cc_item.h"
+-#include <mutex>
+-#define DEFAULT_SEL_FRAME_WIDTH 1
++
+ 
+ class CComponentsForm : public CComponentsItem
+ {
+ 	protected:
+ 		std::vector<CComponentsItem*>	v_cc_items;
+-		void paintForm(const bool &do_save_bg);
++		void paintForm(bool do_save_bg);
+ 		///generates next possible index for an item, see also cc_item_index, getIndex(), setIndex()
+ 		int genIndex();
+ 
+ 		///scrollbar object
+ 		CComponentsScrollBar *sb;
+-		std::mutex cc_frm_mutex;
+ 
+ 		int append_x_offset;
+ 		int append_y_offset;
+@@ -78,7 +75,7 @@
+ 		virtual ~CComponentsForm();
+ 
+ 		///paints current form on screen, for paint a page use paintPage()
+-		void paint(const bool &do_save_bg = CC_SAVE_SCREEN_YES);
++		void paint(bool do_save_bg = CC_SAVE_SCREEN_YES);
+ 
+ 		///same like CComponentsItem::kill(), but erases all embedded items inside of parent at once, this = parent
+ 		///NOTE: Items always have parent bindings to "this" and use the parent background color as default! Set parameter 'ignore_parent=true' to ignore parent background color!
+@@ -100,26 +97,10 @@
+ 		int addCCItem(const std::vector<CComponentsItem*> &cc_items);
+ 		void insertCCItem(const uint& cc_item_id, CComponentsItem* cc_Item);
+ 
+-		/**Function to remove item from item collection and deallocates instance.
+-		 * @param[in]  cc_item_id
+-		 * 	@li item id as unsigned int
+-		*/
++		///removes item object from container and deallocates instance
+ 		void removeCCItem(const uint& cc_item_id);
+-
+-		/**Function to remove item from item collection and deallocates instance.
+-		 * @param[in]  cc_Item
+-		 * 	@li CComponentsItem*
+-		 */
++		///removes item object from container and deallocates instance
+ 		void removeCCItem(CComponentsItem* cc_Item);
+-
+-		/**Function to remove item from item collection and deallocates instance.
+-		 * @param[in]  item_name
+-		 * 	@li std::string
+-		 * NOTE: Requires that unique names are assigned!
+-		 * @see
+-		 * 	getItemName()
+-		 */
+-		void removeCCItem(const std::string &item_name);
+ 
+ 		void replaceCCItem(const uint& cc_item_id, CComponentsItem* new_cc_Item);
+ 		void replaceCCItem(CComponentsItem* old_cc_Item, CComponentsItem* new_cc_Item);
+@@ -132,19 +113,7 @@
+ 		* @return
+ 		*	int, in case of not found item returns -1
+ 		*/
+-		int getCCItemId(CComponentsItem* cc_Item) const;
+-
+-		/**Function to get current item id from passed item name.
+-		 * @param[in]  item_name
+-		 * 	@li std::string
+-		 * @return
+-		 *	int, in case of not found item returns -1
+-		 * NOTE: Requires that unique names are assigned!
+-		 * @see
+-		 * 	setItemName()
+-		 * 	getItemName()
+-		 */
+-		int getCCItemId(const std::string &item_name) const;
++		int getCCItemId(CComponentsItem* cc_Item);
+ 
+ 		/**Function to get current item from item collection.
+ 		* @param[in]  cc_item_id
+@@ -152,15 +121,7 @@
+ 		* @return
+ 		*	CComponentsItem*, in case of not found item returns NULL
+ 		*/
+-		CComponentsItem* getCCItem(const uint& cc_item_id) const;
+-
+-		/**Function to get current item from item collection by name.
+-		 * @param[in]  item_name
+-		 * 	@li std::string
+-		 * @return
+-		 *	CComponentsItem*, in case of not found item returns NULL
+-		 */
+-		CComponentsItem* getCCItem(const std::string &item_name) const;
++		CComponentsItem* getCCItem(const uint& cc_item_id);
+ 
+ 		/**Function to get previous item from item collection.
+ 		* @param[in]  current_cc_item
+@@ -168,7 +129,7 @@
+ 		* @return
+ 		*	CComponentsItem*, in case of not found item returns NULL
+ 		*/
+-		CComponentsItem* getPrevCCItem(CComponentsItem* current_cc_item) const;
++		CComponentsItem* getPrevCCItem(CComponentsItem* current_cc_item);
+ 
+ 		/**Function to get next item from item collection.
+ 		* @param[in]  current_cc_item
+@@ -176,20 +137,20 @@
+ 		* @return
+ 		*	CComponentsItem*, in case of not found item returns NULL
+ 		*/
+-		CComponentsItem* getNextCCItem(CComponentsItem* current_cc_item) const;
++		CComponentsItem* getNextCCItem(CComponentsItem* current_cc_item);
+ 
+ 		void paintCCItems();
+ 
+ 		///clean up and deallocate existant items from v_cc_items at once
+ 		void clear();
+ 		///return true, if no items available
+-		bool empty() const {return v_cc_items.empty();}
++		bool empty(){return v_cc_items.empty();};
+ 		///return size (count) of available items
+-		size_t size() const {return v_cc_items.size();}
++		size_t size(){return v_cc_items.size();};
+ 		///return reference to first item
+-		CComponentsItem* front() const {return v_cc_items.front();}
++		CComponentsItem* front(){return v_cc_items.front();};
+ 		///return reference to last item
+-		CComponentsItem* back() const {return v_cc_items.back();}
++		CComponentsItem* back(){return v_cc_items.back();};
+ 
+ 		///sets alignment offset between items
+ 		void setAppendOffset(const int &x_offset, const int& y_offset){append_x_offset = x_offset; append_y_offset = y_offset;};
+@@ -205,9 +166,9 @@
+ 		///sets current page
+ 		void setCurrentPage(const uint8_t& current_page){cur_page = current_page;};
+ 		///get current page
+-		uint8_t getCurrentPage() const {return cur_page;}
++		uint8_t getCurrentPage(){return cur_page;};
+ 		///paint defined page number 0...n
+-		void paintPage(const uint8_t& page_number, const bool &do_save_bg = CC_SAVE_SCREEN_NO);
++		void paintPage(const uint8_t& page_number, bool do_save_bg = CC_SAVE_SCREEN_NO);
+ 		///enum page scroll modes
+ 		enum
+ 		{
+@@ -221,50 +182,50 @@
+ 		///set width of scrollbar
+ 		void setScrollBarWidth(const int& scrollbar_width){w_sb = scrollbar_width;};
+ 		///returns id of selected item, return value as int, returns -1: if is nothing selected
+-		int getSelectedItem() const;
++		int getSelectedItem();
+ 
+ 		/**Function to get consumed  space of items inside form in y direction.
+ 		* @return
+ 		*	int, used lines
+ 		*/
+-		int getUsedDY() const;
++		int getUsedDY();
+ 
+ 		/**Function to get consumed  space of items inside form in x direction.
+ 		* @return
+ 		*	int, used lines
+ 		*/
+-		int getUsedDX() const;
++		int getUsedDX();
+ 
+ 		/**Function to get free usable space of items inside form in y direction.
+ 		* @return
+ 		*	int, free lines
+ 		*/
+-		int getFreeDY() const {return height - getUsedDY();}
++		int getFreeDY(){return height - getUsedDY();}
+ 
+ 		/**Function to get free usable space of items inside form in x direction.
+ 		* @return
+ 		*	int, free lines
+ 		*/
+-		int getFreeDX() const {return width - getUsedDX();}
++		int getFreeDX(){return width - getUsedDX();}
+ 
+ 		///returns pointer to selected item, return value as CComponentsItem*, returns NULL: if is nothing selected
+-		CComponentsItem* getSelectedItemObject() const;
++		CComponentsItem* getSelectedItemObject();
+ 		///select a definied item, parameter1 as size_t
+ 		void setSelectedItem(	int item_id,
+ 						const fb_pixel_t& sel_frame_col = COL_MENUCONTENTSELECTED_PLUS_0,
+ 						const fb_pixel_t& frame_col = COL_FRAME_PLUS_0,
+ 						const fb_pixel_t& sel_body_col = COL_MENUCONTENT_PLUS_0,
+ 						const fb_pixel_t& body_col = COL_MENUCONTENT_PLUS_0,
+-						const int& frame_w = DEFAULT_SEL_FRAME_WIDTH,
+-						const int& sel_frame_w = DEFAULT_SEL_FRAME_WIDTH);
++						const int& frame_w = 3,
++						const int& sel_frame_w = 3);
+ 		///select a definied item, parameter1 as CComponentsItem*
+ 		void setSelectedItem(	CComponentsItem* cc_item,
+ 						const fb_pixel_t& sel_frame_col = COL_MENUCONTENTSELECTED_PLUS_0,
+ 						const fb_pixel_t& frame_col = COL_FRAME_PLUS_0,
+ 						const fb_pixel_t& sel_body_col = COL_MENUCONTENT_PLUS_0,
+ 						const fb_pixel_t& body_col = COL_MENUCONTENT_PLUS_0,
+-						const int& frame_w = DEFAULT_SEL_FRAME_WIDTH,
+-						const int& sel_frame_w = DEFAULT_SEL_FRAME_WIDTH);
++						const int& frame_w = 3,
++						const int& sel_frame_w = 3);
+ 
+ 		///exec main method, see also sub exec methods
+ 		int exec();
+--- neutrino-mp-tangos.org/src/gui/components/cc_frm_clock.h
++++ neutrino-mp-tangos/src/gui/components/cc_frm_clock.h
+@@ -3,7 +3,7 @@
+ 	Copyright (C) 2001 by Steffen Hehn 'McClean'
+ 
+ 	Classes for generic GUI-related components.
+-	Copyright (C) 2012-2019, Thilo Graf 'dbt'
++	Copyright (C) 2012-2015, Thilo Graf 'dbt'
+ 
+ 	License: GPL
+ 
+@@ -36,7 +36,6 @@
+ #include "cc_frm.h"
+ #include "cc_text_screen.h"
+ #include "cc_timer.h"
+-
+ //! Sub class of CComponents. Show clock with digits on screen. 
+ /*!
+ Usable as simple fixed display or as ticking clock.
+@@ -46,19 +45,22 @@
+ class CComponentsFrmClock : public CComponentsForm, public CCTextScreen
+ {
+ 	private:
++		CComponentsTimer *cl_timer;
+ 		void ShowTime();
+ 		bool may_blit;
+ 
+ 	protected:
+-		CComponentsTimer *cl_timer;
+-
+-		std::mutex cl_mutex;
++		///slot for timer event, reserved for ShowTime()
++		sigc::slot0<void> cl_sl_show;
+ 
+ 		///refresh interval in seconds
+-		int64_t cl_interval;
++		int cl_interval;
+ 
+ 		///raw time chars
+ 		char cl_timestr[32];
++
++		///handle paint clock within thread and is not similar to cc_allow_paint
++		bool cl_blocked;
+ 
+ 		///object: font render object
+ 		Font *cl_font;
+@@ -76,8 +78,6 @@
+ 		std::string cl_format_str;
+ 		///secondary time format for blink
+ 		std::string cl_blink_str;
+-
+-		int cl_width;
+ 
+ 		///initialize clock contents  
+ 		void initCCLockItems();
+@@ -98,9 +98,9 @@
+ 		CComponentsFrmClock( 	const int& x_pos = 1, const int& y_pos = 1,
+ 					Font * font = NULL,
+ 					const char* format_str = "%H:%M",
+-					const char* secformat_str = "%H.%M",
++					const char* secformat_str = NULL,
+ 					bool activ=false,
+-					const int64_t& interval_seconds = 1,
++					const int& interval_seconds = 1,
+ 					CComponentsForm *parent = NULL,
+ 					int shadow_mode = CC_SHADOW_OFF,
+ 					fb_pixel_t color_frame = COL_FRAME_PLUS_0,
+@@ -125,9 +125,6 @@
+ 		///return pointer of font object
+ 		Font* getClockFont();
+ 
+-		///return pointer of timer object
+-		CComponentsTimer* getTimer(){return cl_timer;}
+-
+ 		///set text color
+ 		void setTextColor(fb_pixel_t color_text){ cl_col_text = color_text;}
+ 
+@@ -135,8 +132,6 @@
+ 		void setHeight(const int& h);
+ 		///set width of clock on screen
+ 		void setWidth(const int& w);
+-		
+-		int getWidth() const;
+ 
+ 		///use string expession: "%H:%M" = 12:22, "%H:%M:%S" = 12:22:12
+ 		///set current time format string, 1st parameter set the default format, 2nd parameter sets an alternatively format for use as blink effect
+@@ -147,21 +142,21 @@
+ 		///start and paint ticking clock
+ 		bool Start();
+ 		///same like Start() but for usage as simple call without return value
+-		void unblock(){if (cl_timer) cl_timer->OnTimer.unblock();}
++		void unblock(){Start();}
+ 		///stop ticking clock, but don't hide, use kill() or hide() to remove from screen
+ 		bool Stop();
+ 		///same like Stop() but for usage as simple call without return value
+-		void block(){if (cl_timer) cl_timer->OnTimer.block();}
++		void block(){Stop();}
+ 		///return true on blocked status, blocked means clock can be initalized but would be not paint, to unblock use unblock()
+-		bool isBlocked(void) const {return cl_timer ? cl_timer->OnTimer.blocked() : true;}
++		bool isBlocked(void) {return cl_blocked;}
+ 
+ 		///returns true, if clock is running
+ 		bool isRun() const {return cl_timer ? cl_timer->isRun() : false;}
+ 		///set refresh interval in seconds, default value=1 (=1 sec)
+-		void setClockInterval(const int64_t& seconds){cl_interval = seconds*1000;}
++		void setClockInterval(const int& seconds){cl_interval = seconds;}
+ 
+ 		///show clock on screen
+-		void paint(const bool &do_save_bg = CC_SAVE_SCREEN_YES);
++		void paint(bool do_save_bg = CC_SAVE_SCREEN_YES);
+ 		///hide clock on screen
+ 		void hide(){Stop(); CComponentsForm::hide();}
+ 		///does the same like kill() from base class, but stopping clock before kill
+@@ -190,9 +185,6 @@
+ 		///set color gradient on/off, returns true if gradient mode was changed
+ 		bool enableColBodyGradient(const int& enable_mode, const fb_pixel_t& sec_color = 255 /*=COL_BACKGROUND*/);
+ 
+-		///slot for timer event, reserved for ShowTime()
+-		sigc::slot0<void> cl_sl_show;
+-
+ 		///enable/disable automatic blitting
+ 		void setBlit(bool _may_blit = true) { may_blit = _may_blit; }
+ };
+--- neutrino-mp-tangos.org/src/gui/components/cc_item_text.h
++++ neutrino-mp-tangos/src/gui/components/cc_item_text.h
+@@ -31,7 +31,6 @@
+ #include "cc_text_screen.h"
+ #include <gui/widget/textbox.h>
+ #include <string>
+-#include <mutex>
+ 
+ //! Sub class of CComponentsItem. Shows a text box.
+ /*!
+@@ -77,8 +76,6 @@
+ 		///helper: convert int to string
+ 		static std::string iToString(int int_val); //helper to convert int to string
+ 
+-		std::mutex ct_mutex;
+-
+ 		///initialize all required attributes
+ 		void initVarText(	const int x_pos, const int y_pos, const int w, const int h,
+ 					std::string text,
+@@ -99,7 +96,7 @@
+ 		void initCBox();
+ 
+ 		///paint CCItem backckrond (if paint_bg=true), apply initCCText() and send paint() to the CTextBox object
+-		void paintText(const bool &do_save_bg = CC_SAVE_SCREEN_YES);
++		void paintText(bool do_save_bg = CC_SAVE_SCREEN_YES);
+ 	public:
+ 		enum {
+ 			FONT_STYLE_REGULAR	= 0,
+@@ -139,7 +136,7 @@
+ 		///remove textbox from screen
+ 		void kill(const fb_pixel_t& bg_color = COL_BACKGROUND_PLUS_0, const int& corner_radius = -1, const int& fblayer_type = CC_FBDATA_TYPES);
+ 		///paint text box, parameter do_save_bg: default = true, causes fill of backckrond pixel buffer
+-		void paint(const bool &do_save_bg = CC_SAVE_SCREEN_YES);
++		void paint(bool do_save_bg = CC_SAVE_SCREEN_YES);
+ 
+ 		///send options for text font (size and type), color and mode (allignment)
+ 		 void setTextFont(Font* font_text);
+@@ -277,8 +274,7 @@
+ 					fb_pixel_t color_shadow = COL_SHADOW_PLUS_0)
+ 					:CComponentsText(x_pos, y_pos, w, h, text, mode, font_text, font_style, parent, shadow_mode, color_text, color_frame, color_body, color_shadow)
+ 		{
+-			cc_item_type.id 	= CC_ITEMTYPE_LABEL;
+-			cc_item_type.name	="cc_label_box";
++			cc_item_type 	= CC_ITEMTYPE_LABEL;
+ 		};
+ 
+ 		CComponentsLabel(	CComponentsForm *parent,
+@@ -294,8 +290,7 @@
+ 					fb_pixel_t color_shadow = COL_SHADOW_PLUS_0)
+ 					:CComponentsText(x_pos, y_pos, w, h, text, mode, font_text, font_style, parent, shadow_mode, color_text, color_frame, color_body, color_shadow)
+ 		{
+-			cc_item_type.id		= CC_ITEMTYPE_LABEL;
+-			cc_item_type.name	="cc_label_box";
++			cc_item_type 	= CC_ITEMTYPE_LABEL;
+ 		};
+ };
+ 
 
