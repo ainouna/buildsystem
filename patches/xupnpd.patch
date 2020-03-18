@@ -1,40 +1,80 @@
 --- a/src/Makefile
 +++ b/src/Makefile
-@@ -1,10 +1,10 @@
--LUA     = lua-5.1.4
-+LUA     = lua-5.2.4
- #LUA     = lua-5.2.0
- STATIC  = false
- OPENSSL = /home/user/src/openssl-0.9.8e
+#@@ -1,10 +1,10 @@
+#-LUA     = lua-5.1.4
+#+LUA     = lua-5.2.4
+# #LUA     = lua-5.2.0
+# STATIC  = false
+# OPENSSL = /home/user/src/openssl-0.9.8e
+# 
+#-CFLAGS  = -fno-exceptions -fno-rtti -O2 -I$(LUA) -L$(LUA)
+#-CFLAGS+= -I$(OPENSSL)/include -L$(OPENSSL)/lib/openwrt
+#+CFLAGS  = -fno-exceptions -fno-rtti -O2 -I$(LUA) -L$(LUA)
+#+CFLAGS+= $(shell $(PKG_CONFIG) --cflags --libs openssl)
+# SRC     = main.cpp soap.cpp mem.cpp mcast.cpp luaxlib.cpp luaxcore.cpp luajson.cpp luajson_parser.cpp
+# LUAMYCFLAGS = -DLUA_USE_LINUX
+# 
+#@@ -87,10 +87,16 @@
+# 
+# 
+# embedded:
+#-	PATH=$(PATH):$(UTILS) $(MAKE) -C $(LUA) CC=$(SDK)/gcc a MYCFLAGS='$(LUAMYCFLAGS)'
+#-	$(SDK)/gcc -O2 -c -B$(UTILS) -o md5.o md5c.c
+#-	$(SDK)/gcc $(CFLAGS) -B$(UTILS) -DWITH_URANDOM -o xupnpd-$(TARGET) $(SRC) md5.o -llua -lm -ldl -lssl -lcrypto
+#-	$(SDK)/strip xupnpd-$(TARGET)
+#+	$(TARGET)-gcc -O2 -c -o md5.o md5c.c
+#+	$(TARGET)-gcc $(CFLAGS) $(LUAFLAGS) -DWITH_URANDOM -o xupnpd $(SRC) md5.o  -lrt -llua -lm -ldl -lssl -lcrypto
+#+	$(TARGET)-strip xupnpd
+#+
+#+install:
+#+	if ( test ! -d $(DESTDIR)/usr/bin ) ; then mkdir -p $(DESTDIR)/usr/bin ; fi
+#+	cp -f xupnpd $(DESTDIR)/usr/bin
+#+	chmod a+x $(DESTDIR)/usr/bin/xupnpd
+#+	if ( test ! -d $(DESTDIR)/usr/share/xupnpd ) ; then mkdir -p $(DESTDIR)/usr/share/xupnpd ; fi
+#+	cp -ap plugins profiles ui www *.lua $(DESTDIR)/usr/share/xupnpd/
+# 
+# clean:
+# 	$(MAKE) -C $(LUA) clean
+@@ -1,12 +1,12 @@
+-# x86
++# sh4
+ STAGING_DIR     =
+ BIN             =
+ LIBEXEC         =
+-CC              = gcc
+-CPP             = g++
+-STRIP           = strip
++CC              = sh4-linux-gcc
++CPP             = sh4-linux-g++
++STRIP           = sh4-linux-strip
+ RM              = rm
+-PLATFORM        = x86
++PLATFORM        = sh4
+ TARGET_DIR      = .
+ MY_CFLAGS       =
  
--CFLAGS  = -fno-exceptions -fno-rtti -O2 -I$(LUA) -L$(LUA)
--CFLAGS+= -I$(OPENSSL)/include -L$(OPENSSL)/lib/openwrt
-+CFLAGS  = -fno-exceptions -fno-rtti -O2 -I$(LUA) -L$(LUA)
-+CFLAGS+= $(shell $(PKG_CONFIG) --cflags --libs openssl)
- SRC     = main.cpp soap.cpp mem.cpp mcast.cpp luaxlib.cpp luaxcore.cpp luajson.cpp luajson_parser.cpp
- LUAMYCFLAGS = -DLUA_USE_LINUX
+--- a/src/rules.mk.org
++++ b/src/rules.mk
+@@ -4,11 +4,18 @@
+ LIBS    = $(LUA)/liblua.a
  
-@@ -87,10 +87,16 @@
+ all: $(LIBS) $(OBJS)
+-	PATH=$(PATH):$(LIBEXEC) STAGING_DIR=$(STAGING_DIR) $(CC) -B $(LIBEXEC) $(CFLAGS) -o $(TARGET_DIR)/xupnpd-$(PLATFORM) $(OBJS) $(LIBS) -ldl -lm
++	$(CC) -B $(LIBEXEC) $(CFLAGS) -o $(TARGET_DIR)/xupnpd-$(PLATFORM) $(OBJS) $(LIBS) -ldl -lm
+ 	$(STRIP) $(TARGET_DIR)/xupnpd-$(PLATFORM)
  
- 
- embedded:
--	PATH=$(PATH):$(UTILS) $(MAKE) -C $(LUA) CC=$(SDK)/gcc a MYCFLAGS='$(LUAMYCFLAGS)'
--	$(SDK)/gcc -O2 -c -B$(UTILS) -o md5.o md5c.c
--	$(SDK)/gcc $(CFLAGS) -B$(UTILS) -DWITH_URANDOM -o xupnpd-$(TARGET) $(SRC) md5.o -llua -lm -ldl -lssl -lcrypto
--	$(SDK)/strip xupnpd-$(TARGET)
-+	$(TARGET)-gcc -O2 -c -o md5.o md5c.c
-+	$(TARGET)-gcc $(CFLAGS) $(LUAFLAGS) -DWITH_URANDOM -o xupnpd $(SRC) md5.o  -lrt -llua -lm -ldl -lssl -lcrypto
-+	$(TARGET)-strip xupnpd
+ $(LUA)/liblua.a:
+ 	$(MAKE) -C $(LUA) a CC=$(CC) PATH=$(PATH):$(LIBEXEC) STAGING_DIR=$(STAGING_DIR) MYCFLAGS="-DLUA_USE_LINUX -Os"
 +
 +install:
-+	if ( test ! -d $(DESTDIR)/usr/bin ) ; then mkdir -p $(DESTDIR)/usr/bin ; fi
-+	cp -f xupnpd $(DESTDIR)/usr/bin
++	if (test ! -d $(DESTDIR)/usr/bin); then mkdir -p $(DESTDIR)/usr/bin; fi
++	cp -f xupnpd-sh4 $(DESTDIR)/usr/bin/xupnpd
 +	chmod a+x $(DESTDIR)/usr/bin/xupnpd
-+	if ( test ! -d $(DESTDIR)/usr/share/xupnpd ) ; then mkdir -p $(DESTDIR)/usr/share/xupnpd ; fi
++	if (test ! -d $(DESTDIR)/usr/share/xupnpd); then mkdir -p $(DESTDIR)/usr/share/xupnpd; fi
 +	cp -ap plugins profiles ui www *.lua $(DESTDIR)/usr/share/xupnpd/
  
  clean:
- 	$(MAKE) -C $(LUA) clean
+ 	$(RM) -f $(OBJS)
 --- a/src/plugins/xupnpd_coolstream.lua
 +++ b/src/plugins/xupnpd_coolstream.lua
 @@ -0,0 +1,177 @@
@@ -296,21 +336,6 @@
  --    { './playlists/mozhay.m3u', 'Mozhay.tv' },
  --    { './localmedia', 'Local Media Files' }
  --    { './private', 'Private Media Files', '127.0.0.1;192.168.1.1' }  -- only for 127.0.0.1 and 192.168.1.1
-@@ -90,10 +93,10 @@
- -- feeds list (plugin, feed name, feed type)
- feeds=
- {
--    { 'vimeo',          'channel/hd',           'Vimeo HD Channel' },
--    { 'vimeo',          'channel/hdxs',         'Vimeo Xtreme sports' },
--    { 'vimeo',          'channel/mtb',          'Vimeo MTB Channel' },
--    { 'youtube',        'channel/top_rated',    'YouTube Top Rated' },
-+--    { 'vimeo',          'channel/hd',           'Vimeo HD Channel' },
-+--    { 'vimeo',          'channel/hdxs',         'Vimeo Xtreme sports' },
-+--    { 'vimeo',          'channel/mtb',          'Vimeo MTB Channel' },
-+--    { 'youtube',        'channel/top_rated',    'YouTube Top Rated' },
- --    { 'youtube',        'Drift0r',              'Drift0r' },
- --    { 'youtube',        'XboxAhoy',             'XboxAhoy' },
- --    { 'ag',             'videos',               'AG - New' },
 @@ -101,6 +104,8 @@
  --    { 'gametrailers',   'ps3',                   'GT - PS3' },
  --    { 'giantbomb',      'all',                  'GiantBomb - All' },
@@ -378,7 +403,7 @@
  
 --- a/src/xupnpd_m3u.lua
 +++ b/src/xupnpd_m3u.lua
-@@ -83,6 +83,8 @@
+@@ -86,6 +86,8 @@
      playlist_data.objid='0'
      playlist_data.size=0
      playlist_data.elements={}

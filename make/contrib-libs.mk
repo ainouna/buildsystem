@@ -419,8 +419,8 @@ $(D)/libbluray: $(D)/bootstrap $(ARCHIVE)/$(LIBBLURAY_SOURCE)
 #
 # lua
 #
-LUA_VER = 5.2.4
-LUA_VER_SHORT = 5.2
+LUA_VER = 5.3.5
+LUA_VER_SHORT = 5.3
 LUA_SOURCE = lua-$(LUA_VER).tar.gz
 
 LUAPOSIX_VER = 31
