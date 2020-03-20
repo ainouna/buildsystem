@@ -57,9 +57,9 @@ ifeq ($(BOXTYPE), $(filter $(BOXTYPE), spark spark7162))
 N_CPPFLAGS += -I$(DRIVER_DIR)/frontcontroller/aotom_spark
 endif
 
-#ifeq ($(FLAVOUR), $(filter $(FLAVOUR), tangos, tangos + plugins))
-#N_CPPFLAGS += -std=c++11
-#endif
+ifeq ($(FLAVOUR), $(filter $(FLAVOUR), tangos, tangos + plugins))
+N_CPPFLAGS += -std=c++11
+endif
 
 LH_CONFIG_OPTS =
 ifeq ($(MEDIAFW), gstreamer)
@@ -112,6 +112,7 @@ NEUTRINO      = neutrino-mp-tangos
 LIBSTB_HAL    = libstb-hal-tangos
 N_BRANCH     ?= master
 N_CHECKOUT   ?= f5f2e6e066e99323695989f5cdf606b67256481d # 23/10/2019
+#N_CHECKOUT   ?= e40ae527797759527affaa8a63b3b81ede1a2b2a # 27/10/2019
 #N_CHECKOUT   ?= 213447662c284ff750eda37b1f90b1744341d01d # 14/03.2020
 HAL_BRANCH   ?= master
 HAL_CHECKOUT ?= e64294ac2f42d0bddb5c297decd75d4161ab72b7

@@ -1,172 +1,134 @@
-# commit e40ae527797759527affaa8a63b3b81ede1a2b2a 27/10/2019
+# commit f5f2e6e066e99323695989f5cdf606b67256481d # 23/10/2019
 --- neutrino-mp-tangos.org/acinclude.m4
 +++ neutrino-mp-tangos/acinclude.m4
-@@ -448,8 +448,12 @@
+@@ -435,7 +435,7 @@
  AC_ARG_WITH(boxtype,
- 	AS_HELP_STRING([--with-boxtype], [valid values: generic, azbox, tripledragon, spark, coolstream, armbox, mipsbox]),
+ 	AS_HELP_STRING([--with-boxtype], [valid values: tripledragon, coolstream, spark, azbox, generic, armbox, duckbox, spark7162, mipsbox]),
  	[case "${withval}" in
--		generic|azbox|tripledragon|spark|coolstream|armbox|mipsbox)
-+		generic|azbox|tripledragon|spark|coolstream|armbox|mipsbox|duckbox)
+-		tripledragon|coolstream|azbox|generic|armbox)
++		tripledragon|coolstream|azbox|generic|armbox|duckbox)
  			BOXTYPE="$withval"
-+		;;
-+		spark)
-+			BOXTYPE="spark"
-+			BOXMODEL="$withval"
  		;;
- 		*)
- 			AC_MSG_ERROR([bad value $withval for --with-boxtype])
-@@ -460,6 +464,8 @@
+ 		spark|spark7162)
+@@ -446,50 +446,6 @@
+ 			BOXTYPE="dreambox"
+ 			BOXMODEL="$withval"
+ 		;;
+-		ufs*)
+-			BOXTYPE="duckbox"
+-			BOXMODEL="$withval"
+-		;;
+-		atevio*)
+-			BOXTYPE="duckbox"
+-			BOXMODEL="$withval"
+-		;;
+-		fortis*)
+-			BOXTYPE="duckbox"
+-			BOXMODEL="$withval"
+-		;;
+-		octagon*)
+-			BOXTYPE="duckbox"
+-			BOXMODEL="$withval"
+-		;;
+-		hs7*)
+-			BOXTYPE="duckbox"
+-			BOXMODEL="$withval"
+-		;;
+-		dp*)
+-			BOXTYPE="duckbox"
+-			BOXMODEL="$withval"
+-		;;
+-		cuberevo*)
+-			BOXTYPE="duckbox"
+-			BOXMODEL="$withval"
+-		;;
+-		ipbox*)
+-			BOXTYPE="duckbox"
+-			BOXMODEL="$withval"
+-		;;
+-		arivalink200)
+-			BOXTYPE="duckbox"
+-			BOXMODEL="$withval"
+-		;;
+-		tf*)
+-			BOXTYPE="duckbox"
+-			BOXMODEL="$withval"
+-		;;
+-		hl101)
+-			BOXTYPE="duckbox"
+-			BOXMODEL="$withval"
+-		;;
+ 		hd51|hd60|hd61|bre2ze4k|vusolo4k|vuduo4k|vuultimo4k|vuzero4k|vuuno4kse|vuuno4k)
+ 			BOXTYPE="armbox"
+ 			BOXMODEL="$withval"
+@@ -506,8 +462,8 @@
+ 
  AC_ARG_WITH(boxmodel,
- 	AS_HELP_STRING([--with-boxmodel], [valid for generic: generic, raspi])
- AS_HELP_STRING([], [valid for coolstream: hd1, hd2])
-+AS_HELP_STRING([], [valid for spark: spark, spark7162])
+ 	AS_HELP_STRING([--with-boxmodel], [valid for coolstream: hd1, hd2])
+-AS_HELP_STRING([], [valid for duckbox: ufs910, ufs912, ufs913, ufs922, atevio7500, fortis_hdbox, octagon1008, hs7110, hs7810a, hs7119, hs7819, dp7000, cuberevo, cuberevo_mini, cuberevo_mini2, cuberevo_250hd, cuberevo_2000hd, cuberevo_3000hd, ipbox9900, ipbox99, ipbox55, arivalink200, tf7700, hl101])
+ AS_HELP_STRING([], [valid for spark: spark, spark7162])
 +AS_HELP_STRING([], [valid for duckbox: ufs910, ufs912, ufs913, ufs922, atevio7500, fortis_hdbox, octagon1008, hs7110, hs7420, hs7810a, hs7119, hs7429, hs7819, cuberevo, cuberevo_mini, cuberevo_mini2, cuberevo_250hd, cuberevo_2000hd, cuberevo_3000hd, ipbox9900, ipbox99, ipbox55, arivalink200, tf7700, hl101, adb_box, vitamin_hd5000])
- AS_HELP_STRING([], [valid for armbox: hd51, hd60, bre2ze4k, vusolo4k, vuduo4k, vuultimo4k, vuuno4k, vuuno4kse, vuzero4k|h7])
- AS_HELP_STRING([], [valid for mipsbox: vuduo]),
- 	[case "${withval}" in
-@@ -489,6 +495,20 @@
+ AS_HELP_STRING([], [valid for armbox: hd51, hd60, hd61, bre2ze4k, zgemmah7, vusolo4k, vuduo4k, vuultimo4k, vuzero4k, vuuno4kse, vuuno4k])
+ AS_HELP_STRING([], [valid for mipsbox: vuduo])
+ AS_HELP_STRING([], [valid for generic: raspi]),
+@@ -531,7 +487,7 @@
  				AC_MSG_ERROR([unknown model $withval for boxtype $BOXTYPE])
  			fi
  		;;
+-		ufs910|ufs912|ufs913|ufs922|atevio7500|fortis_hdbox|octagon1008|hs7110|hs7810a|hs7119|hs7819|dp7000|cuberevo|cuberevo_mini|cuberevo_mini2|cuberevo_250hd|cuberevo_2000hd|cuberevo_3000hd|ipbox9900|ipbox99|ipbox55|arivalink200|tf7700|hl101)
 +		ufs910|ufs912|ufs913|ufs922|atevio7500|fortis_hdbox|octagon1008|hs7110|hs7420|hs7810a|hs7119|hs7429|hs7819|dp7000|cuberevo|cuberevo_mini|cuberevo_mini2|cuberevo_250hd|cuberevo_2000hd|cuberevo_3000hd|ipbox9900|ipbox99|ipbox55|arivalink200|tf7700|hl101|adb_box|vitamin_hd5000)
-+			if test "$BOXTYPE" = "duckbox"; then
-+				BOXMODEL="$withval"
-+			else
-+				AC_MSG_ERROR([unknown model $withval for boxtype $BOXTYPE])
-+			fi
-+		;;
-+		spark|spark7162)
-+			if test "$BOXTYPE" = "spark"; then
-+				BOXMODEL="$withval"
-+			else
-+				AC_MSG_ERROR([unknown model $withval for boxtype $BOXTYPE])
-+			fi
-+		;;
- 		hd51|hd60|bre2ze4k|vusolo4k|vuduo4k|vuultimo4k|vuuno4k|vuuno4kse|vuzero4k|h7)
- 			if test "$BOXTYPE" = "armbox"; then
+ 			if test "$BOXTYPE" = "duckbox"; then
  				BOXMODEL="$withval"
-@@ -517,6 +537,7 @@
- AM_CONDITIONAL(BOXTYPE_TRIPLE, test "$BOXTYPE" = "tripledragon")
- AM_CONDITIONAL(BOXTYPE_SPARK, test "$BOXTYPE" = "spark")
- AM_CONDITIONAL(BOXTYPE_COOL, test "$BOXTYPE" = "coolstream")
-+AM_CONDITIONAL(BOXTYPE_DUCKBOX, test "$BOXTYPE" = "duckbox")
- AM_CONDITIONAL(BOXTYPE_ARMBOX, test "$BOXTYPE" = "armbox")
- AM_CONDITIONAL(BOXTYPE_MIPSBOX, test "$BOXTYPE" = "mipsbox")
- 
-@@ -527,6 +548,43 @@
- # coolstream
- AM_CONDITIONAL(BOXMODEL_CS_HD1, test "$BOXMODEL" = "hd1")
- AM_CONDITIONAL(BOXMODEL_CS_HD2, test "$BOXMODEL" = "hd2")
-+
-+# duckbox
-+AM_CONDITIONAL(BOXMODEL_UFS910, test "$BOXMODEL" = "ufs910")
-+AM_CONDITIONAL(BOXMODEL_UFS912, test "$BOXMODEL" = "ufs912")
-+AM_CONDITIONAL(BOXMODEL_UFS913, test "$BOXMODEL" = "ufs913")
-+AM_CONDITIONAL(BOXMODEL_UFS922, test "$BOXMODEL" = "ufs922")
-+AM_CONDITIONAL(BOXMODEL_SPARK, test "$BOXMODEL" = "spark")
-+AM_CONDITIONAL(BOXMODEL_SPARK7162, test "$BOXMODEL" = "spark7162")
-+AM_CONDITIONAL(BOXMODEL_ATEVIO7500, test "$BOXMODEL" = "atevio7500")
-+AM_CONDITIONAL(BOXMODEL_FORTIS_HDBOX, test "$BOXMODEL" = "fortis_hdbox")
-+AM_CONDITIONAL(BOXMODEL_OCTAGON1008, test "$BOXMODEL" = "octagon1008")
-+AM_CONDITIONAL(BOXMODEL_HS7110, test "$BOXMODEL" = "hs7110")
-+AM_CONDITIONAL(BOXMODEL_HS7420, test "$BOXMODEL" = "hs7420")
-+AM_CONDITIONAL(BOXMODEL_HS7810A, test "$BOXMODEL" = "hs7810a")
-+AM_CONDITIONAL(BOXMODEL_HS7119, test "$BOXMODEL" = "hs7119")
+ 			else
+@@ -596,8 +552,10 @@
+ AM_CONDITIONAL(BOXMODEL_FORTIS_HDBOX, test "$BOXMODEL" = "fortis_hdbox")
+ AM_CONDITIONAL(BOXMODEL_OCTAGON1008, test "$BOXMODEL" = "octagon1008")
+ AM_CONDITIONAL(BOXMODEL_HS7110, test "$BOXMODEL" = "hs7110")
++AM_CONDITIONAL(BOXMODEL_HS7420,test "$BOXMODEL" = "hs7420")
+ AM_CONDITIONAL(BOXMODEL_HS7810A, test "$BOXMODEL" = "hs7810a")
+ AM_CONDITIONAL(BOXMODEL_HS7119, test "$BOXMODEL" = "hs7119")
 +AM_CONDITIONAL(BOXMODEL_HS7429,test "$BOXMODEL" = "hs7429")
-+AM_CONDITIONAL(BOXMODEL_HS7819, test "$BOXMODEL" = "hs7819")
-+AM_CONDITIONAL(BOXMODEL_DP7000, test "$BOXMODEL" = "dp7000")
-+
-+# spark
-+AM_CONDITIONAL(BOXMODEL_SPARK, test "$BOXMODEL" = "spark")
-+AM_CONDITIONAL(BOXMODEL_SPARK7162, test "$BOXMODEL" = "spak7162")
-+
-+AM_CONDITIONAL(BOXMODEL_CUBEREVO, test "$BOXMODEL" = "cuberevo")
-+AM_CONDITIONAL(BOXMODEL_CUBEREVO_MINI, test "$BOXMODEL" = "cuberevo_mini")
-+AM_CONDITIONAL(BOXMODEL_CUBEREVO_MINI2, test "$BOXMODEL" = "cuberevo_mini2")
-+AM_CONDITIONAL(BOXMODEL_CUBEREVO_250HD, test "$BOXMODEL" = "cuberevo_250hd")
-+AM_CONDITIONAL(BOXMODEL_CUBEREVO_2000HD, test "$BOXMODEL" = "cuberevo_2000hd")
-+AM_CONDITIONAL(BOXMODEL_CUBEREVO_3000HD, test "$BOXMODEL" = "cuberevo_3000hd")
-+AM_CONDITIONAL(BOXMODEL_IPBOX9900, test "$BOXMODEL" = "ipbox9900")
-+AM_CONDITIONAL(BOXMODEL_IPBOX99, test "$BOXMODEL" = "ipbox99")
-+AM_CONDITIONAL(BOXMODEL_IPBOX55, test "$BOXMODEL" = "ipbox55")
-+AM_CONDITIONAL(BOXMODEL_ARIVALINK200, test "$BOXMODEL" = "arivalink200")
-+AM_CONDITIONAL(BOXMODEL_TF7700, test "$BOXMODEL" = "tf7700")
-+AM_CONDITIONAL(BOXMODEL_HL101, test "$BOXMODEL" = "hl101")
+ AM_CONDITIONAL(BOXMODEL_HS7819, test "$BOXMODEL" = "hs7819")
+ AM_CONDITIONAL(BOXMODEL_DP7000, test "$BOXMODEL" = "dp7000")
+ 
+@@ -613,6 +571,8 @@
+ AM_CONDITIONAL(BOXMODEL_ARIVALINK200, test "$BOXMODEL" = "arivalink200")
+ AM_CONDITIONAL(BOXMODEL_TF7700, test "$BOXMODEL" = "tf7700")
+ AM_CONDITIONAL(BOXMODEL_HL101, test "$BOXMODEL" = "hl101")
 +AM_CONDITIONAL(BOXMODEL_ADB_BOX, test "$BOXMODEL" = "adb_box")
 +AM_CONDITIONAL(BOXMODEL_VITAMIN_HD5000, test "$BOXMODEL" = "vitamin_hd5000")
  
- # armbox
  AM_CONDITIONAL(BOXMODEL_HD51, test "$BOXMODEL" = "hd51")
-@@ -569,6 +627,66 @@
- 	AC_DEFINE(BOXMODEL_CS_HD1, 1, [coolstream hd1/neo/neo2/zee])
- elif test "$BOXMODEL" = "hd2"; then
- 	AC_DEFINE(BOXMODEL_CS_HD2, 1, [coolstream tank/trinity/trinity v2/trinity duo/zee2/link])
-+elif test "$BOXMODEL" = "ufs910"; then
-+	AC_DEFINE(BOXMODEL_UFS910, 1, [ufs910])
-+elif test "$BOXMODEL" = "ufs912"; then
-+	AC_DEFINE(BOXMODEL_UFS912, 1, [ufs912])
-+elif test "$BOXMODEL" = "ufs913"; then
-+	AC_DEFINE(BOXMODEL_UFS913, 1, [ufs913])
-+elif test "$BOXMODEL" = "ufs922"; then
-+	AC_DEFINE(BOXMODEL_UFS922, 1, [ufs922])
-+elif test "$BOXMODEL" = "spark"; then
-+	AC_DEFINE(BOXMODEL_SPARK, 1, [spark])
-+elif test "$BOXMODEL" = "spark7162"; then
-+	AC_DEFINE(BOXMODEL_SPARK7162, 1, [spark7162])
-+elif test "$BOXMODEL" = "atevio7500"; then
-+	AC_DEFINE(BOXMODEL_ATEVIO7500, 1, [atevio7500])
-+elif test "$BOXMODEL" = "fortis_hdbox"; then
-+	AC_DEFINE(BOXMODEL_FORTIS_HDBOX, 1, [fortis_hdbox])
-+elif test "$BOXMODEL" = "octagon1008"; then
-+	AC_DEFINE(BOXMODEL_OCTAGON1008, 1, [octagon1008])
-+elif test "$BOXMODEL" = "hs7110"; then
-+	AC_DEFINE(BOXMODEL_HS7110, 1, [hs7110])
+ AM_CONDITIONAL(BOXMODEL_HD60, test "$BOXMODEL" = "hd60")
+@@ -676,10 +636,14 @@
+ 	AC_DEFINE(BOXMODEL_OCTAGON1008, 1, [octagon1008])
+ elif test "$BOXMODEL" = "hs7110"; then
+ 	AC_DEFINE(BOXMODEL_HS7110, 1, [hs7110])
 +elif test "$BOXMODEL" = "hs7420"; then
 +	AC_DEFINE(BOXMODEL_HS7420, 1, [hs7420])
-+elif test "$BOXMODEL" = "hs7810a"; then
-+	AC_DEFINE(BOXMODEL_HS7810A, 1, [hs7810a])
-+elif test "$BOXMODEL" = "hs7119"; then
-+	AC_DEFINE(BOXMODEL_HS7119, 1, [hs7119])
+ elif test "$BOXMODEL" = "hs7810a"; then
+ 	AC_DEFINE(BOXMODEL_HS7810A, 1, [hs7810a])
+ elif test "$BOXMODEL" = "hs7119"; then
+ 	AC_DEFINE(BOXMODEL_HS7119, 1, [hs7119])
 +elif test "$BOXMODEL" = "hs7429"; then
 +	AC_DEFINE(BOXMODEL_HS7429, 1, [hs7429])
-+elif test "$BOXMODEL" = "hs7819"; then
-+	AC_DEFINE(BOXMODEL_HS7819, 1, [hs7819])
-+elif test "$BOXMODEL" = "dp7000"; then
-+	AC_DEFINE(BOXMODEL_DP7000, 1, [dp7000])
-+elif test "$BOXMODEL" = "cuberevo"; then
-+	AC_DEFINE(BOXMODEL_CUBEREVO, 1, [cuberevo])
-+elif test "$BOXMODEL" = "cuberevo_mini"; then
-+	AC_DEFINE(BOXMODEL_CUBEREVO_MINI, 1, [cuberevo_mini])
-+elif test "$BOXMODEL" = "cuberevo_mini2"; then
-+	AC_DEFINE(BOXMODEL_CUBEREVO_MINI2, 1, [cuberevo_mini2])
-+elif test "$BOXMODEL" = "cuberevo_250hd"; then
-+	AC_DEFINE(BOXMODEL_CUBEREVO_250HD, 1, [cuberevo_250hd])
-+elif test "$BOXMODEL" = "cuberevo_2000hd"; then
-+	AC_DEFINE(BOXMODEL_CUBEREVO_2000HD, 1, [cuberevo_2000hd])
-+elif test "$BOXMODEL" = "cuberevo_3000hd"; then
-+	AC_DEFINE(BOXMODEL_CUBEREVO_3000HD, 1, [cuberevo_3000hd])
-+elif test "$BOXMODEL" = "ipbox9900"; then
-+	AC_DEFINE(BOXMODEL_IPBOX9900, 1, [ipbox9900])
-+elif test "$BOXMODEL" = "ipbox99"; then
-+	AC_DEFINE(BOXMODEL_IPBOX99, 1, [ipbox99])
-+elif test "$BOXMODEL" = "ipbox55"; then
-+	AC_DEFINE(BOXMODEL_IPBOX55, 1, [ipbox55])
-+elif test "$BOXMODEL" = "arivalink200"; then
-+	AC_DEFINE(BOXMODEL_ARIVALINK200, 1, [arivalink200])
-+elif test "$BOXMODEL" = "tf7700"; then
-+	AC_DEFINE(BOXMODEL_TF7700, 1, [tf7700])
-+elif test "$BOXMODEL" = "hl101"; then
-+	AC_DEFINE(BOXMODEL_HL101, 1, [hl101])
+ elif test "$BOXMODEL" = "hs7819"; then
+ 	AC_DEFINE(BOXMODEL_HS7819, 1, [hs7819])
+ elif test "$BOXMODEL" = "dp7000"; then
+@@ -708,6 +672,10 @@
+ 	AC_DEFINE(BOXMODEL_TF7700, 1, [tf7700])
+ elif test "$BOXMODEL" = "hl101"; then
+ 	AC_DEFINE(BOXMODEL_HL101, 1, [hl101])
 +elif test "$BOXMODEL" = "adb_box"; then
 +	AC_DEFINE(BOXMODEL_ADB_BOX, 1, [adb_box])
 +elif test "$BOXMODEL" = "vitamin_hd5000"; then
 +	AC_DEFINE(BOXMODEL_VITAMIN_HD5000, 1, [vitamin_hd5000])
  elif test "$BOXMODEL" = "hd51"; then
  	AC_DEFINE(BOXMODEL_HD51, 1, [hd51])
- elif test "$BOXMODEL" = "hd60"; then
+ 	AC_DEFINE(ENABLE_CHANGE_OSD_RESOLUTION, 1, [enable change the osd resolution])
 --- neutrino-mp-tangos.org/src/neutrino.cpp
 +++ neutrino-mp-tangos/src/neutrino.cpp
-@@ -4443,6 +4443,9 @@
+@@ -4760,6 +4760,9 @@
  
  		CVFD::getInstance()->Clear();
  		CVFD::getInstance()->setMode(CVFD::MODE_STANDBY);
@@ -176,11 +138,11 @@
  		CVFD::getInstance()->setBacklight(g_settings.backlight_standby);
  
  		InfoClock->enableInfoClock(false);
-@@ -4476,7 +4479,13 @@
+@@ -4795,7 +4798,13 @@
  		// Active standby off
  		powerManager->SetStandby(false, false);
  		CVFD::getInstance()->setMode(CVFD::MODE_TVRADIO);
--		CVFD::getInstance()->ShowText("resume...        ");
+-		CVFD::getInstance()->ShowText("resume");
 +#if defined (FORTIS_HDBOX) || defined (TF7700)
 +		CVFD::getInstance()->setlcdparameter(g_settings.lcd_setting[SNeutrinoSettings::LCD_BRIGHTNESS], 1);
 +#endif
@@ -193,57 +155,55 @@
  		CEpgScan::getInstance()->Stop();
 --- neutrino-mp-tangos.org/src/driver/vfd.cpp
 +++ neutrino-mp-tangos/src/driver/vfd.cpp
-@@ -47,8 +47,282 @@
- #include <cs_api.h>
- extern CRemoteControl * g_RemoteControl; /* neutrino.cpp */
+@@ -52,27 +52,39 @@
+ #include <stropts.h>
+ #define VFD_DEVICE "/dev/vfd"
  
-+#ifdef HAVE_DUCKBOX_HARDWARE
-+#include <zapit/zapit.h>
-+#include <stropts.h>
-+#define VFD_DEVICE "/dev/vfd"
-+
+-#if defined (BOXMODEL_OCTAGON1008) || defined (BOXMODEL_TF7700)
 +#if defined (BOXMODEL_OCTAGON1008) \
 + || defined (BOXMODEL_HS7420) \
 + || defined (BOXMODEL_HS7429) \
-+ || defined (BOXMODEL_DP7000) \
 + || defined (BOXMODEL_TF7700)
-+#define VFDLENGTH 8
+ #define VFDLENGTH 8
+-#elif defined (BOXMODEL_FORTIS_HDBOX) || defined (BOXMODEL_ATEVIO7500)
 +#elif defined (BOXMODEL_FORTIS_HDBOX) \
 + || defined (BOXMODEL_ATEVIO7500)
-+#define VFDLENGTH 12
+ #define VFDLENGTH 12
+-#elif defined (BOXMODEL_HS7810A) || defined (BOXMODEL_HS7119) || defined (BOXMODEL_HS7819) || defined (BOXMODEL_CUBEREVO_250HD) || defined (BOXMODEL_IPBOX55)
 +#elif defined (BOXMODEL_HS7810A) \
 + || defined (BOXMODEL_HS7119) \
 + || defined (BOXMODEL_HS7819) \
 + || defined (BOXMODEL_CUBEREVO_250HD) \
 + || defined (BOXMODEL_IPBOX55)
-+#define VFDLENGTH 4
-+#elif defined (BOXMODEL_HS7110)
-+#define VFDLENGTH 0
+ #define VFDLENGTH 4
+ #elif defined (BOXMODEL_HS7110)
+ #define VFDLENGTH 0
+-#elif defined (BOXMODEL_IPBOX9900) || defined (BOXMODEL_IPBOX99)
 +#elif defined (BOXMODEL_IPBOX9900) \
 + || defined (BOXMODEL_IPBOX99)
-+#define VFDLENGTH 14
+ #define VFDLENGTH 14
 +#elif defined (BOXMODEL_ADB_BOX)
 +#define VFDLENGTH 15
-+#else
-+#define VFDLENGTH 16
-+#endif
-+
-+#define SCROLL_TIME 3500000
-+
-+bool invert = false;
-+bool blocked = false;
-+int blocked_counter = 0;
-+int file_vfd = -1;
-+bool active_icon[16] = { false };
+ #else
+ #define VFDLENGTH 16
+ #endif
+ 
+-#define SCROLL_TIME 100000
++#define SCROLL_TIME 500000
+ 
+ bool invert = false;
+ bool blocked = false;
+ int blocked_counter = 0;
+ int file_vfd = -1;
+ bool active_icon[16] = { false };
 +int adb_led = -1;
-+
-+pthread_t vfd_scrollText;
-+
-+struct vfd_ioctl_data {
-+	unsigned char start;
-+	unsigned char data[64];
-+	unsigned char length;
-+};
+ 
+ pthread_t vfd_scrollText;
+ 
+@@ -81,6 +93,33 @@
+ 	unsigned char data[64];
+ 	unsigned char length;
+ };
 +
 +#if defined (BOXMODEL_ADB_BOX)
 +int get_adb_variant()
@@ -271,63 +231,24 @@
 +	return ret;
 +}
 +#endif
-+
-+static void write_to_vfd(unsigned int DevType, struct vfd_ioctl_data * data, bool force = false)
-+{
-+	int __attribute__ ((unused)) file_closed = 0;
-+	if (blocked) {
-+		if (file_vfd > -1) {
-+			blocked_counter++;
-+			usleep(SCROLL_TIME);
-+		} else {
-+			blocked = false;
-+		}
-+	}
-+	if (blocked_counter > 10) {
-+		force = true;
-+		blocked_counter = 0;
-+	}
-+//	printf("[CVFD] - blocked_counter=%i, blocked=%i, force=%i\n", blocked, blocked_counter, force);
-+	if (force || !blocked) {
-+		if (blocked) {
-+			if (file_vfd > -1) {
-+				file_closed = close(file_vfd);
-+				file_vfd = -1;
-+			}
-+		}
-+		blocked = true;
-+		if (file_vfd == -1)
-+			file_vfd = open (VFD_DEVICE, O_RDWR);
-+		if (file_vfd > -1) {
-+			ioctl(file_vfd, DevType, data);
-+			ioctl(file_vfd, I_FLUSH, FLUSHRW);
-+			file_closed = close(file_vfd);
-+			file_vfd = -1;
-+		}
-+		blocked = false;
-+		blocked_counter = 0;
-+	}
-+}
-+
+ 
+ static void write_to_vfd(unsigned int DevType, struct vfd_ioctl_data * data, bool force = false)
+ {
+@@ -119,7 +158,8 @@
+ 	}
+ }
+ 
+-#if defined (BOXMODEL_UFS910) || defined (BOXMODEL_UFS922)
 +#if defined (BOXMODEL_UFS910) \
 + || defined (BOXMODEL_UFS922)
-+static void writeCG (unsigned char adress, unsigned char pixeldata[5])
-+{
-+	struct vfd_ioctl_data data;
-+	data.start = adress & 0x07;
-+	data.data[0] = pixeldata[0];
-+	data.data[1] = pixeldata[1];
-+	data.data[2] = pixeldata[2];
-+	data.data[3] = pixeldata[3];
-+	data.data[4] = pixeldata[4];
-+	data.length = 5;
-+	write_to_vfd(VFDWRITECGRAM, &data);
-+	return;
-+}
-+#endif
-+
-+static void ShowNormalText(char * str, bool fromScrollThread = false)
-+{
+ static void writeCG (unsigned char adress, unsigned char pixeldata[5])
+ {
+ 	struct vfd_ioctl_data data;
+@@ -137,7 +177,16 @@
+ 
+ static void ShowNormalText(char * str, bool fromScrollThread = false)
+ {
+-	if (blocked)
 +	int colon_at_2 = 0;
 +	int disp_len = 0;
 +
@@ -338,46 +259,45 @@
 +	}
 +#endif
 + 	if (blocked)
-+	{
-+		printf("[CVFD] - blocked\n");
-+		usleep(SCROLL_TIME);
-+	}
-+
-+	int ws = 0; // needed whitespace for centering
-+	struct vfd_ioctl_data data;
-+
-+	if (!fromScrollThread)
-+	{
-+		if(vfd_scrollText != 0)
-+		{
-+			pthread_cancel(vfd_scrollText);
-+			pthread_join(vfd_scrollText, NULL);
-+
-+			vfd_scrollText = 0;
-+		}
-+	}
+ 	{
+ 		printf("[CVFD] - blocked\n");
+ 		usleep(SCROLL_TIME);
+@@ -156,39 +205,49 @@
+ 			vfd_scrollText = 0;
+ 		}
+ 	}
+-	if ((strlen(str) > VFDLENGTH && !fromScrollThread) && (g_settings.lcd_vfd_scroll >= 1))
 +	disp_len = (adb_led == 1 ? 4 : VFDLENGTH);
 +#if defined (BOXMODEL_HS7119) || defined (BOXMODEL_HS7810A) || defined (BOXMODEL_HS7819)
 +	if ((strlen(str) > disp_len + colon_at_2 && !fromScrollThread) && (g_settings.lcd_vfd_scroll >= 1))
 +#else
 +	if ((strlen(str) > disp_len && !fromScrollThread) && (g_settings.lcd_vfd_scroll >= 1))
 +#endif
-+	{
-+		CVFD::getInstance()->ShowScrollText(str);
-+		return;
-+	}
+ 	{
+ 		CVFD::getInstance()->ShowScrollText(str);
+ 		return;
+ 	}
+-
+-	if (strlen(str) < VFDLENGTH && VFDLENGTH > 7) // do not center on small displays
+-		ws = (VFDLENGTH-strlen(str))/2;
 +	if (strlen(str) < disp_len && disp_len > 7) // do not center on small displays
 +	{
 +		ws = (disp_len - strlen(str)) / 2;
 +	}
-+	else
+ 	else
 +	{
-+		ws = 0;
+ 		ws = 0;
 +	}
-+	memset(data.data, ' ', 63);
+ 	memset(data.data, ' ', 63);
 +	data.start = 0;
-+	if (!fromScrollThread)
-+	{
+ 	if (!fromScrollThread)
+ 	{
+-		memcpy (data.data+ws, str, VFDLENGTH-ws);
+-		data.start = 0;
+-		if ((strlen(str) % 2) == 1 && VFDLENGTH > 7) // do not center on small displays
+-			data.length = VFDLENGTH-ws-1;
+-		else
+-			data.length = VFDLENGTH-ws;
 +		memcpy(data.data + ws, str, disp_len - ws + colon_at_2);
 +//		if ((strlen(str) % 2) == 1 && disp_len > 7) // if text length odd
 +//		{
@@ -387,126 +307,69 @@
 +//		{
 +			data.length = disp_len - ws + colon_at_2;
 +//		}
-+	}
-+	else
-+	{
+ 	}
+ 	else
+ 	{
+-		memcpy ( data.data, str, VFDLENGTH);
+-		data.start = 0;
+-		data.length = VFDLENGTH;
+-	}
 +		memcpy(data.data, str, disp_len + colon_at_2);
 +		data.length = disp_len + colon_at_2;
 +	}
 +//	printf("CVFD::ShowNormalText: [%s]\n", str);
-+	write_to_vfd(VFDDISPLAYCHARS, &data);
-+	return;
-+}
-+void CVFD::ShowScrollText(char *str)
-+{
-+	if (blocked)
-+	{
-+		printf("[CVFD] - blocked\n");
-+		usleep(SCROLL_TIME);
-+	}
-+
-+	//stop scrolltextthread
-+	if(vfd_scrollText != 0)
-+	{
-+		pthread_cancel(vfd_scrollText);
-+		pthread_join(vfd_scrollText, NULL);
-+
-+		vfd_scrollText = 0;
-+		scrollstr = (char *)"";
-+	}
-+
-+	//scroll text thread
-+	scrollstr = str;
-+	pthread_create(&vfd_scrollText, NULL, ThreadScrollText, (void *)scrollstr);
-+}
-+
-+void* CVFD::ThreadScrollText(void * arg)
-+{
-+	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
-+
-+	int i;
-+	char *str = (char *)arg;
-+	int len = strlen(str);
+ 	write_to_vfd(VFDDISPLAYCHARS, &data);
+ 	return;
+ }
+ void CVFD::ShowScrollText(char *str)
+ {
+-	printf("CVFD::ShowScrollText: [%s]\n", str);
+-
+ 	if (blocked)
+ 	{
+ 		printf("[CVFD] - blocked\n");
+@@ -217,17 +276,18 @@
+ 	int i;
+ 	char *str = (char *)arg;
+ 	int len = strlen(str);
+-	char out[VFDLENGTH+1];
+-	char buf[VFDLENGTH+65];
+-
+-	memset(out, 0, VFDLENGTH+1);
 +	char out[17];
 +	char buf[81];
 +	int disp_len = adb_led == 1 ? 4 : VFDLENGTH;
 +
 +	memset(out, 0, disp_len + 1);
-+
-+	int retries = g_settings.lcd_vfd_scroll;
-+
+ 
+ 	int retries = g_settings.lcd_vfd_scroll;
+ 
+-	if (len > VFDLENGTH)
 +	if (len > disp_len)
-+	{
-+		printf("CVFD::ThreadScrollText: [%s], length %d\n", str, len);
+ 	{
+ 		printf("CVFD::ThreadScrollText: [%s], length %d\n", str, len);
+-		memset(buf, ' ', (len + VFDLENGTH));
 +		memset(buf, ' ', len + disp_len);
-+		memcpy(buf, str, len);
-+
-+		while(retries--)
-+		{
-+//			usleep(SCROLL_TIME);
-+
-+			for (i = 0; i <= (len-1); i++)
-+			{
-+				// scroll text until end
+ 		memcpy(buf, str, len);
+ 
+ 		while(retries--)
+@@ -237,13 +297,13 @@
+ 			for (i = 0; i <= (len-1); i++)
+ 			{
+ 				// scroll text until end
+-				memcpy(out, buf+i, VFDLENGTH);
 +				memcpy(out, buf + i, disp_len);
-+				ShowNormalText(out,true);
-+				usleep(SCROLL_TIME);
-+			}
-+		}
-+	}
+ 				ShowNormalText(out,true);
+ 				usleep(SCROLL_TIME);
+ 			}
+ 		}
+ 	}
+-	memcpy(out, str, VFDLENGTH); // display first VFDLENGTH chars after scrolling
 +	memcpy(out, str, disp_len); // display first VFDLENGTH chars after scrolling
-+	ShowNormalText(out,true);
-+
-+	pthread_exit(0);
-+
-+	return NULL;
-+}
-+#endif
-+
- CVFD::CVFD()
- {
-+	text[0] = 0;
-+	g_str[0] = 0;
-+	clearClock = 0;
-+	mode = MODE_TVRADIO;
-+	switch_name_time_cnt = 0;
-+	timeout_cnt = 0;
-+	service_number = -1;
-+
- #ifdef VFD_UPDATE
-         m_fileList = NULL;
-         m_fileListPos = 0;
-@@ -64,12 +338,16 @@
+ 	ShowNormalText(out,true);
  
- 	has_lcd = true;
- 	has_led_segment = false;
-+#if !HAVE_DUCKBOX_HARDWARE
- 	fd = open("/dev/display", O_RDONLY);
- 	if(fd < 0) {
- 		perror("/dev/display");
- 		has_lcd = false;
- 		has_led_segment = false;
- 	}
-+#else
-+	fd = 1;
-+#endif
- 
- #ifdef BOXMODEL_CS_HD2
- 	if (fd >= 0) {
-@@ -114,10 +392,12 @@
- 
- CVFD::~CVFD()
- {
-+#if !HAVE_DUCKBOX_HARDWARE
- 	if(fd > 0){
- 		close(fd);
- 		fd = -1;
- 	}
-+#endif
- }
- 
- CVFD* CVFD::getInstance()
-@@ -129,44 +409,65 @@
+ 	pthread_exit(0);
+@@ -341,47 +401,62 @@
  	return lcdd;
  }
  
@@ -576,17 +439,14 @@
 +	{
  		switch_name_time_cnt = g_settings.handling_infobar[SNeutrinoSettings::HANDLING_INFOBAR] + 10;
  	}
+ #if defined (BOXMODEL_OCTAGON1008)
+ 	ShowIcon(ICON_COLON2, false);
+ #endif
 -
-+#if defined (BOXMODEL_OCTAGON1008) \
-+ || defined (BOXMODEL_HS7420) \
-+ || defined (BOXMODEL_HS7429) \
-+ || defined (BOXMODEL_DP7000)
-+	ShowIcon(ICON_COLON2, false);
-+#endif
  }
  
  void* CVFD::TimeThread(void *)
-@@ -174,17 +475,24 @@
+@@ -389,17 +464,24 @@
  	while(1) {
  		sleep(1);
  		struct stat buf;
@@ -616,27 +476,31 @@
  	//InitNewClock(); /FIXME
  
  	brightness = -1;
-@@ -213,10 +521,99 @@
+@@ -428,7 +510,7 @@
  
  	brightness = dimm;
  
 -printf("CVFD::setlcdparameter dimm %d power %d\n", dimm, power);
 +	printf("CVFD::setlcdparameter dimm %d power %d\n", dimm, power);
-+#if !HAVE_DUCKBOX_HARDWARE
+ #if !HAVE_DUCKBOX_HARDWARE
  	int ret = ioctl(fd, IOC_FP_SET_BRIGHT, dimm);
  	if(ret < 0)
- 		perror("IOC_FP_SET_BRIGHT");
-+#else
-+// Brightness
-+	struct vfd_ioctl_data data;
-+	memset(&data, 0, sizeof(struct vfd_ioctl_data));
-+	data.start = brightness & 0x07;
-+	data.length = 0;
-+	write_to_vfd(VFDBRIGHTNESS, &data);
+@@ -436,51 +518,81 @@
+ #else
+ // Brightness
+ 	struct vfd_ioctl_data data;
+-#if !defined (BOXMODEL_HS7810A) && !defined (BOXMODEL_HS7119) && !defined (BOXMODEL_HS7819)
+ 	memset(&data, 0, sizeof(struct vfd_ioctl_data));
+ 	data.start = brightness & 0x07;
+ 	data.length = 0;
+ 	write_to_vfd(VFDBRIGHTNESS, &data);
+-#endif
+-#if defined (BOXMODEL_FORTIS_HDBOX) || defined (BOXMODEL_ATEVIO7500)
 +#if defined (BOXMODEL_FORTIS_HDBOX) \
 + || defined (BOXMODEL_ATEVIO7500)
-+	usleep(100000);
-+	memset(&data, 0, sizeof(struct vfd_ioctl_data));
+ 	usleep(100000);
+ 	memset(&data, 0, sizeof(struct vfd_ioctl_data));
+-	data.start = 0;
 +	if (power) {
 +		data.start = 0x01; // red led
 +	}
@@ -648,10 +512,22 @@
 +	data.data[0] = 0;
 +	data.data[1] = 0;
 +	data.data[4] = 0;
-+	data.length = 5;
+ 	data.length = 5;
+-	if (power) {
+-		data.data[0] = 0x01; // red led
+-	}
+-	else
+-	{
+-		data.data[0] = 0xf2; // cross plus blue led
+-	}
+-	data.start = 0;
+-	data.data[4] = 0; // off
+-	data.length = 5;
+-	write_to_vfd(VFDPWRLED, &data);
 +	write_to_vfd(VFDSETLED, &data);
-+	usleep(100000);
-+	memset(&data, 0, sizeof(struct vfd_ioctl_data));
+ 	usleep(100000);
+ 	memset(&data, 0, sizeof(struct vfd_ioctl_data));
+-	data.start = 0;
 +	if (power) {
 +		data.start = 0xf2; // cross plus blue led
 +	}
@@ -663,7 +539,9 @@
 +	data.data[0] = 0;
 +	data.data[1] = 0;
 +	data.data[4] = 0;
-+	data.length = 5;
+ 	data.length = 5;
+-	if (power) {
+-		data.data[0] = 0xf2; // cross plus blue led
 +	write_to_vfd(VFDSETLED, &data);
 +#elif defined (BOXMODEL_HS7420) \
 + || defined (BOXMODEL_HS7810A) \
@@ -694,9 +572,23 @@
 +	if (power)
 +	{
 +		data.data[3] = 2;  // green
-+	}
-+	else
-+	{
+ 	}
+ 	else
+ 	{
+-		data.data[0] = 0x01; // red led
+-	}
+-	data.start = 0;
+-	data.data[4] = brightness*2;
+-	data.length = 5;
+-	write_to_vfd(VFDPWRLED, &data);
+-#elif defined (BOXMODEL_HS7810A) || defined (BOXMODEL_HS7819)
+-	memset(&data, 0, sizeof(struct vfd_ioctl_data));
+-	data.start = 0;
+-	data.data[0] = 0x02; // logo
+-	data.data[4] = (brightness & 0x07);
+-	data.length = 5;
+-	write_to_vfd(VFDPWRLED, &data);
+-#elif !defined (BOXMODEL_UFS912) && !defined (BOXMODEL_UFS913) && !defined (BOXMODEL_OCTAGON1008)
 +		data.data[3] = 1;  // red
 +	}
 +	write_to_vfd(VFDSETLED, &data);
@@ -704,28 +596,10 @@
 +#elif !defined (BOXMODEL_UFS912) \
 + && !defined (BOXMODEL_UFS913) \
 + && !defined (BOXMODEL_OCTAGON1008)
-+// Power on/off
-+	if (power) {
-+		data.start = 0x01;
-+	} else {
-+		data.start = 0x00;
-+	}
-+	data.length = 0;
-+	write_to_vfd(VFDDISPLAYWRITEONOFF, &data, true);
-+#endif
-+#endif
- }
- 
- void CVFD::setlcdparameter(void)
-@@ -227,6 +624,7 @@
- 			last_toggle_state_power);
- }
- 
-+#if !HAVE_DUCKBOX_HARDWARE
- void CVFD::setled(int led1, int led2)
- {
- 	int ret = -1;
-@@ -259,6 +657,10 @@
+ // Power on/off
+ 	if (power) {
+ 		data.start = 0x01;
+@@ -534,6 +646,10 @@
  		return;
  
  	int led1 = -1, led2 = -1;
@@ -736,7 +610,7 @@
  	if(on_off){//on
  		switch(g_settings.led_rec_mode) {
  			case 1:
-@@ -290,23 +692,28 @@
+@@ -565,16 +681,18 @@
  				break;
  	      }
  	}
@@ -746,41 +620,24 @@
  
  void CVFD::setled(void)
  {
--	if(fd < 0) return;
--
- 	int led1 = -1, led2 = -1;
- 	int select = 0;
- 
--	if(mode == MODE_MENU_UTF8 || mode == MODE_TVRADIO  )
--		  select = g_settings.led_tv_mode;
-+	if(fd < 0)
-+	{
-+		return;
-+	}
-+	if (mode == MODE_MENU_UTF8 || mode == MODE_TVRADIO)
-+	{
-+		select = g_settings.led_tv_mode;
-+	}
- 	else if(mode == MODE_STANDBY)
--		  select = g_settings.led_standby_mode;
--
--	switch(select){
-+	{
-+		select = g_settings.led_standby_mode;
-+	}
-+	switch(select)
-+	{
- 		case 0:
- 			led1 = FP_LED_1_OFF; led2 = FP_LED_2_OFF;
- 			break;
-@@ -324,22 +731,33 @@
- 	}
- 	setled(led1, led2);
- }
--
--void CVFD::showServicename(const std::string & name, int number) // UTF-8
-+#endif  // !HAVE DUCKBOX)HARDWARE
++	int led1 = -1, led2 = -1;
++#if defined(BOXMODEL_ADB_BOX)
++	int led3 = -1, led4 = -1;
++#endif
++	int select = 0;
 +
+ 	if(fd < 0) return;
+-
+-	int led1 = -1, led2 = -1;
+-	int select = 0;
+ 
+ 	if(mode == MODE_MENU_UTF8 || mode == MODE_TVRADIO  )
+ 		  select = g_settings.led_tv_mode;
+@@ -601,99 +719,140 @@
+ }
+ #endif
+ 
+-void CVFD::showServicename(const std::string & name, int number) // UTF-8
 +void CVFD::showServicename(const std::string &name, int number) // UTF-8
  {
  	if(fd < 0) return;
@@ -807,23 +664,20 @@
 +	{
 +		printf("CVFD::showServicename(number): [%d]\n", service_number);
  		ShowNumber(service_number);
+-	wake_up();
 +	}
- 	wake_up();
  }
  
-@@ -348,61 +766,141 @@
+ void CVFD::showTime(bool force)
+ {
  	//unsigned int system_rev = cs_get_revision();
  	static int recstatus = 0;
++
  #if 0
--	if(!has_lcd)
--		return;
--#endif
+ 	if(!has_lcd)
+ 		return;
+ #endif
 -	if(fd >= 0 && mode == MODE_SHUTDOWN) {
-+	if (!has_lcd)
-+	{
-+		return;
-+	}
-+#endif
 +	if (fd >= 0 && mode == MODE_SHUTDOWN)
 +	{
  		ShowIcon(FP_ICON_CAM1, false);
@@ -848,23 +702,24 @@
 +			{
  				hour = t->tm_hour;
  				minute = t->tm_min;
--				if (support_text) {
+-#if !defined (BOXMODEL_HS7810A) && !defined (BOXMODEL_HS7819)
 +				second = t->tm_sec;
-+#if defined (BOXMODEL_OCTAGON1008)
+ #if defined (BOXMODEL_OCTAGON1008)
+-				ShowIcon(ICON_COLON2, true);
+-#elif defined (BOXMODEL_OCTAGON1008) || defined (BOXMODEL_HS7119) || defined (BOXMODEL_CUBEREVO_250HD)
 +
 +				ShowIcon(ICON_COLON2, second % 2 == 0 ? true : false);
-+				strftime(timestr, 5, "%H%M", t);
+ 				strftime(timestr, 5, "%H%M", t);
 +				ShowText(timestr);
 +#elif defined (BOXMODEL_HS7420) \
-+ ||   defined (BOXMODEL_HS7429) \
-+ ||   defined (BOXMODEL_DP7000)
++ || defined (BOXMODEL_HS7429)
 +
 +				ShowIcon(ICON_COLON2, second % 2 == 0 ? true : false);
 +				strftime(timestr, 5, "%H%M", t);
 +				ShowText(timestr);
 +#elif defined (BOXMODEL_HS7119) \
-+ ||   defined (BOXMODEL_HS7810A) \
-+ ||   defined (BOXMODEL_HS7819)
++ || defined (BOXMODEL_HS7810A) \
++ || defined (BOXMODEL_HS7819)
 +
 +				strftime(timestr, 5, "%H%M", t);
 +				ShowText(timestr);
@@ -886,14 +741,26 @@
 +#elif defined (BOXMODEL_CUBEREVO_250HD)
 +				strftime(timestr, 5, "%H%M", t);
 +				ShowText(timestr);
-+#else
+ #else
+-				strftime(timestr, 6, "%H:%M", t);
+-#endif
+-				ShowText(timestr);
+-#else //HS7810A or HS7819, string should not scroll
+-				strftime(timestr, 6, "%H:%M", t);
+-				struct vfd_ioctl_data data;
+-				memset(data.data, ' ', 6);
+-				memcpy (data.data, timestr, 6);
+-				data.start = 0;
+-				data.length = 5;
+-				write_to_vfd(VFDDISPLAYCHARS, &data);
+-#endif
+-				if (support_text) {
 +				if (support_text)
 +				{
  					strftime(timestr, 20, "%H:%M", t);
  					ShowText(timestr);
 -				} else if (support_numbers && has_led_segment) {
-+				}
-+				else if (support_numbers && has_led_segment)
++				} else if (support_numbers && has_led_segment)
 +				{
  					ShowNumber((t->tm_hour*100) + t->tm_min);
  #ifdef BOXMODEL_CS_HD2
@@ -908,7 +775,6 @@
  	int tmp_recstatus = CNeutrinoApp::getInstance()->recordingstatus;
 -	if (tmp_recstatus) {
 -		if(clearClock) {
-+
 +	if (tmp_recstatus)
 +	{
 +		if (clearClock)
@@ -916,154 +782,75 @@
  			clearClock = 0;
 -			if(has_lcd)
 +			if (has_lcd)
-+			{
  				ShowIcon(FP_ICON_CAM1, false);
--			setled(false);//off
+ #if !HAVE_DUCKBOX_HARDWARE
+ 			setled(false);//off
+ #endif
 -		} else {
-+			}
-+#if !HAVE_DUCKBOX_HARDWARE
-+			setled(false);  //off
-+#endif
 +		}
 +		else
 +		{
  			clearClock = 1;
 -			if(has_lcd)
 +			if (has_lcd)
-+			{
  				ShowIcon(FP_ICON_CAM1, true);
-+			}
-+#if !HAVE_DUCKBOX_HARDWARE
+ #if !HAVE_DUCKBOX_HARDWARE
  			setled(true);//on
--		}
+ #endif
+ 		}
 -	} else if(clearClock || (recstatus != tmp_recstatus)) { // in case icon ON after record stopped
-+#endif
-+		}
 +	}
 +	else if (clearClock || (recstatus != tmp_recstatus))
 +	{ // in case icon ON after record stopped
  		clearClock = 0;
 -		if(has_lcd)
 +		if (has_lcd)
-+		{
  			ShowIcon(FP_ICON_CAM1, false);
--
+ 
+ #if !HAVE_DUCKBOX_HARDWARE
+@@ -713,7 +872,9 @@
+ 		ShowIcon(FP_ICON_HD,chan->isHD());
+ 		ShowIcon(FP_ICON_LOCK,!chan->camap.empty());
+ 		if (chan->getAudioChannel() != NULL)
++		{
+ 			ShowIcon(FP_ICON_DD, chan->getAudioChannel()->audioChannelType == CZapitAudioChannel::AC3);
 +		}
-+#if !HAVE_DUCKBOX_HARDWARE
- 		setled();
--	}
--
-+#endif
-+	}
- 	recstatus = tmp_recstatus;
+ 	}
  }
-+
-+#if HAVE_DUCKBOX_HARDWARE
-+void CVFD::UpdateIcons()
-+{
-+	CZapitChannel * chan = CZapit::getInstance()->GetCurrentChannel();
-+	if (chan)
-+	{
-+		ShowIcon(FP_ICON_HD,chan->isHD());
-+		ShowIcon(FP_ICON_LOCK,!chan->camap.empty());
-+		if (chan->getAudioChannel() != NULL)
-+		{
-+			ShowIcon(FP_ICON_DD, chan->getAudioChannel()->audioChannelType == CZapitAudioChannel::AC3);
-+		}
-+	}
-+}
-+#endif
- 
- void CVFD::showRCLock(int duration)
- {
-@@ -430,37 +928,135 @@
- 	volume = vol;
- 
- 	if (g_settings.lcd_setting[SNeutrinoSettings::LCD_SHOW_VOLUME] == 2 /* off */)
--		return;
--
-+	{
-+		return;
-+	}
- 	bool allowed_mode = (mode == MODE_TVRADIO || mode == MODE_AUDIO || mode == MODE_MENU_UTF8);
- 	if (!allowed_mode)
--		return;
--
--	if (g_settings.lcd_setting[SNeutrinoSettings::LCD_SHOW_VOLUME] == 1) {
-+	{
-+		return;
-+	}
-+	if (g_settings.lcd_setting[SNeutrinoSettings::LCD_SHOW_VOLUME] == 1)
-+	{
- 		wake_up();
-+#if HAVE_DUCKBOX_HARDWARE
-+		int pp = (int) round((double) vol / (double) 2);
-+		if(oldpp != pp)
-+		{
+ #endif
+@@ -753,7 +914,8 @@
+ 		int pp = (int) round((double) vol / (double) 2);
+ 		if(oldpp != pp)
+ 		{
+-#if defined (BOXMODEL_UFS910) || defined (BOXMODEL_UFS922)
 +#if defined (BOXMODEL_UFS910) \
 + || defined (BOXMODEL_UFS922)
-+			int i;
-+			unsigned char speaker[5] = {0x1C, 0x1C, 0x1C, 0x3E, 0x7F}; // speaker symbol
-+			writeCG(0, speaker);
-+
-+			int j = pp / 5;
-+			// v-lines 0-5 = {0x10,0x11,0x12,0x13,0x14,0x15}
-+			char c0[1] = {0x5F};
-+			char c1[1] = {0x11};
-+			char c2[1] = {0x12};
-+			char c3[1] = {0x13};
-+			char c4[1] = {0x14};
-+			char c5[1] = {0x15};
-+			char VolumeBar[17];
-+			memset (VolumeBar, 0, sizeof(VolumeBar));
-+			char act[2] = {0x01, 0x20};
-+			strncat(VolumeBar, act, 2);
-+			for(i=1; i <= j; i++)
-+			{
-+				strncat(VolumeBar, c5, 1);
-+			}
-+			i = pp % 5;
-+			switch (i)
-+			{
-+				case 1:
-+					strncat(VolumeBar, c1, 1);
-+					break;
-+				case 2:
-+					strncat(VolumeBar, c2, 1);
-+					break;
-+				case 3:
-+					strncat(VolumeBar, c3, 1);
-+					break;
-+				case 4:
-+					strncat(VolumeBar, c4, 1);
-+				break;
-+			}
-+			//dprintf(DEBUG_DEBUG,"CVFD::showVolume: vol %d - pp %d - fullblocks %d - mod %d - %s\n", vol, pp, j, i, VolumeBar);
-+			if (strlen(VolumeBar) < 12) {
-+				for (int a=strlen(VolumeBar); a < 12; a++)
-+					strncat(VolumeBar, c0, 1);
-+			}
-+			ShowText(VolumeBar);
-+#elif defined (BOXMODEL_TF7700)
-+			char vol_chr[64] = "";
-+			snprintf(vol_chr, sizeof(vol_chr)-1, "VOL: %d%%", (int)vol);
-+			ShowText(vol_chr);
+ 			int i;
+ 			unsigned char speaker[5] = {0x1C, 0x1C, 0x1C, 0x3E, 0x7F}; // speaker symbol
+ 			writeCG(0, speaker);
+@@ -800,15 +962,32 @@
+ 			char vol_chr[64] = "";
+ 			snprintf(vol_chr, sizeof(vol_chr)-1, "VOL: %d%%", (int)vol);
+ 			ShowText(vol_chr);
+-#elif defined (BOXMODEL_OCTAGON1008)
 +#elif defined (BOXMODEL_OCTAGON1008) \
 + || defined (BOXMODEL_HS7420) \
-+ || defined (BOXMODEL_HS7429) \
-+ || defined (BOXMODEL_DP7000)
-+			char vol_chr[64] = "";
++ || defined (BOXMODEL_HS7429)
+ 			char vol_chr[64] = "";
+-			snprintf(vol_chr, sizeof(vol_chr)-1, "VOL=%3d", (int)vol);
 +			snprintf(vol_chr, sizeof(vol_chr)-1, "VOL=%3d%%", (int)vol);
-+			ShowText(vol_chr);
+ 			ShowText(vol_chr);
+-#elif defined (BOXMODEL_HS7119) || defined (BOXMODEL_HS7810A) || defined (BOXMODEL_HS7819) || defined (BOXMODEL_CUBEREVO_250HD) || defined (BOXMODEL_IPBOX55)
 +#elif defined (BOXMODEL_HS7119) \
 + || defined (BOXMODEL_HS7810A) \
 + || defined (BOXMODEL_HS7819) \
 + || defined (BOXMODEL_CUBEREVO_250HD) \
 + || defined (BOXMODEL_IPBOX55) \
 + || defined (BOXMODEL_ADB_BOX)
-+			char vol_chr[64] = "";
-+			snprintf(vol_chr, sizeof(vol_chr)-1, "v%3d", (int)vol);
-+			ShowText(vol_chr);
+ 			char vol_chr[64] = "";
+ 			snprintf(vol_chr, sizeof(vol_chr)-1, "v%3d", (int)vol);
+ 			ShowText(vol_chr);
+-#elif defined (BOXMODEL_FORTIS_HDBOX) || defined (BOXMODEL_ATEVIO7500) || defined (BOXMODEL_UFS912) || defined (BOXMODEL_UFS913) || defined (BOXMODEL_CUBEREVO) || defined (BOXMODEL_CUBEREVO_MINI) || defined (BOXMODEL_CUBEREVO_MINI2) || defined (BOXMODEL_CUBEREVO_2000HD) || defined (BOXMODEL_CUBEREVO_3000HD) || defined (BOXMODEL_IPBOX9900) || defined (BOXMODEL_IPBOX99)
 +#elif defined (BOXMODEL_FORTIS_HDBOX) \
 + || defined (BOXMODEL_ATEVIO7500) \
 + || defined (BOXMODEL_UFS912) \
@@ -1075,24 +862,16 @@
 + || defined (BOXMODEL_CUBEREVO_3000HD) \
 + || defined (BOXMODEL_IPBOX9900) \
 + || defined (BOXMODEL_IPBOX99)
-+			char vol_chr[64] = "";
-+			snprintf(vol_chr, sizeof(vol_chr)-1, "Volume: %d%%", (int)vol);
-+			ShowText(vol_chr);
-+#endif
-+			oldpp = pp;
-+		}
-+#else
- 		ShowIcon(FP_ICON_FRAME, true);
- 		int pp = (vol * 8 + 50) / 100;
--		if(pp > 8) pp = 8;
--
+ 			char vol_chr[64] = "";
+ 			snprintf(vol_chr, sizeof(vol_chr)-1, "Volume: %d%%", (int)vol);
+ 			ShowText(vol_chr);
+@@ -820,15 +999,18 @@
+ 		int pp = (int) round((double) vol * (double) 8 / (double) 100);
+ 		if(pp > 8) pp = 8;
+ 
 -		if(force_update || oldpp != pp) {
 -printf("CVFD::showVolume: %d, bar %d\n", (int) vol, pp);
-+		if (pp > 8)
-+		{
-+			pp = 8;
-+		}
-+		if (force_update || oldpp != pp)
++		if(force_update || oldpp != pp)
 +		{
 +			printf("CVFD::showVolume: %d, bar %d\n", (int) vol, pp);
  			int i;
@@ -1104,26 +883,12 @@
  				j /= 2;
  			}
 -			for(;i < 8; i++) {
-+			for(; i < 8; i++)
++			for (;i < 8; i++)
 +			{
  				ShowIcon((fp_icon) j, false);
  				j /= 2;
  			}
- 			oldpp = pp;
- 		}
-+#endif
- 	}
- }
- 
- void CVFD::showPercentOver(const unsigned char perc, const bool /*perform_update*/, const MODES origin)
- {
-+#if HAVE_DUCKBOX_HARDWARE
-+	return;
-+#else
- 
- 	static int ppold = 0;
- 	if(!has_lcd) return;
-@@ -487,7 +1083,7 @@
+@@ -866,7 +1048,7 @@
  		if(pp > 8) pp = 8;
  
  		if(pp != ppold) {
@@ -1132,15 +897,7 @@
  			int i;
  			int j = 0x00000200;
  			for(i = 0; i < pp; i++) {
-@@ -501,6 +1097,7 @@
- 			ppold = pp;
- 		}
- 	}
-+#endif
- }
- 
- void CVFD::showMenuText(const int /*position*/, const char * ptext, const int /*highlight*/, const bool /*utf_encoded*/)
-@@ -518,7 +1115,7 @@
+@@ -898,7 +1080,7 @@
  	if(fd < 0) return;
  	if (mode != MODE_AUDIO)
  		return;
@@ -1149,46 +906,7 @@
  	ShowText(title.c_str());
  	wake_up();
  
-@@ -539,18 +1136,38 @@
- 		case AUDIO_MODE_PLAY:
- 			ShowIcon(FP_ICON_PLAY, true);
- 			ShowIcon(FP_ICON_PAUSE, false);
-+#ifdef HAVE_DUCKBOX_HARDWARE
-+			ShowIcon(FP_ICON_FF, false);
-+			ShowIcon(FP_ICON_FR, false);
-+#endif
- 			break;
- 		case AUDIO_MODE_STOP:
- 			ShowIcon(FP_ICON_PLAY, false);
- 			ShowIcon(FP_ICON_PAUSE, false);
-+#ifdef HAVE_DUCKBOX_HARDWARE
-+			ShowIcon(FP_ICON_FF, false);
-+			ShowIcon(FP_ICON_FR, false);
-+#endif
- 			break;
- 		case AUDIO_MODE_PAUSE:
- 			ShowIcon(FP_ICON_PLAY, false);
- 			ShowIcon(FP_ICON_PAUSE, true);
-+#ifdef HAVE_DUCKBOX_HARDWARE
-+			ShowIcon(FP_ICON_FF, false);
-+			ShowIcon(FP_ICON_FR, false);
-+#endif
- 			break;
- 		case AUDIO_MODE_FF:
-+#ifdef HAVE_DUCKBOX_HARDWARE
-+			ShowIcon(FP_ICON_FF, true);
-+			ShowIcon(FP_ICON_FR, false);
-+#endif
- 			break;
- 		case AUDIO_MODE_REV:
-+#ifdef HAVE_DUCKBOX_HARDWARE
-+			ShowIcon(FP_ICON_FF, false);
-+			ShowIcon(FP_ICON_FR, true);
-+#endif
- 			break;
- 	}
- 	wake_up();
-@@ -567,6 +1184,10 @@
+@@ -967,6 +1149,10 @@
  
  void CVFD::setMode(const MODES m, const char * const title)
  {
@@ -1199,15 +917,14 @@
  	if(fd < 0) return;
  
  	// Clear colon in display if it is still there
-@@ -583,7 +1204,39 @@
+@@ -983,7 +1169,38 @@
  		ShowIcon(FP_ICON_COL2, false);
  	}
  #endif
 -
 +#if defined (BOXMODEL_OCTAGON1008) \
 + || defined (BOXMODEL_HS7420) \
-+ || defined (BOXMODEL_HS7429) \
-+ || defined (BOXMODEL_DP7000)
++ || defined (BOXMODEL_HS7429)
 +	else if (mode == MODE_STANDBY)
 +	{
 +		ShowIcon(ICON_COLON2, true);
@@ -1240,7 +957,7 @@
  	if(strlen(title))
  		ShowText(title);
  	mode = m;
-@@ -605,6 +1258,10 @@
+@@ -1005,6 +1222,10 @@
  			showPercentOver(percentOver, false);
  			break;
  #endif
@@ -1251,20 +968,11 @@
  		}
  		showServicename(servicename);
  		showclock = true;
-@@ -665,7 +1322,9 @@
- #endif // VFD_UPDATE
- 	}
- 	wake_up();
-+#if !HAVE_DUCKBOX_HARDWARE
- 	setled();
-+#endif
- }
- 
- void CVFD::setBrightness(int bright)
-@@ -679,8 +1338,23 @@
+@@ -1086,7 +1307,16 @@
  int CVFD::getBrightness()
  {
  	//FIXME for old neutrino.conf
+-#if defined (BOXMODEL_OCTAGON1008) || defined (BOXMODEL_FORTIS_HDBOX) || defined (BOXMODEL_ATEVIO7500)
 +#if defined (BOXMODEL_OCTAGON1008) \
 + || defined (BOXMODEL_FORTIS_HDBOX) \
 + || defined (BOXMODEL_ATEVIO7500) \
@@ -1274,21 +982,15 @@
 + || defined (BOXMODEL_HS7119) \
 + || defined (BOXMODEL_HS7429) \
 + || defined (BOXMODEL_HS7819) \
-+ || defined (BOXMODEL_DP7000) \
 + || defined (BOXMODEL_ADB_BOX)
-+	if(g_settings.lcd_setting[SNeutrinoSettings::LCD_BRIGHTNESS] > 7)
-+		g_settings.lcd_setting[SNeutrinoSettings::LCD_BRIGHTNESS] = 7;
-+#else
- 	if(g_settings.lcd_setting[SNeutrinoSettings::LCD_BRIGHTNESS] > 15)
- 		g_settings.lcd_setting[SNeutrinoSettings::LCD_BRIGHTNESS] = 15;
-+#endif
- 
- 	return g_settings.lcd_setting[SNeutrinoSettings::LCD_BRIGHTNESS];
- }
-@@ -696,8 +1370,23 @@
+ 	if(g_settings.lcd_setting[SNeutrinoSettings::LCD_BRIGHTNESS] > 7)
+ 		g_settings.lcd_setting[SNeutrinoSettings::LCD_BRIGHTNESS] = 7;
+ #else
+@@ -1108,7 +1338,16 @@
  int CVFD::getBrightnessStandby()
  {
  	//FIXME for old neutrino.conf
+-#if defined (BOXMODEL_OCTAGON1008) || defined (BOXMODEL_FORTIS_HDBOX) || defined (BOXMODEL_ATEVIO7500)
 +#if defined (BOXMODEL_OCTAGON1008) \
 + || defined (BOXMODEL_FORTIS_HDBOX) \
 + || defined (BOXMODEL_ATEVIO7500) \
@@ -1298,21 +1000,15 @@
 + || defined (BOXMODEL_HS7119) \
 + || defined (BOXMODEL_HS7429) \
 + || defined (BOXMODEL_HS7819) \
-+ || defined (BOXMODEL_DP7000) \
 + || defined (BOXMODEL_ADB_BOX)
-+	if(g_settings.lcd_setting[SNeutrinoSettings::LCD_STANDBY_BRIGHTNESS] > 7)
-+		g_settings.lcd_setting[SNeutrinoSettings::LCD_STANDBY_BRIGHTNESS] = 7;
-+#else
- 	if(g_settings.lcd_setting[SNeutrinoSettings::LCD_STANDBY_BRIGHTNESS] > 15)
- 		g_settings.lcd_setting[SNeutrinoSettings::LCD_STANDBY_BRIGHTNESS] = 15;
-+#endif
- 	return g_settings.lcd_setting[SNeutrinoSettings::LCD_STANDBY_BRIGHTNESS];
- }
- 
-@@ -712,8 +1401,23 @@
+ 	if(g_settings.lcd_setting[SNeutrinoSettings::LCD_STANDBY_BRIGHTNESS] > 7)
+ 		g_settings.lcd_setting[SNeutrinoSettings::LCD_STANDBY_BRIGHTNESS] = 7;
+ #else
+@@ -1129,7 +1368,16 @@
  int CVFD::getBrightnessDeepStandby()
  {
  	//FIXME for old neutrino.conf
+-#if defined (BOXMODEL_OCTAGON1008) || defined (BOXMODEL_FORTIS_HDBOX) || defined (BOXMODEL_ATEVIO7500)
 +#if defined (BOXMODEL_OCTAGON1008) \
 + || defined (BOXMODEL_FORTIS_HDBOX) \
 + || defined (BOXMODEL_ATEVIO7500) \
@@ -1322,76 +1018,62 @@
 + || defined (BOXMODEL_HS7119) \
 + || defined (BOXMODEL_HS7429) \
 + || defined (BOXMODEL_HS7819) \
-+ || defined (BOXMODEL_DP7000) \
 + || defined (BOXMODEL_ADB_BOX)
-+	if(g_settings.lcd_setting[SNeutrinoSettings::LCD_DEEPSTANDBY_BRIGHTNESS] > 7)
-+		g_settings.lcd_setting[SNeutrinoSettings::LCD_DEEPSTANDBY_BRIGHTNESS] = 7;
-+#else
- 	if(g_settings.lcd_setting[SNeutrinoSettings::LCD_DEEPSTANDBY_BRIGHTNESS] > 15)
- 		g_settings.lcd_setting[SNeutrinoSettings::LCD_DEEPSTANDBY_BRIGHTNESS] = 15;
-+#endif
- 	return g_settings.lcd_setting[SNeutrinoSettings::LCD_DEEPSTANDBY_BRIGHTNESS];
- }
- 
-@@ -771,22 +1475,155 @@
- void CVFD::Clear()
- {
- 	if(fd < 0) return;
-+#if !HAVE_DUCKBOX_HARDWARE
- 	int ret = ioctl(fd, IOC_FP_CLEAR_ALL, 0);
- 	if(ret < 0)
- 		perror("IOC_FP_SET_TEXT");
+ 	if(g_settings.lcd_setting[SNeutrinoSettings::LCD_DEEPSTANDBY_BRIGHTNESS] > 7)
+ 		g_settings.lcd_setting[SNeutrinoSettings::LCD_DEEPSTANDBY_BRIGHTNESS] = 7;
+ #else
+@@ -1200,14 +1448,25 @@
  	else
  		text.clear();
-+#else
+ #else
+-#if defined (BOXMODEL_HS7810A) || defined (BOXMODEL_HS7119) || defined (BOXMODEL_HS7819) || defined (BOXMODEL_CUBEREVO_250HD) || defined (BOXMODEL_IPBOX55)
 +#if defined (BOXMODEL_HS7810A) \
 + || defined (BOXMODEL_HS7119) \
 + || defined (BOXMODEL_HS7819) \
 + || defined (BOXMODEL_CUBEREVO_250HD) \
 + || defined (BOXMODEL_IPBOX55)
-+	ShowText("    ");
+ 	ShowText("    ");
+-#elif defined (BOXMODEL_OCTAGON1008) || defined (BOXMODEL_TF7700)
 +#elif defined (BOXMODEL_OCTAGON1008) \
 + || defined (BOXMODEL_HS7420) \
 + || defined (BOXMODEL_HS7429) \
-+ || defined (BOXMODEL_DP7000) \
 + || defined (BOXMODEL_TF7700)
-+	ShowText("        ");
+ 	ShowText("        ");
+-#elif defined (BOXMODEL_FORTIS_HDBOX) || defined (BOXMODEL_ATEVIO7500)
 +#elif defined (BOXMODEL_FORTIS_HDBOX) \
 + || defined (BOXMODEL_ATEVIO7500)
-+	ShowText("            ");
+ 	ShowText("            ");
+-#elif defined (BOXMODEL_IPBOX9900) || defined (BOXMODEL_IPBOX99)
 +#elif defined (BOXMODEL_IPBOX9900) \
 + || defined (BOXMODEL_IPBOX99)
-+	ShowText("              ");
+ 	ShowText("              ");
 +#elif defined (BOXMODEL_ADB_BOX)
 +	ShowText("               ");
-+#elif !defined (BOXMODEL_HS7110)
-+	ShowText("                ");
-+#endif
-+#endif
- }
- 
+ #elif !defined (BOXMODEL_HS7110)
+ 	ShowText("                ");
+ #endif
+@@ -1217,25 +1476,52 @@
  void CVFD::ShowIcon(fp_icon icon, bool show)
  {
+ #if !HAVE_DUCKBOX_HARDWARE
 -	if(!has_lcd || fd < 0) return;
 -//printf("CVFD::ShowIcon %s %x\n", show ? "show" : "hide", (int) icon);
-+#if !HAVE_DUCKBOX_HARDWARE
-+	if (!has_lcd || fd < 0)
-+	{
++	if(!has_lcd || fd < 0)
 +		return;
-+	}
++
 +//	printf("CVFD::ShowIcon %s %02d\n", show ? "show" : "hide", (int) icon);
  	int ret = ioctl(fd, show ? IOC_FP_SET_ICON : IOC_FP_CLEAR_ICON, icon);
  	if(ret < 0)
  		perror(show ? "IOC_FP_SET_ICON" : "IOC_FP_CLEAR_ICON");
--}
--
-+#else
+ #else
+-#if defined (BOXMODEL_ATEVIO7500) || defined (BOXMODEL_HS7110) || defined (BOXMODEL_HS7810A) || defined (BOXMODEL_HS7119) || defined (BOXMODEL_HS7819)
 +    #if defined (BOXMODEL_HS7110)
-+	return;
+ 	return;
+-#endif
 +    #endif
-+	if (icon == 0)
-+		return;
-+
+ 	if (icon == 0)
+ 		return;
+ 
 +  #if !defined (BOXMODEL_OCTAGON1008) \
 +   && !defined (BOXMODEL_FORTIS_HDBOX) \
 +   && !defined (BOXMODEL_ATEVIO7500) \
@@ -1401,16 +1083,17 @@
 +   && !defined (BOXMODEL_HS7119) \
 +   && !defined (BOXMODEL_HS7429) \
 +   && !defined (BOXMODEL_HS7819) \
-+   && !defined (BOXMODEL_DP7000) \
 +   && !defined (BOXMODEL_ADB_BOX)
-+	if (active_icon[icon & 0x0F] == show)
-+		return;
-+	else
-+		active_icon[icon & 0x0F] = show;
+ 	if (active_icon[icon & 0x0F] == show)
+ 		return;
+ 	else
+ 		active_icon[icon & 0x0F] = show;
+-
+-	//printf("CVFD::ShowIcon %s %x\n", show ? "show" : "hide", (int) icon);
 +  #endif
 +//	printf("CVFD::ShowIcon %s #%02d\n", show ? "show" : "hide", (int) icon);
 +
-+	struct vfd_ioctl_data data;
+ 	struct vfd_ioctl_data data;
 +
 +  #if defined (BOXMODEL_ADB_BOX)
 +	if ((adb_led == 1 && icon == FP_ICON_CLOCK) || (adb_led == 0 && icon == FP_ICON_REC))
@@ -1425,83 +1108,75 @@
 +		write_to_vfd(VFDSETLED, &data);
 +	}  // and fall through to
 +  #endif
-+	memset(&data, 0, sizeof(struct vfd_ioctl_data));
-+	data.start = 0x00;
-+	data.data[0] = icon;
-+	data.data[4] = show;
-+	data.length = 5;
-+	write_to_vfd(VFDICONDISPLAYONOFF, &data);
-+	return;
-+#endif
-+}
-+
-+#ifdef HAVE_DUCKBOX_HARDWARE
-+void CVFD::ClearIcons()
-+{
+ 	memset(&data, 0, sizeof(struct vfd_ioctl_data));
+ 	data.start = 0x00;
+ 	data.data[0] = icon;
+@@ -1249,17 +1535,12 @@
+ #ifdef HAVE_DUCKBOX_HARDWARE
+ void CVFD::ClearIcons()
+ {
+-#if defined (BOXMODEL_ATEVIO7500) || defined (BOXMODEL_HS7110) || defined (BOXMODEL_HS7810A) || defined (BOXMODEL_HS7119) || defined (BOXMODEL_HS7819)
 +  #if defined (BOXMODEL_HS7110)
-+	return;
+ 	return;
+-#endif
+-	for (int id = 0x10; id < FP_ICON_MAX; id++) {
+-#if defined (BOXMODEL_OCTAGON1008)
 +  #endif
 +//	printf("CVFD::ClearIcons, min=%02d, max=%02d\n", FP_ICON_MIN, FP_ICON_MAX);
-+	for (int id = FP_ICON_MIN; id < FP_ICON_MAX; id++)
-+	{
-+		if (id != FP_ICON_USB && id != FP_ICON_HDD)
-+		{
-+			ShowIcon((fp_icon)id, false);
-+		}
-+	}
-+	return;
-+}
-+
-+void CVFD::ShowText(const char * str)
-+{
-+	memset(g_str, 0, sizeof(g_str));
-+	memcpy(g_str, str, sizeof(g_str)-1);
-+
++	for (int id = FP_ICON_MIN; id < FP_ICON_MAX; id++) {
+ 		if (id != FP_ICON_USB && id != FP_ICON_HDD)
+-#elif defined(BOXMODEL_FORTIS_HDBOX) || defined (BOXMODEL_TF7700)
+-		if (id != FP_ICON_USB)
+-#else
+-		if (id != 0x10 && id != 0x12)
+-#endif
+ 			ShowIcon((fp_icon)id, false);
+ 	}
+ 	return;
+@@ -1270,8 +1551,14 @@
+ 	memset(g_str, 0, sizeof(g_str));
+ 	memcpy(g_str, str, sizeof(g_str)-1);
+ 
 +	if (! str)
 +	{
 +		printf("CVFD::ShowText: str is NULL!\n");
 +		return;
 +	}
-+	int i = strlen(str);
+ 	int i = strlen(str);
+-	if (i > 63) {
 +	if (i > 63)
 +	{
-+		g_str[60] = '.';
-+		g_str[61] = '.';
-+		g_str[62] = '.';
-+		g_str[63] = '\0';
-+		i = 63;
-+	}
-+	ShowNormalText(g_str, false);
-+}
+ 		g_str[60] = '.';
+ 		g_str[61] = '.';
+ 		g_str[62] = '.';
+@@ -1280,14 +1567,15 @@
+ 	}
+ 	ShowNormalText(g_str, false);
+ }
 +
-+void CVFD::repaintIcons()
-+{
-+	char * model = g_info.hw_caps->boxname;
+ void CVFD::repaintIcons()
+ {
+ 	char * model = g_info.hw_caps->boxname;
+-	if(strstr(model, "ufs912") || strstr(model, "ufs913"))
 +	if (strstr(model, "ufs912") || strstr(model, "ufs913"))
-+	{
-+		bool tmp_icon[16] = {false};
-+		printf("VFD repaint icons boxmodel: %s\n", model);
+ 	{
+ 		bool tmp_icon[16] = {false};
+ 		printf("VFD repaint icons boxmodel: %s\n", model);
+-		for (int i = 0x10; i < FP_ICON_MAX; i++)
 +		for (int i = FP_ICON_MIN; i < FP_ICON_MAX; i++)
-+		{
-+			tmp_icon[i & 0x0F] = active_icon[i & 0x0F];
-+			active_icon[i & 0x0F] = false;
-+			ShowIcon((fp_icon)i, tmp_icon[i & 0x0F]);
-+		}
-+	}
-+}
+ 		{
+ 			tmp_icon[i & 0x0F] = active_icon[i & 0x0F];
+ 			active_icon[i & 0x0F] = false;
+@@ -1295,7 +1583,7 @@
+ 		}
+ 	}
+ }
+-#else
 +#else // non-duckbox
  void CVFD::ShowText(const char * str)
  {
  	if (fd < 0 || !support_text)
-@@ -816,6 +1653,7 @@
- 		perror("IOC_FP_SET_TEXT");
- 	}
- }
-+#endif
- 
- void CVFD::ShowNumber(int number)
- {
-@@ -825,11 +1663,26 @@
+@@ -1335,11 +1623,26 @@
  	if (number < 0)
  		return;
  	
@@ -1529,13 +1204,6 @@
  	}
  #endif
  }
-@@ -1158,5 +2011,4 @@
- }
- /*****************************************************************************************/
- #endif // VFD_UPDATE
--
--
-+//vim:ts=4
 #--- neutrino-mp-tangos/src/driver/pictureviewer/pictureviewer.cpp
 #+++ neutrino-mp-tangos/src/driver/pictureviewer/pictureviewer.cpp
 #@@ -566,8 +566,10 @@
@@ -1574,7 +1242,7 @@
   * portable conversion from/to string...
 --- neutrino-mp-tangos.org/src/gui/weather.h
 +++ neutrino-mp-tangos/src/gui/weather.h
-@@ -115,11 +115,11 @@
+@@ -116,11 +116,11 @@
  		};
  		std::string getCurrentPressure()
  		{
@@ -1588,7 +1256,7 @@
  		};
  		std::string getCurrentWindBearing()
  		{
-@@ -157,7 +157,7 @@
+@@ -158,7 +158,7 @@
  		{
  			if (i > (int)v_forecast.size())
  				i = (int)v_forecast.size();
@@ -1597,130 +1265,130 @@
  		};
  		std::string getForecastWindBearing(int i = 0)
  		{
-#--- neutrino-mp-tangos.org/src/gui/movieplayer.cpp
-#+++ neutrino-mp-tangos/src/gui/movieplayer.cpp
-#@@ -82,10 +82,10 @@
-# #include <iconv.h>
-# #include <libdvbsub/dvbsub.h>
-# #include <hardware/audio.h>
-#-#ifdef ENABLE_GRAPHLCD
-#-#include <driver/nglcd.h>
-#+//#ifdef ENABLE_GRAPHLCD
-#+//#include <driver/nglcd.h>
-# bool glcd_play = false;
-#-#endif
-#+//#endif
-# #include <gui/widget/stringinput_ext.h>
-# #include <gui/screensetup.h>
-# #include <gui/widget/msgbox.h>
-#@@ -1438,15 +1438,15 @@
-# #if HAVE_SH4_HARDWARE
-# 	old3dmode = frameBuffer->get3DMode();
-# #endif
-#-#ifdef ENABLE_GRAPHLCD
-#-	nGLCD::MirrorOSD(false);
-#-	if (p_movie_info)
-#-		nGLCD::lockChannel(p_movie_info->channelName, p_movie_info->epgTitle);
-#-	else {
-#-		glcd_play = true;
-#-		nGLCD::lockChannel(g_Locale->getText(LOCALE_MOVIEPLAYER_HEAD), file_name.c_str(), file_prozent);
-#-	}
-#-#endif
-#+//#ifdef ENABLE_GRAPHLCD
-#+//	nGLCD::MirrorOSD(false);
-#+//	if (p_movie_info)
-#+//		nGLCD::lockChannel(p_movie_info->channelName, p_movie_info->epgTitle);
-#+//	else {
-#+//		glcd_play = true;
-#+//		nGLCD::lockChannel(g_Locale->getText(LOCALE_MOVIEPLAYER_HEAD), file_name.c_str(), file_prozent);
-#+//	}
-#+//#endif
-# 	pthread_t thrStartHint = 0;
-# 	if (is_file_player) {
-# 		showStartingHint = true;
-#@@ -1671,14 +1671,14 @@
-# 
-# 	while (playstate >= CMoviePlayerGui::PLAY)
-# 	{
-#-#ifdef ENABLE_GRAPHLCD
-#-		if (p_movie_info)
-#-			nGLCD::lockChannel(p_movie_info->channelName, p_movie_info->epgTitle, duration ? (100 * position / duration) : 0);
-#-		else {
-#-			glcd_play = true;
-#-			nGLCD::lockChannel(g_Locale->getText(LOCALE_MOVIEPLAYER_HEAD), file_name.c_str(), file_prozent);
-#-		}
-#-#endif
-#+//#ifdef ENABLE_GRAPHLCD
-#+//		if (p_movie_info)
-#+//			nGLCD::lockChannel(p_movie_info->channelName, p_movie_info->epgTitle, duration ? (100 * position / duration) : 0);
-#+//		else {
-#+//			glcd_play = true;
-#+//			nGLCD::lockChannel(g_Locale->getText(LOCALE_MOVIEPLAYER_HEAD), file_name.c_str(), file_prozent);
-#+//		}
-#+//#endif
-# 		if (update_lcd || g_settings.movieplayer_display_playtime) {
-# 			update_lcd = false;
-# 			updateLcd(g_settings.movieplayer_display_playtime);
-#@@ -2262,12 +2262,12 @@
-# 	CScreenSetup cSS;
-# 	cSS.showBorder(CZapit::getInstance()->GetCurrentChannelID());
-# #endif
-#-#ifdef ENABLE_GRAPHLCD
-#-	if (p_movie_info || glcd_play == true) {
-#-		glcd_play = false;
-#-		nGLCD::unlockChannel();
-#-	}
-#-#endif
-#+//#ifdef ENABLE_GRAPHLCD
-#+//	if (p_movie_info || glcd_play == true) {
-#+//		glcd_play = false;
-#+//		nGLCD::unlockChannel();
-#+//	}
-#+//#endif
-# 	if (iso_file) {
-# 		iso_file = false;
-# 		if (umount2(ISO_MOUNT_POINT, MNT_FORCE))
-#@@ -2387,10 +2387,10 @@
-# 		}
-# 		if (!movie_info.channelName.empty() || !movie_info.epgTitle.empty())
-# 			p_movie_info = &movie_info;
-#-#ifdef ENABLE_GRAPHLCD
-#-		if (p_movie_info)
-#-			nGLCD::lockChannel(p_movie_info->channelName, p_movie_info->epgTitle);
-#-#endif
-#+//#ifdef ENABLE_GRAPHLCD
-#+//		if (p_movie_info)
-#+//			nGLCD::lockChannel(p_movie_info->channelName, p_movie_info->epgTitle);
-#+//#endif
-# 	}
-# 
-# 	if (p_movie_info) {
-#@@ -2905,10 +2905,10 @@
-# 		tuxtx_pause_subtitle(true);
-# 		frameBuffer->paintBackground();
-# 	}
-#-#ifdef ENABLE_GRAPHLCD
-#-	if (enable_glcd_mirroring)
-#-		nGLCD::MirrorOSD(g_settings.glcd_mirror_osd);
-#-#endif
-#+//#ifdef ENABLE_GRAPHLCD
-#+//	if (enable_glcd_mirroring)
-#+//		nGLCD::MirrorOSD(g_settings.glcd_mirror_osd);
-#+//#endif
-# #endif
-# }
-# 
-#@@ -2946,9 +2946,9 @@
-# {
-# #if HAVE_SH4_HARDWARE || HAVE_ARM_HARDWARE || HAVE_MIPS_HARDWARE
-# 	printf("[CMoviePlayerGui] %s: %s\n", __FUNCTION__, show ? "Show" : "Not show");
-#-#ifdef ENABLE_GRAPHLCD
-#-	nGLCD::MirrorOSD(false);
-#-#endif
-#+//#ifdef ENABLE_GRAPHLCD
-#+//	nGLCD::MirrorOSD(false);
-#+//#endif
-# 
-# 	if(!show)
-# 		return;
-#
+--- neutrino-mp-tangos.org/src/gui/movieplayer.cpp
++++ neutrino-mp-tangos/src/gui/movieplayer.cpp
+@@ -82,10 +82,10 @@
+ #include <iconv.h>
+ #include <libdvbsub/dvbsub.h>
+ #include <hardware/audio.h>
+-#ifdef ENABLE_GRAPHLCD
+-#include <driver/nglcd.h>
++//#ifdef ENABLE_GRAPHLCD
++//#include <driver/nglcd.h>
+ bool glcd_play = false;
+-#endif
++//#endif
+ #include <gui/widget/stringinput_ext.h>
+ #include <gui/screensetup.h>
+ #include <gui/widget/msgbox.h>
+@@ -1446,15 +1446,15 @@
+ #if HAVE_SH4_HARDWARE
+ 	old3dmode = frameBuffer->get3DMode();
+ #endif
+-#ifdef ENABLE_GRAPHLCD
+-	nGLCD::MirrorOSD(false);
+-	if (p_movie_info)
+-		nGLCD::lockChannel(p_movie_info->channelName, p_movie_info->epgTitle);
+-	else {
+-		glcd_play = true;
+-		nGLCD::lockChannel(g_Locale->getText(LOCALE_MOVIEPLAYER_HEAD), file_name.c_str(), file_prozent);
+-	}
+-#endif
++//#ifdef ENABLE_GRAPHLCD
++//	nGLCD::MirrorOSD(false);
++//	if (p_movie_info)
++//		nGLCD::lockChannel(p_movie_info->channelName, p_movie_info->epgTitle);
++//	else {
++//		glcd_play = true;
++//		nGLCD::lockChannel(g_Locale->getText(LOCALE_MOVIEPLAYER_HEAD), file_name.c_str(), file_prozent);
++//	}
++//#endif
+ 	pthread_t thrStartHint = 0;
+ 	if (is_file_player) {
+ 		showStartingHint = true;
+@@ -1672,14 +1672,14 @@
+ 
+ 	while (playstate >= CMoviePlayerGui::PLAY)
+ 	{
+-#ifdef ENABLE_GRAPHLCD
+-		if (p_movie_info)
+-			nGLCD::lockChannel(p_movie_info->channelName, p_movie_info->epgTitle, duration ? (100 * position / duration) : 0);
+-		else {
+-			glcd_play = true;
+-			nGLCD::lockChannel(g_Locale->getText(LOCALE_MOVIEPLAYER_HEAD), file_name.c_str(), file_prozent);
+-		}
+-#endif
++//#ifdef ENABLE_GRAPHLCD
++//		if (p_movie_info)
++//			nGLCD::lockChannel(p_movie_info->channelName, p_movie_info->epgTitle, duration ? (100 * position / duration) : 0);
++//		else {
++//			glcd_play = true;
++//			nGLCD::lockChannel(g_Locale->getText(LOCALE_MOVIEPLAYER_HEAD), file_name.c_str(), file_prozent);
++//		}
++//#endif
+ 		if (update_lcd || g_settings.movieplayer_display_playtime) {
+ 			update_lcd = false;
+ 			updateLcd(g_settings.movieplayer_display_playtime);
+@@ -2254,12 +2254,12 @@
+ 	CScreenSetup cSS;
+ 	cSS.showBorder(CZapit::getInstance()->GetCurrentChannelID());
+ #endif
+-#ifdef ENABLE_GRAPHLCD
+-	if (p_movie_info || glcd_play == true) {
+-		glcd_play = false;
+-		nGLCD::unlockChannel();
+-	}
+-#endif
++//#ifdef ENABLE_GRAPHLCD
++//	if (p_movie_info || glcd_play == true) {
++//		glcd_play = false;
++//		nGLCD::unlockChannel();
++//	}
++//#endif
+ 	if (iso_file) {
+ 		iso_file = false;
+ 		if (umount2(ISO_MOUNT_POINT, MNT_FORCE))
+@@ -2379,10 +2379,10 @@
+ 		}
+ 		if (!movie_info.channelName.empty() || !movie_info.epgTitle.empty())
+ 			p_movie_info = &movie_info;
+-#ifdef ENABLE_GRAPHLCD
+-		if (p_movie_info)
+-			nGLCD::lockChannel(p_movie_info->channelName, p_movie_info->epgTitle);
+-#endif
++//#ifdef ENABLE_GRAPHLCD
++//		if (p_movie_info)
++//			nGLCD::lockChannel(p_movie_info->channelName, p_movie_info->epgTitle);
++//#endif
+ 	}
+ 
+ 	if (p_movie_info) {
+@@ -2910,10 +2910,10 @@
+ 		tuxtx_pause_subtitle(true);
+ 		frameBuffer->paintBackground();
+ 	}
+-#ifdef ENABLE_GRAPHLCD
+-	if (enable_glcd_mirroring)
+-		nGLCD::MirrorOSD(g_settings.glcd_mirror_osd);
+-#endif
++//#ifdef ENABLE_GRAPHLCD
++//	if (enable_glcd_mirroring)
++//		nGLCD::MirrorOSD(g_settings.glcd_mirror_osd);
++//#endif
+ #endif
+ }
+ 
+@@ -2951,9 +2951,9 @@
+ {
+ #if HAVE_SH4_HARDWARE || HAVE_ARM_HARDWARE || HAVE_MIPS_HARDWARE
+ 	printf("[CMoviePlayerGui] %s: %s\n", __FUNCTION__, show ? "Show" : "Not show");
+-#ifdef ENABLE_GRAPHLCD
+-	nGLCD::MirrorOSD(false);
+-#endif
++//#ifdef ENABLE_GRAPHLCD
++//	nGLCD::MirrorOSD(false);
++//#endif
+ 
+ 	if(!show)
+ 		return;
+
