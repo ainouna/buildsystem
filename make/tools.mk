@@ -84,11 +84,11 @@ $(D)/tools-evremote2: $(D)/bootstrap
 	$(TOUCH)
 
 #
-# fortis_eeprom
+# eeprom_fortis
 #
-$(D)/tools-fortis_eeprom: $(D)/bootstrap
+$(D)/tools-eeprom-fortis: $(D)/bootstrap
 	$(START_BUILD)
-	$(SET) -e; cd $(TOOLS_DIR)/fortis_eeprom; \
+	$(SET) -e; cd $(TOOLS_DIR)/eeprom_fortis; \
 		if [ ! -d m4 ]; then mkdir m4; fi; \
 		$(CONFIGURE_TOOLS) \
 			--prefix= \
@@ -126,11 +126,11 @@ $(D)/tools-hotplug: $(D)/bootstrap
 	$(TOUCH)
 
 #
-# ipbox_eeprom
+# eeprom_ipbox
 #
-$(D)/tools-ipbox_eeprom: $(D)/bootstrap
+$(D)/tools-eeprom-ipbox: $(D)/bootstrap
 	$(START_BUILD)
-	$(SET) -e; cd $(TOOLS_DIR)/ipbox_eeprom; \
+	$(SET) -e; cd $(TOOLS_DIR)/eeprom_ipbox; \
 		if [ ! -d m4 ]; then mkdir m4; fi; \
 		$(CONFIGURE_TOOLS) \
 			--prefix= \
