@@ -29,7 +29,7 @@ printenv:
 	@echo "ARCHIVE_DIR      : $(ARCHIVE)"
 	@echo "BASE_DIR         : $(BASE_DIR)"
 	@echo "CUSTOM_DIR       : $(CUSTOM_DIR)"
-	@echo "APPS_DIR         : $(APPS_DIR)"
+	@echo "TOOLS_DIR        : $(TOOLS_DIR)"
 	@echo "DRIVER_DIR       : $(DRIVER_DIR)"
 	@echo "FLASH_DIR        : $(FLASH_DIR)"
 	@echo "CROSS_DIR        : $(CROSS_DIR)"
@@ -98,7 +98,7 @@ help:
 	@echo ""
 	@echo "later, you might find these useful:"
 	@echo "* make update-self         - update the build system"
-	@echo "* make update              - update the build system, apps, driver and flash"
+	@echo "* make update              - update the build system, tools, driver and flash"
 	@echo ""
 	@echo "cleantargets:"
 	@echo "make clean                 - Clears everything except kernel."
@@ -167,11 +167,11 @@ update:
 	@if test -d $(TOOLS_DIR); then \
 		cd $(TOOLS_DIR)/; \
 		echo '==================================================================='; \
-		echo '      updating $(GIT_NAME_APPS)-tools git repository'; \
+		echo '      updating $(GIT_NAME_TOOLS)-tools git repository'; \
 		echo '==================================================================='; \
 		echo; \
 		if [ "$(GIT_STASH_PULL)" = "stashpull" ]; then \
-			git stash && git stash show -p > ./pull-stash-apps.patch || true && git pull && git stash pop || true; \
+			git stash && git stash show -p > ./pull-stash-tools.patch || true && git pull && git stash pop || true; \
 		else \
 			git pull; \
 		fi; \

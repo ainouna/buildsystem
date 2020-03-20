@@ -140,11 +140,11 @@ $(D)/tools-ipbox_eeprom: $(D)/bootstrap
 	$(TOUCH)
 
 #
-# libeplayer3
+# libeplayer3_org
 # CAUTION: name is misleading; builds a library and an executable
-$(D)/tools-libeplayer3: $(D)/bootstrap $(D)/ffmpeg $(D)/libass
+$(D)/tools-libeplayer3_org: $(D)/bootstrap $(D)/ffmpeg $(D)/libass
 	$(START_BUILD)
-	$(SET) -e; cd $(TOOLS_DIR)/libeplayer3; \
+	$(SET) -e; cd $(TOOLS_DIR)/libeplayer3_org; \
 		if [ ! -d m4 ]; then mkdir m4; fi; \
 		$(CONFIGURE_TOOLS) \
 			--prefix=/usr \
@@ -154,11 +154,11 @@ $(D)/tools-libeplayer3: $(D)/bootstrap $(D)/ffmpeg $(D)/libass
 	$(TOUCH)
 
 #
-# libeplayer3_new
+# libeplayer3
 #
-$(D)/tools-libeplayer3_new: $(D)/bootstrap $(D)/ffmpeg
+$(D)/tools-libeplayer3: $(D)/bootstrap $(D)/ffmpeg
 	$(START_BUILD)
-	$(SET) -e; cd $(TOOLS_DIR)/libeplayer3_new; \
+	$(SET) -e; cd $(TOOLS_DIR)/libeplayer3; \
 		if [ ! -d m4 ]; then mkdir m4; fi; \
 		autoreconf -fi $(SILENT_OPT); \
 		$(CONFIGURE) \

@@ -400,7 +400,7 @@ ifeq ($(DESTINATION), USB)
 	$(SILENT)grep -v "CONFIG_BLK_DEV_INITRD" "$(KERNEL_DIR)/.config" > $(KERNEL_DIR)/.config.tmp
 	$(SILENT)cp $(KERNEL_DIR)/.config.tmp $(KERNEL_DIR)/.config
 	$(SILENT)echo "CONFIG_BLK_DEV_INITRD=y " >> $(KERNEL_DIR)/.config
-	$(SILENT)echo "CONFIG_INITRAMFS_SOURCE=\"$(APPS_DIR)/tools/USB_boot/initramfs_no_hdd\"" >> $(KERNEL_DIR)/.config
+	$(SILENT)echo "CONFIG_INITRAMFS_SOURCE=\"$(TOOLS_DIR)/USB_boot/initramfs_no_hdd\"" >> $(KERNEL_DIR)/.config
 	$(SILENT)echo "CONFIG_INITRAMFS_ROOT_UID=0" >> $(KERNEL_DIR)/.config
 	$(SILENT)echo "CONFIG_INITRAMFS_ROOT_GID=0" >> $(KERNEL_DIR)/.config
 	$(SILENT)echo "CONFIG_RD_GZIP=y" >> $(KERNEL_DIR)/.config
@@ -424,7 +424,7 @@ ifeq ($(DESTINATION), HDD)
 	$(SILENT)grep -v "CONFIG_BLK_DEV_INITRD" "$(KERNEL_DIR)/.config" > $(KERNEL_DIR)/.config.tmp
 	$(SILENT)cp $(KERNEL_DIR)/.config.tmp $(KERNEL_DIR)/.config
 	$(SILENT)echo "CONFIG_BLK_DEV_INITRD=y " >> $(KERNEL_DIR)/.config
-	$(SILENT)echo "CONFIG_INITRAMFS_SOURCE=\"$(APPS_DIR)/tools/HDD_boot/initramfs\"" >> $(KERNEL_DIR)/.config
+	$(SILENT)echo "CONFIG_INITRAMFS_SOURCE=\"$(TOOLS_DIR)/HDD_boot/initramfs\"" >> $(KERNEL_DIR)/.config
 	$(SILENT)echo "CONFIG_INITRAMFS_ROOT_UID=0" >> $(KERNEL_DIR)/.config
 	$(SILENT)echo "CONFIG_INITRAMFS_ROOT_GID=0" >> $(KERNEL_DIR)/.config
 	$(SILENT)echo "CONFIG_RD_GZIP=y" >> $(KERNEL_DIR)/.config

@@ -266,7 +266,7 @@ SERVICEMP3EPL_CPPFLAGS += -I$(KERNEL_DIR)/include
 SERVICEMP3EPL_PATCH     = build-enigma2/enigma2-servicemp3epl-$(SERVICEMP3EPL_VER).patch
 
 ifeq ($(MEDIAFW), eplayer3)
-SERVICEMP3EPL_DEPS     += $(D)/tools-libeplayer3_new
+SERVICEMP3EPL_DEPS     += $(D)/tools-libeplayer3
 SERVICEMP3EPL_CONF     += --enable-libeplayer3
 endif
 
@@ -277,7 +277,7 @@ SERVICEMP3EPL_CONF     += --enable-gstreamer
 endif
 
 ifeq ($(MEDIAFW), gst-eplayer3)
-SERVICEMP3EPL_DEPS     += $(D)/tools-libeplayer3_new
+SERVICEMP3EPL_DEPS     += $(D)/tools-libeplayer3
 SERVICEMP3EPL_DEPS     += $(D)/gstreamer $(D)/gst_plugins_base $(D)/gst_plugins_multibox_dvbmediasink
 SERVICEMP3EPL_DEPS     += $(D)/gst_plugins_good $(D)/gst_plugins_bad $(D)/gst_plugins_ugly
 SERVICEMP3EPL_CONF     += --enable-libeplayer3
@@ -285,7 +285,7 @@ SERVICEMP3EPL_CONF     += --enable-gstreamer
 endif
 
 ifeq ($(MEDIAFW), gst-eplayer3-dual)
-SERVICEMP3EPL_DEPS     += $(D)/tools-libeplayer3_new
+SERVICEMP3EPL_DEPS     += $(D)/tools-libeplayer3
 SERVICEMP3EPL_DEPS     += $(D)/gstreamer $(D)/gst_plugins_base $(D)/gst_plugins_multibox_dvbmediasink
 SERVICEMP3EPL_DEPS     += $(D)/gst_plugins_good $(D)/gst_plugins_bad $(D)/gst_plugins_ugly
 SERVICEMP3EPL_CONF     += --enable-dual_mediafw

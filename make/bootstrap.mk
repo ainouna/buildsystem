@@ -226,12 +226,12 @@ $(DRIVER_DIR):
 		cp -rf ~/pti_np/* $(DRIVER_DIR)/pti_np; \
 	fi
 	
-$(APPS_DIR):
+$(TOOLS_DIR):
 	@echo '===================================================================='
 	@echo '      Cloning $(GIT_NAME_TOOLS)-tools git repository'
 	@echo '===================================================================='
 	@if [ ! -e $(TOOLS_DIR)/.git ]; then \
-		git clone $(MINUS_Q) $(GITHUB)/$(GIT_NAME_TOOLS)/tools.git apps; \
+		git clone $(MINUS_Q) $(GITHUB)/$(GIT_NAME_TOOLS)/tools.git tools; \
 	fi
 
 $(FLASH_DIR):
