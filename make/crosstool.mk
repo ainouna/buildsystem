@@ -141,7 +141,7 @@ crosstool-ng: directories $(ARCHIVE)/$(CROSSTOOL_NG_SOURCE)
 		sed -i "s@^CT_PARALLEL_JOBS=.*@CT_PARALLEL_JOBS=$$NUM_CPUS@" .config; \
 		export CT_ARCHIVE=$(ARCHIVE); \
 		export CT_BASE_DIR=$(CROSS_BASE); \
-		export LD_LIBRARY_PATH= ; \
+		export LD_LIBRARY_PATH=; \
 		test -f ./configure || ./bootstrap; \
 		./configure --enable-local; \
 		MAKELEVEL=0 make; \
@@ -154,10 +154,10 @@ crosstool-ng: directories $(ARCHIVE)/$(CROSSTOOL_NG_SOURCE)
 	$(TOUCH)
 
 crossmenuconfig: directories $(ARCHIVE)/$(CROSSTOOL_NG_SOURCE)
+	$(START_BUILD)
 	$(REMOVE)/crosstool-ng
 	$(UNTAR)/$(CROSSTOOL_NG_SOURCE)
 	$(SET) -e; unset CONFIG_SITE; cd $(BUILD_TMP)/crosstool-ng; \
-		$(START_BUILD)
 		cp -a $(PATCHES)/ct-ng/crosstool-ng-$(CROSSTOOL_NG_VER).config .config; \
 		test -f ./configure || ./bootstrap && \
 		./configure --enable-local; \

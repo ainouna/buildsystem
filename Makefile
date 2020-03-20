@@ -164,10 +164,10 @@ update:
 		fi; \
 	fi
 	@echo;
-	@if test -d $(APPS_DIR); then \
-		cd $(APPS_DIR)/; \
+	@if test -d $(TOOLS_DIR); then \
+		cd $(TOOLS_DIR)/; \
 		echo '==================================================================='; \
-		echo '      updating $(GIT_NAME_APPS)-apps git repository'; \
+		echo '      updating $(GIT_NAME_APPS)-tools git repository'; \
 		echo '==================================================================='; \
 		echo; \
 		if [ "$(GIT_STASH_PULL)" = "stashpull" ]; then \
