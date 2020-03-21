@@ -4,6 +4,7 @@
 tools-clean:
 	rm -f $(D)/tools-*
 	-$(MAKE) -C $(TOOLS_DIR)/aio-grab distclean
+	-$(MAKE) -C $(TOOLS_DIR)/gitVCInfo distclean
 	-$(MAKE) -C $(TOOLS_DIR)/satfind distclean
 	-$(MAKE) -C $(TOOLS_DIR)/showiframe distclean
 	-$(MAKE) -C $(TOOLS_DIR)/minimon distclean
@@ -98,6 +99,20 @@ $(D)/tools-eeprom-fortis: $(D)/bootstrap
 	$(TOUCH)
 
 #
+# eeprom_ipbox
+#
+$(D)/tools-eeprom-ipbox: $(D)/bootstrap
+	$(START_BUILD)
+	$(SET) -e; cd $(TOOLS_DIR)/eeprom_ipbox; \
+		if [ ! -d m4 ]; then mkdir m4; fi; \
+		$(CONFIGURE_TOOLS) \
+			--prefix= \
+		; \
+		$(MAKE); \
+		$(MAKE) install DESTDIR=$(TARGET_DIR)
+	$(TOUCH)
+
+#
 # fp_control
 #
 $(D)/tools-fp_control: $(D)/bootstrap
@@ -112,13 +127,13 @@ $(D)/tools-fp_control: $(D)/bootstrap
 	$(TOUCH)
 
 #
-# hotplug
+# gitVCInfo
 #
-$(D)/tools-hotplug: $(D)/bootstrap
+$(D)/tools-gitVCInfo: $(D)/bootstrap
 	$(START_BUILD)
-	$(SET) -e; cd $(TOOLS_DIR)/hotplug; \
+	$(SET) -e; cd $(TOOLS_DIR)/gitVCInfo; \
 		if [ ! -d m4 ]; then mkdir m4; fi; \
-		$(CONFIGURE_TOOLS) \
+		$(CONFIGURE_TOOLS) CPPFLAGS="$(CPPFLAGS)" \
 			--prefix= \
 		; \
 		$(MAKE); \
@@ -126,11 +141,11 @@ $(D)/tools-hotplug: $(D)/bootstrap
 	$(TOUCH)
 
 #
-# eeprom_ipbox
+# hotplug
 #
-$(D)/tools-eeprom-ipbox: $(D)/bootstrap
+$(D)/tools-hotplug: $(D)/bootstrap
 	$(START_BUILD)
-	$(SET) -e; cd $(TOOLS_DIR)/eeprom_ipbox; \
+	$(SET) -e; cd $(TOOLS_DIR)/hotplug; \
 		if [ ! -d m4 ]; then mkdir m4; fi; \
 		$(CONFIGURE_TOOLS) \
 			--prefix= \
@@ -398,10 +413,12 @@ $(D)/tools-own-tools: $(D)/bootstrap $(D)/libcurl
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
 	$(TOUCH)
 
-TOOLS  = $(D)/tools-devinit
+TOOLS  = $(D)/tools-aio-grab
+TOOLS += $(D)/tools-devinit
 TOOLS += $(D)/tools-evremote2
 #TOOLS += $(D)/tools-exteplayer3
 TOOLS += $(D)/tools-showiframe
+#TOOLS += $(D)/tools-gitVCInfo
 TOOLS += $(D)/tools-hotplug
 TOOLS += $(D)/tools-stfbcontrol
 TOOLS += $(D)/tools-ustslave
