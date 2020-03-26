@@ -1,4 +1,4 @@
-# revision bf5ceafdfc684ceafd40a7286da094b0f5cb276f 29/09/2019 14:07
+# revision 4d853c931badcca8d7851209c75db0a6dfe47e67 29/11/2019 19:41
 --- enigma2.org/configure.ac
 +++ enigma2/configure.ac
 @@ -18,6 +18,7 @@
@@ -5083,7 +5083,7 @@
  		self.max_idle_time = 0
  		self.idle_running = False
 @@ -82,25 +82,30 @@
- 			self.card = "sdhci" in self.phys_path
+ 			self.card = "sdhci" in self.phys_path or "mmc" in self.device
  
  		elif self.type == DEVTYPE_DEVFS:
 -			tmp = readFile(self.sysfsPath('dev')).split(':')
@@ -5122,7 +5122,7 @@
 +			print "[Harddisk] self.type =", self.type
  
  		print "[Harddisk] new device", self.device, '->', self.dev_path, '->', self.disk_path
- 		if not removable and not self.card:
+ 		if (self.internal or not removable) and not self.card:
  			self.startIdle()
 +		Console().ePopen(("mount", "mount", "-a"))
  
@@ -5351,7 +5351,7 @@
  		return job
  
  	def initialize(self):
-@@ -650,16 +724,19 @@
+@@ -660,16 +728,19 @@
  				self.devices_scanned_on_init.append((blockdev, removable, is_cdrom, medium_found))
  
  	def getAutofsMountpoint(self, device):
@@ -5375,7 +5375,7 @@
  		return None
  
  	def addHotplugPartition(self, device, physdev = None):
-@@ -675,6 +752,10 @@
+@@ -685,6 +756,10 @@
  		error, blacklisted, removable, is_cdrom, partitions, medium_found = self.getBlockDevInfo(device)
  		if not blacklisted and medium_found:
  			description = self.getUserfriendlyDeviceName(device, physdev)
@@ -5386,7 +5386,7 @@
  			p = Partition(mountpoint = self.getMountpoint(device), description = description, force_mounted = True, device = device)
  			self.partitions.append(p)
  			if p.mountpoint: # Plugins won't expect unmounted devices
-@@ -767,7 +848,7 @@
+@@ -777,7 +852,7 @@
  		try:
  			description = readFile("/sys" + phys + "/model")
  		except IOError, s:
@@ -5395,7 +5395,7 @@
  		# not wholedisk and not partition 1
  		if part and part != 1:
  			description += _(" (Partition %d)") % part
-@@ -808,7 +889,7 @@
+@@ -818,7 +893,7 @@
  			dev = self.hdd.disk_path.split('/')[-1]
  			open('/dev/nomount.%s' % dev, "wb").close()
  		except Exception, e:
@@ -5404,7 +5404,7 @@
  		self.setTool('umount')
  		self.args.append('-f')
  		for dev in self.hdd.enumMountDevices():
-@@ -816,7 +897,7 @@
+@@ -826,7 +901,7 @@
  			self.postconditions.append(Task.ReturncodePostcondition())
  			self.mountpoints.append(dev)
  		if not self.mountpoints:
@@ -5413,7 +5413,7 @@
  			self.cmd = 'true'
  			self.args = [self.cmd]
  	def afterRun(self):
-@@ -824,7 +905,7 @@
+@@ -834,7 +909,7 @@
  			try:
  				os.rmdir(path)
  			except Exception, ex:
@@ -5422,7 +5422,7 @@
  
  class MountTask(Task.LoggingTask):
  	def __init__(self, job, hdd):
-@@ -835,7 +916,7 @@
+@@ -845,7 +920,7 @@
  			dev = self.hdd.disk_path.split('/')[-1]
  			os.unlink('/dev/nomount.%s' % dev)
  		except Exception, e:
@@ -5431,7 +5431,7 @@
  		# try mounting through fstab first
  		if self.hdd.mount_device is None:
  			dev = self.hdd.partitionPath("1")
-@@ -864,7 +945,7 @@
+@@ -874,7 +949,7 @@
  	def prepare(self):
  		self.fsck_state = None
  	def processOutput(self, data):
@@ -5556,35 +5556,35 @@
  		if x[0] == orbpos:
 --- enigma2-nightly.org/lib/python/Components/SystemInfo.py
 +++ enigma2-nightly/lib/python/Components/SystemInfo.py
-@@ -37,28 +37,28 @@
+@@ -42,28 +42,28 @@
  SystemInfo["ZapMode"] = fileCheck("/proc/stb/video/zapmode") or fileCheck("/proc/stb/video/zapping_mode")
  SystemInfo["NumFrontpanelLEDs"] = countFrontpanelLEDs()
  SystemInfo["FrontpanelDisplay"] = fileExists("/dev/dbox/oled0") or fileExists("/dev/dbox/lcd0")
--SystemInfo["LCDsymbol_circle_recording"] = fileCheck("/proc/stb/lcd/symbol_circle") or HardwareInfo().get_device_model() in ("hd51", "vs1500") and fileCheck("/proc/stb/lcd/symbol_recording")
+-SystemInfo["LCDsymbol_circle_recording"] = fileCheck("/proc/stb/lcd/symbol_circle") or model in ("hd51", "vs1500") and fileCheck("/proc/stb/lcd/symbol_recording")
 +SystemInfo["LCDsymbol_circle_recording"] = fileCheck("/proc/stb/lcd/symbol_circle")
  SystemInfo["LCDsymbol_timeshift"] = fileCheck("/proc/stb/lcd/symbol_timeshift")
- SystemInfo["LCDshow_symbols"] = (HardwareInfo().get_device_model().startswith("et9") or HardwareInfo().get_device_model() in ("hd51", "vs1500")) and fileCheck("/proc/stb/lcd/show_symbols")
- SystemInfo["LCDsymbol_hdd"] = HardwareInfo().get_device_model() in ("hd51", "vs1500") and fileCheck("/proc/stb/lcd/symbol_hdd")
+ SystemInfo["LCDshow_symbols"] = (model.startswith("et9") or model in ("hd51", "vs1500")) and fileCheck("/proc/stb/lcd/show_symbols")
+ SystemInfo["LCDsymbol_hdd"] = model in ("hd51", "vs1500") and fileCheck("/proc/stb/lcd/symbol_hdd")
  SystemInfo["FrontpanelDisplayGrayscale"] = fileExists("/dev/dbox/oled0")
 -SystemInfo["DeepstandbySupport"] = HardwareInfo().get_device_name() != "dm800"
-+SystemInfo["DeepstandbySupport"] = True
++SystemInfo["DeepstandbySupport"] = HardwareInfo().get_device_name() != "adb_box"
  SystemInfo["Fan"] = fileCheck("/proc/stb/fp/fan")
  SystemInfo["FanPWM"] = SystemInfo["Fan"] and fileCheck("/proc/stb/fp/fan_pwm")
  SystemInfo["PowerLED"] = fileCheck("/proc/stb/power/powerled")
  SystemInfo["StandbyLED"] = fileCheck("/proc/stb/power/standbyled")
  SystemInfo["SuspendLED"] = fileCheck("/proc/stb/power/suspendled")
  SystemInfo["Display"] = SystemInfo["FrontpanelDisplay"] or SystemInfo["StandbyLED"]
--SystemInfo["PowerOffDisplay"] = HardwareInfo().get_device_model() not in "formuler1" and fileCheck("/proc/stb/power/vfd") or fileCheck("/proc/stb/lcd/vfd")
+-SystemInfo["PowerOffDisplay"] = model not in "formuler1" and fileCheck("/proc/stb/power/vfd") or fileCheck("/proc/stb/lcd/vfd")
 +SystemInfo["PowerOffDisplay"] = fileCheck("/proc/stb/power/vfd") or fileCheck("/proc/stb/lcd/vfd")
- SystemInfo["WakeOnLAN"] = not HardwareInfo().get_device_model().startswith("et8000") and fileCheck("/proc/stb/power/wol") or fileCheck("/proc/stb/fp/wol")
- SystemInfo["HasExternalPIP"] = not (HardwareInfo().get_device_model().startswith("et9") or HardwareInfo().get_device_model() in ('e4hd',)) and fileCheck("/proc/stb/vmpeg/1/external")
+ SystemInfo["WakeOnLAN"] = not model.startswith("et8000") and fileCheck("/proc/stb/power/wol") or fileCheck("/proc/stb/fp/wol")
+ SystemInfo["HasExternalPIP"] = not (model.startswith("et9") or model in ('e4hd',)) and fileCheck("/proc/stb/vmpeg/1/external")
  SystemInfo["VideoDestinationConfigurable"] = fileExists("/proc/stb/vmpeg/0/dst_left")
  SystemInfo["hasPIPVisibleProc"] = fileCheck("/proc/stb/vmpeg/1/visible")
- SystemInfo["MaxPIPSize"] = HardwareInfo().get_device_model() in ('hd51', 'h7', 'vs1500', 'e4hd') and (360, 288) or (540, 432)
--SystemInfo["VFD_scroll_repeats"] = not HardwareInfo().get_device_model().startswith("et8500") and fileCheck("/proc/stb/lcd/scroll_repeats")
--SystemInfo["VFD_scroll_delay"] = not HardwareInfo().get_device_model().startswith("et8500") and fileCheck("/proc/stb/lcd/scroll_delay")
--SystemInfo["VFD_initial_scroll_delay"] = not HardwareInfo().get_device_model().startswith("et8500") and fileCheck("/proc/stb/lcd/initial_scroll_delay")
--SystemInfo["VFD_final_scroll_delay"] = not HardwareInfo().get_device_model().startswith("et8500") and fileCheck("/proc/stb/lcd/final_scroll_delay")
+ SystemInfo["MaxPIPSize"] = model in ('hd51', 'h7', 'vs1500', 'e4hd') and (360, 288) or (540, 432)
+-SystemInfo["VFD_scroll_repeats"] = not model.startswith("et8500") and fileCheck("/proc/stb/lcd/scroll_repeats")
+-SystemInfo["VFD_scroll_delay"] = not model.startswith("et8500") and fileCheck("/proc/stb/lcd/scroll_delay")
+-SystemInfo["VFD_initial_scroll_delay"] = not model.startswith("et8500") and fileCheck("/proc/stb/lcd/initial_scroll_delay")
+-SystemInfo["VFD_final_scroll_delay"] = not model.startswith("et8500") and fileCheck("/proc/stb/lcd/final_scroll_delay")
 +SystemInfo["VFD_scroll_repeats"] = fileCheck("/proc/stb/lcd/scroll_repeats")
 +SystemInfo["VFD_scroll_delay"] = fileCheck("/proc/stb/lcd/scroll_delay")
 +SystemInfo["VFD_initial_scroll_delay"] = fileCheck("/proc/stb/lcd/initial_scroll_delay")
@@ -5592,35 +5592,33 @@
  SystemInfo["LcdLiveTV"] = fileCheck("/proc/stb/fb/sd_detach") or fileCheck("/proc/stb/lcd/live_enable")
  SystemInfo["LcdLiveTVMode"] = fileCheck("/proc/stb/lcd/mode")
  SystemInfo["LcdLiveDecoder"] = fileCheck("/proc/stb/lcd/live_decoder")
-@@ -67,7 +67,7 @@
+@@ -72,7 +72,7 @@
  SystemInfo["3DZNorm"] = fileCheck("/proc/stb/fb/znorm") or fileCheck("/proc/stb/fb/primary/zoffset")
  SystemInfo["Blindscan_t2_available"] = fileCheck("/proc/stb/info/vumodel")
- SystemInfo["RcTypeChangable"] = not(HardwareInfo().get_device_model().startswith('et8500') or HardwareInfo().get_device_model().startswith('et7')) and pathExists('/proc/stb/ir/rc/type')
--SystemInfo["HasFullHDSkinSupport"] = HardwareInfo().get_device_model() not in ("et4000", "et5000", "sh1", "hd500c", "hd1100", "xp1000", "lc")
-+SystemInfo["HasFullHDSkinSupport"] = HardwareInfo().get_device_model() in ("atevio7500", "cuberevo", "cuberevo_mini-fta", "cuberevo-250hd", "cuberevo-mini", "cuberevo-mini2", "cuberevo-2000hd", "cuberevo-3000hd", "cuberevo-9500hd", "hdbox", "hs7110", "hs7420", "hs7810a", "hs7119", "hs7429", "hs7819", "octagon1008", "spark", "spark7162", "tf7700hdpvr", "ufs912", "ufs913")
+ SystemInfo["RcTypeChangable"] = not(model.startswith('et8500') or model.startswith('et7')) and pathExists('/proc/stb/ir/rc/type')
+-SystemInfo["HasFullHDSkinSupport"] = model not in ("et4000", "et5000", "sh1", "hd500c", "hd1100", "xp1000", "lc")
++SystemInfo["HasFullHDSkinSupport"] = HardwareInfo().get_device_model() in ("adb_box", "atevio7500", "cuberevo", "cuberevo_mini-fta", "cuberevo-250hd", "cuberevo-mini", "cuberevo-mini2", "cuberevo-2000hd", "cuberevo-3000hd", "cuberevo-9500hd", "hdbox", "hs7110", "hs7420", "hs7810a", "hs7119", "hs7429", "hs7819", "octagon1008", "spark", "spark7162", "tf7700hdpvr", "ufs912", "ufs913, vitamin_hd5000")
  SystemInfo["HasBypassEdidChecking"] = fileCheck("/proc/stb/hdmi/bypass_edid_checking")
  SystemInfo["HasColorspace"] = fileCheck("/proc/stb/video/hdmi_colorspace")
- SystemInfo["HasColorspaceSimple"] = SystemInfo["HasColorspace"] and HardwareInfo().get_device_model() in "vusolo4k"
-@@ -75,19 +75,19 @@
- SystemInfo["HasMMC"] = fileExists("/proc/cmdline") and "root=/dev/mmcblk" in open("/proc/cmdline", "r").read()
+ SystemInfo["HasColorspaceSimple"] = SystemInfo["HasColorspace"] and model in "vusolo4k"
+@@ -80,7 +80,7 @@
+ SystemInfo["HasMMC"] = "root" in cmdline and cmdline["root"].startswith('/dev/mmcblk')
  SystemInfo["HasTranscoding"] = pathExists("/proc/stb/encoder/0") or fileCheck("/dev/bcm_enc0")
  SystemInfo["HasH265Encoder"] = fileHas("/proc/stb/encoder/0/vcodec_choices", "h265")
--SystemInfo["CanNotDoSimultaneousTranscodeAndPIP"] = HardwareInfo().get_device_model() in "vusolo4k"
+-SystemInfo["CanNotDoSimultaneousTranscodeAndPIP"] = model in "vusolo4k"
 +SystemInfo["CanNotDoSimultaneousTranscodeAndPIP"] = False
  SystemInfo["HasColordepth"] = fileCheck("/proc/stb/video/hdmi_colordepth")
--SystemInfo["HasFrontDisplayPicon"] = HardwareInfo().get_device_model() in ("vusolo4k", "et8500")
-+SystemInfo["HasFrontDisplayPicon"] = False
+ SystemInfo["HasFrontDisplayPicon"] = model in ("vusolo4k", "et8500")
  SystemInfo["Has24hz"] = fileCheck("/proc/stb/video/videomode_24hz")
--SystemInfo["Has2160p"] = fileHas("/proc/stb/video/videomode_preferred", "2160p50")
-+SystemInfo["Has2160p"] = False
+@@ -88,11 +88,11 @@
  SystemInfo["HasHDMIpreemphasis"] = fileCheck("/proc/stb/hdmi/preemphasis")
  SystemInfo["HasColorimetry"] = fileCheck("/proc/stb/video/hdmi_colorimetry")
  SystemInfo["HasHdrType"] = fileCheck("/proc/stb/video/hdmi_hdrtype")
 -SystemInfo["HasHDMI-CEC"] = HardwareInfo().has_hdmi() and fileExists("/usr/lib/enigma2/python/Plugins/SystemPlugins/HdmiCEC/plugin.pyo") and (fileExists("/dev/cec0") or fileExists("/dev/hdmi_cec") or fileExists("/dev/misc/hdmi_cec0"))
--SystemInfo["HasYPbPr"] = HardwareInfo().get_device_model() in ("dm8000", "et5000", "et6000", "et6500", "et9000", "et9200", "et9500", "et10000", "formuler1", "mbtwinplus", "spycat", "vusolo", "vuduo", "vuduo2", "vuultimo")
--SystemInfo["HasScart"] = HardwareInfo().get_device_model() in ("dm8000", "et4000", "et6500", "et8000", "et9000", "et9200", "et9500", "et10000", "formuler1", "hd1100", "hd1200", "hd1265", "hd2400", "vusolo", "vusolo2", "vuduo", "vuduo2", "vuultimo", "vuuno", "xp1000")
--SystemInfo["HasSVideo"] = HardwareInfo().get_device_model() in ("dm8000")
--SystemInfo["HasComposite"] = HardwareInfo().get_device_model() not in ("i55", "gbquad4k", "gbue4k", "hd1500", "osnino", "osninoplus", "purehd", "purehdse", "revo4k", "vusolo4k", "vuzero4k")
+-SystemInfo["HasYPbPr"] = model in ("dm8000", "et5000", "et6000", "et6500", "et9000", "et9200", "et9500", "et10000", "formuler1", "mbtwinplus", "spycat", "vusolo", "vuduo", "vuduo2", "vuultimo")
+-SystemInfo["HasScart"] = model in ("dm8000", "et4000", "et6500", "et8000", "et9000", "et9200", "et9500", "et10000", "formuler1", "hd1100", "hd1200", "hd1265", "hd2400", "vusolo", "vusolo2", "vuduo", "vuduo2", "vuultimo", "vuuno", "xp1000")
+-SystemInfo["HasSVideo"] = model in ("dm8000")
+-SystemInfo["HasComposite"] = model not in ("i55", "gbquad4k", "gbue4k", "hd1500", "osnino", "osninoplus", "purehd", "purehdse", "revo4k", "vusolo4k", "vuzero4k")
 +SystemInfo["HasHDMI-CEC"] = fileExists("/lib/modules/cec.ko") and (fileExists("proc/stb/cec/send") or fileExists("stb/hdmi/cec"))
 +SystemInfo["HasYPbPr"] = HardwareInfo().get_device_model() in ("adb_box", "atevio7500", "cuberevo", "cuberevo-mini-fta", "cuberevo-250hd", "cuberevo-mini", "cuberevo-mini2", "cuberevo-2000hd", "cuberevo-3000hd", "cuberevo-9500hd", "hdbox", "octagon1008", "hs7420", "hs7429", "tf7700hdpvr", "ufs912", "ufs913", "vitamin_hd5000")
 +SystemInfo["HasScart"] = HardwareInfo().get_device_model() not in ("hs7110", "hs7119")
@@ -5629,13 +5627,13 @@
  SystemInfo["HasAutoVolume"] = fileExists("/proc/stb/audio/avl_choices") and fileCheck("/proc/stb/audio/avl")
  SystemInfo["HasAutoVolumeLevel"] = fileExists("/proc/stb/audio/autovolumelevel_choices") and fileCheck("/proc/stb/audio/autovolumelevel")
  SystemInfo["Has3DSurround"] = fileExists("/proc/stb/audio/3d_surround_choices") and fileCheck("/proc/stb/audio/3d_surround")
-@@ -97,9 +97,9 @@
- SystemInfo["hasXcoreVFD"] = HardwareInfo().get_device_model() in ('osmega','spycat4k','spycat4kmini','spycat4kcombo') and fileCheck("/sys/module/brcmstb_%s/parameters/pt6302_cgram" % HardwareInfo().get_device_model())
- SystemInfo["HasOfflineDecoding"] = HardwareInfo().get_device_model() not in ('osmini', 'osminiplus', 'et7000mini', 'et11000', 'mbmicro', 'mbtwinplus', 'mbmicrov2', 'et7000', 'et8500')
- SystemInfo["HasRootSubdir"] = fileHas("/proc/cmdline", "rootsubdir=")
--SystemInfo["canMultiBoot"] = SystemInfo["HasRootSubdir"] and (1, 4, "mmcblk0", False) or fileHas("/proc/cmdline", "_4.boxmode=") and (1, 4, "mmcblk0", False) or HardwareInfo().get_device_model() in ('gbue4k', 'gbquad4k') and (3, 3, "mmcblk0", True) or HardwareInfo().get_device_model() in ('e4hd') and (1, 4, "mmcblk0", False) or HardwareInfo().get_device_model() in ('osmio4k', 'osmio4kplus') and (1, 4, "mmcblk1", True)
--SystemInfo["canMode12"] = fileHas("/proc/cmdline", "_4.boxmode=1 ") and '192M' or fileHas("/proc/cmdline", "_4.boxmode=12") and '192M'
--SystemInfo["canFlashWithOfgwrite"] = not(HardwareInfo().get_device_model().startswith("dm"))
+@@ -102,9 +102,9 @@
+ SystemInfo["hasXcoreVFD"] = model in ('osmega','spycat4k','spycat4kmini','spycat4kcombo') and fileCheck("/sys/module/brcmstb_%s/parameters/pt6302_cgram" % model)
+ SystemInfo["HasOfflineDecoding"] = model not in ('osmini', 'osminiplus', 'et7000mini', 'et11000', 'mbmicro', 'mbtwinplus', 'mbmicrov2', 'et7000', 'et8500')
+ SystemInfo["HasRootSubdir"] = "rootsubdir" in cmdline
+-SystemInfo["canMultiBoot"] = SystemInfo["HasRootSubdir"] and (1, 4, "mmcblk0", False) or "%s_4.boxmode" % model in cmdline and (1, 4, "mmcblk0", False) or model in ('gbue4k', 'gbquad4k') and (3, 3, "mmcblk0", True) or model in ('e4hd') and (1, 4, "mmcblk0", False) or model in ('osmio4k', 'osmio4kplus') and (1, 4, "mmcblk1", True)
+-SystemInfo["canMode12"] = "%s_4.boxmode" % model in cmdline and cmdline["%s_4.boxmode" % model] in ("1","12") and "192M"
+-SystemInfo["canFlashWithOfgwrite"] = not(model.startswith("dm"))
 +SystemInfo["canMultiBoot"] = False
 +SystemInfo["canMode12"] = False
 +SystemInfo["canFlashWithOfgwrite"] = False
@@ -5830,7 +5828,7 @@
 +	plugin.py
 --- enigma2.org/lib/python/Plugins/Extensions/CuberevoVFD/plugin.py
 +++ enigma2/lib/python/Plugins/Extensions/CuberevoVFD/plugin.py
-@@ -0,0 +1,338 @@
+@@ -0,0 +1,339 @@
 +from Screens.Screen import Screen
 +from Screens.MessageBox import MessageBox
 +from Plugins.Plugin import PluginDescriptor
@@ -5851,7 +5849,7 @@
 +from re import compile as re_compile, search as re_search
 +
 +import os
-+#Version 190317.1
++#Version 191204.1
 +
 +try:
 +	DisplayType = evfd.getInstance().getVfdType()
@@ -6118,16 +6116,17 @@
 +		return True
 +
 +	def __evSeekableStatusChanged(self):
-+		tmp = self.getTimeshiftState()
-+		if tmp == self.tsEnabled:
-+			return
-+		if tmp:
-+			print "[Timeshift enabled]"
-+			evfd.getInstance().vfd_set_icon(0x1A,True)
-+		else:
-+			print "[Timeshift disabled]"
-+			evfd.getInstance().vfd_set_icon(0x1A,False)
-+		self.tsEnabled = tmp
++		if not os.path.exists('/proc/stb/lcd/symbol/timeshift'):
++			tmp = self.getTimeshiftState()
++			if tmp == self.tsEnabled:
++				return
++			if tmp:
++				print "[Timeshift enabled]"
++				evfd.getInstance().vfd_set_icon(0x1A,True)
++			else:
++				print "[Timeshift disabled]"
++				evfd.getInstance().vfd_set_icon(0x1A,False)
++			self.tsEnabled = tmp
 +		
 +	def shutdown(self):
 +		self.abort()
@@ -6230,7 +6229,7 @@
 +	plugin.py
 --- enigma2.org/lib/python/Plugins/Extensions/TopfieldVFD/plugin.py
 +++ enigma2/lib/python/Plugins/Extensions/TopfieldVFD/plugin.py
-@@ -0,0 +1,458 @@
+@@ -0,0 +1,459 @@
 +from Screens.Screen import Screen
 +from Screens.MessageBox import MessageBox
 +from Plugins.Plugin import PluginDescriptor
@@ -6254,7 +6253,7 @@
 +from re import compile as re_compile, search as re_search
 +from time import time, localtime, strftime
 +from Components.UsageConfig import defaultMoviePath
-+from os import statvfs
++import os
 +import array
 +
 +my_global_session = None
@@ -6597,22 +6596,23 @@
 +		return True
 +
 +	def __evSeekableStatusChanged(self):
-+		tmp = self.getTimeshiftState()
-+		if tmp == self.tsEnabled:
-+			return
-+		try:
-+			fd = open("/dev/fpc")
-+			if tmp:
-+				print "[Timeshift enabled]"
-+				fcntl.ioctl(fd.fileno(), ioIconCmd, ioTimeshiftOn)
-+			else:
-+				print "[Timeshift disabled]"
-+				fcntl.ioctl(fd.fileno(), ioIconCmd, ioTimeshiftOff)
-+			fd.close()
-+		except IOError,e:
-+			if debug:
-+				print "TopfieldVFD: __evSeekableStatusChanged ", e
-+			self.tsEnabled = tmp
++		if not os.path.exists('/proc/stb/lcd/symbol/timeshift'):
++			tmp = self.getTimeshiftState()
++			if tmp == self.tsEnabled:
++				return
++			try:
++				fd = open("/dev/fpc")
++				if tmp:
++					print "[Timeshift enabled]"
++					fcntl.ioctl(fd.fileno(), ioIconCmd, ioTimeshiftOn)
++				else:
++					print "[Timeshift disabled]"
++					fcntl.ioctl(fd.fileno(), ioIconCmd, ioTimeshiftOff)
++				fd.close()
++			except IOError,e:
++				if debug:
++					print "TopfieldVFD: __evSeekableStatusChanged ", e
++				self.tsEnabled = tmp
 +
 +	def gotRecordEvent(self, service, event):
 +		recs = self.session.nav.getRecordings()
@@ -7379,7 +7379,7 @@
  from Components.ActionMap import NumberActionMap, ActionMap, HelpableActionMap
  from Components.MenuList import MenuList
  from Components.ServiceEventTracker import ServiceEventTracker, InfoBarBase
-@@ -125,7 +130,7 @@
+@@ -122,7 +127,7 @@
  		self.csel = csel
  		self.bsel = None
  		if self.isProtected():
@@ -7388,170 +7388,7 @@
  
  		self["actions"] = ActionMap(["OkCancelActions", "ColorActions", "NumberActions", "MenuActions"],
  			{
-@@ -158,7 +163,7 @@
- 		self.parentalControl = parentalControl
- 		self.parentalControlEnabled = config.ParentalControl.servicepin[0].value and config.ParentalControl.servicepinactive.value
- 		if not (current_sel_path or current_sel_flags & (eServiceReference.isDirectory|eServiceReference.isMarker)) or current_sel_flags & eServiceReference.isGroup:
--			append_when_current_valid(current, menu, (_("show transponder info"), self.showServiceInformations), level=2)
-+			append_when_current_valid(current, menu, (_("Show transponder info"), self.showServiceInformations), level=2)
- 		if csel.bouquet_mark_edit == OFF and not csel.entry_marked:
- 			if not inBouquetRootList:
- 				isPlayable = not (current_sel_flags & (eServiceReference.isMarker|eServiceReference.isDirectory))
-@@ -166,17 +171,17 @@
- 					for p in plugins.getPlugins(PluginDescriptor.WHERE_CHANNEL_CONTEXT_MENU):
- 						append_when_current_valid(current, menu, (p.name, boundFunction(self.runPlugin, p)), key="bullet")
- 					if config.servicelist.startupservice.value == current.toString():
--						append_when_current_valid(current, menu, (_("stop using as startup service"), self.unsetStartupService), level=0)
-+						append_when_current_valid(current, menu, (_("Stop using as startup service"), self.unsetStartupService), level=0)
- 					else:
--						append_when_current_valid(current, menu, (_("set as startup service"), self.setStartupService), level=0)
-+						append_when_current_valid(current, menu, (_("Set as startup service"), self.setStartupService), level=0)
- 					if self.parentalControlEnabled:
- 						if self.parentalControl.getProtectionLevel(current.toCompareString()) == -1:
--							append_when_current_valid(current, menu, (_("add to parental protection"), boundFunction(self.addParentalProtection, current)), level=0)
-+							append_when_current_valid(current, menu, (_("Add to parental protection"), boundFunction(self.addParentalProtection, current)), level=0)
- 						else:
- 							if self.parentalControl.isServiceProtectionBouquet(current.toCompareString()):
--								append_when_current_valid(current, menu, (_("service is in bouquet parental protection"), self.cancelClick), level=0)
-+								append_when_current_valid(current, menu, (_("Service is in bouquet parental protection"), self.cancelClick), level=0)
- 							else:
--								append_when_current_valid(current, menu, (_("remove from parental protection"), boundFunction(self.removeParentalProtection, current)), level=0)
-+								append_when_current_valid(current, menu, (_("Remove from parental protection"), boundFunction(self.removeParentalProtection, current)), level=0)
- 						if self.parentalControl.blacklist and config.ParentalControl.hideBlacklist.value and not self.parentalControl.sessionPinCached and config.ParentalControl.storeservicepin.value != "never":
- 							append_when_current_valid(current, menu, (_("Unhide parental control services"), self.unhideParentalServices), level=0, key="1")
- 					if SystemInfo["3DMode"] and fileExists("/usr/lib/enigma2/python/Plugins/SystemPlugins/OSD3DSetup/plugin.pyo"):
-@@ -203,93 +208,93 @@
- 						else:
- 							bouquetCnt = len(bouquets)
- 						if not self.inBouquet or bouquetCnt > 1:
--							append_when_current_valid(current, menu, (_("add service to bouquet"), self.addServiceToBouquetSelected), level=0, key="5")
-+							append_when_current_valid(current, menu, (_("Add service to bouquet"), self.addServiceToBouquetSelected), level=0, key="5")
- 							self.addFunction = self.addServiceToBouquetSelected
- 						if not self.inBouquet:
--							append_when_current_valid(current, menu, (_("remove entry"), self.removeEntry), level = 0, key="8")
-+							append_when_current_valid(current, menu, (_("Remove entry"), self.removeEntry), level = 0, key="8")
- 							self.removeFunction = self.removeSatelliteService
- 					else:
- 						if not self.inBouquet:
--							append_when_current_valid(current, menu, (_("add service to favourites"), self.addServiceToBouquetSelected), level=0, key="5")
-+							append_when_current_valid(current, menu, (_("Add service to favourites"), self.addServiceToBouquetSelected), level=0, key="5")
- 							self.addFunction = self.addServiceToBouquetSelected
- 					if SystemInfo["PIPAvailable"]:
- 						self.PiPAvailable = True
- 						if self.csel.dopipzap:
--							append_when_current_valid(current, menu, (_("play in mainwindow"), self.playMain), level=0, key="red")
-+							append_when_current_valid(current, menu, (_("Play in mainwindow"), self.playMain), level=0, key="red")
- 						else:
--							append_when_current_valid(current, menu, (_("play as picture in picture"), self.showServiceInPiP), level=0, key="blue")
--					append_when_current_valid(current, menu, (_("find currently played service"), self.findCurrentlyPlayed), level=0, key="3")
-+							append_when_current_valid(current, menu, (_("Play as picture in picture"), self.showServiceInPiP), level=0, key="blue")
-+					append_when_current_valid(current, menu, (_("Find currently played service"), self.findCurrentlyPlayed), level=0, key="3")
- 				else:
- 					if 'FROM SATELLITES' in current_root.getPath() and current and _("Services") in eServiceCenter.getInstance().info(current).getName(current):
- 						unsigned_orbpos = current.getUnsignedData(4) >> 16
- 						if unsigned_orbpos == 0xFFFF:
--							append_when_current_valid(current, menu, (_("remove cable services"), self.removeSatelliteServices), level = 0)
-+							append_when_current_valid(current, menu, (_("Remove cable services"), self.removeSatelliteServices), level = 0)
- 						elif unsigned_orbpos == 0xEEEE:
--							append_when_current_valid(current, menu, (_("remove terrestrial services"), self.removeSatelliteServices), level = 0)
-+							append_when_current_valid(current, menu, (_("Remove terrestrial services"), self.removeSatelliteServices), level = 0)
- 						else:
--							append_when_current_valid(current, menu, (_("remove selected satellite"), self.removeSatelliteServices), level = 0)
-+							append_when_current_valid(current, menu, (_("Remove selected satellite"), self.removeSatelliteServices), level = 0)
- 					if haveBouquets:
- 						if not self.inBouquet and not "PROVIDERS" in current_sel_path:
--							append_when_current_valid(current, menu, (_("copy to bouquets"), self.copyCurrentToBouquetList), level=0)
-+							append_when_current_valid(current, menu, (_("Copy to bouquets"), self.copyCurrentToBouquetList), level=0)
- 					if ("flags == %d" %(FLAG_SERVICE_NEW_FOUND)) in current_sel_path:
--						append_when_current_valid(current, menu, (_("remove all new found flags"), self.removeAllNewFoundFlags), level=0)
-+						append_when_current_valid(current, menu, (_("Remove all new found flags"), self.removeAllNewFoundFlags), level=0)
- 				if self.inBouquet:
--					append_when_current_valid(current, menu, (_("rename entry"), self.renameEntry), level=0, key="2")
-+					append_when_current_valid(current, menu, (_("Rename entry"), self.renameEntry), level=0, key="2")
- 					if not inAlternativeList:
--						append_when_current_valid(current, menu, (_("remove entry"), self.removeEntry), level=0, key="8")
-+						append_when_current_valid(current, menu, (_("Remove entry"), self.removeEntry), level=0, key="8")
- 						self.removeFunction = self.removeCurrentService
- 				if current_root and ("flags == %d" %(FLAG_SERVICE_NEW_FOUND)) in current_root.getPath():
--					append_when_current_valid(current, menu, (_("remove new found flag"), self.removeNewFoundFlag), level=0)
-+					append_when_current_valid(current, menu, (_("Remove new found flag"), self.removeNewFoundFlag), level=0)
- 			else:
- 					if self.parentalControlEnabled:
- 						if self.parentalControl.blacklist and config.ParentalControl.hideBlacklist.value and not self.parentalControl.sessionPinCached and config.ParentalControl.storeservicepin.value != "never":
- 							append_when_current_valid(current, menu, (_("Unhide parental control services"), self.unhideParentalServices), level=0, key="1")
- 						if self.parentalControl.getProtectionLevel(current.toCompareString()) == -1:
--							append_when_current_valid(current, menu, (_("add bouquet to parental protection"), boundFunction(self.addParentalProtection, current)), level=0)
-+							append_when_current_valid(current, menu, (_("Add bouquet to parental protection"), boundFunction(self.addParentalProtection, current)), level=0)
- 						else:
--							append_when_current_valid(current, menu, (_("remove bouquet from parental protection"), boundFunction(self.removeParentalProtection, current)), level=0)
--					menu.append(ChoiceEntryComponent("dummy", (_("add bouquet"), self.showBouquetInputBox)))
--					append_when_current_valid(current, menu, (_("rename entry"), self.renameEntry), level=0, key="2")
--					append_when_current_valid(current, menu, (_("remove entry"), self.removeEntry), level=0, key="8")
-+							append_when_current_valid(current, menu, (_("Remove bouquet from parental protection"), boundFunction(self.removeParentalProtection, current)), level=0)
-+					menu.append(ChoiceEntryComponent("dummy", (_("Add bouquet"), self.showBouquetInputBox)))
-+					append_when_current_valid(current, menu, (_("Rename entry"), self.renameEntry), level=0, key="2")
-+					append_when_current_valid(current, menu, (_("Remove entry"), self.removeEntry), level=0, key="8")
- 					self.removeFunction = self.removeBouquet
- 					if removed_userbouquets_available():
--						append_when_current_valid(current, menu, (_("purge deleted userbouquets"), self.purgeDeletedBouquets), level=0)
--						append_when_current_valid(current, menu, (_("restore deleted userbouquets"), self.restoreDeletedBouquets), level=0)
-+						append_when_current_valid(current, menu, (_("Purge deleted userbouquets"), self.purgeDeletedBouquets), level=0)
-+						append_when_current_valid(current, menu, (_("Restore deleted userbouquets"), self.restoreDeletedBouquets), level=0)
- 		if self.inBouquet: # current list is editable?
- 			if csel.bouquet_mark_edit == OFF:
- 				if csel.movemode:
--					append_when_current_valid(current, menu, (_("disable move mode"), self.toggleMoveMode), level=0, key="6")
-+					append_when_current_valid(current, menu, (_("Dsable move mode"), self.toggleMoveMode), level=0, key="6")
- 				else:
--					append_when_current_valid(current, menu, (_("enable move mode"), self.toggleMoveMode), level=0, key="6")
-+					append_when_current_valid(current, menu, (_("Enable move mode"), self.toggleMoveMode), level=0, key="6")
- 				if not csel.entry_marked and not inBouquetRootList and current_root and not (current_root.flags & eServiceReference.isGroup):
- 					if current.type != -1:
--						menu.append(ChoiceEntryComponent("dummy", (_("add marker"), self.showMarkerInputBox)))
-+						menu.append(ChoiceEntryComponent("dummy", (_("Add marker"), self.showMarkerInputBox)))
- 					if not csel.movemode:
- 						if haveBouquets:
--							append_when_current_valid(current, menu, (_("enable bouquet edit"), self.bouquetMarkStart), level=0)
-+							append_when_current_valid(current, menu, (_("Enable bouquet edit"), self.bouquetMarkStart), level=0)
- 						else:
--							append_when_current_valid(current, menu, (_("enable favourite edit"), self.bouquetMarkStart), level=0)
-+							append_when_current_valid(current, menu, (_("Enable favourite edit"), self.bouquetMarkStart), level=0)
- 					if current_sel_flags & eServiceReference.isGroup:
--						append_when_current_valid(current, menu, (_("edit alternatives"), self.editAlternativeServices), level=2)
--						append_when_current_valid(current, menu, (_("show alternatives"), self.showAlternativeServices), level=2)
--						append_when_current_valid(current, menu, (_("remove all alternatives"), self.removeAlternativeServices), level=2)
-+						append_when_current_valid(current, menu, (_("Edit alternatives"), self.editAlternativeServices), level=2)
-+						append_when_current_valid(current, menu, (_("Show alternatives"), self.showAlternativeServices), level=2)
-+						append_when_current_valid(current, menu, (_("Remove all alternatives"), self.removeAlternativeServices), level=2)
- 					elif not current_sel_flags & eServiceReference.isMarker:
--						append_when_current_valid(current, menu, (_("add alternatives"), self.addAlternativeServices), level=2)
-+						append_when_current_valid(current, menu, (_("Add alternatives"), self.addAlternativeServices), level=2)
- 			else:
- 				if csel.bouquet_mark_edit == EDIT_BOUQUET:
- 					if haveBouquets:
- 						append_when_current_valid(current, menu, (_("end bouquet edit"), self.bouquetMarkEnd), level=0)
--						append_when_current_valid(current, menu, (_("abort bouquet edit"), self.bouquetMarkAbort), level=0)
-+						append_when_current_valid(current, menu, (_("Abort bouquet edit"), self.bouquetMarkAbort), level=0)
- 					else:
--						append_when_current_valid(current, menu, (_("end favourites edit"), self.bouquetMarkEnd), level=0)
--						append_when_current_valid(current, menu, (_("abort favourites edit"), self.bouquetMarkAbort), level=0)
-+						append_when_current_valid(current, menu, (_("End favourites edit"), self.bouquetMarkEnd), level=0)
-+						append_when_current_valid(current, menu, (_("Abort favourites edit"), self.bouquetMarkAbort), level=0)
- 					if current_sel_flags & eServiceReference.isMarker:
--						append_when_current_valid(current, menu, (_("rename entry"), self.renameEntry), level=0, key="2")
--						append_when_current_valid(current, menu, (_("remove entry"), self.removeEntry), level=0, key="8")
-+						append_when_current_valid(current, menu, (_("Rename entry"), self.renameEntry), level=0, key="2")
-+						append_when_current_valid(current, menu, (_("Remove entry"), self.removeEntry), level=0, key="8")
- 						self.removeFunction = self.removeCurrentService
- 				else:
--					append_when_current_valid(current, menu, (_("end alternatives edit"), self.bouquetMarkEnd), level=0)
--					append_when_current_valid(current, menu, (_("abort alternatives edit"), self.bouquetMarkAbort), level=0)
-+					append_when_current_valid(current, menu, (_("End alternatives edit"), self.bouquetMarkEnd), level=0)
-+					append_when_current_valid(current, menu, (_("Abort alternatives edit"), self.bouquetMarkAbort), level=0)
- 
- 		menu.append(ChoiceEntryComponent("menu", (_("Configuration..."), self.openSetup)))
- 		self["menu"] = ChoiceList(menu)
-@@ -336,7 +341,7 @@
+@@ -333,7 +338,7 @@
  		if answer:
  			self.csel.protectContextMenu = False
  		elif answer is not None:
@@ -7560,7 +7397,7 @@
  		else:
  			self.close()
  
-@@ -480,7 +485,7 @@
+@@ -477,7 +482,7 @@
  		self.close()
  
  	def removeParentalProtection(self, service):
@@ -7569,7 +7406,7 @@
  
  	def pinEntered(self, service, answer):
  		if answer:
-@@ -489,13 +494,13 @@
+@@ -486,13 +491,13 @@
  				self.csel.servicelist.resetRoot()
  			self.close()
  		elif answer is not None:
@@ -7585,7 +7422,7 @@
  		else:
  			self.unhideParentalServicesCallback(True)
  
-@@ -508,7 +513,7 @@
+@@ -505,7 +510,7 @@
  			self.csel.servicelist.setCurrent(service)
  			self.close()
  		elif answer is not None:
@@ -7594,7 +7431,7 @@
  		else:
  			self.close()
  
-@@ -862,6 +867,9 @@
+@@ -859,6 +864,9 @@
  		self.saved_title = None
  		self.saved_root = None
  		self.current_ref = None
@@ -7604,7 +7441,7 @@
  		self.editMode = False
  		self.confirmRemove = True
  
-@@ -962,7 +970,7 @@
+@@ -959,7 +967,7 @@
  				if mutableAlternatives:
  					mutableAlternatives.setListName(name)
  					if mutableAlternatives.addService(cur_service.ref):
@@ -7613,7 +7450,7 @@
  					mutableAlternatives.flushChanges()
  					self.servicelist.addService(new_ref.ref, True)
  					self.servicelist.removeCurrent()
-@@ -973,7 +981,7 @@
+@@ -970,7 +978,7 @@
  					if self.startServiceRef and cur_service.ref == self.startServiceRef:
  						self.startServiceRef = new_ref.ref
  				else:
@@ -7622,7 +7459,7 @@
  			else:
  				print "add", str, "to", cur_root.getServiceName(), "failed"
  		else:
-@@ -997,10 +1005,10 @@
+@@ -994,10 +1002,10 @@
  					if services is not None:
  						for service in services:
  							if mutableBouquet.addService(service):
@@ -7635,7 +7472,7 @@
  				# do some voodoo to check if current_root is equal to bouquet_root
  				cur_root = self.getRoot()
  				str1 = cur_root and cur_root.toString()
-@@ -1010,9 +1018,9 @@
+@@ -1007,9 +1015,9 @@
  					self.servicelist.addService(new_bouquet_ref)
  					self.servicelist.resetRoot()
  			else:
@@ -7648,7 +7485,7 @@
  
  	def copyCurrentToBouquetList(self):
  		provider = ServiceReference(self.getCurrentSelection())
-@@ -1038,11 +1046,11 @@
+@@ -1035,11 +1043,11 @@
  					if self.startServiceRef and cur_service.ref == self.startServiceRef:
  						self.startServiceRef = first_in_alternative
  				else:
@@ -7665,7 +7502,7 @@
  		self.removeBouquet()
  		if not end:
  			self.servicelist.moveUp()
-@@ -1124,6 +1132,9 @@
+@@ -1121,6 +1129,9 @@
  			else:
  				new_title += ' ' + _("[favourite edit]")
  		self.setTitle(new_title)
@@ -7675,7 +7512,7 @@
  		self.__marked = self.servicelist.getRootServices()
  		for x in self.__marked:
  			self.servicelist.addMarked(eServiceReference(x))
-@@ -1151,6 +1162,9 @@
+@@ -1148,6 +1159,9 @@
  		self.bouquet_mark_edit = OFF
  		self.mutableList = None
  		self.setTitle(self.saved_title)
@@ -7685,7 +7522,7 @@
  		self.saved_title = None
  		# self.servicePath is just a reference to servicePathTv or Radio...
  		# so we never ever do use the asignment operator in self.servicePath
-@@ -1227,6 +1241,9 @@
+@@ -1224,6 +1238,9 @@
  			self.mutableList.flushChanges() # FIXME add check if changes was made
  			self.mutableList = None
  			self.setTitle(self.saved_title)
@@ -7695,7 +7532,7 @@
  			self.saved_title = None
  			self.servicelist.resetRoot()
  			self.servicelist.l.setHideNumberMarker(config.usage.hide_number_markers.value)
-@@ -1238,6 +1255,9 @@
+@@ -1235,6 +1252,9 @@
  			self.saved_title = self.getTitle()
  			pos = self.saved_title.find(')')
  			self.setTitle(self.saved_title[:pos+1] + ' ' + _("[move mode]") + self.saved_title[pos+1:])
@@ -7705,7 +7542,7 @@
  			self.servicelist.l.setHideNumberMarker(False)
  			self.setCurrentSelection(self.servicelist.getCurrent())
  		self["Service"].editmode = True
-@@ -1293,6 +1313,11 @@
+@@ -1290,6 +1310,11 @@
  
  		self["list"] = ServiceList(self)
  		self.servicelist = self["list"]
@@ -7717,7 +7554,7 @@
  
  		self.numericalTextInput = NumericalTextInput(handleTimeout=False)
  		self.numericalTextInput.setUseableChars(u'1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ')
-@@ -1386,6 +1411,9 @@
+@@ -1383,6 +1408,9 @@
  			title = title[:pos]
  		title += _(" (TV)")
  		self.setTitle(title)
@@ -7727,7 +7564,7 @@
  
  	def setRadioMode(self):
  		self.mode = MODE_RADIO
-@@ -1397,6 +1425,9 @@
+@@ -1394,6 +1422,9 @@
  			title = title[:pos]
  		title += _(" (Radio)")
  		self.setTitle(title)
@@ -7737,7 +7574,7 @@
  
  	def setRoot(self, root, justSet=False):
  		if self.startRoot is None:
-@@ -1451,6 +1482,9 @@
+@@ -1448,6 +1479,9 @@
  					end_ref = None
  				nameStr = self.getServiceName(base_ref)
  				titleStr += ' - ' + nameStr
@@ -7747,7 +7584,7 @@
  				if end_ref is not None:
  					if Len > 2:
  						titleStr += '/../'
-@@ -1458,7 +1492,13 @@
+@@ -1455,7 +1489,13 @@
  						titleStr += '/'
  					nameStr = self.getServiceName(end_ref)
  					titleStr += nameStr
@@ -8185,7 +8022,7 @@
  			})
  
  		self["DirectionActions"] = HelpableActionMap(self, "DirectionActions",
-@@ -540,3 +659,7 @@
+@@ -539,3 +658,7 @@
  
  	def ref2HumanName(self, ref):
  		return enigma.eServiceCenter.getInstance().info(ref).getName(ref)
@@ -8324,21 +8161,21 @@
  		gotoShutdownTime = int(config.usage.standby_to_shutdown_timer.value)
  		if gotoShutdownTime:
 @@ -217,6 +295,7 @@
- 			QUIT_UPGRADE_FP: _("Your frontprocessor will be upgraded\nPlease wait until your receiver reboots\nThis may take a few minutes"),
+ 			QUIT_UPGRADE_FP: _("Your frontprocessor will be updated\nPlease wait until your receiver reboots\nThis may take a few minutes"),
  			QUIT_ERROR_RESTART: _("The user interface of your receiver is restarting\ndue to an error in mytest.py"),
  			QUIT_DEBUG_RESTART: _("The user interface of your receiver is restarting in debug mode"),
 +			10: _('Your receiver is rebooting to Spark now\nThis may take a while'),
- 			QUIT_UPGRADE_PROGRAM: _("Unattended upgrade in progress\nPlease wait until your receiver reboots\nThis may take a few minutes")
+ 			QUIT_UPGRADE_PROGRAM: _("Unattended update in progress\nPlease wait until your receiver reboots\nThis may take a few minutes")
  		}.get(retvalue)
  		self["text"] = Label(text)
 @@ -256,6 +335,7 @@
-				QUIT_RESTART: _("Really restart now?"),
-				QUIT_UPGRADE_FP: _("Really upgrade the frontprocessor and reboot now?"),
-				QUIT_DEBUG_RESTART: _("Really restart in debug mode now?"),
+ 				QUIT_RESTART: _("Really restart now?"),
+ 				QUIT_UPGRADE_FP: _("Really update the frontprocessor and reboot now?"),
+ 				QUIT_DEBUG_RESTART: _("Really restart in debug mode now?"),
 +				10: _('Really reboot to Spark now?'),
-				QUIT_UPGRADE_PROGRAM: _("Really upgrade your settop box and reboot now?")
-			}.get(retvalue, None)
-			if text:
+ 				QUIT_UPGRADE_PROGRAM: _("Really update your settop box and reboot now?")
+ 			}.get(retvalue, None)
+ 			if text:
 --- enigma2.org/lib/python/Screens/Wizard.py
 +++ enigma2/lib/python/Screens/Wizard.py
 @@ -13,6 +13,9 @@
@@ -8462,7 +8299,7 @@
  	LoadPixmap.py Profile.py HardwareInfo.py Transponder.py ASCIItranslit.py \
 -	Downloader.py Trashcan.py GetEcmInfo.py Alternatives.py TextBoundary.py \
 +	Downloader.py Trashcan.py GetEcmInfo.py Alternatives.py TextBoundary.py Command.py \
- 	camcontrol.py CountryCodes.py Multiboot.py FallbackTimer.py
+ 	camcontrol.py CountryCodes.py Multiboot.py FallbackTimer.py Hex2strColor.py
 --- enigma2.org/lib/python/Tools/Profile.py
 +++ enigma2/lib/python/Tools/Profile.py
 @@ -1,6 +1,7 @@

@@ -1,4 +1,4 @@
-# revision 00bbffe27a09c274a5b0f7984034860ddf8bfd11 29/07/2019 21:38
+# revision bf5ceafdfc684ceafd40a7286da094b0f5cb276f 29/09/2019 14:07
 --- enigma2.org/configure.ac
 +++ enigma2/configure.ac
 @@ -18,6 +18,7 @@
@@ -346,7 +346,7 @@
  
  AC_ARG_WITH(accelerationthreshold,
  	AC_HELP_STRING([--with-accelerationthreshold=n], [use acceleration threshold of n bytes]),
-@@ -303,8 +572,6 @@
+@@ -304,8 +573,6 @@
  lib/python/Plugins/Extensions/TuxboxPlugins/Makefile
  lib/python/Plugins/Extensions/TuxboxPlugins/meta/Makefile
  lib/python/Plugins/PLi/Makefile
@@ -355,7 +355,7 @@
  lib/python/Plugins/SystemPlugins/DefaultServicesScanner/Makefile
  lib/python/Plugins/SystemPlugins/DefaultServicesScanner/meta/Makefile
  lib/python/Plugins/SystemPlugins/DiseqcTester/Makefile
-@@ -334,6 +601,55 @@
+@@ -335,6 +602,55 @@
  lib/python/Plugins/SystemPlugins/Videomode/meta/Makefile
  lib/python/Plugins/SystemPlugins/WirelessLan/Makefile
  lib/python/Plugins/SystemPlugins/WirelessLan/meta/Makefile
@@ -2197,7 +2197,7 @@
  	ioctl(vtunerFd, VTUNER_SET_HAS_OUTPUTS, "no");
  	ioctl(vtunerFd, VTUNER_SET_ADAPTER, nr);
  
-@@ -974,6 +990,7 @@
+@@ -973,6 +989,7 @@
  	ePtr<eDVBRegisteredDemux> unused;
  	uint8_t d, a;
  
@@ -2205,7 +2205,7 @@
  	/*
  	 * For pvr playback, start with the last demux.
  	 * On some hardware, there are less ca devices than demuxes, so try to leave
-@@ -1021,15 +1038,61 @@
+@@ -1020,15 +1037,61 @@
  			--i;
  		}
  	}
@@ -2329,7 +2329,7 @@
  	spec.tid_mask = 0xFC;
 --- enigma2.org/lib/dvb/epgcache.cpp
 +++ enigma2/lib/dvb/epgcache.cpp
-@@ -2166,6 +2166,42 @@
+@@ -2520,6 +2520,42 @@
  {
  	int map;
  	iDVBSectionReader *reader = NULL;
@@ -2372,7 +2372,7 @@
  	switch (source)
  	{
  		case NOWNEXT:
-@@ -2290,6 +2326,10 @@
+@@ -2644,6 +2680,10 @@
  			cache->sectionRead(data, source, this);
  		}
  	}
@@ -2628,7 +2628,7 @@
  		}
  
  		if (!(m_flags & scanOnlyFree) || !m_pmt_in_progress->second.scrambled) {
-@@ -1539,10 +1539,10 @@
+@@ -1540,10 +1540,10 @@
  
  					ref.setServiceType(servicetype);
  					int tsonid=(sdt.getTransportStreamId() << 16) | sdt.getOriginalNetworkId();
@@ -5633,7 +5633,7 @@
  SystemInfo["hasXcoreVFD"] = HardwareInfo().get_device_model() in ('osmega','spycat4k','spycat4kmini','spycat4kcombo') and fileCheck("/sys/module/brcmstb_%s/parameters/pt6302_cgram" % HardwareInfo().get_device_model())
  SystemInfo["HasOfflineDecoding"] = HardwareInfo().get_device_model() not in ('osmini', 'osminiplus', 'et7000mini', 'et11000', 'mbmicro', 'mbtwinplus', 'mbmicrov2', 'et7000', 'et8500')
  SystemInfo["HasRootSubdir"] = fileHas("/proc/cmdline", "rootsubdir=")
--SystemInfo["canMultiBoot"] = SystemInfo["HasRootSubdir"] and (1, 4, "mmcblk0", False) or fileHas("/proc/cmdline", "_4.boxmode=") and (1, 4, "mmcblk0", False) or HardwareInfo().get_device_model() in ('gbue4k', 'gbquad4k') and (3, 3, "mmcblk0", True) or HardwareInfo().get_device_model() in ('e4hd') and (1, 4, "mmcblk0", False) or HardwareInfo().get_device_model() in ('osmio4k') and (1, 4, "mmcblk1", True)
+-SystemInfo["canMultiBoot"] = SystemInfo["HasRootSubdir"] and (1, 4, "mmcblk0", False) or fileHas("/proc/cmdline", "_4.boxmode=") and (1, 4, "mmcblk0", False) or HardwareInfo().get_device_model() in ('gbue4k', 'gbquad4k') and (3, 3, "mmcblk0", True) or HardwareInfo().get_device_model() in ('e4hd') and (1, 4, "mmcblk0", False) or HardwareInfo().get_device_model() in ('osmio4k', 'osmio4kplus') and (1, 4, "mmcblk1", True)
 -SystemInfo["canMode12"] = fileHas("/proc/cmdline", "_4.boxmode=1 ") and '192M' or fileHas("/proc/cmdline", "_4.boxmode=12") and '192M'
 -SystemInfo["canFlashWithOfgwrite"] = not(HardwareInfo().get_device_model().startswith("dm"))
 +SystemInfo["canMultiBoot"] = False
@@ -7379,7 +7379,7 @@
  from Components.ActionMap import NumberActionMap, ActionMap, HelpableActionMap
  from Components.MenuList import MenuList
  from Components.ServiceEventTracker import ServiceEventTracker, InfoBarBase
-@@ -122,7 +127,7 @@
+@@ -125,7 +130,7 @@
  		self.csel = csel
  		self.bsel = None
  		if self.isProtected():
@@ -7388,7 +7388,7 @@
  
  		self["actions"] = ActionMap(["OkCancelActions", "ColorActions", "NumberActions", "MenuActions"],
  			{
-@@ -155,7 +160,7 @@
+@@ -158,7 +163,7 @@
  		self.parentalControl = parentalControl
  		self.parentalControlEnabled = config.ParentalControl.servicepin[0].value and config.ParentalControl.servicepinactive.value
  		if not (current_sel_path or current_sel_flags & (eServiceReference.isDirectory|eServiceReference.isMarker)) or current_sel_flags & eServiceReference.isGroup:
@@ -7397,7 +7397,7 @@
  		if csel.bouquet_mark_edit == OFF and not csel.entry_marked:
  			if not inBouquetRootList:
  				isPlayable = not (current_sel_flags & (eServiceReference.isMarker|eServiceReference.isDirectory))
-@@ -163,17 +168,17 @@
+@@ -166,17 +171,17 @@
  					for p in plugins.getPlugins(PluginDescriptor.WHERE_CHANNEL_CONTEXT_MENU):
  						append_when_current_valid(current, menu, (p.name, boundFunction(self.runPlugin, p)), key="bullet")
  					if config.servicelist.startupservice.value == current.toString():
@@ -7420,7 +7420,7 @@
  						if self.parentalControl.blacklist and config.ParentalControl.hideBlacklist.value and not self.parentalControl.sessionPinCached and config.ParentalControl.storeservicepin.value != "never":
  							append_when_current_valid(current, menu, (_("Unhide parental control services"), self.unhideParentalServices), level=0, key="1")
  					if SystemInfo["3DMode"] and fileExists("/usr/lib/enigma2/python/Plugins/SystemPlugins/OSD3DSetup/plugin.pyo"):
-@@ -200,93 +205,93 @@
+@@ -203,93 +208,93 @@
  						else:
  							bouquetCnt = len(bouquets)
  						if not self.inBouquet or bouquetCnt > 1:
@@ -7484,11 +7484,11 @@
 +							append_when_current_valid(current, menu, (_("Add bouquet to parental protection"), boundFunction(self.addParentalProtection, current)), level=0)
  						else:
 -							append_when_current_valid(current, menu, (_("remove bouquet from parental protection"), boundFunction(self.removeParentalProtection, current)), level=0)
--					menu.append(ChoiceEntryComponent(text=(_("add bouquet"), self.showBouquetInputBox)))
+-					menu.append(ChoiceEntryComponent("dummy", (_("add bouquet"), self.showBouquetInputBox)))
 -					append_when_current_valid(current, menu, (_("rename entry"), self.renameEntry), level=0, key="2")
 -					append_when_current_valid(current, menu, (_("remove entry"), self.removeEntry), level=0, key="8")
 +							append_when_current_valid(current, menu, (_("Remove bouquet from parental protection"), boundFunction(self.removeParentalProtection, current)), level=0)
-+					menu.append(ChoiceEntryComponent(text=(_("Add bouquet"), self.showBouquetInputBox)))
++					menu.append(ChoiceEntryComponent("dummy", (_("Add bouquet"), self.showBouquetInputBox)))
 +					append_when_current_valid(current, menu, (_("Rename entry"), self.renameEntry), level=0, key="2")
 +					append_when_current_valid(current, menu, (_("Remove entry"), self.removeEntry), level=0, key="8")
  					self.removeFunction = self.removeBouquet
@@ -7501,14 +7501,14 @@
  			if csel.bouquet_mark_edit == OFF:
  				if csel.movemode:
 -					append_when_current_valid(current, menu, (_("disable move mode"), self.toggleMoveMode), level=0, key="6")
-+					append_when_current_valid(current, menu, (_("Disable move mode"), self.toggleMoveMode), level=0, key="6")
++					append_when_current_valid(current, menu, (_("Dsable move mode"), self.toggleMoveMode), level=0, key="6")
  				else:
 -					append_when_current_valid(current, menu, (_("enable move mode"), self.toggleMoveMode), level=0, key="6")
 +					append_when_current_valid(current, menu, (_("Enable move mode"), self.toggleMoveMode), level=0, key="6")
  				if not csel.entry_marked and not inBouquetRootList and current_root and not (current_root.flags & eServiceReference.isGroup):
  					if current.type != -1:
--						menu.append(ChoiceEntryComponent(text=(_("add marker"), self.showMarkerInputBox)))
-+						menu.append(ChoiceEntryComponent(text=(_("Add marker"), self.showMarkerInputBox)))
+-						menu.append(ChoiceEntryComponent("dummy", (_("add marker"), self.showMarkerInputBox)))
++						menu.append(ChoiceEntryComponent("dummy", (_("Add marker"), self.showMarkerInputBox)))
  					if not csel.movemode:
  						if haveBouquets:
 -							append_when_current_valid(current, menu, (_("enable bouquet edit"), self.bouquetMarkStart), level=0)
@@ -7529,9 +7529,8 @@
  			else:
  				if csel.bouquet_mark_edit == EDIT_BOUQUET:
  					if haveBouquets:
--						append_when_current_valid(current, menu, (_("end bouquet edit"), self.bouquetMarkEnd), level=0)
+ 						append_when_current_valid(current, menu, (_("end bouquet edit"), self.bouquetMarkEnd), level=0)
 -						append_when_current_valid(current, menu, (_("abort bouquet edit"), self.bouquetMarkAbort), level=0)
-+						append_when_current_valid(current, menu, (_("End bouquet edit"), self.bouquetMarkEnd), level=0)
 +						append_when_current_valid(current, menu, (_("Abort bouquet edit"), self.bouquetMarkAbort), level=0)
  					else:
 -						append_when_current_valid(current, menu, (_("end favourites edit"), self.bouquetMarkEnd), level=0)
@@ -7552,18 +7551,16 @@
  
  		menu.append(ChoiceEntryComponent("menu", (_("Configuration..."), self.openSetup)))
  		self["menu"] = ChoiceList(menu)
-@@ -333,8 +338,8 @@
+@@ -336,7 +341,7 @@
  		if answer:
  			self.csel.protectContextMenu = False
  		elif answer is not None:
 -			self.session.openWithCallback(self.close, MessageBox, _("The pin code you entered is wrong."), MessageBox.TYPE_ERROR)
--		else:
 +			self.session.openWithCallback(self.close, MessageBox, _("The PIN code you entered is wrong."), MessageBox.TYPE_ERROR)
-+		else:
+ 		else:
  			self.close()
  
- 	def addServiceToBouquetOrAlternative(self):
-@@ -477,7 +482,7 @@
+@@ -480,7 +485,7 @@
  		self.close()
  
  	def removeParentalProtection(self, service):
@@ -7572,7 +7569,7 @@
  
  	def pinEntered(self, service, answer):
  		if answer:
-@@ -486,13 +491,13 @@
+@@ -489,13 +494,13 @@
  				self.csel.servicelist.resetRoot()
  			self.close()
  		elif answer is not None:
@@ -7588,7 +7585,7 @@
  		else:
  			self.unhideParentalServicesCallback(True)
  
-@@ -505,7 +510,7 @@
+@@ -508,7 +513,7 @@
  			self.csel.servicelist.setCurrent(service)
  			self.close()
  		elif answer is not None:
@@ -7597,7 +7594,7 @@
  		else:
  			self.close()
  
-@@ -859,6 +864,9 @@
+@@ -862,6 +867,9 @@
  		self.saved_title = None
  		self.saved_root = None
  		self.current_ref = None
@@ -7607,7 +7604,7 @@
  		self.editMode = False
  		self.confirmRemove = True
  
-@@ -959,7 +967,7 @@
+@@ -962,7 +970,7 @@
  				if mutableAlternatives:
  					mutableAlternatives.setListName(name)
  					if mutableAlternatives.addService(cur_service.ref):
@@ -7616,7 +7613,7 @@
  					mutableAlternatives.flushChanges()
  					self.servicelist.addService(new_ref.ref, True)
  					self.servicelist.removeCurrent()
-@@ -970,7 +978,7 @@
+@@ -973,7 +981,7 @@
  					if self.startServiceRef and cur_service.ref == self.startServiceRef:
  						self.startServiceRef = new_ref.ref
  				else:
@@ -7625,7 +7622,7 @@
  			else:
  				print "add", str, "to", cur_root.getServiceName(), "failed"
  		else:
-@@ -994,10 +1002,10 @@
+@@ -997,10 +1005,10 @@
  					if services is not None:
  						for service in services:
  							if mutableBouquet.addService(service):
@@ -7638,7 +7635,7 @@
  				# do some voodoo to check if current_root is equal to bouquet_root
  				cur_root = self.getRoot()
  				str1 = cur_root and cur_root.toString()
-@@ -1007,9 +1015,9 @@
+@@ -1010,9 +1018,9 @@
  					self.servicelist.addService(new_bouquet_ref)
  					self.servicelist.resetRoot()
  			else:
@@ -7651,7 +7648,7 @@
  
  	def copyCurrentToBouquetList(self):
  		provider = ServiceReference(self.getCurrentSelection())
-@@ -1035,11 +1043,11 @@
+@@ -1038,11 +1046,11 @@
  					if self.startServiceRef and cur_service.ref == self.startServiceRef:
  						self.startServiceRef = first_in_alternative
  				else:
@@ -7668,7 +7665,7 @@
  		self.removeBouquet()
  		if not end:
  			self.servicelist.moveUp()
-@@ -1121,6 +1129,9 @@
+@@ -1124,6 +1132,9 @@
  			else:
  				new_title += ' ' + _("[favourite edit]")
  		self.setTitle(new_title)
@@ -7678,7 +7675,7 @@
  		self.__marked = self.servicelist.getRootServices()
  		for x in self.__marked:
  			self.servicelist.addMarked(eServiceReference(x))
-@@ -1148,6 +1159,9 @@
+@@ -1151,6 +1162,9 @@
  		self.bouquet_mark_edit = OFF
  		self.mutableList = None
  		self.setTitle(self.saved_title)
@@ -7688,7 +7685,7 @@
  		self.saved_title = None
  		# self.servicePath is just a reference to servicePathTv or Radio...
  		# so we never ever do use the asignment operator in self.servicePath
-@@ -1224,6 +1238,9 @@
+@@ -1227,6 +1241,9 @@
  			self.mutableList.flushChanges() # FIXME add check if changes was made
  			self.mutableList = None
  			self.setTitle(self.saved_title)
@@ -7698,7 +7695,7 @@
  			self.saved_title = None
  			self.servicelist.resetRoot()
  			self.servicelist.l.setHideNumberMarker(config.usage.hide_number_markers.value)
-@@ -1235,6 +1252,9 @@
+@@ -1238,6 +1255,9 @@
  			self.saved_title = self.getTitle()
  			pos = self.saved_title.find(')')
  			self.setTitle(self.saved_title[:pos+1] + ' ' + _("[move mode]") + self.saved_title[pos+1:])
@@ -7708,7 +7705,7 @@
  			self.servicelist.l.setHideNumberMarker(False)
  			self.setCurrentSelection(self.servicelist.getCurrent())
  		self["Service"].editmode = True
-@@ -1290,6 +1310,11 @@
+@@ -1293,6 +1313,11 @@
  
  		self["list"] = ServiceList(self)
  		self.servicelist = self["list"]
@@ -7720,7 +7717,7 @@
  
  		self.numericalTextInput = NumericalTextInput(handleTimeout=False)
  		self.numericalTextInput.setUseableChars(u'1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ')
-@@ -1383,6 +1408,9 @@
+@@ -1386,6 +1411,9 @@
  			title = title[:pos]
  		title += _(" (TV)")
  		self.setTitle(title)
@@ -7730,7 +7727,7 @@
  
  	def setRadioMode(self):
  		self.mode = MODE_RADIO
-@@ -1394,6 +1422,9 @@
+@@ -1397,6 +1425,9 @@
  			title = title[:pos]
  		title += _(" (Radio)")
  		self.setTitle(title)
@@ -7740,7 +7737,7 @@
  
  	def setRoot(self, root, justSet=False):
  		if self.startRoot is None:
-@@ -1448,6 +1479,9 @@
+@@ -1451,6 +1482,9 @@
  					end_ref = None
  				nameStr = self.getServiceName(base_ref)
  				titleStr += ' - ' + nameStr
@@ -7750,7 +7747,7 @@
  				if end_ref is not None:
  					if Len > 2:
  						titleStr += '/../'
-@@ -1455,7 +1489,13 @@
+@@ -1458,7 +1492,13 @@
  						titleStr += '/'
  					nameStr = self.getServiceName(end_ref)
  					titleStr += nameStr
@@ -7801,7 +7798,7 @@
  	except Exception, ex:
  		print "[InfoBar] Failed to load resumepoints:", ex
  		return {}
-@@ -233,6 +234,7 @@
+@@ -231,6 +232,7 @@
  	STATE_HIDING = 1
  	STATE_SHOWING = 2
  	STATE_SHOWN = 3
@@ -7809,7 +7806,7 @@
  	FLAG_CENTER_DVB_SUBS = 2048
  
  	def __init__(self):
-@@ -375,6 +377,12 @@
+@@ -373,6 +375,12 @@
  		else:
  			self.toggleShow()
  
@@ -7822,7 +7819,7 @@
  	def toggleShow(self):
  		if self.__state == self.STATE_HIDDEN:
  			self.showFirstInfoBar()
-@@ -389,7 +397,9 @@
+@@ -387,7 +395,9 @@
  			self.show()
  			self.actualSecondInfoBarScreen.show()
  			self.startHideTimer()
@@ -7833,7 +7830,7 @@
  			self.hide()
  			self.hideTimer.stop()
  
-@@ -685,6 +695,19 @@
+@@ -683,6 +693,19 @@
  				"historyNext": (self.historyNext, _("Switch to next channel in history")),
  				"keyChannelUp": (self.keyChannelUpCheck, self.getKeyChannelUpHelptext),
  				"keyChannelDown": (self.keyChannelDownCheck, self.getKeyChannelDownHelptext),
@@ -7853,7 +7850,7 @@
  			})
  
  	def showTvChannelList(self, zap=False):
-@@ -849,6 +872,32 @@
+@@ -847,6 +870,32 @@
  			self.servicelist.moveUp()
  		self.servicelist.zap(enable_pipzap = True)
  
@@ -7886,7 +7883,7 @@
  	def zapDown(self):
  		if self.servicelist.inBouquet():
  			prev = self.servicelist.getCurrentSelection()
-@@ -883,7 +932,7 @@
+@@ -881,7 +930,7 @@
  	def __init__(self):
  		self["MenuActions"] = HelpableActionMap(self, "InfobarMenuActions",
  			{
@@ -7895,7 +7892,7 @@
  			})
  		self.session.infobar = None
  
-@@ -998,7 +1047,7 @@
+@@ -996,7 +1045,7 @@
  
  		self["EPGActions"] = HelpableActionMap(self, "InfobarEPGActions",
  			{
@@ -7904,7 +7901,7 @@
  				"showEventInfoSingleEPG": (self.showSingleEPG, _("Show single service EPG")),
  				"showEventInfoMultiEPG": (self.showMultiEPG, _("Show multi channel EPG")),
  				"showInfobarOrEpgWhenInfobarAlreadyVisible": self.showEventInfoWhenNotVisible,
-@@ -1009,7 +1058,7 @@
+@@ -1007,7 +1056,7 @@
  				if 'selectedevent' not in p.__call__.func_code.co_varnames] or []
  		from Components.ServiceEventTracker import InfoBarCount
  		if getAll or InfoBarCount == 1:
@@ -7913,7 +7910,7 @@
  		pluginlist.append((_("Multi EPG"), self.openMultiServiceEPG, _("Display EPG as MultiEPG")))
  		pluginlist.append((_("Current event EPG"), self.openEventView, _("Display EPG info for current event")))
  		return pluginlist
-@@ -1163,7 +1212,7 @@
+@@ -1161,7 +1210,7 @@
  	def showEventInfoPlugins(self):
  		pluginlist = self.getEPGPluginList()
  		if pluginlist:
@@ -7922,7 +7919,7 @@
  		else:
  			self.openSingleServiceEPG()
  
-@@ -1236,7 +1285,7 @@
+@@ -1234,7 +1283,7 @@
  				self.eventView = self.session.openWithCallback(self.closed, EventViewEPGSelect, epglist[0], ServiceReference(ref), self.eventViewCallback, self.openSingleServiceEPG, self.openMultiServiceEPG, self.openSimilarList)
  				self.dlg_stack.append(self.eventView)
  		if not epglist:
@@ -7931,7 +7928,7 @@
  			self.openMultiServiceEPG(False)
  
  	def eventViewCallback(self, setEvent, setService, val): #used for now/next displaying
-@@ -2139,7 +2188,7 @@
+@@ -2137,7 +2186,7 @@
  		self.addExtension((lambda: _("Manually import from fallback tuner"), self.importChannels, lambda: config.usage.remote_fallback_extension_menu.value and config.usage.remote_fallback_import.value))
  		self["InstantExtensionsActions"] = HelpableActionMap(self, "InfobarExtensions",
  			{
@@ -7940,7 +7937,7 @@
  			}, 1) # lower priority
  
  	def openSoftcamSetup(self):
-@@ -2169,7 +2218,7 @@
+@@ -2167,7 +2216,7 @@
  
  	def updateExtensions(self):
  		self.extensionsList = []
@@ -7949,7 +7946,7 @@
  		self.extensionKeys = {}
  		for x in self.list:
  			if x[0] == self.EXTENSION_SINGLE:
-@@ -2196,7 +2245,7 @@
+@@ -2194,7 +2243,7 @@
  				else:
  					extensionsList.remove(extension)
  		list.extend([(x[0](), x) for x in extensionsList])
@@ -7958,7 +7955,7 @@
  
  	def extensionCallback(self, answer):
  		if answer is not None:
-@@ -2399,11 +2448,11 @@
+@@ -2397,11 +2446,11 @@
  
  class InfoBarInstantRecord:
  	"""Instant Record - handles the instantRecord action in order to
@@ -7972,7 +7969,7 @@
  			})
  		self.SelectedInstantServiceRef = None
  		if isStandardInfoBar(self):
-@@ -2486,7 +2535,7 @@
+@@ -2484,7 +2533,7 @@
  	def startInstantRecording(self, limitEvent = False):
  		begin = int(time())
  		end = begin + 3600      # dummy
@@ -7981,7 +7978,7 @@
  		info = { }
  
  		self.getProgramInfoAndEvent(info, name)
-@@ -2715,7 +2764,7 @@
+@@ -2713,7 +2762,7 @@
  	def __init__(self):
  		self["AudioSelectionAction"] = HelpableActionMap(self, "InfobarAudioSelectionActions",
  			{
@@ -7990,7 +7987,7 @@
  			})
  
  	def audioSelection(self):
-@@ -2729,7 +2778,7 @@
+@@ -2727,7 +2776,7 @@
  	def __init__(self):
  		self["SubserviceSelectionAction"] = HelpableActionMap(self, "InfobarSubserviceSelectionActions",
  			{
@@ -8188,7 +8185,7 @@
  			})
  
  		self["DirectionActions"] = HelpableActionMap(self, "DirectionActions",
-@@ -542,3 +657,7 @@
+@@ -540,3 +659,7 @@
  
  	def ref2HumanName(self, ref):
  		return enigma.eServiceCenter.getInstance().info(ref).getName(ref)
@@ -9396,7 +9393,7 @@
  	def __init__(self, session):
 --- enigma2.org/data/rc_models/rc_models.cfg
 +++ enigma2/data/rc_models/rc_models.cfg
-@@ -19,120 +19,26 @@
+@@ -19,121 +19,26 @@
  #
  # When no entry matches at all, 'default' will be used as remoteName
  #
@@ -9412,6 +9409,7 @@
 -osmini osmini
 -osminiplus osmini
 -osmio4k edision4
+-osmio4kplus edision4
 -osnino edision1
 -osninoplus edision2
 -osninopro edision3

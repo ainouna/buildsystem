@@ -1,4 +1,4 @@
-# revision 9c55cf0b69c9beba43dd7e017186552f410f357e 28/01/2020 13:13
+# revision 86ff0586450a3ce43e36d87399cf7a1f2f85a3a0 26/03/2020 11:54
 --- enigma2.org/configure.ac
 +++ enigma2/configure.ac
 @@ -18,6 +18,7 @@
@@ -413,7 +413,7 @@
  main/Makefile
 --- enigma2.org/mytest.py
 +++ enigma2/mytest.py
-@@ -294,6 +294,10 @@
+@@ -298,6 +298,10 @@
  
  		self.pushCurrent()
  		dlg = self.current_dialog = self.instantiateDialog(screen, *arguments, **kwargs)
@@ -424,7 +424,7 @@
  		dlg.isTmp = True
  		dlg.callback = None
  		self.execBegin()
-@@ -498,10 +502,10 @@
+@@ -502,10 +506,10 @@
  	if wakeupList:
  		from time import strftime
  		startTime = wakeupList[0]
@@ -2431,7 +2431,7 @@
  		}
  
  		if (!(m_flags & scanOnlyFree) || !m_pmt_in_progress->second.scrambled) {
-@@ -1540,10 +1540,10 @@
+@@ -1542,10 +1542,10 @@
  
  					ref.setServiceType(servicetype);
  					int tsonid=(sdt.getTransportStreamId() << 16) | sdt.getOriginalNetworkId();
@@ -5346,7 +5346,7 @@
  
 --- enigma2.org/lib/python/Components/NimManager.py
 +++ enigma2/lib/python/Components/NimManager.py
-@@ -15,6 +15,10 @@
+@@ -16,6 +16,10 @@
  config.unicable = ConfigSubsection()
  
  def getConfigSatlist(orbpos, satlist):
@@ -5359,7 +5359,7 @@
  		if x[0] == orbpos:
 --- enigma2-nightly.org/lib/python/Components/SystemInfo.py
 +++ enigma2-nightly/lib/python/Components/SystemInfo.py
-@@ -42,28 +42,28 @@
+@@ -54,12 +54,12 @@
  SystemInfo["ZapMode"] = fileCheck("/proc/stb/video/zapmode") or fileCheck("/proc/stb/video/zapping_mode")
  SystemInfo["NumFrontpanelLEDs"] = countFrontpanelLEDs()
  SystemInfo["FrontpanelDisplay"] = fileExists("/dev/dbox/oled0") or fileExists("/dev/dbox/lcd0")
@@ -5374,16 +5374,17 @@
  SystemInfo["Fan"] = fileCheck("/proc/stb/fp/fan")
  SystemInfo["FanPWM"] = SystemInfo["Fan"] and fileCheck("/proc/stb/fp/fan_pwm")
  SystemInfo["PowerLED"] = fileCheck("/proc/stb/power/powerled")
- SystemInfo["StandbyLED"] = fileCheck("/proc/stb/power/standbyled")
- SystemInfo["SuspendLED"] = fileCheck("/proc/stb/power/suspendled")
- SystemInfo["Display"] = SystemInfo["FrontpanelDisplay"] or SystemInfo["StandbyLED"]
+@@ -72,16 +72,16 @@
+ SystemInfo["Power4x7On"] = fileCheck("/proc/stb/fp/power4x7on")
+ SystemInfo["Power4x7Standby"] = fileCheck("/proc/stb/fp/power4x7standby")
+ SystemInfo["Power4x7Suspend"] = fileCheck("/proc/stb/fp/power4x7suspend")
 -SystemInfo["PowerOffDisplay"] = model not in "formuler1" and fileCheck("/proc/stb/power/vfd") or fileCheck("/proc/stb/lcd/vfd")
 +SystemInfo["PowerOffDisplay"] = fileCheck("/proc/stb/power/vfd") or fileCheck("/proc/stb/lcd/vfd")
  SystemInfo["WakeOnLAN"] = not model.startswith("et8000") and fileCheck("/proc/stb/power/wol") or fileCheck("/proc/stb/fp/wol")
- SystemInfo["HasExternalPIP"] = not (model.startswith("et9") or model in ('e4hd',)) and fileCheck("/proc/stb/vmpeg/1/external")
+ SystemInfo["HasExternalPIP"] = not (model.startswith("et9") or model in ("e4hd",)) and fileCheck("/proc/stb/vmpeg/1/external")
  SystemInfo["VideoDestinationConfigurable"] = fileExists("/proc/stb/vmpeg/0/dst_left")
  SystemInfo["hasPIPVisibleProc"] = fileCheck("/proc/stb/vmpeg/1/visible")
- SystemInfo["MaxPIPSize"] = model in ('hd51', 'h7', 'vs1500', 'e4hd') and (360, 288) or (540, 432)
+ SystemInfo["MaxPIPSize"] = model in ("hd51", "h7", "vs1500", "e4hd") and (360, 288) or (540, 432)
 -SystemInfo["VFD_scroll_repeats"] = not model.startswith("et8500") and fileCheck("/proc/stb/lcd/scroll_repeats")
 -SystemInfo["VFD_scroll_delay"] = not model.startswith("et8500") and fileCheck("/proc/stb/lcd/scroll_delay")
 -SystemInfo["VFD_initial_scroll_delay"] = not model.startswith("et8500") and fileCheck("/proc/stb/lcd/initial_scroll_delay")
@@ -5395,17 +5396,17 @@
  SystemInfo["LcdLiveTV"] = fileCheck("/proc/stb/fb/sd_detach") or fileCheck("/proc/stb/lcd/live_enable")
  SystemInfo["LcdLiveTVMode"] = fileCheck("/proc/stb/lcd/mode")
  SystemInfo["LcdLiveDecoder"] = fileCheck("/proc/stb/lcd/live_decoder")
-@@ -72,7 +72,7 @@
+@@ -90,7 +90,7 @@
  SystemInfo["3DZNorm"] = fileCheck("/proc/stb/fb/znorm") or fileCheck("/proc/stb/fb/primary/zoffset")
  SystemInfo["Blindscan_t2_available"] = fileCheck("/proc/stb/info/vumodel")
- SystemInfo["RcTypeChangable"] = not(model.startswith('et8500') or model.startswith('et7')) and pathExists('/proc/stb/ir/rc/type')
+ SystemInfo["RcTypeChangable"] = not(model.startswith("et8500") or model.startswith("et7")) and pathExists("/proc/stb/ir/rc/type")
 -SystemInfo["HasFullHDSkinSupport"] = model not in ("et4000", "et5000", "sh1", "hd500c", "hd1100", "xp1000", "lc")
 +SystemInfo["HasFullHDSkinSupport"] = HardwareInfo().get_device_model() in ("adb_box", "atevio7500", "cuberevo", "cuberevo_mini-fta", "cuberevo-250hd", "cuberevo-mini", "cuberevo-mini2", "cuberevo-2000hd", "cuberevo-3000hd", "cuberevo-9500hd", "hdbox", "hs7110", "hs7420", "hs7810a", "hs7119", "hs7429", "hs7819", "octagon1008", "spark", "spark7162", "tf7700hdpvr", "ufs912", "ufs913, vitamin_hd5000")
  SystemInfo["HasBypassEdidChecking"] = fileCheck("/proc/stb/hdmi/bypass_edid_checking")
  SystemInfo["HasColorspace"] = fileCheck("/proc/stb/video/hdmi_colorspace")
  SystemInfo["HasColorspaceSimple"] = SystemInfo["HasColorspace"] and model in "vusolo4k"
-@@ -80,7 +80,7 @@
- SystemInfo["HasMMC"] = "root" in cmdline and cmdline["root"].startswith('/dev/mmcblk')
+@@ -98,7 +98,7 @@
+ SystemInfo["HasMMC"] = "root" in cmdline and cmdline["root"].startswith("/dev/mmcblk")
  SystemInfo["HasTranscoding"] = pathExists("/proc/stb/encoder/0") or fileCheck("/dev/bcm_enc0")
  SystemInfo["HasH265Encoder"] = fileHas("/proc/stb/encoder/0/vcodec_choices", "h265")
 -SystemInfo["CanNotDoSimultaneousTranscodeAndPIP"] = model in "vusolo4k"
@@ -5413,7 +5414,7 @@
  SystemInfo["HasColordepth"] = fileCheck("/proc/stb/video/hdmi_colordepth")
  SystemInfo["HasFrontDisplayPicon"] = model in ("vusolo4k", "et8500")
  SystemInfo["Has24hz"] = fileCheck("/proc/stb/video/videomode_24hz")
-@@ -88,11 +88,11 @@
+@@ -106,11 +106,11 @@
  SystemInfo["HasHDMIpreemphasis"] = fileCheck("/proc/stb/hdmi/preemphasis")
  SystemInfo["HasColorimetry"] = fileCheck("/proc/stb/video/hdmi_colorimetry")
  SystemInfo["HasHdrType"] = fileCheck("/proc/stb/video/hdmi_hdrtype")
@@ -5430,15 +5431,15 @@
  SystemInfo["HasAutoVolume"] = fileExists("/proc/stb/audio/avl_choices") and fileCheck("/proc/stb/audio/avl")
  SystemInfo["HasAutoVolumeLevel"] = fileExists("/proc/stb/audio/autovolumelevel_choices") and fileCheck("/proc/stb/audio/autovolumelevel")
  SystemInfo["Has3DSurround"] = fileExists("/proc/stb/audio/3d_surround_choices") and fileCheck("/proc/stb/audio/3d_surround")
-@@ -102,9 +102,9 @@
- SystemInfo["hasXcoreVFD"] = model in ('osmega','spycat4k','spycat4kmini','spycat4kcombo') and fileCheck("/sys/module/brcmstb_%s/parameters/pt6302_cgram" % model)
- SystemInfo["HasOfflineDecoding"] = model not in ('osmini', 'osminiplus', 'et7000mini', 'et11000', 'mbmicro', 'mbtwinplus', 'mbmicrov2', 'et7000', 'et8500')
- SystemInfo["HasRootSubdir"] = "rootsubdir" in cmdline
--SystemInfo["canMultiBoot"] = SystemInfo["HasRootSubdir"] and (1, 4, "mmcblk0", False) or "%s_4.boxmode" % model in cmdline and (1, 4, "mmcblk0", False) or model in ('gbue4k', 'gbquad4k') and (3, 3, "mmcblk0", True) or model in ('e4hd') and (1, 4, "mmcblk0", False) or model in ('osmio4k', 'osmio4kplus', 'osmini4k') and (1, 4, "mmcblk1", True)
--SystemInfo["canMode12"] = "%s_4.boxmode" % model in cmdline and cmdline["%s_4.boxmode" % model] in ("1","12") and "192M"
+@@ -120,9 +120,9 @@
+ SystemInfo["hasXcoreVFD"] = model in ("osmega", "spycat4k", "spycat4kmini", "spycat4kcombo") and fileCheck("/sys/module/brcmstb_%s/parameters/pt6302_cgram" % model)
+ SystemInfo["HasOfflineDecoding"] = model not in ("osmini", "osminiplus", "et7000mini", "et11000", "mbmicro", "mbtwinplus", "mbmicrov2", "et7000", "et8500")
+ SystemInfo["MultibootStartupDevice"] = getMultibootStartupDevice()
+-SystemInfo["canMode12"] = "%s_4.boxmode" % model in cmdline and cmdline["%s_4.boxmode" % model] in ("1", "12") and "192M"
+-SystemInfo["canMultiBoot"] = getMultibootslots()
 -SystemInfo["canFlashWithOfgwrite"] = not(model.startswith("dm"))
-+SystemInfo["canMultiBoot"] = False
 +SystemInfo["canMode12"] = False
++SystemInfo["canMultiBoot"] = False
 +SystemInfo["canFlashWithOfgwrite"] = False
  SystemInfo["HDRSupport"] = fileExists("/proc/stb/hdmi/hlg_support_choices") and fileCheck("/proc/stb/hdmi/hlg_support")
  SystemInfo["CanDownmixAC3"] = fileHas("/proc/stb/audio/ac3_choices", "downmix")
@@ -5548,7 +5549,7 @@
 +		self.text = text
 --- enigma2.org/lib/python/Components/UsageConfig.py
 +++ enigma2/lib/python/Components/UsageConfig.py
-@@ -290,7 +290,7 @@
+@@ -291,7 +291,7 @@
  
  	config.misc.disable_background_scan = ConfigYesNo(default = False)
  	config.misc.use_ci_assignment = ConfigYesNo(default = False)
@@ -7840,7 +7841,7 @@
  		elif self.index == self.STATE_CHOISE_CHANNELLIST:
 -			self.enabled = ConfigYesNo(default = True, graphic = False)
 +			self.enabled = ConfigYesNo(default = False, graphic = False)
- 			modes = {"19e-23e-basis": "Astra1 Astra3 basis", "19e-23e": "Astra 1 Astra 3", "19e-23e-28e": "Astra 1 Astra 2 Astra 3", "13e-19e-23e-28e": "Astra 1 Astra 2 Astra 3 Hotbird", "kabelnl": "Kabel-NL"}
+                         modes = {"19e-23e-basis": "Astra1 Astra3 basis", "19e-23e": "Astra 1 Astra 3", "19e-23e-28e": "Astra 1 Astra 2 Astra 3", "13e-19e-23e-28e": "Astra 1 Astra 2 Astra 3 Hotbird", "9e-13e-19e-23e-28e-rotating": "Rotating", "kabelnl": "Kabel-NL"}
  			self.channellist_type = ConfigSelection(choices = modes, default = "19e-23e-basis")
  			self.createMenu()
 --- enigma2.org/lib/python/Screens/ScanSetup.py
@@ -7968,7 +7969,7 @@
  			QUIT_DEBUG_RESTART: _("The user interface of your receiver is restarting in debug mode"),
 +			10: _('Your receiver is rebooting to Spark now\nThis may take a while'),
  			QUIT_UPGRADE_PROGRAM: _("Unattended update in progress\nPlease wait until your receiver reboots\nThis may take a few minutes"),
- 			QUIT_MANUFACTURER_RESET: _("Manufacturer reset in progress\nPease wait until enigma2 restarts")
+ 			QUIT_MANUFACTURER_RESET: _("Manufacturer reset in progress\nPlease wait until enigma2 restarts")
  		}.get(retvalue)
 @@ -258,6 +337,7 @@
  				QUIT_RESTART: _("Really restart now?"),
@@ -8095,13 +8096,15 @@
  
 --- enigma2.org/lib/python/Tools/Makefile.am
 +++ enigma2/lib/python/Tools/Makefile.am
-@@ -5,5 +5,5 @@
+@@ -5,7 +5,7 @@
  	KeyBindings.py BoundFunction.py ISO639.py Notifications.py __init__.py \
  	RedirectOutput.py StbHardware.py Import.py Event.py CList.py CIHelper.py \
  	LoadPixmap.py Profile.py HardwareInfo.py Transponder.py ASCIItranslit.py \
 -	Downloader.py Trashcan.py GetEcmInfo.py Alternatives.py TextBoundary.py \
 +	Downloader.py Trashcan.py GetEcmInfo.py Alternatives.py TextBoundary.py Command.py \
- 	camcontrol.py CountryCodes.py Multiboot.py FallbackTimer.py Hex2strColor.py
+ 	camcontrol.py CountryCodes.py Multiboot.py FallbackTimer.py Hex2strColor.py \
+ 	Geolocation.py
+ 
 --- enigma2.org/lib/python/Tools/Profile.py
 +++ enigma2/lib/python/Tools/Profile.py
 @@ -1,6 +1,7 @@
@@ -8958,24 +8961,26 @@
  	if key in keyDescriptions[idx]:
 --- enigma2.org/lib/python/Screens/InputDeviceSetup.py
 +++ enigma2/lib/python/Screens/InputDeviceSetup.py
-@@ -299,57 +299,24 @@
+@@ -299,62 +299,28 @@
  	rcList = [
  			("0", _("Default")),
  			("4", _("DMM normal")),
 -			("5", _("et9000/et9100")),
  			("6", _("DMM advanced")),
--			("7", _("et5000/6000")),
+-			("7", _("et5000/et6000")),
 -			("8", _("VU+")),
 -			("9", _("et8000/et10000")),
--			("11", _("et9200/9500/6500")),
+-			("11", _("et9200/et9500/et6500")),
 -			("13", _("et4000")),
 -			("14", _("xp1000")),
 -			("16", _("HDx1/HD1xxx/HD5x0C/VS1x00/et7x00/et8500/et7000mini")),
 -			("18", _("F1/F3/F4/F4-TURBO")),
 -			("19", _("HD2400")),
 -			("20", _("Zgemma Star S/2S/H1/H2")),
--			("21", _("Zgemma H.S/H.2S/H.2H/H5/H7")),
--			("25", _("Zgemma H9/i55 Plus"))
+-			("21", _("Zgemma H.S/H.2S/H.2H/H5/H7(old model)")),
+-			("25", _("Zgemma H9(old model)/I55Plus")),
+-			("27", _("HD60")),
+-			("28", _("Zgemma H7(new model)/H9(new model)/H9COMBO/H9TWIN/H10"))
 +			("7", _("fs9000")),
 +			("8", _("hs9510")),
 +			("9", _("hs7110")),
@@ -8983,6 +8988,8 @@
 +			("11", _("tf7700")),
 +			("12", _("ufs912")),
 +			("13", _("cuberevo_uni")),
++			("14", _("vitamin")),
++			("15", _("adb_box")),
  		]
  
  	defaultRcList = [
@@ -9011,15 +9018,18 @@
 -			("hd1265", 16),
 -			("hd1100", 16),
 -			("hd2400", 19),
+-			("hd60", 27),
+-			("et7000mini", 16),
 -			("et7000", 16),
 -			("et7500", 16),
 -			("et8500", 16),
 -			("sh1", 20),
 -			("h3", 21),
 -			("h5", 21),
--			("h7", 21),
--			("h9", 25),
--			("et7000mini", 16)
+-			("h7", 28), # new model /old 21
+-			("h9", 28), # new model /old 25
+-			("h9combo", 28),
+-			("h10", 28)
 +			("fs9000", 7),
 +			("hs9510", 8),
 +			("hs7110", 9),
@@ -9027,12 +9037,14 @@
 +			("tf7700", 11),
 +			("ufs912", 12),
 +			("cuberevo_uni", 13),
++			("vitamin", 14),
++			("adb_xmp", 15),
  		]
  
  	def __init__(self, session):
 --- enigma2.org/data/rc_models/rc_models.cfg
 +++ enigma2/data/rc_models/rc_models.cfg
-@@ -19,125 +19,27 @@
+@@ -19,126 +19,27 @@
  #
  # When no entry matches at all, 'default' will be used as remoteName
  #
@@ -9064,6 +9076,7 @@
 -# Gigablue
 -gbquad4k gb7252
 -gbue4k gb7252
+-gbtrio4k gb7252
 -# Max Digital
 -xp1000   xp1000
 -# MaXitec
