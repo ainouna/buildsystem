@@ -8932,7 +8932,7 @@
  	},
  ]
  
-@@ -248,10 +368,24 @@
+@@ -248,10 +368,30 @@
  		idx = config.misc.rcused.value
  	else:
  		rctype = config.plugins.remotecontroltype.rctype.value
@@ -8954,14 +8954,20 @@
 +			idx = 6
 +		elif rctype == 13:	# CubeRevo Universal
 +			idx = 7
-+#		elif rctype == 14:	# ...
-+#			idx = 8
++		elif rctype == 14:	# Vitamin HD5000
++			idx = 8
++		elif rctype == 15:	# ADB XMP
++			idx = 9
++#		elif rctype == 16:	# Fortis 4G
++#			idx = 10
++#		elif rctype == 17:	# ...
++#			idx = 11
  		else:
  			idx = 2
  	if key in keyDescriptions[idx]:
 --- enigma2.org/lib/python/Screens/InputDeviceSetup.py
 +++ enigma2/lib/python/Screens/InputDeviceSetup.py
-@@ -299,62 +299,28 @@
+@@ -299,62 +299,30 @@
  	rcList = [
  			("0", _("Default")),
  			("4", _("DMM normal")),
@@ -8990,6 +8996,7 @@
 +			("13", _("cuberevo_uni")),
 +			("14", _("vitamin")),
 +			("15", _("adb_box")),
++#			("16", _("fortis_4g")),
  		]
  
  	defaultRcList = [
@@ -9039,6 +9046,7 @@
 +			("cuberevo_uni", 13),
 +			("vitamin", 14),
 +			("adb_xmp", 15),
++#			("fortis_4g", 16),
  		]
  
  	def __init__(self, session):
