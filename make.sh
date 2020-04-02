@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20200326.1
+# Version 20200402.1
 
 ##############################################
 
@@ -118,7 +118,7 @@ fi
 ##############################################
 
 case $1 in
-	[1-9] | 1[0-9] | 2[0-9] | 3[0-9]) REPLY=$1;;
+	[1-9] | 1[0-9] | 2[0-9] | 3[0-9] | 40) REPLY=$1;;
 	*)
 		echo "Target receivers:"
 		echo
@@ -156,7 +156,8 @@ case $1 in
 		echo "   36)  Vitamin HD5000"
 		echo "   37)  SagemCom 88 series"
 		echo "   38)  Ferguson Ariva @Link 200"
-		echo "   39)  Pace HDS-7241 (kernel P0217 only)"
+#		echo "   39)  Pace HDS-7241 (kernel P0217 only)"
+#		echo "   40)  ADB ITI-2850ST (kernel P0217 only)"
 		echo
 		read -p "Select target (1-39)? ";;
 esac
@@ -201,6 +202,7 @@ case "$REPLY" in
 	37) BOXTYPE="sagemcom88";;
 	38) BOXTYPE="arivalink200";;
 	39) BOXTYPE="pace7241";;
+	40) BOXTYPE="adb_2850";;
 	 *) BOXTYPE="atevio7500";;
 esac
 echo "BOXTYPE=$BOXTYPE" >> config
