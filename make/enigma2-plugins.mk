@@ -295,11 +295,12 @@ $(D)/enigma2_servicemp3epl: | $(SERVICEMP3EPL_DEPS)
 	$(START_BUILD)
 	$(REMOVE)/enigma2-servicemp3epl-$(SERVICEMP3EPL_VER)
 	$(SILENT)if [ -d $(ARCHIVE)/enigma2-servicemp3epl-$(SERVICEMP3EPL_VER).git ]; \
-		then cd $(ARCHIVE)/enigma2-servicemp3epl-$(SERVICEMP3EPL_VER).git; git pull $(MINUS_Q) ; \
+		then cd $(ARCHIVE)/enigma2-servicemp3epl-$(SERVICEMP3EPL_VER).git; git pull $(MINUS_Q); \
 		else cd $(ARCHIVE); git clone $(MINUS_Q) https://github.com/OpenVisionE2/servicemp3epl.git enigma2-servicemp3epl-$(SERVICEMP3EPL_VER).git; \
 		fi
 	$(SILENT)cp -ra $(ARCHIVE)/enigma2-servicemp3epl-$(SERVICEMP3EPL_VER).git/ $(BUILD_TMP)/enigma2-servicemp3epl-$(SERVICEMP3EPL_VER)
 	$(SET) -e; cd $(BUILD_TMP)/enigma2-servicemp3epl-$(SERVICEMP3EPL_VER); \
+		git checkout $(MINUS_Q) 00d1f54426f856ada1fa6e75793f2f5550acbeba; \
 		$(call apply_patches,$(SERVICEMP3EPL_PATCH)); \
 		./autogen.sh $(SILENT_OPT); \
 		$(BUILDENV) \
