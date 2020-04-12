@@ -89,8 +89,9 @@ $(D)/host_mtd_utils: directories $(ARCHIVE)/$(HOST_MTD_UTILS_SOURCE)
 #
 # host_mkcramfs
 #
-HOST_MKCRAMFS_VER = 1.1
+HOST_MKCRAMFS_VER    = 1.1
 HOST_MKCRAMFS_SOURCE = cramfs-$(HOST_MKCRAMFS_VER).tar.gz
+HOST_MKCRAMFS_PATCH  = cramfs-$(HOST_MKCRAMFS_VER).patch
 
 $(ARCHIVE)/$(HOST_MKCRAMFS_SOURCE):
 	$(WGET) https://sourceforge.net/projects/cramfs/files/cramfs/$(HOST_MKCRAMFS_VER)/$(HOST_MKCRAMFS_SOURCE)
@@ -100,6 +101,7 @@ $(D)/host_mkcramfs: directories $(ARCHIVE)/$(HOST_MKCRAMFS_SOURCE)
 	$(REMOVE)/cramfs-$(HOST_MKCRAMFS_VER)
 	$(UNTAR)/$(HOST_MKCRAMFS_SOURCE)
 	$(CH_DIR)/cramfs-$(HOST_MKCRAMFS_VER); \
+		$(call apply_patches, $(HOST_MKCRAMFS_PATCH)); \
 		$(MAKE) all
 		cp $(BUILD_TMP)/cramfs-$(HOST_MKCRAMFS_VER)/mkcramfs $(HOST_DIR)/bin
 		cp $(BUILD_TMP)/cramfs-$(HOST_MKCRAMFS_VER)/cramfsck $(HOST_DIR)/bin
