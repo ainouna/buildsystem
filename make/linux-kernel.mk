@@ -284,6 +284,11 @@ SAGEMCOM88_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-sh4-stmmac_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-sagemcom88_sound_stm24_$(KERNEL_LABEL).patch
 
+PACE7241_PATCHES_24 = $(COMMON_PATCHES_24) \
+		linux-sh4-lmb_stm24_$(KERNEL_LABEL).patch \
+		linux-sh4-pace7241_setup_stm24_$(KERNEL_LABEL).patch \
+		linux-sh4-stmmac_stm24_$(KERNEL_LABEL).patch
+
 ADB_2850_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-sh4-lmb_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-adb2850_setup_stm24_$(KERNEL_LABEL).patch \
