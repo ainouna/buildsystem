@@ -765,7 +765,7 @@
  		{
 --- enigma2.org/lib/driver/vfd.cpp
 +++ enigma2/lib/driver/vfd.cpp
-@@ -0,0 +1,861 @@
+@@ -0,0 +1,871 @@
 +/*
 + * vfd.cpp
 + *
@@ -810,6 +810,7 @@
 + * 20170313 Audioniek       Kathrein UFS910/912 added.
 + * 20190317 Audioniek       Several CubeRevo's added.
 + * 20190518 Audioniek       vitamin_hd5000 added.
++ * 20200417 Audioniek       adb_box added.
 + *
 + ****************************************************************************/
 +#include <stdarg.h>
@@ -940,6 +941,8 @@
 +	vfd_type = 16;
 +#elif defined (ENABLE_VITAMIN_HD5000)
 +	vfd_type = 17;
++#elif defined (ENABLE_ADB_BOX)
++	vfd_type = 18;
 +#else
 +	vfd_type = -1;
 +#endif
@@ -1115,6 +1118,8 @@
 +		char str[] = "UFS913 Enigma2";
 +	#elif defined (ENABLE_VITAMIN_HD5000)
 +		char str[] = "Vitamin E2";
++	#elif defined (ENABLE_ADB_BOX)
++		char str[] = "nBox";
 +	#else
 +		char str[] = "SH4 Git Enigma2";
 +	#endif
@@ -1142,7 +1147,8 @@
 +	 && !defined (ENABLE_HS7429) \
 +	 && !defined (ENABLE_HS7810A) \
 +	 && !defined (ENABLE_HS7819) \
-+	 && !defined (ENABLE_VITAMIN_HD5000)
++	 && !defined (ENABLE_VITAMIN_HD5000) \
++	 && !defined (ENABLE_ADB_BOX)
 +	/* Others cycle their icons */
 +	for (int vloop = 0; vloop < 128; vloop++)
 +	{
@@ -1229,7 +1235,8 @@
 +	 && !defined (ENABLE_CUBEREVO_3000HD) \
 +	 && !defined (ENABLE_CUBEREVO_9500HD) \
 +	 && !defined (ENABLE_SPARK7162) \
-+	 && !defined (ENABLE_VITAMIN_HD5000)
++	 && !defined (ENABLE_VITAMIN_HD5000) \
++	 && !defined (ENABLE_ADB_BOX)
 +	//set all blocked icons
 +	for (int id = 0x10; id < 0x20; id++)
 +	{
@@ -1259,7 +1266,8 @@
 + || defined (ENABLE_HS7119) \
 + || defined (ENABLE_HS7810A) \
 + || defined (ENABLE_HS7819) \
-+ || defined (ENABLE_VITAMIN_HD5000)
++ || defined (ENABLE_VITAMIN_HD5000) \
++ || defined (ENABLE_ADB_BOX)
 +void evfd::vfd_write_string_scrollText(char* text)
 +{
 +	return;
@@ -1539,6 +1547,8 @@
 +		for (id = 1; id < 7; id++)
 +	#elif defined (ENABLE_VITAMIN_HD5000)
 +		for (id = 1; id < 17; id++)
++	#elif defined (ENABLE_ADB_BOX)
++		for (id = 1; id < 21; id++)
 +	#else
 +		for (id = 0x10; id < 0x20; id++)
 +	#endif
@@ -8967,7 +8977,7 @@
  	if key in keyDescriptions[idx]:
 --- enigma2.org/lib/python/Screens/InputDeviceSetup.py
 +++ enigma2/lib/python/Screens/InputDeviceSetup.py
-@@ -299,62 +299,28 @@
+@@ -299,62 +299,30 @@
  	rcList = [
  			("0", _("Default")),
  			("4", _("DMM normal")),
@@ -8995,7 +9005,8 @@
 +			("12", _("ufs912")),
 +			("13", _("cuberevo_uni")),
 +			("14", _("vitamin")),
-+			("15", _("adb_box")),
++			("15", _("adb_xmp")),
++#			("16", _("fortis_4g")),
  		]
  
  	defaultRcList = [
@@ -9045,12 +9056,13 @@
 +			("cuberevo_uni", 13),
 +			("vitamin", 14),
 +			("adb_xmp", 15),
++#			("fortis_4g", 16),
  		]
  
  	def __init__(self, session):
 --- enigma2.org/data/rc_models/rc_models.cfg
 +++ enigma2/data/rc_models/rc_models.cfg
-@@ -19,126 +19,27 @@
+@@ -19,126 +19,28 @@
  #
  # When no entry matches at all, 'default' will be used as remoteName
  #
@@ -9199,6 +9211,7 @@
 +cuberevo-3000hd   cuberevo_uni
 +cuberevo-9500hd   cuberevo_uni
 +vitamin_hd5000    vitamin
++adb_box           adb_xmp
  
 --- enigma2.org/data/rc_models/Makefile.am
 +++ enigma2/data/rc_models/Makefile.am
@@ -9217,8 +9230,8 @@
 -	spycat.xml xpeedlx.xml et7000mini.png et7000mini.xml revo4k.xml sab.xml sh1.xml i55.xml qviart.xml \
 -	gb7252.xml e4hd.xml edision2.xml edision3.xml edision4.xml hd60.xml lunix4k.xml multibox.xml viperslim.xml octagon.xml
 +	dmmadv.png \
-+	cuberevo_uni.png fs9000.png  hs7110.png  hs9510.png  spark.png tf7700.png ufs912.png vitamin.png \
++	adb_xmp.png cuberevo_uni.png fs9000.png  hs7110.png  hs9510.png  spark.png tf7700.png ufs912.png vitamin.png \
 +	dmm.png \
 +	dmmadv.xml  \
-+	cuberevo_uni.xml fs9000.xml  hs7110.xml  hs9510.xml  spark.xml tf7700.xml ufs912.xml vitamin.xml \
++	adb_xmp.xml cuberevo_uni.xml fs9000.xml  hs7110.xml  hs9510.xml  spark.xml tf7700.xml ufs912.xml vitamin.xml \
 +	dmm.xml

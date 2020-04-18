@@ -479,7 +479,7 @@ enigma2_release_adb_box:
 	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/frontcontroller/adb_5800_fp/adb_5800_fp.ko $(RELEASE_DIR)/lib/modules/
 	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/frontends/*.ko $(RELEASE_DIR)/lib/modules/
 	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/stgfb/stmfb/stmcore-display-stx7100.ko $(RELEASE_DIR)/lib/modules/
-#	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/adb_box_fan/adb_fan.ko $(RELEASE_DIR)/lib/modules/
+#	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/fan_adb_box/fan_adb_box.ko $(RELEASE_DIR)/lib/modules/
 	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/cec_adb_box/cec_ctrl.ko $(RELEASE_DIR)/lib/modules/
 	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/dvbt/as102/dvb-as102.ko $(RELEASE_DIR)/lib/modules/
 	$(SILENT)cp $(SKEL_ROOT)/boot/video_7100.elf $(RELEASE_DIR)/boot/video.elf
@@ -604,6 +604,7 @@ enigma2_release_pace7241:
 	$(SILENT)cp $(SKEL_ROOT)/firmware/dvb-fe-avl6222.fw $(RELEASE_DIR)/lib/firmware/
 	$(SILENT)cp $(SKEL_ROOT)/firmware/component_7105_pdk7105.fw $(RELEASE_DIR)/lib/firmware/component.fw
 #	$(SILENT)cp -dp $(SKEL_ROOT)/release/lircd_pace7241.conf $(RELEASE_DIR)/etc/lircd.conf
+#	$(SILENT)cp -f $(SKEL_ROOT)/root_enigma2/usr/local/share/enigma2/keymap_sagemcom88.xml $(RELEASE_DIR)/usr/local/share/enigma2/keymap.xml
 
 #
 # release_base
@@ -974,13 +975,19 @@ ifeq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), small size))
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/DVDBurn
 endif
 #
+# Remove WirelessLAN plugin if no wlan built
+#
+ifneq ($(IMAGE), $(filter $(IMAGE), enigma2-wlandriver neutrino-wlandriver))
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/SystemPlugins/WirelessLAN
+endif
+#
 # delete unnecessary remote control files and VFD plugins
 #
 ifneq ($(BOXTYPE), $(filter $(BOXTYPE), cuberevo cuberevo_mini_fta cuberevo_250hd cuberevo_mini cuberevo_mini2 cuberevo_2000hd cuberevo_3000hd cuberevo_9500hd))
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/CuberevoVFD
 endif
 #
-	$(SILENT)cp -f $(SKEL_ROOT)/release/rc_adb_box.png $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/adb.png
+	$(SILENT)cp -f $(SKEL_ROOT)/release/rc_adb_box.png $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/adb_xmp.png
 	$(SILENT)cp -f $(SKEL_ROOT)/release/rc_cuberevo_uni.png $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/cuberevo_uni.png
 	$(SILENT)cp -f $(SKEL_ROOT)/release/rc_fs9000.png $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/fs9000.png
 	$(SILENT)cp -f $(SKEL_ROOT)/release/rc_hs9510.png $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/hs9510.png

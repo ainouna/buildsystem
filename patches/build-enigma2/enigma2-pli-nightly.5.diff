@@ -962,7 +962,7 @@
  		{
 --- enigma2.org/lib/driver/vfd.cpp
 +++ enigma2/lib/driver/vfd.cpp
-@@ -0,0 +1,861 @@
+@@ -0,0 +1,871 @@
 +/*
 + * vfd.cpp
 + *
@@ -1137,6 +1137,8 @@
 +	vfd_type = 16;
 +#elif defined (ENABLE_VITAMIN_HD5000)
 +	vfd_type = 17;
++#elif defined (ENABLE_ADB_BOX)
++	vfd_type = 18;
 +#else
 +	vfd_type = -1;
 +#endif
@@ -1339,7 +1341,8 @@
 +	 && !defined (ENABLE_HS7429) \
 +	 && !defined (ENABLE_HS7810A) \
 +	 && !defined (ENABLE_HS7819) \
-+	 && !defined (ENABLE_VITAMIN_HD5000)
++	 && !defined (ENABLE_VITAMIN_HD5000) \
++	 && !defined (ENABLE_ADB_BOX)
 +	/* Others cycle their icons */
 +	for (int vloop = 0; vloop < 128; vloop++)
 +	{
@@ -1456,7 +1459,8 @@
 + || defined (ENABLE_HS7119) \
 + || defined (ENABLE_HS7810A) \
 + || defined (ENABLE_HS7819) \
-+ || defined (ENABLE_VITAMIN_HD5000)
++ || defined (ENABLE_VITAMIN_HD5000) \
++ || defined (ENABLE_ADB_BOX)
 +void evfd::vfd_write_string_scrollText(char* text)
 +{
 +	return;
@@ -1736,6 +1740,8 @@
 +		for (id = 1; id < 7; id++)
 +	#elif defined (ENABLE_VITAMIN_HD5000)
 +		for (id = 1; id < 17; id++)
++	#elif defined (ENABLE_ADB_BOX)
++		for (id = 1; id < 21; id++)
 +	#else
 +		for (id = 0x10; id < 0x20; id++)
 +	#endif
@@ -9290,7 +9296,7 @@
  	},
  ]
  
-@@ -248,10 +368,24 @@
+@@ -248,10 +368,30 @@
  		idx = config.misc.rcused.value
  	else:
  		rctype = config.plugins.remotecontroltype.rctype.value
@@ -9312,20 +9318,26 @@
 +			idx = 6
 +		elif rctype == 13:	# CubeRevo Universal
 +			idx = 7
-+#		elif rctype == 14:	# ...
-+#			idx = 8
++		elif rctype == 14:	# Vitamin HD5000
++			idx = 8
++		elif rctype == 15:	# ADB XMP
++			idx = 9
++#		elif rctype == 16:	# Fortis 4G
++#			idx = 10
++#		elif rctype == 17:	# ...
++#			idx = 11
  		else:
  			idx = 2
  	if key in keyDescriptions[idx]:
 --- enigma2.org/lib/python/Screens/InputDeviceSetup.py
 +++ enigma2/lib/python/Screens/InputDeviceSetup.py
-@@ -299,57 +299,24 @@
+@@ -299,62 +299,30 @@
  	rcList = [
  			("0", _("Default")),
  			("4", _("DMM normal")),
 -			("5", _("et9000/et9100")),
  			("6", _("DMM advanced")),
--			("7", _("et5000/6000")),
+-			("7", _("et5000/et6000")),
 -			("8", _("VU+")),
 -			("9", _("et8000/et10000")),
 -			("11", _("et9200/9500/6500")),
@@ -9344,6 +9356,9 @@
 +			("11", _("tf7700")),
 +			("12", _("ufs912")),
 +			("13", _("cuberevo_uni")),
++			("14", _("vitamin")),
++			("15", _("adb_xmp")),
++#			("16", _("fortis_4g")),
  		]
  
  	defaultRcList = [
@@ -9372,6 +9387,8 @@
 -			("hd1265", 16),
 -			("hd1100", 16),
 -			("hd2400", 19),
+-			("hd60", 27),
+-			("et7000mini", 16),
 -			("et7000", 16),
 -			("et7500", 16),
 -			("et8500", 16),
@@ -9388,6 +9405,9 @@
 +			("tf7700", 11),
 +			("ufs912", 12),
 +			("cuberevo_uni", 13),
++			("vitamin", 14),
++			("adb_xmp", 15),
++#			("fortis_4g", 16),
  		]
  
  	def __init__(self, session):
@@ -9538,6 +9558,7 @@
 +cuberevo-3000hd   cuberevo_uni
 +cuberevo-9500hd   cuberevo_uni
 +vitamin_hd5000    vitamin
++adb_box           adb_xmp
 --- enigma2.org/data/rc_models/Makefile.am
 +++ enigma2/data/rc_models/Makefile.am
 @@ -2,13 +2,9 @@
@@ -9555,8 +9576,8 @@
 -	spycat.xml xpeedlx.xml et7000mini.png et7000mini.xml revo4k.xml sab.xml sh1.xml i55.xml qviart.xml \
 -	gb7252.xml e4hd.xml edision2.xml edision3.xml edision4.xml hd60.xml lunix4k.xml multibox.xml viperslim.xml
 +	dmmadv.png \
-+	cuberevo_uni.png fs9000.png  hs7110.png  hs9510.png  spark.png tf7700.png ufs912.png vitamin.png \
++	adb_xmp.png cuberevo_uni.png fs9000.png  hs7110.png  hs9510.png  spark.png tf7700.png ufs912.png vitamin.png \
 +	dmm.png \
 +	dmmadv.xml  \
-+	cuberevo_uni.xml fs9000.xml  hs7110.xml  hs9510.xml  spark.xml tf7700.xml ufs912.xml vitamin.xml \
++	adb_xmp.xml cuberevo_uni.xml fs9000.xml  hs7110.xml  hs9510.xml  spark.xml tf7700.xml ufs912.xml vitamin.xml \
 +	dmm.xml
