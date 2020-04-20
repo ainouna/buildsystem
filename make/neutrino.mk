@@ -267,7 +267,6 @@ $(SOURCE_DIR)/$(NEUTRINO)/config.status:
 		$(SOURCE_DIR)/$(NEUTRINO)/configure $(SILENT_CONFIGURE) \
 			--build=$(BUILD) \
 			--host=$(TARGET) \
-			--build=$(BUILD) \
 			--prefix=/usr \
 			--enable-maintainer-mode \
 			--enable-silent-rules \
