@@ -113,7 +113,7 @@ LIBSTB_HAL    = libstb-hal-tangos
 N_BRANCH     ?= master
 N_CHECKOUT   ?= f5f2e6e066e99323695989f5cdf606b67256481d # 23/10/2019
 #N_CHECKOUT   ?= e40ae527797759527affaa8a63b3b81ede1a2b2a # 27/10/2019
-#N_CHECKOUT   ?= 213447662c284ff750eda37b1f90b1744341d01d # 14/03.2020
+#N_CHECKOUT   ?= 213447662c284ff750eda37b1f90b1744341d01d # 14/03/2020
 HAL_BRANCH   ?= master
 HAL_CHECKOUT ?= e64294ac2f42d0bddb5c297decd75d4161ab72b7
 #HAL_CHECKOUT ?= bde3e781bacae3df4ea78904cf96098bcbe4788b # 14/03/2020
@@ -129,9 +129,15 @@ HAL_BRANCH   ?= master
 HAL_CHECKOUT ?= 4219d24d76869a8451b5a7d4a5ce44abe0f69e47
 N_PATCHES     = $(NEUTRINO_DDT_PATCHES)
 HAL_PATCHES   = $(NEUTRINO_LIBSTB_DDT_PATCHES)
-else
-NEUTRINO      = dummy
-LIBSTB_HAL    = dummy2
+else ifeq ($(FLAVOUR), neutrino-hd2)
+GIT_URL       = https://github.com/mohousch/neutrinohd2
+NEUTRINO      = neutrino-hd2
+N_BRANCH     ?= master
+N_CHECKOUT   ?= d2ec257482e841563ad8c29e1aa5253145e4bd21
+N_PATCHES     = $(NEUTRINO_HD2_PATCHES)
+#else
+#NEUTRINO      = dummy
+#LIBSTB_HAL    = dummy2
 endif
 
 N_OBJDIR = $(SOURCE_DIR)/$(NEUTRINO)
@@ -159,6 +165,7 @@ yaud-neutrino-plugins: yaud-none $(D)/$(NEUTRINO)-plugins $(D)/neutrino_release
 	@echo "***************************************************************"
 	@touch $(D)/build_complete
 
+ifneq ($(FLAVOUR), neutrino-hd2)
 ################################################################################
 #
 # libstb-hal
@@ -351,6 +358,7 @@ $(NEUTRINO)-plugins-distclean: neutrino-cdkroot-clean
 	$(SILENT)rm -rf $(N_OBJDIR)
 	$(SILENT)rm -f $(D)/$(NEUTRINO)-plugins*
 	make $(NEUTRINO)-plugin-distclean
+endif
 
 ################################################################################
 #
@@ -388,8 +396,9 @@ ifeq ($(EXTERNAL_LCD), $(filter $(EXTERNAL_LCD), graphlcd, lcd4linux, both))
 NHD2_OPTS     += --enable-lcd
 endif
 
-NHD2_BRANCH   ?= master
-NHD2_CHECKOUT  = d2ec257482e841563ad8c29e1aa5253145e4bd21
+#NHD2_BRANCH   ?= master
+#NHD2_CHECKOUT  = d2ec257482e841563ad8c29e1aa5253145e4bd21
+
 #
 # yaud-neutrino-hd2
 #
@@ -419,31 +428,34 @@ NEUTRINO_HD2_PATCHES =
 
 $(D)/neutrino-hd2.do_prepare: | $(NEUTRINO_DEPS) $(NEUTRINO_DEPS2)
 	$(START_BUILD)
-	$(SILENT)rm -rf $(SOURCE_DIR)/neutrino-hd2
-	$(SILENT)rm -rf $(SOURCE_DIR)/neutrino-hd2.org
-	$(SILENT)rm -rf $(SOURCE_DIR)/neutrino-hd2.git
+	$(SILENT)rm -rf $(SOURCE_DIR)/$(NEUTRINO)
+	$(SILENT)rm -rf $(SOURCE_DIR)/$(NEUTRINO).org
+	$(SILENT)rm -rf $(SOURCE_DIR)/$(NEUTRINO).git
 	$(SILENT)if [ -d "$(ARCHIVE)/neutrino-hd2.git" ]; then \
 			echo -n "Update local git..."; \
-			cd $(ARCHIVE)/neutrino-hd2.git; \
+			cd $(ARCHIVE)/$(NEUTRINO).git; \
 			git pull $(MINUS_Q); \
 			echo " done."; \
 		else \
 			echo -n "Cloning git..."; \
-			git clone $(MINUS_Q) -b $(NHD2_BRANCH) https://github.com/mohousch/neutrinohd2.git $(ARCHIVE)/neutrino-hd2.git; \
+			git clone $(MINUS_Q) -b $(N_BRANCH) $(GIT_URL).git $(ARCHIVE)/$(NEUTRINO).git; \
 			echo " done."; \
 		fi
-	$(SILENT)cp -ra $(ARCHIVE)/neutrino-hd2.git $(SOURCE_DIR)/neutrino-hd2.git
-	$(SILENT)ln -sf $(SOURCE_DIR)/neutrino-hd2.git/nhd2-exp $(SOURCE_DIR)/neutrino-hd2
-	$(SILENT)echo -n "Checking out commit $(NHD2_CHECKOUT)..."
-	$(SILENT)(cd $(SOURCE_DIR)/neutrino-hd2; git checkout $(MINUS_Q) $(NHD2_CHECKOUT))
+	$(SILENT)if [ ! -d $(SOURCE_DIR) ]; then \
+		mkdir -p $(SOURCE_DIR); \
+	fi
+	$(SILENT)cp -ra $(ARCHIVE)/$(NEUTRINO).git $(SOURCE_DIR)/$(NEUTRINO).git
+	$(SILENT)ln -sf $(SOURCE_DIR)/$(NEUTRINO).git/nhd2-exp $(SOURCE_DIR)/$(NEUTRINO)
+	$(SILENT)echo -n "Checking out commit $(N_CHECKOUT)..."
+	$(SILENT)(cd $(SOURCE_DIR)/$(NEUTRINO); git checkout $(MINUS_Q) $(N_CHECKOUT))
 	$(SILENT)echo " done."
-	$(SILENT)cp -ra $(SOURCE_DIR)/neutrino-hd2.git/nhd2-exp $(SOURCE_DIR)/neutrino-hd2.org
-	$(SET) -e; cd $(SOURCE_DIR)/neutrino-hd2; \
-		$(call apply_patches, $(NEUTRINO_HD2_PATCHES))
+	$(SILENT)cp -ra $(SOURCE_DIR)/$(NEUTRINO).git/nhd2-exp $(SOURCE_DIR)/$(NEUTRINO).org
+	$(SET) -e; cd $(SOURCE_DIR)/$(NEUTRINO); \
+		$(call apply_patches, $(N_PATCHES))
 	@touch $@
 
 $(SOURCE_DIR)/neutrino-hd2/config.status:
-	cd $(SOURCE_DIR)/neutrino-hd2; \
+	cd $(SOURCE_DIR)/$(NEUTRINO); \
 		./autogen.sh; \
 		$(BUILDENV) \
 		$(CONFIGURE) \
@@ -460,13 +472,13 @@ $(SOURCE_DIR)/neutrino-hd2/config.status:
 			CPPFLAGS="$(N_CPPFLAGS)" LDFLAGS="$(TARGET_LDFLAGS)"
 
 $(D)/neutrino-hd2.do_compile: $(SOURCE_DIR)/neutrino-hd2/config.status
-	$(SILENT)cd $(SOURCE_DIR)/neutrino-hd2; \
+	$(SILENT)cd $(SOURCE_DIR)/$(NEUTRINO); \
 		$(MAKE) all
 	@touch $@
 
 $(D)/neutrino-hd2: $(D)/neutrino-hd2.do_prepare $(D)/neutrino-hd2.do_compile
 	$(START_BUILD)
-	$(SILENT)make -C $(SOURCE_DIR)/neutrino-hd2 install DESTDIR=$(TARGET_DIR)
+	$(SILENT)make -C $(SOURCE_DIR)/$(NEUTRINO) install DESTDIR=$(TARGET_DIR)
 	$(SILENT)rm -f $(TARGET_DIR)/.version
 	$(SILENT)make $(TARGET_DIR)/.version
 #	$(SILENT)touch $(D)/$(notdir $@)
@@ -475,14 +487,14 @@ $(D)/neutrino-hd2: $(D)/neutrino-hd2.do_prepare $(D)/neutrino-hd2.do_compile
 
 nhd2-clean \
 neutrino-hd2-clean: neutrino-cdkroot-clean
-	$(SILENT)rm -f $(D)/neutrino-hd2
-	$(SILENT)rm -f $(D)/neutrino-hd2.config.status
-	cd $(SOURCE_DIR)/neutrino-hd2; \
+	$(SILENT)rm -f $(D)/$(NEUTRINO)
+	$(SILENT)rm -f $(D)/$(NEUTRINO).config.status
+	cd $(SOURCE_DIR)/$(NEUTRINO); \
 		$(MAKE) clean
 
 nhd2-distclean \
 neutrino-hd2-distclean: neutrino-cdkroot-clean
-	$(SILENT)rm -f $(D)/neutrino-hd2*
+	$(SILENT)rm -f $(D)/$(NEUTRINO)*
 #	$(SILENT)rm -f $(D)/neutrino-hd2-plugins*
 
 ################################################################################

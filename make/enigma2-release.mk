@@ -604,6 +604,9 @@ enigma2_release_pace7241:
 	$(SILENT)cp $(SKEL_ROOT)/firmware/dvb-fe-avl6222.fw $(RELEASE_DIR)/lib/firmware/
 	$(SILENT)cp $(SKEL_ROOT)/firmware/component_7105_pdk7105.fw $(RELEASE_DIR)/lib/firmware/component.fw
 #	$(SILENT)cp -dp $(SKEL_ROOT)/release/lircd_pace7241.conf $(RELEASE_DIR)/etc/lircd.conf
+	$(SILENT)mkdir -p $(RELEASE_DIR)/var/run/lirc
+	$(SILENT)rm -f $(RELEASE_DIR)/bin/vdstandby
+	$(SILENT)cp -f $(SKEL_ROOT)/release/rc_pace7241.png $(RELEASE_DIR)/usr/local/share/enigma2/skin_default/rc.png
 #	$(SILENT)cp -f $(SKEL_ROOT)/root_enigma2/usr/local/share/enigma2/keymap_sagemcom88.xml $(RELEASE_DIR)/usr/local/share/enigma2/keymap.xml
 
 #
@@ -1008,7 +1011,7 @@ endif
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/hd2400.*
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/vu*.*
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/xp1000.*
-	$(SILENT)if [[ ! ENABLE_ADB_BOX ]]; then \
+	$(SILENT)if [[ ! ENABLE_ADB_BOX && ! ENABLE_ADB_2850 ]]; then \
 		rm -rf $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/adb/*; \
 		rmdir $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/adb; \
 	fi

@@ -121,10 +121,10 @@ include make/enigma2-release.mk
 include make/neutrino.mk
 include make/neutrino-plugins.mk
 include make/neutrino-release.mk
+include make/neutrino-patches.mk
 include make/tvheadend.mk
 include make/tvheadend-release.mk
 include make/cleantargets.mk
-include make/patches.mk
 include make/bootstrap.mk
 
 update-self:
