@@ -19,9 +19,12 @@ NEUTRINO_DEPS += $(D)/libpng $(D)/libjpeg $(D)/freetype
 #NEUTRINO_DEPS += $(D)/luaexpat $(D)/luacurl $(D)/luasocket $(D)/luafeedparser $(D)/luasoap $(D)/luajson
 NEUTRINO_DEPS += $(LOCAL_NEUTRINO_DEPS)
 
-ifeq ($(FLAVOUR), tangos + plugins + shairport)
+ifeq ($(FLAVOUR), neutrino-tangos)
+ifeq ($(PLUGINS_NEUTRINO), Yes)
 NEUTRINO_DEPS += $(D)/avahi
 endif
+endif
+
 ifeq ($(BOXTYPE), $(filter $(BOXTYPE), atevio7500 spark spark7162 ufs912 ufs913 ufs910))
 NEUTRINO_DEPS += $(D)/ntfs_3g
 ifneq ($(BOXTYPE), $(filter $(BOXTYPE), ufs910))
@@ -57,9 +60,9 @@ ifeq ($(BOXTYPE), $(filter $(BOXTYPE), spark spark7162))
 N_CPPFLAGS += -I$(DRIVER_DIR)/frontcontroller/aotom_spark
 endif
 
-ifeq ($(FLAVOUR), $(filter $(FLAVOUR), tangos, tangos + plugins))
-N_CPPFLAGS += -std=c++11
-endif
+#ifeq ($(FLAVOUR), neutrino-tangos)
+#N_CPPFLAGS += -std=c++11
+#endif
 
 LH_CONFIG_OPTS =
 ifeq ($(MEDIAFW), gstreamer)
@@ -84,7 +87,7 @@ N_CONFIG_OPTS += --enable-freesatepg
 N_CONFIG_OPTS += --enable-pip
 #N_CONFIG_OPTS += --disable-webif
 #N_CONFIG_OPTS += --disable-upnp
-ifeq ($(FLAVOUR), $(filter $(FLAVOUR), tangos, tangos + plugins))
+ifeq ($(FLAVOUR), neutrino-tangos)
 N_CONFIG_OPTS += --enable-tangos
 endif
 
@@ -135,9 +138,9 @@ NEUTRINO      = neutrino-hd2
 N_BRANCH     ?= master
 N_CHECKOUT   ?= d2ec257482e841563ad8c29e1aa5253145e4bd21
 N_PATCHES     = $(NEUTRINO_HD2_PATCHES)
-#else
-#NEUTRINO      = dummy
-#LIBSTB_HAL    = dummy2
+else
+NEUTRINO      = dummy
+LIBSTB_HAL    = dummy2
 endif
 
 N_OBJDIR = $(SOURCE_DIR)/$(NEUTRINO)
@@ -165,7 +168,7 @@ yaud-neutrino-plugins: yaud-none $(D)/$(NEUTRINO)-plugins $(D)/neutrino_release
 	@echo "***************************************************************"
 	@touch $(D)/build_complete
 
-ifneq ($(FLAVOUR), neutrino-hd2)
+ifeq ($(FLAVOUR), $(filter $(FLAVOUR), neutrino-ddt neutrino-tangos))
 ################################################################################
 #
 # libstb-hal
@@ -359,6 +362,7 @@ $(NEUTRINO)-plugins-distclean: neutrino-cdkroot-clean
 	make $(NEUTRINO)-plugin-distclean
 endif
 
+ifeq ($(FLAVOUR), neutrino-hd2)
 ################################################################################
 #
 # neutrino-hd2
@@ -516,6 +520,7 @@ dual-clean:
 dual-distclean:
 	$(SILENT)make nhd2-distclean
 	$(SILENT)make mp-distclean
+endif
 
 PHONY += $(TARGET_DIR)/.version
 PHONY += $(SOURCE_DIR)/$(NEUTRINO)/src/gui/version.h
