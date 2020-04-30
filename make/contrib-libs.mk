@@ -3008,7 +3008,7 @@ $(D)/libevent: $(D)/bootstrap $(D)/openssl
 	$(REWRITE_LIBTOOL)/libevent.la
 	$(REWRITE_LIBTOOL)/libevent_openssl.la
 	$(REWRITE_LIBTOOL)/libevent_pthreads.la
-#	$(REMOVE)/libevent-$(LIBEVENT_VER)
-#	$(TOUCH)
+	$(REMOVE)/libevent-$(LIBEVENT_VER)
+	$(TOUCH)
 
 

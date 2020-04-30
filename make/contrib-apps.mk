@@ -1468,7 +1468,7 @@ $(D)/samba: $(D)/bootstrap $(ARCHIVE)/$(SAMBA_SOURCE)
 #
 NTP_VER = 4.2.8p13
 NTP_SOURCE = ntp-$(NTP_VER).tar.gz
-NTP_PATCH = ntp-$(NTP_VER).patch
+#NTP_PATCH = ntp-$(NTP_VER).patch
 
 $(ARCHIVE)/$(NTP_SOURCE):
 	$(WGET) https://www.eecis.udel.edu/~ntp/ntp_spool/ntp4/ntp-4.2/$(NTP_SOURCE)

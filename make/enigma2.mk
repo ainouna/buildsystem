@@ -24,6 +24,10 @@ ifeq ($(IMAGE), enigma2-wlandriver)
 ENIGMA2_DEPS += $(D)/wpa_supplicant $(D)/wireless_tools
 endif
 
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE), spark7162))
+ENIGMA2_DEPS += $(D)/ntp
+endif
+
 ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs7110 hs7119 hs7420 hs7429 hs7810a hs7819 vitamin_hd5000))
 ifeq ($(DESTINATION), USB)
 E_CONFIG_OPTS += --enable-run_from_usb
@@ -38,7 +42,7 @@ ENIGMA2_DEPS  += $(D)/libsigc
 endif
 
 # determine requirements for media framework
-# Note: for diffs 0, 2, 3 & 4 there are no extra dependencies;
+# Note: for diffs 0, 2, 3, 4 & 5 there are no extra dependencies;
 # these are part of enigma2-plugins
 ifeq ($(E2_DIFF), $(filter $(E2_DIFF), 1)) # diff 1 (local)
 ifeq ($(MEDIAFW), eplayer3)
@@ -55,24 +59,6 @@ ENIGMA2_DEPS  += $(D)/tools-libeplayer3
 ENIGMA2_DEPS  += $(D)/gstreamer $(D)/gst_plugins_base $(D)/gst_plugins_multibox_dvbmediasink
 ENIGMA2_DEPS  += $(D)/gst_plugins_good $(D)/gst_plugins_bad $(D)/gst_plugins_ugly
 E_CONFIG_OPTS += --with-gstversion=1.0 --enable-mediafwgstreamer --enable-libeplayer3
-endif
-else
-ifeq ($(E2_DIFF), $(filter $(E2_DIFF), 5)) # diff 5
-ifeq ($(MEDIAFW), eplayer3)
-ENIGMA2_DEPS  += $(D)/tools-eplayer3
-E_CONFIG_OPTS += --enable-libeplayer3
-endif
-ifeq ($(MEDIAFW), gstreamer)
-ENIGMA2_DEPS  += $(D)/gstreamer $(D)/gst_plugins_base $(D)/gst_plugins_multibox_dvbmediasink
-ENIGMA2_DEPS  += $(D)/gst_plugins_good $(D)/gst_plugins_bad $(D)/gst_plugins_ugly
-E_CONFIG_OPTS += --with-gstversion=1.0 --enable-mediafwgstreamer
-endif
-ifeq ($(MEDIAFW), gst-eplayer3)
-ENIGMA2_DEPS  += $(D)/tools-libeplayer3
-ENIGMA2_DEPS  += $(D)/gstreamer $(D)/gst_plugins_base $(D)/gst_plugins_multibox_dvbmediasink
-ENIGMA2_DEPS  += $(D)/gst_plugins_good $(D)/gst_plugins_bad $(D)/gst_plugins_ugly
-E_CONFIG_OPTS += --with-gstversion=1.0 --enable-mediafwgstreamer --enable-libeplayer3
-endif
 endif
 endif
 

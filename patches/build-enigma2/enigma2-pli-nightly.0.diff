@@ -1,4 +1,4 @@
-# revision 5e9f3673f299948491fb949bf2e9f3e3cb19a76a 02/02/2020 19:13
+# revision e238b46a92cbc55552631d84f589de5c0153f8b8 30/04/2020 21:01
 --- enigma2.org/configure.ac
 +++ enigma2/configure.ac
 @@ -18,6 +18,7 @@
@@ -491,7 +491,7 @@
  			int i, j = 0;	   // remove leading whitespace and control chars, and comments
 --- enigma2.org/lib/base/estring.cpp
 +++ enigma2/lib/base/estring.cpp
-@@ -635,10 +635,10 @@
+@@ -637,10 +637,10 @@
  		eLog(6, "[convertDVBUTF8] %d chars converted, and %d chars left..", convertedLen, len-convertedLen);
  	eLog(6, "[convertDVBUTF8] table=0x%02X twochar=%d output:%s\n", table, useTwoCharMapping, output.c_str());
  
@@ -506,7 +506,7 @@
  
  	return output;
  }
-@@ -923,13 +923,13 @@
+@@ -925,13 +925,13 @@
      return output;
  }
  
@@ -2327,7 +2327,7 @@
  	void pause();
 --- enigma2.org/lib/dvb/frontend.cpp
 +++ enigma2/lib/dvb/frontend.cpp
-@@ -16,6 +16,10 @@
+@@ -17,6 +17,10 @@
  
  #ifndef I2C_SLAVE_FORCE
  #define I2C_SLAVE_FORCE	0x0706
@@ -2338,7 +2338,7 @@
  #endif
  
  #define eDebugNoSimulate(x...) \
-@@ -726,7 +730,11 @@
+@@ -727,7 +731,11 @@
  		}
  	}
  
@@ -2350,7 +2350,7 @@
  
  	if (!m_multitype)
  		m_type = feSatellite;
-@@ -933,12 +941,16 @@
+@@ -934,12 +942,16 @@
  	int cab_max = 4200;
  	int atsc_max = 4200;
  
@@ -2369,7 +2369,7 @@
  	{
  		ret = (int)(snr / 37.5);
  		sat_max = 1700;
-@@ -2926,7 +2938,11 @@
+@@ -2928,7 +2940,11 @@
  	}
  	else if (!strcmp(type, "DVB-C"))
  	{
@@ -2381,7 +2381,7 @@
  		fetype = feCable;
  	}
  	else if (!strcmp(type, "ATSC"))
-@@ -3056,11 +3072,16 @@
+@@ -3060,11 +3076,16 @@
  		case SYS_ISDBS:		ss << " ISDBS"; break;
  		case SYS_ISDBT:		ss << " ISDBT"; break;
  		case SYS_UNDEFINED:	ss << " UNDEFINED"; break;
@@ -7448,7 +7448,7 @@
  	except Exception, ex:
  		print "[InfoBar] Failed to load resumepoints:", ex
  		return {}
-@@ -231,6 +232,7 @@
+@@ -233,6 +234,7 @@
  	STATE_HIDING = 1
  	STATE_SHOWING = 2
  	STATE_SHOWN = 3
@@ -7456,7 +7456,7 @@
  	FLAG_CENTER_DVB_SUBS = 2048
  
  	def __init__(self):
-@@ -373,6 +375,12 @@
+@@ -375,6 +377,12 @@
  		else:
  			self.toggleShow()
  
@@ -7469,7 +7469,7 @@
  	def toggleShow(self):
  		if self.__state == self.STATE_HIDDEN:
  			self.showFirstInfoBar()
-@@ -387,7 +395,9 @@
+@@ -389,7 +397,9 @@
  			self.show()
  			self.actualSecondInfoBarScreen.show()
  			self.startHideTimer()
@@ -7480,7 +7480,7 @@
  			self.hide()
  			self.hideTimer.stop()
  
-@@ -683,6 +693,19 @@
+@@ -684,6 +694,19 @@
  				"historyNext": (self.historyNext, _("Switch to next channel in history")),
  				"keyChannelUp": (self.keyChannelUpCheck, self.getKeyChannelUpHelptext),
  				"keyChannelDown": (self.keyChannelDownCheck, self.getKeyChannelDownHelptext),
@@ -7500,7 +7500,7 @@
  			})
  
  	def showTvChannelList(self, zap=False):
-@@ -847,6 +870,32 @@
+@@ -848,6 +871,32 @@
  			self.servicelist.moveUp()
  		self.servicelist.zap(enable_pipzap = True)
  
@@ -7533,7 +7533,7 @@
  	def zapDown(self):
  		if self.servicelist.inBouquet():
  			prev = self.servicelist.getCurrentSelection()
-@@ -881,7 +930,7 @@
+@@ -888,7 +937,7 @@
  	def __init__(self):
  		self["MenuActions"] = HelpableActionMap(self, "InfobarMenuActions",
  			{
@@ -7542,7 +7542,7 @@
  			})
  		self.session.infobar = None
  
-@@ -996,7 +1045,7 @@
+@@ -1003,7 +1052,7 @@
  
  		self["EPGActions"] = HelpableActionMap(self, "InfobarEPGActions",
  			{
@@ -7551,7 +7551,7 @@
  				"showEventInfoSingleEPG": (self.showSingleEPG, _("Show single service EPG")),
  				"showEventInfoMultiEPG": (self.showMultiEPG, _("Show multi channel EPG")),
  				"showInfobarOrEpgWhenInfobarAlreadyVisible": self.showEventInfoWhenNotVisible,
-@@ -1007,7 +1056,7 @@
+@@ -1014,7 +1063,7 @@
  				if 'selectedevent' not in p.__call__.func_code.co_varnames] or []
  		from Components.ServiceEventTracker import InfoBarCount
  		if getAll or InfoBarCount == 1:
@@ -7560,7 +7560,7 @@
  		pluginlist.append((_("Multi EPG"), self.openMultiServiceEPG, _("Display EPG as MultiEPG")))
  		pluginlist.append((_("Current event EPG"), self.openEventView, _("Display EPG info for current event")))
  		return pluginlist
-@@ -1161,7 +1210,7 @@
+@@ -1168,7 +1217,7 @@
  	def showEventInfoPlugins(self):
  		pluginlist = self.getEPGPluginList()
  		if pluginlist:
@@ -7569,7 +7569,7 @@
  		else:
  			self.openSingleServiceEPG()
  
-@@ -1234,7 +1283,7 @@
+@@ -1241,7 +1290,7 @@
  				self.eventView = self.session.openWithCallback(self.closed, EventViewEPGSelect, epglist[0], ServiceReference(ref), self.eventViewCallback, self.openSingleServiceEPG, self.openMultiServiceEPG, self.openSimilarList)
  				self.dlg_stack.append(self.eventView)
  		if not epglist:
@@ -7578,7 +7578,7 @@
  			self.openMultiServiceEPG(False)
  
  	def eventViewCallback(self, setEvent, setService, val): #used for now/next displaying
-@@ -2137,7 +2186,7 @@
+@@ -2144,7 +2193,7 @@
  		self.addExtension((lambda: _("Manually import from fallback tuner"), self.importChannels, lambda: config.usage.remote_fallback_extension_menu.value and config.usage.remote_fallback_import.value))
  		self["InstantExtensionsActions"] = HelpableActionMap(self, "InfobarExtensions",
  			{
@@ -7587,7 +7587,7 @@
  			}, 1) # lower priority
  
  	def openSoftcamSetup(self):
-@@ -2167,7 +2216,7 @@
+@@ -2174,7 +2223,7 @@
  
  	def updateExtensions(self):
  		self.extensionsList = []
@@ -7596,7 +7596,7 @@
  		self.extensionKeys = {}
  		for x in self.list:
  			if x[0] == self.EXTENSION_SINGLE:
-@@ -2194,7 +2243,7 @@
+@@ -2201,7 +2250,7 @@
  				else:
  					extensionsList.remove(extension)
  		list.extend([(x[0](), x) for x in extensionsList])
@@ -7605,7 +7605,7 @@
  
  	def extensionCallback(self, answer):
  		if answer is not None:
-@@ -2397,11 +2446,11 @@
+@@ -2404,11 +2453,11 @@
  
  class InfoBarInstantRecord:
  	"""Instant Record - handles the instantRecord action in order to
@@ -7619,7 +7619,7 @@
  			})
  		self.SelectedInstantServiceRef = None
  		if isStandardInfoBar(self):
-@@ -2484,7 +2533,7 @@
+@@ -2491,7 +2540,7 @@
  	def startInstantRecording(self, limitEvent = False):
  		begin = int(time())
  		end = begin + 3600      # dummy
@@ -7628,7 +7628,7 @@
  		info = { }
  
  		self.getProgramInfoAndEvent(info, name)
-@@ -2713,7 +2762,7 @@
+@@ -2720,7 +2769,7 @@
  	def __init__(self):
  		self["AudioSelectionAction"] = HelpableActionMap(self, "InfobarAudioSelectionActions",
  			{
@@ -7637,7 +7637,7 @@
  			})
  
  	def audioSelection(self):
-@@ -2727,7 +2776,7 @@
+@@ -2734,7 +2783,7 @@
  	def __init__(self):
  		self["SubserviceSelectionAction"] = HelpableActionMap(self, "InfobarSubserviceSelectionActions",
  			{
@@ -7851,7 +7851,7 @@
  		elif self.index == self.STATE_CHOISE_CHANNELLIST:
 -			self.enabled = ConfigYesNo(default = True, graphic = False)
 +			self.enabled = ConfigYesNo(default = False, graphic = False)
-                         modes = {"19e-23e-basis": "Astra1 Astra3 basis", "19e-23e": "Astra 1 Astra 3", "19e-23e-28e": "Astra 1 Astra 2 Astra 3", "13e-19e-23e-28e": "Astra 1 Astra 2 Astra 3 Hotbird", "9e-13e-19e-23e-28e-rotating": "Rotating", "kabelnl": "Kabel-NL"}
+ 			modes = {"19e-23e-basis": "Astra1 Astra3 basis", "19e-23e": "Astra 1 Astra 3", "19e-23e-28e": "Astra 1 Astra 2 Astra 3", "13e-19e-23e-28e": "Astra 1 Astra 2 Astra 3 Hotbird", "9e-13e-19e-23e-28e-rotating": "Rotating", "kabelnl": "Kabel-NL"}
  			self.channellist_type = ConfigSelection(choices = modes, default = "19e-23e-basis")
  			self.createMenu()
 --- enigma2.org/lib/python/Screens/ScanSetup.py
@@ -7867,9 +7867,9 @@
  		self.scan_onlyfree = ConfigYesNo(default = False)
 --- enigma2.org/lib/python/Screens/Standby.py
 +++ enigma2/lib/python/Screens/Standby.py
-@@ -15,6 +15,11 @@
- from enigma import eDVBVolumecontrol, eTimer, eDVBLocalTimeHandler, eServiceReference, eStreamServer
- from Components.Sources.StreamService import StreamServiceList
+@@ -17,6 +17,11 @@
+ from GlobalActions import globalActionMap
+ from enigma import eDVBVolumecontrol, eTimer, eDVBLocalTimeHandler, eServiceReference, eStreamServer, quitMainloop, iRecordableService
  
 +from Tools.HardwareInfo import HardwareInfo
 + 
@@ -7877,10 +7877,61 @@
 +stb = HardwareInfo().get_device_name()
 +
  inStandby = None
+ infoBarInstance = None
  
- QUIT_SHUTDOWN = 1
-@@ -31,6 +36,42 @@
- class Standby(Screen):
+@@ -75,6 +80,40 @@
+ 		self.timeHandler = None
+ 
+ 		self.setMute()
++
++		if stb.lower() == 'spark' or stb.lower() == 'spark7162':
++			#apply standby CPU clock frequency
++#			if config.plugins.systemoptions.stbyfreq.value:
++#				if config.plugins.systemoptions.stbyfreq.value == "200":
++#					overclk=5123
++#				elif config.plugins.systemoptions.stbyfreq.value == "300":
++#					overclk=2561
++#				elif config.plugins.systemoptions.stbyfreq.value == "450":
++#					overclk=3841
++#				elif config.plugins.systemoptions.stbyfreq.value == "500":
++#					overclk=12803
++#				elif config.plugins.systemoptions.stbyfreq.value == "540":
++#					overclk=4609
++#				elif config.plugins.systemoptions.stbyfreq.value == "600":
++#					overclk=5121
++#				elif config.plugins.systemoptions.stbyfreq.value == "630":
++#					overclk=5377
++#				elif config.plugins.systemoptions.stbyfreq.value == "650":
++#					overclk=16643
++#				elif config.plugins.systemoptions.stbyfreq.value == "700":
++#					overclk=17923
++#				elif config.plugins.systemoptions.stbyfreq.value == "710":
++#					overclk=18179
++#				elif config.plugins.systemoptions.stbyfreq.value == "750":
++#					overclk=19203
++#				elif config.plugins.systemoptions.stbyfreq.value == "775":
++#					overclk=39686
++#				elif config.plugins.systemoptions.stbyfreq.value == "800":
++#					overclk=20483
++#			else:
++#			overclk=4609
++#			print "STBY Clockspeed =", config.plugins.systemoptions.stbyfreq.value, "PLL = ", str(overclk)
++			open(pll0, 'w').write(str(overclk))
+ 
+ 		self.paused_service = self.paused_action = False
+ 
+@@ -105,6 +144,9 @@
+ 			self.avswitch.setInput("SCART")
+ 		else:
+ 			self.avswitch.setInput("AUX")
++#+++>
++		open("/proc/stb/hdmi/output", "w").write("off")
++#+++<
+ 
+ 		gotoShutdownTime = int(config.usage.standby_to_shutdown_timer.value)
+ 		if gotoShutdownTime:
+@@ -157,6 +199,42 @@
+ 
  	def Power(self):
  		print "[Standby] leave standby"
 +		if stb.lower() == 'spark' or stb.lower() == 'spark7162':
@@ -7922,58 +7973,7 @@
  		self.close(True)
  
  	def setMute(self):
-@@ -72,6 +113,40 @@
- 		self.timeHandler = None
- 
- 		self.setMute()
-+		if stb.lower() == 'spark' or stb.lower() == 'spark7162':
-+			#apply standby CPU clock frequency
-+#			if config.plugins.systemoptions.stbyfreq.value:
-+#				if config.plugins.systemoptions.stbyfreq.value == "200":
-+#					overclk=5123
-+#				elif config.plugins.systemoptions.stbyfreq.value == "300":
-+#					overclk=2561
-+#				elif config.plugins.systemoptions.stbyfreq.value == "450":
-+#					overclk=3841
-+#				elif config.plugins.systemoptions.stbyfreq.value == "500":
-+#					overclk=12803
-+#				elif config.plugins.systemoptions.stbyfreq.value == "540":
-+#					overclk=4609
-+#				elif config.plugins.systemoptions.stbyfreq.value == "600":
-+#					overclk=5121
-+#				elif config.plugins.systemoptions.stbyfreq.value == "630":
-+#					overclk=5377
-+#				elif config.plugins.systemoptions.stbyfreq.value == "650":
-+#					overclk=16643
-+#				elif config.plugins.systemoptions.stbyfreq.value == "700":
-+#					overclk=17923
-+#				elif config.plugins.systemoptions.stbyfreq.value == "710":
-+#					overclk=18179
-+#				elif config.plugins.systemoptions.stbyfreq.value == "750":
-+#					overclk=19203
-+#				elif config.plugins.systemoptions.stbyfreq.value == "775":
-+#					overclk=39686
-+#				elif config.plugins.systemoptions.stbyfreq.value == "800":
-+#					overclk=20483
-+#			else:
-+			overclk=4609
-+#			print "STBY Clockspeed =", config.plugins.systemoptions.stbyfreq.value, "PLL = ", str(overclk)
-+			open(pll0, 'w').write(str(overclk))
-+
- 
- 		self.paused_service = self.paused_action = False
- 
-@@ -102,6 +177,9 @@
- 			self.avswitch.setInput("SCART")
- 		else:
- 			self.avswitch.setInput("AUX")
-+#+++>
-+		open("/proc/stb/hdmi/output", "w").write("off")
-+#+++<
- 
- 		gotoShutdownTime = int(config.usage.standby_to_shutdown_timer.value)
- 		if gotoShutdownTime:
-@@ -218,6 +296,7 @@
+@@ -248,6 +326,7 @@
  			QUIT_UPGRADE_FP: _("Your frontprocessor will be updated\nPlease wait until your receiver reboots\nThis may take a few minutes"),
  			QUIT_ERROR_RESTART: _("The user interface of your receiver is restarting\ndue to an error in mytest.py"),
  			QUIT_DEBUG_RESTART: _("The user interface of your receiver is restarting in debug mode"),
@@ -7981,7 +7981,7 @@
  			QUIT_UPGRADE_PROGRAM: _("Unattended update in progress\nPlease wait until your receiver reboots\nThis may take a few minutes"),
  			QUIT_MANUFACTURER_RESET: _("Manufacturer reset in progress\nPlease wait until enigma2 restarts")
  		}.get(retvalue)
-@@ -258,6 +337,7 @@
+@@ -290,6 +369,7 @@
  				QUIT_RESTART: _("Really restart now?"),
  				QUIT_UPGRADE_FP: _("Really update the frontprocessor and reboot now?"),
  				QUIT_DEBUG_RESTART: _("Really restart in debug mode now?"),
