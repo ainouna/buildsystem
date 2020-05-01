@@ -128,11 +128,10 @@ $(D)/libffi: $(D)/bootstrap $(ARCHIVE)/$(LIBFFI_SOURCE)
 # host_libglib2_genmarshal
 #
 LIBGLIB2_VER_MAJOR = 2
-LIBGLIB2_VER_MINOR = 54
+LIBGLIB2_VER_MINOR = 55
 LIBGLIB2_VER_MICRO = 0
 LIBGLIB2_VER = $(LIBGLIB2_VER_MAJOR).$(LIBGLIB2_VER_MINOR).$(LIBGLIB2_VER_MICRO)
 LIBGLIB2_SOURCE = glib-$(LIBGLIB2_VER).tar.xz
-#LIBGLIB2_HOST_PATCH =
 
 $(ARCHIVE)/$(LIBGLIB2_SOURCE):
 	$(WGET) https://ftp.gnome.org/pub/gnome/sources/glib/$(LIBGLIB2_VER_MAJOR).$(LIBGLIB2_VER_MINOR)/$(LIBGLIB2_SOURCE)
@@ -144,7 +143,6 @@ $(D)/host_libglib2_genmarshal: $(D)/bootstrap $(D)/host_libffi $(ARCHIVE)/$(LIBG
 	$(CH_DIR)/glib-$(LIBGLIB2_VER); \
 		export PKG_CONFIG=/usr/bin/pkg-config; \
 		export PKG_CONFIG_PATH=$(HOST_DIR)/lib/pkgconfig; \
-		$(call apply_patches, $(LIBGLIB2_HOST_PATCH)); \
 		./configure $(SILENT_CONFIGURE) \
 			--prefix=`pwd`/out \
 			--enable-static=yes \
@@ -152,6 +150,7 @@ $(D)/host_libglib2_genmarshal: $(D)/bootstrap $(D)/host_libffi $(ARCHIVE)/$(LIBG
 			--disable-fam \
 			--disable-libmount \
 			--with-pcre=internal \
+			--disable-compile-warnings \
 		; \
 		$(MAKE) install; \
 		cp -a out/bin/glib-* $(HOST_DIR)/bin
@@ -161,7 +160,8 @@ $(D)/host_libglib2_genmarshal: $(D)/bootstrap $(D)/host_libffi $(ARCHIVE)/$(LIBG
 #
 # libglib2
 #
-LIBGLIB2_PATCH = libglib2-$(LIBGLIB2_VER)-disable-tests.patch
+LIBGLIB2_PATCH  = libglib2-$(LIBGLIB2_VER)-disable-tests.patch
+LIBGLIB2_PATCH += libglib2-$(LIBGLIB2_VER)-fix-gio-linking.patch
 
 $(D)/libglib2: $(D)/bootstrap $(D)/host_libglib2_genmarshal $(D)/zlib $(D)/libffi $(ARCHIVE)/$(LIBGLIB2_SOURCE)
 	$(START_BUILD)
@@ -175,7 +175,9 @@ $(D)/libglib2: $(D)/bootstrap $(D)/host_libglib2_genmarshal $(D)/zlib $(D)/libff
 		echo "ac_cv_func_posix_getgrgid_r=yes" >> config.cache; \
 		echo "glib_cv_stack_grows=no" >> config.cache; \
 		echo "glib_cv_uscore=no" >> config.cache; \
+		echo "ac_cv_path_GLIB_GENMARSHAL=$(HOST_DIR)/bin/glib-genmarshal" >> config.cache; \
 		$(call apply_patches, $(LIBGLIB2_PATCH)); \
+		autoreconf -fi $(SILENT_OPT); \
 		$(CONFIGURE) \
 			--prefix=/usr \
 			--enable-static \
@@ -684,7 +686,7 @@ $(D)/timezone: $(D)/bootstrap find-zic $(ARCHIVE)/$(TZDATA_SOURCE)
 # freetype
 #
 FREETYPE_VER = 2.10.1
-FREETYPE_SOURCE = freetype-$(FREETYPE_VER).tar.gz
+FREETYPE_SOURCE = freetype-$(FREETYPE_VER).tar.xz
 FREETYPE_PATCH = freetype-$(FREETYPE_VER).patch
 
 $(ARCHIVE)/$(FREETYPE_SOURCE):
@@ -732,7 +734,7 @@ $(D)/freetype: $(D)/bootstrap $(D)/zlib $(D)/libpng $(ARCHIVE)/$(FREETYPE_SOURCE
 #
 # lirc
 #
-ifeq ($(BOXTYPE), $(filter $(BOXTYPE),adb_box arivalink200 ipbox55 ipbox99 ipbox9900 cuberevo cuberevo_mini cuberevo_mini2 cuberevo_250hd cuberevo_2000hd cuberevo_3000hd hl101 pace7241 sagemcom88 spark spark7162 ufs910 vitamin_hd5000))
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE), adb_box arivalink200 ipbox55 ipbox99 ipbox9900 cuberevo cuberevo_mini cuberevo_mini2 cuberevo_250hd cuberevo_2000hd cuberevo_3000hd hl101 pace7241 sagemcom88 spark spark7162 ufs910 vitamin_hd5000))
 
 LIRC_VER = 0.9.0
 LIRC_SOURCE = lirc-$(LIRC_VER).tar.bz2
@@ -900,7 +902,7 @@ $(D)/libjpeg_turbo: $(D)/bootstrap $(ARCHIVE)/$(LIBJPEG_TURBO_SOURCE)
 #
 # libpng
 #
-LIBPNG_VER = 1.6.35
+LIBPNG_VER = 1.6.37
 LIBPNG_VER_X = 16
 LIBPNG_SOURCE = libpng-$(LIBPNG_VER).tar.xz
 LIBPNG_PATCH = libpng-$(LIBPNG_VER)-disable-tools.patch
@@ -1022,7 +1024,6 @@ $(ARCHIVE)/$(LIBCURL_SOURCE):
 	$(WGET) https://curl.haxx.se/download/$(LIBCURL_SOURCE)
 
 $(D)/libcurl: $(D)/bootstrap $(D)/zlib $(D)/openssl $(D)/ca-bundle $(ARCHIVE)/$(LIBCURL_SOURCE)
-#$(D)/libcurl: $(D)/bootstrap $(D)/openssl $(ARCHIVE)/$(LIBCURL_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/curl-$(LIBCURL_VER)
 	$(UNTAR)/$(LIBCURL_SOURCE)
@@ -1069,8 +1070,8 @@ $(D)/libcurl: $(D)/bootstrap $(D)/zlib $(D)/openssl $(D)/ca-bundle $(ARCHIVE)/$(
 #
 # libfribidi
 #
-LIBFRIBIDI_VER = 1.0.3
-LIBFRIBIDI_SOURCE = fribidi-$(LIBFRIBIDI_VER).tar.bz2
+LIBFRIBIDI_VER = 1.0.9
+LIBFRIBIDI_SOURCE = fribidi-$(LIBFRIBIDI_VER).tar.xz
 LIBFRIBIDI_PATCH = libfribidi-$(LIBFRIBIDI_VER).patch
 
 $(ARCHIVE)/$(LIBFRIBIDI_SOURCE):
@@ -1099,34 +1100,6 @@ $(D)/libfribidi: $(D)/bootstrap $(ARCHIVE)/$(LIBFRIBIDI_SOURCE)
 	$(TOUCH)
 
 #
-# libsigc++_e2
-#
-LIBSIGC_E2_VER_MAJOR = 1
-LIBSIGC_E2_VER_MINOR = 2
-LIBSIGC_E2_VER_MICRO = 7
-LIBSIGC_E2_VER = $(LIBSIGC_E2_VER_MAJOR).$(LIBSIGC_E2_VER_MINOR).$(LIBSIGC_E2_VER_MICRO)
-LIBSIGC_E2_SOURCE = libsigc++-$(LIBSIGC_E2_VER).tar.gz
-
-$(ARCHIVE)/$(LIBSIGC_E2_SOURCE):
-	$(WGET) https://ftp.gnome.org/pub/GNOME/sources/libsigc++/$(LIBSIGC_E2_VER_MAJOR).$(LIBSIGC_E2_VER_MINOR)/$(LIBSIGC_E2_SOURCE)
-
-$(D)/libsigc_e2: $(D)/bootstrap $(ARCHIVE)/$(LIBSIGC_E2_SOURCE)
-	$(START_BUILD)
-	$(REMOVE)/libsigc++-$(LIBSIGC_E2_VER)
-	$(UNTAR)/$(LIBSIGC_E2_SOURCE)
-	$(CH_DIR)/libsigc++-$(LIBSIGC_E2_VER); \
-		$(CONFIGURE) \
-			--prefix=/usr \
-			--disable-checks \
-		; \
-		$(MAKE) all; \
-		$(MAKE) install DESTDIR=$(TARGET_DIR)
-	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/sigc++-1.2.pc
-	$(REWRITE_LIBTOOL)/libsigc-1.2.la
-	$(REMOVE)/libsigc++-$(LIBSIGC_E2_VER)
-	$(TOUCH)
-
-#
 # libsigc
 #
 LIBSIGC_VER_MAJOR = 2
@@ -1134,7 +1107,6 @@ LIBSIGC_VER_MINOR = 4
 LIBSIGC_VER_MICRO = 1
 LIBSIGC_VER = $(LIBSIGC_VER_MAJOR).$(LIBSIGC_VER_MINOR).$(LIBSIGC_VER_MICRO)
 LIBSIGC_SOURCE = libsigc++-$(LIBSIGC_VER).tar.xz
-#LIBSIGC_PATCH = libsigc++-$(LIBSIGC_VER).patch
 
 $(ARCHIVE)/$(LIBSIGC_SOURCE):
 	$(WGET) https://ftp.gnome.org/pub/GNOME/sources/libsigc++/$(LIBSIGC_VER_MAJOR).$(LIBSIGC_VER_MINOR)/$(LIBSIGC_SOURCE)
@@ -1323,8 +1295,9 @@ $(D)/libiconv: $(D)/bootstrap $(ARCHIVE)/$(LIBICONV_SOURCE)
 #
 # expat
 #
-EXPAT_VER = 2.2.7
+EXPAT_VER = 2.2.9
 EXPAT_SOURCE = expat-$(EXPAT_VER).tar.bz2
+EXPAT_PATCH  = expat-$(EXPAT_VER)-libtool-tag.patch
 
 $(ARCHIVE)/$(EXPAT_SOURCE):
 	$(WGET) https://sourceforge.net/projects/expat/files/expat/$(EXPAT_VER)/$(EXPAT_SOURCE)
@@ -1334,6 +1307,7 @@ $(D)/expat: $(D)/bootstrap $(ARCHIVE)/$(EXPAT_SOURCE)
 	$(REMOVE)/expat-$(EXPAT_VER)
 	$(UNTAR)/$(EXPAT_SOURCE)
 	$(CH_DIR)/expat-$(EXPAT_VER); \
+		$(call apply_patches, $(EXPAT_PATCH)); \
 		$(CONFIGURE) \
 			--prefix=/usr \
 			--mandir=/.remove \
@@ -1958,14 +1932,15 @@ endif
 ifeq ($(IMAGE), $(filter $(IMAGE), neutrino neutrino-wlandriver))
 LIBXML2_CONF_OPTS  = --without-python
 LIBXML2_CONF_OPTS += --without-catalog
-LIBXML2_CONF_OPTS += --without-lzma
-LIBXML2_CONF_OPTS += --without-schematron
 LIBXML2_CONF_OPTS += --without-legacy
 ifeq ($(MEDIAFW), gstreamer)
-LIBXML2_CONF_OPTS += --with-tree --with-output --with-sax1
+LIBXML2_CONF_OPTS += --with-tree
+LIBXML2_CONF_OPTS += --with-output
+LIBXML2_CONF_OPTS += --with-sax1
 endif
 LIBXML2_CONF_OPTS += --without-iconv
 LIBXML2_CONF_OPTS += --with-minimum
+LIBXML2_CONF_OPTS += --with-schematron=yes
 endif
 
 $(D)/libxml2: $(D)/bootstrap $(D)/zlib $(ARCHIVE)/$(LIBXML2_SOURCE)
@@ -1993,7 +1968,6 @@ $(D)/libxml2: $(D)/bootstrap $(D)/zlib $(ARCHIVE)/$(LIBXML2_SOURCE)
 		if [ -d $(TARGET_DIR)/usr/include/libxml2/libxml ] ; then \
 			ln -sf ./libxml2/libxml $(TARGET_DIR)/usr/include/libxml; \
 		fi
-#		cp libxml.m4 $(TARGET_DIR)/usr/share/aclocal
 	$(SILENT)mv $(TARGET_DIR)/usr/bin/xml2-config $(HOST_DIR)/bin
 	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libxml-2.0.pc
 	$(REWRITE_PKGCONF) $(HOST_DIR)/bin/xml2-config
@@ -2040,6 +2014,7 @@ $(D)/libxslt: $(D)/bootstrap $(D)/libxml2 $(ARCHIVE)/$(LIBXSLT_SOURCE)
 	$(REWRITE_LIBTOOL)/libxslt.la
 	$(REWRITE_LIBTOOLDEP)/libexslt.la
 	$(SILENT)rm -f $(addprefix $(TARGET_DIR)/usr/bin/,xsltproc xslt-config)
+	$(SILENT)rm -rf $(TARGETLIB)/xsltConf.sh
 	$(SILENT)rm -rf $(TARGETLIB)/libxslt-plugins/
 	$(REMOVE)/libxslt-$(LIBXSLT_VER)
 	$(TOUCH)
@@ -2072,11 +2047,11 @@ $(D)/libpopt: $(D)/bootstrap $(ARCHIVE)/$(LIBPOPT_SOURCE)
 #
 # libroxml
 #
-LIBROXML_VER = 2.3.0
+LIBROXML_VER = 3.0.2
 LIBROXML_SOURCE = libroxml-$(LIBROXML_VER).tar.gz
 
 $(ARCHIVE)/$(LIBROXML_SOURCE):
-	$(WGET) http://download.libroxml.net/pool/v2.x/$(LIBROXML_SOURCE)
+	$(WGET) http://download.libroxml.net/pool/v3.x/$(LIBROXML_SOURCE)
 
 $(D)/libroxml: $(D)/bootstrap $(ARCHIVE)/$(LIBROXML_SOURCE)
 	$(START_BUILD)
@@ -2088,6 +2063,7 @@ $(D)/libroxml: $(D)/bootstrap $(ARCHIVE)/$(LIBROXML_SOURCE)
 			--enable-shared \
 			--disable-static \
 			--disable-roxml \
+			--disable-rocat \
 		; \
 		$(MAKE); \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
@@ -2099,7 +2075,7 @@ $(D)/libroxml: $(D)/bootstrap $(ARCHIVE)/$(LIBROXML_SOURCE)
 #
 # pugixml
 #
-PUGIXML_VER = 1.9
+PUGIXML_VER = 1.10
 PUGIXML_SOURCE = pugixml-$(PUGIXML_VER).tar.gz
 PUGIXML_PATCH = pugixml-$(PUGIXML_VER)-config.patch
 
@@ -2158,7 +2134,7 @@ $(D)/graphlcd: $(D)/bootstrap $(D)/freetype $(D)/libusb $(ARCHIVE)/$(GRAPHLCD_SO
 #
 LIBDPF_VER = 62c8fd0
 LIBDPF_SOURCE = dpf-ax-git-$(LIBDPF_VER).tar.bz2
-LIBDPF_URL = https://github.com/MaxWiesel/dpf-ax.git
+LIBDPF_URL = https://github.com/Duckbox-Developers/dpf-ax.git
 LIBDPF_PATCH = libdpf-crossbuild.patch
 
 $(ARCHIVE)/$(LIBDPF_SOURCE):
@@ -2191,7 +2167,6 @@ $(ARCHIVE)/$(LCD4LINUX_SOURCE):
 	$(SCRIPTS_DIR)/get-git-archive.sh $(LCD4LINUX_URL) $(LCD4LINUX_VER) $(notdir $@) $(ARCHIVE)
 
 $(D)/lcd4linux: $(D)/bootstrap $(D)/libusb_compat $(D)/gd $(D)/libusb $(D)/libdpf $(ARCHIVE)/$(LCD4LINUX_SOURCE)
-#$(D)/lcd4linux: $(D)/bootstrap $(D)/libusb $(D)/libusb_compat $(ARCHIVE)/$(LCD4LINUX_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/lcd4linux-git-$(LCD4LINUX_VER)
 	$(UNTAR)/$(LCD4LINUX_SOURCE)
@@ -2215,7 +2190,7 @@ $(D)/lcd4linux: $(D)/bootstrap $(D)/libusb_compat $(D)/gd $(D)/libusb $(D)/libdp
 #
 # gd
 #
-GD_VER = 2.2.5
+GD_VER = 2.3.0
 GD_SOURCE = libgd-$(GD_VER).tar.xz
 
 $(ARCHIVE)/$(GD_SOURCE):
@@ -2304,14 +2279,15 @@ $(D)/libusb_compat: $(D)/bootstrap $(D)/libusb $(ARCHIVE)/$(LIBUSB_COMPAT_SOURCE
 #
 # alsa-lib
 #
-ALSA_LIB_VER = 1.2.1.2
+ALSA_LIB_VER = 1.2.2
 ALSA_LIB_SOURCE = alsa-lib-$(ALSA_LIB_VER).tar.bz2
 ALSA_LIB_PATCH  = alsa-lib-$(ALSA_LIB_VER).patch
 ALSA_LIB_PATCH += alsa-lib-$(ALSA_LIB_VER)-link_fix.patch
 ALSA_LIB_PATCH += alsa-lib-$(ALSA_LIB_VER)-header.patch
+ALSA_LIB_PATCH += alsa-lib-$(ALSA_LIB_VER)-sh4_kernel_long_t-fix.patch
 
 $(ARCHIVE)/$(ALSA_LIB_SOURCE):
-	$(WGET) ftp://ftp.alsa-project.org/pub/lib/$(ALSA_LIB_SOURCE)
+	$(DOWNLOAD) https://www.alsa-project.org/files/pub/lib/$(ALSA_LIB_SOURCE)
 
 $(D)/alsa_lib: $(D)/bootstrap $(ARCHIVE)/$(ALSA_LIB_SOURCE)
 	$(START_BUILD)
@@ -2335,6 +2311,7 @@ $(D)/alsa_lib: $(D)/bootstrap $(ARCHIVE)/$(ALSA_LIB_SOURCE)
 			--disable-alisp \
 			--disable-hwdep \
 			--disable-python \
+			--disable-topology \
 		; \
 		$(MAKE); \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
@@ -2346,13 +2323,13 @@ $(D)/alsa_lib: $(D)/bootstrap $(ARCHIVE)/$(ALSA_LIB_SOURCE)
 #
 # alsa-utils
 #
-ALSA_UTILS_VER = 1.2.1
+ALSA_UTILS_VER = 1.2.2
 ALSA_UTILS_SOURCE = alsa-utils-$(ALSA_UTILS_VER).tar.bz2
 ALSA_UTILS_PATCH  = alsa-utils-$(ALSA_UTILS_VER)-gettext_fix.patch
 ALSA_UTILS_PATCH += alsa-utils-$(ALSA_UTILS_VER).patch
 
 $(ARCHIVE)/$(ALSA_UTILS_SOURCE):
-	$(WGET) ftp://ftp.alsa-project.org/pub/utils/$(ALSA_UTILS_SOURCE)
+	$(DOWNLOAD) https://www.alsa-project.org/files/pub/utils/$(ALSA_UTILS_SOURCE)
 
 $(D)/alsa_utils: $(D)/bootstrap $(D)/alsa_lib $(ARCHIVE)/$(ALSA_UTILS_SOURCE)
 	$(START_BUILD)
@@ -2405,10 +2382,11 @@ $(D)/libopenthreads: $(D)/bootstrap $(ARCHIVE)/$(LIBOPENTHREADS_SOURCE)
 		echo "# dummy file to prevent warning message" > examples/CMakeLists.txt; \
 		cmake . -DCMAKE_BUILD_TYPE=Release \
 			-DCMAKE_SYSTEM_NAME="Linux" \
-			-DCMAKE_INSTALL_PREFIX="/usr" \
+			-DCMAKE_INSTALL_PREFIX=/usr \
 			-DCMAKE_C_COMPILER="$(TARGET)-gcc" \
 			-DCMAKE_CXX_COMPILER="$(TARGET)-g++" \
-			-D_OPENTHREADS_ATOMIC_USE_GCC_BUILTINS=0 \
+			-D_OPENTHREADS_ATOMIC_USE_GCC_BUILTINS_EXITCODE=1 \
+			-D_OPENTHREADS_ATOMIC_USE_GCC_BUILTINS_EXITCODE__TRYRUN_OUTPUT=1 \
 		; \
 		find . -name cmake_install.cmake -print0 | xargs -0 \
 		sed -i 's@SET(CMAKE_INSTALL_PREFIX "/usr/local")@SET(CMAKE_INSTALL_PREFIX "")@'; \
@@ -2419,28 +2397,29 @@ $(D)/libopenthreads: $(D)/bootstrap $(ARCHIVE)/$(LIBOPENTHREADS_SOURCE)
 	$(TOUCH)
 
 #
-# librtmpdump
+# librtmp
 #
-LIBRTMPDUMP_VER = ad70c64
-LIBRTMPDUMP_SOURCE = librtmpdump-git-$(LIBRTMPDUMP_VER).tar.bz2
-LIBRTMPDUMP_URL = git://github.com/oe-alliance/rtmpdump.git
-LIBRTMPDUMP_PATCH = rtmpdump-2.4.patch
+LIBRTMP_VER = ad70c64
+LIBRTMP_SOURCE = rtmpdump-git-$(LIBRTMP_VER).tar.bz2
+LIBRTMP_URL = git://github.com/oe-alliance/rtmpdump.git
+LIBRTMP_PATCH = rtmpdump-git-$(LIBRTMP_VER).patch
 
-$(ARCHIVE)/$(LIBRTMPDUMP_SOURCE):
-	$(SCRIPTS_DIR)/get-git-archive.sh $(LIBRTMPDUMP_URL) $(LIBRTMPDUMP_VER) $(notdir $@) $(ARCHIVE)
+$(ARCHIVE)/$(LIBRTMP_SOURCE):
+	$(SCRIPTS_DIR)/get-git-archive.sh $(LIBRTMP_URL) $(LIBRTMP_VER) $(notdir $@) $(ARCHIVE)
 
-$(D)/librtmpdump: $(D)/bootstrap $(D)/zlib $(D)/openssl $(ARCHIVE)/$(LIBRTMPDUMP_SOURCE)
+$(D)/librtmp: $(D)/bootstrap $(D)/zlib $(D)/openssl $(ARCHIVE)/$(LIBRTMP_SOURCE)
 	$(START_BUILD)
-	$(REMOVE)/librtmpdump-git-$(LIBRTMPDUMP_VER)
-	$(UNTAR)/$(LIBRTMPDUMP_SOURCE)
-	$(CH_DIR)/librtmpdump-git-$(LIBRTMPDUMP_VER); \
-		$(call apply_patches, $(LIBRTMPDUMP_PATCH)); \
+	$(REMOVE)/rtmpdump-git-$(LIBRTMP_VER)
+	$(UNTAR)/$(LIBRTMP_SOURCE)
+	$(CH_DIR)/rtmpdump-git-$(LIBRTMP_VER); \
+		$(call apply_patches, $(LIBRTMP_PATCH)); \
 		$(BUILDENV) \
 		$(MAKE) CROSS_COMPILE=$(TARGET)- XCFLAGS="-I$(TARGET_INCLUDE_DIR) -L$(TARGET_LIB_DIR)" LDFLAGS="-L$(TARGET_LIB_DIR)"; \
 		$(MAKE) install prefix=/usr DESTDIR=$(TARGET_DIR) MANDIR=$(TARGET_DIR)/.remove
 	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/librtmp.pc
-	rm -f $(addprefix $(TARGET_DIR)/usr/sbin/,rtmpgw rtmpsrv rtmpsuck)
-	$(REMOVE)/librtmpdump-git-$(LIBRTMPDUMP_VER)
+	$(SILENT)rm -f $(addprefix $(TARGET_DIR)/usr/sbin/,rtmpgw rtmpsrv rtmpsuck)
+	$(SILENT)rm -f $(addprefix $(TARGET_DIR)/usr/bin/,rtmpdump)
+	$(REMOVE)/rtmpdump-git-$(LIBRTMP_VER)
 	$(TOUCH)
 
 #
@@ -2525,6 +2504,7 @@ $(D)/lzo: $(D)/bootstrap $(ARCHIVE)/$(LZO_SOURCE)
 MINIDLNA_VER = 1.2.1
 MINIDLNA_SOURCE = minidlna-$(MINIDLNA_VER).tar.gz
 MINIDLNA_PATCH = minidlna-$(MINIDLNA_VER).patch
+
 $(ARCHIVE)/$(MINIDLNA_SOURCE):
 	$(WGET) https://sourceforge.net/projects/minidlna/files/minidlna/$(MINIDLNA_VER)/$(MINIDLNA_SOURCE)
 
@@ -2827,7 +2807,7 @@ GNUTLS_SOURCE = gnutls-$(GNUTLS_VER).tar.xz
 $(ARCHIVE)/$(GNUTLS_SOURCE):
 	$(WGET) ftp://ftp.gnutls.org/gcrypt/gnutls/v$(GNUTLS_VER_MAJOR)/$(GNUTLS_SOURCE)
 
-$(D)/gnutls: $(D)/bootstrap $(D)/nettle $(ARCHIVE)/$(GNUTLS_SOURCE)
+$(D)/gnutls: $(D)/bootstrap $(D)/nettle $(D)/ca-bundle $(ARCHIVE)/$(GNUTLS_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/gnutls-$(GNUTLS_VER)
 	$(UNTAR)/$(GNUTLS_SOURCE)
@@ -3010,5 +2990,3 @@ $(D)/libevent: $(D)/bootstrap $(D)/openssl
 	$(REWRITE_LIBTOOL)/libevent_pthreads.la
 	$(REMOVE)/libevent-$(LIBEVENT_VER)
 	$(TOUCH)
-
-
