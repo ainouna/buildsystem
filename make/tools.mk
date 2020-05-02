@@ -35,6 +35,7 @@ ifeq ($(BOXTYPE), $(filter $(BOXTYPE), tf7700))
 	-$(MAKE) -C $(TOOLS_DIR)/tfd2mtd distclean
 	-$(MAKE) -C $(TOOLS_DIR)/tffpctl distclean
 endif
+	-$(MAKE) -C $(TOOLS_DIR)/tuxcom distclean
 	-$(MAKE) -C $(TOOLS_DIR)/ustslave distclean
 	-$(MAKE) -C $(TOOLS_DIR)/vfdctl distclean
 	-$(MAKE) -C $(TOOLS_DIR)/wait4button distclean
@@ -325,6 +326,22 @@ $(D)/tools-tffpctl: $(D)/bootstrap
 	$(TOUCH)
 
 #
+# tuxcom
+#
+$(D)/tools-tuxcom: $(D)/bootstrap $(D)/freetype
+	$(START_BUILD)
+	$(SET) -e; cd $(TOOLS_DIR)/tuxcom; \
+		if [ ! -d m4 ]; then mkdir m4; fi; \
+		$(CONFIGURE_TOOLS) \
+			--prefix= \
+			--with-boxmodel=$(BOXTYPE) \
+			--with-boxtype=$(BOXTYPE) \
+		; \
+		$(MAKE); \
+		$(MAKE) install DESTDIR=$(TARGET_DIR)
+	$(TOUCH)
+
+#
 # ustslave
 #
 $(D)/tools-ustslave: $(D)/bootstrap
@@ -440,6 +457,11 @@ TOOLS += $(D)/tools-vfdctl
 endif
 ifneq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), small))
 TOOLS += $(D)/tools-streamproxy
+ifeq ($(PLUGINS_NEUTRINO), Yes)
+ifneq ($(BOXTYPE), $(filter $(BOXTYPE), ufs910 ufs922))
+TOOLS += $(D)/tools-tuxcom
+endif
+endif
 TOOLS += $(D)/tools-wait4button
 endif
 ifneq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), small size))
