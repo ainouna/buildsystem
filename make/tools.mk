@@ -8,6 +8,7 @@ tools-clean:
 	-$(MAKE) -C $(TOOLS_DIR)/satfind distclean
 	-$(MAKE) -C $(TOOLS_DIR)/showiframe distclean
 	-$(MAKE) -C $(TOOLS_DIR)/minimon distclean
+	-$(MAKE) -C $(TOOLS_DIR)/msgbox distclean
 	-$(MAKE) -C $(TOOLS_DIR)/spf_tool distclean
 	-$(MAKE) -C $(TOOLS_DIR)/devinit distclean
 	-$(MAKE) -C $(TOOLS_DIR)/eplayer3 distclean
@@ -228,6 +229,22 @@ $(D)/tools-minimon: $(D)/bootstrap $(D)/libjpeg $(D)/libusb
 	$(TOUCH)
 
 #
+# msgbox
+#
+$(D)/tools-msgbox: $(D)/bootstrap $(D)/libpng $(D)/freetype
+	$(START_BUILD)
+	$(SET) -e; cd $(TOOLS_DIR)/msgbox; \
+		if [ ! -d m4 ]; then mkdir m4; fi; \
+		$(CONFIGURE_TOOLS) \
+			--prefix= \
+			--with-boxmodel=$(BOXTYPE) \
+			--with-boxtype=$(BOXTYPE) \
+		; \
+		$(MAKE); \
+		$(MAKE) install DESTDIR=$(TARGET_DIR)
+	$(TOUCH)
+
+#
 # satfind
 #
 $(D)/tools-satfind: $(D)/bootstrap
@@ -430,51 +447,60 @@ $(D)/tools-own-tools: $(D)/bootstrap $(D)/libcurl
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
 	$(TOUCH)
 
-TOOLS  = $(D)/tools-aio-grab
-TOOLS += $(D)/tools-devinit
-TOOLS += $(D)/tools-evremote2
-#TOOLS += $(D)/tools-exteplayer3
-TOOLS += $(D)/tools-showiframe
-#TOOLS += $(D)/tools-gitVCInfo
-TOOLS += $(D)/tools-hotplug
-TOOLS += $(D)/tools-stfbcontrol
-TOOLS += $(D)/tools-ustslave
-ifeq ($(BOXTYPE), $(filter $(BOXTYPE), adb_box atemio520 atemio530 atevio7500 cuberevo cuberevo_250hd cuberevo_2000hd cuberevo_3000hd cuberevo_9500hd cuberevo_mini cuberevo_mini2 cuberevo_mini_fta fortis_hdbox hl101 hs5101 hs7110 hs7420 hs7810a hs7119 hs7429 hs7819 octagon1008 ufc960 ufs910 ufs912 ufs913 ufs922 spark spark7162 tf7700hdpvr vip1-v2 vip2-v1 vitamin_hd5000))
-TOOLS += $(D)/tools-fp_control
+TOOLS =
+ifneq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), small size))
+TOOLS += $(D)/tools-aio-grab
 endif
+TOOLS += $(D)/tools-devinit
 ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs7110 hs7420 hs7810a hs7119 hs7249 hs7819))
 TOOLS += $(D)/tools-eeprom-fortis
 endif
 ifeq ($(BOXTYPE), $(filter $(BOXTYPE), ipbox55 ipbox99 ipbox9900 cuberevo cuberevo_mini cuberevo_mini2 cuberevo_250hd cuberevo_2000hd cuberevo_3000hd))
 TOOLS += $(D)/tools-eeprom-ipbox
 endif
-ifeq ($(BOXTYPE), $(filter $(BOXTYPE), tf7700))
-TOOLS += $(D)/tools-tfd2mtd
-TOOLS += $(D)/tools-tffpctl
+TOOLS += $(D)/tools-evremote2
+#TOOLS += $(D)/tools-exteplayer3
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE), adb_box atemio520 atemio530 atevio7500 cuberevo cuberevo_250hd cuberevo_2000hd cuberevo_3000hd cuberevo_9500hd cuberevo_mini cuberevo_mini2 cuberevo_mini_fta fortis_hdbox hl101 hs5101 hs7110 hs7420 hs7810a hs7119 hs7429 hs7819 octagon1008 ufc960 ufs910 ufs912 ufs913 ufs922 spark spark7162 tf7700hdpvr vip1-v2 vip2-v1 vitamin_hd5000))
+TOOLS += $(D)/tools-fp_control
 endif
-ifeq ($(BOXTYPE), $(filter $(BOXTYPE), ufs910 ufs912 ufs913 spark7162))
-TOOLS += $(D)/tools-vfdctl
-endif
-ifneq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), small))
-TOOLS += $(D)/tools-streamproxy
-ifeq ($(PLUGINS_NEUTRINO), Yes)
-ifneq ($(BOXTYPE), $(filter $(BOXTYPE), ufs910 ufs922))
-TOOLS += $(D)/tools-tuxcom
-endif
-endif
-TOOLS += $(D)/tools-wait4button
-endif
-ifneq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), small size))
-TOOLS += $(D)/tools-aio-grab
-TOOLS += $(D)/tools-satfind
-ifneq ($(EXTERNAL_LCD), none)
-#TOOLS += $(D)/tools-minimon
-endif
-endif
+#TOOLS += $(D)/tools-gitVCInfo
 ifeq ($(IMAGE), $(filter $(IMAGE), enigma2 enigma2-wlandriver))
 TOOLS += $(D)/tools-libmme_host
 TOOLS += $(D)/tools-libmme_image
 endif
+ifneq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), small size))
+ifneq ($(EXTERNAL_LCD), none)
+#TOOLS += $(D)/tools-minimon
+endif
+endif
+ifeq ($(PLUGINS_NEUTRINO), Yes)
+TOOLS += $(D)/tools-msgbox
+endif
+TOOLS += $(D)/tools-hotplug
+ifneq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), small size))
+TOOLS += $(D)/tools-satfind
+endif
+TOOLS += $(D)/tools-showiframe
+TOOLS += $(D)/tools-stfbcontrol
+ifneq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), small))
+TOOLS += $(D)/tools-streamproxy
+endif
+TOOLS += $(D)/tools-ustslave
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE), tf7700))
+TOOLS += $(D)/tools-tfd2mtd
+TOOLS += $(D)/tools-tffpctl
+endif
+ifneq ($(BOXTYPE), $(filter $(BOXTYPE), ufs910 ufs922))
+ifneq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), small))
+ifeq ($(PLUGINS_NEUTRINO), Yes)
+TOOLS += $(D)/tools-tuxcom
+endif
+endif
+endif
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE), ufs910 ufs912 ufs913 spark7162))
+TOOLS += $(D)/tools-vfdctl
+endif
+TOOLS += $(D)/tools-wait4button
 ifneq ($(wildcard $(TOOLS_DIR)/own-tools),)
 TOOLS += $(D)/tools-own-tools
 endif
