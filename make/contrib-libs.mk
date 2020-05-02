@@ -838,7 +838,7 @@ $(D)/libjpeg_turbo2: $(D)/bootstrap $(ARCHIVE)/$(LIBJPEG_TURBO2_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/libjpeg-turbo-$(LIBJPEG_TURBO2_VER)
 	$(UNTAR)/$(LIBJPEG_TURBO2_SOURCE)
-	set -e; cd $(BUILD_TMP)/libjpeg-turbo-$(LIBJPEG_TURBO2_VER); \
+	$(SET) -e; cd $(BUILD_TMP)/libjpeg-turbo-$(LIBJPEG_TURBO2_VER); \
 		$(call apply_patches, $(LIBJPEG_TURBO2_PATCH)); \
 		cmake   -DCMAKE_INSTALL_PREFIX=/usr \
 			-DCMAKE_C_COMPILER=$(TARGET)-gcc \
@@ -1493,7 +1493,7 @@ $(D)/ffmpeg: $(D)/bootstrap $(D)/openssl $(D)/zlib $(D)/bzip2 $(D)/libass $(D)/l
 	$(START_BUILD)
 	$(REMOVE)/ffmpeg-$(FFMPEG_VER)
 	$(UNTAR)/$(FFMPEG_SOURCE)
-	set -e; cd $(BUILD_TMP)/ffmpeg-$(FFMPEG_VER); \
+	$(SET) -e; cd $(BUILD_TMP)/ffmpeg-$(FFMPEG_VER); \
 		$(call apply_patches, $(FFMPEG_PATCH)); \
 		./configure $(SILENT_OPT) \
 			--disable-ffserver \

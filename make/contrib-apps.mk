@@ -473,7 +473,7 @@ $(D)/dosfstools: $(D)/bootstrap $(ARCHIVE)/$(DOSFSTOOLS_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/dosfstools-$(DOSFSTOOLS_VER)
 	$(UNTAR)/$(DOSFSTOOLS_SOURCE)
-	$(SILENT)set -e; cd $(BUILD_TMP)/dosfstools-$(DOSFSTOOLS_VER); \
+	$(SET) -e; cd $(BUILD_TMP)/dosfstools-$(DOSFSTOOLS_VER); \
 		autoreconf -fi $(SILENT_OPT); \
 		$(CONFIGURE) \
 			--prefix= \
@@ -532,7 +532,7 @@ $(D)/ntfs_3g: $(D)/bootstrap $(ARCHIVE)/$(NTFS_3G_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/ntfs-3g_ntfsprogs-$(NTFS_3G_VER)
 	$(UNTAR)/$(NTFS_3G_SOURCE)
-	set -e; cd $(BUILD_TMP)/ntfs-3g_ntfsprogs-$(NTFS_3G_VER); \
+	$(SET) -e; cd $(BUILD_TMP)/ntfs-3g_ntfsprogs-$(NTFS_3G_VER); \
 		$(call apply_patches, $(NTFS_3G_PATCH)); \
 		$(CONFIGURE) \
 			--prefix=/usr \
@@ -837,7 +837,7 @@ $(D)/gptfdisk: $(D)/bootstrap $(D)/e2fsprogs $(D)/ncurses $(D)/libpopt $(ARCHIVE
 	$(START_BUILD)
 	$(REMOVE)/gptfdisk-$(GPTFDISK_VER)
 	$(UNTAR)/$(GPTFDISK_SOURCE)
-	set -e; cd $(BUILD_TMP)/gptfdisk-$(GPTFDISK_VER); \
+	$(SET) -e; cd $(BUILD_TMP)/gptfdisk-$(GPTFDISK_VER); \
 		$(BUILDENV) \
 		$(MAKE) sgdisk; \
 		install -m755 sgdisk $(TARGET_DIR)/usr/sbin/sgdisk
@@ -965,8 +965,8 @@ $(D)/shairport-sync: $(D)/bootstrap $(D)/libdaemon $(D)/libpopt $(D)/libconfig $
 		then cd $(ARCHIVE)/shairport-sync.git; git pull $(MINUS_Q); \
 		else cd $(ARCHIVE); git clone $(MINUS_Q) https://github.com/mikebrady/shairport-sync.git shairport-sync.git; \
 		fi
-	cp -ra $(ARCHIVE)/shairport-sync.git $(BUILD_TMP)/shairport-sync
-	set -e; cd $(BUILD_TMP)/shairport-sync; \
+	$(SILENT)cp -ra $(ARCHIVE)/shairport-sync.git $(BUILD_TMP)/shairport-sync
+	$(SET) -e; cd $(BUILD_TMP)/shairport-sync; \
 		autoreconf -fi; \
 		PKG_CONFIG=$(PKG_CONFIG) \
 		$(BUILDENV) \

@@ -22,3 +22,5 @@ NEUTRINO_LIBSTB_TANGOS_PATCHES += $(PATCHES)/build-neutrino/libstb-hal-tangos.pa
 NEUTRINO_HD2_PATCHES += $(PATCHES)/build-neutrino/nhd2-exp.patch
 NEUTRINO_HD2_PLUGINS_PATCHES += $(PATCHES)/build-neutrino/nhd2-exp-plugins.patch
 
+# Oscam patch
+OSCAM_LOCAL_PATCH =
