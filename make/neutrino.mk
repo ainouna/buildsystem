@@ -465,6 +465,7 @@ $(SOURCE_DIR)/neutrino-hd2/config.status:
 			--build=$(BUILD) \
 			--host=$(TARGET) \
 			--enable-silent-rules \
+			--with-boxmodel=$(BOXTYPE) \
 			--with-boxtype=$(BOXTYPE) \
 			--with-datadir=/usr/share/tuxbox \
 			--with-configdir=/var/tuxbox/config \
