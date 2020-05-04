@@ -5,10 +5,10 @@
  
  AC_ARG_WITH(boxtype,
 -	[  --with-boxtype          valid values: generic,dgs,gigablue,dreambox,xtrend,fulan,kathrein,ipbox,topfield,fortis_hdbox,octagon,atevio,adb_box,whitebox,vip,homecast,vuplus,azbox,technomate,coolstream,hypercube,venton,xp1000,odin,ixuss,iqonios,e3hd,ebox5000,wetek,edision,hd,gi,xpeedc,formuler,miraclebox,spycat,xsarius,zgemma],
-+	[  --with-boxtype          valid values: generic,duckbox,dgs,gigablue,dreambox,xtrend,fulan,kathrein,ipbox,topfield,fortis_hdbox,octagon,atevio,hs7,adb_box,adb2850,vip,homecast,vitamin_hd5000,vuplus,azbox,technomate,coolstream,hypercube,venton,xp1000,odin,ixuss,iqonios,e3hd,ebox5000,wetek,edision,hd,gi,xpeedc,formuler,miraclebox,spycat,xsarius,zgemma],
++	[  --with-boxtype          valid values: generic,duckbox,dgs,gigablue,dreambox,xtrend,fulan,kathrein,ipbox,topfield,fortis_hdbox,octagon,atevio,hs7,adb_box,adb_2850,vip,homecast,vitamin_hd5000,vuplus,azbox,technomate,coolstream,hypercube,venton,xp1000,odin,ixuss,iqonios,e3hd,ebox5000,wetek,edision,hd,gi,xpeedc,formuler,miraclebox,spycat,xsarius,zgemma],
  	[case "${withval}" in
 -		generic|dgs|gigablue|dreambox|xtrend|fulan|kathrein|ipbox|hl101|topfield|fortis_hdbox|octagon|atevio|adb_box|whitebox|vip|homecast|vuplus|azbox|technomate|coolstream|hypercube|venton|xp1000|odin|ixuss|iqonios|e3hd|ebox5000|wetek|edision|hd|gi|xpeedc|formuler|miraclebox|spycat|xsarius|zgemma)
-+		generic|duckbox|dgs|gigablue|dreambox|xtrend|fulan|kathrein|ipbox|hl101|topfield|fortis_hdbox|octagon|atevio|hs7|adb_box|adb2850|vitamin_hd5000|whitebox|vip|homecast|vuplus|azbox|technomate|coolstream|hypercube|venton|xp1000|odin|ixuss|iqonios|e3hd|ebox5000|wetek|edision|hd|gi|xpeedc|formuler|miraclebox|spycat|xsarius|zgemma)
++		generic|duckbox|dgs|gigablue|dreambox|xtrend|fulan|kathrein|ipbox|hl101|topfield|fortis_hdbox|octagon|atevio|hs7|vitamin|whitebox|vip|homecast|vuplus|azbox|technomate|coolstream|hypercube|venton|xp1000|odin|ixuss|iqonios|e3hd|ebox5000|wetek|edision|hd|gi|xpeedc|formuler|miraclebox|spycat|xsarius|zgemma)
  			BOXTYPE="$withval"
  			;;
  		cu*)
@@ -57,7 +57,7 @@
  				valid for atevio: atevio700,atevio7000,atevio7500,atevio7600
  				valid for octagon: octagon1008
 +				valid for fortis: hs7110, hs7420, hs7810a, hs7119, hs7429, hs7819
-+				valid for adb: adb_box, adb2850
++				valid for adb: adb_box, adb_2850
 +				valid for pace: pace7241
 +				valid for vitamin_hd5000: vitamin_hd5000
  				valid for vuplus: vusolo,vuduo,vuuno,vuultimo,vuduo2,vusolo2,vusolo4k,vusolose,vuzero
@@ -88,7 +88,7 @@
 +				AC_MSG_ERROR([unknown model $withval for boxtype $BOXTYPE])
 +			fi
 +			;;
-+		adb_box|adb2850)
++		adb_box|adb_2850)
 +			if test "$BOXTYPE" = "adb"; then
 +				BOXMODEL="$withval"
 +			else
@@ -178,7 +178,7 @@
 +AM_CONDITIONAL(BOXMODEL_HS7819, test "$BOXMODEL" = "hs7819")
 +
 +AM_CONDITIONAL(BOXMODEL_ADB_BOX, test "$BOXMODEL" = "adb_box")
-+AM_CONDITIONAL(BOXMODEL_ADB2850, test "$BOXMODEL" = "adb2850")
++AM_CONDITIONAL(BOXMODEL_ADB_2850, test "$BOXMODEL" = "adb_2850")
 +AM_CONDITIONAL(BOXMODEL_PACE7241, test "$BOXMODEL" = "pace7241")
 +
 +AM_CONDITIONAL(BOXMODEL_VITAMIN_HD5000, test "$BOXMODEL" = "vitamin_hd5000")
@@ -269,8 +269,8 @@
 +
 +elif test "$BOXMODEL" = "adb_box"; then
 +	AC_DEFINE(BOXMODEL_ADB_BOX, 1, [building for adb_box])
-+elif test "$BOXMODEL" = "adb2850"; then
-+	AC_DEFINE(BOXMODEL_ADB2850, 1, [building for adb2850])
++elif test "$BOXMODEL" = "adb_2850"; then
++	AC_DEFINE(BOXMODEL_ADB_2850, 1, [building for adb_2850])
 +
 +elif test "$BOXMODEL" = "pace7241"; then
 +	AC_DEFINE(BOXMODEL_PACE7241, 1, [building for pace7241])
