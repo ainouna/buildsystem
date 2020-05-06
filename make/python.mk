@@ -26,7 +26,7 @@ PYTHON_INSTALL = \
 # host_python
 #
 PYTHON_VER_MAJOR = 2.7
-PYTHON_VER_MINOR = 17
+PYTHON_VER_MINOR = 18
 PYTHON_VER = $(PYTHON_VER_MAJOR).$(PYTHON_VER_MINOR)
 PYTHON_SOURCE = Python-$(PYTHON_VER).tar.xz
 HOST_PYTHON_PATCH = python-$(PYTHON_VER).patch
@@ -342,6 +342,25 @@ $(D)/python_cffi: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(D)/libffi 
 		$(PYTHON_BUILD); \
 		$(PYTHON_INSTALL)
 	$(REMOVE)/cffi-$(PYTHON_CFFI_VER)
+	$(TOUCH)
+
+#
+# python_sqlite3
+#
+PYTHON_SQLITE3 = 1.0.5
+PYTHON_SQLITE3_SOURCE = sqlite3-$(PYTHON_SQLITE3_VER).tar.gz
+
+$(ARCHIVE)/$(PYTHON_SQLITE3_SOURCE):
+	$(WGET) https://pypi.python.org/packages/source/c/sqlite3/$(PYTHON_SQLITE3_SOURCE)
+
+$(D)/python_sqlite3: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(D)/libffi $(D)/python_pycparser $(ARCHIVE)/$(PYTHON_CFFI_SOURCE)
+	$(START_BUILD)
+	$(REMOVE)/cffi-$(PYTHON_SQLITE3_VER)
+	$(UNTAR)/$(PYTHON_SQLITE3_SOURCE)
+	$(CH_DIR)/cffi-$(PYTHON_SQLITE3_VER); \
+		$(PYTHON_BUILD); \
+		$(PYTHON_INSTALL)
+	$(REMOVE)/cffi-$(PYTHON_SQLITE3_VER)
 	$(TOUCH)
 
 #
