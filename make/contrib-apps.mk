@@ -649,7 +649,7 @@ $(D)/rsync: $(D)/bootstrap $(ARCHIVE)/$(RSYNC_SOURCE)
 #
 # fuse
 #
-FUSE_VER = 2.9.7
+FUSE_VER = 2.9.9
 FUSE_SOURCE = fuse-$(FUSE_VER).tar.gz
 
 $(ARCHIVE)/$(FUSE_SOURCE):
@@ -710,7 +710,7 @@ $(D)/curlftpfs: $(D)/bootstrap $(D)/libcurl $(D)/fuse $(D)/libglib2 $(ARCHIVE)/$
 #
 # sdparm
 #
-SDPARM_VER = 1.10
+SDPARM_VER = 1.11
 SDPARM_SOURCE = sdparm-$(SDPARM_VER).tgz
 
 $(ARCHIVE)/$(SDPARM_SOURCE):
@@ -828,7 +828,7 @@ $(D)/fbshot: $(D)/bootstrap $(D)/libpng $(ARCHIVE)/$(FBSHOT_SOURCE)
 #
 # gptfdisk
 #
-GPTFDISK_VER = 1.0.4
+GPTFDISK_VER = 1.0.5
 GPTFDISK_SOURCE = gptfdisk-$(GPTFDISK_VER).tar.gz
 
 $(ARCHIVE)/$(GPTFDISK_SOURCE):
@@ -884,7 +884,7 @@ $(D)/parted: $(D)/bootstrap $(D)/e2fsprogs $(ARCHIVE)/$(PARTED_SOURCE)
 #
 # sysstat
 #
-SYSSTAT_VER = 11.5.7
+SYSSTAT_VER = 12.3.3
 SYSSTAT_SOURCE = sysstat-$(SYSSTAT_VER).tar.bz2
 
 $(ARCHIVE)/$(SYSSTAT_SOURCE):
@@ -1145,7 +1145,7 @@ $(D)/coreutils: $(D)/bootstrap $(D)/openssl $(ARCHIVE)/$(COREUTILS_SOURCE)
 #
 # smartmontools
 #
-SMARTMONTOOLS_VER = 7.0
+SMARTMONTOOLS_VER = 7.1
 SMARTMONTOOLS_SOURCE = smartmontools-$(SMARTMONTOOLS_VER).tar.gz
 
 $(ARCHIVE)/$(SMARTMONTOOLS_SOURCE):
@@ -1313,8 +1313,9 @@ $(D)/htop: $(D)/bootstrap $(D)/ncurses $(ARCHIVE)/$(HTOP_SOURCE)
 #
 # ethtool
 #
-ETHTOOL_VER = 4.17
+ETHTOOL_VER = 5.6
 ETHTOOL_SOURCE = ethtool-$(ETHTOOL_VER).tar.xz
+ETHTOOL_PATCH = ethtool-$(ETHTOOL_VER).patch
 
 $(ARCHIVE)/$(ETHTOOL_SOURCE):
 	$(WGET) https://www.kernel.org/pub/software/network/ethtool/$(ETHTOOL_SOURCE)
@@ -1324,10 +1325,12 @@ $(D)/ethtool: $(D)/bootstrap $(ARCHIVE)/$(ETHTOOL_SOURCE)
 	$(REMOVE)/ethtool-$(ETHTOOL_VER)
 	$(UNTAR)/$(ETHTOOL_SOURCE)
 	$(CH_DIR)/ethtool-$(ETHTOOL_VER); \
+		$(call apply_patches, $(ETHTOOL_PATCH)); \
 		$(CONFIGURE) \
 			--prefix=/usr \
 			--mandir=/.remove \
 			--disable-pretty-dump \
+			--disable-netlink \
 		; \
 		$(MAKE); \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
@@ -1467,7 +1470,7 @@ $(D)/samba: $(D)/bootstrap $(ARCHIVE)/$(SAMBA_SOURCE)
 #
 # ntp
 #
-NTP_VER = 4.2.8p13
+NTP_VER = 4.2.8p14
 NTP_SOURCE = ntp-$(NTP_VER).tar.gz
 #NTP_PATCH = ntp-$(NTP_VER).patch
 
@@ -1638,7 +1641,7 @@ $(D)/udpxy: $(D)/bootstrap $(ARCHIVE)/$(UDPXY_SOURCE)
 #
 # openvpn
 #
-OPENVPN_VER = 2.4.6
+OPENVPN_VER = 2.4.9
 OPENVPN_SOURCE = openvpn-$(OPENVPN_VER).tar.xz
 
 $(ARCHIVE)/$(OPENVPN_SOURCE):
@@ -1677,7 +1680,7 @@ $(D)/openvpn: $(D)/bootstrap $(D)/openssl $(D)/lzo $(ARCHIVE)/$(OPENVPN_SOURCE)
 #
 # openssh
 #
-OPENSSH_VER = 7.7p1
+OPENSSH_VER = 8.2p1
 OPENSSH_SOURCE = openssh-$(OPENSSH_VER).tar.gz
 
 $(ARCHIVE)/$(OPENSSH_SOURCE):
