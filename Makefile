@@ -111,6 +111,7 @@ include make/contrib-apps.mk
 include make/linux-kernel.mk
 include make/crosstool.mk
 include make/driver.mk
+include make/ffmpeg.mk
 include make/gstreamer.mk
 include make/root-etc.mk
 include make/python.mk

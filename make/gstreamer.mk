@@ -398,8 +398,8 @@ $(D)/gst_libav: $(D)/bootstrap $(D)/gstreamer $(D)/gst_plugins_base $(D)/libglib
 #
 # gmediarender
 #
-GST_GMEDIARENDER_VER =
-GST_GMEDIARENDER_SOURCE =
+GST_GMEDIARENDER_VER = 0.0.6
+GST_GMEDIARENDER_SOURCE = gmediarender-$(GST_GMEDIARENDER_VER).tar.bz2
 GST_GMEDIARENDER_PATCH =
 
 $(ARCHIVE)/$(GST_GMEDIARENDER_SOURCE):
