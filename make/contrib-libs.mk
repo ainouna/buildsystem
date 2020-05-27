@@ -827,7 +827,7 @@ endif
 #
 # libjpeg_turbo2
 #
-LIBJPEG_TURBO2_VER = 2.0.3
+LIBJPEG_TURBO2_VER = 2.0.4
 LIBJPEG_TURBO2_SOURCE = libjpeg-turbo-$(LIBJPEG_TURBO2_VER).tar.gz
 LIBJPEG_TURBO2_PATCH = libjpeg-turbo-tiff-ojpeg.patch
 
@@ -1904,11 +1904,10 @@ $(D)/libdpf: $(D)/bootstrap $(D)/libusb_compat $(ARCHIVE)/$(LIBDPF_SOURCE)
 #
 # lcd4linux
 #
-LCD4LINUX_VER = 07ef2dd
-//LCD4LINUX_VER = 91cfbc2
+LCD4LINUX_VER = 91cfbc2
 LCD4LINUX_SOURCE = lcd4linux-git-$(LCD4LINUX_VER).tar.bz2
 LCD4LINUX_URL = https://github.com/TangoCash/lcd4linux.git
-LCD4LINUX_PATCH = lcd4linux-widget.patch
+#LCD4LINUX_PATCH = lcd4linux-widget.patch
 
 $(ARCHIVE)/$(LCD4LINUX_SOURCE):
 	$(SCRIPTS_DIR)/get-git-archive.sh $(LCD4LINUX_URL) $(LCD4LINUX_VER) $(notdir $@) $(ARCHIVE)
@@ -2331,7 +2330,7 @@ $(D)/djmount: $(D)/bootstrap $(D)/fuse $(ARCHIVE)/$(DJMOUNT_SOURCE)
 #
 # libupnp
 #
-LIBUPNP_VER = 1.6.22
+LIBUPNP_VER = 1.6.25
 LIBUPNP_SOURCE = libupnp-$(LIBUPNP_VER).tar.bz2
 
 $(ARCHIVE)/$(LIBUPNP_SOURCE):
