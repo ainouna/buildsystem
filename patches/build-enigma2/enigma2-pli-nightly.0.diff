@@ -1,4 +1,4 @@
-# revision e238b46a92cbc55552631d84f589de5c0153f8b8 30/04/2020 21:01
+# revision dfb4739a2f606b5e8d3702f1238b97f4f422fcb1 29/05/2020 12:27
 --- enigma2.org/configure.ac
 +++ enigma2/configure.ac
 @@ -18,6 +18,7 @@
@@ -2391,7 +2391,7 @@
  	{
  		ret = (int)(snr / 37.5);
  		sat_max = 1700;
-@@ -2928,7 +2940,11 @@
+@@ -2944,7 +2956,11 @@
  	}
  	else if (!strcmp(type, "DVB-C"))
  	{
@@ -2403,7 +2403,7 @@
  		fetype = feCable;
  	}
  	else if (!strcmp(type, "ATSC"))
-@@ -3060,11 +3076,16 @@
+@@ -3076,11 +3092,16 @@
  		case SYS_ISDBS:		ss << " ISDBS"; break;
  		case SYS_ISDBT:		ss << " ISDBT"; break;
  		case SYS_UNDEFINED:	ss << " UNDEFINED"; break;
@@ -4909,7 +4909,7 @@
  
  		if os.access("/dev/.udev", 0):
  			self.type = DEVTYPE_UDEV
-@@ -53,7 +54,6 @@
+@@ -55,7 +56,6 @@
  		else:
  			print "[Harddisk] Unable to determine structure of /dev"
  			self.type = -1
@@ -4917,7 +4917,7 @@
  
  		self.max_idle_time = 0
  		self.idle_running = False
-@@ -82,25 +82,30 @@
+@@ -84,25 +84,30 @@
  			self.card = "sdhci" in self.phys_path or "mmc" in self.device
  
  		elif self.type == DEVTYPE_DEVFS:
@@ -4963,7 +4963,7 @@
  
  	def __lt__(self, ob):
  		return self.device < ob.device
-@@ -244,7 +249,9 @@
+@@ -246,7 +251,9 @@
  
  	def createPartition(self):
  		cmd = 'printf "8,\n;0,0\n;0,0\n;0,0\ny\n" | sfdisk -f -uS ' + self.disk_path
@@ -4973,7 +4973,7 @@
  		return (res >> 8)
  
  	def mkfs(self):
-@@ -287,6 +294,7 @@
+@@ -289,6 +296,7 @@
  		return 1
  
  	def killPartitionTable(self):
@@ -4981,7 +4981,7 @@
  		zero = 512 * '\0'
  		h = open(self.dev_path, 'wb')
  		# delete first 9 sectors, which will likely kill the first partition too
-@@ -303,25 +311,30 @@
+@@ -305,25 +313,30 @@
  		h.close()
  
  	def createInitializeJob(self):
@@ -5030,7 +5030,7 @@
  
  		if os.path.exists('/usr/sbin/parted'):
  			use_parted = True
-@@ -332,7 +345,9 @@
+@@ -334,7 +347,9 @@
  			else:
  				use_parted = False
  
@@ -5041,7 +5041,7 @@
  		task.weighting = 5
  		if use_parted:
  			task.setTool('parted')
-@@ -344,9 +359,17 @@
+@@ -346,9 +361,17 @@
  				alignment = 'opt'
  			if size > 2097151:
  				parttype = 'gpt'
@@ -5060,7 +5060,7 @@
  		else:
  			task.setTool('sfdisk')
  			task.args.append('-f')
-@@ -354,51 +377,96 @@
+@@ -356,53 +379,100 @@
  			task.args.append(self.disk_path)
  			if size > 128000:
  				# Start at sector 8 to better support 4k aligned disks
@@ -5090,7 +5090,9 @@
 +# execute a dummy fdisk -l to force read the harddisk's new content
 +		task = Task.LoggingTask(job, _("Dummy command fdisk -l"))
  		task.weighting = 1
--
+ 
+ 		if self.type == DEVTYPE_UDEV:
+ 			task = UnmountTask(job, self)
 -		task = MkfsTask(job, _("Creating filesystem"))
 -		big_o_options = ["dir_index"]
 -		if isFileSystemSupported("ext4"):
@@ -5172,7 +5174,7 @@
  		task = Task.ConditionTask(job, _("Waiting for mount"), timeoutCount=20)
  		task.check = self.mountDevice
  		task.weighting = 1
--
+ 
 +		print "[Harddisk init] Waiting for mount to succeed"
 +
 +		task = Task.LoggingTask(job, _("Create /media/hdd/movie"))
@@ -5186,7 +5188,7 @@
  		return job
  
  	def initialize(self):
-@@ -660,16 +728,19 @@
+@@ -664,16 +734,19 @@
  				self.devices_scanned_on_init.append((blockdev, removable, is_cdrom, medium_found))
  
  	def getAutofsMountpoint(self, device):
@@ -5210,7 +5212,7 @@
  		return None
  
  	def addHotplugPartition(self, device, physdev = None):
-@@ -685,6 +756,10 @@
+@@ -689,6 +762,10 @@
  		error, blacklisted, removable, is_cdrom, partitions, medium_found = self.getBlockDevInfo(device)
  		if not blacklisted and medium_found:
  			description = self.getUserfriendlyDeviceName(device, physdev)
@@ -5221,7 +5223,7 @@
  			p = Partition(mountpoint = self.getMountpoint(device), description = description, force_mounted = True, device = device)
  			self.partitions.append(p)
  			if p.mountpoint: # Plugins won't expect unmounted devices
-@@ -777,7 +852,7 @@
+@@ -781,7 +858,7 @@
  		try:
  			description = readFile("/sys" + phys + "/model")
  		except IOError, s:
@@ -5230,7 +5232,7 @@
  		# not wholedisk and not partition 1
  		if part and part != 1:
  			description += _(" (Partition %d)") % part
-@@ -818,7 +893,7 @@
+@@ -822,7 +899,7 @@
  			dev = self.hdd.disk_path.split('/')[-1]
  			open('/dev/nomount.%s' % dev, "wb").close()
  		except Exception, e:
@@ -5239,7 +5241,7 @@
  		self.setTool('umount')
  		self.args.append('-f')
  		for dev in self.hdd.enumMountDevices():
-@@ -826,7 +901,7 @@
+@@ -830,7 +907,7 @@
  			self.postconditions.append(Task.ReturncodePostcondition())
  			self.mountpoints.append(dev)
  		if not self.mountpoints:
@@ -5248,7 +5250,7 @@
  			self.cmd = 'true'
  			self.args = [self.cmd]
  	def afterRun(self):
-@@ -834,7 +909,7 @@
+@@ -838,7 +915,7 @@
  			try:
  				os.rmdir(path)
  			except Exception, ex:
@@ -5257,7 +5259,7 @@
  
  class MountTask(Task.LoggingTask):
  	def __init__(self, job, hdd):
-@@ -845,7 +920,7 @@
+@@ -849,7 +926,7 @@
  			dev = self.hdd.disk_path.split('/')[-1]
  			os.unlink('/dev/nomount.%s' % dev)
  		except Exception, e:
@@ -5266,7 +5268,7 @@
  		# try mounting through fstab first
  		if self.hdd.mount_device is None:
  			dev = self.hdd.partitionPath("1")
-@@ -874,7 +949,7 @@
+@@ -878,7 +955,7 @@
  	def prepare(self):
  		self.fsck_state = None
  	def processOutput(self, data):
@@ -5277,77 +5279,77 @@
  		elif 'Creating journal' in data:
 --- enigma2.org/lib/python/Components/Network.py
 +++ enigma2/lib/python/Components/Network.py
-@@ -61,7 +61,7 @@
- 		return [ int(n) for n in ip.split('.') ]
- 
- 	def getAddrInet(self, iface, callback):
--		cmd = ("/sbin/ip", "/sbin/ip", "-o", "addr", "show", "dev", iface)
-+		cmd = ("/sbin/ip", "/sbin/ip", "addr", "show", "dev", iface)
- 		self.console.ePopen(cmd, self.IPaddrFinished, [iface, callback])
- 
- 	def IPaddrFinished(self, result, retval, extra_args):
-@@ -71,37 +71,45 @@
- 		ipRegexp = '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}'
- 		netRegexp = '[0-9]{1,2}'
- 		macRegexp = '[0-9a-fA-F]{2}\:[0-9a-fA-F]{2}\:[0-9a-fA-F]{2}\:[0-9a-fA-F]{2}\:[0-9a-fA-F]{2}\:[0-9a-fA-F]{2}'
--		ipLinePattern = re.compile('inet ' + ipRegexp + '/')
-+		ipLinePattern = re.compile(ipRegexp + '/')
- 		ipPattern = re.compile(ipRegexp)
- 		netmaskLinePattern = re.compile('/' + netRegexp)
- 		netmaskPattern = re.compile(netRegexp)
--		bcastLinePattern = re.compile(' brd ' + ipRegexp)
-+		bcastLinePattern = re.compile('brd ' + ipRegexp)
- 		upPattern = re.compile('UP')
- 		macPattern = re.compile(macRegexp)
--		macLinePattern = re.compile('link/ether ' + macRegexp)
-+		macLinePattern = re.compile(macRegexp)
- 
- 		for line in result.splitlines():
- 			split = line.strip().split(' ',2)
- 			if (split[1][:-1] == iface) or (split[1][:-1] == (iface + '@sys0')):
- 				up = self.regExpMatch(upPattern, split[2])
--				mac = self.regExpMatch(macPattern, self.regExpMatch(macLinePattern, split[2]))
-+#				print "[Network] up = ", up
- 				if up is not None:
- 					data['up'] = True
- 					if iface is not 'lo':
- 						self.configuredInterfaces.append(iface)
-+			if (split[0] == 'link/ether'):
-+				mac = self.regExpMatch(macPattern, self.regExpMatch(macLinePattern, split[1]))
- 				if mac is not None:
-+#					print "[Network] mac = ", mac
- 					data['mac'] = mac
--			if split[1] == iface:
--				if re.search(globalIPpattern, split[2]):
--					ip = self.regExpMatch(ipPattern, self.regExpMatch(ipLinePattern, split[2]))
--					netmask = self.calc_netmask(self.regExpMatch(netmaskPattern, self.regExpMatch(netmaskLinePattern, split[2])))
--					bcast = self.regExpMatch(ipPattern, self.regExpMatch(bcastLinePattern, split[2]))
--					if ip is not None:
--						data['ip'] = self.convertIP(ip)
--					if netmask is not None:
--						data['netmask'] = self.convertIP(netmask)
--					if bcast is not None:
--						data['bcast'] = self.convertIP(bcast)
-+			if (split[0] == 'inet'):
-+				ip = self.regExpMatch(ipPattern, self.regExpMatch(ipLinePattern, split[1]))
-+#				if ip is not None:
-+#					print "[Network] ip = ", ip
-+				netmask = self.calc_netmask(self.regExpMatch(netmaskPattern, self.regExpMatch(netmaskLinePattern, split[1])))
-+#				if netmask is not None:
-+#					print "[Network] netmask = ", netmask
-+				bcast = self.regExpMatch(ipPattern, self.regExpMatch(bcastLinePattern, split[2]))
-+#				if bcast is not None:
-+#					print "[Network] bcast = ", bcast
-+				if ip is not None:
-+					data['ip'] = self.convertIP(ip)
-+				if netmask is not None:
-+					data['netmask'] = self.convertIP(netmask)
-+				if bcast is not None:
-+					data['bcast'] = self.convertIP(bcast)
- 
- 		if 'ip' not in data:
- 			data['dhcp'] = True
-@@ -568,16 +576,18 @@
+#@@ -62,7 +62,7 @@
+# 		return [ int(n) for n in ip.split('.') ]
+# 
+# 	def getAddrInet(self, iface, callback):
+#-		cmd = ("/sbin/ip", "/sbin/ip", "-o", "addr", "show", "dev", iface)
+#+		cmd = ("/sbin/ip", "/sbin/ip", "addr", "show", "dev", iface)
+# 		self.console.ePopen(cmd, self.IPaddrFinished, [iface, callback])
+# 
+# 	def IPaddrFinished(self, result, retval, extra_args):
+#@@ -71,37 +71,45 @@
+# 		ipRegexp = '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}'
+# 		netRegexp = '[0-9]{1,2}'
+# 		macRegexp = '[0-9a-fA-F]{2}\:[0-9a-fA-F]{2}\:[0-9a-fA-F]{2}\:[0-9a-fA-F]{2}\:[0-9a-fA-F]{2}\:[0-9a-fA-F]{2}'
+#-		ipLinePattern = re.compile('inet ' + ipRegexp + '/')
+#+		ipLinePattern = re.compile(ipRegexp + '/')
+# 		ipPattern = re.compile(ipRegexp)
+# 		netmaskLinePattern = re.compile('/' + netRegexp)
+# 		netmaskPattern = re.compile(netRegexp)
+#-		bcastLinePattern = re.compile(' brd ' + ipRegexp)
+#+		bcastLinePattern = re.compile('brd ' + ipRegexp)
+# 		upPattern = re.compile('UP')
+# 		macPattern = re.compile(macRegexp)
+#-		macLinePattern = re.compile('link/ether ' + macRegexp)
+#+		macLinePattern = re.compile(macRegexp)
+# 
+# 		for line in result.splitlines():
+# 			split = line.strip().split(' ',2)
+# 			if (split[1][:-1] == iface) or (split[1][:-1] == (iface + '@sys0')):
+# 				up = self.regExpMatch(upPattern, split[2])
+#-				mac = self.regExpMatch(macPattern, self.regExpMatch(macLinePattern, split[2]))
+#+#				print "[Network] up = ", up
+# 				if up is not None:
+# 					data['up'] = True
+# 					if iface is not 'lo':
+# 						self.configuredInterfaces.append(iface)
+#+			if (split[0] == 'link/ether'):
+#+				mac = self.regExpMatch(macPattern, self.regExpMatch(macLinePattern, split[1]))
+# 				if mac is not None:
+#+#					print "[Network] mac = ", mac
+# 					data['mac'] = mac
+#-			if split[1] == iface:
+#-				if re.search(globalIPpattern, split[2]):
+#-					ip = self.regExpMatch(ipPattern, self.regExpMatch(ipLinePattern, split[2]))
+#-					netmask = self.calc_netmask(self.regExpMatch(netmaskPattern, self.regExpMatch(netmaskLinePattern, split[2])))
+#-					bcast = self.regExpMatch(ipPattern, self.regExpMatch(bcastLinePattern, split[2]))
+#-					if ip is not None:
+#-						data['ip'] = self.convertIP(ip)
+#-					if netmask is not None:
+#-						data['netmask'] = self.convertIP(netmask)
+#-					if bcast is not None:
+#-						data['bcast'] = self.convertIP(bcast)
+#+			if (split[0] == 'inet'):
+#+				ip = self.regExpMatch(ipPattern, self.regExpMatch(ipLinePattern, split[1]))
+#+#				if ip is not None:
+#+#					print "[Network] ip = ", ip
+#+				netmask = self.calc_netmask(self.regExpMatch(netmaskPattern, self.regExpMatch(netmaskLinePattern, split[1])))
+#+#				if netmask is not None:
+#+#					print "[Network] netmask = ", netmask
+#+				bcast = self.regExpMatch(ipPattern, self.regExpMatch(bcastLinePattern, split[2]))
+#+#				if bcast is not None:
+#+#					print "[Network] bcast = ", bcast
+#+				if ip is not None:
+#+					data['ip'] = self.convertIP(ip)
+#+				if netmask is not None:
+#+					data['netmask'] = self.convertIP(netmask)
+#+				if bcast is not None:
+#+					data['bcast'] = self.convertIP(bcast)
+# 
+# 		if 'ip' not in data:
+# 			data['dhcp'] = True
+@@ -521,16 +521,18 @@
  			return True
  
  		# r871x_usb_drv on kernel 2.6.12 is not identifiable over /sys/class/net/'ifacename'/wireless so look also inside /proc/net/wireless
@@ -7669,7 +7671,6 @@
  
  		self["SubserviceQuickzapAction"] = HelpableActionMap(self, "InfobarSubserviceQuickzapActions",
 --- enigma2.org/lib/python/Screens/InfoBar.py
-+++ enigma2/lib/python/Screens/InfoBar.py
 @@ -9,6 +9,9 @@
  
  profile("LOAD:enigma")
@@ -7691,7 +7692,7 @@
  			}, prio=2)
  
  		self.radioTV = 0
-@@ -65,8 +68,8 @@
+@@ -65,8 +72,8 @@
  				InfoBarPlugins, InfoBarServiceErrorPopupSupport, InfoBarHotkey:
  			x.__init__(self)
  
@@ -7702,7 +7703,7 @@
  
  		self.__event_tracker = ServiceEventTracker(screen=self, eventmap=
  			{
-@@ -77,6 +80,88 @@
+@@ -77,6 +84,88 @@
  		assert InfoBar.instance is None, "class InfoBar is a singleton class and just one instance of this class is allowed!"
  		InfoBar.instance = self
  
@@ -7791,7 +7792,7 @@
  	def __onClose(self):
  		InfoBar.instance = None
  
-@@ -95,6 +180,22 @@
+@@ -95,6 +184,22 @@
  		self.__serviceStarted(True)
  		self.onExecBegin.remove(self.__checkServiceStarted)
  
@@ -7834,15 +7835,15 @@
  	def toggleTvRadio(self):
  		if self.radioTV == 1:
  			self.radioTV = 0
-@@ -151,6 +265,7 @@
- class MoviePlayer(InfoBarBase, InfoBarShowHide, InfoBarMenu, InfoBarSeek, InfoBarShowMovies, InfoBarInstantRecord,
+@@ -151,6 +269,7 @@
+ class MoviePlayer(InfoBarBase, InfoBarShowHide, InfoBarMenu, InfoBarSeek, InfoBarShowMovies, InfoBarInstantRecord, InfoBarVmodeButton,
  		InfoBarAudioSelection, HelpableScreen, InfoBarNotifications, InfoBarServiceNotifications, InfoBarPVRState,
  		InfoBarCueSheetSupport, InfoBarMoviePlayerSummarySupport, InfoBarSubtitleSupport, Screen, InfoBarTeletextPlugin,
 +		InfoBarSubserviceSelection,
  		InfoBarServiceErrorPopupSupport, InfoBarExtensions, InfoBarPlugins, InfoBarPiP, InfoBarHDMI, InfoBarHotkey):
  
  	ENABLE_RESUME_SUPPORT = True
-@@ -161,10 +276,10 @@
+@@ -161,10 +280,10 @@
  
  		self["actions"] = HelpableActionMap(self, "MoviePlayerActions",
  			{
