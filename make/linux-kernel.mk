@@ -56,6 +56,9 @@ COMMON_PATCHES_24 = \
 		linux-defined_is_deprecated_timeconst.pl_stm24_$(KERNEL_LABEL).patch \
 		$(if $(P0217),linux-patch_swap_notify_core_support_stm24_$(KERNEL_LABEL).patch) \
 		$(if $(P0209),linux-sh4-dwmac_stm24_$(KERNEL_LABEL).patch)
+ifneq ($(BS_GCC_VER), $(filter $(BS_GCC_VER), 4.6.3 4.8.4))
+COMMON_PATCHES_24 += linux-sh4-remove_m4-nofpu-arg_$(KERNEL_LABEL).patch
+endif
 
 TF7700_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-sh4-tf7700_setup_stm24_$(KERNEL_LABEL).patch \

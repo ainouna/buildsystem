@@ -1,6 +1,9 @@
-# set up environment for other makefiles
-# print '+' before each executed command
-# SHELL := $(SHELL) -x
+#
+# set up build environment for other makefiles
+#
+# -----------------------------------------------------------------------------
+
+#SHELL := $(SHELL) -x
 
 CONFIG_SITE =
 export CONFIG_SITE
@@ -8,9 +11,20 @@ export CONFIG_SITE
 LD_LIBRARY_PATH =
 export LD_LIBRARY_PATH
 
-BASE_DIR             := $(shell pwd)
+# -----------------------------------------------------------------------------
 
-ARCHIVE               = $(HOME)/Archive
+# set up default parallelism
+PARALLEL_JOBS := $(shell echo $$((1 + `getconf _NPROCESSORS_ONLN 2>/dev/null || echo 1`)))
+override MAKE = make $(if $(findstring j,$(filter-out --%,$(MAKEFLAGS))),,-j$(PARALLEL_JOBS)) $(SILENT_OPT)
+export PARALLEL_JOBS
+
+MAKEFLAGS            += --no-print-directory
+
+# -----------------------------------------------------------------------------
+
+# default platform...
+BASE_DIR             := $(shell pwd)
+ARCHIVE              ?= $(HOME)/Archive
 TOOLS_DIR             = $(BASE_DIR)/tools
 BUILD_TMP             = $(BASE_DIR)/build_tmp
 SOURCE_DIR            = $(BASE_DIR)/build_source
@@ -22,8 +36,6 @@ FLASH_DIR             = $(BASE_DIR)/flash
 # for local extensions
 -include $(BASE_DIR)/config.local
 
-# default platform...
-MAKEFLAGS            += --no-print-directory
 GIT_PROTOCOL         ?= http
 ifneq ($(GIT_PROTOCOL), http)
 GITHUB               ?= git://github.com
@@ -35,8 +47,22 @@ GIT_NAME_DRIVER      ?= Audioniek
 GIT_NAME_TOOLS       ?= Audioniek
 GIT_NAME_FLASH       ?= Audioniek
 
+# default config...
+KBUILD_VERBOSE       ?= normal
+BOXARCH              ?= sh4
+BOXTYPE              ?= atevio7500
+BOXARCH              ?= sh4
+KERNEL_STM           ?= p0217
+IMAGE                ?= neutrino-wlandriver
+FLAVOUR              ?= neutrino-ddt
+OPTIMIZATIONS        ?= size
+MEDIAFW              ?= buildinplayer
+EXTERNAL_LCD         ?= none
+DESTINATION          ?= flash
+
 TUFSBOX_DIR           = $(BASE_DIR)/tufsbox
-CROSS_BASE            = $(BASE_DIR)/cross/$(BOXTYPE)
+#CROSS_BASE            = $(BASE_DIR)/cross/$(BOXTYPE)
+CROSS_BASE            = $(TUFSBOX_DIR)/cross
 TARGET_DIR            = $(TUFSBOX_DIR)/cdkroot
 BOOT_DIR              = $(TUFSBOX_DIR)/cdkroot-tftpboot
 CROSS_DIR             = $(TUFSBOX_DIR)/cross
@@ -60,7 +86,11 @@ BUILD                ?= $(shell /usr/share/libtool/config.guess 2>/dev/null || /
 
 CCACHE_DIR            = $(HOME)/.ccache-bs-sh4
 export CCACHE_DIR
+ifeq ($(BS_GCC_VER), $(filter $(BS_GCC_VER), 4.6.3 4.8.4))
 TARGET               ?= sh4-linux
+else
+TARGET               ?= sh4-unknown-linux-gnu
+endif
 KERNELNAME            = uImage
 TARGET_MARCH_CFLAGS   =
 
