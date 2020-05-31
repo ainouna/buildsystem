@@ -746,11 +746,30 @@ $(D)/python_livestreamersrv: $(D)/bootstrap $(D)/python $(D)/python_setuptools $
 	$(REMOVE)/livestreamersrv
 	$(TOUCH)
 
+#
+# python_netifaces
+#
+PYTHON_NETIFACES_VER = 0.10.9
+PYTHON_NETIFACES_SOURCE = netifaces-$(PYTHON_NETIFACES_VER).tar.gz
+
+$(ARCHIVE)/$(PYTHON_NETIFACES_SOURCE):
+	$(WGET) http://qpypi.qpython.org/repository/15020/$(PYTHON_NETIFACES_SOURCE)
+
+$(D)/python_netifaces: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(ARCHIVE)/$(PYTHON_NETIFACES_SOURCE)
+	$(START_BUILD)
+	$(REMOVE)/netifaces
+	$(UNTAR)/$(PYTHON_NETIFACES_SOURCE)
+	$(CH_DIR)/netifaces-$(PYTHON_NETIFACES_VER); \
+		$(PYTHON_INSTALL)
+#	$(REMOVE)/netifaces
+	$(TOUCH)
+
 PYTHON_DEPS  = $(D)/host_python
 PYTHON_DEPS += $(D)/python
 PYTHON_DEPS += $(D)/python_twisted
 PYTHON_DEPS += $(D)/python_lxml
 PYTHON_DEPS += $(D)/python_service_identity
+PYTHON_DEPS += $(D)/python_netifaces
 ifeq ($(IMAGE), $(filter $(IMAGE), enigma2-wlandriver))
 PYTHON_DEPS += $(D)/python_wifi
 endif
