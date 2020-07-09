@@ -520,7 +520,7 @@
  
  	return output;
  }
-@@ -925,13 +925,13 @@
+@@ -940,13 +940,13 @@
      return output;
  }
  
@@ -2391,7 +2391,7 @@
  	{
  		ret = (int)(snr / 37.5);
  		sat_max = 1700;
-@@ -2944,7 +2956,11 @@
+@@ -2962,7 +2974,11 @@
  	}
  	else if (!strcmp(type, "DVB-C"))
  	{
@@ -2403,7 +2403,7 @@
  		fetype = feCable;
  	}
  	else if (!strcmp(type, "ATSC"))
-@@ -3076,11 +3092,16 @@
+@@ -3094,11 +3110,16 @@
  		case SYS_ISDBS:		ss << " ISDBS"; break;
  		case SYS_ISDBT:		ss << " ISDBT"; break;
  		case SYS_UNDEFINED:	ss << " UNDEFINED"; break;
@@ -5583,7 +5583,7 @@
 +		self.text = text
 --- enigma2.org/lib/python/Components/UsageConfig.py
 +++ enigma2/lib/python/Components/UsageConfig.py
-@@ -291,7 +291,7 @@
+@@ -294,7 +294,7 @@
  
  	config.misc.disable_background_scan = ConfigYesNo(default = False)
  	config.misc.use_ci_assignment = ConfigYesNo(default = False)
@@ -7379,7 +7379,7 @@
  			self.servicelist.l.setHideNumberMarker(False)
  			self.setCurrentSelection(self.servicelist.getCurrent())
  		self["Service"].editmode = True
-@@ -1317,6 +1337,11 @@
+@@ -1316,6 +1336,11 @@
  
  		self["list"] = ServiceList(self)
  		self.servicelist = self["list"]
@@ -7480,7 +7480,7 @@
  	FLAG_CENTER_DVB_SUBS = 2048
  
  	def __init__(self):
-@@ -375,6 +377,12 @@
+@@ -374,6 +376,12 @@
  		else:
  			self.toggleShow()
  
@@ -7493,7 +7493,7 @@
  	def toggleShow(self):
  		if self.__state == self.STATE_HIDDEN:
  			self.showFirstInfoBar()
-@@ -389,7 +397,9 @@
+@@ -388,7 +396,9 @@
  			self.show()
  			self.actualSecondInfoBarScreen.show()
  			self.startHideTimer()
@@ -7504,7 +7504,7 @@
  			self.hide()
  			self.hideTimer.stop()
  
-@@ -684,6 +694,19 @@
+@@ -683,6 +693,19 @@
  				"historyNext": (self.historyNext, _("Switch to next channel in history")),
  				"keyChannelUp": (self.keyChannelUpCheck, self.getKeyChannelUpHelptext),
  				"keyChannelDown": (self.keyChannelDownCheck, self.getKeyChannelDownHelptext),
@@ -7524,7 +7524,7 @@
  			})
  
  	def showTvChannelList(self, zap=False):
-@@ -848,6 +871,32 @@
+@@ -847,6 +870,32 @@
  			self.servicelist.moveUp()
  		self.servicelist.zap(enable_pipzap = True)
  
@@ -7557,7 +7557,7 @@
  	def zapDown(self):
  		if self.servicelist.inBouquet():
  			prev = self.servicelist.getCurrentSelection()
-@@ -888,7 +937,7 @@
+@@ -887,7 +936,7 @@
  	def __init__(self):
  		self["MenuActions"] = HelpableActionMap(self, "InfobarMenuActions",
  			{
@@ -7566,7 +7566,7 @@
  			})
  		self.session.infobar = None
  
-@@ -1003,7 +1052,7 @@
+@@ -1002,7 +1051,7 @@
  
  		self["EPGActions"] = HelpableActionMap(self, "InfobarEPGActions",
  			{
@@ -7575,7 +7575,7 @@
  				"showEventInfoSingleEPG": (self.showSingleEPG, _("Show single service EPG")),
  				"showEventInfoMultiEPG": (self.showMultiEPG, _("Show multi channel EPG")),
  				"showInfobarOrEpgWhenInfobarAlreadyVisible": self.showEventInfoWhenNotVisible,
-@@ -1014,7 +1063,7 @@
+@@ -1013,7 +1062,7 @@
  				if 'selectedevent' not in p.__call__.func_code.co_varnames] or []
  		from Components.ServiceEventTracker import InfoBarCount
  		if getAll or InfoBarCount == 1:
@@ -7584,7 +7584,7 @@
  		pluginlist.append((_("Multi EPG"), self.openMultiServiceEPG, _("Display EPG as MultiEPG")))
  		pluginlist.append((_("Current event EPG"), self.openEventView, _("Display EPG info for current event")))
  		return pluginlist
-@@ -1168,7 +1217,7 @@
+@@ -1167,7 +1216,7 @@
  	def showEventInfoPlugins(self):
  		pluginlist = self.getEPGPluginList()
  		if pluginlist:
@@ -7593,7 +7593,7 @@
  		else:
  			self.openSingleServiceEPG()
  
-@@ -1241,7 +1290,7 @@
+@@ -1240,7 +1289,7 @@
  				self.eventView = self.session.openWithCallback(self.closed, EventViewEPGSelect, epglist[0], ServiceReference(ref), self.eventViewCallback, self.openSingleServiceEPG, self.openMultiServiceEPG, self.openSimilarList)
  				self.dlg_stack.append(self.eventView)
  		if not epglist:
@@ -7602,7 +7602,7 @@
  			self.openMultiServiceEPG(False)
  
  	def eventViewCallback(self, setEvent, setService, val): #used for now/next displaying
-@@ -2144,7 +2193,7 @@
+@@ -2143,7 +2192,7 @@
  		self.addExtension((lambda: _("Manually import from fallback tuner"), self.importChannels, lambda: config.usage.remote_fallback_extension_menu.value and config.usage.remote_fallback_import.value))
  		self["InstantExtensionsActions"] = HelpableActionMap(self, "InfobarExtensions",
  			{
@@ -7611,7 +7611,7 @@
  			}, 1) # lower priority
  
  	def openSoftcamSetup(self):
-@@ -2174,7 +2223,7 @@
+@@ -2173,7 +2222,7 @@
  
  	def updateExtensions(self):
  		self.extensionsList = []
@@ -7620,7 +7620,7 @@
  		self.extensionKeys = {}
  		for x in self.list:
  			if x[0] == self.EXTENSION_SINGLE:
-@@ -2201,7 +2250,7 @@
+@@ -2200,7 +2249,7 @@
  				else:
  					extensionsList.remove(extension)
  		list.extend([(x[0](), x) for x in extensionsList])
@@ -7629,7 +7629,7 @@
  
  	def extensionCallback(self, answer):
  		if answer is not None:
-@@ -2404,11 +2453,11 @@
+@@ -2403,11 +2452,11 @@
  
  class InfoBarInstantRecord:
  	"""Instant Record - handles the instantRecord action in order to
@@ -7643,7 +7643,7 @@
  			})
  		self.SelectedInstantServiceRef = None
  		if isStandardInfoBar(self):
-@@ -2491,7 +2540,7 @@
+@@ -2490,7 +2539,7 @@
  	def startInstantRecording(self, limitEvent = False):
  		begin = int(time())
  		end = begin + 3600      # dummy
@@ -7652,7 +7652,7 @@
  		info = { }
  
  		self.getProgramInfoAndEvent(info, name)
-@@ -2720,7 +2769,7 @@
+@@ -2719,7 +2768,7 @@
  	def __init__(self):
  		self["AudioSelectionAction"] = HelpableActionMap(self, "InfobarAudioSelectionActions",
  			{
@@ -7661,7 +7661,7 @@
  			})
  
  	def audioSelection(self):
-@@ -2734,7 +2783,7 @@
+@@ -2733,7 +2782,7 @@
  	def __init__(self):
  		self["SubserviceSelectionAction"] = HelpableActionMap(self, "InfobarSubserviceSelectionActions",
  			{
@@ -7671,6 +7671,7 @@
  
  		self["SubserviceQuickzapAction"] = HelpableActionMap(self, "InfobarSubserviceQuickzapActions",
 --- enigma2.org/lib/python/Screens/InfoBar.py
++++ enigma2/lib/python/Screens/InfoBar.py
 @@ -9,6 +9,9 @@
  
  profile("LOAD:enigma")
@@ -7843,7 +7844,7 @@
  		InfoBarServiceErrorPopupSupport, InfoBarExtensions, InfoBarPlugins, InfoBarPiP, InfoBarHDMI, InfoBarHotkey):
  
  	ENABLE_RESUME_SUPPORT = True
-@@ -161,10 +280,10 @@
+@@ -162,10 +281,10 @@
  
  		self["actions"] = HelpableActionMap(self, "MoviePlayerActions",
  			{
@@ -7858,7 +7859,7 @@
  			})
  
  		self["DirectionActions"] = HelpableActionMap(self, "DirectionActions",
-@@ -539,3 +658,7 @@
+@@ -543,3 +662,7 @@
  
  	def ref2HumanName(self, ref):
  		return enigma.eServiceCenter.getInstance().info(ref).getName(ref)
@@ -8633,373 +8634,353 @@
  
 --- enigma2.org/lib/python/Tools/KeyBindings.py
 +++ enigma2/lib/python/Tools/KeyBindings.py
-@@ -5,7 +5,7 @@
- from Components.config import config
- from Components.RcModel import rc_model
+@@ -214,14 +214,12 @@
+ 	KEYIDS["KEY_POWER2"]: ("POWER2",),
+ 	KEYIDS["KEY_SUSPEND"]: ("SUSPEND",),
+ 	KEYIDS["KEY_WAKEUP"]: ("WAKEUP",)
+-}, {  # id=3 - XP1000.
+-	# The xp1000/rcpositions file defines PLAY and PAUSE
+-	# at the same location where it should just define
+-	# PLAYPAUSE there. It has similar overlayed incorrect
+-	# definitions for play & pause rather than play/pause
+-	# in remote.html.
+-	KEYIDS["BTN_0"]: ("UP", "fp"),
+-	KEYIDS["BTN_1"]: ("DOWN", "fp"),
++}, {  # id=3 - Spark RC12
++	KEYIDS["KEY_POWER"]: ("POWER",),
++	KEYIDS["KEY_V"]: ("V.FORMAT",),
++	KEYIDS["KEY_AUX"]: ("TV/SAT",),
++	KEYIDS["KEY_TIME"]: ("TIME",),
++	KEYIDS["KEY_MUTE"]: ("MUTE",),
+ 	KEYIDS["KEY_0"]: ("0",),
+ 	KEYIDS["KEY_1"]: ("1",),
+ 	KEYIDS["KEY_2"]: ("2",),
+@@ -232,104 +230,204 @@
+ 	KEYIDS["KEY_7"]: ("7",),
+ 	KEYIDS["KEY_8"]: ("8",),
+ 	KEYIDS["KEY_9"]: ("9",),
+-	KEYIDS["KEY_AUDIO"]: ("AUDIO",),
+-	KEYIDS["KEY_BLUE"]: ("BLUE",),
+-	KEYIDS["KEY_BOOKMARKS"]: ("PORTAL",),
+-	KEYIDS["KEY_CHANNELDOWN"]: ("BOUQUET-",),
+-	KEYIDS["KEY_CHANNELUP"]: ("BOUQUET+",),
++	KEYIDS["KEY_TV2"]: ("TV/RADIO",),
++	KEYIDS["KEY_BACK"]: ("RECALL",),
++	KEYIDS["KEY_PAGEUP"]: ("PAGE+",),
++	KEYIDS["KEY_PAGEDOWN"]: ("PAGE-",),
++	KEYIDS["KEY_FIND"]: ("FIND",),
++	KEYIDS["KEY_ARCHIVE"]: ("FOLDER",),
++	KEYIDS["KEY_VOLUMEUP"]: ("VOL+",),
++	KEYIDS["KEY_VOLUMEDOWN"]: ("VOL-",),
++	KEYIDS["KEY_MENU"]: ("MENU",),
++	KEYIDS["KEY_INFO"]: ("INFO",),
++	KEYIDS["KEY_UP"]: ("UP",),
+ 	KEYIDS["KEY_DOWN"]: ("DOWN",),
++	KEYIDS["KEY_LEFT"]: ("LEFT",),
++	KEYIDS["KEY_RIGHT"]: ("RIGHT",),
++	KEYIDS["KEY_OK"]: ("OK", ""),
++	KEYIDS["KEY_HOME"]: ("EXIT",),
+ 	KEYIDS["KEY_EPG"]: ("EPG",),
+-	KEYIDS["KEY_EXIT"]: ("EXIT",),
++	KEYIDS["KEY_FAVORITES"]: ("FAV",),
++	KEYIDS["KEY_SAT"]: ("SAT",),
++	KEYIDS["KEY_RED"]: ("RED",),
++	KEYIDS["KEY_GREEN"]: ("GREEN",),
++	KEYIDS["KEY_YELLOW"]: ("YELLOW",),
++	KEYIDS["KEY_BLUE"]: ("BLUE",),
++	KEYIDS["KEY_RECORD"]: ("RECORD",),
++	KEYIDS["KEY_STOP"]: ("STOP",),
++	KEYIDS["KEY_PLAY"]: ("PLAY",),
++	KEYIDS["KEY_PAUSE"]: ("PAUSE",),
+ 	KEYIDS["KEY_FASTFORWARD"]: ("FASTFORWARD",),
+-	KEYIDS["KEY_GREEN"]: ("GREEN",),
+-	KEYIDS["KEY_HELP"]: ("HELP",),
+-	KEYIDS["KEY_INFO"]: ("INFO",),
+-	KEYIDS["KEY_LEFT"]: ("LEFT",),
+-	KEYIDS["KEY_MENU"]: ("MENU",),
+-	KEYIDS["KEY_MUTE"]: ("MUTE",),
++	KEYIDS["KEY_REWIND"]: ("REWIND",),
++	KEYIDS["KEY_PREVIOUS"]: ("ARROWLEFT",),
+ 	KEYIDS["KEY_NEXT"]: ("ARROWRIGHT",),
+-	KEYIDS["KEY_NEXTSONG"]: ("NEXTSONG",),
+-	KEYIDS["KEY_OK"]: ("OK",),
+-	KEYIDS["KEY_PLAY"]: ("PLAY",),
+-	KEYIDS["KEY_PLAYPAUSE"]: ("PLAYPAUSE",),
+-	KEYIDS["KEY_POWER"]: ("POWER",),
+-	KEYIDS["KEY_PREVIOUS"]: ("ARROWLEFT",),
+-	KEYIDS["KEY_PREVIOUSSONG"]: ("PREVIOUSSONG",),
+-	KEYIDS["KEY_PROGRAM"]: ("TIMER",),
+-	KEYIDS["KEY_RADIO"]: ("RADIO",),
+-	KEYIDS["KEY_RECORD"]: ("RECORD",),
+-	KEYIDS["KEY_RED"]: ("RED",),
+-	KEYIDS["KEY_REWIND"]: ("REWIND",),
+-	KEYIDS["KEY_RIGHT"]: ("RIGHT",),
+-	KEYIDS["KEY_SLEEP"]: ("SLEEP",),
+-	KEYIDS["KEY_STOP"]: ("STOP",),
+-	KEYIDS["KEY_SUBTITLE"]: ("SUBTITLE",),
+-	KEYIDS["KEY_SWITCHVIDEOMODE"]: ("VMODE",),
+-	KEYIDS["KEY_TEXT"]: ("TEXT",),
+-	KEYIDS["KEY_TV"]: ("TV",),
+-	KEYIDS["KEY_UP"]: ("UP",),
+-	KEYIDS["KEY_VIDEO"]: ("PVR",),
+-	# KEYIDS["KEY_VMODE"]: ("VMODE",),  # This value is deprecated use KEY_SWITCHVIDEOMODE instead.
+-	KEYIDS["KEY_VOLUMEDOWN"]: ("VOL-",),
+-	KEYIDS["KEY_VOLUMEUP"]: ("VOL+",),
+-	KEYIDS["KEY_YELLOW"]: ("YELLOW",)
+-}, {  # id=4 - Formuler F1/F3.
+-	# The formuler1 rcpositions file seems to define
+-	# the FF and REW keys as FASTFORWARD and KEY_REWIND,
+-	# but the remote.xml file issues KEY_PREVIOUSSONG
+-	# and KEY_NEXTSONG.
+-	KEYIDS["BTN_0"]: ("UP", "fp"),
+-	KEYIDS["BTN_1"]: ("DOWN", "fp"),
+-	KEYIDS["KEY_0"]: ("0",),
+-	KEYIDS["KEY_1"]: ("1",),
+-	KEYIDS["KEY_2"]: ("2",),
+-	KEYIDS["KEY_3"]: ("3",),
+-	KEYIDS["KEY_4"]: ("4",),
+-	KEYIDS["KEY_5"]: ("5",),
+-	KEYIDS["KEY_6"]: ("6",),
+-	KEYIDS["KEY_7"]: ("7",),
+-	KEYIDS["KEY_8"]: ("8",),
+-	KEYIDS["KEY_9"]: ("9",),
+-	KEYIDS["KEY_AUDIO"]: ("AUDIO",),
+-	KEYIDS["KEY_BACK"]: ("RECALL",),
+-	KEYIDS["KEY_BLUE"]: ("BLUE",),
+-	KEYIDS["KEY_BOOKMARKS"]: ("PLAYLIST",),
+-	KEYIDS["KEY_CHANNELDOWN"]: ("BOUQUET-",),
+-	KEYIDS["KEY_CHANNELUP"]: ("BOUQUET+",),
+-	KEYIDS["KEY_CONTEXT_MENU"]: ("CONTEXT",),
+-	KEYIDS["KEY_DOWN"]: ("DOWN",),
+-	KEYIDS["KEY_EPG"]: ("EPG",),
+-	KEYIDS["KEY_EXIT"]: ("EXIT",),
++	KEYIDS["KEY_F"]: ("FAST",),
++	KEYIDS["KEY_SLOW"]: ("SLOW",),
++	KEYIDS["KEY_P"]: ("PLAY_MODE",),
++	KEYIDS["KEY_CLOSE"]: ("USB",),
++	KEYIDS["KEY_T"]: ("Tms",),
+ 	KEYIDS["KEY_F1"]: ("F1",),
+ 	KEYIDS["KEY_F2"]: ("F2",),
+ 	KEYIDS["KEY_F3"]: ("F3",),
++	KEYIDS["KEY_OPEN"]: ("PORTAL",),
++},
++{  # id=4 All Fortis
++	KEYIDS["KEY_MUTE"]: ("MUTE",),
++	KEYIDS["KEY_POWER"]: ("STANDBY",),
++	KEYIDS["KEY_ANGLE"]: ("VFORMAT",),
++	KEYIDS["KEY_SCREEN"]: ("RESOLUTION",),
++	KEYIDS["KEY_1"]: ("1BUTTON",),
++	KEYIDS["KEY_2"]: ("2BUTTON",),
++	KEYIDS["KEY_3"]: ("3BUTTON",),
++	KEYIDS["KEY_4"]: ("4BUTTON",),
++	KEYIDS["KEY_5"]: ("5BUTTON",),
++	KEYIDS["KEY_6"]: ("6BUTTON",),
++	KEYIDS["KEY_7"]: ("7BUTTON",),
++	KEYIDS["KEY_8"]: ("8BUTTON",),
++	KEYIDS["KEY_9"]: ("9BUTTON",),
++	KEYIDS["KEY_HELP"]: ("INFO",),
++	KEYIDS["KEY_0"]: ("0BUTTON",),
++	KEYIDS["KEY_MEMO"]: ("RECALL",),
++	KEYIDS["KEY_VOLUMEUP"]: ("VOLUMEUP",),
++	KEYIDS["KEY_MENU"]: ("MENU",),
++	KEYIDS["KEY_PAGEUP"]: ("CHANNELUP",),
++	KEYIDS["KEY_VOLUMEDOWN"]: ("VOLUMEDOWN",),
++	KEYIDS["KEY_HOME"]: ("EXIT",),
++	KEYIDS["KEY_PAGEDOWN"]: ("CHANNELDOWN",),
++	KEYIDS["KEY_UP"]: ("UP",),
++	KEYIDS["KEY_LEFT"]: ("LEFT",),
++	KEYIDS["KEY_OK"]: ("OK",),
++	KEYIDS["KEY_RIGHT"]: ("RIGHT",),
++	KEYIDS["KEY_DOWN"]: ("DOWN",),
++	KEYIDS["KEY_TEEN"]: ("UPUP",),
++	KEYIDS["KEY_EPG"]: ("EPG",),
++	KEYIDS["KEY_TWEN"]: ("DOWNDOWN",),
++	KEYIDS["KEY_REWIND"]: ("REWIND",),
++	KEYIDS["KEY_PLAY"]: ("PLAY",),
+ 	KEYIDS["KEY_FASTFORWARD"]: ("FASTFORWARD",),
+-	KEYIDS["KEY_FAVORITES"]: ("FAVORITES",),
+-	KEYIDS["KEY_GREEN"]: ("GREEN",),
++	KEYIDS["KEY_PREVIOUS"]: ("LAST",),
++	KEYIDS["KEY_RECORD"]: ("RECORD",),
++	KEYIDS["KEY_NEXT"]: ("NEXT",),
++	KEYIDS["KEY_DIRECTORY"]: ("OPEN",),
++	KEYIDS["KEY_PAUSE"]: ("PAUSE",),
++	KEYIDS["KEY_STOP"]: ("STOP",),
++	KEYIDS["KEY_SELECT"]: ("CHECK",),
++	KEYIDS["KEY_RED"]: ("RED",),
++	KEYIDS["KEY_GREEN"]: ("GREEN",),
++	KEYIDS["KEY_YELLOW"]: ("YELLOW",),
++	KEYIDS["KEY_BLUE"]: ("BLUE",),
++	KEYIDS["KEY_OPTION"]: ("PIP",),
++	KEYIDS["KEY_GOTO"]: ("SWAP",),
++	KEYIDS["KEY_PIPSEL"]: ("PIP_SEL",), # PIP list
++	KEYIDS["KEY_SLOW"]: ("SLEEP",),
++	KEYIDS["KEY_FAVORITES"]: ("FAV",),
++	KEYIDS["KEY_MODE"]: ("TVRADIO",),
++	KEYIDS["KEY_SUBTITLE"]: ("LIST",),
++	KEYIDS["KEY_TEXT"]: ("TEXT",),
++	KEYIDS["KEY_ZOOM"]: ("ZOOM",),
++},
++{  # id=5 Topfield TF77X0HDPVR
++	KEYIDS["KEY_POWER"]: ("STANDBY",),
++	KEYIDS["KEY_MUTE"]: ("MUTE",),
++	KEYIDS["KEY_ZOOM"]: ("V.FORMAT",),
++	KEYIDS["KEY_SCREEN"]: ("A/R",),
++	KEYIDS["KEY_AUX"]: ("AUX",),
++	KEYIDS["KEY_1"]: ("1BUTTON",),
++	KEYIDS["KEY_2"]: ("2BUTTON",),
++	KEYIDS["KEY_3"]: ("3BUTTON",),
++	KEYIDS["KEY_4"]: ("4BUTTON",),
++	KEYIDS["KEY_5"]: ("5BUTTON",),
++	KEYIDS["KEY_6"]: ("6BUTTON",),
++	KEYIDS["KEY_7"]: ("7BUTTON",),
++	KEYIDS["KEY_8"]: ("8BUTTON",),
++	KEYIDS["KEY_9"]: ("9BUTTON",),
++	KEYIDS["KEY_BACK"]: ("BACK",),
++	KEYIDS["KEY_0"]: ("0BUTTON",),
++	KEYIDS["KEY_HELP"]: ("INFO",),
++	KEYIDS["KEY_LANGUAGE"]: ("AUDIO",),
++	KEYIDS["KEY_SUBTITLE"]: ("SUBTITLE",),
++	KEYIDS["KEY_TEXT"]: ("TEXT",),
++	KEYIDS["KEY_MENU"]: ("MENU",),
++	KEYIDS["KEY_EPG"]: ("GUIDE",),
++	KEYIDS["KEY_UP"]: ("UP/P+",),
++	KEYIDS["KEY_LEFT"]: ("LEFT/V-",),
++	KEYIDS["KEY_OK"]: ("OK/LIST",),
++	KEYIDS["KEY_RIGHT"]: ("RIGHT/V+",),
++	KEYIDS["KEY_DOWN"]: ("DOWN/P-",),
++	KEYIDS["KEY_HOME"]: ("EXIT",),
++	KEYIDS["KEY_FAVORITES"]: ("FAV",),
++	KEYIDS["KEY_RED"]: ("RED",),
++	KEYIDS["KEY_GREEN"]: ("GREEN",),
++	KEYIDS["KEY_YELLOW"]: ("YELLOW",),
++	KEYIDS["KEY_BLUE"]: ("BLUE",),
++	KEYIDS["KEY_REWIND"]: ("REWIND",),
++	KEYIDS["KEY_PAUSE"]: ("PAUSE",),
++	KEYIDS["KEY_PLAY"]: ("PLAY",),
++	KEYIDS["KEY_FASTFORWARD"]: ("FASTFORWARD",),
++	KEYIDS["KEY_RECORD"]: ("RECORD",),
++	KEYIDS["KEY_STOP"]: ("STOP",),
++	KEYIDS["KEY_SLOW"]: ("SLOWMOTION",),
++	KEYIDS["KEY_LIST"]: ("RECORDLIST" ,),
++	KEYIDS["KEY_SAT"]: ("SAT",),
++	KEYIDS["KEY_PREVIOUS"]: ("STEPBACK",),
++	KEYIDS["KEY_NEXT"]: ("STEPFORWARD",),
++	KEYIDS["KEY_OPTION"]: ("MARK",),
++	KEYIDS["KEY_TV2"]: ("TV/RADIO",),
++	KEYIDS["KEY_ARCHIVE"]: ("USB",),
++	KEYIDS["KEY_TIME"]: ("TIMER",),
++	# Frontpanel keys
++	KEYIDS["KEY_PAGEDOWN"]: ("CHANNELDOWN",),
++	KEYIDS["KEY_PAGEUP"]: ("CHANNELUP",),
++	KEYIDS["KEY_VOLUMEDOWN"]: ("VOLUMEDOWN",),
++	KEYIDS["KEY_VOLUMEUP"]: ("VOLUMEUP",),
++	KEYIDS["KEY_POWER"]: ("STANDBY",),
++},
++{  # id=6 Kathrein UFS912
++	KEYIDS["KEY_MEDIA"]: ("MEDIA",),
++	KEYIDS["KEY_ARCHIVE"]: ("ARCHIVE",),
++	KEYIDS["KEY_MENU"]: ("MENU",),
++	KEYIDS["KEY_RED"]: ("RED",),
++	KEYIDS["KEY_GREEN"]: ("GREEN",),
++	KEYIDS["KEY_YELLOW"]: ("YELLOW",),
++	KEYIDS["KEY_BLUE"]: ("BLUE",),
++	KEYIDS["KEY_HOME"]: ("EXIT",),
++	KEYIDS["KEY_TEXT"]: ("TEXT",),
++	KEYIDS["KEY_EPG"]: ("EPG",),
++	KEYIDS["KEY_REWIND"]: ("REWIND",),
++	KEYIDS["KEY_FASTFORWARD"]: ("FASTFORWARD",),
++	KEYIDS["KEY_PLAY"]: ("PLAY",),
++	KEYIDS["KEY_PAUSE"]: ("PAUSE",),
++	KEYIDS["KEY_RECORD"]: ("RECORD",),
++	KEYIDS["KEY_STOP"]: ("STOP",),
++	KEYIDS["KEY_POWER"]: ("STANDBY",),
++	KEYIDS["KEY_MUTE"]: ("MUTE",),
++	KEYIDS["KEY_PAGEUP"]: ("CHANNELUP",),
++	KEYIDS["KEY_PAGEDOWN"]: ("CHANNELDOWN",),
++	KEYIDS["KEY_VOLUMEUP"]: ("VOLUMEUP",),
++	KEYIDS["KEY_VOLUMEDOWN"]: ("VOLUMEDOWN",),
+ 	KEYIDS["KEY_HELP"]: ("HELP",),
+ 	KEYIDS["KEY_INFO"]: ("INFO",),
++	KEYIDS["KEY_OK"]: ("OK",),
++	KEYIDS["KEY_UP"]: ("UP",),
++	KEYIDS["KEY_RIGHT"]: ("RIGHT",),
++	KEYIDS["KEY_DOWN"]: ("DOWN",),
+ 	KEYIDS["KEY_LEFT"]: ("LEFT",),
+-	KEYIDS["KEY_MENU"]: ("MENU",),
+-	KEYIDS["KEY_MUTE"]: ("MUTE",),
+-	KEYIDS["KEY_NEXT"]: ("ARROWRIGHT",),
+-	KEYIDS["KEY_OK"]: ("OK",),
+-	KEYIDS["KEY_PAUSE"]: ("PAUSE",),
+-	KEYIDS["KEY_PLAY"]: ("PLAY",),
+-	KEYIDS["KEY_POWER"]: ("POWER",),
+-	KEYIDS["KEY_PREVIOUS"]: ("ARROWLEFT",),
+-	KEYIDS["KEY_RADIO"]: ("RADIO",),
+-	KEYIDS["KEY_RECORD"]: ("RECORD",),
+-	KEYIDS["KEY_RED"]: ("RED",),
+-	KEYIDS["KEY_REWIND"]: ("REWIND",),
+-	KEYIDS["KEY_RIGHT"]: ("RIGHT",),
+-	KEYIDS["KEY_STOP"]: ("STOP",),
+-	KEYIDS["KEY_TEXT"]: ("TEXT",),
+-	KEYIDS["KEY_TV"]: ("TV",),
+-	KEYIDS["KEY_UP"]: ("UP",),
+-	KEYIDS["KEY_VIDEO"]: ("PVR",),
+-	KEYIDS["KEY_VOLUMEDOWN"]: ("VOL-",),
+-	KEYIDS["KEY_VOLUMEUP"]: ("VOL+",),
+-	KEYIDS["KEY_YELLOW"]: ("YELLOW",)
++	KEYIDS["KEY_0"]: ("0BUTTON",),
++	KEYIDS["KEY_1"]: ("1BUTTON",),
++	KEYIDS["KEY_2"]: ("2BUTTON",),
++	KEYIDS["KEY_3"]: ("3BUTTON",),
++	KEYIDS["KEY_4"]: ("4BUTTON",),
++	KEYIDS["KEY_5"]: ("5BUTTON",),
++	KEYIDS["KEY_6"]: ("6BUTTON",),
++	KEYIDS["KEY_7"]: ("7BUTTON",),
++	KEYIDS["KEY_8"]: ("8BUTTON",),
++	KEYIDS["KEY_9"]: ("9BUTTON",),
++	# Front panel keys
++	KEYIDS["KEY_MEDIA"]: ("FP_MEDIA",),
++	KEYIDS["KEY_POWER"]: ("FP_ON_OFF",),
++	KEYIDS["KEY_DOWN"]: ("FP_MINUS",),
++	KEYIDS["KEY_UP"]: ("FP_PLUS",),
++	KEYIDS["KEY_OK"]: ("FP_TV_R",),
+ }]
  
--keyDescriptions = [{
-+keyDescriptions = [{ # for remotes with ID 0 (DMM)
- 		KEYIDS["BTN_0"]: ("UP", "fp"),
- 		KEYIDS["BTN_1"]: ("DOWN", "fp"),
- 		KEYIDS["KEY_OK"]: ("OK", ""),
-@@ -47,7 +47,7 @@
- 		KEYIDS["KEY_STOP"]: ("STOP",),
- 		KEYIDS["KEY_RECORD"]: ("RECORD",)
- 	},
--	{
-+	{  # for remotes with ID 1 (DMM advanced)
- 		KEYIDS["BTN_0"]: ("UP", "fp"),
- 		KEYIDS["BTN_1"]: ("DOWN", "fp"),
- 		KEYIDS["KEY_OK"]: ("OK", ""),
-@@ -87,9 +87,12 @@
- 		KEYIDS["KEY_9"]: ("9",),
- 		KEYIDS["KEY_EXIT"]: ("EXIT",),
- 		KEYIDS["KEY_STOP"]: ("TV", "SHIFT"),
--		KEYIDS["KEY_RECORD"]: ("RADIO", "SHIFT")
--	},
--	{
-+		KEYIDS["KEY_RECORD"]: ("RADIO", "SHIFT"),
-+		KEYIDS["KEY_EPG"]: ("EPG",),
-+		KEYIDS["KEY_REWIND"]: ("REWIND",),
-+		KEYIDS["KEY_FASTFORWARD"]: ("FASTFORWARD",)
-+	},
-+	{ # for remotes with ID 2 (default)
- 		KEYIDS["BTN_0"]: ("UP", "fp"),
- 		KEYIDS["BTN_1"]: ("DOWN", "fp"),
- 		KEYIDS["KEY_OK"]: ("OK", ""),
-@@ -133,36 +136,12 @@
- 		KEYIDS["KEY_PAGEUP"]: ("PAGEUP",),
- 		KEYIDS["KEY_PAGEDOWN"]: ("PAGEDOWN",)
- 	},
--	{       # XP1000
--		KEYIDS["BTN_0"]: ("UP", "fp"),
--		KEYIDS["BTN_1"]: ("DOWN", "fp"),
--		KEYIDS["KEY_OK"]: ("OK", ""),
--		KEYIDS["KEY_UP"]: ("UP",),
--		KEYIDS["KEY_DOWN"]: ("DOWN",),
-+	{  # for remotes with ID 3 (Spark RC12)
- 		KEYIDS["KEY_POWER"]: ("POWER",),
--		KEYIDS["KEY_RED"]: ("RED",),
--		KEYIDS["KEY_BLUE"]: ("BLUE",),
--		KEYIDS["KEY_GREEN"]: ("GREEN",),
--		KEYIDS["KEY_YELLOW"]: ("YELLOW",),
--		KEYIDS["KEY_MENU"]: ("MENU",),
--		KEYIDS["KEY_LEFT"]: ("LEFT",),
--		KEYIDS["KEY_RIGHT"]: ("RIGHT",),
--		KEYIDS["KEY_VIDEO"]: ("PVR",),
--		KEYIDS["KEY_INFO"]: ("INFO",),
--		KEYIDS["KEY_AUDIO"]: ("AUDIO",),
--		KEYIDS["KEY_SUBTITLE"]: ("SUBTITLE",),
--		KEYIDS["KEY_TV"]: ("TV",),
--		KEYIDS["KEY_RADIO"]: ("RADIO",),
--		KEYIDS["KEY_TEXT"]: ("TEXT",),
--		KEYIDS["KEY_NEXT"]: ("ARROWRIGHT",),
--		KEYIDS["KEY_PREVIOUS"]: ("ARROWLEFT",),
--		KEYIDS["KEY_PREVIOUSSONG"]: ("SKIPBACK",),
--		KEYIDS["KEY_REWIND"]: ("REWIND",),
--		KEYIDS["KEY_FASTFORWARD"]: ("FASTFORWARD",),
--		KEYIDS["KEY_NEXTSONG"]: ("SKIPFORWARD",),
--		KEYIDS["KEY_PLAYPAUSE"]: ("PLAYPAUSE",),
--		KEYIDS["KEY_CHANNELUP"]: ("BOUQUET+",),
--		KEYIDS["KEY_CHANNELDOWN"]: ("BOUQUET-",),
-+		KEYIDS["KEY_V"]: ("V.FORMAT",),
-+		KEYIDS["KEY_AUX"]: ("TV/SAT",),
-+		KEYIDS["KEY_TIME"]: ("TIME",),
-+		KEYIDS["KEY_MUTE"]: ("MUTE",),
- 		KEYIDS["KEY_0"]: ("0",),
- 		KEYIDS["KEY_1"]: ("1",),
- 		KEYIDS["KEY_2"]: ("2",),
-@@ -173,63 +152,204 @@
- 		KEYIDS["KEY_7"]: ("7",),
- 		KEYIDS["KEY_8"]: ("8",),
- 		KEYIDS["KEY_9"]: ("9",),
--		KEYIDS["KEY_EXIT"]: ("EXIT",),
--		KEYIDS["KEY_STOP"]: ("STOP",),
--		KEYIDS["KEY_RECORD"]: ("RECORD",),
--		KEYIDS["KEY_BOOKMARKS"]: ("PORTAL",),
--		KEYIDS["KEY_VMODE"]: ("VMODE",),
--		KEYIDS["KEY_PROGRAM"]: ("TIMER",),
--		KEYIDS["KEY_SLEEP"]: ("SLEEP",),
-+		KEYIDS["KEY_TV2"]: ("TV/RADIO",),
-+		KEYIDS["KEY_BACK"]: ("RECALL",),
-+		KEYIDS["KEY_PAGEUP"]: ("PAGE+",),
-+		KEYIDS["KEY_PAGEDOWN"]: ("PAGE-",),
-+		KEYIDS["KEY_FIND"]: ("FIND",),
-+		KEYIDS["KEY_ARCHIVE"]: ("FOLDER",),
-+		KEYIDS["KEY_VOLUMEUP"]: ("VOL+",),
-+		KEYIDS["KEY_VOLUMEDOWN"]: ("VOL-",),
-+		KEYIDS["KEY_MENU"]: ("MENU",),
-+		KEYIDS["KEY_INFO"]: ("INFO",),
-+		KEYIDS["KEY_UP"]: ("UP",),
-+		KEYIDS["KEY_DOWN"]: ("DOWN",),
-+		KEYIDS["KEY_LEFT"]: ("LEFT",),
-+		KEYIDS["KEY_RIGHT"]: ("RIGHT",),
-+		KEYIDS["KEY_OK"]: ("OK", ""),
-+		KEYIDS["KEY_HOME"]: ("EXIT",),
- 		KEYIDS["KEY_EPG"]: ("EPG",),
--	},
--	{       # Formuler F1
--		KEYIDS["BTN_0"]: ("UP", "fp"),
--		KEYIDS["BTN_1"]: ("DOWN", "fp"),
--		KEYIDS["KEY_OK"]: ("OK", ""),
--		KEYIDS["KEY_UP"]: ("UP",),
--		KEYIDS["KEY_DOWN"]: ("DOWN",),
--		KEYIDS["KEY_POWER"]: ("POWER",),
--		KEYIDS["KEY_RED"]: ("RED",),
--		KEYIDS["KEY_BLUE"]: ("BLUE",),
--		KEYIDS["KEY_GREEN"]: ("GREEN",),
--		KEYIDS["KEY_YELLOW"]: ("YELLOW",),
--		KEYIDS["KEY_MENU"]: ("MENU",),
--		KEYIDS["KEY_LEFT"]: ("LEFT",),
--		KEYIDS["KEY_RIGHT"]: ("RIGHT",),
--		KEYIDS["KEY_VIDEO"]: ("PVR",),
--		KEYIDS["KEY_INFO"]: ("INFO",),
--		KEYIDS["KEY_AUDIO"]: ("AUDIO",),
--		KEYIDS["KEY_TV"]: ("TV",),
--		KEYIDS["KEY_RADIO"]: ("RADIO",),
--		KEYIDS["KEY_TEXT"]: ("TEXT",),
-+		KEYIDS["KEY_FAVORITES"]: ("FAV",),
-+		KEYIDS["KEY_SAT"]: ("SAT",),
-+		KEYIDS["KEY_RED"]: ("RED",),
-+		KEYIDS["KEY_GREEN"]: ("GREEN",),
-+		KEYIDS["KEY_YELLOW"]: ("YELLOW",),
-+		KEYIDS["KEY_BLUE"]: ("BLUE",),
-+		KEYIDS["KEY_RECORD"]: ("RECORD",),
-+		KEYIDS["KEY_STOP"]: ("STOP",),
-+		KEYIDS["KEY_PLAY"]: ("PLAY",),
-+		KEYIDS["KEY_PAUSE"]: ("PAUSE",),
-+		KEYIDS["KEY_FASTFORWARD"]: ("FASTFORWARD",),
-+		KEYIDS["KEY_REWIND"]: ("REWIND",),
-+		KEYIDS["KEY_PREVIOUS"]: ("ARROWLEFT",),
- 		KEYIDS["KEY_NEXT"]: ("ARROWRIGHT",),
--		KEYIDS["KEY_PREVIOUS"]: ("ARROWLEFT",),
--		KEYIDS["KEY_REWIND"]: ("REWIND",),
--		KEYIDS["KEY_PAUSE"]: ("PAUSE",),
--		KEYIDS["KEY_PLAY"]: ("PLAY",),
--		KEYIDS["KEY_FASTFORWARD"]: ("FASTFORWARD",),
--		KEYIDS["KEY_CHANNELUP"]: ("BOUQUET+",),
--		KEYIDS["KEY_CHANNELDOWN"]: ("BOUQUET-",),
--		KEYIDS["KEY_0"]: ("0",),
--		KEYIDS["KEY_1"]: ("1",),
--		KEYIDS["KEY_2"]: ("2",),
--		KEYIDS["KEY_3"]: ("3",),
--		KEYIDS["KEY_4"]: ("4",),
--		KEYIDS["KEY_5"]: ("5",),
--		KEYIDS["KEY_6"]: ("6",),
--		KEYIDS["KEY_7"]: ("7",),
--		KEYIDS["KEY_8"]: ("8",),
--		KEYIDS["KEY_9"]: ("9",),
--		KEYIDS["KEY_EXIT"]: ("EXIT",),
--		KEYIDS["KEY_STOP"]: ("STOP",),
--		KEYIDS["KEY_RECORD"]: ("RECORD",),
-+		KEYIDS["KEY_F"]: ("FAST",),
-+		KEYIDS["KEY_SLOW"]: ("SLOW",),
-+		KEYIDS["KEY_P"]: ("PLAY_MODE",),
-+		KEYIDS["KEY_CLOSE"]: ("USB",),
-+		KEYIDS["KEY_T"]: ("Tms",),
- 		KEYIDS["KEY_F1"]: ("F1",),
- 		KEYIDS["KEY_F2"]: ("F2",),
- 		KEYIDS["KEY_F3"]: ("F3",),
--		KEYIDS["KEY_BACK"]: ("RECALL",),
--		KEYIDS["KEY_CONTEXT_MENU"]: ("CONTEXT",),
-+		KEYIDS["KEY_OPEN"]: ("PORTAL",),
-+	},
-+	{  # for remotes with ID 4 (All Fortis)
-+		KEYIDS["KEY_MUTE"]: ("MUTE",),
-+		KEYIDS["KEY_POWER"]: ("STANDBY",),
-+		KEYIDS["KEY_ANGLE"]: ("VFORMAT",),
-+		KEYIDS["KEY_SCREEN"]: ("RESOLUTION",),
-+		KEYIDS["KEY_1"]: ("1BUTTON",),
-+		KEYIDS["KEY_2"]: ("2BUTTON",),
-+		KEYIDS["KEY_3"]: ("3BUTTON",),
-+		KEYIDS["KEY_4"]: ("4BUTTON",),
-+		KEYIDS["KEY_5"]: ("5BUTTON",),
-+		KEYIDS["KEY_6"]: ("6BUTTON",),
-+		KEYIDS["KEY_7"]: ("7BUTTON",),
-+		KEYIDS["KEY_8"]: ("8BUTTON",),
-+		KEYIDS["KEY_9"]: ("9BUTTON",),
-+		KEYIDS["KEY_HELP"]: ("INFO",),
-+		KEYIDS["KEY_0"]: ("0BUTTON",),
-+		KEYIDS["KEY_MEMO"]: ("RECALL",),
-+		KEYIDS["KEY_VOLUMEUP"]: ("VOLUMEUP",),
-+		KEYIDS["KEY_MENU"]: ("MENU",),
-+		KEYIDS["KEY_PAGEUP"]: ("CHANNELUP",),
-+		KEYIDS["KEY_VOLUMEDOWN"]: ("VOLUMEDOWN",),
-+		KEYIDS["KEY_HOME"]: ("EXIT",),
-+		KEYIDS["KEY_PAGEDOWN"]: ("CHANNELDOWN",),
-+		KEYIDS["KEY_UP"]: ("UP",),
-+		KEYIDS["KEY_LEFT"]: ("LEFT",),
-+		KEYIDS["KEY_OK"]: ("OK",),
-+		KEYIDS["KEY_RIGHT"]: ("RIGHT",),
-+		KEYIDS["KEY_DOWN"]: ("DOWN",),
-+		KEYIDS["KEY_TEEN"]: ("UPUP",),
- 		KEYIDS["KEY_EPG"]: ("EPG",),
--		KEYIDS["KEY_BOOKMARKS"]: ("PLAYLIST",),
-+		KEYIDS["KEY_TWEN"]: ("DOWNDOWN",),
-+		KEYIDS["KEY_REWIND"]: ("REWIND",),
-+		KEYIDS["KEY_PLAY"]: ("PLAY",),
-+		KEYIDS["KEY_FASTFORWARD"]: ("FASTFORWARD",),
-+		KEYIDS["KEY_PREVIOUS"]: ("LAST",),
-+		KEYIDS["KEY_RECORD"]: ("RECORD",),
-+		KEYIDS["KEY_NEXT"]: ("NEXT",),
-+		KEYIDS["KEY_DIRECTORY"]: ("OPEN",),
-+		KEYIDS["KEY_PAUSE"]: ("PAUSE",),
-+		KEYIDS["KEY_STOP"]: ("STOP",),
-+		KEYIDS["KEY_SELECT"]: ("CHECK",),
-+		KEYIDS["KEY_RED"]: ("RED",),
-+		KEYIDS["KEY_GREEN"]: ("GREEN",),
-+		KEYIDS["KEY_YELLOW"]: ("YELLOW",),
-+		KEYIDS["KEY_BLUE"]: ("BLUE",),
-+		KEYIDS["KEY_OPTION"]: ("PIP",),
-+		KEYIDS["KEY_GOTO"]: ("SWAP",),
-+#		KEYIDS["KEY_PIPSEL"]: ("PIP_SEL",), # PIP list
-+		KEYIDS["KEY_SLOW"]: ("SLEEP",),
-+		KEYIDS["KEY_FAVORITES"]: ("FAV",),
-+		KEYIDS["KEY_MODE"]: ("TVRADIO",),
-+		KEYIDS["KEY_SUBTITLE"]: ("LIST",),
-+		KEYIDS["KEY_TEXT"]: ("TEXT",),
-+		KEYIDS["KEY_ZOOM"]: ("ZOOM",),
-+	},
-+	{  # for remotes with ID 5 (Topfield TF77X0HDPVR)
-+		KEYIDS["KEY_POWER"]: ("STANDBY",),
-+		KEYIDS["KEY_MUTE"]: ("MUTE",),
-+		KEYIDS["KEY_ZOOM"]: ("V.FORMAT",),
-+		KEYIDS["KEY_SCREEN"]: ("A/R",),
-+		KEYIDS["KEY_AUX"]: ("AUX",),
-+		KEYIDS["KEY_1"]: ("1BUTTON",),
-+		KEYIDS["KEY_2"]: ("2BUTTON",),
-+		KEYIDS["KEY_3"]: ("3BUTTON",),
-+		KEYIDS["KEY_4"]: ("4BUTTON",),
-+		KEYIDS["KEY_5"]: ("5BUTTON",),
-+		KEYIDS["KEY_6"]: ("6BUTTON",),
-+		KEYIDS["KEY_7"]: ("7BUTTON",),
-+		KEYIDS["KEY_8"]: ("8BUTTON",),
-+		KEYIDS["KEY_9"]: ("9BUTTON",),
-+		KEYIDS["KEY_BACK"]: ("BACK",),
-+		KEYIDS["KEY_0"]: ("0BUTTON",),
-+		KEYIDS["KEY_HELP"]: ("INFO",),
-+		KEYIDS["KEY_LANGUAGE"]: ("AUDIO",),
-+		KEYIDS["KEY_SUBTITLE"]: ("SUBTITLE",),
-+		KEYIDS["KEY_TEXT"]: ("TEXT",),
-+		KEYIDS["KEY_MENU"]: ("MENU",),
-+		KEYIDS["KEY_EPG"]: ("GUIDE",),
-+		KEYIDS["KEY_UP"]: ("UP/P+",),
-+		KEYIDS["KEY_LEFT"]: ("LEFT/V-",),
-+		KEYIDS["KEY_OK"]: ("OK/LIST",),
-+		KEYIDS["KEY_RIGHT"]: ("RIGHT/V+",),
-+		KEYIDS["KEY_DOWN"]: ("DOWN/P-",),
-+		KEYIDS["KEY_HOME"]: ("EXIT",),
-+		KEYIDS["KEY_FAVORITES"]: ("FAV",),
-+		KEYIDS["KEY_RED"]: ("RED",),
-+		KEYIDS["KEY_GREEN"]: ("GREEN",),
-+		KEYIDS["KEY_YELLOW"]: ("YELLOW",),
-+		KEYIDS["KEY_BLUE"]: ("BLUE",),
-+		KEYIDS["KEY_REWIND"]: ("REWIND",),
-+		KEYIDS["KEY_PAUSE"]: ("PAUSE",),
-+		KEYIDS["KEY_PLAY"]: ("PLAY",),
-+		KEYIDS["KEY_FASTFORWARD"]: ("FASTFORWARD",),
-+		KEYIDS["KEY_RECORD"]: ("RECORD",),
-+		KEYIDS["KEY_STOP"]: ("STOP",),
-+		KEYIDS["KEY_SLOW"]: ("SLOWMOTION",),
-+		KEYIDS["KEY_LIST"]: ("RECORDLIST" ,),
-+		KEYIDS["KEY_SAT"]: ("SAT",),
-+		KEYIDS["KEY_PREVIOUS"]: ("STEPBACK",),
-+		KEYIDS["KEY_NEXT"]: ("STEPFORWARD",),
-+		KEYIDS["KEY_OPTION"]: ("MARK",),
-+		KEYIDS["KEY_TV2"]: ("TV/RADIO",),
-+		KEYIDS["KEY_ARCHIVE"]: ("USB",),
-+		KEYIDS["KEY_TIME"]: ("TIMER",),
-+		# Frontpanel keys
-+		KEYIDS["KEY_PAGEDOWN"]: ("CHANNELDOWN",),
-+		KEYIDS["KEY_PAGEUP"]: ("CHANNELUP",),
-+		KEYIDS["KEY_VOLUMEDOWN"]: ("VOLUMEDOWN",),
-+		KEYIDS["KEY_VOLUMEUP"]: ("VOLUMEUP",),
-+		KEYIDS["KEY_POWER"]: ("STANDBY",),
-+	},
-+	{  # for remotes with ID 6 (Kathrein UFS912)
-+		KEYIDS["KEY_MEDIA"]: ("MEDIA",),
-+		KEYIDS["KEY_ARCHIVE"]: ("ARCHIVE",),
-+		KEYIDS["KEY_MENU"]: ("MENU",),
-+		KEYIDS["KEY_RED"]: ("RED",),
-+		KEYIDS["KEY_GREEN"]: ("GREEN",),
-+		KEYIDS["KEY_YELLOW"]: ("YELLOW",),
-+		KEYIDS["KEY_BLUE"]: ("BLUE",),
-+		KEYIDS["KEY_HOME"]: ("EXIT",),
-+		KEYIDS["KEY_TEXT"]: ("TEXT",),
-+		KEYIDS["KEY_EPG"]: ("EPG",),
-+		KEYIDS["KEY_REWIND"]: ("REWIND",),
-+		KEYIDS["KEY_FASTFORWARD"]: ("FASTFORWARD",),
-+		KEYIDS["KEY_PLAY"]: ("PLAY",),
-+		KEYIDS["KEY_PAUSE"]: ("PAUSE",),
-+		KEYIDS["KEY_RECORD"]: ("RECORD",),
-+		KEYIDS["KEY_STOP"]: ("STOP",),
-+		KEYIDS["KEY_POWER"]: ("STANDBY",),
-+		KEYIDS["KEY_MUTE"]: ("MUTE",),
-+		KEYIDS["KEY_PAGEUP"]: ("CHANNELUP",),
-+		KEYIDS["KEY_PAGEDOWN"]: ("CHANNELDOWN",),
-+		KEYIDS["KEY_VOLUMEUP"]: ("VOLUMEUP",),
-+		KEYIDS["KEY_VOLUMEDOWN"]: ("VOLUMEDOWN",),
-+		KEYIDS["KEY_HELP"]: ("HELP",),
-+		KEYIDS["KEY_INFO"]: ("INFO",),
-+		KEYIDS["KEY_OK"]: ("OK",),
-+		KEYIDS["KEY_UP"]: ("UP",),
-+		KEYIDS["KEY_RIGHT"]: ("RIGHT",),
-+		KEYIDS["KEY_DOWN"]: ("DOWN",),
-+		KEYIDS["KEY_LEFT"]: ("LEFT",),
-+		KEYIDS["KEY_0"]: ("0BUTTON",),
-+		KEYIDS["KEY_1"]: ("1BUTTON",),
-+		KEYIDS["KEY_2"]: ("2BUTTON",),
-+		KEYIDS["KEY_3"]: ("3BUTTON",),
-+		KEYIDS["KEY_4"]: ("4BUTTON",),
-+		KEYIDS["KEY_5"]: ("5BUTTON",),
-+		KEYIDS["KEY_6"]: ("6BUTTON",),
-+		KEYIDS["KEY_7"]: ("7BUTTON",),
-+		KEYIDS["KEY_8"]: ("8BUTTON",),
-+		KEYIDS["KEY_9"]: ("9BUTTON",),
-+		# Front panel keys
-+		KEYIDS["KEY_MEDIA"]: ("FP_MEDIA",),
-+		KEYIDS["KEY_POWER"]: ("FP_ON_OFF",),
-+		KEYIDS["KEY_DOWN"]: ("FP_MINUS",),
-+		KEYIDS["KEY_UP"]: ("FP_PLUS",),
-+		KEYIDS["KEY_OK"]: ("FP_TV_R",),
- 	},
- ]
- 
-@@ -248,10 +368,32 @@
- 		idx = config.misc.rcused.value
+ def addKeyBinding(domain, key, context, action, flags):
+@@ -363,10 +461,31 @@
  	else:
- 		rctype = config.plugins.remotecontroltype.rctype.value
--		if rctype == 14:	# XP1000
-+		print "[Keybindings.py] RC type is:", rctype
-+		rctype = 11
-+		if rctype == 10:	# Spark
+ 		rcType = config.plugins.remotecontroltype.rctype.value
+ 		# rcType = config.misc.inputdevices.rcType.value
+-		if rcType == 14:  # XP1000
++		print "[Keybindings.py] RC type is:", rcType
++		if rcType == 10:	# Spark
  			idx = 3
--		elif rctype == 18:	# F1
-+		elif rctype == 7:	# Fortis FS9000/FS9200/HS8200
+-		elif rcType == 18:  # F1
++		elif rcType == 7:	# Fortis FS9000/FS9200/HS8200
  			idx = 4
-+		elif rctype == 8:	# Fortis HS9510/HS7420/HS7429/HS7810A/HS7819
++		elif rcType == 8:	# Fortis HS9510/HS7420/HS7429/HS7810A/HS7819
 +			idx = 4
-+		elif rctype == 9:	# Fortis HS7110/HS7119
++		elif rcType == 9:	# Fortis HS7110/HS7119
 +			idx = 4
-+		elif rctype == 11:	# Topfield TF77X0HDPVR
++		elif rcType == 11:	# Topfield TF77X0HDPVR
 +			idx = 5
-+		elif rctype == 12:	# Kathrein UFS912
++		elif rcType == 12:	# Kathrein UFS912
 +			idx = 6
-+		elif rctype == 13:	# CubeRevo Universal
++		elif rcType == 13:	# CubeRevo Universal
 +			idx = 7
-+		elif rctype == 14:	# Vitamin HD5000
++		elif rcType == 14:	# Vitamin HD5000
 +			idx = 8
-+		elif rctype == 15:	# ADB XMP
++		elif rcType == 15:	# ADB XMP
 +			idx = 9
-+		elif rctype == 16:	# Pace 7241
++		elif rcType == 16:	# Pace 7241
 +			idx = 10
-+#		elif rctype == 17:	# Fortis 4G
++#		elif rcType == 17:	# Fortis 4G
 +#			idx = 11
-+#		elif rctype == 18:	# ...
++#		elif rcType == 18:	# ...
 +#			idx = 12
  		else:
  			idx = 2
- 	if key in keyDescriptions[idx]:
+ 	return keyDescriptions[idx].get(key)
 --- enigma2.org/lib/python/Screens/InputDeviceSetup.py
 +++ enigma2/lib/python/Screens/InputDeviceSetup.py
 @@ -299,62 +299,32 @@
@@ -9089,7 +9070,7 @@
  	def __init__(self, session):
 --- enigma2.org/data/rc_models/rc_models.cfg
 +++ enigma2/data/rc_models/rc_models.cfg
-@@ -19,126 +19,29 @@
+@@ -19,128 +19,30 @@
  #
  # When no entry matches at all, 'default' will be used as remoteName
  #
@@ -9215,6 +9196,10 @@
 -sh1 sh1
 -# Octagon
 -sf8008 octagon
+-sf8008m octagon
+-# uClan
+-ustym4kpro uclan
++#
 +hdbox             fs9000
 +octagon1008       hs9510
 +atevio7500        fs9000
@@ -9241,10 +9226,9 @@
 +adb_box           adb_xmp
 +adb_2850          adb_xmp
 +pace7241          pace7241
--
 --- enigma2.org/data/rc_models/Makefile.am
 +++ enigma2/data/rc_models/Makefile.am
-@@ -2,13 +2,9 @@
+@@ -2,15 +2,9 @@
  
  dist_install_DATA = \
  	rc_models.cfg \
@@ -9253,11 +9237,13 @@
 -	hd2400.png hd-gen.png vs1x00.png wetekplay.png osmini.png zgemma.png miraclebox.png miraclebox2.png \
 -	spycat.png xpeedlx.png revo4k.png sab.png sh1.png i55.png qviart.png gb7252.png e4hd.png \
 -	edision2.png edision3.png edision4.png hd60.png lunix4k.png multibox.png viperslim.png octagon.png \
+-	uclan.png \
 -	dmmadv.xml edision1.xml et4x00.xml et8000.xml et9x00.xml vuultimo.xml xp1000.xml dmm.xml amiko.xml \
 -	amiko1.xml et6x00.xml et9500.xml et7x00.xml vuduo2.xml vu.xml vu2.xml formuler1.xml hd2400.xml hd-gen.xml \
 -	vs1x00.xml xsarius.xml xsarius.png wetekplay.xml osmini.xml zgemma.xml miraclebox.xml miraclebox2.xml \
 -	spycat.xml xpeedlx.xml et7000mini.png et7000mini.xml revo4k.xml sab.xml sh1.xml i55.xml qviart.xml \
--	gb7252.xml e4hd.xml edision2.xml edision3.xml edision4.xml hd60.xml lunix4k.xml multibox.xml viperslim.xml octagon.xml
+-	gb7252.xml e4hd.xml edision2.xml edision3.xml edision4.xml hd60.xml lunix4k.xml multibox.xml viperslim.xml \
+-	octagon.xml uclan.xml
 +	dmmadv.png \
 +	adb_xmp.png cuberevo_uni.png fs9000.png  hs7110.png  hs9510.png  spark.png tf7700.png ufs912.png vitamin.png \
 +	pace7241.png dmm.png \
