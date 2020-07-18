@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 191113.1
+#Version 200620.1
 
 echo "[rcS] Start"
 echo "CubeRevo Neutrino"
@@ -9,7 +9,7 @@ MODDIR=/lib/modules
 insmod $MODDIR/e2_proc.ko
 
 echo "[rcS] Init frontpanel"
-insmod $MODDIR/micom.ko paramDebug=10
+insmod $MODDIR/cuberevo_micom.ko # paramDebug=100
 
 if [ -e /var/etc/.firstboot ]; then
    echo "WAIT 3 minutes" > /dev/vfd
@@ -33,14 +33,8 @@ echo "[rcS] Starting DEBUG Interface"
 #fi
 
 echo -n "[rcS] Starting telnetd "
-autologin=`cat /etc/enigma2/settings | grep systemoptions.autologin | cut -d "=" -f2`
-if [ ! $autologin ]; then
-   /usr/sbin/telnetd -l /bin/autologin
-   echo "with autologin"
-else
-   /usr/sbin/telnetd -l /bin/login
-   echo "with normal login"
-fi
+/usr/sbin/telnetd -l /bin/autologin
+echo "with autologin"
 
 echo "[rcS] Init stmfb (LOAD 9)"
 echo "Load 9" > /dev/vfd
@@ -50,19 +44,19 @@ insmod $MODDIR/stmcore-display-stx7109c3.ko
 TVMODE=$?
 case "$TVMODE" in
    0) echo "[rcS] Video mode: SD-PAL (576i)"
-      insmod $MODDIR/stmfb.ko display0=720x576-32@50i:12m:pal:rgb:yuv;;
+      insmod $MODDIR/stmfb.ko display0=720x576-32@50i:16m::pal:cvbs:rgb;;
    1) echo "[rcS] Video mode: SD-NTSC (480i)"
-      insmod $MODDIR/stmfb.ko display0=720x480-32@60i:12m:ntsc-m:rgb:yuv;;
+      insmod $MODDIR/stmfb.ko display0=720x480-32@60i:16m::ntsc-m:cvbs:rgb;;
    2) echo "[rcS] Video mode: 720p-50"
-      insmod $MODDIR/stmfb.ko display0=1280x720-32@50:12m:pal:rgb:yuv;;
+      insmod $MODDIR/stmfb.ko display0=1280x720-32@50:16m::pal:cvbs:rgb;;
    3) echo "[rcS] Video mode: 720p-60"
-      insmod $MODDIR/stmfb.ko display0=1280x720-32@60:12m:ntsc-m:rgb:yuv;;
+      insmod $MODDIR/stmfb.ko display0=1280x720-32@60:16m::ntsc-m:cvbs:rgb;;
    4) echo "[rcS] Video mode: 1080i-50"
-      insmod $MODDIR/stmfb.ko display0=1920x1080-32@50i:12m:pal:rgb:yuv;;
+      insmod $MODDIR/stmfb.ko display0=1920x1080-32@50i:16m::pal:cvbs:rgb;;
    5) echo "[rcS] Video mode: 1080i-60"
-      insmod $MODDIR/stmfb.ko display0=1920x1080-32@60i:12m:ntsc-m:rgb:yuv;;
+      insmod $MODDIR/stmfb.ko display0=1920x1080-32@60i:16m::ntsc-m:cvbs:rgb;;
    *) echo "[rcS] Video mode: use default 720p-50"
-      insmod $MODDIR/stmfb.ko display0=1280x720-32@50:12m:pal:rgb:yuv;;
+      insmod $MODDIR/stmfb.ko display0=1280x720-32@50:16m::pal:cvbs:rgb;;
 esac
 
 echo "[rcS] Loading modules"
@@ -179,14 +173,13 @@ if [ -e $MODDIR/usbserial.ko ]; then
       insmod $MODDIR/pl2303.ko
    fi
 fi
-echo "[rcS] Init frontpanel keyboard (LOAD 2)"
-echo "Load 2" > /dev/vfd
+echo "[rcS] Init frontpanel keyboard"
 #insmod $MODDIR/boxtype.ko
 insmod $MODDIR/simu_button.ko
 
-if [ -e /boot/neutrinologo.mvi ]; then
-   showiframe -p /boot/neutrinologo.mvi &
-fi
+#if [ -e /boot/neutrinologo.mvi ]; then
+#   showiframe -p /boot/neutrinologo.mvi &
+#fi
 stfbcontrol a 0
 
 echo "[rcS] Init remote control"
@@ -206,8 +199,8 @@ else
 #   sleep 3
 fi
 
-echo "[rcS] Initialize network (LOAD 1)"
-echo "Load 1" >/dev/vfd
+echo "[rcS] Initialize network (LOAD 2)"
+echo "Load 2" >/dev/vfd
 NFS=`grep -c nfs /proc/cmdline`
 if [ "$NFS" -eq "1" ]; then
    echo "[rcS] Booting from nfs, do not set network"
@@ -223,14 +216,40 @@ else
       /etc/init.d/networking start
    fi
 fi
+#Allow network to wake up and initialize
+sleep 2
+#Show IP address on frontpanel
+#ip=`ifconfig eth0 | sed -n '/inet addr/s/.*addr.\([^ ]*\) .*/\1/p'`
+#echo "IP $ip" > /dev/vfd
+#sleep 3
+
+if [ -e $MODDIR/autofs4.ko ]; then
+   insmod $MODDIR/autofs4.ko
+fi
+# Start automounter with umount timeout of 5 seconds
+if [ -e /etc/init.d/automount ]; then
+   /usr/sbin/automount --timeout=5 /autofs file /etc/auto.usb
+fi
+
+# inadyn
+if [ ! -e /usr/bin/inadyn ]; then
+   echo "[rcS] No inadyn"
+else
+   /usr/bin/inadyn &
+fi
+
+# OpenSSh daemon
+if [ -e /etc/init.d/sshd ]; then
+   (sleep 30; /etc/init.d/sshd start) &
+fi
+
+echo "[rcS] Set internet time"
+(ntpd -n -p 0.europe.pool.ntp.org -q; /bin/fp_control -sst)
 
 echo "[rcS] Init portmap & ftp"
 /etc/init.d/portmap start
 /etc/init.d/vsftpd start
 /usr/sbin/inetd
-
-echo "[rcS] Set internet time"
-(ntpd -n -p 0.europe.pool.ntp.org -q; /bin/fp_control -sst)
 
 stfbcontrol a 255
 /bin/fp_control -l 0 1 #power LED on
@@ -240,9 +259,9 @@ echo "Loading Neutrino" > /dev/vfd
 
 until false
 do
-   if [ -e /boot/neutrinologo.mvi ]; then
-      killall -9 showiframe
-   fi
+#   if [ -e /boot/neutrinologo.mvi ]; then
+#      killall -9 showiframe
+#   fi
    echo "[rcS] Starting neutrino"
    /usr/bin/neutrino
    rtv=$?

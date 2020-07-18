@@ -1,6 +1,6 @@
 --- enigma2/lib/python/Plugins/Extensions/Makefile.am.orig
 +++ enigma2/lib/python/Plugins/Extensions/Makefile.am
-@@ -38,6 +38,58 @@
+@@ -38,6 +38,66 @@
  SUBDIRS += CuberevoVFD
  endif
  
@@ -48,6 +48,14 @@
 +SUBDIRS += sparkVFD
 +endif
 +
++if ENABLE_VIP1_V2
++SUBDIRS += spark7162VFD
++endif
++ 
++if ENABLE_VIP2_V1
++SUBDIRS += spark7162VFD
++endif
++ 
 +if ENABLE_ADB_BOX
 +SUBDIRS += adb_5800VFD
 +endif
@@ -4288,7 +4296,7 @@
 +	vfddisplay.png
 --- /dev/null
 +++ enigma2/lib/python/Plugins/Extensions/spark7162VFD/plugin.py
-@@ -0,0 +1,823 @@
+@@ -0,0 +1,825 @@
 +# -*- coding: utf-8 -*-
 +from Plugins.Plugin import PluginDescriptor
 +from ServiceReference import ServiceReference
@@ -4340,8 +4348,10 @@
 +if DisplayTypevfd is None:
 +	if stb.lower() == 'spark7162':
 +		DisplayType = 8
-+#	elif stb.lower() == 'spark':
-+#		DisplayType = 4
++	elif stb.lower() == 'vip1-v2':
++		DisplayType = 8
++	elif stb.lower() == 'vip2-v1':
++		DisplayType = 8
 +	else:
 +		DisplayType = None
 +
@@ -5107,7 +5117,7 @@
 +	if config.plugins.vfdicon.extMenu.value:
 +		l.append(PluginDescriptor(
 +			name = _("VFD display"),
-+			description = _("VFD display configuration for Spark 7162"),
++			description = _("VFD display configuration for Spark 7162/Edision argus VIP"),
 +			where = PluginDescriptor.WHERE_PLUGINMENU,
 +			icon = _("vfddisplay.png"),
 +			fnc = opencfg))
