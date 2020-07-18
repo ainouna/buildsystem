@@ -1,13 +1,14 @@
 #
 # busybox
 #
-BUSYBOX_VER = 1.31.1
+BUSYBOX_VER = 1.32.0
 BUSYBOX_SOURCE = busybox-$(BUSYBOX_VER).tar.bz2
 BUSYBOX_PATCH  = busybox-$(BUSYBOX_VER)-nandwrite.patch
 BUSYBOX_PATCH += busybox-$(BUSYBOX_VER)-unicode.patch
 BUSYBOX_PATCH += busybox-$(BUSYBOX_VER)-extra.patch
 BUSYBOX_PATCH += busybox-$(BUSYBOX_VER)-extra2.patch
 BUSYBOX_PATCH += busybox-$(BUSYBOX_VER)-flashcp-small-output.patch
+BUSYBOX_PATCH += busybox-$(BUSYBOX_VER)-block-telnet-internet.patch
 
 $(ARCHIVE)/$(BUSYBOX_SOURCE):
 	$(WGET) https://busybox.net/downloads/$(BUSYBOX_SOURCE)
@@ -110,15 +111,17 @@ $(D)/module_init_tools: $(D)/bootstrap $(D)/lsb $(ARCHIVE)/$(MODULE_INIT_TOOLS_S
 		; \
 		$(MAKE); \
 		$(MAKE) install sbin_PROGRAMS="depmod modinfo" bin_PROGRAMS= DESTDIR=$(TARGET_DIR)
-	$(call adapted-etc-files,$(MODULE_INIT_TOOLS_ADAPTED_ETC_FILES))
+	$(call adapted-etc-files, $(MODULE_INIT_TOOLS_ADAPTED_ETC_FILES))
 	$(REMOVE)/module-init-tools-$(MODULE_INIT_TOOLS_VER)
 	$(TOUCH)
 
 #
 # sysvinit
 #
-SYSVINIT_VER = 2.88dsf
-SYSVINIT_SOURCE = sysvinit_$(SYSVINIT_VER).orig.tar.gz
+SYSVINIT_VER = 2.96
+SYSVINIT_SOURCE = sysvinit_$(SYSVINIT_VER).orig.tar.xz
+SYSVINIT_PATCH  = sysvinit-$(SYSVINIT_VER)-crypt-lib.patch
+SYSVINIT_PATCH += sysvinit-$(SYSVINIT_VER)-change-INIT_FIFO.patch
 
 $(ARCHIVE)/$(SYSVINIT_SOURCE):
 	$(WGET) http://ftp.debian.org/debian/pool/main/s/sysvinit/$(SYSVINIT_SOURCE)
@@ -128,6 +131,7 @@ $(D)/sysvinit: $(D)/bootstrap $(ARCHIVE)/$(SYSVINIT_SOURCE)
 	$(REMOVE)/sysvinit-$(SYSVINIT_VER)
 	$(UNTAR)/$(SYSVINIT_SOURCE)
 	$(CH_DIR)/sysvinit-$(SYSVINIT_VER); \
+		$(call apply_patches, $(SYSVINIT_PATCH)); \
 		sed -i -e 's/\ sulogin[^ ]*//' -e 's/pidof\.8//' -e '/ln .*pidof/d' \
 		-e '/bootlogd/d' -e '/utmpdump/d' -e '/mountpoint/d' -e '/mesg/d' src/Makefile; \
 		$(BUILDENV) \
@@ -371,20 +375,19 @@ $(D)/e2fsprogs: $(D)/bootstrap $(D)/util_linux $(ARCHIVE)/$(E2FSPROGS_SOURCE)
 #
 # util_linux
 #
-UTIL_LINUX_MAJOR = 2.35
-#UTIL_LINUX_MINOR = 1
-#UTIL_LINUX_VER = $(UTIL_LINUX_MAJOR).$(UTIL_LINUX_MINOR)
-UTIL_LINUX_VER = $(UTIL_LINUX_MAJOR)
-UTIL_LINUX_SOURCE = util-linux-$(UTIL_LINUX_MAJOR).tar.xz
+UTIL_LINUX_MAJOR = 2.36
+UTIL_LINUX_MINOR = -rc2
+UTIL_LINUX_VER = $(UTIL_LINUX_MAJOR)$(UTIL_LINUX_MINOR)
+UTIL_LINUX_SOURCE = util-linux-$(UTIL_LINUX_VER).tar.xz
 
 $(ARCHIVE)/$(UTIL_LINUX_SOURCE):
 	$(WGET) https://mirrors.edge.kernel.org/pub/linux/utils/util-linux/v$(UTIL_LINUX_MAJOR)/$(UTIL_LINUX_SOURCE)
 
 $(D)/util_linux: $(D)/bootstrap $(D)/zlib $(ARCHIVE)/$(UTIL_LINUX_SOURCE)
 	$(START_BUILD)
-	$(REMOVE)/util-linux-$(UTIL_LINUX_MAJOR)
+	$(REMOVE)/util-linux-$(UTIL_LINUX_VER)
 	$(UNTAR)/$(UTIL_LINUX_SOURCE)
-	$(CH_DIR)/util-linux-$(UTIL_LINUX_MAJOR); \
+	$(CH_DIR)/util-linux-$(UTIL_LINUX_VER); \
 		$(CONFIGURE) \
 			--prefix=/usr \
 			--mandir=/.remove \
@@ -392,7 +395,8 @@ $(D)/util_linux: $(D)/bootstrap $(D)/zlib $(ARCHIVE)/$(UTIL_LINUX_SOURCE)
 			--disable-gtk-doc \
 			--disable-nls \
 			--disable-rpath \
-			--enable-libblkid \
+			--enable-libuuid \
+			--disable-libblkid \
 			--disable-libmount \
 			--enable-libsmartcols \
 			--disable-mount \
@@ -435,6 +439,7 @@ $(D)/util_linux: $(D)/bootstrap $(D)/zlib $(ARCHIVE)/$(UTIL_LINUX_SOURCE)
 			--disable-pg \
 			--disable-setterm \
 			--disable-schedutils \
+			--disable-tunelp \
 			--disable-wall \
 			--disable-write \
 			--disable-bash-completion \
@@ -444,19 +449,75 @@ $(D)/util_linux: $(D)/bootstrap $(D)/zlib $(ARCHIVE)/$(UTIL_LINUX_SOURCE)
 			--disable-makeinstall-chown \
 			--disable-makeinstall-setuid \
 			--without-audit \
+			--without-ncurses \
 			--without-ncursesw \
-			--without-tinfo \
 			--without-slang \
 			--without-utempter \
+			--disable-wall \
 			--without-python \
 			--disable-makeinstall-chown \
 			--without-systemdsystemunitdir \
 		; \
-		$(MAKE); \
-		$(MAKE) sfdisk; \
+		$(MAKE) sfdisk mkfs; \
 		install -D -m 755 sfdisk $(TARGET_DIR)/sbin/sfdisk; \
 		install -D -m 755 mkfs $(TARGET_DIR)/sbin/mkfs
-	$(REMOVE)/util-linux-$(UTIL_LINUX_MAJOR)
+	$(REMOVE)/util-linux-$(UTIL_LINUX_VER)
+	$(TOUCH)
+
+#
+# gptfdisk
+#
+GPTFDISK_VER = 1.0.5
+GPTFDISK_SOURCE = gptfdisk-$(GPTFDISK_VER).tar.gz
+
+$(ARCHIVE)/$(GPTFDISK_SOURCE):
+	$(WGET) https://sourceforge.net/projects/gptfdisk/files/gptfdisk/$(GPTFDISK_VER)/$(GPTFDISK_SOURCE)
+
+$(D)/gptfdisk: $(D)/bootstrap $(D)/e2fsprogs $(D)/ncurses $(D)/libpopt $(ARCHIVE)/$(GPTFDISK_SOURCE)
+	$(START_BUILD)
+	$(REMOVE)/gptfdisk-$(GPTFDISK_VER)
+	$(UNTAR)/$(GPTFDISK_SOURCE)
+	$(SET) -e; cd $(BUILD_TMP)/gptfdisk-$(GPTFDISK_VER); \
+		$(BUILDENV) \
+		$(MAKE) sgdisk; \
+		install -m755 sgdisk $(TARGET_DIR)/usr/sbin/sgdisk
+	$(REMOVE)/gptfdisk-$(GPTFDISK_VER)
+	$(TOUCH)
+
+#
+# parted
+#
+PARTED_VER = 3.3
+PARTED_SOURCE = parted-$(PARTED_VER).tar.xz
+PARTED_PATCH = parted-$(PARTED_VER)-device-mapper.patch
+
+$(ARCHIVE)/$(PARTED_SOURCE):
+	$(WGET) https://ftp.gnu.org/gnu/parted/$(PARTED_SOURCE)
+
+$(D)/parted: $(D)/bootstrap $(D)/e2fsprogs $(ARCHIVE)/$(PARTED_SOURCE)
+	$(START_BUILD)
+	$(REMOVE)/parted-$(PARTED_VER)
+	$(UNTAR)/$(PARTED_SOURCE)
+	$(CH_DIR)/parted-$(PARTED_VER); \
+		$(call apply_patches, $(PARTED_PATCH)); \
+		$(CONFIGURE) \
+			--target=$(TARGET) \
+			--prefix=/usr \
+			--mandir=/.remove \
+			--enable-silent-rules \
+			--infodir=/.remove \
+			--without-readline \
+			--disable-shared \
+			--disable-debug \
+			--disable-device-mapper \
+			--disable-nls \
+		; \
+		$(MAKE) all; \
+		$(MAKE) install DESTDIR=$(TARGET_DIR)
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libparted.pc
+	$(REWRITE_LIBTOOL)/libparted.la
+	$(REWRITE_LIBTOOL)/libparted-fs-resize.la
+	$(REMOVE)/parted-$(PARTED_VER)
 	$(TOUCH)
 
 #
@@ -559,9 +620,10 @@ $(D)/ntfs_3g: $(D)/bootstrap $(ARCHIVE)/$(NTFS_3G_SOURCE)
 #
 # mc
 #
-MC_VER = 4.8.23
+MC_VER = 4.8.24
 MC_SOURCE = mc-$(MC_VER).tar.xz
-MC_PATCH = mc-$(MC_VER).patch
+MC_PATCH  = mc-$(MC_VER).patch
+MC_PATCH += mc-$(MC_VER)_fix-mouse-handling-newer-terminfo.patch
 
 $(ARCHIVE)/$(MC_SOURCE):
 	$(WGET) ftp.midnight-commander.org/$(MC_SOURCE)
@@ -584,6 +646,12 @@ $(D)/mc: $(D)/bootstrap $(D)/ncurses $(D)/libglib2 $(ARCHIVE)/$(MC_SOURCE)
 			--disable-doxygen-html \
 			--enable-charset \
 			--disable-nls \
+			--disable-maintainer-mode \
+			--disable-dependency-tracking \
+			AWK=awk \
+			--disable-rpath \
+			--disable-static \
+			--disable-silent-rules \
 			--with-screen=ncurses \
 			--without-x \
 		; \
@@ -826,62 +894,6 @@ $(D)/fbshot: $(D)/bootstrap $(D)/libpng $(ARCHIVE)/$(FBSHOT_SOURCE)
 	$(TOUCH)
 
 #
-# gptfdisk
-#
-GPTFDISK_VER = 1.0.5
-GPTFDISK_SOURCE = gptfdisk-$(GPTFDISK_VER).tar.gz
-
-$(ARCHIVE)/$(GPTFDISK_SOURCE):
-	$(WGET) https://sourceforge.net/projects/gptfdisk/files/gptfdisk/$(GPTFDISK_VER)/$(GPTFDISK_SOURCE)
-
-$(D)/gptfdisk: $(D)/bootstrap $(D)/e2fsprogs $(D)/ncurses $(D)/libpopt $(ARCHIVE)/$(GPTFDISK_SOURCE)
-	$(START_BUILD)
-	$(REMOVE)/gptfdisk-$(GPTFDISK_VER)
-	$(UNTAR)/$(GPTFDISK_SOURCE)
-	$(SET) -e; cd $(BUILD_TMP)/gptfdisk-$(GPTFDISK_VER); \
-		$(BUILDENV) \
-		$(MAKE) sgdisk; \
-		install -m755 sgdisk $(TARGET_DIR)/usr/sbin/sgdisk
-	$(REMOVE)/gptfdisk-$(GPTFDISK_VER)
-	$(TOUCH)
-
-#
-# parted
-#
-PARTED_VER = 3.3
-PARTED_SOURCE = parted-$(PARTED_VER).tar.xz
-PARTED_PATCH = parted-$(PARTED_VER)-device-mapper.patch
-
-$(ARCHIVE)/$(PARTED_SOURCE):
-	$(WGET) https://ftp.gnu.org/gnu/parted/$(PARTED_SOURCE)
-
-$(D)/parted: $(D)/bootstrap $(D)/e2fsprogs $(ARCHIVE)/$(PARTED_SOURCE)
-	$(START_BUILD)
-	$(REMOVE)/parted-$(PARTED_VER)
-	$(UNTAR)/$(PARTED_SOURCE)
-	$(CH_DIR)/parted-$(PARTED_VER); \
-		$(call apply_patches, $(PARTED_PATCH)); \
-		$(CONFIGURE) \
-			--target=$(TARGET) \
-			--prefix=/usr \
-			--mandir=/.remove \
-			--enable-silent-rules \
-			--infodir=/.remove \
-			--without-readline \
-			--disable-shared \
-			--disable-debug \
-			--disable-device-mapper \
-			--disable-nls \
-		; \
-		$(MAKE) all; \
-		$(MAKE) install DESTDIR=$(TARGET_DIR)
-	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libparted.pc
-	$(REWRITE_LIBTOOL)/libparted.la
-	$(REWRITE_LIBTOOL)/libparted-fs-resize.la
-	$(REMOVE)/parted-$(PARTED_VER)
-	$(TOUCH)
-
-#
 # sysstat
 #
 SYSSTAT_VER = 12.3.3
@@ -1087,8 +1099,9 @@ $(D)/avahi: $(D)/bootstrap $(D)/expat $(D)/libdaemon $(D)/dbus $(ARCHIVE)/$(AVAH
 #
 # wget
 #
-WGET_VER = 1.20.1
+WGET_VER = 1.20.3
 WGET_SOURCE = wget-$(WGET_VER).tar.gz
+WGET_PATCH = wget-$(WGET_VER).patch
 
 $(ARCHIVE)/$(WGET_SOURCE):
 	$(WGET) https://ftp.gnu.org/gnu/wget/$(WGET_SOURCE)
@@ -1098,6 +1111,7 @@ $(D)/wget: $(D)/bootstrap $(D)/openssl $(ARCHIVE)/$(WGET_SOURCE)
 	$(REMOVE)/wget-$(WGET_VER)
 	$(UNTAR)/$(WGET_SOURCE)
 	$(CH_DIR)/wget-$(WGET_VER); \
+		$(call apply_patches, $(WGET_PATCH)); \
 		$(CONFIGURE) \
 			--prefix=/usr \
 			--mandir=/.remove \
@@ -1167,7 +1181,7 @@ $(D)/smartmontools: $(D)/bootstrap $(ARCHIVE)/$(SMARTMONTOOLS_SOURCE)
 #
 # nfs_utils
 #
-NFS_UTILS_VER = 2.4.3
+NFS_UTILS_VER = 2.5.1
 NFS_UTILS_SOURCE = nfs-utils-$(NFS_UTILS_VER).tar.bz2
 NFS_UTILS_PATCH = nfs-utils-$(NFS_UTILS_VER).patch
 
@@ -1254,7 +1268,7 @@ $(D)/vsftpd: $(D)/bootstrap $(ARCHIVE)/$(VSFTPD_SOURCE)
 #
 # procps_ng
 #
-PROCPS_NG_VER = 3.3.12
+PROCPS_NG_VER = 3.3.16
 PROCPS_NG_SOURCE = procps-ng-$(PROCPS_NG_VER).tar.xz
 
 $(ARCHIVE)/$(PROCPS_NG_SOURCE):
@@ -1294,6 +1308,7 @@ $(D)/htop: $(D)/bootstrap $(D)/ncurses $(ARCHIVE)/$(HTOP_SOURCE)
 	$(UNTAR)/$(HTOP_SOURCE)
 	$(SILENT)cd $(BUILD_TMP)/htop-$(HTOP_VER); \
 		$(call apply_patches, $(HTOP_PATCH)); \
+		autoreconf -fi $(SILENT_OPT); \
 		$(CONFIGURE) \
 			--prefix=/usr \
 			--mandir=/.remove \
@@ -1313,7 +1328,7 @@ $(D)/htop: $(D)/bootstrap $(D)/ncurses $(ARCHIVE)/$(HTOP_SOURCE)
 #
 # ethtool
 #
-ETHTOOL_VER = 5.6
+ETHTOOL_VER = 5.7
 ETHTOOL_SOURCE = ethtool-$(ETHTOOL_VER).tar.xz
 ETHTOOL_PATCH = ethtool-$(ETHTOOL_VER).patch
 
@@ -1470,7 +1485,7 @@ $(D)/samba: $(D)/bootstrap $(ARCHIVE)/$(SAMBA_SOURCE)
 #
 # ntp
 #
-NTP_VER = 4.2.8p14
+NTP_VER = 4.2.8p15
 NTP_SOURCE = ntp-$(NTP_VER).tar.gz
 #NTP_PATCH = ntp-$(NTP_VER).patch
 
@@ -1680,7 +1695,7 @@ $(D)/openvpn: $(D)/bootstrap $(D)/openssl $(D)/lzo $(ARCHIVE)/$(OPENVPN_SOURCE)
 #
 # openssh
 #
-OPENSSH_VER = 8.2p1
+OPENSSH_VER = 8.3p1
 OPENSSH_SOURCE = openssh-$(OPENSSH_VER).tar.gz
 
 $(ARCHIVE)/$(OPENSSH_SOURCE):
