@@ -1,6 +1,53 @@
---- a/arch/sh/boards/mach-mb442/setup.c
+--- a/arch/sh/kernel/setup.c.org
++++ b/arch/sh/kernel/setup.c
+@@ -420,6 +420,44 @@
+ #endif
+ #endif
+ 
++	{
++		int command_line_len = strlen(command_line);
++		char sda1_org_command_line[] = "console=ttyAS0,115200 root=/dev/sda1";
++		char sda1_new_command_line[] = "console=ttyAS0,115200 root=/dev/sda1 rw init=/bin/devinit ip=$ipaddr:$serverip:$gateway:$netmask:edision:eth0:off coprocessor_mem=4m@0x10000000,4m@0x10400000 rootdelay=5 mem=128m Manufacture=STi7101_YW-MOON-IBOX-VER1.0_EDISION STB_ID=03:05:08:00:00:20:8C nwhwconf=device:eth0,hwaddr:";
++		char sdb1_org_command_line[] = "console=ttyAS0,115200 root=/dev/sdb1";
++		char sdb1_new_command_line[] = "console=ttyAS0,115200 root=/dev/sdb1 rw init=/bin/devinit ip=$ipaddr:$serverip:$gateway:$netmask:edision:eth0:off coprocessor_mem=4m@0x10000000,4m@0x10400000 rootdelay=5 mem=128m Manufacture=STi7101_YW-MOON-IBOX-VER1.0_EDISION STB_ID=03:05:08:00:00:20:8C nwhwconf=device:eth0,hwaddr:";
++		char mac[] = "12:34:56:78:9A:BC";
++		int sda1_org_command_line_len = strlen(sda1_org_command_line);
++		int sdb1_org_command_line_len = strlen(sdb1_org_command_line);
++		int i;
++
++		for (i = 0; i < (command_line_len - 7); i++)
++		{
++			if (!strncmp(command_line + i, "ethaddr", 7))
++			{
++				strlcpy(mac, command_line + i + 8, sizeof(mac));
++				break;
++			}
++			if (!strncmp(command_line + i, "hwaddr", 6))
++			{
++				strlcpy(mac, command_line + i + 7, sizeof(mac));
++				break;
++			}
++		}
++		/* boot from /dev/sda1 */
++		if (command_line_len >= sda1_org_command_line_len && !strncmp(command_line, sda1_org_command_line, sda1_org_command_line_len))
++		{
++			strlcpy(command_line, sda1_new_command_line, sizeof(sda1_new_command_line));
++			strlcat(command_line, mac, sizeof(mac));
++		}
++		/* boot from /dev/sdb1 */
++		if (command_line_len >= sdb1_org_command_line_len && !strncmp(command_line, sdb1_org_command_line, sdb1_org_command_line_len))
++		{
++			strlcpy(command_line, sdb1_new_command_line, sizeof(sdb1_new_command_line));
++			strlcat(command_line, mac, sizeof(mac));
++		}
++	}
++
+ 	/* Save unparsed command line copy for /proc/cmdline */
+ 	memcpy(boot_command_line, command_line, COMMAND_LINE_SIZE);
+ 	*cmdline_p = command_line;
+--- a/arch/sh/boards/mach-mb442/setup.c.org
 +++ b/arch/sh/boards/mach-mb442/setup.c
-@@ -22,14 +22,30 @@
+@@ -22,14 +22,31 @@
  #include <linux/stm/platform.h>
  #include <linux/stm/stx7100.h>
  #include <asm/irl.h>
@@ -16,26 +63,27 @@
 +const char *LMI_VID_partalias[] = { "BPA2_Region1", "coredisplay-video", "gfx-memory", "v4l2-video-buffers", NULL };
 +const char *LMI_SYS_partalias[] = { "BPA2_Region0", "bigphysarea", "v4l2-coded-video-buffers", NULL };
  
-+static struct bpa2_partition_desc bpa2_parts_table[] = {
-+ {
-+         .name = "LMI_VID",
-+         .start = 0x10800000,
-+         .size = 0x03800000,
-+         .flags = 0,
-+         .aka = LMI_VID_partalias
-+ },
-+ {
-+         .name = "LMI_SYS",
-+         .start = 0,
-+         .size = 0x01400000,
-+         .flags = 0,
-+         .aka = LMI_SYS_partalias
-+ }
++static struct bpa2_partition_desc bpa2_parts_table[] =
++{
++	{
++		.name  = "LMI_VID",
++		.start = 0x10800000,
++		.size  = 0x03800000,
++		.flags = 0,
++		.aka   = LMI_VID_partalias
++	},
++	{
++		.name  = "LMI_SYS",
++		.start = 0,
++		.size  = 0x01400000,
++		.flags = 0,
++		.aka   = LMI_SYS_partalias
++	}
 +};
  
  void __init mb442_setup(char** cmdline_p)
  {
-@@ -43,6 +59,8 @@
+@@ -43,6 +60,8 @@
  	stx7100_configure_asc(3, &(struct stx7100_asc_config) {
  			.hw_flow_control = 0,
  			.is_console = 0, });
@@ -85,8 +133,8 @@
  	.dev.platform_data = &(struct physmap_flash_data) {
  		.width		= 2,
  		.set_vpp	= mb442_set_vpp,
-+		.nr_parts        = ARRAY_SIZE(mtd_parts_table),
-+		.parts                = mtd_parts_table
++		.nr_parts   = ARRAY_SIZE(mtd_parts_table),
++		.parts      = mtd_parts_table
  	},
  };
  
@@ -107,8 +155,8 @@
 -	stx7100_configure_ssc_spi(1, NULL);
 -	stx7100_configure_ssc_i2c(2, NULL);
 +	stx7100_configure_ssc_i2c(0);
-+        stx7100_configure_ssc_i2c(1);
-+        stx7100_configure_ssc_i2c(2);
++	stx7100_configure_ssc_i2c(1);
++	stx7100_configure_ssc_i2c(2);
  
  	stx7100_configure_usb();
  
@@ -140,56 +188,40 @@
  			ARRAY_SIZE(mb442_devices));
  }
 
-*** a/drivers/net/phy/phy_device.c
---- b/drivers/net/phy/phy_device.c
-***************
-*** 1104,1110 ****
-  		return retval;
-  	}
-  
-! 	pr_debug("%s: Registered new driver\n", new_driver->name);
-  
-  	return 0;
-  }
---- 1104,1110 ----
-  		return retval;
-  	}
-  
-! 	pr_info("%s: Registered new driver (0x%08x)\n", new_driver->name, new_driver->phy_id);
-  
-  	return 0;
-  }
-*** a/drivers/net/stmmac/stmmac_mdio.c
---- b/drivers/net/stmmac/stmmac_mdio.c
-***************
-*** 194,202 ****
-  			 * and no PHY number was provided to the MAC,
-  			 * use the one probed here.
-  			 */
-! 			if ((priv->plat->bus_id == mdio_bus_data->bus_id) &&
-! 			    (priv->plat->phy_addr == -1))
-! 				priv->plat->phy_addr = addr;
-  
-  			act = (priv->plat->bus_id == mdio_bus_data->bus_id) &&
-  				(priv->plat->phy_addr == addr);
---- 194,208 ----
-  			 * and no PHY number was provided to the MAC,
-  			 * use the one probed here.
-  			 */
-! 
-! 			 if ((priv->plat->bus_id == mdio_bus_data->bus_id) && ((priv->plat->phy_addr == -1) ||
-! 			 (phydev->phy_id == 0x0181b880) || // Davicom DM9161E
-! 			 (phydev->phy_id == 0x0181b8a0) || // Davicom DM9161A
-! 			 (phydev->phy_id == 0x00181b80) || // Davicom DM9131
-! 			 (phydev->phy_id == 0x1c040011) || // STe100p
-! 			 (phydev->phy_id == 0x00061c50) || // STe101p
-! 			 (phydev->phy_id == 0x001cc912))) // RTL821x
-! 			 priv->plat->phy_addr = addr;
-  
-  			act = (priv->plat->bus_id == mdio_bus_data->bus_id) &&
-  				(priv->plat->phy_addr == addr);
---- a/include/linux/stm/stx7100.h
-+++ b/include/linux/stm/stx7100_orig.h
+--- a/drivers/net/phy/phy_device.c.orig
++++ b/drivers/net/phy/phy_device.c
+@@ -1104,7 +1104,7 @@
+ 		return retval;
+ 	}
+ 
+-	pr_debug("%s: Registered new driver\n", new_driver->name);
++ 	pr_info("%s: Registered new driver (0x%08x)\n", new_driver->name, new_driver->phy_id);  
+ 
+ 	return 0;
+ }
+--- a/drivers/net/stmmac/stmmac_mdio.c.orig
++++ b/drivers/net/stmmac/stmmac_mdio.c
+@@ -194,9 +194,15 @@
+ 			 * and no PHY number was provided to the MAC,
+ 			 * use the one probed here.
+ 			 */
+-			if ((priv->plat->bus_id == mdio_bus_data->bus_id) &&
+-			    (priv->plat->phy_addr == -1))
+-				priv->plat->phy_addr = addr;
++
++			if ((priv->plat->bus_id == mdio_bus_data->bus_id) && ((priv->plat->phy_addr == -1)
++			||  (phydev->phy_id == 0x0181b880) // Davicom DM9161E
++			||  (phydev->phy_id == 0x0181b8a0) // Davicom DM9161A
++			||  (phydev->phy_id == 0x00181b80) // Davicom DM9131
++			||  (phydev->phy_id == 0x1c040011) // STe100p
++			||  (phydev->phy_id == 0x00061c50) // STe101p
++			||  (phydev->phy_id == 0x001cc912))) // RTL821x
++				priv->plat->phy_addr = addr;
+ 
+ 			act = (priv->plat->bus_id == mdio_bus_data->bus_id) &&
+ 				(priv->plat->phy_addr == addr);
+--- a/include/linux/stm/stx7100.h.orig
++++ b/include/linux/stm/stx7100.h
 @@ -34,15 +34,11 @@
  };
  void stx7100_configure_asc(int asc, struct stx7100_asc_config *config);
@@ -627,8 +659,8 @@
  
  	ret = platform_driver_register(&stm_gpio_driver);
  	if (ret)
---- a/drivers/stm/stx7100_comms.c
-+++ b/drivers/stm/stx7100_comms_orig.c
+--- a/drivers/stm/stx7100_comms.c.orig
++++ b/drivers/stm/stx7100_comms.c
 @@ -226,12 +226,10 @@
  			STM_PAD_PIO_BIDIR_NAMED(2, 0, 1, "SCL"),
  			STM_PAD_PIO_BIDIR_NAMED(2, 1, 1, "SDA"),
@@ -667,4 +699,4 @@
 -		plat_data->i2c_fastmode = config->fastmode;
  
  	/* I2C bus number reservation (to prevent any hot-plug device
- 	 * from using it) */	
+ 	 * from using it) */
