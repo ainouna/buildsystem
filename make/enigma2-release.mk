@@ -471,6 +471,29 @@ enigma2_release_hl101:
 	$(SILENT)cp -f $(SKEL_ROOT)/root_enigma2/usr/local/share/enigma2/keymap_hl101.xml $(RELEASE_DIR)/usr/local/share/enigma2/keymap.xml
 
 #
+# vip1_v2
+#
+enigma2_release_vip1_v2:
+#	echo "vip1-v2" > $(prefix)/release/etc/hostname
+	$(SILENT)install -m 0755 $(SKEL_ROOT)/root/release/halt_vip2 $(prefix)/release/etc/init.d/halt
+	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/frontcontroller/aotom/aotom.ko $(RELEASE_DIR)/lib/modules/
+	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/frontends/*.ko $(RELEASE_DIR)/lib/modules/
+	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/stgfb/stmfb/stmcore-display-stx7109c3.ko $(prefix)/release/lib/modules/
+	$(SILENT)cp $(SKEL_ROOT)/boot/video_7109.elf $(RELEASE_DIR)/boot/video.elf
+	$(SILENT)cp $(SKEL_ROOT)/boot/audio_7109.elf $(RELEASE_DIR)/boot/audio.elf
+	$(SILENT)cp -f $(SKEL_ROOT)/release/fstab_vip2 $(RELEASE_DIR)/etc/fstab
+	$(SILENT)cp -f $(targetprefix)/sbin/shutdown $(RELEASE_DIR)/sbin/
+	$(SILENT)cp -dp $(SKEL_ROOT)/release/lircd_vip2_v1_rc1.conf $(RELEASE_DIR)/etc/lircd.conf
+	$(SILENT)mkdir -p $(RELEASE_DIR)/var/run/lirc
+	$(SILENT)rm -f $(RELEASE_DIR)/bin/vdstandby
+	$(SILENT)cp -f $(SKEL_ROOT)/root/usr/local/share/enigma2/keymap_vip2.xml $(RELEASE_DIR)/usr/local/share/enigma2/keymap.xml
+
+#
+# release_vip2_v1
+#
+release_vip2_v1: release_release_vip1_v2
+
+#
 # adb_box
 #
 enigma2_release_adb_box:
