@@ -47,7 +47,7 @@
  	*cmdline_p = command_line;
 --- a/arch/sh/boards/mach-mb442/setup.c.org
 +++ b/arch/sh/boards/mach-mb442/setup.c
-@@ -22,14 +22,31 @@
+@@ -22,18 +22,35 @@
  #include <linux/stm/platform.h>
  #include <linux/stm/stx7100.h>
  #include <asm/irl.h>
@@ -60,22 +60,22 @@
 +#define MB442_PIO_STE100P_RESET stm_gpio(3, 6)
  #define MB442_PIO_FLASH_VPP stm_gpio(2, 7)
  
-+const char *LMI_VID_partalias[] = { "BPA2_Region1", "coredisplay-video", "gfx-memory", "v4l2-video-buffers", "v4l2-coded-video-buffers", NULL };
-+const char *LMI_SYS_partalias[] = { "BPA2_Region0", "bigphysarea", NULL };
++const char *LMI_VID_partalias[] = { "BPA2_Region1", "coredisplay-video", "gfx-memory", "v4l2-video-buffers", NULL };
++const char *LMI_SYS_partalias[] = { "BPA2_Region0", "bigphysarea", "v4l2-coded-video-buffers", NULL };
  
 +static struct bpa2_partition_desc bpa2_parts_table[] =
 +{
 +	{
 +		.name  = "LMI_VID",
 +		.start = 0x10800000,
-+		.size  = 0x02400000,	// 36M
++		.size  = 0x03800000,  // 56M
 +		.flags = 0,
 +		.aka   = LMI_VID_partalias
 +	},
 +	{
 +		.name  = "LMI_SYS",
 +		.start = 0,
-+		.size  = 0x02C00000,	// 44M
++		.size  = 0x02000000,  // 32M
 +		.flags = 0,
 +		.aka   = LMI_SYS_partalias
 +	}
@@ -83,7 +83,12 @@
  
  void __init mb442_setup(char** cmdline_p)
  {
-@@ -43,6 +60,8 @@
+-	printk("STMicroelectronics STb7100 Reference board initialisation\n");
++	printk("Edision argus VIP2 main board initialisation\n");
+ 
+ 	stx7100_early_device_init();
+ 
+@@ -43,6 +48,8 @@
  	stx7100_configure_asc(3, &(struct stx7100_asc_config) {
  			.hw_flow_control = 0,
  			.is_console = 0, });
@@ -92,44 +97,44 @@
  }
  
  static struct resource mb442_smc91x_resources[] = {
-@@ -70,6 +88,36 @@
+@@ -70,6 +77,36 @@
  	gpio_set_value(MB442_PIO_FLASH_VPP, enable);
  }
  
 +static struct mtd_partition mtd_parts_table[] =
 +{
-+        {
-+                .name = "Boot Firmware",
-+                .size = 0x00040000,        //u-boot 0x00000000-0xa003ffff 256k
-+                .offset = 0x00000000,
-+                mask_flags: 0
-+        },
-+        {
-+                .name = "Boot Config",
-+                .size = 0x00020000,        //boot config 0xa0040000-0xa005ffff 128k
-+                .offset = 0x00040000,
-+         },
-+        {
-+                .name = "Kernel",
-+                .size = 0x00280000,        //kernel 0x40000-0x2dffff 2.5MB
-+                .offset = 0x00060000,
-+        },
-+        {
-+                .name = "ROOTFS (Backup)",
-+                .size = 0x002E0000,
-+                .offset = 0x00240000,
-+        },
-+         {
-+                .name = "Full without bootloader",
-+                .size = 0x00580000,
-+                .offset = 0x00040000,
-+        },
++	{
++		.name       = "Boot Firmware",
++		.size       = 0x00040000,        // u-boot 0xa0000000-0xa003ffff 256kbyte
++		.offset     = 0x00000000,
++		.mask_flags = 0
++	},
++	{
++		.name       = "Boot Config",
++		.size       = 0x00020000,        // boot config 0xa0040000-0xa005ffff 128kbyte
++		.offset     = 0x00040000,
++	},
++	{
++		.name       = "Kernel",
++		.size       = 0x00280000,        // kernel 0xa0060000-0xa02dffff 2.5Mbyte
++		.offset     = 0x00060000,
++	},
++	{
++		.name       = "ROOTFS (Backup)",
++		.size       = 0x002E0000,        // rootfs 0a0240000-0xa0051ffff 2,875Mbyte
++		.offset     = 0x00240000,
++	},
++	{
++		.name       = "Full without bootloader",
++		.size       = 0x00580000,
++		.offset     = 0x00040000,
++	},
 +};
 +
  static struct platform_device mb442_physmap_flash = {
  	.name		= "physmap-flash",
  	.id		= -1,
-@@ -80,6 +128,8 @@
+@@ -80,6 +117,8 @@
  	.dev.platform_data = &(struct physmap_flash_data) {
  		.width		= 2,
  		.set_vpp	= mb442_set_vpp,
@@ -138,7 +143,7 @@
  	},
  };
  
-@@ -95,7 +145,7 @@
+@@ -95,7 +134,7 @@
  	return 1;
  }
  
@@ -147,7 +152,7 @@
  static int stmmac_phy_irqs[PHY_MAX_ADDR] = {
  	[STMMAC_PHY_ADDR] = IRL3_IRQ,
  };
-@@ -119,9 +169,9 @@
+@@ -119,9 +158,9 @@
  			.out0_enabled = 0,
  			.out1_enabled = 1, });
  
@@ -160,7 +165,7 @@
  
  	stx7100_configure_usb();
  
-@@ -130,11 +180,6 @@
+@@ -130,11 +169,6 @@
  			.tx_enabled = 0,
  			.tx_od_enabled = 0, });
  
@@ -172,7 +177,7 @@
  	gpio_request(MB442_PIO_FLASH_VPP, "Flash VPP");
  	gpio_direction_output(MB442_PIO_FLASH_VPP, 0);
  
-@@ -149,14 +194,6 @@
+@@ -149,14 +173,6 @@
  			.mdio_bus_data = &stmmac_mdio_bus,
  		});
  
@@ -188,7 +193,7 @@
  			ARRAY_SIZE(mb442_devices));
  }
 
---- a/drivers/net/phy/phy_device.c.orig
+--- a/drivers/net/phy/phy_device.c.org
 +++ b/drivers/net/phy/phy_device.c
 @@ -1104,7 +1104,7 @@
  		return retval;
@@ -199,7 +204,7 @@
  
  	return 0;
  }
---- a/drivers/net/stmmac/stmmac_mdio.c.orig
+--- a/drivers/net/stmmac/stmmac_mdio.c.org
 +++ b/drivers/net/stmmac/stmmac_mdio.c
 @@ -194,9 +194,15 @@
  			 * and no PHY number was provided to the MAC,
@@ -441,7 +446,7 @@
 +        struct stm_gpio_port *port;
 +        struct stm_gpio_pin *pin;
 +
-+        len = sprintf(page, " port name direction\n");
++        len = sprintf(page, " Port     Name      Direction\n");
 +        for (port_no = 0; port_no < num_ports; port_no++)
 +        {
 +                for (pin_no = 0; pin_no < STM_GPIO_PINS_PER_PORT; pin_no++) {
@@ -659,7 +664,7 @@
  
  	ret = platform_driver_register(&stm_gpio_driver);
  	if (ret)
---- a/drivers/stm/stx7100_comms.c.orig
+--- a/drivers/stm/stx7100_comms.c.org
 +++ b/drivers/stm/stx7100_comms.c
 @@ -226,12 +226,10 @@
  			STM_PAD_PIO_BIDIR_NAMED(2, 0, 1, "SCL"),
