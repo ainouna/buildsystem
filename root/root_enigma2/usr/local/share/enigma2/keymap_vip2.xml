@@ -148,6 +148,7 @@
 		<key id="KEY_INFO" mapto="showEventInfoPlugin" flags="l"/>
 		<key id="KEY_EPG" mapto="showEventInfoSingleEPG" flags="b"/>
 		<key id="KEY_EPG" mapto="showEventInfo" flags="l"/>
+		<!--key id="KEY_BACK" mapto="showSimpleInfo" flags="l"/-->
 	</map>
 
 	<map context="InfobarInstantRecord">
@@ -168,14 +169,15 @@
 		<key id="KEY_RIGHT" mapto="keyRight" flags="mr"/>
 		<key id="KEY_UP" mapto="keyUp" flags="mr"/>
 		<key id="KEY_DOWN" mapto="keyDown" flags="mr"/>
-		<!--key id="KEY_UP" mapto="switchChannelUp" flags="mr"-->
-		<!--key id="KEY_DOWN" mapto="switchChannelDown" flags="mr"-->
-		<!--key id="KEY_VOLUMEDOWN" mapto="volumeDown" flags="mr"-->
-		<!--key id="KEY_VOLUMEUP" mapto="volumeUp" flags="mr"-->
+		<!--key id="KEY_UP" mapto="switchChannelUp" flags="mr"/-->
+		<!--key id="KEY_DOWN" mapto="switchChannelDown" flags="mr"/-->
+		<key id="KEY_VOLUMEDOWN" mapto="volumeDown" flags="mr"/>
+		<key id="KEY_VOLUMEUP" mapto="volumeUp" flags="mr"/>
 		<key id="KEY_PAGEUP" mapto="zapDown" flags="mr"/>   <!-- P+ -->
 		<key id="KEY_PAGEDOWN" mapto="zapUp" flags="mr"/>   <!-- P- -->
 		<key id="KEY_PREVIOUS" mapto="historyBack" flags="mr"/>
 		<key id="KEY_NEXT" mapto="historyNext" flags="mr"/>
+		<key id="KEY_BACK" mapto="historyBack" flags="mr" />
 		<key id="KEY_OK" mapto="openServiceList" flags="m"/>
 		<key id="KEY_TIME" mapto="timer" flags="b"/>
 		<key id="KEY_TIME" mapto="sleepTimer" flags="l"/>
@@ -285,12 +287,11 @@
 	</map>
 
 	<map context="InfobarVmodeButtonActions">
-		<key id="KEY_VMODE" mapto="vmodeSelection" flags="b"/>
+		<key id="KEY_V" mapto="vmodeSelection" flags="b"/>
 	</map>
 
 	<map context="InfobarPiPActions">
-		<!--key id="KEY_BLUE" mapto="activatePiP" flags="mr" /-->
-		<key id="KEY_P" mapto="activatePiP" flags="m"/>
+		<key id="KEY_SCREEN" mapto="activatePiP" flags="m"/>
 	</map>
 
 	<map context="InfobarSubserviceQuickzapActions">
@@ -344,8 +345,6 @@
 		<key id="KEY_FASTFORWARD" mapto="seekFwdManual" flags="l"/>
 		<key id="KEY_PREVIOUS" mapto="jumpPreviousMark" flags="m"/>
 		<key id="KEY_NEXT" mapto="jumpNextMark" flags="m"/>
-		<key id="KEY_LEFT" mapto="seekBack" flags="m"/>
-		<key id="KEY_RIGHT" mapto="seekFwd" flags="m"/>
 		<key id="KEY_OK" mapto="okButton" flags="m"/>
 		<key id="KEY_1" mapto="seekdef:1" flags="m"/>
 		<key id="KEY_3" mapto="seekdef:3" flags="m"/>
@@ -371,8 +370,8 @@
 	<map context="InfobarTimeshiftActions">
 		<key id="KEY_PAUSE" mapto="timeshiftStart" flags="m"/>
 		<key id="KEY_STOP" mapto="timeshiftStop" flags="m"/>
-		<key id="KEY_T" mapto="timeshiftStart" flags="m" /> <!-- Tms key -->
-		<key id="KEY_TIME" mapto="timeshiftStart" flags="m"/>
+		<key id="KEY_T" mapto="timeshiftStart" flags="b" /> <!-- Tms key -->
+		<key id="KEY_T" mapto="timeshiftStop" flags="l" /> <!-- Tms key -->
 	</map>
 
 	<map context="InfobarTimeshiftActivateActions">
@@ -417,7 +416,7 @@
 	</map-->
 
 	<map context="InfobarTeletextActions">
-		<key id="KEY_YELLOW" mapto="startTeletext" flags="l" />
+		<key id="KEY_BLUE" mapto="startTeletext" flags="l" />
 	</map>
 
 	<map context="TeletextActions">
@@ -430,13 +429,13 @@
 		<key id="KEY_GREEN" mapto="green" flags="m"/>
 		<key id="KEY_YELLOW" mapto="yellow" flags="m"/>
 		<key id="KEY_RED" mapto="red" flags="m"/>
-		<key id="KEY_BLUE" mapto="blue" flags="m"/>
+		<key id="KEY_BLUE" mapto="blue" flags="b"/>
 		<key id="KEY_PAGEUP" mapto="zoomMode" flags="m"/>
 		<key id="KEY_PAGEDOWN" mapto="screenMode" flags="m"/>
 		<key id="KEY_HELP" mapto="hint" flags="m"/>
 		<key id="KEY_MENU" mapto="menu" flags="m"/>
 		<key id="KEY_HOME" mapto="exit" flags="m"/>
-		<key id="KEY_YELLOW" mapto="exit" flags="l"/>
+		<key id="KEY_BLUE" mapto="exit" flags="l"/>
 		<key id="KEY_POWER" mapto="exit" flags="m"/>
 	</map>
 
@@ -505,6 +504,27 @@
 		<key id="KEY_PREVIOUS" mapto="prevService" flags="m"/>
 		<key id="KEY_TIME" mapto="timerAdd" flags="m"/>
 		<key id="KEY_TV2" mapto="preview" flags="m"/>
+		<key id="KEY_REWIND" mapto="prevDay" flags="m"/>
+		<key id="KEY_FASTFORWARD" mapto="nextDay" flags="m"/>
+	</map>
+
+	<map context="GMEPGSelectActions">
+		<key id="KEY_GREEN" mapto="timerAdd" flags="m"/>
+		<key id="KEY_YELLOW" mapto="yellow" flags="mr"/>
+		<key id="KEY_BLUE" mapto="blue" flags="b"/>
+		<key id="KEY_BLUE" mapto="blue_long" flags="l"/>
+		<key id="KEY_RED" mapto="red" flags="m"/>
+		<key id="KEY_INFO" mapto="info" flags="m"/>
+		<key id="KEY_EPG" mapto="info" flags="m"/>
+		<key id="KEY_MENU" mapto="menu" flags="m"/>
+		<key id="KEY_PAGEUP" mapto="nextBouquet" flags="m"/>
+		<key id="KEY_PAGEDOWN" mapto="prevBouquet" flags="m"/>
+		<key id="KEY_NEXT" mapto="nextService" flags="m"/>
+		<key id="KEY_PREVIOUS" mapto="prevService" flags="m"/>
+		<key id="KEY_TIME" mapto="timerAdd" flags="m"/>
+		<key id="KEY_AUX" mapto="preview" flags="b"/>
+		<key id="KEY_TV2" mapto="preview" flags="m"/>
+		<key id="KEY_AUX" mapto="window" flags="l"/>
 		<key id="KEY_REWIND" mapto="prevDay" flags="m"/>
 		<key id="KEY_FASTFORWARD" mapto="nextDay" flags="m"/>
 	</map>
