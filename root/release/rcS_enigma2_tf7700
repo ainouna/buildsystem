@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 190617.1
+#Version 200722.1
 
 echo "Topfield TF77X0HDPVR Enigma2"
 
@@ -22,6 +22,7 @@ insmod $MODDIR/simu_button.ko
 tffpctl --keyemulationmode 2
 
 if [ -e /var/etc/.firstboot ]; then
+   echo "config.plugins.remotecontroltype.rctype=11" >> /etc/enigma2/settings
    echo "WAIT" > /dev/fpsmall
    echo "3 minutes" > /dev/fplarge
    rm /var/etc/.firstboot
@@ -70,7 +71,7 @@ if [ ! -e /boot/audio.elf ] || [ ! -e /boot/video.elf ]; then
 fi
 
 echo "[rcS] Load audio firmware (LOAD 8)"
-echo "   8"  > /dev/fpsmall
+echo "   8" > /dev/fpsmall
 dtsdown=`cat /etc/enigma2/settings | grep systemoptions.dtsdownmix | cut -d "=" -f2`
 if [ ! $dtsdown ] && [ -e /boot/audio_dts.elf ]; then
    /bin/ustslave /dev/st231-1 /boot/audio_dts.elf > /dev/null
@@ -79,23 +80,23 @@ else
 fi
 
 echo "[rcS] Load video firmware (LOAD 7)"
-echo "   7"  > /dev/fpsmall
+echo "   7" > /dev/fpsmall
 bin/ustslave /dev/st231-0 /boot/video.elf > /dev/null
 
 echo "[rcS] Init embx (LOAD 6)"
-echo "   6"  > /dev/fpsmall
+echo "   6" > /dev/fpsmall
 insmod $MODDIR/embxshell.ko
 insmod $MODDIR/embxmailbox.ko mailbox0=0xb9211000:136:set2 mailbox1=0xb9212000:0 ;
 insmod $MODDIR/embxshm.ko mailbox0=shm:0:7:0x60000000:0:256:256:0:1024:0xa4000000:0x10000000 ;
 insmod $MODDIR/mme_host.ko transport0=shm
 
 echo "[rcS] Init AVS (LOAD 5)" 
-echo "   5"  > /dev/fpsmall
+echo "   5" > /dev/fpsmall
 insmod $MODDIR/avs.ko type=stv6412
 
 player=`cat /proc/stb/player/version | awk '{ print substr( $0, length($0) - 2, length($0) ) }'`
 echo "[rcS] Init player $player (LOAD 4)"
-echo "   4"  > /dev/fpsmall
+echo "   4" > /dev/fpsmall
 insmod $MODDIR/mmelog.ko
 insmod $MODDIR/mpeg2hw.ko mmeName=MPEG2_TRANSFORMER1
 insmod $MODDIR/ksound.ko
@@ -113,18 +114,9 @@ if [ $? -ne 0 ]; then
 else
    echo "[rcS] Full feature pti"
 fi
-if [ $player=='player191' ]; then
-   insmod $MODDIR/stm_monitor.ko
-   insmod $MODDIR/stmsysfs.ko
-   insmod $MODDIR/stmdvb.ko
-elif [ $player=='player179' ]; then
-   insmod $MODDIR/stm_monitor.ko
-   insmod $MODDIR/stmsysfs.ko
-    insmod $MODDIR/stmdvb.ko
-else
-   insmod $MODDIR/stmdvb.ko
-   insmod $MODDIR/stm_monitor.ko
-fi
+insmod $MODDIR/stm_monitor.ko
+insmod $MODDIR/stmsysfs.ko
+insmod $MODDIR/stmdvb.ko
 
 echo "[rcS] Init eplayer2 (LOAD 3)"
 echo "   3" > /dev/fpsmall
@@ -135,7 +127,7 @@ insmod $MODDIR/platform.ko
 insmod $MODDIR/silencegen.ko
 
 insmod $MODDIR/bpamem.ko
-mknod /dev/bpamem c 153 0 
+mknod /dev/bpamem c 153 0
 
 if [ -e /boot/bootlogo.mvi ]; then
    showiframe -p /boot/bootlogo.mvi &
@@ -183,14 +175,14 @@ echo "   1" > /dev/fpsmall
 
 NFS=`grep -c nfs /proc/cmdline`
 if [ "$NFS" -eq "1" ]; then
-   echo "Booting from nfs, don't set network"
+   echo "Booting from nfs, do not set network"
 else
    if [ -e /etc/network/interfaces ]; then
       ip addr flush eth0
       /etc/init.d/networking stop
       DHCP=`grep -c 'iface eth0 inet dhcp' /etc/network/interfaces`
       if [ "$DHCP" -eq "1" ]; then
-         echo "Starting DHCP on eth0"
+         echo "[rcS] Starting DHCP on eth0"
          /etc/init.d/udhcpc start
       fi
       /etc/init.d/networking start &
@@ -215,8 +207,8 @@ fi
 
 # Try and synchronise time
 #inettime=`cat /etc/enigma2/settings | grep systemoptions.inettime | cut -d "=" -f2`
-# if [ ! $inettime ] && [ -e /sbin/ntpdate ]; then
-#if [ -e /sbin/ntpdate ]; then
+# if [ ! $inettime ] && [ -e /sbin/ntpd ]; then
+#if [ -e /sbin/ntpd ]; then
    echo "[rcS] Set internet time"
    (ntpd -n -p 0.europe.pool.ntp.org -q; tffpctl --syncfptime)
 #else
@@ -232,7 +224,7 @@ echo "ENIGMA 2" > /dev/fplarge
 
 until false
 do
-   echo "[rcS] Entering e2 main loop"
+   echo "[rcS] Entering E2 main loop"
    if [ -e /usr/local/share/enigma2/backdrop.mvi ]; then
       showiframe -p /usr/local/share/enigma2/backdrop.mvi &
    fi
@@ -245,7 +237,7 @@ do
    case "$rtv" in
       0) echo "[rcS] E2 ERROR"
          echo "E2 ERROR" > /dev/fplarge
-         #kill tuxtxt because it inhibits e2 from
+         #kill tuxtxt because it inhibits E2 from
          #restart after a crash. Of course this could
          #be done better ;-)
          /usr/bin/killall tuxtxt

@@ -1,15 +1,25 @@
 #!/bin/sh
+#Version 200722.1
+
+echo "Kathrein UFS913 Enigma2"
 
 MODDIR=/lib/modules
+
 insmod $MODDIR/e2_proc.ko
-insmod $MODDIR/kathrein_micom.ko paramDebug=0
+
+echo "[rcS] Init frontpanel"
+insmod $MODDIR/kathrein_micom.ko # paramDebug=0
 
 if [ -e /var/etc/.firstboot ]; then
+   echo "config.plugins.remotecontroltype.rctype=12" >> /etc/enigma2/settings
    #fp_control does not work here
    echo "WAIT 1 min" >/dev/vfd
    echo "WAIT 1 min"
    rm /var/etc/.firstboot
    touch /dev/.devfsd
+else
+   echo "LOAD 10" > /dev/vfd
+   echo "[rcS] LOAD 10"
 fi
 
 /etc/init.d/mountvirtfs start
@@ -27,7 +37,7 @@ if [ ! -e /var/etc/.firstboot ]; then
    NFS=`grep -c nfs /proc/cmdline`
    if [ "$NFS" -eq "1" ]; then
       # We can not correct the mac from userspace if we are booting from nfsroot
-      echo "Booting from nfs, don't set network"
+      echo "Booting from nfs, do not set network"
    else
       HWADDR=`strings /dev/mtdblock2 | tail -n 1`
       ifconfig eth0 down
@@ -182,8 +192,10 @@ if [ ! -e /var/etc/.firstboot ]; then
 		   echo "ERROR"
            init 6;;
       esac
-   done 
+   done
 fi
 
 #never reached
-
+echo "[rcS] REBOOT UFS913"
+echo "REBOOT" > /dev/vfd
+reboot -f

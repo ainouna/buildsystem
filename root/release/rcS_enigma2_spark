@@ -15,8 +15,9 @@ if [ -e $MODDIR/encrypt.ko ]; then
 fi
 
 if [ -e /var/etc/.firstboot ]; then
-   echo "1MIN" >/dev/vfd
-   echo "WAIT 1 minute"
+   echo "config.plugins.remotecontroltype.rctype=10" >> /etc/enigma2/settings
+   echo "1MIN" > /dev/vfd
+   echo "[rcS] WAIT 1 minute"
    rm /var/etc/.firstboot
    sleep 1
    touch /dev/.devfsd
