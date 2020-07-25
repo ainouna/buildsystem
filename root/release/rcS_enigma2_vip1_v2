@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 200722.1
+#Version 200725.1
 
 echo "Edision Argus VIP1 (pluggable tuner) Enigma2"
 
@@ -8,7 +8,7 @@ MODDIR=/lib/modules
 insmod $MODDIR/e2_proc.ko
 
 echo "[rcS] Init frontpanel"
-insmod $MODDIR/aotom.ko # paramDebug=20
+insmod $MODDIR/aotom.ko #paramDebug=20
 insmod $MODDIR/simu_button.ko
 if [ -e $MODDIR/encrypt.ko ]; then
    insmod $MODDIR/encrypt.ko
@@ -94,11 +94,11 @@ insmod $MODDIR/stmvbi.ko
 insmod $MODDIR/pseudocard.ko
 
 echo "[rcS] Init frontends"
-#demodulator type: stb0899, stv090x, cx24116, ce6353, tda10023(default stb0899)
-#tuner type: stb6100, stv6110x, sharp7306, sharp6465, lg031(default stb6100)
-insmod $MODDIR/fe-core.ko demod=stv090x tuner=sharp7306 paramDebug=100
+#demodulator type: stv090x, ce6353, tda10023 (default stv090x)
+#tuner type: stv6110x, sharp7306, sharp6465, lg031 (default sharp7306)
+insmod $MODDIR/fe-core.ko demod=stv090x tuner=sharp7306 #paramDebug=20
 
-insmod $MODDIR/cimax.ko
+insmod $MODDIR/cimax.ko #paramDebug=20
 insmod $MODDIR/pti.ko waitMS=20 videoMem=4096
 if [ $? -ne 0 ]; then
    insmod $MODDIR/pti.ko
@@ -117,7 +117,7 @@ insmod $MODDIR/sth264pp.ko
 insmod $MODDIR/stmalloc.ko
 insmod $MODDIR/platform.ko
 
-# insmod $MODDIR/smartcard.ko
+insmod $MODDIR/smartcard.ko
 
 if [ -e $MODDIR/usb_serial.ko ]; then
   insmod $MODDIR/usb_serial.ko
