@@ -1,4 +1,4 @@
-# revision dfb4739a2f606b5e8d3702f1238b97f4f422fcb1 29/05/2020 12:27
+# revision 7d9234baf5230e16b53dbfa475dd1517f989f2e4 22/07/2020 15:19
 --- enigma2.org/configure.ac
 +++ enigma2/configure.ac
 @@ -18,6 +18,7 @@
@@ -9,7 +9,7 @@
  AX_PYTHON_DEVEL
  AX_PKG_SWIG
  AX_SWIG_ENABLE_CXX
-@@ -35,6 +36,276 @@
+@@ -35,6 +36,303 @@
  PKG_CHECK_MODULES(LIBDDVD, libdreamdvd, HAVE_LIBDDVD="yes", HAVE_LIBDDVD="no")
  AM_CONDITIONAL(HAVE_LIBDDVD, test "$HAVE_LIBDDVD" = "yes")
  PKG_CHECK_MODULES(AVAHI, avahi-client)
@@ -275,6 +275,33 @@
 +	AC_DEFINE(ENABLE_VITAMIN_HD5000, 1, [enable vitamin_hd5000 stuff])
 +fi
 +
++AC_ARG_ENABLE(hl101,
++	[  --enable-hl101            enable hl101 stuff],
++	[AC_DEFINE(ENABLE_HL101, 1, [enable hl101 stuff])])
++
++AM_CONDITIONAL(ENABLE_HL101, test "$enable_hl101" = "yes")
++if test "$enable_hl101" = "yes"; then
++	AC_DEFINE(ENABLE_HL101, 1, [enable hl101 stuff])
++fi
++
++AC_ARG_ENABLE(vip1_v2,
++	[  --enable-vip1_v2          enable vip1_v2 stuff],
++	[AC_DEFINE(ENABLE_VIP1_V2, 1, [enable vip1_v2 stuff])])
++
++AM_CONDITIONAL(ENABLE_VIP1_V2, test "$enable_vip1_v2" = "yes")
++if test "$enable_vip1_v2" = "yes"; then
++	AC_DEFINE(ENABLE_VIP1_V2, 1, [enable vip1_v2 stuff])
++fi
++
++AC_ARG_ENABLE(vip2_v1,
++	[  --enable-vip2_v1          enable vip2_v1 stuff],
++	[AC_DEFINE(ENABLE_VIP2_V1, 1, [enable vip2_v1 stuff])])
++
++AM_CONDITIONAL(ENABLE_VIP2_V1, test "$enable_vip2_v1" = "yes")
++if test "$enable_vip2_v1" = "yes"; then
++	AC_DEFINE(ENABLE_VIP2_V1, 1, [enable vip2_v1 stuff])
++fi
++
 +AC_ARG_ENABLE(pace7241,
 +	[  --enable-pace7241        enable pace7241 stuff],
 +	[AC_DEFINE(ENABLE_PACE7241, 1, [enable pace7241 stuff])])
@@ -286,7 +313,7 @@
  
  AC_CHECK_LIB([udfread], [udfread_init])
  AC_CHECK_LIB([dl], [dlopen], [LIBDL_LIBS="-ldl"], [AC_MSG_ERROR([Could not find libdl])])
-@@ -51,8 +322,8 @@
+@@ -51,8 +349,8 @@
  AC_DEFINE_UNQUOTED(CRASH_EMAILADDR,"$CRASHLOGEMAIL",[crash log email address])
  
  AC_ARG_WITH(boxtype,
@@ -297,7 +324,7 @@
  AC_SUBST(BOXTYPE)
  AC_DEFINE_UNQUOTED(BOXTYPE,"$BOXTYPE",[box type])
  
-@@ -79,19 +350,6 @@
+@@ -79,19 +377,6 @@
  	[[TEXTSKIN="default"]]
  )
  AC_SUBST(TEXTSKIN)
@@ -317,7 +344,7 @@
  
  AC_ARG_WITH(libsdl,
  	AS_HELP_STRING([--with-libsdl],[use libsdl, yes or no]),
-@@ -141,8 +399,8 @@
+@@ -141,8 +426,8 @@
  
  AC_ARG_WITH(alsa,
  	AC_HELP_STRING([--with-alsa], [Enable ALSA support]),
@@ -328,7 +355,7 @@
  )
  if test x"$with_alsa" == xyes ; then
  	AC_DEFINE(HAVE_ALSA, 1,[Enables ALSA support])
-@@ -196,6 +454,26 @@
+@@ -196,6 +481,26 @@
  elif test x"$with_alphablendingacceleration" = xalways ; then
  	AC_DEFINE_UNQUOTED(FORCE_ALPHABLENDING_ACCELERATION, 1, [Accelerate alphablending blits])
  fi
@@ -355,7 +382,7 @@
  
  AC_ARG_WITH(accelerationthreshold,
  	AC_HELP_STRING([--with-accelerationthreshold=n], [use acceleration threshold of n bytes]),
-@@ -303,8 +581,6 @@
+@@ -303,8 +608,6 @@
  lib/python/Plugins/Extensions/SocketMMI/meta/Makefile
  lib/python/Plugins/Extensions/SocketMMI/src/Makefile
  lib/python/Plugins/PLi/Makefile
@@ -364,7 +391,7 @@
  lib/python/Plugins/SystemPlugins/DefaultServicesScanner/Makefile
  lib/python/Plugins/SystemPlugins/DefaultServicesScanner/meta/Makefile
  lib/python/Plugins/SystemPlugins/DiseqcTester/Makefile
-@@ -332,6 +608,60 @@
+@@ -332,6 +635,60 @@
  lib/python/Plugins/SystemPlugins/Videomode/meta/Makefile
  lib/python/Plugins/SystemPlugins/WirelessLan/Makefile
  lib/python/Plugins/SystemPlugins/WirelessLan/meta/Makefile
@@ -505,7 +532,7 @@
  			int i, j = 0;	   // remove leading whitespace and control chars, and comments
 --- enigma2.org/lib/base/estring.cpp
 +++ enigma2/lib/base/estring.cpp
-@@ -637,10 +637,10 @@
+@@ -692,10 +692,10 @@
  		eLog(6, "[convertDVBUTF8] %d chars converted, and %d chars left..", convertedLen, len-convertedLen);
  	eLog(6, "[convertDVBUTF8] table=0x%02X twochar=%d output:%s\n", table, useTwoCharMapping, output.c_str());
  
@@ -520,7 +547,7 @@
  
  	return output;
  }
-@@ -940,13 +940,13 @@
+@@ -995,13 +995,13 @@
      return output;
  }
  
@@ -543,7 +570,7 @@
  {
 --- enigma2.org/lib/base/estring.h
 +++ enigma2/lib/base/estring.h
-@@ -32,7 +32,7 @@
+@@ -33,7 +33,7 @@
  
  std::string urlDecode(const std::string &s);
  std::string string_to_hex(const std::string& input);
@@ -779,7 +806,7 @@
  		{
 --- enigma2.org/lib/driver/vfd.cpp
 +++ enigma2/lib/driver/vfd.cpp
-@@ -0,0 +1,879 @@
+@@ -0,0 +1,913 @@
 +/*
 + * vfd.cpp
 + *
@@ -826,6 +853,7 @@
 + * 20190518 Audioniek       vitamin_hd5000 added.
 + * 20200417 Audioniek       adb_box added.
 + * 20200508 Audioniek       pace7241 added.
++ * 20200719 Audioniek       hl101, vip1_v2 and vip2_v1 added.
 + *
 + ****************************************************************************/
 +#include <stdarg.h>
@@ -857,9 +885,9 @@
 +
 +bool startloop_running = false;
 +static bool icon_onoff[45];
-+//static bool icon_onoff[LAST_ICON];
++// static bool icon_onoff[LAST_ICON];
 +static int led_onoff[7];
-+//static int led_onoff[LAST_LED];
++// static int led_onoff[LAST_LED];
 +static pthread_t thread_start_loop = 0;
 +void *start_loop (void *arg);
 +bool blocked    = false;
@@ -891,7 +919,10 @@
 +#elif defined (ENABLE_OCTAGON1008) \
 +   || defined (ENABLE_HS7420) \
 +   || defined (ENABLE_HS7429) \
-+   || defined (ENABLE_SPARK7162)
++   || defined (ENABLE_SPARK7162) \
++   || defined (ENABLE_HL101) \
++   || defined (ENABLE_VIP1_V2) \
++   || defined (ENABLE_VIP2_V1)
 +	#define VFDLENGTH 8
 +#elif defined (ENABLE_VITAMIN_HD5000)
 +	#define VFDLENGTH 11
@@ -933,19 +964,27 @@
 +	vfd_type = 6;
 +#elif defined (ENABLE_OCTAGON1008)
 +	vfd_type = 7;
-+#elif defined (ENABLE_SPARK7162)
++#elif defined (ENABLE_SPARK7162) \
++   || defined (ENABLE_HL101) \
++   || defined (ENABLE_VIP1_V2) \
++   || defined (ENABLE_VIP2_V1)
 +	vfd_type = 8;
-+#elif defined (ENABLE_HS7810A) || defined (ENABLE_HS7819) || defined (ENABLE_HS7119)
++#elif defined (ENABLE_HS7810A) \
++   || defined (ENABLE_HS7819) \
++   || defined (ENABLE_HS7119)
 +	vfd_type = 9;
 +#elif defined (ENABLE_HS7110)
 +	vfd_type = 10;
-+#elif defined (ENABLE_HS7420) || defined (ENABLE_HS7429)
++#elif defined (ENABLE_HS7420) \
++   || defined (ENABLE_HS7429)
 +	vfd_type = 11;
-+#elif defined (ENABLE_UFS912) || defined (ENABLE_UFS913)
++#elif defined (ENABLE_UFS912) \
++   || defined (ENABLE_UFS913)
 +	vfd_type = 12;
 +#elif defined (ENABLE_CUBEREVO)
 +	vfd_type = 13;
-+#elif defined (ENABLE_CUBEREVO_MINI_FTA) || defined (ENABLE_CUBEREVO_250HD)
++#elif defined (ENABLE_CUBEREVO_MINI_FTA) \
++   || defined (ENABLE_CUBEREVO_250HD)
 +	vfd_type = 14;
 +#elif defined (ENABLE_CUBEREVO_MINI) \
 +   || defined (ENABLE_CUBEREVO_MINI2) \
@@ -977,7 +1016,7 @@
 +
 +#if defined (ENABLE_TF7700)
 +
-+char * getProgress()
++char *getProgress()
 +{
 +	int n;
 +	static char progress[20] = "0";
@@ -994,7 +1033,7 @@
 +	{
 +		n = 0;
 +	}
-+	else if((n > 1) && (progress[n-1] == 0xa))
++	else if((n > 1) && (progress[n- 1] == 0xa))
 +	{
 +		n--;
 +	}
@@ -1002,7 +1041,7 @@
 +	return progress;
 +}
 +
-+void * start_loop (void *arg)
++void *start_loop (void *arg)
 +{
 +	int fplarge = open ("/dev/fplarge", O_WRONLY);
 +	int fpsmall = open ("/dev/fpsmall", O_WRONLY);
@@ -1030,7 +1069,7 @@
 +	frontpanel_ioctl_icons icons = {0, 0, 0xf};
 +
 +	// start the display loop
-+	char * progress = getProgress();
++	char *progress = getProgress();
 +	int index = 2;
 +	while (!requested)
 +	{
@@ -1087,9 +1126,9 @@
 +
 +	return NULL;
 +}
-+#else  //next code for boxes other than Topfield TF77X0HDPVR
++#else  // next code for boxes other than Topfield TF77X0HDPVR
 +
-+void * start_loop (void *arg)
++void *start_loop (void *arg)
 +{
 +	evfd vfd;
 +	blocked = true;
@@ -1139,6 +1178,12 @@
 +		char str[] = "nBox Enigma2";
 +	#elif defined (ENABLE_PACE7241)
 +		char str[] = "Pace 7241 Enigma2";
++	#elif defined (ENABLE_HL101)
++		char str[] = "HL101 E2";
++	#elif defined (ENABLE_VIP1_V2)
++		char str[] = "VIP E2";
++	#elif defined (ENABLE_VIP2_V1)
++		char str[] = "VIP2 E2";
 +	#else
 +		char str[] = "SH4 Git Enigma2";
 +	#endif
@@ -1146,7 +1191,7 @@
 +	write(vfddev, str, strlen(str));
 +	close(vfddev);
 +
-+	/*these boxes can control display brightness*/
++	/* These boxes can control display brightness */
 +	#if !defined (ENABLE_FORTIS_HDBOX) \
 +	 && !defined (ENABLE_OCTAGON1008) \
 +	 && !defined (ENABLE_ATEVIO7500) \
@@ -1168,73 +1213,76 @@
 +	 && !defined (ENABLE_HS7819) \
 +	 && !defined (ENABLE_VITAMIN_HD5000) \
 +	 && !defined (ENABLE_ADB_BOX) \
-+	 && !defined (ENABLE_PACE7241)
++	 && !defined (ENABLE_PACE7241) \
++	 && !defined (ENABLE_HL101) \
++	 && !defined (ENABLE_VIP1_V2) \
++	 && !defined (ENABLE_VIP2_V1)
 +	/* Others cycle their icons */
 +	for (int vloop = 0; vloop < 128; vloop++)
 +	{
-+		if (vloop%2 == 1)
++		if (vloop % 2 == 1)
 +		{
-+			vfd.vfd_set_icon((((vloop%32)/2)%16), ICON_OFF, true);
++			vfd.vfd_set_icon((((vloop % 32) / 2) % 16), ICON_OFF, true);
 +			usleep(2000);
-+			vfd.vfd_set_icon(((((vloop%32)/2)%16)+1), ICON_ON, true);
++			vfd.vfd_set_icon(((((vloop % 32) / 2) % 16) + 1), ICON_ON, true);
 +		}
 +	}
-+	#else //modulate brightness 3 times
++	#else // Modulate brightness 3 times
 +	for (int vloop = 0; vloop < 3 * 14; vloop++)
 +	{
-+		if (vloop%14 == 0)
++		if (vloop % 14 == 0)
 +		{
 +			vfd.vfd_set_brightness(6);
 +		}
-+		else if (vloop%14 == 1)
++		else if (vloop % 14 == 1)
 +		{
 +			vfd.vfd_set_brightness(5);
 +		}
-+		else if (vloop%14 == 2)
++		else if (vloop % 14 == 2)
 +		{
 +			vfd.vfd_set_brightness(4);
 +		}
-+		else if (vloop%14 == 3)
++		else if (vloop % 14 == 3)
 +		{
 +			vfd.vfd_set_brightness(3);
 +		}
-+		else if (vloop%14 == 4)
++		else if (vloop % 14 == 4)
 +		{
 +			vfd.vfd_set_brightness(2);
 +		}
-+		else if (vloop%14 == 5)
++		else if (vloop % 14 == 5)
 +		{
 +			vfd.vfd_set_brightness(1);
 +		}
-+		else if (vloop%14 == 6)
++		else if (vloop % 14 == 6)
 +		{
 +			vfd.vfd_set_brightness(0);
 +		}
-+		else if (vloop%14 == 7)
++		else if (vloop % 14 == 7)
 +		{
 +			vfd.vfd_set_brightness(1);
 +		}
-+		else if (vloop%14 == 8)
++		else if (vloop % 14 == 8)
 +		{
 +			vfd.vfd_set_brightness(2);
 +		}
-+		else if (vloop%14 == 9)
++		else if (vloop % 14 == 9)
 +		{
 +			vfd.vfd_set_brightness(3);
 +		}
-+		else if (vloop%14 == 10)
++		else if (vloop % 14 == 10)
 +		{
 +			vfd.vfd_set_brightness(4);
 +		}
-+		else if (vloop%14 == 11)
++		else if (vloop % 14 == 11)
 +		{
 +			vfd.vfd_set_brightness(5);
 +		}
-+		else if (vloop%14 == 12)
++		else if (vloop % 14 == 12)
 +		{
 +			vfd.vfd_set_brightness(6);
 +		}
-+		else if (vloop%14 == 13)
++		else if (vloop % 14 == 13)
 +		{
 +			vfd.vfd_set_brightness(7);
 +		}
@@ -1257,8 +1305,11 @@
 +	 && !defined (ENABLE_SPARK7162) \
 +	 && !defined (ENABLE_VITAMIN_HD5000) \
 +	 && !defined (ENABLE_ADB_BOX) \
-+	 && !defined (ENABLE_PACE7241)
-+	//set all blocked icons
++	 && !defined (ENABLE_PACE7241) \
++	 && !defined (ENABLE_HL101) \
++	 && !defined (ENABLE_VIP1_V2) \
++	 && !defined (ENABLE_VIP2_V1)
++	// Set all blocked icons
 +	for (int id = 0x10; id < 0x20; id++)
 +	{
 +		vfd.vfd_set_icon(id, icon_onoff[id]);
@@ -1289,14 +1340,17 @@
 + || defined (ENABLE_HS7819) \
 + || defined (ENABLE_VITAMIN_HD5000) \
 + || defined (ENABLE_ADB_BOX) \
-+ || defined (ENABLE_PACE7241)
-+void evfd::vfd_write_string_scrollText(char* text)
++ || defined (ENABLE_PACE7241) \
++ || defined (ENABLE_HL101) \
++ || defined (ENABLE_VIP1_V2) \
++ || defined (ENABLE_VIP2_V1)
++void evfd::vfd_write_string_scrollText(char *text)
 +{
 +	return;
 +}
 +
 +// We cannot use a member function (vfd_write_string_scrollText) in pthread,
-+// so we use a second (same content) non member function (vfd_write_string_scrollText1)
++// so we use a second (same content) non-member function (vfd_write_string_scrollText1)
 +static void *vfd_write_string_scrollText1(void *arg)
 +{
 +	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
@@ -1304,41 +1358,42 @@
 +	char out[VFDLENGTH + 1];
 +	int i, len;
 +	evfd vfd;
-+	len = strlen((char *) g_str);
++
++	len = strlen((char *)g_str);
 +	memset(out, ' ', VFDLENGTH + 1);
 +	while (scoll_loop && (len > VFDLENGTH))
 +	{
 +		if (blocked)
 +		{
-+			usleep(750000); //0.75s pause between scroll loops?
++			usleep(750000);  //0.75s pause between scroll loops
 +		}
 +		else
 +		{
 +			scoll_loop = false;
 +		}
-+		for (i = 0; i <= (len-VFDLENGTH); i++) //scroll part 1: write full string scrolling and wait 0.75s between scrolls
++		for (i = 0; i <= (len - VFDLENGTH); i++) //scroll part 1: write full string scrolling and wait 0.75s between scrolls
 +		{
 +			if (blocked)
 +			{
-+				memset(out, ' ', VFDLENGTH); //fill buffer with spaces
-+				memcpy(out, g_str+i, VFDLENGTH); ///then put string in
-+				vfd.vfd_write_string(out, true);  //print string on VFD
-+				usleep(750000); //0.75 sec character delay
++				memset(out, ' ', VFDLENGTH); // fill buffer with spaces
++				memcpy(out, g_str + i, VFDLENGTH); // then put string in
++				vfd.vfd_write_string(out, true);  // print string on VFD
++				usleep(750000);  // 0.75 sec character delay
 +			}
 +			else
 +			{
 +				scoll_loop = false;
-+				i = len-VFDLENGTH;
++				i = len - VFDLENGTH;
 +			}
 +		}
-+		for (i = 1; i <= VFDLENGTH; i++) //scroll part 2: write full string shifted 1 character scrolling and wait 0.75s between scrolls
++		for (i = 1; i <= VFDLENGTH; i++) // scroll part 2: write full string shifted 1 character scrolling and wait 0.75s between scrolls
 +		{
 +			if (blocked)
 +			{
 +				memset(out, ' ', VFDLENGTH); //fill buffer with spaces
-+				memcpy(out, g_str+len+i-VFDLENGTH, VFDLENGTH-i); // copy string shifted 1 character
++				memcpy(out, g_str + len + i - VFDLENGTH, VFDLENGTH - i);  // copy string shifted 1 character
 +				vfd.vfd_write_string(out, true);
-+				usleep(750000); //0.75 sec character delay
++				usleep(750000);  // 0.75 sec character delay
 +			}
 +			else
 +			{
@@ -1347,14 +1402,14 @@
 +			}
 +		}
 +		memcpy(out, g_str, VFDLENGTH);
-+		vfd.vfd_write_string(out, true); //final display: write 1st VFDLENGTH characters
++		vfd.vfd_write_string(out, true);  // final display: write 1st VFDLENGTH characters
 +		if (VFD_SCROLL != 2 || !blocked)
 +		{
 +			scoll_loop = false;
 +		}
 +		else
 +		{
-+			sleep(1); // 1 sec delay between loops
++			sleep(1);  // 1 sec delay between loops
 +		}
 +	}
 +	blocked = false;
@@ -1374,10 +1429,10 @@
 +		pthread_join(thread_start_loop, NULL);
 +		blocked = false;
 +	}
-+	memset(g_str, ' ', 64); //clear scroll buffer
-+	strcpy(g_str, str); //and set display string in it
-+	vfd_write_string(str, false); //initial display: 1st VFDLENGTH characters
-+	if (i > VFDLENGTH && VFD_SCROLL) //if string longer than display and scroll mode
++	memset(g_str, ' ', 64); // clear scroll buffer
++	strcpy(g_str, str);  // and set display string in it
++	vfd_write_string(str, false);  // initial display: 1st VFDLENGTH characters
++	if (i > VFDLENGTH && VFD_SCROLL)  // if string longer than display and scroll mode
 +	{
 +		blocked = true;
 +		pthread_create(&thread_start_loop, NULL, vfd_write_string_scrollText1, (void *)str);
@@ -1389,6 +1444,8 @@
 +{
 +	int ws = 0;
 +	int i = strlen(str);
++	struct vfd_ioctl_data data;
++
 +	if (VFD_CENTER == true)
 +	{
 +		if (i < VFDLENGTH)
@@ -1405,9 +1462,6 @@
 +	{
 +		i = VFDLENGTH;
 +	}
-+
-+	struct vfd_ioctl_data data;
-+
 +	memset(data.data, ' ', VFDLENGTH);
 +	if (VFD_CENTER == true)
 +	{
@@ -1465,7 +1519,7 @@
 +		data.length = i;
 +
 +		file_vfd = open (VFD_DEVICE, O_WRONLY);
-+		ioctl (file_vfd, VFDDISPLAYCHARS, &data );
++		ioctl (file_vfd, VFDDISPLAYCHARS, &data);
 +		close (file_vfd);
 +	}
 +}
@@ -1477,20 +1531,20 @@
 +		int i, len = strlen(text);
 +		char* out = (char *) malloc(63);
 +		for (i = 0; i <= (len-63); i++)
-+		{ // scroll text until end
++		{  // scroll text until end
 +			memset(out, ' ', 63);
 +			memcpy(out, text + i, 63);
 +			vfd_write_string(out);
 +			usleep(750000);
 +		}
 +		for (i = 1; i < 63; i++)
-+		{ // scroll text with whitespaces from right
++		{  // scroll text with whitespaces from right
 +			memset(out, ' ', 63);
-+			memcpy(out, text + len +i - 63, 63 - i);
++			memcpy(out, text + len + i - 63, 63 - i);
 +			vfd_write_string(out);
 +			usleep(750000);
 +		}
-+		memcpy(out, text, VFDLENGTH); //final: display first VFDLENGTH chars after scrolling
++		memcpy(out, text, VFDLENGTH);  // final: display first VFDLENGTH chars after scrolling
 +		vfd_write_string(out);
 +		free (out);
 +	}
@@ -1553,7 +1607,10 @@
 +{
 +	int id;
 +
-+	#if defined (ENABLE_SPARK7162)
++	#if defined (ENABLE_SPARK7162) \
++	 || defined (ENABLE_HL101) \
++	 || defined (ENABLE_VIP1_V2) \
++	 || defined (ENABLE_VIP2_V1)
 +		for (id = 1; id < 46; id++)
 +	#elif defined (ENABLE_FORTIS_HDBOX)
 +		for (id = 1; id < 40; id++)
@@ -1561,15 +1618,20 @@
 +		for (id = 1; id < 29; id++)
 +	#elif defined (ENABLE_ATEVIO7500)
 +		for (id = 1; id < 23; id++);
-+	#elif defined (ENABLE_UFS912) || defined (ENABLE_UFS913)
++	#elif defined (ENABLE_UFS912) \
++	 ||   defined (ENABLE_UFS913)
 +		for (id = 1; id < 16; id++)
 +	#elif defined (ENABLE_CUBEREVO)
 +		for (id = 1; id < 28; id++)
-+	#elif defined (ENABLE_CUBEREVO_MINI) || defined (ENABLE_CUBEREVO_MINI2) || defined (ENABLE_CUBEREVO_2000HD) || defined (ENABLE_CUBEREVO_3000HD)
++	#elif defined (ENABLE_CUBEREVO_MINI) \
++	 ||   defined (ENABLE_CUBEREVO_MINI2) \
++	 ||   defined (ENABLE_CUBEREVO_2000HD) \
++	 ||   defined (ENABLE_CUBEREVO_3000HD)
 +		for (id = 1; id < 7; id++)
 +	#elif defined (ENABLE_VITAMIN_HD5000)
 +		for (id = 1; id < 17; id++)
-+	#elif defined (ENABLE_ADB_BOX) || defined (ENABLE_PACE7241)
++	#elif defined (ENABLE_ADB_BOX) \
++	 ||   defined (ENABLE_PACE7241)
 +		for (id = 1; id < 21; id++)
 +	#else
 +		for (id = 0x10; id < 0x20; id++)
@@ -1643,11 +1705,11 @@
 +
 +void evfd::vfd_set_SCROLL(int id)
 +{
-+	if (id > 2)  //if more than 2, set 2 (scroll continously)
++	if (id > 2)  // if more than 2, set 2 (scroll continously)
 +	{
 +		id = 2;
 +	}
-+	if (id < 0) //if less than zero, set zero (no scroll)
++	if (id < 0)  // if less than zero, set zero (no scroll)
 +	{
 +		id = 0;
 +	}
@@ -2164,7 +2226,7 @@
  	spec.tid_mask = 0xFC;
 --- enigma2.org/lib/dvb/epgcache.cpp
 +++ enigma2/lib/dvb/epgcache.cpp
-@@ -2526,6 +2526,42 @@
+@@ -2523,6 +2523,42 @@
  {
  	int map;
  	iDVBSectionReader *reader = NULL;
@@ -2207,7 +2269,7 @@
  	switch (source)
  	{
  		case NOWNEXT:
-@@ -2650,6 +2686,10 @@
+@@ -2647,6 +2683,10 @@
  			cache->sectionRead(data, source, this);
  		}
  	}
@@ -5435,7 +5497,7 @@
  SystemInfo["Blindscan_t2_available"] = fileCheck("/proc/stb/info/vumodel")
  SystemInfo["RcTypeChangable"] = not(model.startswith("et8500") or model.startswith("et7")) and pathExists("/proc/stb/ir/rc/type")
 -SystemInfo["HasFullHDSkinSupport"] = model not in ("et4000", "et5000", "sh1", "hd500c", "hd1100", "xp1000", "lc")
-+SystemInfo["HasFullHDSkinSupport"] = HardwareInfo().get_device_model() in ("adb_box", "atevio7500", "cuberevo", "cuberevo_mini-fta", "cuberevo-250hd", "cuberevo-mini", "cuberevo-mini2", "cuberevo-2000hd", "cuberevo-3000hd", "cuberevo-9500hd", "hdbox", "hs7110", "hs7420", "hs7810a", "hs7119", "hs7429", "hs7819", "octagon1008", "spark", "spark7162", "tf7700hdpvr", "ufs912", "ufs913, vitamin_hd5000")
++SystemInfo["HasFullHDSkinSupport"] = HardwareInfo().get_device_model() in ("adb_box", "atevio7500", "cuberevo", "cuberevo_mini-fta", "cuberevo-250hd", "cuberevo-mini", "cuberevo-mini2", "cuberevo-2000hd", "cuberevo-3000hd", "cuberevo-9500hd", "hdbox", "hs7110", "hs7420", "hs7810a", "hs7119", "hs7429", "hs7819", "hl101", "octagon1008", "spark", "spark7162", "tf7700hdpvr", "ufs912", "ufs913", "vip1-v2", "vip2-v1", "vitamin-hd5000")
  SystemInfo["HasBypassEdidChecking"] = fileCheck("/proc/stb/hdmi/bypass_edid_checking")
  SystemInfo["HasColorspace"] = fileCheck("/proc/stb/video/hdmi_colorspace")
  SystemInfo["HasColorspaceSimple"] = SystemInfo["HasColorspace"] and model in "vusolo4k"
@@ -5444,7 +5506,7 @@
  SystemInfo["HasTranscoding"] = pathExists("/proc/stb/encoder/0") or fileCheck("/dev/bcm_enc0")
  SystemInfo["HasH265Encoder"] = fileHas("/proc/stb/encoder/0/vcodec_choices", "h265")
 -SystemInfo["CanNotDoSimultaneousTranscodeAndPIP"] = model in "vusolo4k"
-+SystemInfo["CanNotDoSimultaneousTranscodeAndPIP"] = False
++SystemInfo["CanNotDoSimultaneousTranscodeAndPIP"] = True
  SystemInfo["HasColordepth"] = fileCheck("/proc/stb/video/hdmi_colordepth")
  SystemInfo["HasFrontDisplayPicon"] = model in ("vusolo4k", "et8500")
  SystemInfo["Has24hz"] = fileCheck("/proc/stb/video/videomode_24hz")
@@ -5458,7 +5520,7 @@
 -SystemInfo["HasSVideo"] = model in ("dm8000")
 -SystemInfo["HasComposite"] = model not in ("i55", "gbquad4k", "gbue4k", "hd1500", "osnino", "osninoplus", "purehd", "purehdse", "revo4k", "vusolo4k", "vuzero4k")
 +SystemInfo["HasHDMI-CEC"] = fileExists("/lib/modules/cec.ko") and (fileExists("proc/stb/cec/send") or fileExists("stb/hdmi/cec"))
-+SystemInfo["HasYPbPr"] = HardwareInfo().get_device_model() in ("adb_box", "atevio7500", "cuberevo", "cuberevo-mini-fta", "cuberevo-250hd", "cuberevo-mini", "cuberevo-mini2", "cuberevo-2000hd", "cuberevo-3000hd", "cuberevo-9500hd", "hdbox", "octagon1008", "hs7420", "hs7429", "tf7700hdpvr", "ufs912", "ufs913", "vitamin_hd5000")
++SystemInfo["HasYPbPr"] = HardwareInfo().get_device_model() in ("adb_box", "atevio7500", "cuberevo", "cuberevo-mini-fta", "cuberevo-250hd", "cuberevo-mini", "cuberevo-mini2", "cuberevo-2000hd", "cuberevo-3000hd", "cuberevo-9500hd", "hdbox", "octagon1008", "hs7420", "hs7429", "hl101", "tf7700hdpvr", "ufs912", "ufs913", "vip1-v2", "vip2-v1", "vitamin-hd5000")
 +SystemInfo["HasScart"] = HardwareInfo().get_device_model() not in ("hs7110", "hs7119")
 +SystemInfo["HasSVideo"] = HardwareInfo().get_device_model() in ("cuberevo")
 +SystemInfo["HasComposite"] = HardwareInfo().get_device_model() not in ("cuberevo-mini-fta", "cuberevo-250hd")
@@ -7797,7 +7859,7 @@
  		self.__serviceStarted(True)
  		self.onExecBegin.remove(self.__checkServiceStarted)
  
-+	def toogleTvRadio(self): 
++	def toggleTvRadio(self): 
 +		service = self.session.nav.getCurrentService()
 +		info = service.info()
 +		AudioPID = info.getInfo(iServiceInformation.sAudioPID)
@@ -8176,7 +8238,7 @@
 +					if perc > 20:
 +						if os.path.isfile('/proc/stb/info/model'):
 +							model = str(open("/proc/stb/info/model").read())
-+							if model.startswith("spark7162") or model.startswith("tf7700hdpvr") or model.startswith("octagon1008") or model.startswith("hdbox") or model.startswith("atevio7500") or model.startswith("hs7420") or model.startswith("hs7429") or model.startswith("vitamin_hd5000"):
++							if model.startswith("spark7162") or model.startswith("tf7700hdpvr") or model.startswith("octagon1008") or model.startswith("hdbox") or model.startswith("atevio7500") or model.startswith("hs7420") or model.startswith("hs7429") or model.startswith("vitamin-hd5000") or model.startswith("hl101") or model.startswith("vip1-v2") or model.startswith("vip2-v1"):
 +								evfd.getInstance().vfd_write_string("START %02d" % perc)
 +							elif model.startswith("spark") or model.startswith("hs7119") or model.startswith("hs7810a") or model.startswith("hs7819"):
 +								evfd.getInstance().vfd_write_string("St%02d" % perc)
@@ -8655,7 +8717,7 @@
  	KEYIDS["KEY_0"]: ("0",),
  	KEYIDS["KEY_1"]: ("1",),
  	KEYIDS["KEY_2"]: ("2",),
-@@ -232,104 +230,204 @@
+@@ -232,54 +230,281 @@
  	KEYIDS["KEY_7"]: ("7",),
  	KEYIDS["KEY_8"]: ("8",),
  	KEYIDS["KEY_9"]: ("9",),
@@ -8664,6 +8726,7 @@
 -	KEYIDS["KEY_BOOKMARKS"]: ("PORTAL",),
 -	KEYIDS["KEY_CHANNELDOWN"]: ("BOUQUET-",),
 -	KEYIDS["KEY_CHANNELUP"]: ("BOUQUET+",),
+-	KEYIDS["KEY_DOWN"]: ("DOWN",),
 +	KEYIDS["KEY_TV2"]: ("TV/RADIO",),
 +	KEYIDS["KEY_BACK"]: ("RECALL",),
 +	KEYIDS["KEY_PAGEUP"]: ("PAGE+",),
@@ -8675,7 +8738,7 @@
 +	KEYIDS["KEY_MENU"]: ("MENU",),
 +	KEYIDS["KEY_INFO"]: ("INFO",),
 +	KEYIDS["KEY_UP"]: ("UP",),
- 	KEYIDS["KEY_DOWN"]: ("DOWN",),
++	KEYIDS["KEY_DOWN"]: ("DOWN",),
 +	KEYIDS["KEY_LEFT"]: ("LEFT",),
 +	KEYIDS["KEY_RIGHT"]: ("RIGHT",),
 +	KEYIDS["KEY_OK"]: ("OK", ""),
@@ -8694,77 +8757,19 @@
 +	KEYIDS["KEY_PAUSE"]: ("PAUSE",),
  	KEYIDS["KEY_FASTFORWARD"]: ("FASTFORWARD",),
 -	KEYIDS["KEY_GREEN"]: ("GREEN",),
--	KEYIDS["KEY_HELP"]: ("HELP",),
--	KEYIDS["KEY_INFO"]: ("INFO",),
--	KEYIDS["KEY_LEFT"]: ("LEFT",),
--	KEYIDS["KEY_MENU"]: ("MENU",),
--	KEYIDS["KEY_MUTE"]: ("MUTE",),
 +	KEYIDS["KEY_REWIND"]: ("REWIND",),
 +	KEYIDS["KEY_PREVIOUS"]: ("ARROWLEFT",),
- 	KEYIDS["KEY_NEXT"]: ("ARROWRIGHT",),
--	KEYIDS["KEY_NEXTSONG"]: ("NEXTSONG",),
--	KEYIDS["KEY_OK"]: ("OK",),
--	KEYIDS["KEY_PLAY"]: ("PLAY",),
--	KEYIDS["KEY_PLAYPAUSE"]: ("PLAYPAUSE",),
--	KEYIDS["KEY_POWER"]: ("POWER",),
--	KEYIDS["KEY_PREVIOUS"]: ("ARROWLEFT",),
--	KEYIDS["KEY_PREVIOUSSONG"]: ("PREVIOUSSONG",),
--	KEYIDS["KEY_PROGRAM"]: ("TIMER",),
--	KEYIDS["KEY_RADIO"]: ("RADIO",),
--	KEYIDS["KEY_RECORD"]: ("RECORD",),
--	KEYIDS["KEY_RED"]: ("RED",),
--	KEYIDS["KEY_REWIND"]: ("REWIND",),
--	KEYIDS["KEY_RIGHT"]: ("RIGHT",),
--	KEYIDS["KEY_SLEEP"]: ("SLEEP",),
--	KEYIDS["KEY_STOP"]: ("STOP",),
--	KEYIDS["KEY_SUBTITLE"]: ("SUBTITLE",),
--	KEYIDS["KEY_SWITCHVIDEOMODE"]: ("VMODE",),
--	KEYIDS["KEY_TEXT"]: ("TEXT",),
--	KEYIDS["KEY_TV"]: ("TV",),
--	KEYIDS["KEY_UP"]: ("UP",),
--	KEYIDS["KEY_VIDEO"]: ("PVR",),
--	# KEYIDS["KEY_VMODE"]: ("VMODE",),  # This value is deprecated use KEY_SWITCHVIDEOMODE instead.
--	KEYIDS["KEY_VOLUMEDOWN"]: ("VOL-",),
--	KEYIDS["KEY_VOLUMEUP"]: ("VOL+",),
--	KEYIDS["KEY_YELLOW"]: ("YELLOW",)
--}, {  # id=4 - Formuler F1/F3.
--	# The formuler1 rcpositions file seems to define
--	# the FF and REW keys as FASTFORWARD and KEY_REWIND,
--	# but the remote.xml file issues KEY_PREVIOUSSONG
--	# and KEY_NEXTSONG.
--	KEYIDS["BTN_0"]: ("UP", "fp"),
--	KEYIDS["BTN_1"]: ("DOWN", "fp"),
--	KEYIDS["KEY_0"]: ("0",),
--	KEYIDS["KEY_1"]: ("1",),
--	KEYIDS["KEY_2"]: ("2",),
--	KEYIDS["KEY_3"]: ("3",),
--	KEYIDS["KEY_4"]: ("4",),
--	KEYIDS["KEY_5"]: ("5",),
--	KEYIDS["KEY_6"]: ("6",),
--	KEYIDS["KEY_7"]: ("7",),
--	KEYIDS["KEY_8"]: ("8",),
--	KEYIDS["KEY_9"]: ("9",),
--	KEYIDS["KEY_AUDIO"]: ("AUDIO",),
--	KEYIDS["KEY_BACK"]: ("RECALL",),
--	KEYIDS["KEY_BLUE"]: ("BLUE",),
--	KEYIDS["KEY_BOOKMARKS"]: ("PLAYLIST",),
--	KEYIDS["KEY_CHANNELDOWN"]: ("BOUQUET-",),
--	KEYIDS["KEY_CHANNELUP"]: ("BOUQUET+",),
--	KEYIDS["KEY_CONTEXT_MENU"]: ("CONTEXT",),
--	KEYIDS["KEY_DOWN"]: ("DOWN",),
--	KEYIDS["KEY_EPG"]: ("EPG",),
--	KEYIDS["KEY_EXIT"]: ("EXIT",),
++	KEYIDS["KEY_NEXT"]: ("ARROWRIGHT",),
 +	KEYIDS["KEY_F"]: ("FAST",),
 +	KEYIDS["KEY_SLOW"]: ("SLOW",),
 +	KEYIDS["KEY_P"]: ("PLAY_MODE",),
 +	KEYIDS["KEY_CLOSE"]: ("USB",),
 +	KEYIDS["KEY_T"]: ("Tms",),
- 	KEYIDS["KEY_F1"]: ("F1",),
- 	KEYIDS["KEY_F2"]: ("F2",),
- 	KEYIDS["KEY_F3"]: ("F3",),
-+	KEYIDS["KEY_OPEN"]: ("PORTAL",),
-+},
-+{  # id=4 All Fortis
++	KEYIDS["KEY_F1"]: ("F1",),
++	KEYIDS["KEY_F2"]: ("F2",),
++	KEYIDS["KEY_F3"]: ("F3",),
++	KEYIDS["KEY_OPEN"]: ("PORTAL",)
++}, {  # id=4 - All Fortis
 +	KEYIDS["KEY_MUTE"]: ("MUTE",),
 +	KEYIDS["KEY_POWER"]: ("STANDBY",),
 +	KEYIDS["KEY_ANGLE"]: ("VFORMAT",),
@@ -8797,9 +8802,7 @@
 +	KEYIDS["KEY_TWEN"]: ("DOWNDOWN",),
 +	KEYIDS["KEY_REWIND"]: ("REWIND",),
 +	KEYIDS["KEY_PLAY"]: ("PLAY",),
- 	KEYIDS["KEY_FASTFORWARD"]: ("FASTFORWARD",),
--	KEYIDS["KEY_FAVORITES"]: ("FAVORITES",),
--	KEYIDS["KEY_GREEN"]: ("GREEN",),
++	KEYIDS["KEY_FASTFORWARD"]: ("FASTFORWARD",),
 +	KEYIDS["KEY_PREVIOUS"]: ("LAST",),
 +	KEYIDS["KEY_RECORD"]: ("RECORD",),
 +	KEYIDS["KEY_NEXT"]: ("NEXT",),
@@ -8813,15 +8816,14 @@
 +	KEYIDS["KEY_BLUE"]: ("BLUE",),
 +	KEYIDS["KEY_OPTION"]: ("PIP",),
 +	KEYIDS["KEY_GOTO"]: ("SWAP",),
-+	KEYIDS["KEY_PIPSEL"]: ("PIP_SEL",), # PIP list
++#	KEYIDS["KEY_PIPSEL"]: ("PIP_SEL",), # PIP list
 +	KEYIDS["KEY_SLOW"]: ("SLEEP",),
 +	KEYIDS["KEY_FAVORITES"]: ("FAV",),
 +	KEYIDS["KEY_MODE"]: ("TVRADIO",),
 +	KEYIDS["KEY_SUBTITLE"]: ("LIST",),
 +	KEYIDS["KEY_TEXT"]: ("TEXT",),
-+	KEYIDS["KEY_ZOOM"]: ("ZOOM",),
-+},
-+{  # id=5 Topfield TF77X0HDPVR
++	KEYIDS["KEY_ZOOM"]: ("ZOOM",)
++}, {  # id=5 - Topfield TF77X0HDPVR
 +	KEYIDS["KEY_POWER"]: ("STANDBY",),
 +	KEYIDS["KEY_MUTE"]: ("MUTE",),
 +	KEYIDS["KEY_ZOOM"]: ("V.FORMAT",),
@@ -8875,9 +8877,8 @@
 +	KEYIDS["KEY_PAGEUP"]: ("CHANNELUP",),
 +	KEYIDS["KEY_VOLUMEDOWN"]: ("VOLUMEDOWN",),
 +	KEYIDS["KEY_VOLUMEUP"]: ("VOLUMEUP",),
-+	KEYIDS["KEY_POWER"]: ("STANDBY",),
-+},
-+{  # id=6 Kathrein UFS912
++	KEYIDS["KEY_POWER"]: ("STANDBY",)
++}, {  # id=6 - Kathrein UFS912
 +	KEYIDS["KEY_MEDIA"]: ("MEDIA",),
 +	KEYIDS["KEY_ARCHIVE"]: ("ARCHIVE",),
 +	KEYIDS["KEY_MENU"]: ("MENU",),
@@ -8902,11 +8903,274 @@
 +	KEYIDS["KEY_VOLUMEDOWN"]: ("VOLUMEDOWN",),
  	KEYIDS["KEY_HELP"]: ("HELP",),
  	KEYIDS["KEY_INFO"]: ("INFO",),
-+	KEYIDS["KEY_OK"]: ("OK",),
+-	KEYIDS["KEY_LEFT"]: ("LEFT",),
+-	KEYIDS["KEY_MENU"]: ("MENU",),
+-	KEYIDS["KEY_MUTE"]: ("MUTE",),
+-	KEYIDS["KEY_NEXT"]: ("ARROWRIGHT",),
+-	KEYIDS["KEY_NEXTSONG"]: ("NEXTSONG",),
+ 	KEYIDS["KEY_OK"]: ("OK",),
+-	KEYIDS["KEY_PLAY"]: ("PLAY",),
+-	KEYIDS["KEY_PLAYPAUSE"]: ("PLAYPAUSE",),
 +	KEYIDS["KEY_UP"]: ("UP",),
 +	KEYIDS["KEY_RIGHT"]: ("RIGHT",),
 +	KEYIDS["KEY_DOWN"]: ("DOWN",),
- 	KEYIDS["KEY_LEFT"]: ("LEFT",),
++	KEYIDS["KEY_LEFT"]: ("LEFT",),
++	KEYIDS["KEY_0"]: ("0BUTTON",),
++	KEYIDS["KEY_1"]: ("1BUTTON",),
++	KEYIDS["KEY_2"]: ("2BUTTON",),
++	KEYIDS["KEY_3"]: ("3BUTTON",),
++	KEYIDS["KEY_4"]: ("4BUTTON",),
++	KEYIDS["KEY_5"]: ("5BUTTON",),
++	KEYIDS["KEY_6"]: ("6BUTTON",),
++	KEYIDS["KEY_7"]: ("7BUTTON",),
++	KEYIDS["KEY_8"]: ("8BUTTON",),
++	KEYIDS["KEY_9"]: ("9BUTTON",),
++	# Front panel keys
++	KEYIDS["KEY_MEDIA"]: ("FP_MEDIA",),
++	KEYIDS["KEY_POWER"]: ("FP_ON_OFF",),
++	KEYIDS["KEY_DOWN"]: ("FP_MINUS",),
++	KEYIDS["KEY_UP"]: ("FP_PLUS",),
++	KEYIDS["KEY_OK"]: ("FP_TV_R",)
++}, {  # id=7 - Cuberevo universal
++	KEYIDS["KEY_F1"]: ("KEY_F1",),
++	KEYIDS["KEY_F2"]: ("KEY_F2",),
++	KEYIDS["KEY_F3"]: ("KEY_F3",),
++	KEYIDS["KEY_INFO"]: ("INFO",),
++	KEYIDS["KEY_RADIO"]: ("RADIO",),
++	KEYIDS["KEY_PREVIOUS"]: ("PREVIOUS",),
++	KEYIDS["KEY_EPG"]: ("EPG",),
++	KEYIDS["KEY_RECORD"]: ("RECORD",),
++	KEYIDS["KEY_FAVORITES"]: ("FAVORITES",),
++	KEYIDS["KEY_MEDIA"]: ("MEDIA",),
++	KEYIDS["KEY_POWER"]: ("STANDBY",),
++	KEYIDS["KEY_F5"]: ("KEY_F5",),
++	KEYIDS["KEY_MUTE"]: ("MUTE",),
++	KEYIDS["KEY_ARCHIVE"]: ("ARCHIVE",),
++	KEYIDS["KEY_0"]: ("0BUTTON",),
++	KEYIDS["KEY_1"]: ("1BUTTON",),
++	KEYIDS["KEY_2"]: ("2BUTTON",),
++	KEYIDS["KEY_3"]: ("3BUTTON",),
++	KEYIDS["KEY_4"]: ("4BUTTON",),
++	KEYIDS["KEY_5"]: ("5BUTTON",),
++	KEYIDS["KEY_6"]: ("6BUTTON",),
++	KEYIDS["KEY_7"]: ("7BUTTON",),
++	KEYIDS["KEY_8"]: ("8BUTTON",),
++	KEYIDS["KEY_9"]: ("9BUTTON",),
++	KEYIDS["KEY_UP"]: ("UP",),
++	KEYIDS["KEY_DOWN"]: ("DOWN",),
++	KEYIDS["KEY_RIGHT"]: ("RIGHT",),
++	KEYIDS["KEY_LEFT"]: ("LEFT",),
++	KEYIDS["KEY_REWIND"]: ("REWIND",),
++	KEYIDS["KEY_OK"]: ("OK",),
++	KEYIDS["KEY_PLAY"]: ("PLAY",),
++	KEYIDS["KEY_FASTFORWARD"]: ("FASTFORWARD",),
++	KEYIDS["KEY_STOP"]: ("STOP",),
++	KEYIDS["KEY_SLOW"]: ("SLOW",),
++	KEYIDS["KEY_AGAIN"]: ("AGAIN",),
++	KEYIDS["KEY_PAUSE"]: ("PAUSE",),
++	KEYIDS["KEY_MENU"]: ("MENU",),
++	KEYIDS["KEY_HOME"]: ("EXIT",),
++	KEYIDS["KEY_F7"]: ("KEY_F7",),
++	KEYIDS["KEY_BOOKMARKS"]: ("KEY_BOOMARKS",),
++	KEYIDS["KEY_RED"]: ("RED",),
++	KEYIDS["KEY_BLUE"]: ("BLUE",),
++	KEYIDS["KEY_F8"]: ("KEY_F8",),
++	KEYIDS["KEY_GREEN"]: ("GREEN",),
++	KEYIDS["KEY_YELLOW"]: ("YELLOW",),
++	KEYIDS["KEY_AUDIO"]: ("AUDIO",),
++	KEYIDS["KEY_SUBTITLE"]: ("SUBTITLE",),
++	KEYIDS["KEY_TEXT"]: ("TEXT",),
++	KEYIDS["KEY_CHANNELUP"]: ("CHANNELUP",),
++	KEYIDS["KEY_CHANNELDOWN"]: ("CHANNELDOWN",),
++	KEYIDS["KEY_VOLUMEUP"]: ("VOLUMEUP",),
++	KEYIDS["KEY_VOLUMEDOWN"]: ("VOLUMEDOWN",),
++	KEYIDS["KEY_WWW"]: ("WWW",)
++}, {  # id=8 - Vitamin HD5000
+ 	KEYIDS["KEY_POWER"]: ("POWER",),
+-	KEYIDS["KEY_PREVIOUS"]: ("ARROWLEFT",),
+-	KEYIDS["KEY_PREVIOUSSONG"]: ("PREVIOUSSONG",),
+-	KEYIDS["KEY_PROGRAM"]: ("TIMER",),
+-	KEYIDS["KEY_RADIO"]: ("RADIO",),
+-	KEYIDS["KEY_RECORD"]: ("RECORD",),
+-	KEYIDS["KEY_RED"]: ("RED",),
+-	KEYIDS["KEY_REWIND"]: ("REWIND",),
+-	KEYIDS["KEY_RIGHT"]: ("RIGHT",),
+-	KEYIDS["KEY_SLEEP"]: ("SLEEP",),
+-	KEYIDS["KEY_STOP"]: ("STOP",),
+-	KEYIDS["KEY_SUBTITLE"]: ("SUBTITLE",),
+-	KEYIDS["KEY_SWITCHVIDEOMODE"]: ("VMODE",),
+-	KEYIDS["KEY_TEXT"]: ("TEXT",),
+-	KEYIDS["KEY_TV"]: ("TV",),
+-	KEYIDS["KEY_UP"]: ("UP",),
+-	KEYIDS["KEY_VIDEO"]: ("PVR",),
+-	# KEYIDS["KEY_VMODE"]: ("VMODE",),  # This value is deprecated use KEY_SWITCHVIDEOMODE instead.
+-	KEYIDS["KEY_VOLUMEDOWN"]: ("VOL-",),
+-	KEYIDS["KEY_VOLUMEUP"]: ("VOL+",),
+-	KEYIDS["KEY_YELLOW"]: ("YELLOW",)
+-}, {  # id=4 - Formuler F1/F3.
+-	# The formuler1 rcpositions file seems to define
+-	# the FF and REW keys as FASTFORWARD and KEY_REWIND,
+-	# but the remote.xml file issues KEY_PREVIOUSSONG
+-	# and KEY_NEXTSONG.
+-	KEYIDS["BTN_0"]: ("UP", "fp"),
+-	KEYIDS["BTN_1"]: ("DOWN", "fp"),
++	KEYIDS["KEY_OK"]: ("OK",),
++	KEYIDS["KEY_LEFT"]: ("LEFT",),
++	KEYIDS["KEY_RIGHT"]: ("RIGHT",),
++	KEYIDS["KEY_UP"]: ("UP",),
++	KEYIDS["KEY_DOWN"]: ("DOWN",),
++	KEYIDS["KEY_MENU"]: ("MENU",),
++	KEYIDS["KEY_EXIT"]: ("EXIT",),
++	KEYIDS["KEY_INFO"]: ("INFO",),
++	KEYIDS["KEY_F11"]: ("FEED",),
++	KEYIDS["KEY_F12"]: ("RECALL",),
++	KEYIDS["KEY_FAVORITES"]: ("FAV",),
++	KEYIDS["KEY_EPG"]: ("EPG",),
++	KEYIDS["KEY_VOLUMEUP"]: ("VOLUP",),
++	KEYIDS["KEY_VOLUMEDOWN"]: ("VOLDOWN",),
++	KEYIDS["KEY_PAGEUP"]: ("CHUP",),
++	KEYIDS["KEY_PAGEDOWN"]: ("CHDOWN",),
++	KEYIDS["KEY_TV"]: ("TVRADIO",),
++	KEYIDS["KEY_F10"]: ("SATLIST",),
++	KEYIDS["KEY_WWW"]: ("MOSAIC",),
++	KEYIDS["KEY_MEDIA"]: ("PLAYLIST",),
++	KEYIDS["KEY_RED"]: ("RED",),
++	KEYIDS["KEY_GREEN"]: ("GREEN",),
++	KEYIDS["KEY_YELLOW"]: ("YELLOW",),
++	KEYIDS["KEY_BLUE"]: ("BLUE",),
+ 	KEYIDS["KEY_0"]: ("0",),
+ 	KEYIDS["KEY_1"]: ("1",),
+ 	KEYIDS["KEY_2"]: ("2",),
+@@ -290,46 +515,124 @@
+ 	KEYIDS["KEY_7"]: ("7",),
+ 	KEYIDS["KEY_8"]: ("8",),
+ 	KEYIDS["KEY_9"]: ("9",),
+-	KEYIDS["KEY_AUDIO"]: ("AUDIO",),
+-	KEYIDS["KEY_BACK"]: ("RECALL",),
+-	KEYIDS["KEY_BLUE"]: ("BLUE",),
+-	KEYIDS["KEY_BOOKMARKS"]: ("PLAYLIST",),
+-	KEYIDS["KEY_CHANNELDOWN"]: ("BOUQUET-",),
+-	KEYIDS["KEY_CHANNELUP"]: ("BOUQUET+",),
+-	KEYIDS["KEY_CONTEXT_MENU"]: ("CONTEXT",),
+-	KEYIDS["KEY_DOWN"]: ("DOWN",),
+-	KEYIDS["KEY_EPG"]: ("EPG",),
+-	KEYIDS["KEY_EXIT"]: ("EXIT",),
+ 	KEYIDS["KEY_F1"]: ("F1",),
+ 	KEYIDS["KEY_F2"]: ("F2",),
+-	KEYIDS["KEY_F3"]: ("F3",),
++	KEYIDS["KEY_TV2"]: ("TV_STB",),
++	KEYIDS["KEY_MUTE"]: ("MUTE",),
++	KEYIDS["KEY_F8"]: ("TEXT",),
++	KEYIDS["KEY_F9"]: ("SUBTITLE",),
++	KEYIDS["KEY_F3"]: ("SIGNAL",),
++	KEYIDS["KEY_F4"]: ("CAPTURE",),
++	KEYIDS["KEY_F5"]: ("BOOK_M",),
++	KEYIDS["KEY_F6"]: ("BOOK_J",),
++	KEYIDS["KEY_PREVIOUS"]: ("PREV",),
++	KEYIDS["KEY_REWIND"]: ("REW",),
++	KEYIDS["KEY_NEXT"]: ("NEXT",),
++	KEYIDS["KEY_F7"]: ("REPEAT",),
++	KEYIDS["KEY_PLAY"]: ("PLAY",),
++	KEYIDS["KEY_STOP"]: ("STOP",),
++	KEYIDS["KEY_RECORD"]: ("RECORD",)
++}, {  # id=9 - ADB XMP
++	KEYIDS["KEY_POWER"]: ("XMP_POWER",),
++	KEYIDS["KEY_MEDIA"]: ("XMP_VOD",),
++	KEYIDS["KEY_GOTO"]: ("XMP_GOTO",),
++	KEYIDS["KEY_EPG"]: ("XMP_EPG",),
++	KEYIDS["KEY_PVR"]: ("XMP_HOUSE",),
++	KEYIDS["KEY_INFO"]: ("XMP_INFO",),
++	KEYIDS["KEY_TIME"]: ("XMP_APP",),
++	KEYIDS["KEY_SUBTITLE"]: ("XMP_OPT",),
++	KEYIDS["KEY_VOLUMEUP"]: ("XMP_VOLUMEUP",),
++	KEYIDS["KEY_VOLUMEDOWN"]: ("XMP_VOLUMEDOWN",),
++	KEYIDS["KEY_PAGEUP"]: ("XMP_PAGEUP",),
++	KEYIDS["KEY_PAGEDOWN"]: ("XMP_PAGEDOWN",),
++	KEYIDS["KEY_OK"]: ("XMP_OK",),
++	KEYIDS["KEY_UP"]: ("XMP_UP",),
++	KEYIDS["KEY_DOWN"]: ("XMP_DOWN",),
++	KEYIDS["KEY_LEFT"]: ("XMP_LEFT",),
++	KEYIDS["KEY_RIGHT"]: ("XMP_RIGHT",),
++	KEYIDS["KEY_HOME"]: ("XMP_BACK",),
++	KEYIDS["KEY_STOP"]: ("XMP_STOP",),
++	KEYIDS["KEY_REWIND"]: ("XMP_REWIND",),
++	KEYIDS["KEY_FASTFORWARD"]: ("XMP_FASTFORWARD",),
++	KEYIDS["KEY_PLAY"]: ("XMP_PLAY",),
++	KEYIDS["KEY_PAUSE"]: ("XMP_PAUSE",),
++	KEYIDS["KEY_RECORD"]: ("XMP_RECORD",),
++	KEYIDS["KEY_MUTE"]: ("XMP_MUTE",),
++	KEYIDS["KEY_TV2"]: ("XMP_ATSIGN",),
++	KEYIDS["KEY_TEXT"]: ("XMP_TEXT",),
++	KEYIDS["KEY_LIST"]: ("XMP_LIST",),
++	KEYIDS["KEY_RED"]: ("XMP_RED",),
++	KEYIDS["KEY_GREEN"]: ("XMP_GREEN",),
++	KEYIDS["KEY_YELLOW"]: ("XMP_YELLOW",),
++	KEYIDS["KEY_BLUE"]: ("XMP_BLUE",),
++	KEYIDS["KEY_1"]: ("XMP_1",),
++	KEYIDS["KEY_2"]: ("XMP_2",),
++	KEYIDS["KEY_3"]: ("XMP_3",),
++	KEYIDS["KEY_4"]: ("XMP_4",),
++	KEYIDS["KEY_5"]: ("XMP_5",),
++	KEYIDS["KEY_6"]: ("XMP_6",),
++	KEYIDS["KEY_7"]: ("XMP_7",),
++	KEYIDS["KEY_8"]: ("XMP_8",),
++	KEYIDS["KEY_9"]: ("XMP_9",),
++	KEYIDS["KEY_0"]: ("XMP_0",),
++	KEYIDS["KEY_MENU"]: ("XMP_SETUP",),
++	KEYIDS["KEY_HELP"]: ("XMP_STAR",)
++}, {  # id=10 - Pace HDS7241
++}, {  # id=11 - VIP2_1
++	KEYIDS["KEY_POWER"]: ("STANDBY",),
++	KEYIDS["KEY_VMODE"]: ("V.FORMAT",),
++	KEYIDS["KEY_TIME"]: ("TIME",),
++	KEYIDS["KEY_MUTE"]: ("MUTE",),
++	KEYIDS["KEY_T"]: ("Tms",),
++	KEYIDS["KEY_SCREEN"]: ("PIP",),
++	KEYIDS["KEY_F1"]: ("F1",),
++	KEYIDS["KEY_AUX"]: ("TV/SAT",),
++	KEYIDS["KEY_0"]: ("0BUTTON",),
++	KEYIDS["KEY_1"]: ("1BUTTON",),
++	KEYIDS["KEY_2"]: ("2BUTTON",),
++	KEYIDS["KEY_3"]: ("3BUTTON",),
++	KEYIDS["KEY_4"]: ("4BUTTON",),
++	KEYIDS["KEY_5"]: ("5BUTTON",),
++	KEYIDS["KEY_6"]: ("6BUTTON",),
++	KEYIDS["KEY_7"]: ("7BUTTON",),
++	KEYIDS["KEY_8"]: ("8BUTTON",),
++	KEYIDS["KEY_9"]: ("9BUTTON",),
++	KEYIDS["KEY_TV2"]: ("TV/RADIO",),
++	KEYIDS["KEY_BACK"]: ("RECALL",),
++	KEYIDS["KEY_FIND"]: ("FIND",),
++	KEYIDS["KEY_VOLUMEDOWN"]: ("VOL-",),
++	KEYIDS["KEY_PAGEDOWN"]: ("PAGEDOWN",),
++	KEYIDS["KEY_SAT"]: ("SAT",),
++	KEYIDS["KEY_RECORD"]: ("RECORD",),
++	KEYIDS["KEY_VOLUMEUP"]: ("VOL+",),
++	KEYIDS["KEY_PAGEUP"]: ("PAGEUP",),
++	KEYIDS["KEY_FAVORITES"]: ("FAV",),
++	KEYIDS["KEY_MENU"]: ("MENU",),
++	KEYIDS["KEY_MENU"]: ("MENU",),
++	KEYIDS["KEY_INFO"]: ("INFO",),
++	KEYIDS["KEY_UP"]: ("UP",),
++	KEYIDS["KEY_DOWN"]: ("DOWN",),
++	KEYIDS["KEY_LEFT"]: ("LEFT",),
++	KEYIDS["KEY_RIGHT"]: ("RIGHT",),
++	KEYIDS["KEY_OK"]: ("OK",),
++	KEYIDS["KEY_HOME"]: ("EXIT",),
++	KEYIDS["KEY_EPG"]: ("EDIVISION",),
++	KEYIDS["KEY_ARCHIVE"]: ("FOLDER",),
++	KEYIDS["KEY_STOP"]: ("STOP",),
++	KEYIDS["KEY_PAUSE"]: ("PAUSE",),
++	KEYIDS["KEY_PLAY"]: ("PLAY",),
++	KEYIDS["KEY_PREVIOUS"]: ("PREVIOUS",),
++	KEYIDS["KEY_NEXT"]: ("NEXT",),
++	KEYIDS["KEY_REWIND"]: ("REWIND",),
+ 	KEYIDS["KEY_FASTFORWARD"]: ("FASTFORWARD",),
+-	KEYIDS["KEY_FAVORITES"]: ("FAVORITES",),
+-	KEYIDS["KEY_GREEN"]: ("GREEN",),
+-	KEYIDS["KEY_HELP"]: ("HELP",),
+-	KEYIDS["KEY_INFO"]: ("INFO",),
+-	KEYIDS["KEY_LEFT"]: ("LEFT",),
 -	KEYIDS["KEY_MENU"]: ("MENU",),
 -	KEYIDS["KEY_MUTE"]: ("MUTE",),
 -	KEYIDS["KEY_NEXT"]: ("ARROWRIGHT",),
@@ -8928,26 +9192,18 @@
 -	KEYIDS["KEY_VOLUMEDOWN"]: ("VOL-",),
 -	KEYIDS["KEY_VOLUMEUP"]: ("VOL+",),
 -	KEYIDS["KEY_YELLOW"]: ("YELLOW",)
-+	KEYIDS["KEY_0"]: ("0BUTTON",),
-+	KEYIDS["KEY_1"]: ("1BUTTON",),
-+	KEYIDS["KEY_2"]: ("2BUTTON",),
-+	KEYIDS["KEY_3"]: ("3BUTTON",),
-+	KEYIDS["KEY_4"]: ("4BUTTON",),
-+	KEYIDS["KEY_5"]: ("5BUTTON",),
-+	KEYIDS["KEY_6"]: ("6BUTTON",),
-+	KEYIDS["KEY_7"]: ("7BUTTON",),
-+	KEYIDS["KEY_8"]: ("8BUTTON",),
-+	KEYIDS["KEY_9"]: ("9BUTTON",),
-+	# Front panel keys
-+	KEYIDS["KEY_MEDIA"]: ("FP_MEDIA",),
-+	KEYIDS["KEY_POWER"]: ("FP_ON_OFF",),
-+	KEYIDS["KEY_DOWN"]: ("FP_MINUS",),
-+	KEYIDS["KEY_UP"]: ("FP_PLUS",),
-+	KEYIDS["KEY_OK"]: ("FP_TV_R",),
++	KEYIDS["KEY_SLOW"]: ("STEP_BACK",),
++	KEYIDS["KEY_F"]: ("STEP_FWD",),
++	KEYIDS["KEY_W"]: ("PLAYMODE",),
++	KEYIDS["KEY_CLOSE"]: ("USB",),
++	KEYIDS["KEY_RED"]: ("RED",),
++	KEYIDS["KEY_GREEN"]: ("GREEN",),
++	KEYIDS["KEY_YELLOW"]: ("YELLOW",),
++	KEYIDS["KEY_BLUE"]: ("BLUE",)
  }]
  
  def addKeyBinding(domain, key, context, action, flags):
-@@ -363,10 +461,31 @@
+@@ -363,10 +666,33 @@
  	else:
  		rcType = config.plugins.remotecontroltype.rctype.value
  		# rcType = config.misc.inputdevices.rcType.value
@@ -8974,16 +9230,18 @@
 +			idx = 9
 +		elif rcType == 16:	# Pace 7241
 +			idx = 10
-+#		elif rcType == 17:	# Fortis 4G
-+#			idx = 11
-+#		elif rcType == 18:	# ...
++		elif rcType == 17:	# VIP2_1
++			idx = 11
++#		elif rcType == 18:	# Fortis 4G
 +#			idx = 12
++#		elif rcType == 19:	# ...
++#			idx = 13
  		else:
  			idx = 2
  	return keyDescriptions[idx].get(key)
 --- enigma2.org/lib/python/Screens/InputDeviceSetup.py
 +++ enigma2/lib/python/Screens/InputDeviceSetup.py
-@@ -299,62 +299,32 @@
+@@ -299,62 +299,52 @@
  	rcList = [
  			("0", _("Default")),
  			("4", _("DMM normal")),
@@ -9003,17 +9261,18 @@
 -			("25", _("Zgemma H9(old model)/I55Plus")),
 -			("27", _("HD60")),
 -			("28", _("Zgemma H7(new model)/H9(new model)/H9COMBO/H9TWIN/H10"))
-+			("7", _("fs9000")),
-+			("8", _("hs9510")),
-+			("9", _("hs7110")),
-+			("10", _("spark")),
-+			("11", _("tf7700")),
-+			("12", _("ufs912")),
-+			("13", _("cuberevo_uni")),
-+			("14", _("vitamin")),
-+			("15", _("adb_xmp")),
-+			("16", _("pace7241")),
-+#			("17", _("fortis_4g")),
++			("7", _("Fortis universal")),
++			("8", _("Fortis standard")),
++			("9", _("Fortis mini")),
++			("10", _("Spark")),
++			("11", _("Topfield TF77X0HDPVR")),
++			("12", _("Kathrein UFS")),
++			("13", _("Cuberevo universal")),
++			("14", _("Vitamin 5000HD")),
++			("15", _("ADB XMP")),
++			("16", _("Pace HDS7241")),
++			("17", _("Edision argus")),
++#			("18", _("fortis_4g")),
  		]
  
  	defaultRcList = [
@@ -9054,23 +9313,42 @@
 -			("h9", 28), # new model /old 25
 -			("h9combo", 28),
 -			("h10", 28)
-+			("fs9000", 7),
++			("fortis-hdbox", 7),
++			("atevio7500", 7),
 +			("hs9510", 8),
++			("hs7420", 8),
++			("hs7429", 8),
++			("hs7810a", 8),
++			("hs7819", 8),
 +			("hs7110", 9),
++			("hs7119", 9),
 +			("spark", 10),
++			("spark7162", 10),
 +			("tf7700", 11),
 +			("ufs912", 12),
-+			("cuberevo_uni", 13),
-+			("vitamin", 14),
-+			("adb_xmp", 15),
++			("ufs913", 12),
++			("cuberevo", 13),
++			("cuberevo-mini", 13),
++			("cuberevo-mini2", 13),
++			("cuberevo-250hd", 13),
++			("cuberevo-9500hd", 13),
++			("cuberevo-2000hd", 13),
++			("cuberevo-3000hd", 13),
++			("cuberevo-mini-fta", 13),
++			("vitamin-hd5000", 14),
++			("adb-box", 15),
++			("adb-2850", 15),
 +			("pace7241", 16),
-+#			("fortis_4g", 17),
++			("hl101", 17),
++			("vip1-v2", 17),
++			("vip2-v1", 17),
++#			("fortis_4g", 18),
  		]
  
  	def __init__(self, session):
 --- enigma2.org/data/rc_models/rc_models.cfg
 +++ enigma2/data/rc_models/rc_models.cfg
-@@ -19,128 +19,30 @@
+@@ -19,128 +19,32 @@
  #
  # When no entry matches at all, 'default' will be used as remoteName
  #
@@ -9222,10 +9500,12 @@
 +cuberevo-2000hd   cuberevo_uni
 +cuberevo-3000hd   cuberevo_uni
 +cuberevo-9500hd   cuberevo_uni
-+vitamin_hd5000    vitamin
-+adb_box           adb_xmp
-+adb_2850          adb_xmp
++vitamin-hd5000    vitamin
++adb-box           adb_xmp
++adb-2850          adb_xmp
 +pace7241          pace7241
++vip1-v2           vip2_1
++vip2-v1           vip2_1
 --- enigma2.org/data/rc_models/Makefile.am
 +++ enigma2/data/rc_models/Makefile.am
 @@ -2,15 +2,9 @@
@@ -9246,7 +9526,7 @@
 -	octagon.xml uclan.xml
 +	dmmadv.png \
 +	adb_xmp.png cuberevo_uni.png fs9000.png  hs7110.png  hs9510.png  spark.png tf7700.png ufs912.png vitamin.png \
-+	pace7241.png dmm.png \
++	pace7241.png vip2_1.png dmm.png \
 +	dmmadv.xml  \
 +	adb_xmp.xml cuberevo_uni.xml fs9000.xml  hs7110.xml  hs9510.xml  spark.xml tf7700.xml ufs912.xml vitamin.xml \
-+	pace7241.xml dmm.xml
++	pace7241.xml vip2_1.xml dmm.xml

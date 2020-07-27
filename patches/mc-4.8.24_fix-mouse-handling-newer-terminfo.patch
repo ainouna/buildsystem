@@ -1,0 +1,55 @@
+--- a/lib/tty/key.c
++++ b/lib/tty/key.c
+@@ -2127,8 +2127,15 @@
+ #endif /* KEY_MOUSE */
+                           || c == MCKEY_EXTENDED_MOUSE))
+     {
+-        /* Mouse event */
+-        xmouse_get_event (event, c == MCKEY_EXTENDED_MOUSE);
++        /* Mouse event. See tickets 2956 and 3954 for extended mode detection. */
++        gboolean extended = c == MCKEY_EXTENDED_MOUSE;
++
++#ifdef KEY_MOUSE
++        extended = extended || (c == KEY_MOUSE && xmouse_seq == NULL
++                                && xmouse_extended_seq != NULL);
++#endif /* KEY_MOUSE */
++
++        xmouse_get_event (event, extended);
+         c = (event->type != 0) ? EV_MOUSE : EV_NONE;
+     }
+     else if (c == MCKEY_BRACKETED_PASTING_START)
+--- a/lib/tty/mouse.c
++++ b/lib/tty/mouse.c
+@@ -90,8 +90,10 @@
+ 
+     case MOUSE_XTERM_NORMAL_TRACKING:
+     case MOUSE_XTERM_BUTTON_EVENT_TRACKING:
+-        define_sequence (MCKEY_MOUSE, xmouse_seq, MCKEY_NOACTION);
+-        define_sequence (MCKEY_EXTENDED_MOUSE, xmouse_extended_seq, MCKEY_NOACTION);
++        if (xmouse_seq != NULL)
++            define_sequence (MCKEY_MOUSE, xmouse_seq, MCKEY_NOACTION);
++        if (xmouse_extended_seq != NULL)
++            define_sequence (MCKEY_EXTENDED_MOUSE, xmouse_extended_seq, MCKEY_NOACTION);
+         break;
+ 
+     default:
+--- a/lib/tty/tty.c
++++ b/lib/tty/tty.c
+@@ -361,9 +361,16 @@
+         }
+     }
+ 
+-    /* No termcap for SGR extended mouse (yet), hardcode it for now */
++    /* There's only one termcap entry "kmous", typically containing "\E[M" or "\E[<".
++     * We need the former in xmouse_seq, the latter in xmouse_extended_seq.
++     * See tickets 2956 and 3954 for details. */
+     if (xmouse_seq != NULL)
++    {
++        if (strcmp (xmouse_seq, ESC_STR "[<") == 0)
++            xmouse_seq = NULL;
++
+         xmouse_extended_seq = ESC_STR "[<";
++    }
+ }
+ 
+ /* --------------------------------------------------------------------------------------------- */

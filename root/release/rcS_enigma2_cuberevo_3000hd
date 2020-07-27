@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 190617.1
+#Version 200722.1
 
 echo "[rcS] Start"
 echo "CubeRevo 3000HD Enigma2"
@@ -9,11 +9,12 @@ MODDIR=/lib/modules
 insmod $MODDIR/e2_proc.ko
 
 echo "[rcS] Init frontpanel"
-insmod $MODDIR/cuberevo_micom.ko paramDebug=10
+insmod $MODDIR/cuberevo_micom.ko # paramDebug=10
 
 if [ -e /var/etc/.firstboot ]; then
+   echo "config.plugins.remotecontroltype.rctype=13" >> /etc/enigma2/settings
    echo "WAIT 3 minutes" > /dev/vfd
-   echo "[rcS] WAIT 3 min"
+   echo "[rcS] WAIT 3 minutes"
    rm /var/etc/.firstboot
    sleep 1
    touch /dev/.devfsd

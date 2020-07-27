@@ -1,9 +1,11 @@
 #!/bin/sh
-#Version 2000508.1
+#Version 200722.1
 
+echo "[rcS] Start"
 echo "ADB ITI-5800S(X) Enigma2"
 
 MODDIR=/lib/modules
+
 insmod $MODDIR/e2_proc.ko
 
 #if [ -e $MODDIR/cpu_frequ.ko ]; then
@@ -21,6 +23,7 @@ insmod $MODDIR/simu_button.ko
 
 
 if [ -e /var/etc/.firstboot ]; then
+   echo "config.plugins.remotecontroltype.rctype=15" >> /etc/enigma2/settings
    echo "WAIT 1st start" >/dev/vfd
    echo "[rcS] WAIT 1st start"
    rm /var/etc/.firstboot
@@ -634,7 +637,7 @@ else
       /etc/init.d/networking start
    fi
 fi
-#Allow network to wake up and initialize
+# Allow network to wake up and initialize
 sleep 2
 #Show IP address on frontpanel
 #ip=`ifconfig eth0 | sed -n '/inet addr/s/.*addr.\([^ ]*\) .*/\1/p'`

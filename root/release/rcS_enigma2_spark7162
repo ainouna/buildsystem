@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 190617.1
+#Version 200722.1
 
 echo "Spark 7162 Enigma2"
 
@@ -15,8 +15,9 @@ if [ -e $MODDIR/encrypt.ko ]; then
 fi
 
 if [ -e /var/etc/.firstboot ]; then
+   echo "config.plugins.remotecontroltype.rctype=10" >> /etc/enigma2/settings
    echo "Wait 1 min." > /dev/vfd
-   echo "[rcS] WAIT 1 min"
+   echo "[rcS] WAIT 1 minute"
    rm /var/etc/.firstboot
    sleep 1
    touch /dev/.devfsd
@@ -232,7 +233,7 @@ echo "[rcS] Init FTP & network"
 
 NFS=`grep -c nfs /proc/cmdline`
 if [ "$NFS" -eq "1" ]; then
-   echo "Booting from nfs, don't set network"
+   echo "Booting from nfs, do not set network"
 else
    if [ -e /etc/network/interfaces ]; then
       ip addr flush eth0

@@ -1,8 +1,8 @@
 #!/bin/sh
-#Version 200704.1
+#Version 200719.1
 
 echo "[rcS] Start"
-echo "Edision Argus VIP2 Neutrino"
+echo "Edision Argus VIP1 (pluggable tuner) Neutrino"
 
 MODDIR=/lib/modules
 
@@ -89,7 +89,7 @@ echo "[rcS] Init frontends"
 #tuner type1: sharp7306, stv6110x, sharp6465, lg031(default sharp7306)
 #demodulator2 type: stv090x, ce6353, tda10023(default ce6353)
 #tuner type2: sharp7306, stv6110x, sharp6465, lg031(default sharp6465)
-insmod $MODDIR/fe-core.ko # paramDebug=100 demod1=stv090x tuner1=sharp7306 demod2=stv090x tuner2=sharp7306;
+insmod $MODDIR/fe-core.ko #paramDebug=100 demod1=stv090x tuner1=sharp7306 demod2=stv090x tuner2=sharp7306;
 
 insmod $MODDIR/cimax.ko
 insmod $MODDIR/pti.ko waitMS=20 videoMem=4096
@@ -229,6 +229,6 @@ do
 done
 
 #never reached
-echo "[rcS] REBOOT VIP2"
+echo "[rcS] REBOOT VIP1"
 echo "REBOOT" > /dev/vfd
 init 6

@@ -1,6 +1,7 @@
 #!/bin/sh
-#Version 190617.1
+#Version 200722.1
 
+echo "[rcS] Start"
 echo "Fortis HS7110 Enigma2"
 
 MODDIR=/lib/modules
@@ -15,6 +16,7 @@ insmod $MODDIR/nuvoton.ko
 insmod $MODDIR/simu_button.ko
 
 if [ -e /var/etc/.firstboot ]; then
+   echo "config.plugins.remotecontroltype.rctype=9" >> /etc/enigma2/settings
    echo "[rcS] WAIT 1 minute"
    rm /var/etc/.firstboot
    sleep 1
@@ -117,7 +119,7 @@ insmod $MODDIR/silencegen.ko
 insmod $MODDIR/bpamem.ko
 mknod /dev/bpamem c 153 0
 
-if [ -e $MODDIR/cec.ko ];then
+if [ -e $MODDIR/cec.ko ]; then
    echo "[rcS] Init HDMI-CEC"
    insmod $MODDIR/cec.ko activemode=1
 fi
@@ -167,7 +169,7 @@ stfbcontrol a 255
 
 NFS=`grep -c nfs /proc/cmdline`
 if [ "$NFS" -eq "1" ]; then
-   echo "[rcS] Booting from NFS, don't set network"
+   echo "[rcS] Booting from NFS, do not set network"
 else
    if [ -e /etc/network/interfaces ]; then
       ip addr flush eth0
@@ -201,7 +203,7 @@ if [ ! $wlan ] || [ ! -e $MODDIR/$wlan.ko ]; then
    echo "None."
 else
    insmod $MODDIR/$wlan.ko
-   echo "$wlan"
+   echo "[rcS] $wlan WLAN"
 #   echo "$wlan WLAN" > /dev/vfd
 #   sleep 3
 fi
@@ -239,8 +241,8 @@ fi
 
 # Try and synchronise time
 #inettime=`cat /etc/enigma2/settings | grep systemoptions.inettime | cut -d "=" -f2`
-# if [ ! $inettime ] && [ -e /sbin/ntpdate ]; then
-#if [ -e /sbin/ntpdate ]; then
+# if [ ! $inettime ] && [ -e /sbin/ntpd ]; then
+#if [ -e /sbin/ntpd ]; then
    echo "[rcS] Set internet time"
    (ntpd -n -p 0.europe.pool.ntp.org -q; /bin/fp_control -sst)
 #else
@@ -264,13 +266,13 @@ echo "[rcS] Loading E2"
 
 until false
 do
-   echo "[rcS] Entering e2 main loop"
+   echo "[rcS] Entering E2 main loop"
    if [ -e /usr/local/share/enigma2/backdrop.mvi ]; then
       showiframe -p /usr/local/share/enigma2/backdrop.mvi &
    fi
    /usr/local/bin/enigma2
    rtv=$?
-   echo "[rcS] e2 ended <- return value: " $rtv
+   echo "[rcS] E2 ended <- return value: " $rtv
    case "$rtv" in
       0) echo "[rcS] E2 ERROR"
          init 6;;
@@ -297,7 +299,7 @@ do
             showiframe -p /boot/bootlogo.mvi &
          fi
          echo -n " ";;
-       *) echo "[rcS] ERROR"
+      *) echo "[rcS] ERROR"
          init 6;;
    esac
 done

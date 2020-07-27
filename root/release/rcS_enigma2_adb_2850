@@ -1,7 +1,8 @@
 #!/bin/sh
-#Version 20200510.1
+#Version 200722.1
 
-echo "ADB ITI-249/2850/2851S(T) Enigma2"
+echo "[rcS] Start"
+echo "ADB ITI-2849/2850/2851S(T) Enigma2"
 
 MODDIR=/lib/modules
 insmod $MODDIR/e2_proc.ko
@@ -16,6 +17,7 @@ echo "[rcS] Init frontpanel"
 insmod $MODDIR/adb_2850_fp.ko #paramDebug=10
 
 if [ -e /var/etc/.firstboot ]; then
+   echo "config.plugins.remotecontroltype.rctype=15" >> /etc/enigma2/settings
    echo "[rcS] WAIT 1st start"
    rm /var/etc/.firstboot
    touch /dev/.devfsd
@@ -33,7 +35,7 @@ echo "[rcS] Starting DEBUG Interface"
 /etc/init.d/mountall start
 /etc/init.d/hostname start
 
-echo -n "[rcS] Starting telnetd"
+echo -n "[rcS] Starting telnetd "
 autologin=`cat /etc/enigma2/settings | grep systemoptions.autologin | cut -d "=" -f2`
 if [ ! $autologin ]; then
    /usr/sbin/telnetd -l /bin/autologin
@@ -71,7 +73,7 @@ insmod $MODDIR/embxshell.ko
 insmod $MODDIR/embxmailbox.ko mailbox0=0xb9211000:136:set2 mailbox1=0xb9212000:0
 insmod $MODDIR/embxshm.ko mailbox0=shm:0:7:0x60000000:0:256:256:0:1024:0xa4000000:0x10000000
 insmod $MODDIR/mme_host.ko transport0=shm
-   
+
 echo "[rcS] Init AVS (LOAD 5)"
 insmod $MODDIR/avs.ko type=fake_avs
 
@@ -104,6 +106,7 @@ insmod $MODDIR/player2.ko
 insmod $MODDIR/sth264pp.ko
 insmod $MODDIR/stmalloc.ko
 insmod $MODDIR/platform.ko
+
 insmod $MODDIR/bpamem.ko
 insmod $MODDIR/smartcard.ko
 
@@ -124,7 +127,7 @@ if [ -e $MODDIR/exportfs.ko ]; then
 fi
 
 if [ -e $MODDIR/cifs.ko ]; then
-echo "[rcS] Init CIFS support"
+   echo "[rcS] Init CIFS support"
    insmod $MODDIR/cifs.ko
 fi
 
@@ -134,18 +137,18 @@ if [ -e $MODDIR/ntfs.ko ]; then
 fi
 
 if [ -e $MODDIR/tun.ko ]; then
-echo "[rcS] Init tun support"
+   echo "[rcS] Init tun support"
    insmod $MODDIR/tun.ko
 fi
 
 if [ -e $MODDIR/usbserial.ko ]; then
    insmod $MODDIR/usbserial.ko
    if [ -e $MODDIR/ftdi.ko ]; then
-   echo "[rcS] Init FTDI USB serial support"
+      echo "[rcS] Init FTDI USB serial support"
       insmod $MODDIR/ftdi.ko
    fi
    if [ -e $MODDIR/pl2303.ko ]; then
-   echo "[rcS] Init PL2303 USB serial support"
+      echo "[rcS] Init PL2303 USB serial support"
       insmod $MODDIR/pl2303.ko
    fi
 fi
@@ -194,7 +197,7 @@ fi
 echo "[rcS] Apply various E2 settings(LOAD 1)"
 # inadyn
 inadyn=`cat /etc/enigma2/settings | grep systemoptions.inadyn | cut -d "=" -f2`
-if [ ! $inadyn ] ||  [ ! -e /usr/bin/inadyn ]; then
+if [ ! $inadyn ] || [ ! -e /usr/bin/inadyn ]; then
    echo "[rcS] No inadyn"
 else
    if [ -e /usr/bin/inadyn ]; then
@@ -252,8 +255,8 @@ do
             showiframe -p /usr/local/share/enigma2/shutdown.mvi &
          fi
          sync
-         init 6
          umount -a;;
+         init 6
       2) echo "[rcS] REBOOT"
          sync
          init 6;;
@@ -265,13 +268,13 @@ do
             showiframe -p /boot/bootlogo.mvi &
          fi
          echo -n " ";;
-      6)  echo "[rcS] E2 DEBUG"
-          echo "0" > /proc/progress
-          if [ -e /usr/local/share/enigma2/backdrop.mvi ]; then
-             showiframe -p /usr/local/share/enigma2/backdrop.mvi
-          else
-             showiframe -p /boot/bootlogo.mvi &
-          fi;;
+      6) echo "[rcS] E2 DEBUG"
+         echo "0" > /proc/progress
+         if [ -e /usr/local/share/enigma2/backdrop.mvi ]; then
+            showiframe -p /usr/local/share/enigma2/backdrop.mvi
+         else
+            showiframe -p /boot/bootlogo.mvi &
+         fi;;
       *) echo "[rcS] ERROR"
          sync
          echo "0" > /proc/progress

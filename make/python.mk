@@ -309,7 +309,7 @@ $(D)/python_ipaddress: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(ARCHI
 #
 # python_six
 #
-PYTHON_SIX_VER = 1.9.0
+PYTHON_SIX_VER = 1.15.0
 PYTHON_SIX_SOURCE = six-$(PYTHON_SIX_VER).tar.gz
 
 $(ARCHIVE)/$(PYTHON_SIX_SOURCE):
@@ -761,7 +761,7 @@ $(D)/python_netifaces: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(ARCHI
 	$(UNTAR)/$(PYTHON_NETIFACES_SOURCE)
 	$(CH_DIR)/netifaces-$(PYTHON_NETIFACES_VER); \
 		$(PYTHON_INSTALL)
-#	$(REMOVE)/netifaces
+	$(REMOVE)/netifaces
 	$(TOUCH)
 
 PYTHON_DEPS  = $(D)/host_python
@@ -770,6 +770,7 @@ PYTHON_DEPS += $(D)/python_twisted
 PYTHON_DEPS += $(D)/python_lxml
 PYTHON_DEPS += $(D)/python_service_identity
 PYTHON_DEPS += $(D)/python_netifaces
+PYTHON_DEPS += $(D)/python_six
 ifeq ($(IMAGE), $(filter $(IMAGE), enigma2-wlandriver))
 PYTHON_DEPS += $(D)/python_wifi
 endif

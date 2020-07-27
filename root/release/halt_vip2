@@ -47,6 +47,18 @@ then
 	poweroff=""
 fi
 
+/bin/fp_control -sst
+/bin/fp_control -tm 1
+/bin/fp_control -e
+
+#handle red led
+redled=`cat /etc/enigma2/settings | grep vfdicon.dstandbyredledon | cut -d "=" -f2`
+if [ "$redled"=="true" ]; then
+   /bin/fp_control -l 0 1
+else
+   /bin/fp_control -l 0 0
+fi
+echo "0" > /proc/progress
 halt -d -f -n -i $poweroff $hddown
 
 : exit 0

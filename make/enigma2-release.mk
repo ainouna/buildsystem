@@ -471,6 +471,40 @@ enigma2_release_hl101:
 	$(SILENT)cp -f $(SKEL_ROOT)/root_enigma2/usr/local/share/enigma2/keymap_hl101.xml $(RELEASE_DIR)/usr/local/share/enigma2/keymap.xml
 
 #
+# vip1_v2
+#
+enigma2_release_vip1_v2:
+	$(SILENT)install -m 0755 $(SKEL_ROOT)/release/halt_vip2 $(RELEASE_DIR)/etc/init.d/halt
+	$(SILENT)chmod 755 $(RELEASE_DIR)/etc/init.d/halt
+	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/frontcontroller/aotom_vip/aotom.ko $(RELEASE_DIR)/lib/modules/
+	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/frontends/*.ko $(RELEASE_DIR)/lib/modules/
+	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/stgfb/stmfb/stmcore-display-stx7109c3.ko $(RELEASE_DIR)/lib/modules/
+	$(SILENT)cp $(SKEL_ROOT)/boot/video_7109.elf $(RELEASE_DIR)/boot/video.elf
+	$(SILENT)cp $(SKEL_ROOT)/boot/audio_7109.elf $(RELEASE_DIR)/boot/audio.elf
+	$(SILENT)rm -f $(RELEASE_DIR)/lib/firmware/dvb-fe-{avl2108,avl6222,cx24116,cx21143,stv6306}.fw
+	$(SILENT)cp -f $(SKEL_ROOT)/release/fstab_vip2 $(RELEASE_DIR)/etc/fstab
+	$(SILENT)cp -dp $(SKEL_ROOT)/release/lircd_vip2_rc1.conf $(RELEASE_DIR)/etc/lircd.conf
+	$(SILENT)cp -f $(TARGET_DIR)/sbin/shutdown $(RELEASE_DIR)/sbin/
+	$(SILENT)mkdir -p $(RELEASE_DIR)/var/run/lirc
+	$(SILENT)rm -f $(RELEASE_DIR)/bin/vdstandby
+#	$(SILENT)cp -f $(SKEL_ROOT)/release/rc_vip2_1.png $(RELEASE_DIR)/usr/local/share/enigma2/skin_default/rc.png
+	$(SILENT)if [ -e $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/spark7162VFD/plugin.py ]; then \
+		rm -f $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/SystemPlugins/VFD-Icons/*; \
+		cp -f $(SKEL_ROOT)/release/vfddisplay.png $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/spark7162VFD; \
+		cp -rf $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/spark7162VFD/* $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/SystemPlugins/VFD-Icons; \
+		rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/spark7162VFD; \
+	fi
+	$(SILENT)cp -f $(SKEL_ROOT)/root_enigma2/usr/local/share/enigma2/keymap_vip2.xml $(RELEASE_DIR)/usr/local/share/enigma2/keymap.xml
+
+#
+# vip2_v1
+#
+enigma2_release_vip2_v1: enigma2_release_vip1_v2
+	$(SILENT)cp -dp $(SKEL_ROOT)/release/lircd_vip2_rc1.conf $(RELEASE_DIR)/etc/lircd.conf
+#	$(SILENT)cp -f $(SKEL_ROOT)/release/rc_vip2_1.png $(RELEASE_DIR)/usr/local/share/enigma2/skin_default/rc.png
+	$(SILENT)cp -f $(SKEL_ROOT)/root_enigma2/usr/local/share/enigma2/keymap_vip2.xml $(RELEASE_DIR)/usr/local/share/enigma2/keymap.xml
+
+#
 # adb_box
 #
 enigma2_release_adb_box:
@@ -1004,6 +1038,8 @@ endif
 	$(SILENT)cp -f $(SKEL_ROOT)/release/rc_tf7700.png $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/tf7700.png
 	$(SILENT)cp -f $(SKEL_ROOT)/release/rc_ufs912.png $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/ufs912.png
 	$(SILENT)cp -f $(SKEL_ROOT)/release/rc_vitamin.png $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/vitamin.png
+#	$(SILENT)cp -f $(SKEL_ROOT)/release/rc_pace7241.png $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/pace7241.png
+	$(SILENT)cp -f $(SKEL_ROOT)/release/rc_vip2_1.png $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/vip2_1.png
 # delete mips remote control files
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/et4x00.*
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/et6x00.*

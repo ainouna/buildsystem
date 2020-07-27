@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 190618.1
+#Version 200722.1
 
 echo "Showbox Vitamin HD 5000 Enigma2"
 
@@ -12,10 +12,12 @@ insmod $MODDIR/vitamin_micom.ko paramDebug=0
 insmod $MODDIR/simu_button.ko
 
 if [ -e /var/etc/.firstboot ]; then
+   echo "config.plugins.remotecontroltype.rctype=14" >> /etc/enigma2/settings
    echo "Wait 1 min." > /dev/vfd
    echo "[rcS] Wait 1 min"
    rm /var/etc/.firstboot
-   sleep 1  touch /dev/.devfsd
+   sleep 1
+   touch /dev/.devfsd
 else
    echo "Load 10" > /dev/vfd
    echo "[rcS] LOAD 10"
@@ -142,6 +144,15 @@ fi
 
 if [ -e $MODDIR/usb_serial.ko ]; then
    insmod $MODDIR/usb_serial.ko
+   if [ -e $MODDIR/ch341.ko ]; then
+      insmod $MODDIR/ch341.ko
+   fi
+   if [ -e $MODDIR/ftdi.ko ]; then
+      insmod $MODDIR/ftdi.ko
+   fi
+   if [ -e $MODDIR/pl2303.ko ]; then
+      insmod $MODDIR/pl2303.ko
+   fi
    if [ -e $MODDIR/option.ko ]; then
       insmod $MODDIR/option.ko
    fi
@@ -159,7 +170,7 @@ if [ -e /boot/bootlogo.mvi ]; then
 fi
 stfbcontrol a 0
 
-echo "[rcS] Init lircd (LOAD 2)"
+echo "[rcS] Init remote control (LOAD 2)"
 echo "Load 2" > /dev/vfd
 /bin/evremote2 &
 
@@ -190,7 +201,7 @@ echo "[rcS] Init FTP & network"
 
 NFS=`grep -c nfs /proc/cmdline`
 if [ "$NFS" -eq "1" ]; then
-   echo "Booting from NFS, do not set network"
+   echo "[rcS] Booting from NFS, do not set network"
 else
    if [ -e /etc/network/interfaces ]; then
       ip addr flush eth0
@@ -248,42 +259,47 @@ echo "Start SH4 Enigma2" > /dev/vfd
 
 until false
 do
-   echo "starting e2->"
+   echo "[rcS] Entering E2 main loop"
+   if [ -e /usr/local/share/enigma2/backdrop.mvi ]; then
+      showiframe -p /usr/local/share/enigma2/backdrop.mvi
+   fi
    /usr/local/bin/enigma2
    rtv=$?
-   echo "e2 ended <- RTV: " $rtv
+   echo "[rcS] E2 ended <- RTV: " $rtv
+#   /bin/fp_control -i 46 0
    case "$rtv" in
-      0) echo "[rcS] E2 ERROR"
-         echo "E2 Error" > /dev/vfd
-         init 6;;
-      1) echo "[rcS] SHUTDOWN"
-         echo "Shutdown" > /dev/vfd
-         if [ -e /usr/local/share/enigma2/shutdown.mvi ]; then
-            showiframe -p /usr/local/share/enigma2/shutdown.mvi
-         fi
-         init 0;;
-      2) echo "[rcS] REBOOT"
-         echo "Reboot" > /dev/vfd
-         init 6;;
-      3) echo "[rcS] E2 RESTART"
-         echo "Restart GUI" > /dev/vfd
-         echo "0" > /proc/progress
-         if [ -e /usr/local/share/enigma2/backdrop.mvi ]; then
-            showiframe -p /usr/local/share/enigma2/backdrop.mvi
-         elif [ -e /usr/local/share/enigma2/shutdown.mvi ]; then
-            showiframe -p /boot/bootlogo.mvi &
-         fi;;
-      6) echo "[rcS] E2 DEBUG RESTART"
-         echo "Restart dbg" > /dev/vfd
-         echo "0" > /proc/progress
-         if [ -e /usr/local/share/enigma2/backdrop.mvi ]; then
-            showiframe -p /usr/local/share/enigma2/backdrop.mvi
-         elif [ -e /usr/local/share/enigma2/shutdown.mvi ]; then
-            showiframe -p /boot/bootlogo.mvi &
-         fi;;
-      *) echo "[rcS] ERROR"
-         echo "Error" > /dev/vfd
-        init 6;;
+      0)  echo "[rcS] E2 ERROR"
+          echo "E2 Error" > /dev/vfd
+          init 6;;
+      1)  echo "[rcS] SHUTDOWN"
+          echo "Shutdown" > /dev/vfd
+          if [ -e /usr/local/share/enigma2/shutdown.mvi ]; then
+             showiframe -p /usr/local/share/enigma2/shutdown.mvi
+          fi
+          umount -a
+          init 0;;
+      2)  echo "[rcS] REBOOT"
+          echo "Reboot" > /dev/vfd
+          init 6;;
+      3)  echo "[rcS] E2 RESTART"
+          echo "Restart GUI" > /dev/vfd
+          echo "0" > /proc/progress
+          if [ -e /usr/local/share/enigma2/backdrop.mvi ]; then
+             showiframe -p /usr/local/share/enigma2/backdrop.mvi
+          elif [ -e /usr/local/share/enigma2/shutdown.mvi ]; then
+             showiframe -p /boot/bootlogo.mvi &
+          fi;;
+      6)  echo "[rcS] E2 DEBUG RESTART"
+          echo "Restart dbg" > /dev/vfd
+          echo "0" > /proc/progress
+          if [ -e /usr/local/share/enigma2/backdrop.mvi ]; then
+             showiframe -p /usr/local/share/enigma2/backdrop.mvi
+          elif [ -e /usr/local/share/enigma2/shutdown.mvi ]; then
+             showiframe -p /boot/bootlogo.mvi &
+          fi;;
+      *)  echo "[rcS] ERROR"
+          echo "Error" > /dev/vfd
+          init 6;;
    esac
 done
 

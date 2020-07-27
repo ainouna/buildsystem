@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 190617.1
+#Version 200722.1
 
 echo "Kathrein UFS912 Enigma2"
 
@@ -8,12 +8,12 @@ MODDIR=/lib/modules
 insmod $MODDIR/e2_proc.ko
 
 echo "[rcS] Init frontpanel"
-insmod $MODDIR/kathrein_micom.ko paramDebug=0
+insmod $MODDIR/kathrein_micom.ko # paramDebug=0
 
 if [ -e /var/etc/.firstboot ]; then
-   #fp_control does not work here
-   echo "WAIT 1 minute" >/dev/vfd
-   echo "[rcS] WAIT 1 minute"
+   echo "config.plugins.remotecontroltype.rctype=12" >> /etc/enigma2/settings
+   echo "WAIT 3 min" > /dev/vfd
+   echo "[rcS] WAIT 3 minutes"
    rm /var/etc/.firstboot
    sleep 1
    touch /dev/.devfsd
@@ -51,7 +51,7 @@ insmod $MODDIR/stmcore-display-sti7111.ko
 #if grep -q "config.av.videoport=Scart" /etc/enigma2/settings; then
 #   insmod $MODDIR/stmfb.ko display0=720x576-16@50:1m::pal:cvbs
 #else
-   insmod $MODDIR/stmfb.ko display0=1280x720-32@50:16m::pal:cvbs:rgb # display1=720x576-16@50:1m::pal:cvbs
+   insmod $MODDIR/stmfb.ko display0=1280x720-32@50:16m::pal:cvbs:rgb
 #fi
 echo "[rcS] Loading modules"
 
@@ -133,12 +133,12 @@ if [ -e $MODDIR/tun.ko ]; then
 fi
 if [ -e $MODDIR/usbserial.ko ]; then
    insmod $MODDIR/usbserial.ko
-fi
-if [ -e $MODDIR/ftdi.ko ]; then
-   insmod $MODDIR/ftdi.ko
-fi
-if [ -e $MODDIR/pl2303.ko ]; then
-   insmod $MODDIR/pl2303.ko
+   if [ -e $MODDIR/ftdi.ko ]; then
+      insmod $MODDIR/ftdi.ko
+   fi
+   if [ -e $MODDIR/pl2303.ko ]; then
+      insmod $MODDIR/pl2303.ko
+   fi
 fi
 
 echo "[rcS] Init frontpanel (LOAD 2)"
@@ -150,7 +150,7 @@ echo "[rcS] Init remote control"
 
 NFS=`grep -c nfs /proc/cmdline`
 if [ "$NFS" -eq "1" ]; then
-   echo "[rcS] Booting from nfs, don't set network"
+   echo "[rcS] Booting from nfs, do not set network"
 else
    if [ -e /etc/network/interfaces ]; then
       ip addr flush eth0
@@ -214,8 +214,8 @@ fi
 
 # Try and synchronise time
 #inettime=`cat /etc/enigma2/settings | grep systemoptions.inettime | cut -d "=" -f2`
-# if [ ! $inettime ] && [ -e /sbin/ntpdate ]; then
-#if [ -e /sbin/ntpdate ]; then
+# if [ ! $inettime ] && [ -e /sbin/ntpd ]; then
+#if [ -e /sbin/ntpd ]; then
    echo "[rcS] Set internet time"
    (ntpd -n -p 0.europe.pool.ntp.org -q; /bin/fp_control -sst) &
 #else
@@ -242,37 +242,43 @@ stfbcontrol a 255
 
 until false
 do
-   echo "starting e2->"
+   echo "[rcS] starting E2 ->"
    /usr/local/bin/enigma2
    rtv=$?
-   echo "e2 ended <- RTV: " $rtv
+   echo "[rcS] E2 ended <- RTV: " $rtv
    case "$rtv" in
-      0) echo "[rcS] E2 ERROR"
-         echo "E2 Error" > /dev/vfd
-         init 6;;
-      1) echo "[rcS] SHUTDOWN"
-         echo "Shutdown" > /dev/vfd
-         init 0;;
-      2) echo "[rcS] REBOOT"
-         echo "Reboot" > /dev/vfd
-         init 6;;
-      3) echo "[rcS] E2 RESTART"
-         echo "E2 Restart" > /dev/vfd
-         echo "0" > /proc/progress
-         if [ -e /boot/bootlogo.mvi ]; then
-            showiframe -p /boot/bootlogo.mvi &
-         fi;;
-      6) echo "[rcS] E2 DEBUG RESTART"
-         echo "E2 Debug Restart" > /dev/vfd
-         echo "0" > /proc/progress
-         if [ -e /boot/bootlogo.mvi ]; then
-            showiframe -p /boot/bootlogo.mvi &
-         fi;;
-      *) echo "[rcS] ERROR"
-         echo "Error" > /dev/vfd
-         init 6;;
+      0)  echo "[rcS] E2 ERROR"
+          echo "E2 Error" > /dev/vfd
+          init 6;;
+      1)  echo "[rcS] SHUTDOWN"
+          echo "Shutdown" > /dev/vfd
+          init 0;;
+      2)  echo "[rcS] REBOOT"
+          echo "Reboot" > /dev/vfd
+          init 6;;
+      3)  echo "[rcS] E2 RESTART"
+          echo "E2 Restart" > /dev/vfd
+          echo "0" > /proc/progress
+          if [ -e /usr/local/share/enigma2/backdrop.mvi ]; then
+             showiframe -p /usr/local/share/enigma2/backdrop.mvi
+          else
+             showiframe -p /boot/bootlogo.mvi &
+          fi;;
+      6)  echo "[rcS] E2 DEBUG RESTART"
+          echo "E2 Debug Restart" > /dev/vfd
+          echo "0" > /proc/progress
+          if [ -e /usr/local/share/enigma2/backdrop.mvi ]; then
+             showiframe -p /usr/local/share/enigma2/backdrop.mvi
+          else
+             showiframe -p /boot/bootlogo.mvi &
+          fi;;
+      *)  echo "[rcS] ERROR"
+          echo "Error" > /dev/vfd
+          init 6;;
    esac
-done 
+done
 
 #never reached
-
+echo "[rcS] REBOOT UFS912"
+echo "REBOOT" > /dev/vfd
+reboot -f
