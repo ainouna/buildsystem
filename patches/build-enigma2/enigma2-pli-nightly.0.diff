@@ -1,4 +1,4 @@
-# revision 7d9234baf5230e16b53dbfa475dd1517f989f2e4 22/07/2020 15:19
+# revision 09843a7b26f35c9f5758a0e121dfb4d2f81a7195 27/07/2020 18:24
 --- enigma2.org/configure.ac
 +++ enigma2/configure.ac
 @@ -18,6 +18,7 @@
@@ -2016,7 +2016,7 @@
  	flt.pes_type = DMX_PES_OTHER;
  	flt.pid     = pid;
  	flt.input   = DMX_IN_FRONTEND;
-@@ -735,6 +737,7 @@
+@@ -806,6 +808,7 @@
  	setBufferSize(1024*1024);
  
  	dmx_pes_filter_params flt;
@@ -2282,10 +2282,10 @@
  #if ENABLE_FREESAT
 --- enigma2.org/lib/dvb/filepush.cpp
 +++ enigma2/lib/dvb/filepush.cpp
-@@ -3,6 +3,14 @@
- #include <errno.h>
+@@ -4,6 +4,14 @@
  #include <fcntl.h>
  #include <sys/ioctl.h>
+ #include <poll.h>
 +// this allows filesystem tasks to be prioritised
 +#include <sys/vfs.h>
 +#define USBDEVICE_SUPER_MAGIC 0x9fa2
@@ -2297,7 +2297,7 @@
  
  //#define SHOW_WRITE_TIME
  
-@@ -27,7 +35,10 @@
+@@ -28,7 +36,10 @@
  eFilePushThread::~eFilePushThread()
  {
  	stop(); /* eThread is borked, always call stop() from d'tor */
@@ -2309,7 +2309,7 @@
  }
  
  static void signal_handler(int x)
-@@ -59,10 +70,27 @@
+@@ -60,10 +71,27 @@
  	size_t current_span_remaining = 0;
  	m_sof = 0;
  
@@ -2337,7 +2337,7 @@
  			m_sg->getNextSourceSpan(m_current_position, bytes_read, current_span_offset, current_span_remaining, m_blocksize, m_sof);
  			ASSERT(!(current_span_remaining % m_blocksize));
  			m_current_position = current_span_offset;
-@@ -129,7 +157,16 @@
+@@ -130,7 +158,16 @@
  				{
  					case 0:
  						eDebug("[eFilePushThread] wait for driver eof timeout");
@@ -2355,7 +2355,7 @@
  					case 1:
  						eDebug("[eFilePushThread] wait for driver eof ok");
  						break;
-@@ -174,6 +211,10 @@
+@@ -175,6 +212,10 @@
  			filterRecordData(m_buffer, buf_end);
  			while ((buf_start != buf_end) && !m_stop)
  			{
@@ -2366,7 +2366,7 @@
  				int w = write(m_fd_dest, m_buffer + buf_start, buf_end - buf_start);
  
  				if (w <= 0)
-@@ -195,12 +236,18 @@
+@@ -196,12 +237,18 @@
  			}
  
  			eofcount = 0;
@@ -2513,7 +2513,7 @@
  		{
 --- enigma2.org/lib/dvb/scan.cpp
 +++ enigma2/lib/dvb/scan.cpp
-@@ -1104,9 +1104,9 @@
+@@ -1103,9 +1103,9 @@
  			if( m_chid_current )
  				tsonid = ( m_chid_current.transport_stream_id.get() << 16 )
  					| m_chid_current.original_network_id.get();
@@ -2525,7 +2525,7 @@
  		}
  
  		if (!(m_flags & scanOnlyFree) || !m_pmt_in_progress->second.scrambled) {
-@@ -1542,10 +1542,10 @@
+@@ -1541,10 +1541,10 @@
  
  					ref.setServiceType(servicetype);
  					int tsonid=(sdt.getTransportStreamId() << 16) | sdt.getOriginalNetworkId();
@@ -7691,7 +7691,7 @@
  
  	def extensionCallback(self, answer):
  		if answer is not None:
-@@ -2403,11 +2452,11 @@
+@@ -2405,11 +2454,11 @@
  
  class InfoBarInstantRecord:
  	"""Instant Record - handles the instantRecord action in order to
@@ -7705,7 +7705,7 @@
  			})
  		self.SelectedInstantServiceRef = None
  		if isStandardInfoBar(self):
-@@ -2490,7 +2539,7 @@
+@@ -2492,7 +2541,7 @@
  	def startInstantRecording(self, limitEvent = False):
  		begin = int(time())
  		end = begin + 3600      # dummy
@@ -7714,7 +7714,7 @@
  		info = { }
  
  		self.getProgramInfoAndEvent(info, name)
-@@ -2719,7 +2768,7 @@
+@@ -2721,7 +2770,7 @@
  	def __init__(self):
  		self["AudioSelectionAction"] = HelpableActionMap(self, "InfobarAudioSelectionActions",
  			{
@@ -7723,7 +7723,7 @@
  			})
  
  	def audioSelection(self):
-@@ -2733,7 +2782,7 @@
+@@ -2735,7 +2784,7 @@
  	def __init__(self):
  		self["SubserviceSelectionAction"] = HelpableActionMap(self, "InfobarSubserviceSelectionActions",
  			{
@@ -8143,7 +8143,7 @@
  
  	def __init__(self):
  		global hw_info
-@@ -35,39 +35,18 @@
+@@ -35,49 +35,16 @@
  			pass
  
  		# Model
@@ -8165,31 +8165,41 @@
 +		except:
 +			pass
  
- 		self.device_model = self.device_model or self.device_name
+-		# standard values
+-		self.device_model = self.device_model or self.device_name
++ 		self.device_model = self.device_model or self.device_name
+ 		self.machine_name = self.device_model
++		self.device_string = self.device_model
  
--		# map for Xtrend device models to machine names
+-		# custom overrides for specific receivers
 -		if self.device_model.startswith(("et9", "et4", "et5", "et6", "et7")):
 -			self.machine_name = "%sx00" % self.device_model[:3]
 -		elif self.device_model == "et11000":
 -			self.machine_name = "et1x000"
--		else:
--			self.machine_name = self.device_model
-+		self.machine_name = self.device_model
- 
+-		elif self.device_model.startswith("H9 "):
+-			self.device_name = self.device_model
+-			self.device_model = self.device_name.replace(" ", "").lower()
+-			self.machine_name = "h9combo"
+-		elif self.device_model.startswith("H9"):
+-			self.device_name = self.device_model
+-			self.device_model = self.device_name.lower()
+-			self.machine_name = "h9"
+-
 -		if self.device_revision:
 -			self.device_string = "%s (%s-%s)" % (self.device_model, self.device_revision, self.device_version)
 -		elif self.device_version:
 -			self.device_string = "%s (%s)" % (self.device_model, self.device_version)
 -		else:
 -			self.device_string = self.device_model
-+		self.device_string = self.device_model
- 
+-
 -		# only some early DMM boxes do not have HDMI hardware
 -		self.device_hdmi =  self.device_model not in ("dm800", "dm8000")
-+		self.device_hdmi =  self.device_model
+-
+-		print "Detected: " + self.get_device_string()
++		print "[HardwareInfo] Detected: " + self.get_device_string()
  
- 		print "Detected: " + self.get_device_string()
- 
+ 	def get_device_name(self):
+ 		return hw_info.device_name
 --- enigma2.org/lib/python/Tools/Makefile.am
 +++ enigma2/lib/python/Tools/Makefile.am
 @@ -5,7 +5,7 @@
@@ -8289,7 +8299,7 @@
  		extensions.push_back("ts");
  		extensions.push_back("trp");
  		sc->addServiceFactory(eServiceFactoryDVB::id, this, extensions);
-@@ -1213,7 +1215,8 @@
+@@ -1214,7 +1216,8 @@
  		break;
  	}
  	case eDVBServicePMTHandler::eventPreStart:
@@ -8299,7 +8309,7 @@
  		break;
  	case eDVBServicePMTHandler::eventEOF:
  		m_event((iPlayableService*)this, evEOF);
-@@ -1366,6 +1369,8 @@
+@@ -1367,6 +1370,8 @@
  			scrambled = true;
  
  		type = eDVBServicePMTHandler::streamclient;
@@ -8308,7 +8318,7 @@
  	}
  
  	m_first_program_info = 1;
-@@ -1737,9 +1742,9 @@
+@@ -1738,9 +1743,9 @@
  				return -2;
  			}
  
@@ -8696,7 +8706,7 @@
  
 --- enigma2.org/lib/python/Tools/KeyBindings.py
 +++ enigma2/lib/python/Tools/KeyBindings.py
-@@ -214,14 +214,12 @@
+@@ -218,14 +218,12 @@
  	KEYIDS["KEY_POWER2"]: ("POWER2",),
  	KEYIDS["KEY_SUSPEND"]: ("SUSPEND",),
  	KEYIDS["KEY_WAKEUP"]: ("WAKEUP",)
@@ -8717,7 +8727,7 @@
  	KEYIDS["KEY_0"]: ("0",),
  	KEYIDS["KEY_1"]: ("1",),
  	KEYIDS["KEY_2"]: ("2",),
-@@ -232,54 +230,281 @@
+@@ -236,54 +234,281 @@
  	KEYIDS["KEY_7"]: ("7",),
  	KEYIDS["KEY_8"]: ("8",),
  	KEYIDS["KEY_9"]: ("9",),
@@ -9041,7 +9051,7 @@
  	KEYIDS["KEY_0"]: ("0",),
  	KEYIDS["KEY_1"]: ("1",),
  	KEYIDS["KEY_2"]: ("2",),
-@@ -290,46 +515,124 @@
+@@ -294,46 +519,124 @@
  	KEYIDS["KEY_7"]: ("7",),
  	KEYIDS["KEY_8"]: ("8",),
  	KEYIDS["KEY_9"]: ("9",),
@@ -9203,7 +9213,7 @@
  }]
  
  def addKeyBinding(domain, key, context, action, flags):
-@@ -363,10 +666,33 @@
+@@ -367,10 +670,33 @@
  	else:
  		rcType = config.plugins.remotecontroltype.rctype.value
  		# rcType = config.misc.inputdevices.rcType.value
@@ -9348,7 +9358,7 @@
  	def __init__(self, session):
 --- enigma2.org/data/rc_models/rc_models.cfg
 +++ enigma2/data/rc_models/rc_models.cfg
-@@ -19,128 +19,32 @@
+@@ -19,127 +19,32 @@
  #
  # When no entry matches at all, 'default' will be used as remoteName
  #
@@ -9429,8 +9439,6 @@
 -vuuno4kse vu2
 -vuzero4k vu2
 -vuzero   vu
--# Wetek
--wetekplay   wetekplay
 -# Xsarius
 -fusionhd  xsarius
 -fusionhdse  xsarius
@@ -9470,6 +9478,7 @@
 -h7 zgemma
 -h9 zgemma
 -h9combo zgemma
+-h9twin zgemma
 -lc sh1
 -sh1 sh1
 -# Octagon
@@ -9514,13 +9523,13 @@
  	rc_models.cfg \
 -	dmmadv.png amiko.png amiko1.png edision1.png et4x00.png et8000.png et9x00.png vu.png xp1000.png \
 -	dmm.png et6x00.png et9500.png vuduo2.png vuultimo.png vu2.png et7x00.png formuler1.png \
--	hd2400.png hd-gen.png vs1x00.png wetekplay.png osmini.png zgemma.png miraclebox.png miraclebox2.png \
+-	hd2400.png hd-gen.png vs1x00.png osmini.png zgemma.png miraclebox.png miraclebox2.png \
 -	spycat.png xpeedlx.png revo4k.png sab.png sh1.png i55.png qviart.png gb7252.png e4hd.png \
 -	edision2.png edision3.png edision4.png hd60.png lunix4k.png multibox.png viperslim.png octagon.png \
 -	uclan.png \
 -	dmmadv.xml edision1.xml et4x00.xml et8000.xml et9x00.xml vuultimo.xml xp1000.xml dmm.xml amiko.xml \
 -	amiko1.xml et6x00.xml et9500.xml et7x00.xml vuduo2.xml vu.xml vu2.xml formuler1.xml hd2400.xml hd-gen.xml \
--	vs1x00.xml xsarius.xml xsarius.png wetekplay.xml osmini.xml zgemma.xml miraclebox.xml miraclebox2.xml \
+-	vs1x00.xml xsarius.xml xsarius.png osmini.xml zgemma.xml miraclebox.xml miraclebox2.xml \
 -	spycat.xml xpeedlx.xml et7000mini.png et7000mini.xml revo4k.xml sab.xml sh1.xml i55.xml qviart.xml \
 -	gb7252.xml e4hd.xml edision2.xml edision3.xml edision4.xml hd60.xml lunix4k.xml multibox.xml viperslim.xml \
 -	octagon.xml uclan.xml
@@ -9530,3 +9539,4 @@
 +	dmmadv.xml  \
 +	adb_xmp.xml cuberevo_uni.xml fs9000.xml  hs7110.xml  hs9510.xml  spark.xml tf7700.xml ufs912.xml vitamin.xml \
 +	pace7241.xml vip2_1.xml dmm.xml
+
