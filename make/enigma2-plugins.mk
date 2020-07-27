@@ -300,7 +300,6 @@ $(D)/enigma2_servicemp3epl: | $(SERVICEMP3EPL_DEPS)
 		fi
 	$(SILENT)cp -ra $(ARCHIVE)/enigma2-servicemp3epl-$(SERVICEMP3EPL_VER).git/ $(BUILD_TMP)/enigma2-servicemp3epl-$(SERVICEMP3EPL_VER)
 	$(SET) -e; cd $(BUILD_TMP)/enigma2-servicemp3epl-$(SERVICEMP3EPL_VER); \
-		git checkout $(MINUS_Q) 00d1f54426f856ada1fa6e75793f2f5550acbeba; \
 		$(call apply_patches,$(SERVICEMP3EPL_PATCH)); \
 		./autogen.sh $(SILENT_OPT); \
 		$(BUILDENV) \
