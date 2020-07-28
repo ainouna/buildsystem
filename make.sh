@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20200530.1
+# Version 20200728.1
 
 ##############################################
 
@@ -147,13 +147,15 @@ case $1 in
 		echo "   27)  Spark           29)  AM520"
 		echo "   28)  Spark7162       30)  AM530"
 		echo
+		echo "  Edision"
+		echo "   31)  Edision argus VIP V1 [ 1 fixed tuner + 2 CI + 1.5 USB ]"
+		echo "   32)  Edision argus VIP V2 [ 1 plugin tuner + 2 CI + 1 USB ]"
+		echo "   33)  Edision argus VIP2   [ 2 plugin tuners + 1 USB ]"
+		echo
 		echo "  Various sh4-based receivers"
-		echo "   31)  Edision Argus VIP1 V1 [ 1 tuner + 2 CI + 2 USB ]"
-		echo "   32)  Edision Argus VIP1 V2 [ 1 fixedtuner + 2 CI + 1 USB + plugin tuner (DVB-S2/T/C) ]"
-		echo "   33)  Edision Argus VIP2 V1 [ 2 plugin tuners ]"
 		echo "   34)  SpiderBox HL-101"
 		echo "   35)  ADB ITI-5800S(X) (nBox BSKA, BSLA, BXZB or BZZB)"
-		echo "   36)  Vitamin HD5000"
+		echo "   36)  Showbox Vitamin HD5000 (256Mbyte flash version)"
 		echo "   37)  SagemCom 88 series"
 		echo "   38)  Ferguson Ariva @Link 200"
 #		echo "   39)  Pace HDS-7241 (kernel P0217 only)"
