@@ -6067,15 +6067,7 @@
  	bool defaultMP3_Player;
  #endif
  };
-@@ -111,6 +115,7 @@
- 	RESULT frontendInfo(ePtr<iFrontendInformation> &ptr) { ptr = 0; return -1; }
- 	RESULT subServices(ePtr<iSubserviceList> &ptr) { ptr = 0; return -1; }
- 	RESULT timeshift(ePtr<iTimeshiftService> &ptr) { ptr = 0; return -1; }
-+	RESULT tap(ePtr<iTapService> &ptr) { ptr = nullptr; return -1; };
- 
- 	// iCueSheet
- 	PyObject *getCutList();
-@@ -166,6 +171,8 @@
+@@ -167,6 +171,8 @@
  	int getPCMDelay();
  	void setAC3Delay(int);
  	void setPCMDelay(int);
@@ -6084,7 +6076,7 @@
  
  	struct audioStream
  	{
-@@ -281,5 +288,5 @@
+@@ -282,5 +288,5 @@
  	void getChapters();
  	gint m_aspect, m_width, m_height, m_framerate, m_progressive;
  };
