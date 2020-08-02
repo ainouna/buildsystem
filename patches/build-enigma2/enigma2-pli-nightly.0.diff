@@ -1,4 +1,4 @@
-# revision 09843a7b26f35c9f5758a0e121dfb4d2f81a7195 27/07/2020 18:24
+# revision 18a41ab38416303a5368fd6fdd70d6a0b089ad2d 02/08/2020 13:26
 --- enigma2.org/configure.ac
 +++ enigma2/configure.ac
 @@ -18,6 +18,7 @@
@@ -2513,7 +2513,7 @@
  		{
 --- enigma2.org/lib/dvb/scan.cpp
 +++ enigma2/lib/dvb/scan.cpp
-@@ -1103,9 +1103,9 @@
+@@ -1047,9 +1047,9 @@
  			if( m_chid_current )
  				tsonid = ( m_chid_current.transport_stream_id.get() << 16 )
  					| m_chid_current.original_network_id.get();
@@ -2525,7 +2525,7 @@
  		}
  
  		if (!(m_flags & scanOnlyFree) || !m_pmt_in_progress->second.scrambled) {
-@@ -1541,10 +1541,10 @@
+@@ -1485,10 +1485,10 @@
  
  					ref.setServiceType(servicetype);
  					int tsonid=(sdt.getTransportStreamId() << 16) | sdt.getOriginalNetworkId();
@@ -8143,7 +8143,7 @@
  
  	def __init__(self):
  		global hw_info
-@@ -35,49 +35,16 @@
+@@ -35,49 +35,18 @@
  			pass
  
  		# Model
@@ -8165,11 +8165,11 @@
 +		except:
 +			pass
  
--		# standard values
--		self.device_model = self.device_model or self.device_name
-+ 		self.device_model = self.device_model or self.device_name
+ 		# standard values
+ 		self.device_model = self.device_model or self.device_name
  		self.machine_name = self.device_model
 +		self.device_string = self.device_model
++		self.device_hdmi =  self.device_model
  
 -		# custom overrides for specific receivers
 -		if self.device_model.startswith(("et9", "et4", "et5", "et6", "et7")):
@@ -8706,7 +8706,7 @@
  
 --- enigma2.org/lib/python/Tools/KeyBindings.py
 +++ enigma2/lib/python/Tools/KeyBindings.py
-@@ -218,14 +218,12 @@
+@@ -221,14 +221,12 @@
  	KEYIDS["KEY_POWER2"]: ("POWER2",),
  	KEYIDS["KEY_SUSPEND"]: ("SUSPEND",),
  	KEYIDS["KEY_WAKEUP"]: ("WAKEUP",)
@@ -8727,7 +8727,7 @@
  	KEYIDS["KEY_0"]: ("0",),
  	KEYIDS["KEY_1"]: ("1",),
  	KEYIDS["KEY_2"]: ("2",),
-@@ -236,54 +234,281 @@
+@@ -239,54 +237,281 @@
  	KEYIDS["KEY_7"]: ("7",),
  	KEYIDS["KEY_8"]: ("8",),
  	KEYIDS["KEY_9"]: ("9",),
@@ -9051,7 +9051,7 @@
  	KEYIDS["KEY_0"]: ("0",),
  	KEYIDS["KEY_1"]: ("1",),
  	KEYIDS["KEY_2"]: ("2",),
-@@ -294,46 +519,124 @@
+@@ -297,46 +522,124 @@
  	KEYIDS["KEY_7"]: ("7",),
  	KEYIDS["KEY_8"]: ("8",),
  	KEYIDS["KEY_9"]: ("9",),
@@ -9213,7 +9213,7 @@
  }]
  
  def addKeyBinding(domain, key, context, action, flags):
-@@ -367,10 +670,33 @@
+@@ -370,10 +673,33 @@
  	else:
  		rcType = config.plugins.remotecontroltype.rctype.value
  		# rcType = config.misc.inputdevices.rcType.value
@@ -9358,10 +9358,11 @@
  	def __init__(self, session):
 --- enigma2.org/data/rc_models/rc_models.cfg
 +++ enigma2/data/rc_models/rc_models.cfg
-@@ -19,127 +19,32 @@
+@@ -18,128 +18,33 @@
+ # a default rc model will be used for ModelName.
  #
  # When no entry matches at all, 'default' will be used as remoteName
- #
+-#
 -# Amiko
 -vipercombo amiko
 -vipert2c amiko
@@ -9515,6 +9516,7 @@
 +pace7241          pace7241
 +vip1-v2           vip2_1
 +vip2-v1           vip2_1
++
 --- enigma2.org/data/rc_models/Makefile.am
 +++ enigma2/data/rc_models/Makefile.am
 @@ -2,15 +2,9 @@
