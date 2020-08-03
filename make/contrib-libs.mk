@@ -782,7 +782,7 @@ $(D)/lirc: $(D)/bootstrap $(ARCHIVE)/$(LIRC_SOURCE)
 		$(MAKE) -j1 all; \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
 	$(REWRITE_LIBTOOL)/liblirc_client.la
-	rm -f $(addprefix $(TARGET_DIR)/usr/bin/,lircmd ircat irpty irrecord irsend irw lircrcd mode2 pronto2lirc)
+	rm -f $(addprefix $(TARGET_DIR)/usr/bin/,lircmd ircat irpty irsend irw lircrcd mode2 pronto2lirc)
 	$(REMOVE)/lirc-$(LIRC_VER)
 	$(TOUCH)
 endif
@@ -2030,7 +2030,7 @@ $(D)/libusb_compat: $(D)/bootstrap $(D)/libusb $(ARCHIVE)/$(LIBUSB_COMPAT_SOURCE
 #
 # alsa-lib
 #
-ALSA_LIB_VER = 1.2.3.1
+ALSA_LIB_VER = 1.2.3.2
 ALSA_LIB_SOURCE = alsa-lib-$(ALSA_LIB_VER).tar.bz2
 ALSA_LIB_PATCH  = alsa-lib-$(ALSA_LIB_VER).patch
 ALSA_LIB_PATCH += alsa-lib-$(ALSA_LIB_VER)-link_fix.patch
