@@ -250,38 +250,38 @@ do
    echo "[rcS] E2 ended <- RTV: " $rtv
    /bin/fp_control -i 46 0
    case "$rtv" in
-      0)  echo "[rcS] E2 ERROR"
-          echo "E2 Error" > /dev/vfd
-          init 6;;
-      1)  echo "[rcS] SHUTDOWN"
-          echo "Shutdown" > /dev/vfd
-          if [ -e /usr/local/share/enigma2/shutdown.mvi ]; then
-             showiframe -p /usr/local/share/enigma2/shutdown.mvi
-          fi
-          umount -a
-          init 0;;
-      2)  echo "[rcS] REBOOT"
-          echo "Reboot" > /dev/vfd
-          init 6;;
-      3)  echo "[rcS] E2 RESTART"
-          echo "Restart GUI" > /dev/vfd
-          echo "0" > /proc/progress
-          if [ -e /usr/local/share/enigma2/backdrop.mvi ]; then
-             showiframe -p /usr/local/share/enigma2/backdrop.mvi
-          else
-             showiframe -p /boot/bootlogo.mvi &
-          fi;;
-      6)  echo "[rcS] E2 DEBUG"
-          echo "Restart Dbg" > /dev/vfd
-          echo "0" > /proc/progress
-          if [ -e /usr/local/share/enigma2/backdrop.mvi ]; then
-             showiframe -p /usr/local/share/enigma2/backdrop.mvi
-          else
-             showiframe -p /boot/bootlogo.mvi &
-          fi;;
-      *)  echo "[rcS] ERROR"
-          echo "Error" > /dev/vfd
-          init 6;;
+      0) echo "[rcS] E2 ERROR"
+         echo "E2 Error" > /dev/vfd
+         init 6;;
+      1) echo "[rcS] SHUTDOWN"
+         echo "Shutdown" > /dev/vfd
+         if [ -e /usr/local/share/enigma2/shutdown.mvi ]; then
+            showiframe -p /usr/local/share/enigma2/shutdown.mvi
+         fi
+         umount -a
+         init 0;;
+      2) echo "[rcS] REBOOT"
+         echo "Reboot" > /dev/vfd
+         init 6;;
+      3) echo "[rcS] E2 RESTART"
+         echo "Restart GUI" > /dev/vfd
+         echo "0" > /proc/progress
+         if [ -e /usr/local/share/enigma2/backdrop.mvi ]; then
+            showiframe -p /usr/local/share/enigma2/backdrop.mvi
+         else
+            showiframe -p /boot/bootlogo.mvi &
+         fi;;
+      6) echo "[rcS] E2 DEBUG"
+         echo "Restart Dbg" > /dev/vfd
+         echo "0" > /proc/progress
+         if [ -e /usr/local/share/enigma2/backdrop.mvi ]; then
+            showiframe -p /usr/local/share/enigma2/backdrop.mvi
+         else
+            showiframe -p /boot/bootlogo.mvi &
+         fi;;
+      *) echo "[rcS] ERROR"
+         echo "Error" > /dev/vfd
+         init 6;;
    esac
 done
 

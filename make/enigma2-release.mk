@@ -468,6 +468,13 @@ enigma2_release_hl101:
 	$(SILENT)cp -dp $(SKEL_ROOT)/release/lircd_hl101.conf $(RELEASE_DIR)/etc/lircd.conf
 	$(SILENT)mkdir -p $(RELEASE_DIR)/var/run/lirc
 	$(SILENT)rm -f $(RELEASE_DIR)/bin/vdstandby
+#	$(SILENT)cp -f $(SKEL_ROOT)/release/rc_hl101_1.png $(RELEASE_DIR)/usr/local/share/enigma2/skin_default/rc.png
+	$(SILENT)if [ -e $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/spark7162VFD/plugin.py ]; then \
+		rm -f $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/SystemPlugins/VFD-Icons/*; \
+		cp -f $(SKEL_ROOT)/release/vfddisplay.png $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/spark7162VFD; \
+		cp -rf $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/spark7162VFD/* $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/SystemPlugins/VFD-Icons; \
+		rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/spark7162VFD; \
+	fi
 	$(SILENT)cp -f $(SKEL_ROOT)/root_enigma2/usr/local/share/enigma2/keymap_hl101.xml $(RELEASE_DIR)/usr/local/share/enigma2/keymap.xml
 
 #
