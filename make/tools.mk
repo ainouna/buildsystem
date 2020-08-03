@@ -459,7 +459,7 @@ ifeq ($(BOXTYPE), $(filter $(BOXTYPE), ipbox55 ipbox99 ipbox9900 cuberevo cubere
 TOOLS += $(D)/tools-eeprom-ipbox
 endif
 TOOLS += $(D)/tools-evremote2
-ifeq ($(BOXTYPE), $(filter $(BOXTYPE), adb_box atemio520 atemio530 atevio7500 cuberevo cuberevo_250hd cuberevo_2000hd cuberevo_3000hd cuberevo_9500hd cuberevo_mini cuberevo_mini2 cuberevo_mini_fta fortis_hdbox hl101 hs5101 hs7110 hs7420 hs7810a hs7119 hs7429 hs7819 octagon1008 ufc960 ufs910 ufs912 ufs913 ufs922 spark spark7162 tf7700hdpvr hl101 vip1_v2 vip2_v1 vitamin_hd5000))
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE), adb_box atemio520 atemio530 atevio7500 cuberevo cuberevo_250hd cuberevo_2000hd cuberevo_3000hd cuberevo_9500hd cuberevo_mini cuberevo_mini2 cuberevo_mini_fta fortis_hdbox hl101 hs5101 hs7110 hs7420 hs7810a hs7119 hs7429 hs7819 octagon1008 ufc960 ufs910 ufs912 ufs913 ufs922 spark spark7162 tf7700hdpvr vip1_v2 vip2_v1 vitamin_hd5000))
 TOOLS += $(D)/tools-fp_control
 endif
 TOOLS += $(D)/tools-hotplug
