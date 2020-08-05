@@ -463,8 +463,8 @@ enigma2_release_hl101:
 	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/stgfb/stmfb/stmcore-display-stx7109c3.ko $(RELEASE_DIR)/lib/modules/
 	$(SILENT)cp $(SKEL_ROOT)/boot/video_7109.elf $(RELEASE_DIR)/boot/video.elf
 	$(SILENT)cp $(SKEL_ROOT)/boot/audio_7109.elf $(RELEASE_DIR)/boot/audio.elf
-	$(SILENT)cp $(SKEL_ROOT)/firmware/dvb-fe-avl2108.fw $(RELEASE_DIR)/lib/firmware/
-	$(SILENT)cp $(SKEL_ROOT)/firmware/dvb-fe-stv6306.fw $(RELEASE_DIR)/lib/firmware/
+	$(SILENT)rm -f $(RELEASE_DIR)/lib/firmware/dvb-fe-{avl2108,avl6222,cx24116,cx21143,stv6306}.fw
+	$(SILENT)cp -f $(SKEL_ROOT)/release/fstab_vip2 $(RELEASE_DIR)/etc/fstab
 	$(SILENT)cp -dp $(SKEL_ROOT)/release/lircd_hl101.conf $(RELEASE_DIR)/etc/lircd.conf
 	$(SILENT)mkdir -p $(RELEASE_DIR)/var/run/lirc
 	$(SILENT)rm -f $(RELEASE_DIR)/bin/vdstandby
@@ -1046,6 +1046,7 @@ endif
 	$(SILENT)cp -f $(SKEL_ROOT)/release/rc_ufs912.png $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/ufs912.png
 	$(SILENT)cp -f $(SKEL_ROOT)/release/rc_vitamin.png $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/vitamin.png
 #	$(SILENT)cp -f $(SKEL_ROOT)/release/rc_pace7241.png $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/pace7241.png
+	$(SILENT)cp -f $(SKEL_ROOT)/release/rc_hl101_1.png $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/hl101_1.png
 	$(SILENT)cp -f $(SKEL_ROOT)/release/rc_vip2_1.png $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/vip2_1.png
 # delete mips remote control files
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/et4x00.*
@@ -1059,38 +1060,6 @@ endif
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/hd2400.*
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/vu*.*
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/xp1000.*
-	$(SILENT)if [[ ! ENABLE_ADB_BOX && ! ENABLE_ADB_2850 ]]; then \
-		rm -rf $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/adb/*; \
-		rmdir $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/adb; \
-	fi
-	$(SILENT)if [[ ! ENABLE_CUBEREVO && ! ENABLE_CUBEREVO_MINI_FTA && ! ENABLE_CUBEREVO_250HD && ! ENABLE_CUBEREVO_MINI && ! CUBEREVO_MINI2 && ! CUBEREVO_2000HD && ! CUBEREVO_3000HD && ! CUBEREVO_9500HD ]]; then \
-		rm -rf $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/cuberevo_uni/*; \
-		rmdir $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/cuberevo_uni; \
-	fi
-	$(SILENT)if [[ ! ENABLE_SPARK7162 && ! ENABLE_SPARK ]]; then \
-		rm -rf $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/spark/*; \
-		rmdir $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/spark; \
-	fi
-	$(SILENT)if [[ ! ENABLE_HDBOX && ! ENABLE_ATEVIO7500 ]]; then \
-		rm -rf $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/fs9000/*; \
-		rmdir $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/fs9000; \
-	fi
-	$(SILENT)if [[ ! ENABLE_OCTAGON1008 && ! ENABLE_HS7420 && ! ENABLE_HS7810A && ! ENABLE_HS7429 && ! ENABLE_HS7819 ]]; then \
-		rm -rf $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/hs9510/*; \
-		rmdir $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/hs9510; \
-	fi
-	$(SILENT)if [[ ! ENABLE_HS7110 && ! ENABLE_HS7119 ]]; then \
-		rm -rf $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/hs7110/*; \
-		rmdir $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/hs7110; \
-	fi
-	$(SILENT)if [[ ! ENABLE_TF7700 ]]; then \
-		rm -rf $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/tf7700/*; \
-		rmdir $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/tf7700; \
-	fi
-	$(SILENT)if [[ ! ENABLE_UFS910 && ! ENABLE_UFS912 ]]; then \
-		rm -rf $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/ufs912/*; \
-		rmdir $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/ufs912; \
-	fi
 #
 # Do not remove pyo files, remove pyc instead
 #

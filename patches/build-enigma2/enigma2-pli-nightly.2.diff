@@ -5466,7 +5466,7 @@
  SystemInfo["LCDsymbol_hdd"] = model in ("hd51", "vs1500") and fileCheck("/proc/stb/lcd/symbol_hdd")
  SystemInfo["FrontpanelDisplayGrayscale"] = fileExists("/dev/dbox/oled0")
 -SystemInfo["DeepstandbySupport"] = HardwareInfo().get_device_name() != "dm800"
-+SystemInfo["DeepstandbySupport"] = HardwareInfo().get_device_name() != "adb_box"
++SystemInfo["DeepstandbySupport"] = HardwareInfo().get_device_name() != model in ("adb_box", "hl101")"
  SystemInfo["Fan"] = fileCheck("/proc/stb/fp/fan")
  SystemInfo["FanPWM"] = SystemInfo["Fan"] and fileCheck("/proc/stb/fp/fan_pwm")
  SystemInfo["PowerLED"] = fileCheck("/proc/stb/power/powerled")
@@ -8731,12 +8731,6 @@
  	KEYIDS["KEY_7"]: ("7",),
  	KEYIDS["KEY_8"]: ("8",),
  	KEYIDS["KEY_9"]: ("9",),
--	KEYIDS["KEY_AUDIO"]: ("AUDIO",),
--	KEYIDS["KEY_BLUE"]: ("BLUE",),
--	KEYIDS["KEY_BOOKMARKS"]: ("PORTAL",),
--	KEYIDS["KEY_CHANNELDOWN"]: ("BOUQUET-",),
--	KEYIDS["KEY_CHANNELUP"]: ("BOUQUET+",),
--	KEYIDS["KEY_DOWN"]: ("DOWN",),
 +	KEYIDS["KEY_TV2"]: ("TV/RADIO",),
 +	KEYIDS["KEY_BACK"]: ("RECALL",),
 +	KEYIDS["KEY_PAGEUP"]: ("PAGE+",),
@@ -8753,8 +8747,7 @@
 +	KEYIDS["KEY_RIGHT"]: ("RIGHT",),
 +	KEYIDS["KEY_OK"]: ("OK", ""),
 +	KEYIDS["KEY_HOME"]: ("EXIT",),
- 	KEYIDS["KEY_EPG"]: ("EPG",),
--	KEYIDS["KEY_EXIT"]: ("EXIT",),
++	KEYIDS["KEY_EPG"]: ("EPG",),
 +	KEYIDS["KEY_FAVORITES"]: ("FAV",),
 +	KEYIDS["KEY_SAT"]: ("SAT",),
 +	KEYIDS["KEY_RED"]: ("RED",),
@@ -8765,8 +8758,7 @@
 +	KEYIDS["KEY_STOP"]: ("STOP",),
 +	KEYIDS["KEY_PLAY"]: ("PLAY",),
 +	KEYIDS["KEY_PAUSE"]: ("PAUSE",),
- 	KEYIDS["KEY_FASTFORWARD"]: ("FASTFORWARD",),
--	KEYIDS["KEY_GREEN"]: ("GREEN",),
++	KEYIDS["KEY_FASTFORWARD"]: ("FASTFORWARD",),
 +	KEYIDS["KEY_REWIND"]: ("REWIND",),
 +	KEYIDS["KEY_PREVIOUS"]: ("ARROWLEFT",),
 +	KEYIDS["KEY_NEXT"]: ("ARROWRIGHT",),
@@ -8911,16 +8903,9 @@
 +	KEYIDS["KEY_PAGEDOWN"]: ("CHANNELDOWN",),
 +	KEYIDS["KEY_VOLUMEUP"]: ("VOLUMEUP",),
 +	KEYIDS["KEY_VOLUMEDOWN"]: ("VOLUMEDOWN",),
- 	KEYIDS["KEY_HELP"]: ("HELP",),
- 	KEYIDS["KEY_INFO"]: ("INFO",),
--	KEYIDS["KEY_LEFT"]: ("LEFT",),
--	KEYIDS["KEY_MENU"]: ("MENU",),
--	KEYIDS["KEY_MUTE"]: ("MUTE",),
--	KEYIDS["KEY_NEXT"]: ("ARROWRIGHT",),
--	KEYIDS["KEY_NEXTSONG"]: ("NEXTSONG",),
- 	KEYIDS["KEY_OK"]: ("OK",),
--	KEYIDS["KEY_PLAY"]: ("PLAY",),
--	KEYIDS["KEY_PLAYPAUSE"]: ("PLAYPAUSE",),
++	KEYIDS["KEY_HELP"]: ("HELP",),
++	KEYIDS["KEY_INFO"]: ("INFO",),
++	KEYIDS["KEY_OK"]: ("OK",),
 +	KEYIDS["KEY_UP"]: ("UP",),
 +	KEYIDS["KEY_RIGHT"]: ("RIGHT",),
 +	KEYIDS["KEY_DOWN"]: ("DOWN",),
@@ -8987,7 +8972,13 @@
 +	KEYIDS["KEY_F8"]: ("KEY_F8",),
 +	KEYIDS["KEY_GREEN"]: ("GREEN",),
 +	KEYIDS["KEY_YELLOW"]: ("YELLOW",),
-+	KEYIDS["KEY_AUDIO"]: ("AUDIO",),
+ 	KEYIDS["KEY_AUDIO"]: ("AUDIO",),
+-	KEYIDS["KEY_BLUE"]: ("BLUE",),
+-	KEYIDS["KEY_BOOKMARKS"]: ("PORTAL",),
+-	KEYIDS["KEY_CHANNELDOWN"]: ("BOUQUET-",),
+-	KEYIDS["KEY_CHANNELUP"]: ("BOUQUET+",),
+-	KEYIDS["KEY_DOWN"]: ("DOWN",),
+-	KEYIDS["KEY_EPG"]: ("EPG",),
 +	KEYIDS["KEY_SUBTITLE"]: ("SUBTITLE",),
 +	KEYIDS["KEY_TEXT"]: ("TEXT",),
 +	KEYIDS["KEY_CHANNELUP"]: ("CHANNELUP",),
@@ -8996,7 +8987,27 @@
 +	KEYIDS["KEY_VOLUMEDOWN"]: ("VOLUMEDOWN",),
 +	KEYIDS["KEY_WWW"]: ("WWW",)
 +}, {  # id=8 - Vitamin HD5000
- 	KEYIDS["KEY_POWER"]: ("POWER",),
++	KEYIDS["KEY_POWER"]: ("POWER",),
++	KEYIDS["KEY_OK"]: ("OK",),
++	KEYIDS["KEY_LEFT"]: ("LEFT",),
++	KEYIDS["KEY_RIGHT"]: ("RIGHT",),
++	KEYIDS["KEY_UP"]: ("UP",),
++	KEYIDS["KEY_DOWN"]: ("DOWN",),
++	KEYIDS["KEY_MENU"]: ("MENU",),
+ 	KEYIDS["KEY_EXIT"]: ("EXIT",),
+-	KEYIDS["KEY_FASTFORWARD"]: ("FASTFORWARD",),
+-	KEYIDS["KEY_GREEN"]: ("GREEN",),
+-	KEYIDS["KEY_HELP"]: ("HELP",),
+-	KEYIDS["KEY_INFO"]: ("INFO",),
+-	KEYIDS["KEY_LEFT"]: ("LEFT",),
+-	KEYIDS["KEY_MENU"]: ("MENU",),
+-	KEYIDS["KEY_MUTE"]: ("MUTE",),
+-	KEYIDS["KEY_NEXT"]: ("ARROWRIGHT",),
+-	KEYIDS["KEY_NEXTSONG"]: ("NEXTSONG",),
+-	KEYIDS["KEY_OK"]: ("OK",),
+-	KEYIDS["KEY_PLAY"]: ("PLAY",),
+-	KEYIDS["KEY_PLAYPAUSE"]: ("PLAYPAUSE",),
+-	KEYIDS["KEY_POWER"]: ("POWER",),
 -	KEYIDS["KEY_PREVIOUS"]: ("ARROWLEFT",),
 -	KEYIDS["KEY_PREVIOUSSONG"]: ("PREVIOUSSONG",),
 -	KEYIDS["KEY_PROGRAM"]: ("TIMER",),
@@ -9024,13 +9035,6 @@
 -	# and KEY_NEXTSONG.
 -	KEYIDS["BTN_0"]: ("UP", "fp"),
 -	KEYIDS["BTN_1"]: ("DOWN", "fp"),
-+	KEYIDS["KEY_OK"]: ("OK",),
-+	KEYIDS["KEY_LEFT"]: ("LEFT",),
-+	KEYIDS["KEY_RIGHT"]: ("RIGHT",),
-+	KEYIDS["KEY_UP"]: ("UP",),
-+	KEYIDS["KEY_DOWN"]: ("DOWN",),
-+	KEYIDS["KEY_MENU"]: ("MENU",),
-+	KEYIDS["KEY_EXIT"]: ("EXIT",),
 +	KEYIDS["KEY_INFO"]: ("INFO",),
 +	KEYIDS["KEY_F11"]: ("FEED",),
 +	KEYIDS["KEY_F12"]: ("RECALL",),
@@ -9051,7 +9055,7 @@
  	KEYIDS["KEY_0"]: ("0",),
  	KEYIDS["KEY_1"]: ("1",),
  	KEYIDS["KEY_2"]: ("2",),
-@@ -297,46 +522,124 @@
+@@ -297,46 +522,175 @@
  	KEYIDS["KEY_7"]: ("7",),
  	KEYIDS["KEY_8"]: ("8",),
  	KEYIDS["KEY_9"]: ("9",),
@@ -9185,7 +9189,48 @@
 -	KEYIDS["KEY_MUTE"]: ("MUTE",),
 -	KEYIDS["KEY_NEXT"]: ("ARROWRIGHT",),
 -	KEYIDS["KEY_OK"]: ("OK",),
--	KEYIDS["KEY_PAUSE"]: ("PAUSE",),
++	KEYIDS["KEY_SLOW"]: ("STEP_BACK",),
++	KEYIDS["KEY_F"]: ("STEP_FWD",),
++	KEYIDS["KEY_W"]: ("PLAYMODE",),
++	KEYIDS["KEY_CLOSE"]: ("USB",),
++	KEYIDS["KEY_RED"]: ("RED",),
++	KEYIDS["KEY_GREEN"]: ("GREEN",),
++	KEYIDS["KEY_YELLOW"]: ("YELLOW",),
++	KEYIDS["KEY_BLUE"]: ("BLUE",)
++}, {  # id=12 - HL101
++	KEYIDS["KEY_POWER"]: ("STANDBY",),
++	KEYIDS["KEY_TIME"]: ("TIMER",),
++	KEYIDS["KEY_U"]: ("U",),
++	KEYIDS["KEY_V"]: ("V.FORMAT",),
++	KEYIDS["KEY_MUTE"]: ("MUTE",),
++	KEYIDS["KEY_AUX"]: ("TV/SAT",),
++	KEYIDS["KEY_TV2"]: ("TV/RADIO",),
++	KEYIDS["KEY_FIND"]: ("FIND",),
++	KEYIDS["KEY_FAVORITES"]: ("FAV",),
++	KEYIDS["KEY_1"]: ("1BUTTON",),
++	KEYIDS["KEY_2"]: ("2BUTTON",),
++	KEYIDS["KEY_3"]: ("3BUTTON",),
++	KEYIDS["KEY_4"]: ("4BUTTON",),
++	KEYIDS["KEY_5"]: ("5BUTTON",),
++	KEYIDS["KEY_6"]: ("6BUTTON",),
++	KEYIDS["KEY_7"]: ("7BUTTON",),
++	KEYIDS["KEY_8"]: ("8BUTTON",),
++	KEYIDS["KEY_9"]: ("9BUTTON",),
++	KEYIDS["KEY_MENU"]: ("MENU",),
++	KEYIDS["KEY_0"]: ("0BUTTON",),
++	KEYIDS["KEY_INFO"]: ("INFO",),
++	KEYIDS["KEY_EPG"]: ("EPG",),
++	KEYIDS["KEY_HOME"]: ("EXIT",),
++	KEYIDS["KEY_UP"]: ("UP/P+",),
++	KEYIDS["KEY_LEFT"]: ("LEFT/V-",),
++	KEYIDS["KEY_OK"]: ("OK/LIST",),
++	KEYIDS["KEY_RIGHT"]: ("RIGHT/V+",),
++	KEYIDS["KEY_DOWN"]: ("DOWN/P-",),
++	KEYIDS["KEY_BACK"]: ("RECALL",),
++	KEYIDS["KEY_RECORD"]: ("RECORD",),
++	KEYIDS["KEY_PLAY"]: ("PLAY",),
++	KEYIDS["KEY_REWIND"]: ("REWIND",),
+ 	KEYIDS["KEY_PAUSE"]: ("PAUSE",),
 -	KEYIDS["KEY_PLAY"]: ("PLAY",),
 -	KEYIDS["KEY_POWER"]: ("POWER",),
 -	KEYIDS["KEY_PREVIOUS"]: ("ARROWLEFT",),
@@ -9202,18 +9247,27 @@
 -	KEYIDS["KEY_VOLUMEDOWN"]: ("VOL-",),
 -	KEYIDS["KEY_VOLUMEUP"]: ("VOL+",),
 -	KEYIDS["KEY_YELLOW"]: ("YELLOW",)
-+	KEYIDS["KEY_SLOW"]: ("STEP_BACK",),
-+	KEYIDS["KEY_F"]: ("STEP_FWD",),
++	KEYIDS["KEY_FASTFORWARD"]: ("FASTFORWARD",),
++	KEYIDS["KEY_STOP"]: ("STOP",),
++	KEYIDS["KEY_SLOW"]: ("SLOW",),
++	KEYIDS["KEY_PREVIOUS"]: ("PREVIOUS",),
++	KEYIDS["KEY_NEXT"]: ("NEXT",),
++	KEYIDS["KEY_ARCHIVE"]: ("ARCHIVE",),
++	KEYIDS["KEY_OPTION"]: ("PIPSWAP",),
 +	KEYIDS["KEY_W"]: ("PLAYMODE",),
 +	KEYIDS["KEY_CLOSE"]: ("USB",),
++	KEYIDS["KEY_AUDIO"]: ("AUDIO",),
++	KEYIDS["KEY_SAT"]: ("SAT",),
++	KEYIDS["KEY_F1"]: ("F1",),
++	KEYIDS["KEY_F2"]: ("F2",),
 +	KEYIDS["KEY_RED"]: ("RED",),
 +	KEYIDS["KEY_GREEN"]: ("GREEN",),
 +	KEYIDS["KEY_YELLOW"]: ("YELLOW",),
-+	KEYIDS["KEY_BLUE"]: ("BLUE",)
++	KEYIDS["KEY_BLUE"]: ("BLUE",),
  }]
  
  def addKeyBinding(domain, key, context, action, flags):
-@@ -370,10 +673,35 @@
+@@ -370,10 +724,35 @@
  	else:
  		rcType = config.plugins.remotecontroltype.rctype.value
  		# rcType = config.misc.inputdevices.rcType.value
@@ -9540,8 +9594,8 @@
 -	octagon.xml uclan.xml
 +	dmmadv.png \
 +	adb_xmp.png cuberevo_uni.png fs9000.png  hs7110.png  hs9510.png  spark.png tf7700.png ufs912.png vitamin.png \
-+	pace7241.png vip2_1.png dmm.png \
++	pace7241.png hl101_1.png vip2_1.png dmm.png \
 +	dmmadv.xml  \
 +	adb_xmp.xml cuberevo_uni.xml fs9000.xml  hs7110.xml  hs9510.xml  spark.xml tf7700.xml ufs912.xml vitamin.xml \
-+	pace7241.xml vip2_1.xml dmm.xml
++	pace7241.xml hl101_1.xml vip2_1.xml dmm.xml
 
