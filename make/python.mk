@@ -757,11 +757,11 @@ $(ARCHIVE)/$(PYTHON_NETIFACES_SOURCE):
 
 $(D)/python_netifaces: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(ARCHIVE)/$(PYTHON_NETIFACES_SOURCE)
 	$(START_BUILD)
-	$(REMOVE)/netifaces
+	$(REMOVE)/netifaces-$(PYTHON_NETIFACES_VER)
 	$(UNTAR)/$(PYTHON_NETIFACES_SOURCE)
 	$(CH_DIR)/netifaces-$(PYTHON_NETIFACES_VER); \
 		$(PYTHON_INSTALL)
-	$(REMOVE)/netifaces
+	$(REMOVE)/netifaces-$(PYTHON_NETIFACES_VER)
 	$(TOUCH)
 
 PYTHON_DEPS  = $(D)/host_python
