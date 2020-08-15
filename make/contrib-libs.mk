@@ -1984,6 +1984,7 @@ $(D)/libusb: $(D)/bootstrap $(ARCHIVE)/$(LIBUSB_SOURCE)
 	$(UNTAR)/$(LIBUSB_SOURCE)
 	$(CH_DIR)/libusb-$(LIBUSB_VER); \
 		$(call apply_patches, $(LIBUSB_PATCH)); \
+		autoreconf -fi $(SILENT_OPT); \
 		$(CONFIGURE) \
 			--prefix=/usr \
 			--enable-static \

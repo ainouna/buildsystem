@@ -60,7 +60,15 @@
  			printf("  uncompressing block at %ld to %ld (%ld)\n", curr, next, next - curr);
 --- a/mkcramfs.c.org
 +++ b/mkcramfs.c
-@@ -242,7 +242,7 @@
+@@ -35,6 +35,7 @@
+ #include <stdarg.h>
+ #include <linux/cramfs_fs.h>
+ #include <zlib.h>
++#include <sys/sysmacros.h>
+ 
+ /* Exit codes used by mkfs-type programs */
+ #define MKFS_OK          0	/* No errors */
+@@ -242,7 +243,7 @@
  	endpath++;
  
  	/* read in the directory and sort */
@@ -69,7 +77,7 @@
  
  	if (dircount < 0) {
  		die(MKFS_ERROR, 1, "scandir failed: %s", name);
-@@ -284,7 +284,7 @@
+@@ -284,7 +285,7 @@
  		if (!entry) {
  			die(MKFS_ERROR, 1, "calloc failed");
  		}
@@ -78,7 +86,7 @@
  		if (!entry->name) {
  			die(MKFS_ERROR, 1, "strdup failed");
  		}
-@@ -396,9 +396,9 @@
+@@ -396,9 +397,9 @@
  
  	memset(super->name, 0x00, sizeof(super->name));
  	if (opt_name)
@@ -90,7 +98,7 @@
  
  	super->root.mode = root->mode;
  	super->root.uid = root->uid;
-@@ -477,7 +477,7 @@
+@@ -477,7 +478,7 @@
  		int dir_start = stack_entries;
  		while (entry) {
  			struct cramfs_inode *inode = (struct cramfs_inode *) (base + offset);
@@ -99,7 +107,7 @@
  
  			entry->dir_offset = offset;
  
-@@ -595,7 +595,7 @@
+@@ -595,7 +596,7 @@
  			input = blksize;
  		size -= input;
  		if (!(opt_holes && is_zero (uncompressed, input))) {
@@ -108,7 +116,7 @@
  			if (err != Z_OK) {
  				die(MKFS_ERROR, 0, "compression error: %s", zError(err));
  			}
-@@ -644,7 +644,7 @@
+@@ -644,7 +645,7 @@
  				set_data_offset(entry, base, offset);
  				entry->offset = offset;
  				map_entry(entry);
@@ -117,7 +125,7 @@
  				unmap_entry(entry);
  			}
  		}
-@@ -822,7 +822,7 @@
+@@ -822,7 +823,7 @@
  
  	/* Put the checksum in. */
  	crc = crc32(0L, Z_NULL, 0);
