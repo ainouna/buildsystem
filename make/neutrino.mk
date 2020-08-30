@@ -7,7 +7,7 @@ $(TARGET_DIR)/.version:
 	$(SILENT)echo "creator=$(MAINTAINER)" >> $@
 	$(SILENT)echo "docs=https://github.com/Audioniek" >> $@
 #	$(SILENT)echo "forum=https://github.com/Duckbox-Developers/neutrino-cst-next" >> $@
-	$(SILENT)echo "version=0200`date +%Y%m%d%H%M`" >> $@
+	$(SILENT)echo "version=0380`date +%Y%m%d%H%M`" >> $@
 	$(SILENT)echo "git=`git log | grep "^commit" | wc -l`" >> $@
 
 NEUTRINO_DEPS  = $(D)/bootstrap $(KERNEL) $(D)/system-tools $(D)/alsa_utils $(D)/ffmpeg $(D)/libopenthreads
@@ -58,6 +58,9 @@ N_CPPFLAGS    += -I$(KERNEL_DIR)/include
 
 ifeq ($(BOXTYPE), $(filter $(BOXTYPE), spark spark7162))
 N_CPPFLAGS += -I$(DRIVER_DIR)/frontcontroller/aotom_spark
+endif
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE), vip2))
+N_CPPFLAGS += -I$(DRIVER_DIR)/frontcontroller/aotom_vip
 endif
 
 #ifeq ($(FLAVOUR), neutrino-tangos)

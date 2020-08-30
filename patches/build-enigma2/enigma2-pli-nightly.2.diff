@@ -9,7 +9,7 @@
  AX_PYTHON_DEVEL
  AX_PKG_SWIG
  AX_SWIG_ENABLE_CXX
-@@ -35,6 +36,303 @@
+@@ -35,6 +36,312 @@
  PKG_CHECK_MODULES(LIBDDVD, libdreamdvd, HAVE_LIBDDVD="yes", HAVE_LIBDDVD="no")
  AM_CONDITIONAL(HAVE_LIBDDVD, test "$HAVE_LIBDDVD" = "yes")
  PKG_CHECK_MODULES(AVAHI, avahi-client)
@@ -284,6 +284,15 @@
 +	AC_DEFINE(ENABLE_HL101, 1, [enable hl101 stuff])
 +fi
 +
++AC_ARG_ENABLE(vip1_v1,
++	[  --enable-vip1_v1         enable vip1_v1 stuff],
++	[AC_DEFINE(ENABLE_VIP1_V1, 1, [enable vip1_v1 stuff])])
++
++AM_CONDITIONAL(ENABLE_VIP1_V1, test "$enable_vip1_v1" = "yes")
++if test "$enable_vip1_v1" = "yes"; then
++	AC_DEFINE(ENABLE_VIP1_V1, 1, [enable vip1_v1 stuff])
++fi
++
 +AC_ARG_ENABLE(vip1_v2,
 +	[  --enable-vip1_v2         enable vip1_v2 stuff],
 +	[AC_DEFINE(ENABLE_VIP1_V2, 1, [enable vip1_v2 stuff])])
@@ -293,13 +302,13 @@
 +	AC_DEFINE(ENABLE_VIP1_V2, 1, [enable vip1_v2 stuff])
 +fi
 +
-+AC_ARG_ENABLE(vip2_v1,
-+	[  --enable-vip2_v1         enable vip2_v1 stuff],
-+	[AC_DEFINE(ENABLE_VIP2_V1, 1, [enable vip2_v1 stuff])])
++AC_ARG_ENABLE(vip2,
++	[  --enable-vip2            enable vip2 stuff],
++	[AC_DEFINE(ENABLE_VIP2, 1, [enable vip2 stuff])])
 +
-+AM_CONDITIONAL(ENABLE_VIP2_V1, test "$enable_vip2_v1" = "yes")
-+if test "$enable_vip2_v1" = "yes"; then
-+	AC_DEFINE(ENABLE_VIP2_V1, 1, [enable vip2_v1 stuff])
++AM_CONDITIONAL(ENABLE_VIP2, test "$enable_vip2" = "yes")
++if test "$enable_vip2" = "yes"; then
++	AC_DEFINE(ENABLE_VIP2, 1, [enable vip2 stuff])
 +fi
 +
 +AC_ARG_ENABLE(pace7241,
@@ -313,7 +322,7 @@
  
  AC_CHECK_LIB([udfread], [udfread_init])
  AC_CHECK_LIB([dl], [dlopen], [LIBDL_LIBS="-ldl"], [AC_MSG_ERROR([Could not find libdl])])
-@@ -51,8 +349,8 @@
+@@ -51,8 +358,8 @@
  AC_DEFINE_UNQUOTED(CRASH_EMAILADDR,"$CRASHLOGEMAIL",[crash log email address])
  
  AC_ARG_WITH(boxtype,
@@ -324,7 +333,7 @@
  AC_SUBST(BOXTYPE)
  AC_DEFINE_UNQUOTED(BOXTYPE,"$BOXTYPE",[box type])
  
-@@ -79,19 +377,6 @@
+@@ -79,19 +386,6 @@
  	[[TEXTSKIN="default"]]
  )
  AC_SUBST(TEXTSKIN)
@@ -344,7 +353,7 @@
  
  AC_ARG_WITH(libsdl,
  	AS_HELP_STRING([--with-libsdl],[use libsdl, yes or no]),
-@@ -141,8 +426,8 @@
+@@ -141,8 +435,8 @@
  
  AC_ARG_WITH(alsa,
  	AC_HELP_STRING([--with-alsa], [Enable ALSA support]),
@@ -355,7 +364,7 @@
  )
  if test x"$with_alsa" == xyes ; then
  	AC_DEFINE(HAVE_ALSA, 1,[Enables ALSA support])
-@@ -196,6 +481,26 @@
+@@ -196,6 +490,26 @@
  elif test x"$with_alphablendingacceleration" = xalways ; then
  	AC_DEFINE_UNQUOTED(FORCE_ALPHABLENDING_ACCELERATION, 1, [Accelerate alphablending blits])
  fi
@@ -382,7 +391,7 @@
  
  AC_ARG_WITH(accelerationthreshold,
  	AC_HELP_STRING([--with-accelerationthreshold=n], [use acceleration threshold of n bytes]),
-@@ -303,8 +608,6 @@
+@@ -303,8 +617,6 @@
  lib/python/Plugins/Extensions/SocketMMI/meta/Makefile
  lib/python/Plugins/Extensions/SocketMMI/src/Makefile
  lib/python/Plugins/PLi/Makefile
@@ -391,7 +400,7 @@
  lib/python/Plugins/SystemPlugins/DefaultServicesScanner/Makefile
  lib/python/Plugins/SystemPlugins/DefaultServicesScanner/meta/Makefile
  lib/python/Plugins/SystemPlugins/DiseqcTester/Makefile
-@@ -332,6 +635,60 @@
+@@ -332,6 +644,60 @@
  lib/python/Plugins/SystemPlugins/Videomode/meta/Makefile
  lib/python/Plugins/SystemPlugins/WirelessLan/Makefile
  lib/python/Plugins/SystemPlugins/WirelessLan/meta/Makefile
@@ -806,7 +815,7 @@
  		{
 --- enigma2.org/lib/driver/vfd.cpp
 +++ enigma2/lib/driver/vfd.cpp
-@@ -0,0 +1,913 @@
+@@ -0,0 +1,923 @@
 +/*
 + * vfd.cpp
 + *
@@ -854,6 +863,7 @@
 + * 20200417 Audioniek       adb_box added.
 + * 20200508 Audioniek       pace7241 added.
 + * 20200719 Audioniek       hl101, vip1_v2 and vip2_v1 added.
++ * 20200828 Audioniek       Add vip1_v1, rename vip2.
 + *
 + ****************************************************************************/
 +#include <stdarg.h>
@@ -921,8 +931,9 @@
 +   || defined (ENABLE_HS7429) \
 +   || defined (ENABLE_SPARK7162) \
 +   || defined (ENABLE_HL101) \
++   || defined (ENABLE_VIP1_V1) \
 +   || defined (ENABLE_VIP1_V2) \
-+   || defined (ENABLE_VIP2_V1)
++   || defined (ENABLE_VIP2)
 +	#define VFDLENGTH 8
 +#elif defined (ENABLE_VITAMIN_HD5000)
 +	#define VFDLENGTH 11
@@ -966,8 +977,9 @@
 +	vfd_type = 7;
 +#elif defined (ENABLE_SPARK7162) \
 +   || defined (ENABLE_HL101) \
++   || defined (ENABLE_VIP1_V1) \
 +   || defined (ENABLE_VIP1_V2) \
-+   || defined (ENABLE_VIP2_V1)
++   || defined (ENABLE_VIP2)
 +	vfd_type = 8;
 +#elif defined (ENABLE_HS7810A) \
 +   || defined (ENABLE_HS7819) \
@@ -1180,8 +1192,10 @@
 +		char str[] = "Pace 7241 Enigma2";
 +	#elif defined (ENABLE_HL101)
 +		char str[] = "HL101 E2";
-+	#elif defined (ENABLE_VIP1_V2)
++	#elif defined (ENABLE_VIP1_V1)
 +		char str[] = "VIP E2";
++	#elif defined (ENABLE_VIP1_V2)
++		char str[] = "VIP1_2 E2";
 +	#elif defined (ENABLE_VIP2_V1)
 +		char str[] = "VIP2 E2";
 +	#else
@@ -1215,8 +1229,9 @@
 +	 && !defined (ENABLE_ADB_BOX) \
 +	 && !defined (ENABLE_PACE7241) \
 +	 && !defined (ENABLE_HL101) \
++	 && !defined (ENABLE_VIP1_V1) \
 +	 && !defined (ENABLE_VIP1_V2) \
-+	 && !defined (ENABLE_VIP2_V1)
++	 && !defined (ENABLE_VIP2)
 +	/* Others cycle their icons */
 +	for (int vloop = 0; vloop < 128; vloop++)
 +	{
@@ -1307,8 +1322,9 @@
 +	 && !defined (ENABLE_ADB_BOX) \
 +	 && !defined (ENABLE_PACE7241) \
 +	 && !defined (ENABLE_HL101) \
++	 && !defined (ENABLE_VIP1_V1) \
 +	 && !defined (ENABLE_VIP1_V2) \
-+	 && !defined (ENABLE_VIP2_V1)
++	 && !defined (ENABLE_VIP2)
 +	// Set all blocked icons
 +	for (int id = 0x10; id < 0x20; id++)
 +	{
@@ -1342,8 +1358,9 @@
 + || defined (ENABLE_ADB_BOX) \
 + || defined (ENABLE_PACE7241) \
 + || defined (ENABLE_HL101) \
++ || defined (ENABLE_VIP1_V1) \
 + || defined (ENABLE_VIP1_V2) \
-+ || defined (ENABLE_VIP2_V1)
++ || defined (ENABLE_VIP2)
 +void evfd::vfd_write_string_scrollText(char *text)
 +{
 +	return;
@@ -1609,8 +1626,9 @@
 +
 +	#if defined (ENABLE_SPARK7162) \
 +	 || defined (ENABLE_HL101) \
++	 || defined (ENABLE_VIP1_V1) \
 +	 || defined (ENABLE_VIP1_V2) \
-+	 || defined (ENABLE_VIP2_V1)
++	 || defined (ENABLE_VIP2)
 +		for (id = 1; id < 46; id++)
 +	#elif defined (ENABLE_FORTIS_HDBOX)
 +		for (id = 1; id < 40; id++)
@@ -5466,7 +5484,7 @@
  SystemInfo["LCDsymbol_hdd"] = model in ("hd51", "vs1500") and fileCheck("/proc/stb/lcd/symbol_hdd")
  SystemInfo["FrontpanelDisplayGrayscale"] = fileExists("/dev/dbox/oled0")
 -SystemInfo["DeepstandbySupport"] = HardwareInfo().get_device_name() != "dm800"
-+SystemInfo["DeepstandbySupport"] = HardwareInfo().get_device_name() != model in ("adb_box", "hl101")
++SystemInfo["DeepstandbySupport"] = HardwareInfo().get_device_name() != model in ("adb_box", "hl101", vip1-v1)
  SystemInfo["Fan"] = fileCheck("/proc/stb/fp/fan")
  SystemInfo["FanPWM"] = SystemInfo["Fan"] and fileCheck("/proc/stb/fp/fan_pwm")
  SystemInfo["PowerLED"] = fileCheck("/proc/stb/power/powerled")
@@ -5497,7 +5515,7 @@
  SystemInfo["Blindscan_t2_available"] = fileCheck("/proc/stb/info/vumodel")
  SystemInfo["RcTypeChangable"] = not(model.startswith("et8500") or model.startswith("et7")) and pathExists("/proc/stb/ir/rc/type")
 -SystemInfo["HasFullHDSkinSupport"] = model not in ("et4000", "et5000", "sh1", "hd500c", "hd1100", "xp1000", "lc")
-+SystemInfo["HasFullHDSkinSupport"] = HardwareInfo().get_device_model() in ("adb_box", "atevio7500", "cuberevo", "cuberevo_mini-fta", "cuberevo-250hd", "cuberevo-mini", "cuberevo-mini2", "cuberevo-2000hd", "cuberevo-3000hd", "cuberevo-9500hd", "hdbox", "hs7110", "hs7420", "hs7810a", "hs7119", "hs7429", "hs7819", "hl101", "octagon1008", "spark", "spark7162", "tf7700hdpvr", "ufs912", "ufs913", "vip1-v2", "vip2-v1", "vitamin-hd5000")
++SystemInfo["HasFullHDSkinSupport"] = HardwareInfo().get_device_model() in ("adb_box", "atevio7500", "cuberevo", "cuberevo_mini-fta", "cuberevo-250hd", "cuberevo-mini", "cuberevo-mini2", "cuberevo-2000hd", "cuberevo-3000hd", "cuberevo-9500hd", "hdbox", "hs7110", "hs7420", "hs7810a", "hs7119", "hs7429", "hs7819", "hl101", "octagon1008", "spark", "spark7162", "tf7700hdpvr", "ufs912", "ufs913", "vip1-v1", "vip1-v2", "vip2", "vitamin-hd5000")
  SystemInfo["HasBypassEdidChecking"] = fileCheck("/proc/stb/hdmi/bypass_edid_checking")
  SystemInfo["HasColorspace"] = fileCheck("/proc/stb/video/hdmi_colorspace")
  SystemInfo["HasColorspaceSimple"] = SystemInfo["HasColorspace"] and model in "vusolo4k"
@@ -5520,7 +5538,7 @@
 -SystemInfo["HasSVideo"] = model in ("dm8000")
 -SystemInfo["HasComposite"] = model not in ("i55", "gbquad4k", "gbue4k", "hd1500", "osnino", "osninoplus", "purehd", "purehdse", "revo4k", "vusolo4k", "vuzero4k")
 +SystemInfo["HasHDMI-CEC"] = fileExists("/lib/modules/cec.ko") and (fileExists("proc/stb/cec/send") or fileExists("stb/hdmi/cec"))
-+SystemInfo["HasYPbPr"] = HardwareInfo().get_device_model() in ("adb_box", "atevio7500", "cuberevo", "cuberevo-mini-fta", "cuberevo-250hd", "cuberevo-mini", "cuberevo-mini2", "cuberevo-2000hd", "cuberevo-3000hd", "cuberevo-9500hd", "hdbox", "octagon1008", "hs7420", "hs7429", "hl101", "tf7700hdpvr", "ufs912", "ufs913", "vip1-v2", "vip2-v1", "vitamin-hd5000")
++SystemInfo["HasYPbPr"] = HardwareInfo().get_device_model() in ("adb_box", "atevio7500", "cuberevo", "cuberevo-mini-fta", "cuberevo-250hd", "cuberevo-mini", "cuberevo-mini2", "cuberevo-2000hd", "cuberevo-3000hd", "cuberevo-9500hd", "hdbox", "octagon1008", "hs7420", "hs7429", "hl101", "tf7700hdpvr", "ufs912", "ufs913", "vip1-v1", "vip1-v2", "vip2", "vitamin-hd5000")
 +SystemInfo["HasScart"] = HardwareInfo().get_device_model() not in ("hs7110", "hs7119")
 +SystemInfo["HasSVideo"] = HardwareInfo().get_device_model() in ("cuberevo")
 +SystemInfo["HasComposite"] = HardwareInfo().get_device_model() not in ("cuberevo-mini-fta", "cuberevo-250hd")
@@ -8259,7 +8277,7 @@
 +					if perc > 20:
 +						if os.path.isfile('/proc/stb/info/model'):
 +							model = str(open("/proc/stb/info/model").read())
-+							if model.startswith("spark7162") or model.startswith("tf7700hdpvr") or model.startswith("octagon1008") or model.startswith("hdbox") or model.startswith("atevio7500") or model.startswith("hs7420") or model.startswith("hs7429") or model.startswith("vitamin-hd5000") or model.startswith("hl101") or model.startswith("vip1-v2") or model.startswith("vip2-v1"):
++							if model.startswith("spark7162") or model.startswith("tf7700hdpvr") or model.startswith("octagon1008") or model.startswith("hdbox") or model.startswith("atevio7500") or model.startswith("hs7420") or model.startswith("hs7429") or model.startswith("vitamin-hd5000") or model.startswith("hl101") or model.startswith("vip1-v1") or model.startswith("vip1-v2") or model.startswith("vip2"):
 +								evfd.getInstance().vfd_write_string("START %02d" % perc)
 +							elif model.startswith("ufs912") or model.startswith("ufs913"):
 +								evfd.getInstance().vfd_write_string("Enigma2 START %02d" % perc)
@@ -9332,7 +9350,7 @@
  	return keyDescriptions[idx].get(key)
 --- enigma2.org/lib/python/Screens/InputDeviceSetup.py
 +++ enigma2/lib/python/Screens/InputDeviceSetup.py
-@@ -299,62 +299,53 @@
+@@ -299,62 +299,54 @@
  	rcList = [
  			("0", _("Default")),
  			("4", _("DMM normal")),
@@ -9432,15 +9450,16 @@
 +			("adb-2850", 15),
 +			("pace7241", 16),
 +			("hl101", 18),
++			("vip1-v1", 17),
 +			("vip1-v2", 17),
-+			("vip2-v1", 17),
++			("vip2", 17),
 +#			("fortis_4g", 19),
  		]
  
  	def __init__(self, session):
 --- enigma2.org/data/rc_models/rc_models.cfg
 +++ enigma2/data/rc_models/rc_models.cfg
-@@ -18,128 +18,33 @@
+@@ -18,128 +18,34 @@
  # a default rc model will be used for ModelName.
  #
  # When no entry matches at all, 'default' will be used as remoteName
@@ -9597,8 +9616,9 @@
 +adb-2850          adb_xmp
 +pace7241          pace7241
 +hl101             hl101_1
-+vip1-v2           vip2_1
-+vip2-v1           vip2_1
++vip1-v1           vip_1
++vip1-v2           vip_1
++vip2              vip_1
 --- enigma2.org/data/rc_models/Makefile.am
 +++ enigma2/data/rc_models/Makefile.am
 @@ -2,15 +2,9 @@
@@ -9619,8 +9639,8 @@
 -	octagon.xml uclan.xml
 +	dmmadv.png \
 +	adb_xmp.png cuberevo_uni.png fs9000.png  hs7110.png  hs9510.png  spark.png tf7700.png ufs912.png vitamin.png \
-+	pace7241.png hl101_1.png vip2_1.png dmm.png \
++	pace7241.png hl101_1.png vip_1.png dmm.png \
 +	dmmadv.xml  \
 +	adb_xmp.xml cuberevo_uni.xml fs9000.xml  hs7110.xml  hs9510.xml  spark.xml tf7700.xml ufs912.xml vitamin.xml \
-+	pace7241.xml hl101_1.xml vip2_1.xml dmm.xml
++	pace7241.xml hl101_1.xml vip_1.xml dmm.xml
 

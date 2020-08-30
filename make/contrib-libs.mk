@@ -735,7 +735,7 @@ $(D)/freetype: $(D)/bootstrap $(D)/zlib $(D)/libpng $(ARCHIVE)/$(FREETYPE_SOURCE
 #
 # lirc
 #
-ifeq ($(BOXTYPE), $(filter $(BOXTYPE), adb_box arivalink200 ipbox55 ipbox99 ipbox9900 cuberevo cuberevo_mini cuberevo_mini2 cuberevo_250hd cuberevo_2000hd cuberevo_3000hd hl101 pace7241 sagemcom88 spark spark7162 ufs910 vip1_v2 vip2_v1 vitamin_hd5000))
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE), adb_box arivalink200 ipbox55 ipbox99 ipbox9900 cuberevo cuberevo_mini cuberevo_mini2 cuberevo_250hd cuberevo_2000hd cuberevo_3000hd hl101 pace7241 sagemcom88 spark spark7162 ufs910 vip1_v1 vip1_v2 vip2 vitamin_hd5000))
 
 LIRC_VER = 0.9.0
 LIRC_SOURCE = lirc-$(LIRC_VER).tar.bz2
@@ -1529,8 +1529,8 @@ $(D)/sqlite: $(D)/bootstrap $(ARCHIVE)/$(SQLITE_SOURCE)
 #
 # libsoup
 #
-LIBSOUP_VER_MAJOR = 2.64
-LIBSOUP_VER_MINOR = 0
+LIBSOUP_VER_MAJOR = 2.68
+LIBSOUP_VER_MINOR = 3
 LIBSOUP_VER = $(LIBSOUP_VER_MAJOR).$(LIBSOUP_VER_MINOR)
 LIBSOUP_SOURCE = libsoup-$(LIBSOUP_VER).tar.xz
 
@@ -1984,7 +1984,6 @@ $(D)/libusb: $(D)/bootstrap $(ARCHIVE)/$(LIBUSB_SOURCE)
 	$(UNTAR)/$(LIBUSB_SOURCE)
 	$(CH_DIR)/libusb-$(LIBUSB_VER); \
 		$(call apply_patches, $(LIBUSB_PATCH)); \
-		autoreconf -fi $(SILENT_OPT); \
 		$(CONFIGURE) \
 			--prefix=/usr \
 			--enable-static \
@@ -2623,7 +2622,7 @@ LIBUDFREAD_VER_MAJOR = 1
 LIBUDFREAD_VER_MINOR = 0
 LIBUDFREAD_VER_MICRO = 0
 LIBUDFREAD_VER = $(LIBUDFREAD_VER_MAJOR).$(LIBUDFREAD_VER_MINOR).$(LIBUDFREAD_VER_MICRO)
-LIBUDFREAD_URL = https://code.videolan.org/videolan/libudfread.git
+LIBUDFREAD_URL = https://git.videolan.org/git/libudfread.git
 LIBUDFREAD_PATCH =
 
 $(D)/libudfread: $(D)/bootstrap

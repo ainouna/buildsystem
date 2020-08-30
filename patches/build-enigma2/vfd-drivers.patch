@@ -1,6 +1,6 @@
 --- enigma2/lib/python/Plugins/Extensions/Makefile.am.orig
 +++ enigma2/lib/python/Plugins/Extensions/Makefile.am
-@@ -38,6 +38,70 @@
+@@ -38,6 +38,74 @@
  SUBDIRS += CuberevoVFD
  endif
  
@@ -52,11 +52,15 @@
 +SUBDIRS += spark7162VFD
 +endif
 + 
++if ENABLE_VIP1_V1
++SUBDIRS += spark7162VFD
++endif
++ 
 +if ENABLE_VIP1_V2
 +SUBDIRS += spark7162VFD
 +endif
 + 
-+if ENABLE_VIP2_V1
++if ENABLE_VIP2
 +SUBDIRS += spark7162VFD
 +endif
 + 
@@ -4300,7 +4304,7 @@
 +	vfddisplay.png
 --- /dev/null
 +++ enigma2/lib/python/Plugins/Extensions/spark7162VFD/plugin.py
-@@ -0,0 +1,825 @@
+@@ -0,0 +1,829 @@
 +# -*- coding: utf-8 -*-
 +from Plugins.Plugin import PluginDescriptor
 +from ServiceReference import ServiceReference
@@ -4352,9 +4356,13 @@
 +if DisplayTypevfd is None:
 +	if stb.lower() == 'spark7162':
 +		DisplayType = 8
++	elif stb.lower() == 'hl101':
++		DisplayType = 8
++	elif stb.lower() == 'vip1-v1':
++		DisplayType = 8
 +	elif stb.lower() == 'vip1-v2':
 +		DisplayType = 8
-+	elif stb.lower() == 'vip2-v1':
++	elif stb.lower() == 'vip2':
 +		DisplayType = 8
 +	else:
 +		DisplayType = None

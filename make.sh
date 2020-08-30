@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20200802.1
+# Version 20200828.1
 
 ##############################################
 
@@ -195,9 +195,9 @@ case "$REPLY" in
 	28) BOXTYPE="spark7162";;
 	29) BOXTYPE="atemio520";;
 	30) BOXTYPE="atemio530";;
-	31) BOXTYPE="hl101";;
+	31) BOXTYPE="vip1_v1";;
 	32) BOXTYPE="vip1_v2";;
-	33) BOXTYPE="vip2_v1";;
+	33) BOXTYPE="vip2";;
 	34) BOXTYPE="hl101";;
 	35) BOXTYPE="adb_box";;
 	36) BOXTYPE="vitamin_hd5000";;

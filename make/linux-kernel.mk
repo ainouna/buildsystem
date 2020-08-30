@@ -179,12 +179,6 @@ UFC960_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-sh4-i2c-st40-pio_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-fortis_hdbox_i2c_st40_stm24_$(KERNEL_LABEL).patch
 
-HL101_PATCHES_24 = $(COMMON_PATCHES_24) \
-		linux-sh4-hl101_setup_stm24_$(KERNEL_LABEL).patch \
-		linux-usbwait123_stm24.patch \
-		linux-sh4-stmmac_stm24_$(KERNEL_LABEL).patch \
-		linux-sh4-i2c-st40-pio_stm24_$(KERNEL_LABEL).patch
-
 SPARK_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-sh4-stmmac_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-lmb_stm24_$(KERNEL_LABEL).patch \
@@ -303,14 +297,26 @@ ARIVALINK200_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-sh4-ipbox_bdinfo_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-ipbox_dvb_ca_stm24_$(KERNEL_LABEL).patch
 
+HL101_PATCHES_24 = $(COMMON_PATCHES_24) \
+		linux-sh4-hl101_setup_stm24_$(KERNEL_LABEL).patch \
+		linux-usbwait123_stm24.patch \
+		linux-sh4-stmmac_stm24_$(KERNEL_LABEL).patch \
+		linux-sh4-i2c-st40-pio_stm24_$(KERNEL_LABEL).patch
+
+VIP1_V1_PATCHES_24 = $(COMMON_PATCHES_24) \
+		linux-sh4-vip1_v1_setup_stm24_$(KERNEL_LABEL).patch \
+		linux-usbwait123_stm24.patch \
+		linux-sh4-stmmac_stm24_$(KERNEL_LABEL).patch \
+		linux-sh4-i2c-st40-pio_stm24_$(KERNEL_LABEL).patch
+
 VIP1_V2_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-sh4-vip1_v2_setup_stm24_$(KERNEL_LABEL).patch \
 		linux-usbwait123_stm24.patch \
 		linux-sh4-stmmac_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-i2c-st40-pio_stm24_$(KERNEL_LABEL).patch
 
-VIP2_V1_PATCHES_24 = $(COMMON_PATCHES_24) \
-		linux-sh4-vip2_v1_setup_stm24_$(KERNEL_LABEL).patch \
+VIP2_PATCHES_24 = $(COMMON_PATCHES_24) \
+		linux-sh4-vip2_setup_stm24_$(KERNEL_LABEL).patch \
 		linux-usbwait123_stm24.patch \
 		linux-sh4-stmmac_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-i2c-st40-pio_stm24_$(KERNEL_LABEL).patch

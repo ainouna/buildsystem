@@ -80,7 +80,11 @@ insmod $MODDIR/stm_v4l2.ko
 insmod $MODDIR/stmvout.ko
 insmod $MODDIR/stmvbi.ko
 insmod $MODDIR/pseudocard.ko
-insmod $MODDIR/fe-core.ko demod=stb0899 tuner=stb6100 ;
+
+#demodulator type: stb0899(default) stv090x
+#tuner type: stb6100(default) stv6110x, sharp7306
+insmod $MODDIR/fe-core.ko demod=stv090x tuner=stv6110x #paramDebug=50
+
 insmod $MODDIR/cimax.ko
 insmod $MODDIR/smartcard.ko
 insmod $MODDIR/pti.ko
