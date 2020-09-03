@@ -7,16 +7,34 @@ $(TARGET_DIR)/.version:
 	$(SILENT)echo "creator=$(MAINTAINER)" >> $@
 	$(SILENT)echo "docs=https://github.com/Audioniek" >> $@
 #	$(SILENT)echo "forum=https://github.com/Duckbox-Developers/neutrino-cst-next" >> $@
-	$(SILENT)echo "version=0380`date +%Y%m%d%H%M`" >> $@
+	$(SILENT)echo "version=0200`date +%Y%m%d%H%M`" >> $@
 	$(SILENT)echo "git=`git log | grep "^commit" | wc -l`" >> $@
 
-NEUTRINO_DEPS  = $(D)/bootstrap $(KERNEL) $(D)/system-tools $(D)/alsa_utils $(D)/ffmpeg $(D)/libopenthreads
-NEUTRINO_DEPS += $(LIRC) $(D)/libcurl $(D)/libsigc $(D)/pugixml $(D)/libdvbsi $(D)/libfribidi $(D)/giflib
-NEUTRINO_DEPS += $(D)/lua
-NEUTRINO_DEPS += $(D)/libpng $(D)/libjpeg $(D)/freetype
+NEUTRINO_DEPS  = $(D)/bootstrap
+NEUTRINO_DEPS += $(KERNEL)
+NEUTRINO_DEPS += $(D)/system-tools
 #NEUTRINO_DEPS += $(D)/ncurses
+NEUTRINO_DEPS += $(D)/alsa_utils
+NEUTRINO_DEPS += $(D)/ffmpeg
+NEUTRINO_DEPS += $(D)/libopenthreads
+NEUTRINO_DEPS += $(LIRC)
+NEUTRINO_DEPS += $(D)/libcurl
+NEUTRINO_DEPS += $(D)/libsigc
+NEUTRINO_DEPS += $(D)/pugixml
+NEUTRINO_DEPS += $(D)/libdvbsi
+NEUTRINO_DEPS += $(D)/libfribidi
+NEUTRINO_DEPS += $(D)/giflib
+NEUTRINO_DEPS += $(D)/lua
+#NEUTRINO_DEPS += $(D)/luaexpat
+#NEUTRINO_DEPS += $(D)/luacurl
+#NEUTRINO_DEPS += $(D)/luasocket
+#NEUTRINO_DEPS += $(D)/luafeedparser
+#NEUTRINO_DEPS += $(D)/luasoap
+#NEUTRINO_DEPS += $(D)/luajson
+NEUTRINO_DEPS += $(D)/libpng
+NEUTRINO_DEPS += $(D)/libjpeg
+NEUTRINO_DEPS += $(D)/freetype
 #NEUTRINO_DEPS += $(D)/libusb
-#NEUTRINO_DEPS += $(D)/luaexpat $(D)/luacurl $(D)/luasocket $(D)/luafeedparser $(D)/luasoap $(D)/luajson
 NEUTRINO_DEPS += $(LOCAL_NEUTRINO_DEPS)
 
 ifeq ($(FLAVOUR), neutrino-tangos)
@@ -45,7 +63,10 @@ N_CFLAGS       = -Wall -W -Wshadow -pipe -Os
 N_CFLAGS      += -D__KERNEL_STRICT_NAMES
 N_CFLAGS      += -D__STDC_FORMAT_MACROS
 N_CFLAGS      += -D__STDC_CONSTANT_MACROS
-N_CFLAGS      += -fno-strict-aliasing -funsigned-char -ffunction-sections -fdata-sections
+N_CFLAGS      += -fno-strict-aliasing
+N_CFLAGS      += -funsigned-char
+N_CFLAGS      += -ffunction-sections
+N_CFLAGS      += -fdata-sections
 #N_CFLAGS      += -DCPU_FREQ
 N_CFLAGS      += $(LOCAL_NEUTRINO_CFLAGS)
 
@@ -55,6 +76,8 @@ N_CPPFLAGS    += -ffunction-sections -fdata-sections
 
 N_CPPFLAGS    += -I$(DRIVER_DIR)/bpamem
 N_CPPFLAGS    += -I$(KERNEL_DIR)/include
+N_CPPFLAGS    += -ffunction-sections
+N_CPPFLAGS    += -fdata-sections
 
 ifeq ($(BOXTYPE), $(filter $(BOXTYPE), spark spark7162))
 N_CPPFLAGS += -I$(DRIVER_DIR)/frontcontroller/aotom_spark
