@@ -2622,7 +2622,7 @@ LIBUDFREAD_VER_MAJOR = 1
 LIBUDFREAD_VER_MINOR = 0
 LIBUDFREAD_VER_MICRO = 0
 LIBUDFREAD_VER = $(LIBUDFREAD_VER_MAJOR).$(LIBUDFREAD_VER_MINOR).$(LIBUDFREAD_VER_MICRO)
-LIBUDFREAD_URL = https://git.videolan.org/git/libudfread.git
+LIBUDFREAD_URL = https://code.videolan.org/videolan/libudfread.git
 LIBUDFREAD_PATCH =
 
 $(D)/libudfread: $(D)/bootstrap
