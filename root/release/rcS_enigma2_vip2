@@ -1,14 +1,14 @@
 #!/bin/sh
 #Version 200804.1
 
-echo "Edision argus VIP V2 (1 pluggable tuner) Enigma2"
+echo "Edision argus VIP2 Enigma2"
 
 MODDIR=/lib/modules
 
 insmod $MODDIR/e2_proc.ko
 
 echo "[rcS] Init frontpanel"
-insmod $MODDIR/aotom.ko #paramDebug=20
+insmod $MODDIR/aotom.ko # paramDebug=20
 insmod $MODDIR/simu_button.ko
 if [ -e $MODDIR/encrypt.ko ]; then
    insmod $MODDIR/encrypt.ko
@@ -17,7 +17,7 @@ fi
 if [ -e /var/etc/.firstboot ]; then
    echo "config.plugins.remotecontroltype.rctype=17" >> /etc/enigma2/settings
    echo "WAIT 3 min" > /dev/vfd
-   echo "WAIT 3 min"
+   echo "[rcS] WAIT 3 minutes"
    rm /var/etc/.firstboot
    sleep 1
    touch /dev/.devfsd
@@ -48,9 +48,9 @@ echo "[rcS] Init stmfb (LOAD 9)"
 echo "Load 9" > /dev/vfd
 insmod $MODDIR/stmcore-display-stx7109c3.ko
 if grep -q "config.av.videoport=Scart" /etc/enigma2/settings; then
-  insmod $MODDIR/stmfb.ko display0=720x576i-32@50:15m::pal:cvbs:rgb #SCART
+   insmod $MODDIR/stmfb.ko display0=720x576i-32@50:15m::pal:cvbs:rgb #SCART
 else
-  insmod $MODDIR/stmfb.ko display0=1280x720-32@50:16m::pal:cvbs:rgb #HDMI
+   insmod $MODDIR/stmfb.ko display0=1280x720-32@50:16m::pal:cvbs:rgb #HDMI
 fi
 
 echo "[rcS] Loading modules"
@@ -77,7 +77,7 @@ insmod $MODDIR/mme_host.ko transport0=shm
 
 echo "[rcS] Init AVS (LOAD 5)"
 echo "Load 5" > /dev/vfd
-#insmod $MODDIR/avs.ko type=vip1_avs  #TODO: Fix!
+#insmod $MODDIR/avs.ko type=vip2_avs  #TODO: Fix!
 insmod $MODDIR/avs.ko type=fake_avs
 
 player=`cat /proc/stb/player/version | awk '{ print substr( $0, length($0) - 2, length($0) ) }'`
@@ -94,11 +94,12 @@ insmod $MODDIR/stmvbi.ko
 insmod $MODDIR/pseudocard.ko
 
 echo "[rcS] Init frontends"
-#demodulator type: stv090x(default), ce6353, tda10023
-#tuner type: stv6110x, sharp7306(default), sharp6465, lg031
-insmod $MODDIR/fe-core.ko demod=stv090x tuner=sharp7306 #paramDebug=20
+#demodulator1 type: stv090x(default), ce6353, tda10023
+#tuner type1: sharp7306(default), stv6110x, sharp6465, lg031
+#demodulator2 type: stv090x, ce6353(default), tda10023
+#tuner type2: sharp7306, stv6110x, sharp6465(default), lg031
+insmod $MODDIR/fe-core.ko # paramDebug=20 #demod1=stv090x tuner1=sharp7306 demod2=ce6353 tuner2=sharp6465
 
-insmod $MODDIR/cimax.ko #paramDebug=20
 insmod $MODDIR/pti.ko waitMS=20 videoMem=4096
 if [ $? -ne 0 ]; then
    insmod $MODDIR/pti.ko
@@ -117,26 +118,26 @@ insmod $MODDIR/sth264pp.ko
 insmod $MODDIR/stmalloc.ko
 insmod $MODDIR/platform.ko
 
-insmod $MODDIR/smartcard.ko
+#insmod $MODDIR/smartcard.ko
 
 if [ -e $MODDIR/usb_serial.ko ]; then
-  insmod $MODDIR/usb_serial.ko
-  if [ -e $MODDIR/ch341.ko ]; then
-    insmod $MODDIR/ch341.ko
-  fi
-  if [ -e $MODDIR/ftdi.ko ]; then
-    insmod $MODDIR/ftdi.ko
-  fi
-  if [ -e $MODDIR/pl2303.ko ]; then
-    insmod $MODDIR/pl2303.ko
-  fi
-  if [ -e $MODDIR/option.ko ]; then
-    insmod $MODDIR/option.ko
-  fi
-  if [ -e $MODDIR/usb_wwan.ko ]; then # 3G modem
-    insmod $MODDIR/usb_wwan.ko
-  fi
-  insmod $MODDIR/option.ko
+   insmod $MODDIR/usb_serial.ko
+   if [ -e $MODDIR/ch341.ko ]; then
+      insmod $MODDIR/ch341.ko
+   fi
+   if [ -e $MODDIR/ftdi.ko ]; then
+      insmod $MODDIR/ftdi.ko
+   fi
+   if [ -e $MODDIR/pl2303.ko ]; then
+      insmod $MODDIR/pl2303.ko
+   fi
+   if [ -e $MODDIR/option.ko ]; then
+      insmod $MODDIR/option.ko
+   fi
+   if [ -e $MODDIR/usb_wwan.ko ]; then # 3G modem
+      insmod $MODDIR/usb_wwan.ko
+   fi
+   insmod $MODDIR/option.ko
 fi
 
 insmod $MODDIR/bpamem.ko
@@ -156,12 +157,10 @@ mknod /dev/rc c 147 1 #VFD
 /bin/evremote2 10 120 &
 
 echo "[rcS] Init smartcard cardreader"
-mknod /dev/sci0 c 169 0
-mknod /dev/sci1 c 169 1
+#mknod /dev/sci0 c 169 0
+#mknod /dev/sci1 c 169 1
 
 stfbcontrol a 255
-
-#mount /dev/sda3 /hdd/
 
 #wlan=`cat /etc/enigma2/settings | grep systemoptions.wlan | cut -d "=" -f2`
 wlan=
@@ -188,15 +187,12 @@ echo "[rcS] Init FTP & network"
 
 NFS=`grep -c nfs /proc/cmdline`
 if [ "$NFS" -eq "1" ]; then
-   echo "[rcS] Booting from nfs, do not set network"
+   echo "[rcS] Booting from NFS, do not set network"
 else
    if [ -e /etc/network/interfaces ]; then
       ip addr flush eth0
       /etc/init.d/networking stop
-         MAC="12:34:56:78:9A:BC"
-         echo "MAC = $MAC"
-         ip link set eth0 address $MAC
-	 DHCP=`grep -c 'iface eth0 inet dhcp' /etc/network/interfaces`
+      DHCP=`grep -c 'iface eth0 inet dhcp' /etc/network/interfaces`
       if [ "$DHCP" -eq "1" ]; then
          echo "[rcS] Starting DHCP on eth0"
          /etc/init.d/udhcpc start
@@ -250,42 +246,42 @@ do
    echo "[rcS] E2 ended <- RTV: " $rtv
    /bin/fp_control -i 46 0
    case "$rtv" in
-      0) echo "[rcS] E2 ERROR"
-         echo "E2 Error" > /dev/vfd
-         init 6;;
-      1) echo "[rcS] SHUTDOWN"
-         echo "Shutdown" > /dev/vfd
-         if [ -e /usr/local/share/enigma2/shutdown.mvi ]; then
-            showiframe -p /usr/local/share/enigma2/shutdown.mvi
-         fi
-         umount -a
-         init 0;;
-      2) echo "[rcS] REBOOT"
-         echo "Reboot" > /dev/vfd
-         init 6;;
-      3) echo "[rcS] E2 RESTART"
-         echo "Restart GUI" > /dev/vfd
-         echo "0" > /proc/progress
-         if [ -e /usr/local/share/enigma2/backdrop.mvi ]; then
-            showiframe -p /usr/local/share/enigma2/backdrop.mvi
-         else
-            showiframe -p /boot/bootlogo.mvi &
-         fi;;
-      6) echo "[rcS] E2 DEBUG"
-         echo "Restart Dbg" > /dev/vfd
-         echo "0" > /proc/progress
-         if [ -e /usr/local/share/enigma2/backdrop.mvi ]; then
-            showiframe -p /usr/local/share/enigma2/backdrop.mvi
-         else
-            showiframe -p /boot/bootlogo.mvi &
-         fi;;
-      *) echo "[rcS] ERROR"
-         echo "Error" > /dev/vfd
-         init 6;;
+      0)  echo "[rcS] E2 ERROR"
+          echo "E2 Error" > /dev/vfd
+          init 6;;
+      1)  echo "[rcS] SHUTDOWN"
+          echo "Shutdown" > /dev/vfd
+          if [ -e /usr/local/share/enigma2/shutdown.mvi ]; then
+             showiframe -p /usr/local/share/enigma2/shutdown.mvi
+          fi
+          umount -a
+          init 0;;
+      2)  echo "[rcS] REBOOT"
+          echo "Reboot" > /dev/vfd
+          init 6;;
+      3)  echo "[rcS] E2 RESTART"
+          echo "Restart GUI" > /dev/vfd
+          echo "0" > /proc/progress
+          if [ -e /usr/local/share/enigma2/backdrop.mvi ]; then
+             showiframe -p /usr/local/share/enigma2/backdrop.mvi
+          else
+             showiframe -p /boot/bootlogo.mvi &
+          fi;;
+      6)  echo "[rcS] E2 DEBUG"
+          echo "Restart Dbg" > /dev/vfd
+          echo "0" > /proc/progress
+          if [ -e /usr/local/share/enigma2/backdrop.mvi ]; then
+             showiframe -p /usr/local/share/enigma2/backdrop.mvi
+          else
+             showiframe -p /boot/bootlogo.mvi &
+          fi;;
+      *)  echo "[rcS] ERROR"
+          echo "Error" > /dev/vfd
+          init 6;;
    esac
 done
 
 #never reached
-echo "[rcS] REBOOT VIP1"
+echo "[rcS] REBOOT VIP2"
 echo "REBOOT" > /dev/vfd
 reboot -f
