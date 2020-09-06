@@ -652,19 +652,19 @@ $(D)/bzip2: $(D)/bootstrap $(ARCHIVE)/$(BZIP2_SOURCE)
 # timezone
 #
 TZDATA_VER = 2020a
-TZDATA_SOURCE = tzcode$(TZDATA_VER).tar.gz
-TZDATA_ZONELIST = africa antarctica asia australasia europe northamerica southamerica pacificnew etcetera backward
+TZDATA_SOURCE = tzdata$(TZDATA_VER).tar.gz
+TZDATA_ZONELIST = africa antarctica asia australasia europe northamerica southamerica pacificnew etcetera backzone
 DEFAULT_TIMEZONE ?= "CET"
 #ln -s /usr/share/zoneinfo/<country>/<city> /etc/localtime
 
 $(ARCHIVE)/$(TZDATA_SOURCE):
 	$(WGET) ftp://ftp.iana.org/tz/releases/$(TZDATA_SOURCE)
 
-$(D)/timezone: $(D)/bootstrap find-zic $(ARCHIVE)/$(TZDATA_SOURCE)
+$(D)/timezone: $(D)/bootstrap $(ARCHIVE)/$(TZDATA_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/timezone
-	mkdir $(BUILD_TMP)/timezone
-	tar -C $(BUILD_TMP)/timezone -xf $(ARCHIVE)/$(TZDATA_SOURCE)
+	$(SILENT)mkdir $(BUILD_TMP)/timezone
+	$(SILENT)tar -C $(BUILD_TMP)/timezone -xf $(ARCHIVE)/$(TZDATA_SOURCE)
 	$(CH_DIR)/timezone; \
 		unset ${!LC_*}; LANG=POSIX; LC_ALL=POSIX; export LANG LC_ALL; \
 		for zone in $(TZDATA_ZONELIST); do \
@@ -679,7 +679,7 @@ $(D)/timezone: $(D)/bootstrap find-zic $(ARCHIVE)/$(TZDATA_SOURCE)
 		if [ -e $(TARGET_DIR)/usr/share/zoneinfo/$(DEFAULT_TIMEZONE) ]; then \
 			echo ${DEFAULT_TIMEZONE} > $(TARGET_DIR)/etc/timezone; \
 		fi; \
-	install -m 0644 $(SKEL_ROOT)/etc/timezone.xml $(TARGET_DIR)/etc/
+	$(SILENT)install -m 0644 $(SKEL_ROOT)/etc/timezone.xml $(TARGET_DIR)/etc/
 	$(REMOVE)/timezone
 	$(TOUCH)
 
