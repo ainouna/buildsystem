@@ -99,7 +99,6 @@ PACKAGES="\
 	${UBUNTU:+pkg-config}           ${SUSE:+pkg-config}                                    ${GENTOO:+pkg-config}  \
 	${UBUNTU:+patch}                ${SUSE:+patch}                                         ${GENTOO:+patch}       \
 	${UBUNTU:+autopoint}                                                                                          \
-	${UBUNTU:+cfv}                                                                         ${GENTOO:+cfv}         \
 	${UBUNTU:+fakeroot}                                                                    ${GENTOO:+fakeroot}    \
 	${UBUNTU:+gawk}                                                                        ${GENTOO:+gawk}        \
 	${UBUNTU:+libglib2.0-bin}       ${SUSE:+glib2-devel}         ${FEDORA:+glib2-devel}    ${GENTOO:+glib:2}      \
@@ -116,8 +115,7 @@ PACKAGES="\
 	${UBUNTU:+libmount-dev}                                      ${FEDORA:+help2man}                              \
 	${UBUNTU:+mtools}                                                                                             \
 	${UBUNTU:+u-boot-tools}                                                                                       \
-	${UBUNTU:+android-tools-fsutils}
-	${UBUNTU:+curl}    
+	${UBUNTU:+curl}
 ";
 
 if [ "$UBUNTU" == 1 ]; then
