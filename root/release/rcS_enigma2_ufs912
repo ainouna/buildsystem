@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 200722.1
+#Version 200915.1
 
 echo "Kathrein UFS912 Enigma2"
 
@@ -236,7 +236,7 @@ if [ -e /etc/ownscript.sh ]; then
 fi
 
 echo "LOADING Enigma2" > /dev/vfd
-echo "[rcS] LOADING e2"
+echo "[rcS] Loading Enigma2"
 
 stfbcontrol a 255
 
@@ -252,6 +252,9 @@ do
           init 6;;
       1)  echo "[rcS] SHUTDOWN"
           echo "Shutdown" > /dev/vfd
+          if [ -e /usr/local/share/enigma2/shutdown.mvi ]; then
+             showiframe -p /usr/local/share/enigma2/shutdown.mvi &
+          fi
           init 0;;
       2)  echo "[rcS] REBOOT"
           echo "Reboot" > /dev/vfd
@@ -260,7 +263,7 @@ do
           echo "E2 Restart" > /dev/vfd
           echo "0" > /proc/progress
           if [ -e /usr/local/share/enigma2/backdrop.mvi ]; then
-             showiframe -p /usr/local/share/enigma2/backdrop.mvi
+             showiframe -p /usr/local/share/enigma2/backdrop.mvi &
           else
              showiframe -p /boot/bootlogo.mvi &
           fi;;
@@ -268,7 +271,7 @@ do
           echo "E2 Debug Restart" > /dev/vfd
           echo "0" > /proc/progress
           if [ -e /usr/local/share/enigma2/backdrop.mvi ]; then
-             showiframe -p /usr/local/share/enigma2/backdrop.mvi
+             showiframe -p /usr/local/share/enigma2/backdrop.mvi &
           else
              showiframe -p /boot/bootlogo.mvi &
           fi;;

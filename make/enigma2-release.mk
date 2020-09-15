@@ -131,7 +131,7 @@ enigma2_release_ufs910:
 	$(SILENT)cp -dp $(SKEL_ROOT)/release/lircd_ufs910.conf $(RELEASE_DIR)/etc/lircd.conf
 	$(SILENT)mkdir -p $(RELEASE_DIR)/var/run/lirc
 	$(SILENT)rm -f $(RELEASE_DIR)/bin/vdstandby
-#	$(SILENT)cp -f $(SKEL_ROOT)/release/rc_ufs912.png $(RELEASE_DIR)/usr/local/share/enigma2/skin_default/rc.png
+#	$(SILENT)cp -f $(SKEL_ROOT)/release/rc_ufs910.png $(RELEASE_DIR)/usr/local/share/enigma2/skin_default/rc.png
 	$(SILENT)cp -f $(SKEL_ROOT)/root_enigma2/usr/local/share/enigma2/keymap_ufs910.xml $(RELEASE_DIR)/usr/local/share/enigma2/keymap.xml
 
 #
@@ -1067,6 +1067,7 @@ endif
 	$(SILENT)cp -f $(SKEL_ROOT)/release/rc_hs7110.png $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/hs7110.png
 	$(SILENT)cp -f $(SKEL_ROOT)/release/rc_spark.png $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/spark.png
 	$(SILENT)cp -f $(SKEL_ROOT)/release/rc_tf7700.png $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/tf7700.png
+	$(SILENT)cp -f $(SKEL_ROOT)/release/rc_ufs910.png $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/ufs910.png
 	$(SILENT)cp -f $(SKEL_ROOT)/release/rc_ufs912.png $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/ufs912.png
 	$(SILENT)cp -f $(SKEL_ROOT)/release/rc_vitamin.png $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/vitamin.png
 	$(SILENT)cp -f $(SKEL_ROOT)/release/rc_pace7241.png $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/pace7241.png

@@ -9100,7 +9100,7 @@
 +	KEYIDS["KEY_TV2"]: ("TV/RADIO",),
 +	KEYIDS["KEY_MEDIA"]: ("USB",),
 +	KEYIDS["KEY_PROGRAM"]: ("TIMER",),
-+}, {  # id=6 - Kathrein UFS912, UFS913
++}, {  # id=6 - Kathrein UFS910, UFS912, UFS913
 +	KEYIDS["KEY_HELP"]: ("HELP",),
 +	KEYIDS["KEY_POWER"]: ("POWER",),
 +	KEYIDS["KEY_1"]: ("1",),
@@ -9131,7 +9131,7 @@
 +	KEYIDS["KEY_LEFT"]: ("LEFT",),
 +	KEYIDS["KEY_OK"]: ("OK",),
 +	KEYIDS["KEY_RIGHT"]: ("RIGHT",),
-+	KEYIDS["KEY_EXIT"]: ("BACK",),
++	KEYIDS["KEY_EXIT"]: ("EXIT",),
 +	KEYIDS["KEY_DOWN"]: ("DOWN",),
 +	KEYIDS["KEY_MEDIA"]: ("MEDIA",),
 +	KEYIDS["KEY_REWIND"]: ("REWIND",),
@@ -9425,7 +9425,7 @@
  }]
  
  def addKeyBinding(domain, key, context, action, flags):
-@@ -369,10 +710,35 @@
+@@ -370,10 +711,37 @@
  	else:
  		rcType = config.plugins.remotecontroltype.rctype.value
  		# rcType = config.misc.inputdevices.rcType.value
@@ -9456,16 +9456,18 @@
 +			idx = 11
 +		elif rcType == 18:	# HL101
 +			idx = 12
-+#		elif rcType == 19:	# Fortis 4G
++		elif rcType == 19:	# Kathrein UFS910, UFS922
++			idx = 6
++#		elif rcType == 20:	# Fortis 4G
 +#			idx = 13
-+#		elif rcType == 20:	# ...
++#		elif rcType == 21:	# ...
 +#			idx = 14
  		else:
  			idx = 2
  	return keyDescriptions[idx].get(key)
 --- enigma2.org/lib/python/Screens/InputDeviceSetup.py
 +++ enigma2/lib/python/Screens/InputDeviceSetup.py
-@@ -299,62 +299,54 @@
+@@ -299,62 +299,57 @@
  	rcList = [
  			("0", _("Default")),
  			("4", _("DMM normal")),
@@ -9490,14 +9492,15 @@
 +			("9", _("Fortis mini")),
 +			("10", _("Spark")),
 +			("11", _("Topfield TF77X0HDPVR")),
-+			("12", _("Kathrein UFS")),
++			("12", _("Kathrein RC671")),
 +			("13", _("Cuberevo universal")),
 +			("14", _("Vitamin 5000HD")),
 +			("15", _("ADB XMP")),
 +			("16", _("Pace HDS7241")),
 +			("17", _("Edision argus")),
 +			("18", _("HL-101")),
-+#			("19", _("fortis_4g")),
++			("19", _("Kathrein RC660")),
++#			("20", _("fortis_4g")),
  		]
  
  	defaultRcList = [
@@ -9552,6 +9555,7 @@
 +			("tf7700", 11),
 +			("ufs912", 12),
 +			("ufs913", 12),
++			("ufs922", 12),
 +			("cuberevo", 13),
 +			("cuberevo-mini", 13),
 +			("cuberevo-mini2", 13),
@@ -9568,13 +9572,14 @@
 +			("vip1-v1", 17),
 +			("vip1-v2", 17),
 +			("vip2", 17),
-+#			("fortis_4g", 19),
++			("ufs910", 19),
++#			("fortis_4g", 20),
  		]
  
  	def __init__(self, session):
 --- enigma2.org/data/rc_models/rc_models.cfg
 +++ enigma2/data/rc_models/rc_models.cfg
-@@ -18,128 +18,34 @@
+@@ -18,128 +18,35 @@
  # a default rc model will be used for ModelName.
  #
  # When no entry matches at all, 'default' will be used as remoteName
@@ -9716,6 +9721,8 @@
 +spark             spark
 +spark7162         spark
 +tf7700hdpvr       tf7700
++ufs910            ufs910
++ufs922            ufs912
 +ufs912            ufs912
 +ufs913            ufs912
 +cuberevo          cuberevo_uni
@@ -9754,8 +9761,8 @@
 -	octagon.xml uclan.xml
 +	dmmadv.png \
 +	adb_xmp.png cuberevo_uni.png fs9000.png  hs7110.png  hs9510.png  spark.png tf7700.png ufs912.png vitamin.png \
-+	pace7241.png hl101_1.png vip_1.png dmm.png \
++	pace7241.png hl101_1.png vip_1.png ufs910.png dmm.png \
 +	dmmadv.xml  \
 +	adb_xmp.xml cuberevo_uni.xml fs9000.xml  hs7110.xml  hs9510.xml  spark.xml tf7700.xml ufs912.xml vitamin.xml \
-+	pace7241.xml hl101_1.xml vip_1.xml dmm.xml
++	pace7241.xml hl101_1.xml vip_1.xml ufs910.xml dmm.xml
 
