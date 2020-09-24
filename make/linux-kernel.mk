@@ -54,6 +54,7 @@ COMMON_PATCHES_24 = \
 		linux-sh4-permit_gcc_command_line_sections_stm24.patch \
 		linux-sh4-mmap_stm24.patch \
 		linux-defined_is_deprecated_timeconst.pl_stm24_$(KERNEL_LABEL).patch \
+		linux-sh4-fs-dev-no-warnings_stm24_$(KERNEL_LABEL).patch \
 		$(if $(P0217),linux-patch_swap_notify_core_support_stm24_$(KERNEL_LABEL).patch) \
 		$(if $(P0209),linux-sh4-dwmac_stm24_$(KERNEL_LABEL).patch)
 ifneq ($(BS_GCC_VER), $(filter $(BS_GCC_VER), 4.6.3 4.8.4))
