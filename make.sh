@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20200828.1
+# Version 20200927.1
 
 ##############################################
 
@@ -158,8 +158,8 @@ case $1 in
 		echo "   36)  Showbox Vitamin HD5000 (256Mbyte flash version)"
 		echo "   37)  SagemCom 88 series"
 		echo "   38)  Ferguson Ariva @Link 200"
-#		echo "   39)  Pace HDS-7241 (kernel P0217 only)"
-#		echo "   40)  ADB ITI-2850ST (kernel P0217 only)"
+#		echo "   39)  Pace HDS-7241 (in development, kernel P0217 only)"
+#		echo "   40)  ADB ITI-2849ST/2850ST/2851S (in development, kernel P0217 only)"
 		echo
 		read -p "Select target (1-39)? ";;
 esac
@@ -465,10 +465,10 @@ case "$IMAGE" in
 				echo "=================================================================================================="
 				echo " 1)  Use your own Enigma2 git dir without patchfile"
 				echo "=================================================================================================="
-				echo " 2*) Sun, 02 Aug 2020 13:26 - E2 OpenPLi  any framework  18a41ab38416303a5368fd6fdd70d6a0b089ad2d"
-				echo " 3)  Fri, 29 May 2020 12:47 - E2 OpenPLi  any framework  dfb4739a2f606b5e8d3702f1238b97f4f422fcb1"
-				echo " 4)  Thu, 26 Mar 2020 11:54 - E2 OpenPLi  any framework  86ff0586450a3ce43e36d87399cf7a1f2f85a3a0"
-				echo " 5)  Tue, 28 Jan 2020 13:13 - E2 OpenPLi  any framework  9c55cf0b69c9beba43dd7e017186552f410f357e"
+				echo " 2*) Thu, 24 Sep 2020 15:41 - E2 OpenPLi  any framework  8e8ec1bdf7a579917903882bab3e4c09b654b049"
+				echo " 3)  Sun, 02 Aug 2020 13:26 - E2 OpenPLi  any framework  18a41ab38416303a5368fd6fdd70d6a0b089ad2d"
+				echo " 4)  Fri, 29 May 2020 12:47 - E2 OpenPLi  any framework  dfb4739a2f606b5e8d3702f1238b97f4f422fcb1"
+				echo " 5)  Thu, 26 Mar 2020 11:54 - E2 OpenPLi  any framework  86ff0586450a3ce43e36d87399cf7a1f2f85a3a0"
 				echo "=================================================================================================="
 				echo "Media Framework         : $MEDIAFW"
 				echo
@@ -479,15 +479,15 @@ case "$IMAGE" in
 			1)	DIFF="1"
 				REVISION="local";;
 			3)	DIFF="3"
-				REVISION="dfb4739a2f606b5e8d3702f1238b97f4f422fcb1";;
+				REVISION="18a41ab38416303a5368fd6fdd70d6a0b089ad2d";;
 			4)	DIFF="4"
-				REVISION="86ff0586450a3ce43e36d87399cf7a1f2f85a3a0";;
+				REVISION="dfb4739a2f606b5e8d3702f1238b97f4f422fcb1";;
 			5)	DIFF="5"
-				REVISION="9c55cf0b69c9beba43dd7e017186552f410f357e";;
+				REVISION="86ff0586450a3ce43e36d87399cf7a1f2f85a3a0";;
 			0)	DIFF="0"
 				REVISION="newest";;
 			*)	DIFF="2"
-				REVISION="18a41ab38416303a5368fd6fdd70d6a0b089ad2d";;
+				REVISION="8e8ec1bdf7a579917903882bab3e4c09b654b049";;
 		esac
 
 		echo "E2_DIFF=$DIFF" >> config

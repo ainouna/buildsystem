@@ -1,4 +1,4 @@
-# revision 18a41ab38416303a5368fd6fdd70d6a0b089ad2d 02/08/2020 13:26
+# revision 8e8ec1bdf7a579917903882bab3e4c09b654b049 24/09/2020 15:41
 --- enigma2.org/configure.ac
 +++ enigma2/configure.ac
 @@ -18,6 +18,7 @@
@@ -2227,7 +2227,7 @@
  	ioctl(vtunerFd, VTUNER_SET_HAS_OUTPUTS, "no");
  	ioctl(vtunerFd, VTUNER_SET_ADAPTER, nr);
  
-@@ -973,6 +989,7 @@
+@@ -1003,6 +1019,7 @@
  	ePtr<eDVBRegisteredDemux> unused;
  	uint8_t d, a;
  
@@ -2235,7 +2235,7 @@
  	/*
  	 * For pvr playback, start with the last demux.
  	 * On some hardware, there are less ca devices than demuxes, so try to leave
-@@ -1020,15 +1037,61 @@
+@@ -1050,15 +1067,61 @@
  			--i;
  		}
  	}
@@ -2300,7 +2300,7 @@
  		else
  			demux->get().setSourcePVR(0);
  		return 0;
-@@ -2150,21 +2213,11 @@
+@@ -2180,21 +2243,11 @@
  
  	if (m_pvr_fd_dst < 0)
  	{
@@ -2567,7 +2567,7 @@
  
  	if (!m_multitype)
  		m_type = feSatellite;
-@@ -934,12 +942,16 @@
+@@ -943,12 +951,16 @@
  	int cab_max = 4200;
  	int atsc_max = 4200;
  
@@ -2586,7 +2586,7 @@
  	{
  		ret = (int)(snr / 37.5);
  		sat_max = 1700;
-@@ -2962,7 +2974,11 @@
+@@ -2977,7 +2989,11 @@
  	}
  	else if (!strcmp(type, "DVB-C"))
  	{
@@ -2598,7 +2598,7 @@
  		fetype = feCable;
  	}
  	else if (!strcmp(type, "ATSC"))
-@@ -3094,11 +3110,16 @@
+@@ -3109,11 +3125,16 @@
  		case SYS_ISDBS:		ss << " ISDBS"; break;
  		case SYS_ISDBT:		ss << " ISDBT"; break;
  		case SYS_UNDEFINED:	ss << " UNDEFINED"; break;
@@ -5778,7 +5778,7 @@
 +		self.text = text
 --- enigma2.org/lib/python/Components/UsageConfig.py
 +++ enigma2/lib/python/Components/UsageConfig.py
-@@ -294,7 +294,7 @@
+@@ -295,7 +295,7 @@
  
  	config.misc.disable_background_scan = ConfigYesNo(default = False)
  	config.misc.use_ci_assignment = ConfigYesNo(default = False)
@@ -7730,7 +7730,7 @@
  			})
  
  	def showTvChannelList(self, zap=False):
-@@ -847,6 +870,32 @@
+@@ -848,6 +871,32 @@
  			self.servicelist.moveUp()
  		self.servicelist.zap(enable_pipzap = True)
  
@@ -7763,7 +7763,7 @@
  	def zapDown(self):
  		if self.servicelist.inBouquet():
  			prev = self.servicelist.getCurrentSelection()
-@@ -887,7 +936,7 @@
+@@ -888,7 +937,7 @@
  	def __init__(self):
  		self["MenuActions"] = HelpableActionMap(self, "InfobarMenuActions",
  			{
@@ -7772,7 +7772,7 @@
  			})
  		self.session.infobar = None
  
-@@ -1002,7 +1051,7 @@
+@@ -1003,7 +1052,7 @@
  
  		self["EPGActions"] = HelpableActionMap(self, "InfobarEPGActions",
  			{
@@ -7781,7 +7781,7 @@
  				"showEventInfoSingleEPG": (self.showSingleEPG, _("Show single service EPG")),
  				"showEventInfoMultiEPG": (self.showMultiEPG, _("Show multi channel EPG")),
  				"showInfobarOrEpgWhenInfobarAlreadyVisible": self.showEventInfoWhenNotVisible,
-@@ -1013,7 +1062,7 @@
+@@ -1014,7 +1063,7 @@
  				if 'selectedevent' not in p.__call__.func_code.co_varnames] or []
  		from Components.ServiceEventTracker import InfoBarCount
  		if getAll or InfoBarCount == 1:
@@ -7790,7 +7790,7 @@
  		pluginlist.append((_("Multi EPG"), self.openMultiServiceEPG, _("Display EPG as MultiEPG")))
  		pluginlist.append((_("Current event EPG"), self.openEventView, _("Display EPG info for current event")))
  		return pluginlist
-@@ -1167,7 +1216,7 @@
+@@ -1168,7 +1217,7 @@
  	def showEventInfoPlugins(self):
  		pluginlist = self.getEPGPluginList()
  		if pluginlist:
@@ -7799,7 +7799,7 @@
  		else:
  			self.openSingleServiceEPG()
  
-@@ -1240,7 +1289,7 @@
+@@ -1241,7 +1290,7 @@
  				self.eventView = self.session.openWithCallback(self.closed, EventViewEPGSelect, epglist[0], ServiceReference(ref), self.eventViewCallback, self.openSingleServiceEPG, self.openMultiServiceEPG, self.openSimilarList)
  				self.dlg_stack.append(self.eventView)
  		if not epglist:
@@ -7808,7 +7808,7 @@
  			self.openMultiServiceEPG(False)
  
  	def eventViewCallback(self, setEvent, setService, val): #used for now/next displaying
-@@ -2143,7 +2192,7 @@
+@@ -2144,7 +2193,7 @@
  		self.addExtension((lambda: _("Manually import from fallback tuner"), self.importChannels, lambda: config.usage.remote_fallback_extension_menu.value and config.usage.remote_fallback_import.value))
  		self["InstantExtensionsActions"] = HelpableActionMap(self, "InfobarExtensions",
  			{
@@ -7817,7 +7817,7 @@
  			}, 1) # lower priority
  
  	def openSoftcamSetup(self):
-@@ -2173,7 +2222,7 @@
+@@ -2174,7 +2223,7 @@
  
  	def updateExtensions(self):
  		self.extensionsList = []
@@ -7826,7 +7826,7 @@
  		self.extensionKeys = {}
  		for x in self.list:
  			if x[0] == self.EXTENSION_SINGLE:
-@@ -2200,7 +2249,7 @@
+@@ -2201,7 +2250,7 @@
  				else:
  					extensionsList.remove(extension)
  		list.extend([(x[0](), x) for x in extensionsList])
@@ -7835,7 +7835,7 @@
  
  	def extensionCallback(self, answer):
  		if answer is not None:
-@@ -2405,11 +2454,11 @@
+@@ -2406,11 +2455,11 @@
  
  class InfoBarInstantRecord:
  	"""Instant Record - handles the instantRecord action in order to
@@ -7849,7 +7849,7 @@
  			})
  		self.SelectedInstantServiceRef = None
  		if isStandardInfoBar(self):
-@@ -2492,7 +2541,7 @@
+@@ -2493,7 +2542,7 @@
  	def startInstantRecording(self, limitEvent = False):
  		begin = int(time())
  		end = begin + 3600      # dummy
@@ -7858,7 +7858,7 @@
  		info = { }
  
  		self.getProgramInfoAndEvent(info, name)
-@@ -2721,7 +2770,7 @@
+@@ -2722,7 +2771,7 @@
  	def __init__(self):
  		self["AudioSelectionAction"] = HelpableActionMap(self, "InfobarAudioSelectionActions",
  			{
@@ -7867,7 +7867,7 @@
  			})
  
  	def audioSelection(self):
-@@ -2735,7 +2784,7 @@
+@@ -2736,7 +2785,7 @@
  	def __init__(self):
  		self["SubserviceSelectionAction"] = HelpableActionMap(self, "InfobarSubserviceSelectionActions",
  			{
@@ -8852,7 +8852,7 @@
  
 --- enigma2.org/lib/python/Tools/KeyBindings.py
 +++ enigma2/lib/python/Tools/KeyBindings.py
-@@ -221,122 +221,463 @@
+@@ -220,122 +220,463 @@
  	KEYIDS["KEY_POWER2"]: ("POWER2",),
  	KEYIDS["KEY_SUSPEND"]: ("SUSPEND",),
  	KEYIDS["KEY_WAKEUP"]: ("WAKEUP",)
@@ -9425,7 +9425,7 @@
  }]
  
  def addKeyBinding(domain, key, context, action, flags):
-@@ -370,10 +711,37 @@
+@@ -369,10 +710,37 @@
  	else:
  		rcType = config.plugins.remotecontroltype.rctype.value
  		# rcType = config.misc.inputdevices.rcType.value
@@ -9579,135 +9579,157 @@
  	def __init__(self, session):
 --- enigma2.org/data/rc_models/rc_models.cfg
 +++ enigma2/data/rc_models/rc_models.cfg
-@@ -18,128 +18,35 @@
+@@ -18,150 +18,35 @@
  # a default rc model will be used for ModelName.
  #
  # When no entry matches at all, 'default' will be used as remoteName
 -#
 -# Amiko
--vipercombo amiko
--vipert2c amiko
--vipercombohdd amiko1
--viperslim viperslim
+-vipercombo      amiko
+-vipert2c        amiko
+-vipercombohdd   amiko1
+-viperslim       viperslim
+-#
 -#Axas
--e4hd e4hd
+-e4hd            e4hd
+-#
 -# Edision
--osmega osmini
--osmini4k edision4
--osmini osmini
--osminiplus osmini
--osmio4k edision4
--osmio4kplus edision4
--osnino edision1
--osninoplus edision2
--osninopro edision3
+-osmega          osmini
+-osmini4k        edision4
+-osmini          osmini
+-osminiplus      osmini
+-osmio4k         edision4
+-osmio4kplus     edision4
+-osnino          edision1
+-osninoplus      edision2
+-osninopro       edision3
+-#
 -# Formuler
--formuler1   formuler1
--formuler3   formuler1
--formuler4   formuler1
--formuler4turbo	formuler1
+-formuler1       formuler1
+-formuler3       formuler1
+-formuler4       formuler1
+-formuler4turbo  formuler1
+-#
 -# Galaxy innovations
--et7000mini et7000mini
--et11000	et7000mini
+-et7000mini      et7000mini
+-et11000         et7000mini
+-#
 -# Gigablue
--gbquad4k gb7252
--gbue4k gb7252
--gbtrio4k gb7252
+-gbquad4k        gb7252
+-gbue4k          gb7252
+-gbtrio4k        gb7252
+-#
 -# Max Digital
--xp1000   xp1000
+-xp1000          xp1000
+-#
 -# MaXitec
--multibox multibox
+-multibox        multibox
+-#
 -# Miraclebox
--mbtwinplus miraclebox
--7000S miraclebox2
--7005S miraclebox2
+-mbtwinplus      miraclebox
+-7000S           miraclebox2
+-7005S           miraclebox2
+-#
 -# Mutant
--hd11	hd-gen
--hd51	hd-gen
--hd60	hd60
--hd500c	hd-gen
--hd530c  hd-gen
--hd1100	hd-gen
--hd1200  hd-gen
--hd1265	hd-gen
--hd1500	hd-gen
--hd2400	hd2400
+-hd11            hd-gen
+-hd51            hd-gen
+-hd60            hd60
+-hd500c          hd-gen
+-hd530c          hd-gen
+-hd1100          hd-gen
+-hd1200          hd-gen
+-hd1265          hd-gen
+-hd1500          hd-gen
+-hd2400          hd2400
+-#
 -# Vimastec
--vs1000	vs1x00
--vs1500	vs1x00
+-vs1000          vs1x00
+-vs1500          vs1x00
+-#
 -# SAB
--alphatriplehd sab
+-alphatriplehd   sab
+-#
 -# Qviart
--lunix	qviart
--lunix3-4k	qviart
--lunix4k	lunix4k
+-lunix           qviart
+-lunix3-4k       qviart
+-lunix4k         lunix4k
+-#
 -# Spycat
--spycat spycat
--spycatmini spycat
--spycatminiplus	spycat
--xpeedlx xpeedlx
+-spycat          spycat
+-spycatmini      spycat
+-spycatminiplus  spycat
+-#
+-#Golden Interstar
+-xpeedlx         xpeedlx
+-#
 -# Vu+
--vuduo2   vuduo2
--vuduo    vu
--vuduo4k  vu2
--vusolo2  vu
--vusolo   vu
--vusolose vu
--vusolo4k   vu
--vuultimo vuultimo
--vuultimo4k vu
--vuuno    vu
--vuuno4k   vu
--vuuno4kse vu2
--vuzero4k vu2
--vuzero   vu
+-vuduo           vu
+-vuduo2          vuduo2
+-vuduo4k         vu2
+-vuduo4kse       vu2
+-vusolo          vu
+-vusolo2         vu
+-vusolose        vu
+-vusolo4k        vu
+-vuultimo        vuultimo
+-vuultimo4k      vu
+-vuuno           vu
+-vuuno4k         vu
+-vuuno4kse       vu2
+-vuzero4k        vu2
+-vuzero          vu
+-#
 -# Xsarius
--fusionhd  xsarius
--fusionhdse  xsarius
--galaxy4k revo4k
--purehd	xsarius
--purehdse xsarius
--revo4k	revo4k
+-fusionhd        xsarius
+-fusionhdse      xsarius
+-galaxy4k        revo4k
+-purehd          xsarius
+-purehdse        xsarius
+-revo4k          revo4k
+-#
 -# Xtrend
--et4000   et4x00
--et5000   et6x00
--et6000   et6x00
--et6500   et6x00
--et6500.4   dmm
--et6500.6   dmmadv
--et7000 et7x00
--et7500 et7x00
--et8000   et8000
--et8000.4   dmm
--et8000.6   dmmadv
--et8500 et8000
--et9000   et9x00
--et9000.4   dmm
--et9000.6   dmmadv
--et9000.9  et9500
--et9200   et9x00
--et9500   et9500
--et10000  et8000
--et10000.4   dmm
--et10000.6   dmmadv
+-et4000          et4x00
+-et5000          et6x00
+-et6000          et6x00
+-et6500          et6x00
+-et6500.4        dmm
+-et6500.6        dmmadv
+-et7000          et7x00
+-et7500          et7x00
+-et8000          et8000
+-et8000.4        dmm
+-et8000.6        dmmadv
+-et8500          et8000
+-et9000          et9x00
+-et9000.4        dmm
+-et9000.6        dmmadv
+-et9000.9        et9500
+-et9200          et9x00
+-et9500          et9500
+-et10000         et8000
+-et10000.4       dmm
+-et10000.6       dmmadv
+-#
 -# Zgemma
--i55 i55
--i55plus zgemma
--h3 zgemma
--h4 zgemma
--h5 zgemma
--h6 zgemma
--h7 zgemma
--h9 zgemma
--h9combo zgemma
--h9twin zgemma
--lc sh1
--sh1 sh1
+-i55             i55
+-i55plus         zgemma
+-h3              zgemma
+-h4              zgemma
+-h5              zgemma
+-h6              zgemma
+-h7              zgemma
+-h9              zgemma
+-h9combo         zgemma
+-h9twin          zgemma
+-lc              sh1
+-sh1             sh1
+-#
 -# Octagon
--sf8008 octagon
--sf8008m octagon
+-sf8008         octagon
+-sf8008m        octagon
+-#
 -# uClan
--ustym4kpro uclan
+-ustym4kpro     uclan
 +#
 +hdbox             fs9000
 +octagon1008       hs9510

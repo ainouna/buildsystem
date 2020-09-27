@@ -1,4 +1,4 @@
-# revision 86ff0586450a3ce43e36d87399cf7a1f2f85a3a0 26/03/2020 11:54
+# revision dfb4739a2f606b5e8d3702f1238b97f4f422fcb1 29/05/2020 12:27
 --- enigma2.org/configure.ac
 +++ enigma2/configure.ac
 @@ -18,6 +18,7 @@
@@ -532,7 +532,7 @@
  			int i, j = 0;	   // remove leading whitespace and control chars, and comments
 --- enigma2.org/lib/base/estring.cpp
 +++ enigma2/lib/base/estring.cpp
-@@ -635,10 +635,10 @@
+@@ -637,10 +637,10 @@
  		eLog(6, "[convertDVBUTF8] %d chars converted, and %d chars left..", convertedLen, len-convertedLen);
  	eLog(6, "[convertDVBUTF8] table=0x%02X twochar=%d output:%s\n", table, useTwoCharMapping, output.c_str());
  
@@ -547,7 +547,7 @@
  
  	return output;
  }
-@@ -923,13 +923,13 @@
+@@ -925,13 +925,13 @@
      return output;
  }
  
@@ -2226,7 +2226,7 @@
  	spec.tid_mask = 0xFC;
 --- enigma2.org/lib/dvb/epgcache.cpp
 +++ enigma2/lib/dvb/epgcache.cpp
-@@ -2520,6 +2520,42 @@
+@@ -2526,6 +2526,42 @@
  {
  	int map;
  	iDVBSectionReader *reader = NULL;
@@ -2269,7 +2269,7 @@
  	switch (source)
  	{
  		case NOWNEXT:
-@@ -2644,6 +2680,10 @@
+@@ -2650,6 +2686,10 @@
  			cache->sectionRead(data, source, this);
  		}
  	}
@@ -2411,7 +2411,7 @@
  	void pause();
 --- enigma2.org/lib/dvb/frontend.cpp
 +++ enigma2/lib/dvb/frontend.cpp
-@@ -16,6 +16,10 @@
+@@ -17,6 +17,10 @@
  
  #ifndef I2C_SLAVE_FORCE
  #define I2C_SLAVE_FORCE	0x0706
@@ -2422,7 +2422,7 @@
  #endif
  
  #define eDebugNoSimulate(x...) \
-@@ -726,7 +730,11 @@
+@@ -727,7 +731,11 @@
  		}
  	}
  
@@ -2434,7 +2434,7 @@
  
  	if (!m_multitype)
  		m_type = feSatellite;
-@@ -933,12 +941,16 @@
+@@ -934,12 +942,16 @@
  	int cab_max = 4200;
  	int atsc_max = 4200;
  
@@ -2453,7 +2453,7 @@
  	{
  		ret = (int)(snr / 37.5);
  		sat_max = 1700;
-@@ -2926,7 +2938,11 @@
+@@ -2944,7 +2956,11 @@
  	}
  	else if (!strcmp(type, "DVB-C"))
  	{
@@ -2465,7 +2465,7 @@
  		fetype = feCable;
  	}
  	else if (!strcmp(type, "ATSC"))
-@@ -3056,11 +3072,16 @@
+@@ -3076,11 +3092,16 @@
  		case SYS_ISDBS:		ss << " ISDBS"; break;
  		case SYS_ISDBT:		ss << " ISDBT"; break;
  		case SYS_UNDEFINED:	ss << " UNDEFINED"; break;
@@ -4971,7 +4971,7 @@
  
  		if os.access("/dev/.udev", 0):
  			self.type = DEVTYPE_UDEV
-@@ -53,7 +54,6 @@
+@@ -55,7 +56,6 @@
  		else:
  			print "[Harddisk] Unable to determine structure of /dev"
  			self.type = -1
@@ -4979,7 +4979,7 @@
  
  		self.max_idle_time = 0
  		self.idle_running = False
-@@ -82,25 +82,30 @@
+@@ -84,25 +84,30 @@
  			self.card = "sdhci" in self.phys_path or "mmc" in self.device
  
  		elif self.type == DEVTYPE_DEVFS:
@@ -5025,7 +5025,7 @@
  
  	def __lt__(self, ob):
  		return self.device < ob.device
-@@ -244,7 +249,9 @@
+@@ -246,7 +251,9 @@
  
  	def createPartition(self):
  		cmd = 'printf "8,\n;0,0\n;0,0\n;0,0\ny\n" | sfdisk -f -uS ' + self.disk_path
@@ -5035,7 +5035,7 @@
  		return (res >> 8)
  
  	def mkfs(self):
-@@ -287,6 +294,7 @@
+@@ -289,6 +296,7 @@
  		return 1
  
  	def killPartitionTable(self):
@@ -5043,7 +5043,7 @@
  		zero = 512 * '\0'
  		h = open(self.dev_path, 'wb')
  		# delete first 9 sectors, which will likely kill the first partition too
-@@ -303,25 +311,30 @@
+@@ -305,25 +313,30 @@
  		h.close()
  
  	def createInitializeJob(self):
@@ -5092,7 +5092,7 @@
  
  		if os.path.exists('/usr/sbin/parted'):
  			use_parted = True
-@@ -332,7 +345,9 @@
+@@ -334,7 +347,9 @@
  			else:
  				use_parted = False
  
@@ -5103,7 +5103,7 @@
  		task.weighting = 5
  		if use_parted:
  			task.setTool('parted')
-@@ -344,9 +359,17 @@
+@@ -346,9 +361,17 @@
  				alignment = 'opt'
  			if size > 2097151:
  				parttype = 'gpt'
@@ -5122,7 +5122,7 @@
  		else:
  			task.setTool('sfdisk')
  			task.args.append('-f')
-@@ -354,51 +377,96 @@
+@@ -356,53 +379,100 @@
  			task.args.append(self.disk_path)
  			if size > 128000:
  				# Start at sector 8 to better support 4k aligned disks
@@ -5152,7 +5152,9 @@
 +# execute a dummy fdisk -l to force read the harddisk's new content
 +		task = Task.LoggingTask(job, _("Dummy command fdisk -l"))
  		task.weighting = 1
--
+ 
+ 		if self.type == DEVTYPE_UDEV:
+ 			task = UnmountTask(job, self)
 -		task = MkfsTask(job, _("Creating filesystem"))
 -		big_o_options = ["dir_index"]
 -		if isFileSystemSupported("ext4"):
@@ -5234,7 +5236,7 @@
  		task = Task.ConditionTask(job, _("Waiting for mount"), timeoutCount=20)
  		task.check = self.mountDevice
  		task.weighting = 1
--
+ 
 +		print "[Harddisk init] Waiting for mount to succeed"
 +
 +		task = Task.LoggingTask(job, _("Create /media/hdd/movie"))
@@ -5248,7 +5250,7 @@
  		return job
  
  	def initialize(self):
-@@ -660,16 +728,19 @@
+@@ -664,16 +734,19 @@
  				self.devices_scanned_on_init.append((blockdev, removable, is_cdrom, medium_found))
  
  	def getAutofsMountpoint(self, device):
@@ -5272,7 +5274,7 @@
  		return None
  
  	def addHotplugPartition(self, device, physdev = None):
-@@ -685,6 +756,10 @@
+@@ -689,6 +762,10 @@
  		error, blacklisted, removable, is_cdrom, partitions, medium_found = self.getBlockDevInfo(device)
  		if not blacklisted and medium_found:
  			description = self.getUserfriendlyDeviceName(device, physdev)
@@ -5283,7 +5285,7 @@
  			p = Partition(mountpoint = self.getMountpoint(device), description = description, force_mounted = True, device = device)
  			self.partitions.append(p)
  			if p.mountpoint: # Plugins won't expect unmounted devices
-@@ -777,7 +852,7 @@
+@@ -781,7 +858,7 @@
  		try:
  			description = readFile("/sys" + phys + "/model")
  		except IOError, s:
@@ -5292,7 +5294,7 @@
  		# not wholedisk and not partition 1
  		if part and part != 1:
  			description += _(" (Partition %d)") % part
-@@ -818,7 +893,7 @@
+@@ -822,7 +899,7 @@
  			dev = self.hdd.disk_path.split('/')[-1]
  			open('/dev/nomount.%s' % dev, "wb").close()
  		except Exception, e:
@@ -5301,7 +5303,7 @@
  		self.setTool('umount')
  		self.args.append('-f')
  		for dev in self.hdd.enumMountDevices():
-@@ -826,7 +901,7 @@
+@@ -830,7 +907,7 @@
  			self.postconditions.append(Task.ReturncodePostcondition())
  			self.mountpoints.append(dev)
  		if not self.mountpoints:
@@ -5310,7 +5312,7 @@
  			self.cmd = 'true'
  			self.args = [self.cmd]
  	def afterRun(self):
-@@ -834,7 +909,7 @@
+@@ -838,7 +915,7 @@
  			try:
  				os.rmdir(path)
  			except Exception, ex:
@@ -5319,7 +5321,7 @@
  
  class MountTask(Task.LoggingTask):
  	def __init__(self, job, hdd):
-@@ -845,7 +920,7 @@
+@@ -849,7 +926,7 @@
  			dev = self.hdd.disk_path.split('/')[-1]
  			os.unlink('/dev/nomount.%s' % dev)
  		except Exception, e:
@@ -5328,7 +5330,7 @@
  		# try mounting through fstab first
  		if self.hdd.mount_device is None:
  			dev = self.hdd.partitionPath("1")
-@@ -874,7 +949,7 @@
+@@ -878,7 +955,7 @@
  	def prepare(self):
  		self.fsck_state = None
  	def processOutput(self, data):
@@ -5339,77 +5341,77 @@
  		elif 'Creating journal' in data:
 --- enigma2.org/lib/python/Components/Network.py
 +++ enigma2/lib/python/Components/Network.py
-@@ -61,7 +61,7 @@
- 		return [ int(n) for n in ip.split('.') ]
- 
- 	def getAddrInet(self, iface, callback):
--		cmd = ("/sbin/ip", "/sbin/ip", "-o", "addr", "show", "dev", iface)
-+		cmd = ("/sbin/ip", "/sbin/ip", "addr", "show", "dev", iface)
- 		self.console.ePopen(cmd, self.IPaddrFinished, [iface, callback])
- 
- 	def IPaddrFinished(self, result, retval, extra_args):
-@@ -71,37 +71,45 @@
- 		ipRegexp = '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}'
- 		netRegexp = '[0-9]{1,2}'
- 		macRegexp = '[0-9a-fA-F]{2}\:[0-9a-fA-F]{2}\:[0-9a-fA-F]{2}\:[0-9a-fA-F]{2}\:[0-9a-fA-F]{2}\:[0-9a-fA-F]{2}'
--		ipLinePattern = re.compile('inet ' + ipRegexp + '/')
-+		ipLinePattern = re.compile(ipRegexp + '/')
- 		ipPattern = re.compile(ipRegexp)
- 		netmaskLinePattern = re.compile('/' + netRegexp)
- 		netmaskPattern = re.compile(netRegexp)
--		bcastLinePattern = re.compile(' brd ' + ipRegexp)
-+		bcastLinePattern = re.compile('brd ' + ipRegexp)
- 		upPattern = re.compile('UP')
- 		macPattern = re.compile(macRegexp)
--		macLinePattern = re.compile('link/ether ' + macRegexp)
-+		macLinePattern = re.compile(macRegexp)
- 
- 		for line in result.splitlines():
- 			split = line.strip().split(' ',2)
- 			if (split[1][:-1] == iface) or (split[1][:-1] == (iface + '@sys0')):
- 				up = self.regExpMatch(upPattern, split[2])
--				mac = self.regExpMatch(macPattern, self.regExpMatch(macLinePattern, split[2]))
-+#				print "[Network] up = ", up
- 				if up is not None:
- 					data['up'] = True
- 					if iface is not 'lo':
- 						self.configuredInterfaces.append(iface)
-+			if (split[0] == 'link/ether'):
-+				mac = self.regExpMatch(macPattern, self.regExpMatch(macLinePattern, split[1]))
- 				if mac is not None:
-+#					print "[Network] mac = ", mac
- 					data['mac'] = mac
--			if split[1] == iface:
--				if re.search(globalIPpattern, split[2]):
--					ip = self.regExpMatch(ipPattern, self.regExpMatch(ipLinePattern, split[2]))
--					netmask = self.calc_netmask(self.regExpMatch(netmaskPattern, self.regExpMatch(netmaskLinePattern, split[2])))
--					bcast = self.regExpMatch(ipPattern, self.regExpMatch(bcastLinePattern, split[2]))
--					if ip is not None:
--						data['ip'] = self.convertIP(ip)
--					if netmask is not None:
--						data['netmask'] = self.convertIP(netmask)
--					if bcast is not None:
--						data['bcast'] = self.convertIP(bcast)
-+			if (split[0] == 'inet'):
-+				ip = self.regExpMatch(ipPattern, self.regExpMatch(ipLinePattern, split[1]))
-+#				if ip is not None:
-+#					print "[Network] ip = ", ip
-+				netmask = self.calc_netmask(self.regExpMatch(netmaskPattern, self.regExpMatch(netmaskLinePattern, split[1])))
-+#				if netmask is not None:
-+#					print "[Network] netmask = ", netmask
-+				bcast = self.regExpMatch(ipPattern, self.regExpMatch(bcastLinePattern, split[2]))
-+#				if bcast is not None:
-+#					print "[Network] bcast = ", bcast
-+				if ip is not None:
-+					data['ip'] = self.convertIP(ip)
-+				if netmask is not None:
-+					data['netmask'] = self.convertIP(netmask)
-+				if bcast is not None:
-+					data['bcast'] = self.convertIP(bcast)
- 
- 		if 'ip' not in data:
- 			data['dhcp'] = True
-@@ -568,16 +576,18 @@
+#@@ -62,7 +62,7 @@
+# 		return [ int(n) for n in ip.split('.') ]
+# 
+# 	def getAddrInet(self, iface, callback):
+#-		cmd = ("/sbin/ip", "/sbin/ip", "-o", "addr", "show", "dev", iface)
+#+		cmd = ("/sbin/ip", "/sbin/ip", "addr", "show", "dev", iface)
+# 		self.console.ePopen(cmd, self.IPaddrFinished, [iface, callback])
+# 
+# 	def IPaddrFinished(self, result, retval, extra_args):
+#@@ -71,37 +71,45 @@
+# 		ipRegexp = '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}'
+# 		netRegexp = '[0-9]{1,2}'
+# 		macRegexp = '[0-9a-fA-F]{2}\:[0-9a-fA-F]{2}\:[0-9a-fA-F]{2}\:[0-9a-fA-F]{2}\:[0-9a-fA-F]{2}\:[0-9a-fA-F]{2}'
+#-		ipLinePattern = re.compile('inet ' + ipRegexp + '/')
+#+		ipLinePattern = re.compile(ipRegexp + '/')
+# 		ipPattern = re.compile(ipRegexp)
+# 		netmaskLinePattern = re.compile('/' + netRegexp)
+# 		netmaskPattern = re.compile(netRegexp)
+#-		bcastLinePattern = re.compile(' brd ' + ipRegexp)
+#+		bcastLinePattern = re.compile('brd ' + ipRegexp)
+# 		upPattern = re.compile('UP')
+# 		macPattern = re.compile(macRegexp)
+#-		macLinePattern = re.compile('link/ether ' + macRegexp)
+#+		macLinePattern = re.compile(macRegexp)
+# 
+# 		for line in result.splitlines():
+# 			split = line.strip().split(' ',2)
+# 			if (split[1][:-1] == iface) or (split[1][:-1] == (iface + '@sys0')):
+# 				up = self.regExpMatch(upPattern, split[2])
+#-				mac = self.regExpMatch(macPattern, self.regExpMatch(macLinePattern, split[2]))
+#+#				print "[Network] up = ", up
+# 				if up is not None:
+# 					data['up'] = True
+# 					if iface is not 'lo':
+# 						self.configuredInterfaces.append(iface)
+#+			if (split[0] == 'link/ether'):
+#+				mac = self.regExpMatch(macPattern, self.regExpMatch(macLinePattern, split[1]))
+# 				if mac is not None:
+#+#					print "[Network] mac = ", mac
+# 					data['mac'] = mac
+#-			if split[1] == iface:
+#-				if re.search(globalIPpattern, split[2]):
+#-					ip = self.regExpMatch(ipPattern, self.regExpMatch(ipLinePattern, split[2]))
+#-					netmask = self.calc_netmask(self.regExpMatch(netmaskPattern, self.regExpMatch(netmaskLinePattern, split[2])))
+#-					bcast = self.regExpMatch(ipPattern, self.regExpMatch(bcastLinePattern, split[2]))
+#-					if ip is not None:
+#-						data['ip'] = self.convertIP(ip)
+#-					if netmask is not None:
+#-						data['netmask'] = self.convertIP(netmask)
+#-					if bcast is not None:
+#-						data['bcast'] = self.convertIP(bcast)
+#+			if (split[0] == 'inet'):
+#+				ip = self.regExpMatch(ipPattern, self.regExpMatch(ipLinePattern, split[1]))
+#+#				if ip is not None:
+#+#					print "[Network] ip = ", ip
+#+				netmask = self.calc_netmask(self.regExpMatch(netmaskPattern, self.regExpMatch(netmaskLinePattern, split[1])))
+#+#				if netmask is not None:
+#+#					print "[Network] netmask = ", netmask
+#+				bcast = self.regExpMatch(ipPattern, self.regExpMatch(bcastLinePattern, split[2]))
+#+#				if bcast is not None:
+#+#					print "[Network] bcast = ", bcast
+#+				if ip is not None:
+#+					data['ip'] = self.convertIP(ip)
+#+				if netmask is not None:
+#+					data['netmask'] = self.convertIP(netmask)
+#+				if bcast is not None:
+#+					data['bcast'] = self.convertIP(bcast)
+# 
+# 		if 'ip' not in data:
+# 			data['dhcp'] = True
+@@ -521,16 +521,18 @@
  			return True
  
  		# r871x_usb_drv on kernel 2.6.12 is not identifiable over /sys/class/net/'ifacename'/wireless so look also inside /proc/net/wireless
@@ -7276,7 +7278,7 @@
  from Components.ActionMap import NumberActionMap, ActionMap, HelpableActionMap
  from Components.MenuList import MenuList
  from Components.ServiceEventTracker import ServiceEventTracker, InfoBarBase
-@@ -122,7 +127,7 @@
+@@ -123,7 +128,7 @@
  		self.csel = csel
  		self.bsel = None
  		if self.isProtected():
@@ -7285,7 +7287,7 @@
  
  		self["actions"] = ActionMap(["OkCancelActions", "ColorActions", "NumberActions", "MenuActions"],
  			{
-@@ -333,7 +338,7 @@
+@@ -336,7 +341,7 @@
  		if answer:
  			self.csel.protectContextMenu = False
  		elif answer is not None:
@@ -7294,7 +7296,7 @@
  		else:
  			self.close()
  
-@@ -477,7 +482,7 @@
+@@ -480,7 +485,7 @@
  		self.close()
  
  	def removeParentalProtection(self, service):
@@ -7303,7 +7305,7 @@
  
  	def pinEntered(self, service, answer):
  		if answer:
-@@ -486,13 +491,13 @@
+@@ -489,13 +494,13 @@
  				self.csel.servicelist.resetRoot()
  			self.close()
  		elif answer is not None:
@@ -7319,7 +7321,7 @@
  		else:
  			self.unhideParentalServicesCallback(True)
  
-@@ -505,7 +510,7 @@
+@@ -508,7 +513,7 @@
  			self.csel.servicelist.setCurrent(service)
  			self.close()
  		elif answer is not None:
@@ -7328,7 +7330,7 @@
  		else:
  			self.close()
  
-@@ -859,6 +864,9 @@
+@@ -884,6 +889,9 @@
  		self.saved_title = None
  		self.saved_root = None
  		self.current_ref = None
@@ -7338,7 +7340,7 @@
  		self.editMode = False
  		self.confirmRemove = True
  
-@@ -959,7 +967,7 @@
+@@ -984,7 +992,7 @@
  				if mutableAlternatives:
  					mutableAlternatives.setListName(name)
  					if mutableAlternatives.addService(cur_service.ref):
@@ -7347,7 +7349,7 @@
  					mutableAlternatives.flushChanges()
  					self.servicelist.addService(new_ref.ref, True)
  					self.servicelist.removeCurrent()
-@@ -970,7 +978,7 @@
+@@ -995,7 +1003,7 @@
  					if self.startServiceRef and cur_service.ref == self.startServiceRef:
  						self.startServiceRef = new_ref.ref
  				else:
@@ -7356,7 +7358,7 @@
  			else:
  				print "add", str, "to", cur_root.getServiceName(), "failed"
  		else:
-@@ -994,10 +1002,10 @@
+@@ -1019,10 +1027,10 @@
  					if services is not None:
  						for service in services:
  							if mutableBouquet.addService(service):
@@ -7369,7 +7371,7 @@
  				# do some voodoo to check if current_root is equal to bouquet_root
  				cur_root = self.getRoot()
  				str1 = cur_root and cur_root.toString()
-@@ -1007,9 +1015,9 @@
+@@ -1032,9 +1040,9 @@
  					self.servicelist.addService(new_bouquet_ref)
  					self.servicelist.resetRoot()
  			else:
@@ -7382,7 +7384,7 @@
  
  	def copyCurrentToBouquetList(self):
  		provider = ServiceReference(self.getCurrentSelection())
-@@ -1035,11 +1043,11 @@
+@@ -1060,11 +1068,11 @@
  					if self.startServiceRef and cur_service.ref == self.startServiceRef:
  						self.startServiceRef = first_in_alternative
  				else:
@@ -7399,7 +7401,7 @@
  		self.removeBouquet()
  		if not end:
  			self.servicelist.moveUp()
-@@ -1121,6 +1129,9 @@
+@@ -1146,6 +1154,9 @@
  			else:
  				new_title += ' ' + _("[favourite edit]")
  		self.setTitle(new_title)
@@ -7409,7 +7411,7 @@
  		self.__marked = self.servicelist.getRootServices()
  		for x in self.__marked:
  			self.servicelist.addMarked(eServiceReference(x))
-@@ -1148,6 +1159,9 @@
+@@ -1173,6 +1184,9 @@
  		self.bouquet_mark_edit = OFF
  		self.mutableList = None
  		self.setTitle(self.saved_title)
@@ -7419,7 +7421,7 @@
  		self.saved_title = None
  		# self.servicePath is just a reference to servicePathTv or Radio...
  		# so we never ever do use the asignment operator in self.servicePath
-@@ -1224,6 +1238,9 @@
+@@ -1251,6 +1265,9 @@
  			self.mutableList.flushChanges() # FIXME add check if changes was made
  			self.mutableList = None
  			self.setTitle(self.saved_title)
@@ -7429,7 +7431,7 @@
  			self.saved_title = None
  			self.servicelist.resetRoot()
  			self.servicelist.l.setHideNumberMarker(config.usage.hide_number_markers.value)
-@@ -1235,6 +1252,9 @@
+@@ -1262,6 +1279,9 @@
  			self.saved_title = self.getTitle()
  			pos = self.saved_title.find(')')
  			self.setTitle(self.saved_title[:pos+1] + ' ' + _("[move mode]") + self.saved_title[pos+1:])
@@ -7439,7 +7441,7 @@
  			self.servicelist.l.setHideNumberMarker(False)
  			self.setCurrentSelection(self.servicelist.getCurrent())
  		self["Service"].editmode = True
-@@ -1290,6 +1310,11 @@
+@@ -1317,6 +1337,11 @@
  
  		self["list"] = ServiceList(self)
  		self.servicelist = self["list"]
@@ -7451,7 +7453,7 @@
  
  		self.numericalTextInput = NumericalTextInput(handleTimeout=False)
  		self.numericalTextInput.setUseableChars(u'1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ')
-@@ -1383,6 +1408,9 @@
+@@ -1410,6 +1435,9 @@
  			title = title[:pos]
  		title += _(" (TV)")
  		self.setTitle(title)
@@ -7461,7 +7463,7 @@
  
  	def setRadioMode(self):
  		self.mode = MODE_RADIO
-@@ -1394,6 +1422,9 @@
+@@ -1421,6 +1449,9 @@
  			title = title[:pos]
  		title += _(" (Radio)")
  		self.setTitle(title)
@@ -7471,7 +7473,7 @@
  
  	def setRoot(self, root, justSet=False):
  		if self.startRoot is None:
-@@ -1448,6 +1479,9 @@
+@@ -1475,6 +1506,9 @@
  					end_ref = None
  				nameStr = self.getServiceName(base_ref)
  				titleStr += ' - ' + nameStr
@@ -7481,7 +7483,7 @@
  				if end_ref is not None:
  					if Len > 2:
  						titleStr += '/../'
-@@ -1455,7 +1489,13 @@
+@@ -1482,7 +1516,13 @@
  						titleStr += '/'
  					nameStr = self.getServiceName(end_ref)
  					titleStr += nameStr
@@ -7532,7 +7534,7 @@
  	except Exception, ex:
  		print "[InfoBar] Failed to load resumepoints:", ex
  		return {}
-@@ -231,6 +232,7 @@
+@@ -233,6 +234,7 @@
  	STATE_HIDING = 1
  	STATE_SHOWING = 2
  	STATE_SHOWN = 3
@@ -7540,7 +7542,7 @@
  	FLAG_CENTER_DVB_SUBS = 2048
  
  	def __init__(self):
-@@ -373,6 +375,12 @@
+@@ -375,6 +377,12 @@
  		else:
  			self.toggleShow()
  
@@ -7553,7 +7555,7 @@
  	def toggleShow(self):
  		if self.__state == self.STATE_HIDDEN:
  			self.showFirstInfoBar()
-@@ -387,7 +395,9 @@
+@@ -389,7 +397,9 @@
  			self.show()
  			self.actualSecondInfoBarScreen.show()
  			self.startHideTimer()
@@ -7564,7 +7566,7 @@
  			self.hide()
  			self.hideTimer.stop()
  
-@@ -683,6 +693,19 @@
+@@ -684,6 +694,19 @@
  				"historyNext": (self.historyNext, _("Switch to next channel in history")),
  				"keyChannelUp": (self.keyChannelUpCheck, self.getKeyChannelUpHelptext),
  				"keyChannelDown": (self.keyChannelDownCheck, self.getKeyChannelDownHelptext),
@@ -7584,7 +7586,7 @@
  			})
  
  	def showTvChannelList(self, zap=False):
-@@ -847,6 +870,32 @@
+@@ -848,6 +871,32 @@
  			self.servicelist.moveUp()
  		self.servicelist.zap(enable_pipzap = True)
  
@@ -7617,7 +7619,7 @@
  	def zapDown(self):
  		if self.servicelist.inBouquet():
  			prev = self.servicelist.getCurrentSelection()
-@@ -881,7 +930,7 @@
+@@ -888,7 +937,7 @@
  	def __init__(self):
  		self["MenuActions"] = HelpableActionMap(self, "InfobarMenuActions",
  			{
@@ -7626,7 +7628,7 @@
  			})
  		self.session.infobar = None
  
-@@ -996,7 +1045,7 @@
+@@ -1003,7 +1052,7 @@
  
  		self["EPGActions"] = HelpableActionMap(self, "InfobarEPGActions",
  			{
@@ -7635,7 +7637,7 @@
  				"showEventInfoSingleEPG": (self.showSingleEPG, _("Show single service EPG")),
  				"showEventInfoMultiEPG": (self.showMultiEPG, _("Show multi channel EPG")),
  				"showInfobarOrEpgWhenInfobarAlreadyVisible": self.showEventInfoWhenNotVisible,
-@@ -1007,7 +1056,7 @@
+@@ -1014,7 +1063,7 @@
  				if 'selectedevent' not in p.__call__.func_code.co_varnames] or []
  		from Components.ServiceEventTracker import InfoBarCount
  		if getAll or InfoBarCount == 1:
@@ -7644,7 +7646,7 @@
  		pluginlist.append((_("Multi EPG"), self.openMultiServiceEPG, _("Display EPG as MultiEPG")))
  		pluginlist.append((_("Current event EPG"), self.openEventView, _("Display EPG info for current event")))
  		return pluginlist
-@@ -1161,7 +1210,7 @@
+@@ -1168,7 +1217,7 @@
  	def showEventInfoPlugins(self):
  		pluginlist = self.getEPGPluginList()
  		if pluginlist:
@@ -7653,7 +7655,7 @@
  		else:
  			self.openSingleServiceEPG()
  
-@@ -1234,7 +1283,7 @@
+@@ -1241,7 +1290,7 @@
  				self.eventView = self.session.openWithCallback(self.closed, EventViewEPGSelect, epglist[0], ServiceReference(ref), self.eventViewCallback, self.openSingleServiceEPG, self.openMultiServiceEPG, self.openSimilarList)
  				self.dlg_stack.append(self.eventView)
  		if not epglist:
@@ -7662,7 +7664,7 @@
  			self.openMultiServiceEPG(False)
  
  	def eventViewCallback(self, setEvent, setService, val): #used for now/next displaying
-@@ -2137,7 +2186,7 @@
+@@ -2144,7 +2193,7 @@
  		self.addExtension((lambda: _("Manually import from fallback tuner"), self.importChannels, lambda: config.usage.remote_fallback_extension_menu.value and config.usage.remote_fallback_import.value))
  		self["InstantExtensionsActions"] = HelpableActionMap(self, "InfobarExtensions",
  			{
@@ -7671,7 +7673,7 @@
  			}, 1) # lower priority
  
  	def openSoftcamSetup(self):
-@@ -2167,7 +2216,7 @@
+@@ -2174,7 +2223,7 @@
  
  	def updateExtensions(self):
  		self.extensionsList = []
@@ -7680,7 +7682,7 @@
  		self.extensionKeys = {}
  		for x in self.list:
  			if x[0] == self.EXTENSION_SINGLE:
-@@ -2194,7 +2243,7 @@
+@@ -2201,7 +2250,7 @@
  				else:
  					extensionsList.remove(extension)
  		list.extend([(x[0](), x) for x in extensionsList])
@@ -7689,7 +7691,7 @@
  
  	def extensionCallback(self, answer):
  		if answer is not None:
-@@ -2397,11 +2446,11 @@
+@@ -2404,11 +2453,11 @@
  
  class InfoBarInstantRecord:
  	"""Instant Record - handles the instantRecord action in order to
@@ -7703,7 +7705,7 @@
  			})
  		self.SelectedInstantServiceRef = None
  		if isStandardInfoBar(self):
-@@ -2484,7 +2533,7 @@
+@@ -2491,7 +2540,7 @@
  	def startInstantRecording(self, limitEvent = False):
  		begin = int(time())
  		end = begin + 3600      # dummy
@@ -7712,7 +7714,7 @@
  		info = { }
  
  		self.getProgramInfoAndEvent(info, name)
-@@ -2713,7 +2762,7 @@
+@@ -2720,7 +2769,7 @@
  	def __init__(self):
  		self["AudioSelectionAction"] = HelpableActionMap(self, "InfobarAudioSelectionActions",
  			{
@@ -7721,7 +7723,7 @@
  			})
  
  	def audioSelection(self):
-@@ -2727,7 +2776,7 @@
+@@ -2734,7 +2783,7 @@
  	def __init__(self):
  		self["SubserviceSelectionAction"] = HelpableActionMap(self, "InfobarSubserviceSelectionActions",
  			{
@@ -7753,7 +7755,7 @@
  			}, prio=2)
  
  		self.radioTV = 0
-@@ -65,8 +68,8 @@
+@@ -65,8 +72,8 @@
  				InfoBarPlugins, InfoBarServiceErrorPopupSupport, InfoBarHotkey:
  			x.__init__(self)
  
@@ -7764,7 +7766,7 @@
  
  		self.__event_tracker = ServiceEventTracker(screen=self, eventmap=
  			{
-@@ -77,6 +80,88 @@
+@@ -77,6 +84,88 @@
  		assert InfoBar.instance is None, "class InfoBar is a singleton class and just one instance of this class is allowed!"
  		InfoBar.instance = self
  
@@ -7853,7 +7855,7 @@
  	def __onClose(self):
  		InfoBar.instance = None
  
-@@ -95,6 +180,22 @@
+@@ -95,6 +184,22 @@
  		self.__serviceStarted(True)
  		self.onExecBegin.remove(self.__checkServiceStarted)
  
@@ -7896,15 +7898,15 @@
  	def toggleTvRadio(self):
  		if self.radioTV == 1:
  			self.radioTV = 0
-@@ -151,6 +265,7 @@
- class MoviePlayer(InfoBarBase, InfoBarShowHide, InfoBarMenu, InfoBarSeek, InfoBarShowMovies, InfoBarInstantRecord,
+@@ -151,6 +269,7 @@
+ class MoviePlayer(InfoBarBase, InfoBarShowHide, InfoBarMenu, InfoBarSeek, InfoBarShowMovies, InfoBarInstantRecord, InfoBarVmodeButton,
  		InfoBarAudioSelection, HelpableScreen, InfoBarNotifications, InfoBarServiceNotifications, InfoBarPVRState,
  		InfoBarCueSheetSupport, InfoBarMoviePlayerSummarySupport, InfoBarSubtitleSupport, Screen, InfoBarTeletextPlugin,
 +		InfoBarSubserviceSelection,
  		InfoBarServiceErrorPopupSupport, InfoBarExtensions, InfoBarPlugins, InfoBarPiP, InfoBarHDMI, InfoBarHotkey):
  
  	ENABLE_RESUME_SUPPORT = True
-@@ -161,10 +276,10 @@
+@@ -161,10 +280,10 @@
  
  		self["actions"] = HelpableActionMap(self, "MoviePlayerActions",
  			{
@@ -7935,7 +7937,7 @@
  		elif self.index == self.STATE_CHOISE_CHANNELLIST:
 -			self.enabled = ConfigYesNo(default = True, graphic = False)
 +			self.enabled = ConfigYesNo(default = False, graphic = False)
-                         modes = {"19e-23e-basis": "Astra1 Astra3 basis", "19e-23e": "Astra 1 Astra 3", "19e-23e-28e": "Astra 1 Astra 2 Astra 3", "13e-19e-23e-28e": "Astra 1 Astra 2 Astra 3 Hotbird", "9e-13e-19e-23e-28e-rotating": "Rotating", "kabelnl": "Kabel-NL"}
+ 			modes = {"19e-23e-basis": "Astra1 Astra3 basis", "19e-23e": "Astra 1 Astra 3", "19e-23e-28e": "Astra 1 Astra 2 Astra 3", "13e-19e-23e-28e": "Astra 1 Astra 2 Astra 3 Hotbird", "9e-13e-19e-23e-28e-rotating": "Rotating", "kabelnl": "Kabel-NL"}
  			self.channellist_type = ConfigSelection(choices = modes, default = "19e-23e-basis")
  			self.createMenu()
 --- enigma2.org/lib/python/Screens/ScanSetup.py
@@ -7951,9 +7953,9 @@
  		self.scan_onlyfree = ConfigYesNo(default = False)
 --- enigma2.org/lib/python/Screens/Standby.py
 +++ enigma2/lib/python/Screens/Standby.py
-@@ -15,6 +15,11 @@
- from enigma import eDVBVolumecontrol, eTimer, eDVBLocalTimeHandler, eServiceReference, eStreamServer
- from Components.Sources.StreamService import StreamServiceList
+@@ -17,6 +17,11 @@
+ from GlobalActions import globalActionMap
+ from enigma import eDVBVolumecontrol, eTimer, eDVBLocalTimeHandler, eServiceReference, eStreamServer, quitMainloop, iRecordableService
  
 +from Tools.HardwareInfo import HardwareInfo
 + 
@@ -7961,10 +7963,61 @@
 +stb = HardwareInfo().get_device_name()
 +
  inStandby = None
+ infoBarInstance = None
  
- QUIT_SHUTDOWN = 1
-@@ -31,6 +36,42 @@
- class Standby(Screen):
+@@ -75,6 +80,40 @@
+ 		self.timeHandler = None
+ 
+ 		self.setMute()
++
++		if stb.lower() == 'spark' or stb.lower() == 'spark7162':
++			#apply standby CPU clock frequency
++#			if config.plugins.systemoptions.stbyfreq.value:
++#				if config.plugins.systemoptions.stbyfreq.value == "200":
++#					overclk=5123
++#				elif config.plugins.systemoptions.stbyfreq.value == "300":
++#					overclk=2561
++#				elif config.plugins.systemoptions.stbyfreq.value == "450":
++#					overclk=3841
++#				elif config.plugins.systemoptions.stbyfreq.value == "500":
++#					overclk=12803
++#				elif config.plugins.systemoptions.stbyfreq.value == "540":
++#					overclk=4609
++#				elif config.plugins.systemoptions.stbyfreq.value == "600":
++#					overclk=5121
++#				elif config.plugins.systemoptions.stbyfreq.value == "630":
++#					overclk=5377
++#				elif config.plugins.systemoptions.stbyfreq.value == "650":
++#					overclk=16643
++#				elif config.plugins.systemoptions.stbyfreq.value == "700":
++#					overclk=17923
++#				elif config.plugins.systemoptions.stbyfreq.value == "710":
++#					overclk=18179
++#				elif config.plugins.systemoptions.stbyfreq.value == "750":
++#					overclk=19203
++#				elif config.plugins.systemoptions.stbyfreq.value == "775":
++#					overclk=39686
++#				elif config.plugins.systemoptions.stbyfreq.value == "800":
++#					overclk=20483
++#			else:
++#			overclk=4609
++#			print "STBY Clockspeed =", config.plugins.systemoptions.stbyfreq.value, "PLL = ", str(overclk)
++			open(pll0, 'w').write(str(overclk))
+ 
+ 		self.paused_service = self.paused_action = False
+ 
+@@ -105,6 +144,9 @@
+ 			self.avswitch.setInput("SCART")
+ 		else:
+ 			self.avswitch.setInput("AUX")
++#+++>
++		open("/proc/stb/hdmi/output", "w").write("off")
++#+++<
+ 
+ 		gotoShutdownTime = int(config.usage.standby_to_shutdown_timer.value)
+ 		if gotoShutdownTime:
+@@ -157,6 +199,42 @@
+ 
  	def Power(self):
  		print "[Standby] leave standby"
 +		if stb.lower() == 'spark' or stb.lower() == 'spark7162':
@@ -8006,58 +8059,7 @@
  		self.close(True)
  
  	def setMute(self):
-@@ -72,6 +113,40 @@
- 		self.timeHandler = None
- 
- 		self.setMute()
-+		if stb.lower() == 'spark' or stb.lower() == 'spark7162':
-+			#apply standby CPU clock frequency
-+#			if config.plugins.systemoptions.stbyfreq.value:
-+#				if config.plugins.systemoptions.stbyfreq.value == "200":
-+#					overclk=5123
-+#				elif config.plugins.systemoptions.stbyfreq.value == "300":
-+#					overclk=2561
-+#				elif config.plugins.systemoptions.stbyfreq.value == "450":
-+#					overclk=3841
-+#				elif config.plugins.systemoptions.stbyfreq.value == "500":
-+#					overclk=12803
-+#				elif config.plugins.systemoptions.stbyfreq.value == "540":
-+#					overclk=4609
-+#				elif config.plugins.systemoptions.stbyfreq.value == "600":
-+#					overclk=5121
-+#				elif config.plugins.systemoptions.stbyfreq.value == "630":
-+#					overclk=5377
-+#				elif config.plugins.systemoptions.stbyfreq.value == "650":
-+#					overclk=16643
-+#				elif config.plugins.systemoptions.stbyfreq.value == "700":
-+#					overclk=17923
-+#				elif config.plugins.systemoptions.stbyfreq.value == "710":
-+#					overclk=18179
-+#				elif config.plugins.systemoptions.stbyfreq.value == "750":
-+#					overclk=19203
-+#				elif config.plugins.systemoptions.stbyfreq.value == "775":
-+#					overclk=39686
-+#				elif config.plugins.systemoptions.stbyfreq.value == "800":
-+#					overclk=20483
-+#			else:
-+			overclk=4609
-+#			print "STBY Clockspeed =", config.plugins.systemoptions.stbyfreq.value, "PLL = ", str(overclk)
-+			open(pll0, 'w').write(str(overclk))
-+
- 
- 		self.paused_service = self.paused_action = False
- 
-@@ -102,6 +177,9 @@
- 			self.avswitch.setInput("SCART")
- 		else:
- 			self.avswitch.setInput("AUX")
-+#+++>
-+		open("/proc/stb/hdmi/output", "w").write("off")
-+#+++<
- 
- 		gotoShutdownTime = int(config.usage.standby_to_shutdown_timer.value)
- 		if gotoShutdownTime:
-@@ -218,6 +296,7 @@
+@@ -248,6 +326,7 @@
  			QUIT_UPGRADE_FP: _("Your frontprocessor will be updated\nPlease wait until your receiver reboots\nThis may take a few minutes"),
  			QUIT_ERROR_RESTART: _("The user interface of your receiver is restarting\ndue to an error in mytest.py"),
  			QUIT_DEBUG_RESTART: _("The user interface of your receiver is restarting in debug mode"),
@@ -8065,7 +8067,7 @@
  			QUIT_UPGRADE_PROGRAM: _("Unattended update in progress\nPlease wait until your receiver reboots\nThis may take a few minutes"),
  			QUIT_MANUFACTURER_RESET: _("Manufacturer reset in progress\nPlease wait until enigma2 restarts")
  		}.get(retvalue)
-@@ -258,6 +337,7 @@
+@@ -290,6 +369,7 @@
  				QUIT_RESTART: _("Really restart now?"),
  				QUIT_UPGRADE_FP: _("Really update the frontprocessor and reboot now?"),
  				QUIT_DEBUG_RESTART: _("Really restart in debug mode now?"),
@@ -8250,7 +8252,7 @@
  def profile_final():
 --- enigma2.org/lib/service/listboxservice.cpp
 +++ enigma2/lib/service/listboxservice.cpp
-@@ -189,14 +189,14 @@
+@@ -192,14 +192,14 @@
  	{
  		--i;
  		--index;
@@ -8267,7 +8269,7 @@
  			break;
  	}
  	return cursorResolve(index);
-@@ -212,7 +212,7 @@
+@@ -215,7 +215,7 @@
  	{
  		++i;
  		++index;
@@ -8699,7 +8701,7 @@
  from Components.RcModel import rc_model
  
 -keyDescriptions = [{
-+keyDescriptions = [{ # for remotes with ID 0 (DMM)
++keyDescriptions = [{ # for remotes with Index 0 (DMM)
  		KEYIDS["BTN_0"]: ("UP", "fp"),
  		KEYIDS["BTN_1"]: ("DOWN", "fp"),
  		KEYIDS["KEY_OK"]: ("OK", ""),
@@ -8708,7 +8710,7 @@
  		KEYIDS["KEY_RECORD"]: ("RECORD",)
  	},
 -	{
-+	{  # for remotes with ID 1 (DMM advanced)
++	{  # for remotes with Index 1 (DMM advanced)
  		KEYIDS["BTN_0"]: ("UP", "fp"),
  		KEYIDS["BTN_1"]: ("DOWN", "fp"),
  		KEYIDS["KEY_OK"]: ("OK", ""),
@@ -8724,7 +8726,7 @@
 +		KEYIDS["KEY_REWIND"]: ("REWIND",),
 +		KEYIDS["KEY_FASTFORWARD"]: ("FASTFORWARD",)
 +	},
-+	{ # for remotes with ID 2 (default)
++	{ # for remotes with Index 2 (default)
  		KEYIDS["BTN_0"]: ("UP", "fp"),
  		KEYIDS["BTN_1"]: ("DOWN", "fp"),
  		KEYIDS["KEY_OK"]: ("OK", ""),
@@ -8738,7 +8740,7 @@
 -		KEYIDS["KEY_OK"]: ("OK", ""),
 -		KEYIDS["KEY_UP"]: ("UP",),
 -		KEYIDS["KEY_DOWN"]: ("DOWN",),
-+	{  # for remotes with ID 3 (Spark RC12)
++	{  # for remotes with Index 3 (Spark RC12)
  		KEYIDS["KEY_POWER"]: ("POWER",),
 -		KEYIDS["KEY_RED"]: ("RED",),
 -		KEYIDS["KEY_BLUE"]: ("BLUE",),
@@ -8770,17 +8772,12 @@
  		KEYIDS["KEY_0"]: ("0",),
  		KEYIDS["KEY_1"]: ("1",),
  		KEYIDS["KEY_2"]: ("2",),
-@@ -173,63 +152,204 @@
+@@ -173,63 +152,417 @@
  		KEYIDS["KEY_7"]: ("7",),
  		KEYIDS["KEY_8"]: ("8",),
  		KEYIDS["KEY_9"]: ("9",),
 -		KEYIDS["KEY_EXIT"]: ("EXIT",),
 -		KEYIDS["KEY_STOP"]: ("STOP",),
--		KEYIDS["KEY_RECORD"]: ("RECORD",),
--		KEYIDS["KEY_BOOKMARKS"]: ("PORTAL",),
--		KEYIDS["KEY_VMODE"]: ("VMODE",),
--		KEYIDS["KEY_PROGRAM"]: ("TIMER",),
--		KEYIDS["KEY_SLEEP"]: ("SLEEP",),
 +		KEYIDS["KEY_TV2"]: ("TV/RADIO",),
 +		KEYIDS["KEY_BACK"]: ("RECALL",),
 +		KEYIDS["KEY_PAGEUP"]: ("PAGE+",),
@@ -8797,7 +8794,19 @@
 +		KEYIDS["KEY_RIGHT"]: ("RIGHT",),
 +		KEYIDS["KEY_OK"]: ("OK", ""),
 +		KEYIDS["KEY_HOME"]: ("EXIT",),
- 		KEYIDS["KEY_EPG"]: ("EPG",),
++		KEYIDS["KEY_EPG"]: ("EPG",),
++		KEYIDS["KEY_FAVORITES"]: ("FAV",),
++		KEYIDS["KEY_SAT"]: ("SAT",),
++		KEYIDS["KEY_RED"]: ("RED",),
++		KEYIDS["KEY_GREEN"]: ("GREEN",),
++		KEYIDS["KEY_YELLOW"]: ("YELLOW",),
++		KEYIDS["KEY_BLUE"]: ("BLUE",),
+ 		KEYIDS["KEY_RECORD"]: ("RECORD",),
+-		KEYIDS["KEY_BOOKMARKS"]: ("PORTAL",),
+-		KEYIDS["KEY_VMODE"]: ("VMODE",),
+-		KEYIDS["KEY_PROGRAM"]: ("TIMER",),
+-		KEYIDS["KEY_SLEEP"]: ("SLEEP",),
+-		KEYIDS["KEY_EPG"]: ("EPG",),
 -	},
 -	{       # Formuler F1
 -		KEYIDS["BTN_0"]: ("UP", "fp"),
@@ -8819,13 +8828,6 @@
 -		KEYIDS["KEY_TV"]: ("TV",),
 -		KEYIDS["KEY_RADIO"]: ("RADIO",),
 -		KEYIDS["KEY_TEXT"]: ("TEXT",),
-+		KEYIDS["KEY_FAVORITES"]: ("FAV",),
-+		KEYIDS["KEY_SAT"]: ("SAT",),
-+		KEYIDS["KEY_RED"]: ("RED",),
-+		KEYIDS["KEY_GREEN"]: ("GREEN",),
-+		KEYIDS["KEY_YELLOW"]: ("YELLOW",),
-+		KEYIDS["KEY_BLUE"]: ("BLUE",),
-+		KEYIDS["KEY_RECORD"]: ("RECORD",),
 +		KEYIDS["KEY_STOP"]: ("STOP",),
 +		KEYIDS["KEY_PLAY"]: ("PLAY",),
 +		KEYIDS["KEY_PAUSE"]: ("PAUSE",),
@@ -8865,7 +8867,7 @@
 -		KEYIDS["KEY_CONTEXT_MENU"]: ("CONTEXT",),
 +		KEYIDS["KEY_OPEN"]: ("PORTAL",),
 +	},
-+	{  # for remotes with ID 4 (All Fortis)
++	{  # for remotes with Index 4 (All Fortis)
 +		KEYIDS["KEY_MUTE"]: ("MUTE",),
 +		KEYIDS["KEY_POWER"]: ("STANDBY",),
 +		KEYIDS["KEY_ANGLE"]: ("VFORMAT",),
@@ -8921,7 +8923,7 @@
 +		KEYIDS["KEY_TEXT"]: ("TEXT",),
 +		KEYIDS["KEY_ZOOM"]: ("ZOOM",),
 +	},
-+	{  # for remotes with ID 5 (Topfield TF77X0HDPVR)
++	{  # for remotes with Index 5 (Topfield TF77X0HDPVR)
 +		KEYIDS["KEY_POWER"]: ("STANDBY",),
 +		KEYIDS["KEY_MUTE"]: ("MUTE",),
 +		KEYIDS["KEY_ZOOM"]: ("V.FORMAT",),
@@ -8977,7 +8979,7 @@
 +		KEYIDS["KEY_VOLUMEUP"]: ("VOLUMEUP",),
 +		KEYIDS["KEY_POWER"]: ("STANDBY",),
 +	},
-+	{  # for remotes with ID 6 (Kathrein UFS912)
++	{  # for remotes with Index 6 (Kathrein UFS912)
 +		KEYIDS["KEY_MEDIA"]: ("MEDIA",),
 +		KEYIDS["KEY_ARCHIVE"]: ("ARCHIVE",),
 +		KEYIDS["KEY_MENU"]: ("MENU",),
@@ -9023,16 +9025,228 @@
 +		KEYIDS["KEY_DOWN"]: ("FP_MINUS",),
 +		KEYIDS["KEY_UP"]: ("FP_PLUS",),
 +		KEYIDS["KEY_OK"]: ("FP_TV_R",),
++	},
++	{  # for remotes with Index 7 (Cuberevo universal)
++		KEYIDS["KEY_F1"]: ("KEY_F1",),
++		KEYIDS["KEY_F2"]: ("KEY_F2",),
++		KEYIDS["KEY_F3"]: ("KEY_F3",),
++		KEYIDS["KEY_INFO"]: ("INFO",),
++		KEYIDS["KEY_RADIO"]: ("RADIO",),
++		KEYIDS["KEY_PREVIOUS"]: ("PREVIOUS",),
++		KEYIDS["KEY_EPG"]: ("EPG",),
++		KEYIDS["KEY_RECORD"]: ("RECORD",),
++		KEYIDS["KEY_FAVORITES"]: ("FAVORITES",),
++		KEYIDS["KEY_MEDIA"]: ("MEDIA",),
++		KEYIDS["KEY_POWER"]: ("STANDBY",),
++		KEYIDS["KEY_F5"]: ("KEY_F5",),
++		KEYIDS["KEY_MUTE"]: ("MUTE",),
++		KEYIDS["KEY_ARCHIVE"]: ("ARCHIVE",),
++		KEYIDS["KEY_0"]: ("0BUTTON",),
++		KEYIDS["KEY_1"]: ("1BUTTON",),
++		KEYIDS["KEY_2"]: ("2BUTTON",),
++		KEYIDS["KEY_3"]: ("3BUTTON",),
++		KEYIDS["KEY_4"]: ("4BUTTON",),
++		KEYIDS["KEY_5"]: ("5BUTTON",),
++		KEYIDS["KEY_6"]: ("6BUTTON",),
++		KEYIDS["KEY_7"]: ("7BUTTON",),
++		KEYIDS["KEY_8"]: ("8BUTTON",),
++		KEYIDS["KEY_9"]: ("9BUTTON",),
++		KEYIDS["KEY_UP"]: ("UP",),
++		KEYIDS["KEY_DOWN"]: ("DOWN",),
++		KEYIDS["KEY_RIGHT"]: ("RIGHT",),
++		KEYIDS["KEY_LEFT"]: ("LEFT",),
++		KEYIDS["KEY_REWIND"]: ("REWIND",),
++		KEYIDS["KEY_OK"]: ("OK",),
++		KEYIDS["KEY_PLAY"]: ("PLAY",),
++		KEYIDS["KEY_FASTFORWARD"]: ("FASTFORWARD",),
++		KEYIDS["KEY_STOP"]: ("STOP",),
++		KEYIDS["KEY_SLOW"]: ("SLOW",),
++		KEYIDS["KEY_AGAIN"]: ("AGAIN",),
++		KEYIDS["KEY_PAUSE"]: ("PAUSE",),
++		KEYIDS["KEY_MENU"]: ("MENU",),
++		KEYIDS["KEY_HOME"]: ("EXIT",),
++		KEYIDS["KEY_F7"]: ("KEY_F7",),
++		KEYIDS["KEY_BOOKMARKS"]: ("KEY_BOOMARKS",),
++		KEYIDS["KEY_RED"]: ("RED",),
++		KEYIDS["KEY_BLUE"]: ("BLUE",),
++		KEYIDS["KEY_F8"]: ("KEY_F8",),
++		KEYIDS["KEY_GREEN"]: ("GREEN",),
++		KEYIDS["KEY_YELLOW"]: ("YELLOW",),
++		KEYIDS["KEY_AUDIO"]: ("AUDIO",),
++		KEYIDS["KEY_SUBTITLE"]: ("SUBTITLE",),
++		KEYIDS["KEY_TEXT"]: ("TEXT",),
++		KEYIDS["KEY_CHANNELUP"]: ("CHANNELUP",),
++		KEYIDS["KEY_CHANNELDOWN"]: ("CHANNELDOWN",),
++		KEYIDS["KEY_VOLUMEUP"]: ("VOLUMEUP",),
++		KEYIDS["KEY_VOLUMEDOWN"]: ("VOLUMEDOWN",),
++		KEYIDS["KEY_WWW"]: ("WWW",)
++	},
++	{  # for remotes with Index 8 (Vitamin HD5000)
++		KEYIDS["KEY_POWER"]: ("POWER",),
++		KEYIDS["KEY_OK"]: ("OK",),
++		KEYIDS["KEY_LEFT"]: ("LEFT",),
++		KEYIDS["KEY_RIGHT"]: ("RIGHT",),
++		KEYIDS["KEY_UP"]: ("UP",),
++		KEYIDS["KEY_DOWN"]: ("DOWN",),
++		KEYIDS["KEY_MENU"]: ("MENU",),
++		KEYIDS["KEY_EXIT"]: ("EXIT",),
++		KEYIDS["KEY_INFO"]: ("INFO",),
++		KEYIDS["KEY_F11"]: ("FEED",),
++		KEYIDS["KEY_F12"]: ("RECALL",),
++		KEYIDS["KEY_FAVORITES"]: ("FAV",),
++		KEYIDS["KEY_EPG"]: ("EPG",),
++		KEYIDS["KEY_VOLUMEUP"]: ("VOLUP",),
++		KEYIDS["KEY_VOLUMEDOWN"]: ("VOLDOWN",),
++		KEYIDS["KEY_PAGEUP"]: ("CHUP",),
++		KEYIDS["KEY_PAGEDOWN"]: ("CHDOWN",),
++		KEYIDS["KEY_TV"]: ("TVRADIO",),
++		KEYIDS["KEY_F10"]: ("SATLIST",),
++		KEYIDS["KEY_WWW"]: ("MOSAIC",),
++		KEYIDS["KEY_MEDIA"]: ("PLAYLIST",),
++		KEYIDS["KEY_RED"]: ("RED",),
++		KEYIDS["KEY_GREEN"]: ("GREEN",),
++		KEYIDS["KEY_YELLOW"]: ("YELLOW",),
++		KEYIDS["KEY_BLUE"]: ("BLUE",),
++ 		KEYIDS["KEY_0"]: ("0",),
++ 		KEYIDS["KEY_1"]: ("1",),
++ 		KEYIDS["KEY_2"]: ("2",),
++ 		KEYIDS["KEY_3"]: ("3",),
++ 		KEYIDS["KEY_4"]: ("4",),
++ 		KEYIDS["KEY_5"]: ("6",),
++ 		KEYIDS["KEY_6"]: ("7",),
++ 		KEYIDS["KEY_7"]: ("7",),
++ 		KEYIDS["KEY_8"]: ("8",),
++ 		KEYIDS["KEY_9"]: ("9",),
++ 		KEYIDS["KEY_F1"]: ("F1",),
++ 		KEYIDS["KEY_F2"]: ("F2",),
++		KEYIDS["KEY_TV2"]: ("TV_STB",),
++		KEYIDS["KEY_MUTE"]: ("MUTE",),
++		KEYIDS["KEY_F8"]: ("TEXT",),
++		KEYIDS["KEY_F9"]: ("SUBTITLE",),
++		KEYIDS["KEY_F3"]: ("SIGNAL",),
++		KEYIDS["KEY_F4"]: ("CAPTURE",),
++		KEYIDS["KEY_F5"]: ("BOOK_M",),
++		KEYIDS["KEY_F6"]: ("BOOK_J",),
++		KEYIDS["KEY_PREVIOUS"]: ("PREV",),
++		KEYIDS["KEY_REWIND"]: ("REW",),
++		KEYIDS["KEY_FASTFORWARD"]: ("FWD",),
++		KEYIDS["KEY_NEXT"]: ("NEXT",),
++		KEYIDS["KEY_F7"]: ("REPEAT",),
++		KEYIDS["KEY_PLAY"]: ("PLAY",),
++		KEYIDS["KEY_STOP"]: ("STOP",),
++		KEYIDS["KEY_RECORD"]: ("RECORD",)
++	},
++	{  # for remotes with Index 9 (ADB XMP)
++		KEYIDS["KEY_POWER"]: ("XMP_POWER",),
++		KEYIDS["KEY_MEDIA"]: ("XMP_VOD",),
++		KEYIDS["KEY_GOTO"]: ("XMP_GOTO",),
++		KEYIDS["KEY_EPG"]: ("XMP_EPG",),
++		KEYIDS["KEY_PVR"]: ("XMP_HOUSE",),
++		KEYIDS["KEY_INFO"]: ("XMP_INFO",),
++		KEYIDS["KEY_TIME"]: ("XMP_APP",),
++		KEYIDS["KEY_SUBTITLE"]: ("XMP_OPT",),
++		KEYIDS["KEY_VOLUMEUP"]: ("XMP_VOLUMEUP",),
++		KEYIDS["KEY_VOLUMEDOWN"]: ("XMP_VOLUMEDOWN",),
++		KEYIDS["KEY_PAGEUP"]: ("XMP_PAGEUP",),
++		KEYIDS["KEY_PAGEDOWN"]: ("XMP_PAGEDOWN",),
++		KEYIDS["KEY_OK"]: ("XMP_OK",),
++		KEYIDS["KEY_UP"]: ("XMP_UP",),
++		KEYIDS["KEY_DOWN"]: ("XMP_DOWN",),
++		KEYIDS["KEY_LEFT"]: ("XMP_LEFT",),
++		KEYIDS["KEY_RIGHT"]: ("XMP_RIGHT",),
++		KEYIDS["KEY_HOME"]: ("XMP_BACK",),
++		KEYIDS["KEY_STOP"]: ("XMP_STOP",),
++		KEYIDS["KEY_REWIND"]: ("XMP_REWIND",),
++		KEYIDS["KEY_FASTFORWARD"]: ("XMP_FASTFORWARD",),
++		KEYIDS["KEY_PLAY"]: ("XMP_PLAY",),
++		KEYIDS["KEY_PAUSE"]: ("XMP_PAUSE",),
++		KEYIDS["KEY_RECORD"]: ("XMP_RECORD",),
++		KEYIDS["KEY_MUTE"]: ("XMP_MUTE",),
++		KEYIDS["KEY_TV2"]: ("XMP_ATSIGN",),
++		KEYIDS["KEY_TEXT"]: ("XMP_TEXT",),
++		KEYIDS["KEY_LIST"]: ("XMP_LIST",),
++		KEYIDS["KEY_RED"]: ("XMP_RED",),
++		KEYIDS["KEY_GREEN"]: ("XMP_GREEN",),
++		KEYIDS["KEY_YELLOW"]: ("XMP_YELLOW",),
++		KEYIDS["KEY_BLUE"]: ("XMP_BLUE",),
++		KEYIDS["KEY_1"]: ("XMP_1",),
++		KEYIDS["KEY_2"]: ("XMP_2",),
++		KEYIDS["KEY_3"]: ("XMP_3",),
++		KEYIDS["KEY_4"]: ("XMP_4",),
++		KEYIDS["KEY_5"]: ("XMP_5",),
++		KEYIDS["KEY_6"]: ("XMP_6",),
++		KEYIDS["KEY_7"]: ("XMP_7",),
++		KEYIDS["KEY_8"]: ("XMP_8",),
++		KEYIDS["KEY_9"]: ("XMP_9",),
++		KEYIDS["KEY_0"]: ("XMP_0",),
++		KEYIDS["KEY_MENU"]: ("XMP_SETUP",),
++		KEYIDS["KEY_HELP"]: ("XMP_STAR",)
++	},
++	{  # for remotes with Index 10 (Pace HDS7241)
++	},
++	{  # for remotes with Index 11 (VIP2_V1)
++		KEYIDS["KEY_POWER"]: ("STANDBY",),
++		KEYIDS["KEY_VMODE"]: ("V.FORMAT",),
++		KEYIDS["KEY_TIME"]: ("TIME",),
++		KEYIDS["KEY_MUTE"]: ("MUTE",),
++		KEYIDS["KEY_T"]: ("Tms",),
++		KEYIDS["KEY_SCREEN"]: ("PIP",),
++		KEYIDS["KEY_F1"]: ("F1",),
++		KEYIDS["KEY_AUX"]: ("TV/SAT",),
++		KEYIDS["KEY_0"]: ("0BUTTON",),
++		KEYIDS["KEY_1"]: ("1BUTTON",),
++		KEYIDS["KEY_2"]: ("2BUTTON",),
++		KEYIDS["KEY_3"]: ("3BUTTON",),
++		KEYIDS["KEY_4"]: ("4BUTTON",),
++		KEYIDS["KEY_5"]: ("5BUTTON",),
++		KEYIDS["KEY_6"]: ("6BUTTON",),
++		KEYIDS["KEY_7"]: ("7BUTTON",),
++		KEYIDS["KEY_8"]: ("8BUTTON",),
++		KEYIDS["KEY_9"]: ("9BUTTON",),
++		KEYIDS["KEY_TV2"]: ("TV/RADIO",),
++ 		KEYIDS["KEY_BACK"]: ("RECALL",),
++		KEYIDS["KEY_FIND"]: ("FIND",),
++		KEYIDS["KEY_VOLUMEDOWN"]: ("VOL-",),
++		KEYIDS["KEY_PAGEDOWN"]: ("PAGEDOWN",),
++		KEYIDS["KEY_SAT"]: ("SAT",),
++		KEYIDS["KEY_RECORD"]: ("RECORD",),
++		KEYIDS["KEY_VOLUMEUP"]: ("VOL+",),
++		KEYIDS["KEY_PAGEUP"]: ("PAGEUP",),
++		KEYIDS["KEY_FAVORITES"]: ("FAV",),
++		KEYIDS["KEY_MENU"]: ("MENU",),
++		KEYIDS["KEY_INFO"]: ("INFO",),
++		KEYIDS["KEY_UP"]: ("UP",),
++		KEYIDS["KEY_DOWN"]: ("DOWN",),
++		KEYIDS["KEY_LEFT"]: ("LEFT",),
++		KEYIDS["KEY_RIGHT"]: ("RIGHT",),
++		KEYIDS["KEY_OK"]: ("OK",),
++		KEYIDS["KEY_HOME"]: ("EXIT",),
++		KEYIDS["KEY_EPG"]: ("EDIVISION",),
++		KEYIDS["KEY_ARCHIVE"]: ("FOLDER",),
++		KEYIDS["KEY_STOP"]: ("STOP",),
++		KEYIDS["KEY_PAUSE"]: ("PAUSE",),
++		KEYIDS["KEY_PLAY"]: ("PLAY",),
++		KEYIDS["KEY_PREVIOUS"]: ("PREVIOUS",),
++		KEYIDS["KEY_NEXT"]: ("NEXT",),
++		KEYIDS["KEY_REWIND"]: ("REWIND",),
++		KEYIDS["KEY_FASTFORWARD"]: ("FASTFORWARD",),
++		KEYIDS["KEY_SLOW"]: ("STEP_BACK",),
++		KEYIDS["KEY_F"]: ("STEP_FWD",),
++		KEYIDS["KEY_W"]: ("PLAYMODE",),
++		KEYIDS["KEY_CLOSE"]: ("USB",),
++		KEYIDS["KEY_RED"]: ("RED",),
++		KEYIDS["KEY_GREEN"]: ("GREEN",),
++		KEYIDS["KEY_YELLOW"]: ("YELLOW",),
++		KEYIDS["KEY_BLUE"]: ("BLUE",),
  	},
  ]
  
-@@ -248,10 +368,34 @@
+@@ -248,10 +581,33 @@
  		idx = config.misc.rcused.value
  	else:
  		rctype = config.plugins.remotecontroltype.rctype.value
 -		if rctype == 14:	# XP1000
 +		print "[Keybindings.py] RC type is:", rctype
-+		rctype = 11
 +		if rctype == 10:	# Spark
  			idx = 3
 -		elif rctype == 18:	# F1
@@ -9065,7 +9279,7 @@
  	if key in keyDescriptions[idx]:
 --- enigma2.org/lib/python/Screens/InputDeviceSetup.py
 +++ enigma2/lib/python/Screens/InputDeviceSetup.py
-@@ -299,62 +299,34 @@
+@@ -299,62 +299,52 @@
  	rcList = [
  			("0", _("Default")),
  			("4", _("DMM normal")),
@@ -9085,17 +9299,17 @@
 -			("25", _("Zgemma H9(old model)/I55Plus")),
 -			("27", _("HD60")),
 -			("28", _("Zgemma H7(new model)/H9(new model)/H9COMBO/H9TWIN/H10"))
-+			("7", _("fs9000")),
-+			("8", _("hs9510")),
-+			("9", _("hs7110")),
-+			("10", _("spark")),
-+			("11", _("tf7700")),
-+			("12", _("ufs912")),
-+			("13", _("cuberevo_uni")),
-+			("14", _("vitamin")),
-+			("15", _("adb_xmp")),
-+			("16", _("pace7241")),
-+			("17", _("vip2_1")),
++			("7", _("Fortis universal")),
++			("8", _("Fortis standard")),
++			("9", _("Fortis mini")),
++			("10", _("Spark")),
++			("11", _("Topfield TF77X0HDPVR")),
++			("12", _("Kathrein UFS")),
++			("13", _("Cuberevo universal")),
++			("14", _("Vitamin 5000HD")),
++			("15", _("ADB XMP")),
++			("16", _("Pace HDS7241")),
++			("17", _("Edision argus")),
 +#			("18", _("fortis_4g")),
  		]
  
@@ -9137,17 +9351,35 @@
 -			("h9", 28), # new model /old 25
 -			("h9combo", 28),
 -			("h10", 28)
-+			("fs9000", 7),
++			("fortis-hdbox", 7),
++			("atevio7500", 7),
 +			("hs9510", 8),
++			("hs7420", 8),
++			("hs7429", 8),
++			("hs7810a", 8),
++			("hs7819", 8),
 +			("hs7110", 9),
++			("hs7119", 9),
 +			("spark", 10),
++			("spark7162", 10),
 +			("tf7700", 11),
 +			("ufs912", 12),
-+			("cuberevo_uni", 13),
-+			("vitamin", 14),
-+			("adb_xmp", 15),
++			("ufs913", 12),
++			("cuberevo", 13),
++			("cuberevo-mini", 13),
++			("cuberevo-mini2", 13),
++			("cuberevo-250hd", 13),
++			("cuberevo-9500hd", 13),
++			("cuberevo-2000hd", 13),
++			("cuberevo-3000hd", 13),
++			("cuberevo-mini-fta", 13),
++			("vitamin-hd5000", 14),
++			("adb-box", 15),
++			("adb-2850", 15),
 +			("pace7241", 16),
-+			("vip2_1", 17),
++			("hl101", 17),
++			("vip1-v2", 17),
++			("vip2-v1", 17),
 +#			("fortis_4g", 18),
  		]
  
