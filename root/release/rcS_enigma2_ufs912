@@ -72,8 +72,8 @@ echo "LOAD 7" > /dev/vfd
 echo "[rcS] Init embx (LOAD 6)"
 echo "LOAD 6" > /dev/vfd
 insmod $MODDIR/embxshell.ko
-insmod $MODDIR/embxmailbox.ko mailbox0=0xfe211000:136:set2 mailbox1=0xfe212000:0;
-insmod $MODDIR/embxshm.ko mailbox0=shm:0:7:0x60000000:0:256:256:0:512:0x40000000:0x10000000;
+insmod $MODDIR/embxmailbox.ko mailbox0=0xfe211000:136:set2 mailbox1=0xfe212000:0
+insmod $MODDIR/embxshm.ko mailbox0=shm:0:7:0x60000000:0:256:256:0:512:0x40000000:0x10000000
 insmod $MODDIR/mme_host.ko transport0=shm
 
 echo "[rcS] Init AVS (LOAD 5)"
@@ -89,7 +89,7 @@ insmod $MODDIR/p2div64.ko
 insmod $MODDIR/stm_v4l2.ko
 insmod $MODDIR/pseudocard.ko
 
-echo "[rcS] Init frontends"
+echo "[rcS] Init frontend"
 insmod $MODDIR/stv090x.ko
 insmod $MODDIR/ufs912_cic.ko
 
