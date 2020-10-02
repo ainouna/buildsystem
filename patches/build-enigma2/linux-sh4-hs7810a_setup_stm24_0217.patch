@@ -53,8 +53,8 @@
  	if (c->cut_major == -1)
  		seq_printf(m, "cut\t\t: unknown\n");
  	else if (c->cut_minor == -1)
---- linux-sh4/arch/sh/boards/mach-sat7111/setup.c.org
-+++ linux-sh4/arch/sh/boards/mach-sat7111/setup.c
+--- a/arch/sh/boards/mach-sat7111/setup.c.org
++++ b/arch/sh/boards/mach-sat7111/setup.c
 @@ -33,8 +33,11 @@
  #include <asm/irq-ilc.h>
  #include <asm/irl.h>
@@ -297,8 +297,8 @@
  	return platform_add_devices(sat7111_devices,
  				    ARRAY_SIZE(sat7111_devices));
  }
---- linux-sh4/arch/sh/include/asm/irq-ilc.h.org
-+++ linux-sh4/arch/sh/include/asm/irq-ilc.h
+--- a/arch/sh/include/asm/irq-ilc.h.org
++++ b/arch/sh/include/asm/irq-ilc.h
 @@ -44,7 +44,7 @@
  #define ILC_IRQ(x)	(ILC_FIRST_IRQ + (x))
  #elif	defined(CONFIG_CPU_SUBTYPE_STX7111)
@@ -308,8 +308,8 @@
  #define ILC_INT_IRQ(x)	(ILC_FIRST_IRQ + (x))
  #define ILC_EXT_IRQ(x)	(ILC_FIRST_IRQ + 64 + (x))
  #define ILC_IRQ(x)	ILC_INT_IRQ(x)
---- linux-sh4/drivers/stm/stx7111_comms.c	2012-03-31 15:26:54.723480793 +0200
-+++ linux-sh4/drivers/stm/stx7111_comms.c.patched	2012-03-31 15:26:54.982982566 +0200
+--- a/drivers/stm/stx7111_comms.c.org
++++ b/drivers/stm/stx7111_comms.c
 @@ -69,10 +69,10 @@
  	[3] = {
  		.gpios_num = 4,
@@ -486,24 +486,6 @@
  
  #endif /* CONFIG_STPIO */
  
-@@ -667,7 +773,7 @@
- 			break;
- 		default:
- 			/* Should never get here... */
--			__WARN();
-+			WARN_ON(1);
- 			direction = "unknown configuration";
- 			break;
- 		}
-@@ -709,7 +815,7 @@
- 					trigger = "level-low";
- 					break;
- 				default:
--					__WARN();
-+					WARN_ON(1);
- 					trigger = "unknown";
- 					break;
- 				}
 @@ -1031,7 +1137,11 @@
  static int __init stm_gpio_init(void)
  {
@@ -517,41 +499,41 @@
  	ret = platform_driver_register(&stm_gpio_driver);
  	if (ret)
  		return ret;
---- a/drivers/stm/stx7111_hispeed.c.org
-+++ b/drivers/stm/stx7111_hispeed.c
-@@ -20,6 +20,8 @@
- #include <linux/stm/sysconf.h>
- #include <linux/stm/device.h>
- #include <linux/stm/emi.h>
-+#include <linux/stm/pio.h>
-+#include <linux/delay.h>
- #include <linux/stm/stx7111.h>
- #include <asm/irq-ilc.h>
- 
-@@ -149,6 +151,7 @@
- 
- #define USB_PWR "USB_PWR"
- #define USB_ACK "USB_ACK"
-+#define USB_RESET stm_gpio(3, 5)
- 
- static void stx7111_usb_power(struct stm_device_state *device_state,
- 		enum stm_device_power_state power)
-@@ -230,7 +233,12 @@
- 		sysconf_write(sc, 2);
- 
- 	}
--
- 	platform_device_register(&stx7111_usb_device);
--}
--
-+
-+	// reset usb on boot.
-+	gpio_set_value(USB_RESET, 1);
-+	udelay(100000);
-+	gpio_set_value(USB_RESET, 0);
-+	udelay(100000);
-+	gpio_set_value(USB_RESET, 1);
-+}
+#--- a/drivers/stm/stx7111_hispeed.c.org
+#+++ b/drivers/stm/stx7111_hispeed.c
+#@@ -20,6 +20,8 @@
+# #include <linux/stm/sysconf.h>
+# #include <linux/stm/device.h>
+# #include <linux/stm/emi.h>
+#+#include <linux/stm/pio.h>
+#+#include <linux/delay.h>
+# #include <linux/stm/stx7111.h>
+# #include <asm/irq-ilc.h>
+# 
+#@@ -149,6 +151,7 @@
+# 
+# #define USB_PWR "USB_PWR"
+# #define USB_ACK "USB_ACK"
+#+#define USB_RESET stm_gpio(3, 5)
+# 
+# static void stx7111_usb_power(struct stm_device_state *device_state,
+# 		enum stm_device_power_state power)
+#@@ -230,7 +233,12 @@
+# 		sysconf_write(sc, 2);
+# 
+# 	}
+#-
+# 	platform_device_register(&stx7111_usb_device);
+#-}
+#-
+#+
+#+	// reset usb on boot.
+#+	gpio_set_value(USB_RESET, 1);
+#+	udelay(100000);
+#+	gpio_set_value(USB_RESET, 0);
+#+	udelay(100000);
+#+	gpio_set_value(USB_RESET, 1);
+#+}
 *** linux-sh4/drivers/net/phy/phy_device.c.org
 --- linux-sh4/drivers/net/phy/phy_device.c
 ***************

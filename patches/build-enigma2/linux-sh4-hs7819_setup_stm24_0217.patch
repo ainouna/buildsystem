@@ -1,5 +1,5 @@
 --- a/arch/sh/kernel/setup.c.org
-+++ a/arch/sh/kernel/setup.c
++++ b/arch/sh/kernel/setup.c
 @@ -389,6 +389,44 @@
  #endif
  #endif
@@ -432,8 +432,8 @@
  	stx7111_configure_ssc_i2c(1, NULL);
  	stx7111_configure_ssc_i2c(2, NULL);
  	stx7111_configure_ssc_i2c(3, NULL);
---- linux-sh4/arch/sh/include/asm/irq-ilc.h.org
-+++ linux-sh4/arch/sh/include/asm/irq-ilc.h
+--- a/arch/sh/include/asm/irq-ilc.h.org
++++ b/arch/sh/include/asm/irq-ilc.h
 @@ -44,7 +44,7 @@
  #define ILC_IRQ(x)	(ILC_FIRST_IRQ + (x))
  #elif	defined(CONFIG_CPU_SUBTYPE_STX7111)
@@ -443,8 +443,8 @@
  #define ILC_INT_IRQ(x)	(ILC_FIRST_IRQ + (x))
  #define ILC_EXT_IRQ(x)	(ILC_FIRST_IRQ + 64 + (x))
  #define ILC_IRQ(x)	ILC_INT_IRQ(x)
---- linux-sh4/drivers/stm/stx7111_comms.c	2012-03-31 15:26:54.723480793 +0200
-+++ linux-sh4/drivers/stm/stx7111_comms.c.patched	2012-03-31 15:26:54.982982566 +0200
+--- a/drivers/stm/stx7111_comms.c.org
++++ b/drivers/stm/stx7111_comms.c
 @@ -69,10 +69,10 @@
  	[3] = {
  		.gpios_num = 4,
@@ -488,9 +488,9 @@
  struct stpio_pin {
  #ifdef CONFIG_STPIO
 +	const char *pin_name;
-	void (*func)(struct stpio_pin *pin, void *dev);
-	void* dev;
-	unsigned short port_no, pin_no;
+ 	void (*func)(struct stpio_pin *pin, void *dev);
+ 	void* dev;
+ 	unsigned short port_no, pin_no;
  #endif
 @@ -52,6 +57,7 @@
  #ifdef CONFIG_HIBERNATION
