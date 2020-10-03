@@ -1,4 +1,4 @@
-# revision d265b77b723d0b2d505311cf10f8e24455a01625 26/09/2020 07:40
+# revision e8a9856f8d620ef904c8cc0221150602e107acc7 04/10/2020 00:17
 --- enigma2.org/configure.ac
 +++ enigma2/configure.ac
 @@ -18,6 +18,7 @@
@@ -2359,7 +2359,7 @@
  	spec.tid_mask = 0xFC;
 --- enigma2.org/lib/dvb/epgcache.cpp
 +++ enigma2/lib/dvb/epgcache.cpp
-@@ -2523,6 +2523,42 @@
+@@ -2525,6 +2525,42 @@
  {
  	int map;
  	iDVBSectionReader *reader = NULL;
@@ -2402,7 +2402,7 @@
  	switch (source)
  	{
  		case NOWNEXT:
-@@ -2647,6 +2683,10 @@
+@@ -2649,6 +2685,10 @@
  			cache->sectionRead(data, source, this);
  		}
  	}
@@ -5544,7 +5544,7 @@
 # 
 # 		if 'ip' not in data:
 # 			data['dhcp'] = True
-@@ -521,16 +521,18 @@
+@@ -526,16 +526,18 @@
  			return True
  
  		# r871x_usb_drv on kernel 2.6.12 is not identifiable over /sys/class/net/'ifacename'/wireless so look also inside /proc/net/wireless
@@ -5588,7 +5588,7 @@
  		if x[0] == orbpos:
 --- enigma2-nightly.org/lib/python/Components/SystemInfo.py
 +++ enigma2-nightly/lib/python/Components/SystemInfo.py
-@@ -54,12 +54,12 @@
+@@ -52,12 +52,12 @@
  SystemInfo["ZapMode"] = fileCheck("/proc/stb/video/zapmode") or fileCheck("/proc/stb/video/zapping_mode")
  SystemInfo["NumFrontpanelLEDs"] = countFrontpanelLEDs()
  SystemInfo["FrontpanelDisplay"] = fileExists("/dev/dbox/oled0") or fileExists("/dev/dbox/lcd0")
@@ -5603,7 +5603,7 @@
  SystemInfo["Fan"] = fileCheck("/proc/stb/fp/fan")
  SystemInfo["FanPWM"] = SystemInfo["Fan"] and fileCheck("/proc/stb/fp/fan_pwm")
  SystemInfo["PowerLED"] = fileCheck("/proc/stb/power/powerled")
-@@ -72,16 +72,16 @@
+@@ -70,16 +70,16 @@
  SystemInfo["Power4x7On"] = fileCheck("/proc/stb/fp/power4x7on")
  SystemInfo["Power4x7Standby"] = fileCheck("/proc/stb/fp/power4x7standby")
  SystemInfo["Power4x7Suspend"] = fileCheck("/proc/stb/fp/power4x7suspend")
@@ -5625,7 +5625,7 @@
  SystemInfo["LcdLiveTV"] = fileCheck("/proc/stb/fb/sd_detach") or fileCheck("/proc/stb/lcd/live_enable")
  SystemInfo["LcdLiveTVMode"] = fileCheck("/proc/stb/lcd/mode")
  SystemInfo["LcdLiveDecoder"] = fileCheck("/proc/stb/lcd/live_decoder")
-@@ -90,7 +90,7 @@
+@@ -88,7 +88,7 @@
  SystemInfo["3DZNorm"] = fileCheck("/proc/stb/fb/znorm") or fileCheck("/proc/stb/fb/primary/zoffset")
  SystemInfo["Blindscan_t2_available"] = fileCheck("/proc/stb/info/vumodel")
  SystemInfo["RcTypeChangable"] = not(model.startswith("et8500") or model.startswith("et7")) and pathExists("/proc/stb/ir/rc/type")
@@ -5634,7 +5634,7 @@
  SystemInfo["HasBypassEdidChecking"] = fileCheck("/proc/stb/hdmi/bypass_edid_checking")
  SystemInfo["HasColorspace"] = fileCheck("/proc/stb/video/hdmi_colorspace")
  SystemInfo["HasColorspaceSimple"] = SystemInfo["HasColorspace"] and model in "vusolo4k"
-@@ -98,7 +98,7 @@
+@@ -96,7 +96,7 @@
  SystemInfo["HasMMC"] = "root" in cmdline and cmdline["root"].startswith("/dev/mmcblk")
  SystemInfo["HasTranscoding"] = pathExists("/proc/stb/encoder/0") or fileCheck("/dev/bcm_enc0")
  SystemInfo["HasH265Encoder"] = fileHas("/proc/stb/encoder/0/vcodec_choices", "h265")
@@ -5643,7 +5643,7 @@
  SystemInfo["HasColordepth"] = fileCheck("/proc/stb/video/hdmi_colordepth")
  SystemInfo["HasFrontDisplayPicon"] = model in ("vusolo4k", "et8500")
  SystemInfo["Has24hz"] = fileCheck("/proc/stb/video/videomode_24hz")
-@@ -106,11 +106,11 @@
+@@ -104,11 +104,11 @@
  SystemInfo["HasHDMIpreemphasis"] = fileCheck("/proc/stb/hdmi/preemphasis")
  SystemInfo["HasColorimetry"] = fileCheck("/proc/stb/video/hdmi_colorimetry")
  SystemInfo["HasHdrType"] = fileCheck("/proc/stb/video/hdmi_hdrtype")
@@ -5660,7 +5660,7 @@
  SystemInfo["HasAutoVolume"] = fileExists("/proc/stb/audio/avl_choices") and fileCheck("/proc/stb/audio/avl")
  SystemInfo["HasAutoVolumeLevel"] = fileExists("/proc/stb/audio/autovolumelevel_choices") and fileCheck("/proc/stb/audio/autovolumelevel")
  SystemInfo["Has3DSurround"] = fileExists("/proc/stb/audio/3d_surround_choices") and fileCheck("/proc/stb/audio/3d_surround")
-@@ -120,9 +120,9 @@
+@@ -118,9 +118,9 @@
  SystemInfo["hasXcoreVFD"] = model in ("osmega", "spycat4k", "spycat4kmini", "spycat4kcombo") and fileCheck("/sys/module/brcmstb_%s/parameters/pt6302_cgram" % model)
  SystemInfo["HasOfflineDecoding"] = model not in ("osmini", "osminiplus", "et7000mini", "et11000", "mbmicro", "mbtwinplus", "mbmicrov2", "et7000", "et8500")
  SystemInfo["MultibootStartupDevice"] = getMultibootStartupDevice()
@@ -5778,7 +5778,7 @@
 +		self.text = text
 --- enigma2.org/lib/python/Components/UsageConfig.py
 +++ enigma2/lib/python/Components/UsageConfig.py
-@@ -295,7 +295,7 @@
+@@ -292,7 +292,7 @@
  
  	config.misc.disable_background_scan = ConfigYesNo(default = False)
  	config.misc.use_ci_assignment = ConfigYesNo(default = False)
@@ -8852,7 +8852,7 @@
  
 --- enigma2.org/lib/python/Tools/KeyBindings.py
 +++ enigma2/lib/python/Tools/KeyBindings.py
-@@ -220,122 +220,463 @@
+@@ -220,122 +220,464 @@
  	KEYIDS["KEY_POWER2"]: ("POWER2",),
  	KEYIDS["KEY_SUSPEND"]: ("SUSPEND",),
  	KEYIDS["KEY_WAKEUP"]: ("WAKEUP",)
@@ -9100,8 +9100,9 @@
 +	KEYIDS["KEY_TV2"]: ("TV/RADIO",),
 +	KEYIDS["KEY_MEDIA"]: ("USB",),
 +	KEYIDS["KEY_PROGRAM"]: ("TIMER",),
-+}, {  # id=6 - Kathrein UFS910, UFS912, UFS913
++}, {  # id=6 - Kathrein UFS912, UFS913
 +	KEYIDS["KEY_HELP"]: ("HELP",),
++	KEYIDS["KEY_TV2"]: ("TVRADIO",),
 +	KEYIDS["KEY_POWER"]: ("POWER",),
 +	KEYIDS["KEY_1"]: ("1",),
 +	KEYIDS["KEY_2"]: ("2",),
@@ -9425,7 +9426,7 @@
  }]
  
  def addKeyBinding(domain, key, context, action, flags):
-@@ -369,10 +710,37 @@
+@@ -369,10 +710,39 @@
  	else:
  		rcType = config.plugins.remotecontroltype.rctype.value
  		# rcType = config.misc.inputdevices.rcType.value
@@ -9458,16 +9459,18 @@
 +			idx = 12
 +		elif rcType == 19:	# Kathrein UFS910, UFS922
 +			idx = 6
-+#		elif rcType == 20:	# Fortis 4G
++		elif rcType == 20:	# Kathrein UFS913
++			idx = 6
++#		elif rcType == 21:	# Fortis 4G
 +#			idx = 13
-+#		elif rcType == 21:	# ...
++#		elif rcType == 22:	# ...
 +#			idx = 14
  		else:
  			idx = 2
  	return keyDescriptions[idx].get(key)
 --- enigma2.org/lib/python/Screens/InputDeviceSetup.py
 +++ enigma2/lib/python/Screens/InputDeviceSetup.py
-@@ -299,62 +299,57 @@
+@@ -299,62 +299,58 @@
  	rcList = [
  			("0", _("Default")),
  			("4", _("DMM normal")),
@@ -9492,15 +9495,16 @@
 +			("9", _("Fortis mini")),
 +			("10", _("Spark")),
 +			("11", _("Topfield TF77X0HDPVR")),
-+			("12", _("Kathrein RC671")),
++			("12", _("Kathrein RC671 (UFS912")),
 +			("13", _("Cuberevo universal")),
 +			("14", _("Vitamin 5000HD")),
 +			("15", _("ADB XMP")),
 +			("16", _("Pace HDS7241")),
 +			("17", _("Edision argus")),
 +			("18", _("HL-101")),
-+			("19", _("Kathrein RC660")),
-+#			("20", _("fortis_4g")),
++			("19", _("Kathrein RC660 (UFS910/922")),
++			("20", _("Kathrein RC675 (UFS913)")),
++#			("21", _("fortis_4g")),
  		]
  
  	defaultRcList = [
@@ -9554,7 +9558,7 @@
 +			("spark7162", 10),
 +			("tf7700", 11),
 +			("ufs912", 12),
-+			("ufs913", 12),
++			("ufs913", 20),
 +			("ufs922", 12),
 +			("cuberevo", 13),
 +			("cuberevo-mini", 13),
@@ -9573,7 +9577,7 @@
 +			("vip1-v2", 17),
 +			("vip2", 17),
 +			("ufs910", 19),
-+#			("fortis_4g", 20),
++#			("fortis_4g", 21),
  		]
  
  	def __init__(self, session):
@@ -9746,7 +9750,7 @@
 +ufs910            ufs910
 +ufs922            ufs912
 +ufs912            ufs912
-+ufs913            ufs912
++ufs913            ufs913
 +cuberevo          cuberevo_uni
 +cuberevo-mini-fta cuberevo_uni
 +cuberevo-250hd    cuberevo_uni
@@ -9782,9 +9786,9 @@
 -	gb7252.xml e4hd.xml edision2.xml edision3.xml edision4.xml hd60.xml lunix4k.xml multibox.xml viperslim.xml \
 -	octagon.xml uclan.xml
 +	dmmadv.png \
-+	adb_xmp.png cuberevo_uni.png fs9000.png  hs7110.png  hs9510.png  spark.png tf7700.png ufs912.png vitamin.png \
-+	pace7241.png hl101_1.png vip_1.png ufs910.png dmm.png \
++	adb_xmp.png cuberevo_uni.png fs9000.png hs7110.png hs9510.png spark.png tf7700.png ufs912.png vitamin.png \
++	pace7241.png hl101_1.png vip_1.png ufs910.png ufs913.png dmm.png \
 +	dmmadv.xml  \
-+	adb_xmp.xml cuberevo_uni.xml fs9000.xml  hs7110.xml  hs9510.xml  spark.xml tf7700.xml ufs912.xml vitamin.xml \
-+	pace7241.xml hl101_1.xml vip_1.xml ufs910.xml dmm.xml
++	adb_xmp.xml cuberevo_uni.xml fs9000.xml hs7110.xml hs9510.xml spark.xml tf7700.xml ufs912.xml vitamin.xml \
++	pace7241.xml hl101_1.xml vip_1.xml ufs910.xml ufs913.xml dmm.xml
 
