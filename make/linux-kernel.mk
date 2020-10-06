@@ -86,6 +86,7 @@ UFS912_PATCHES_24 = $(COMMON_PATCHES_24) \
 
 UFS913_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-sh4-lmb_stm24_$(KERNEL_LABEL).patch \
+		linux-sh4-7105_clocks_no_warnings_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-ufs913_setup_stm24_$(KERNEL_LABEL).patch
 
 OCTAGON1008_PATCHES_24 = $(COMMON_PATCHES_24) \
@@ -99,6 +100,7 @@ endif
 
 ATEVIO7500_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-sh4-lmb_stm24_$(KERNEL_LABEL).patch \
+		linux-sh4-7105_clocks_no_warnings_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-atevio7500_setup_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-atevio7500_mtdconcat_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-stmmac_stm24_$(KERNEL_LABEL).patch
@@ -190,6 +192,7 @@ SPARK_PATCHES_24 = $(COMMON_PATCHES_24) \
 SPARK7162_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-sh4-stmmac_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-lmb_stm24_$(KERNEL_LABEL).patch \
+		linux-sh4-7105_clocks_no_warnings_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-spark7162_setup_stm24_$(KERNEL_LABEL).patch
 
 FORTIS_HDBOX_PATCHES_24 = $(COMMON_PATCHES_24) \
@@ -283,9 +286,10 @@ SAGEMCOM88_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-sh4-sagemcom88_sound_stm24_$(KERNEL_LABEL).patch
 
 PACE7241_PATCHES_24 = $(COMMON_PATCHES_24) \
+		linux-sh4-stmmac_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-lmb_stm24_$(KERNEL_LABEL).patch \
-		linux-sh4-pace7241_setup_stm24_$(KERNEL_LABEL).patch \
-		linux-sh4-stmmac_stm24_$(KERNEL_LABEL).patch
+		linux-sh4-7105_clocks_no_warnings_stm24_$(KERNEL_LABEL).patch \
+		linux-sh4-pace7241_setup_stm24_$(KERNEL_LABEL).patch
 
 ADB_2850_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-sh4-lmb_stm24_$(KERNEL_LABEL).patch \

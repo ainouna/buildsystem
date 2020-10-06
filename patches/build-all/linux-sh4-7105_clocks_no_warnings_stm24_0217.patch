@@ -1,0 +1,33 @@
+--- a/drivers/stm/clocks/clock-stx7105.c.org
++++ b/drivers/stm/clocks/clock-stx7105.c
+@@ -1244,7 +1244,7 @@
+ static int clkgenb_observe(clk_t *clk_p, unsigned long *div_p)
+ {
+ 	unsigned long i, out0, out1 = 0;
+-	static const struct gen_utility observe_table_stx7105[] = {
++	static struct gen_utility observe_table_stx7105[] = {
+ 		{CLKB_TMDS_HDMI, 1},		{CLKB_656_1, 2},
+ 		{CLKB_PIX_HD, 3},		{CLKB_DISP_HD, 4},
+ 		{CLKB_656_0, 5},		{CLKB_GDP3, 6},
+@@ -1253,7 +1253,7 @@
+ 		{CLKB_MMC, 11},			{CLKB_LPC, 13 },
+ 		{CLKB_DVP, 14 },		{CLKB_PP, 22}
+ 	};
+-	static const struct gen_utility observe_table_stx7106[] = {
++	static struct gen_utility observe_table_stx7106[] = {
+ 		{CLKB_TMDS_HDMI, 1}, {CLKB_656_1, 15},
+ 		{CLKB_PIX_HD, 3}, {CLKB_DISP_HD, 4},
+ 		{CLKB_656_0, 5}, {CLKB_GDP3, 6},
+@@ -1562,9 +1562,9 @@
+ {
+ 	unsigned long sel, fs_sel;
+ 	unsigned long displaycfg;
+-	const clk_t *fs_clock[2] = { &clk_clocks[CLKB_FS0_CH1],
++	clk_t *fs_clock[2] = { &clk_clocks[CLKB_FS0_CH1],
+ 				     &clk_clocks[CLKB_FS1_CH1] };
+-	const clk_t *dvp_fs_clock[4] = {
++	clk_t *dvp_fs_clock[4] = {
+ 		&clk_clocks[CLKB_PIX_FROM_DVP], &clk_clocks[CLKB_PIX_FROM_DVP],
+ 		&clk_clocks[CLKB_FS0_CH1], &clk_clocks[CLKB_FS1_CH1]
+ 		};
+
