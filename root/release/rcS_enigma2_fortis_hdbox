@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 200722.1
+#Version 200727.1
 
 echo "[rcS] Start"
 echo "Fortis FS9000/9200 Enigma2"
@@ -27,6 +27,14 @@ else
 fi
 
 /etc/init.d/mountvirtfs start
+
+# Start automounter with umount timeout of 5 seconds
+if [ -e $MODDIR/autofs4.ko ]; then
+   insmod $MODDIR/autofs4.ko
+fi
+if [ -e /etc/init.d/automount ]; then
+   /usr/sbin/automount --timeout=5 /autofs file /etc/auto.usb
+fi
 
 echo "[rcS] Starting DEBUG Interface"
 /etc/init.d/mountall start
