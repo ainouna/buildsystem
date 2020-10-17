@@ -108,9 +108,9 @@ $(TARGET_DIR)/lib/libc.so.6:
 #	@echo "--------------------------------------------------------------"
 #	@echo -e "Build of $(TERM_GREEN_BOLD)$(PKG_NAME)$(TERM_NORMAL) completed."
 #	@echo
+endif  # BS_GCC_VER is not 4.6.3 or 4.8.4
 
-else
-
+ifneq ($(BS_GCC_VER), $(filter $(BS_GCC_VER), 4.6.3 4.8.4))
 $(TARGET_DIR)/lib/libc.so.6:
 #	$(START_BUILD)
 	$(SILENT)if [ -e $(CROSS_DIR)/$(TARGET)/sys-root/lib ]; then \
@@ -123,6 +123,20 @@ $(TARGET_DIR)/lib/libc.so.6:
 		cp -ar $(SKEL_ROOT)/usr/include/linux/* $(TARGET_DIR)/usr/include/linux; \
 	fi
 
+ifeq ($(wildcard $(CROSS_BASE)/build.log.bz2),)
+CROSSTOOL = crosstool
+$(D)/crosstool:
+	$(START_BUILD)
+	$(SILENT)if [ -e $(CROSSTOOL_NG_BACKUP) ]; then \
+		make crosstool-restore; \
+	else \
+		make MAKEFLAGS=--no-print-directory crosstool-ng; \
+		make crosstool-backup; \
+	fi
+	$(TOUCH)
+endif
+endif
+
 #
 # crosstool-ng
 #
@@ -130,9 +144,6 @@ CROSSTOOL_GCC_VER = gcc-$(BS_GCC_VER)
 CROSSTOOL_NG_VER = 1.24.0
 CROSSTOOL_NG_SOURCE = crosstool-ng-$(CROSSTOOL_NG_VER).tar.xz
 CROSSTOOL_NG_BACKUP = $(ARCHIVE)/$(CROSSTOOL_GCC_VER)-sh4-kernel-$(KERNEL_VER)-backup.tar.gz
-ifeq ($(CROSSTOOL_NG_VER), 1.22.0)
-CROSSTOOL_NG_PATCH = ct-ng/crosstool-ng-$(CROSSTOOL_NG_VER)_add_gcc_494.patch
-endif
 ifeq ($(CROSSTOOL_NG_VER), 1.23.0)
 CROSSTOOL_NG_PATCH = ct-ng/crosstool-ng-$(CROSSTOOL_NG_VER)_add_linux_2_6_32_71.patch
 endif
@@ -140,42 +151,16 @@ endif
 $(ARCHIVE)/$(CROSSTOOL_NG_SOURCE):
 	$(WGET) http://crosstool-ng.org/download/crosstool-ng/$(CROSSTOOL_NG_SOURCE)
 
-ifeq ($(wildcard $(CROSS_BASE)/build.log.bz2),)
-CROSSTOOL = crosstool
-$(D)/crosstool:
-	$(START_BUILD)
-	$(SILENT)make MAKEFLAGS=--no-print-directory crosstool-ng
-	if [ ! -e $(CROSSTOOL_NG_BACKUP) ]; then \
-		make crosstool-backup; \
-	fi
-	$(TOUCH)
-
 $(D)/crosstool-ng: directories $(ARCHIVE)/$(CROSSTOOL_NG_SOURCE)
 	$(START_BUILD)
-	$(SILENT)make $(BUILD_TMP)
+	$(SILENT)if [ ! -d $(BUILD_TMP) ]; then \
+		make $(BUILD_TMP); \
+	fi
 	$(SILENT)if [ ! -d $(CROSS_BASE) ]; then \
 		mkdir -p $(CROSS_BASE); \
 	fi
 	$(REMOVE)/crosstool-ng
 	$(UNTAR)/$(CROSSTOOL_NG_SOURCE)
-ifeq ($(CROSSTOOL_NG_VER), 1.22.0)
-	$(SET) -e; unset CONFIG_SITE; cd $(BUILD_TMP)/crosstool-ng; \
-		$(call apply_patches, $(CROSSTOOL_NG_PATCH)); \
-		cp -a $(PATCHES)/ct-ng/crosstool-ng-$(CROSSTOOL_NG_VER)-$(BS_GCC_VER)-sh4.config .config; \
-		sed -i "s@^CT_PARALLEL_JOBS=.*@CT_PARALLEL_JOBS=$$PARALLEL_JOBS@" .config; \
-		export CT_ARCHIVE=$(ARCHIVE); \
-		export CT_BASE_DIR=$(CROSS_BASE); \
-		export LD_LIBRARY_PATH=; \
-		test -f ./configure || ./bootstrap; \
-		./configure $(MINUS_Q) --enable-local; \
-		MAKELEVEL=0 make; \
-		chmod 0755 ct-ng; \
-		./ct-ng oldconfig; \
-		./ct-ng build
-	$(SILENT)chmod -R +w $(CROSS_BASE)
-	$(SILENT)test -e $(CROSS_BASE)/sh4-unknown-linux-gnu/lib || ln -sf sys-root/lib $(CROSS_BASE)/sh4-unknown-linux-gnu/
-	$(SILENT)rm -f $(CROSS_BASE)/sh4-unknown-linux-gnu/sys-root/lib/libstdc++.so.6.0.20-gdb.py
-else
 	$(SET) -e; unset CONFIG_SITE; unset LD_LIBRARY_PATH; cd $(BUILD_TMP)/crosstool-ng-$(CROSSTOOL_NG_VER); \
 		$(call apply_patches, $(CROSSTOOL_NG_PATCH)); \
 		cp -a $(PATCHES)/ct-ng/crosstool-ng-$(CROSSTOOL_NG_VER)-$(BS_GCC_VER)-sh4.config .config; \
@@ -190,10 +175,8 @@ else
 	$(SILENT)chmod -R +w $(CROSS_BASE)
 	$(SILENT)test -e $(CROSS_BASE)/sh4-unknown-linux-gnu/lib || ln -sf sys-root/lib $(CROSS_BASE)/sh4-unknown-linux-gnu/
 	$(SILENT)rm -f $(CROSS_BASE)/sh4-unknown-linux-gnu/sys-root/lib/libstdc++.so.6.0.20-gdb.py
-endif
 	$(REMOVE)/crosstool-ng-$(CROSSTOOL_NG_VER)
 	$(TOUCH)
-endif
 
 crosstool-backup:
 	$(START_BUILD)
@@ -208,21 +191,21 @@ crosstool-restore: $(CROSSTOOL_NG_BACKUP)
 	$(SILENT)if [ ! -e $(CROSS_DIR) ]; then \
 		mkdir -p $(CROSS_DIR); \
 	fi
-	$(SILENT)tar xzvf $(CROSSTOOL_NG_BACKUP) -C $(CROSS_DIR)
+ifeq ($(KBUILD_VERBOSE), verbose)
+	tar xzvf $(CROSSTOOL_NG_BACKUP) -C $(CROSS_DIR)
+endif
+ifeq ($(KBUILD_VERBOSE), normal)
+	@echo
+	@echo -n "Restoring archived gcc..."
+	$(SILENT)tar xzf $(CROSSTOOL_NG_BACKUP) -C $(CROSS_DIR)
+	@echo " done."
+	@echo
+endif
+ifeq ($(KBUILD_VERBOSE), silent)
+	$(SILENT)tar xzf $(CROSSTOOL_NG_BACKUP) -C $(CROSS_DIR)
+endif
 
 $(D)/crossmenuconfig: directories $(ARCHIVE)/$(CROSSTOOL_NG_SOURCE)
-ifeq ($(CROSSTOOL_NG_VER), 1.22.0)
-	$(START_BUILD)
-	$(REMOVE)/crosstool-ng
-	$(UNTAR)/$(CROSSTOOL_NG_SOURCE)
-	$(SET) -e; unset CONFIG_SITE; cd $(BUILD_TMP)/crosstool-ng; \
-		cp -a $(PATCHES)/ct-ng/crosstool-ng-$(CROSSTOOL_NG_VER).config .config; \
-		test -f ./configure || ./bootstrap && \
-		./configure $(MINUS_Q) --enable-local; \
-		MAKELEVEL=0 make; \
-		chmod 0755 ct-ng; \
-		./ct-ng menuconfig
-else
 	$(START_BUILD)
 	$(REMOVE)/crosstool-ng-$(CROSSTOOL_NG_VER)
 	$(UNTAR)/$(CROSSTOOL_NG_SOURCE)
@@ -233,9 +216,7 @@ else
 		MAKELEVEL=0 make; \
 		chmod 0755 ct-ng; \
 		./ct-ng menuconfig
-endif
 #	$(TOUCH)
-endif
 
 #
 # host_u_boot_tools

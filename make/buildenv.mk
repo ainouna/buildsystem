@@ -86,10 +86,12 @@ BUILD                ?= $(shell /usr/share/libtool/config.guess 2>/dev/null || /
 
 CCACHE_DIR            = $(HOME)/.ccache-bs-sh4
 export CCACHE_DIR
+
+BS_GCC_VER           ?= 4.8.4
 ifeq ($(BS_GCC_VER), $(filter $(BS_GCC_VER), 4.6.3 4.8.4))
 TARGET               ?= sh4-linux
 else
-TARGET               ?= sh4-unknown-linux-gnu
+TARGET               ?= sh4-stm-linux-gnu
 endif
 KERNELNAME            = uImage
 TARGET_MARCH_CFLAGS   =
@@ -150,9 +152,9 @@ TERM_YELLOW_BOLD     := \033[01;33m
 TERM_NORMAL          := \033[0m
 
 # set the default verbosity
-ifndef KBUILD_VERBOSE
-KBUILD_VERBOSE        = normal
-endif
+#ifndef KBUILD_VERBOSE
+#KBUILD_VERBOSE        = normal
+#endif
 
 MAKEFLAGS            += --no-print-directory
 MINUS_Q               = -q
