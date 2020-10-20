@@ -624,7 +624,7 @@ endif
 #
 #
 	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/simu_button/simu_button.ko $(RELEASE_DIR)/lib/modules/
-ifneq ($(BOXTYPE), $(filter $(BOXTYPE), vip2 spark spark7162 adb_box))
+ifneq ($(BOXTYPE), $(filter $(BOXTYPE), vip2 spark spark7162 adb_box adb_2850 pace7241))
 	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/cic/*.ko $(RELEASE_DIR)/lib/modules/
 endif
 	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/button/button.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/button/button.ko $(RELEASE_DIR)/lib/modules/ || true
