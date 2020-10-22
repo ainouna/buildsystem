@@ -264,7 +264,7 @@ SERVICEMP3EPL_CPPFLAGS += -I$(SOURCE_DIR)/enigma2
 SERVICEMP3EPL_CPPFLAGS += -I$(SOURCE_DIR)/enigma2/include
 SERVICEMP3EPL_CPPFLAGS += -I$(KERNEL_DIR)/include
 SERVICEMP3EPL_PATCH     = build-enigma2/enigma2-servicemp3epl-$(SERVICEMP3EPL_VER).patch
-ifeq ($(E2_DIFF), $(filter $(E2_DIFF), 3 4 5))
+ifeq ($(E2_DIFF), $(filter $(E2_DIFF), 4 5))
 SERVICEMP3EPL_PATCH    += build-enigma2/enigma2-servicemp3epl-$(SERVICEMP3EPL_VER)-e2diff.patch
 endif
 

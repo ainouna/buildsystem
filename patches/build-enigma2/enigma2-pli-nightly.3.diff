@@ -5057,6 +5057,65 @@
  }
  
  void eWidget::raise()
+--- enigma2.org/lib/gui/esubtitle.cpp
++++ enigma2/lib/gui/esubtitle.cpp
+@@ -237,11 +237,20 @@
+ 	invalidate(m_visible_region); // invalidate new regions
+ }
+ 
++void eSubtitleWidget::setPage(const eVobSubtitlePage &p)  // added for servicemp3epl
++{
++	eRect r = eRect(0, 0, 720, 576);
++	ePtr<gPixmap> pixmap = p.m_pixmap;
++	setPixmap(pixmap, r, r);
++	m_hide_subtitles_timer->start(p.m_timeout, true);
++}
++
+ void eSubtitleWidget::clearPage()
+ {
+ 	m_page_ok = 0;
+ 	m_dvb_page_ok = 0;
+ 	m_pango_page_ok = 0;
++	m_pixmap = 0;  // added for servicemp3epl
+ 	invalidate(m_visible_region);
+ 	m_visible_region.rects.clear();
+ }
+@@ -259,6 +268,7 @@
+ 		changed.scale(size().width(), pixmap->size().width(), size().height(), pixmap->size().height());
+ 
+ 	invalidate(changed);
++	m_visible_region = changed;  // added for servicemp3epl
+ }
+ 
+ int eSubtitleWidget::event(int event, void *data, void *data2)
+--- enigma2.org/lib/gui/esubtitle.h
++++ enigma2/lib/gui/esubtitle.h
+@@ -48,6 +48,7 @@
+ 	void setPage(const eDVBTeletextSubtitlePage &p);
+ 	void setPage(const eDVBSubtitlePage &p);
+ 	void setPage(const ePangoSubtitlePage &p);
++	void setPage(const eVobSubtitlePage &p);  // added for servicemp3epl
+ 	void clearPage();
+ 	void setPixmap(ePtr<gPixmap> &pixmap, gRegion changed, eRect dest = eRect(0, 0, 720, 576));
+ 	void destroy() { delete this; }
+--- enigma2.org/lib/service/iservice.h
++++ enigma2/lib/service/iservice.h
+@@ -698,6 +698,7 @@
+ struct eDVBTeletextSubtitlePage;
+ struct eDVBSubtitlePage;
+ struct ePangoSubtitlePage;
++struct eVobSubtitlePage;  // added for servicemp3epl
+ class eRect;
+ class gRegion;
+ class gPixmap;
+@@ -709,6 +710,7 @@
+ 	virtual void setPage(const eDVBTeletextSubtitlePage &p) = 0;
+ 	virtual void setPage(const eDVBSubtitlePage &p) = 0;
+ 	virtual void setPage(const ePangoSubtitlePage &p) = 0;
++	virtual void setPage(const eVobSubtitlePage &p) = 0;  // added for servicemp3epl
+ 	virtual void setPixmap(ePtr<gPixmap> &pixmap, gRegion changed, eRect dest) = 0;
+ 	virtual void destroy() = 0;
+ };
 --- enigma2.org/lib/python/Components/Converter/RemainingToText.py
 +++ enigma2/lib/python/Components/Converter/RemainingToText.py
 @@ -9,6 +9,9 @@
