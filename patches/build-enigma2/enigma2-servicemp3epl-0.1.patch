@@ -214,19 +214,20 @@
 +endif
 --- a/servicemp3/pythonmodule.cpp.org
 +++ b/servicemp3/pythonmodule.cpp
-@@ -1,5 +1,12 @@
+@@ -1,4 +1,13 @@
 +#if defined ENABLE_DUAL_MEDIAFW \
 + || defined ENABLE_GSTREAMER
  #include "servicemp3.h"
 +#endif
- 
++
 +#if defined ENABLE_DUAL_MEDIAFW \
 + || defined ENABLE_LIBEPLAYER3
 +#include "servicelibpl.h"
 +#endif
++
+ #include <Python.h>
  
  static PyMethodDef servicemp3Methods[] =
- {
 --- a/servicemp3/servicemp3.cpp.org
 +++ b/servicemp3/servicemp3.cpp
 @@ -1,5 +1,5 @@
