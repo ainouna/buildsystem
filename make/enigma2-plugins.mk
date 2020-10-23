@@ -258,15 +258,18 @@ $(D)/enigma2_servicemp3: | $(SERVICEMP3_DEPS)
 #
 SERVICEMP3EPL_VER       = 0.1
 SERVICEMP3EPL_DEPS      = $(D)/bootstrap $(D)/enigma2
+
+SERVICEMP3EPL_URL       = https://github.com/OpenVisionE2/servicemp3epl.git
+SERVICEMP3EPL_BRANCH    = Audioniek
 SERVICEMP3EPL_CPPFLAGS  = -std=c++11
 SERVICEMP3EPL_CPPFLAGS += -I$(TARGET_DIR)/usr/include/python$(PYTHON_VER_MAJOR)
 SERVICEMP3EPL_CPPFLAGS += -I$(SOURCE_DIR)/enigma2
 SERVICEMP3EPL_CPPFLAGS += -I$(SOURCE_DIR)/enigma2/include
 SERVICEMP3EPL_CPPFLAGS += -I$(KERNEL_DIR)/include
-SERVICEMP3EPL_PATCH     = build-enigma2/enigma2-servicemp3epl-$(SERVICEMP3EPL_VER).patch
-ifeq ($(E2_DIFF), $(filter $(E2_DIFF), 4 5))
-SERVICEMP3EPL_PATCH    += build-enigma2/enigma2-servicemp3epl-$(SERVICEMP3EPL_VER)-e2diff.patch
-endif
+#SERVICEMP3EPL_PATCH     = build-enigma2/enigma2-servicemp3epl-$(SERVICEMP3EPL_VER).patch
+#ifeq ($(E2_DIFF), $(filter $(E2_DIFF), 4 5))
+#SERVICEMP3EPL_PATCH    += build-enigma2/enigma2-servicemp3epl-$(SERVICEMP3EPL_VER)-e2diff.patch
+#endif
 
 ifeq ($(MEDIAFW), eplayer3)
 SERVICEMP3EPL_DEPS     += $(D)/tools-libeplayer3
@@ -299,7 +302,7 @@ $(D)/enigma2_servicemp3epl: | $(SERVICEMP3EPL_DEPS)
 	$(REMOVE)/enigma2-servicemp3epl-$(SERVICEMP3EPL_VER)
 	$(SILENT)if [ -d $(ARCHIVE)/enigma2-servicemp3epl-$(SERVICEMP3EPL_VER).git ]; \
 		then cd $(ARCHIVE)/enigma2-servicemp3epl-$(SERVICEMP3EPL_VER).git; git pull $(MINUS_Q); \
-		else cd $(ARCHIVE); git clone $(MINUS_Q) https://github.com/OpenVisionE2/servicemp3epl.git enigma2-servicemp3epl-$(SERVICEMP3EPL_VER).git; \
+		else cd $(ARCHIVE); git clone $(MINUS_Q) $(SERVICEMP3EPL_URL) -b $(SERVICEMP3EPL_BRANCH) enigma2-servicemp3epl-$(SERVICEMP3EPL_VER).git; \
 		fi
 	$(SILENT)cp -ra $(ARCHIVE)/enigma2-servicemp3epl-$(SERVICEMP3EPL_VER).git/ $(BUILD_TMP)/enigma2-servicemp3epl-$(SERVICEMP3EPL_VER)
 	$(SET) -e; cd $(BUILD_TMP)/enigma2-servicemp3epl-$(SERVICEMP3EPL_VER); \
