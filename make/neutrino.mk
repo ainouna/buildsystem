@@ -153,9 +153,9 @@ GIT_URL       = https://github.com/Duckbox-Developers
 NEUTRINO      = neutrino-ddt
 LIBSTB_HAL    = libstb-hal-ddt
 N_BRANCH     ?= master
-N_CHECKOUT   ?= c7a768a5116f34a0a4f69308b25c90e5c7932918
+N_CHECKOUT   ?= 154632ace0e0a69619e7d7b2b72bb2de1adbcd8f
 HAL_BRANCH   ?= master
-HAL_CHECKOUT ?= 4219d24d76869a8451b5a7d4a5ce44abe0f69e47
+HAL_CHECKOUT ?= cf3a21f558494c790f47687be089db65c9090e0f
 N_PATCHES     = $(NEUTRINO_DDT_PATCHES)
 HAL_PATCHES   = $(NEUTRINO_LIBSTB_DDT_PATCHES)
 else ifeq ($(FLAVOUR), neutrino-hd2)
