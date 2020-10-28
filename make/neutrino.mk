@@ -159,7 +159,7 @@ else ifeq ($(FLAVOUR), neutrino-hd2)
 GIT_URL       = https://github.com/mohousch/neutrinohd2
 NEUTRINO      = neutrino-hd2
 N_BRANCH     ?= master
-N_CHECKOUT   ?= d2ec257482e841563ad8c29e1aa5253145e4bd21
+N_CHECKOUT   ?= 95cda4e731818785788870fb6378ee28c76c1b14 # 27/10/2020
 N_PATCHES     = $(NEUTRINO_HD2_PATCHES)
 else
 NEUTRINO      = dummy

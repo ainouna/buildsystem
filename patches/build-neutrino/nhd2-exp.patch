@@ -1,3 +1,4 @@
+# Commit 95cda4e731818785788870fb6378ee28c76c1b14  22/05/2020
 --- nhd2-exp.org/acinclude.m4
 +++ nhd2-exp/acinclude.m4
 @@ -201,9 +201,9 @@
@@ -5,10 +6,10 @@
  
  AC_ARG_WITH(boxtype,
 -	[  --with-boxtype          valid values: generic,dgs,gigablue,dreambox,xtrend,fulan,kathrein,ipbox,topfield,fortis_hdbox,octagon,atevio,adb_box,whitebox,vip,homecast,vuplus,azbox,technomate,coolstream,hypercube,venton,xp1000,odin,ixuss,iqonios,e3hd,ebox5000,wetek,edision,hd,gi,xpeedc,formuler,miraclebox,spycat,xsarius,zgemma],
-+	[  --with-boxtype          valid values: generic,duckbox,dgs,gigablue,dreambox,xtrend,fulan,kathrein,ipbox,topfield,fortis_hdbox,octagon,atevio,hs7,adb_box,adb_2850,vip,homecast,vitamin_hd5000,vuplus,azbox,technomate,coolstream,hypercube,venton,xp1000,odin,ixuss,iqonios,e3hd,ebox5000,wetek,edision,hd,gi,xpeedc,formuler,miraclebox,spycat,xsarius,zgemma],
++	[  --with-boxtype          valid values: generic,duckbox,dgs,gigablue,dreambox,xtrend,fulan,kathrein,ipbox,topfield,fortis_hdbox,octagon,atevio,hs7,adb_box,adb_2850,vip_v1,vip_2,vip2,homecast,vitamin_hd5000,vuplus,azbox,technomate,coolstream,hypercube,venton,xp1000,odin,ixuss,iqonios,e3hd,ebox5000,wetek,edision,hd,gi,xpeedc,formuler,miraclebox,spycat,xsarius,zgemma],
  	[case "${withval}" in
 -		generic|dgs|gigablue|dreambox|xtrend|fulan|kathrein|ipbox|hl101|topfield|fortis_hdbox|octagon|atevio|adb_box|whitebox|vip|homecast|vuplus|azbox|technomate|coolstream|hypercube|venton|xp1000|odin|ixuss|iqonios|e3hd|ebox5000|wetek|edision|hd|gi|xpeedc|formuler|miraclebox|spycat|xsarius|zgemma)
-+		generic|duckbox|dgs|gigablue|dreambox|xtrend|fulan|kathrein|ipbox|hl101|topfield|fortis_hdbox|octagon|atevio|hs7|vitamin|whitebox|vip|homecast|vuplus|azbox|technomate|coolstream|hypercube|venton|xp1000|odin|ixuss|iqonios|e3hd|ebox5000|wetek|edision|hd|gi|xpeedc|formuler|miraclebox|spycat|xsarius|zgemma)
++		generic|duckbox|dgs|gigablue|dreambox|xtrend|fulan|kathrein|ipbox|hl101|topfield|fortis_hdbox|octagon|atevio|hs7|vitamin|vip|homecast|vuplus|azbox|technomate|coolstream|hypercube|venton|xp1000|odin|ixuss|iqonios|e3hd|ebox5000|wetek|edision|hd|gi|xpeedc|formuler|miraclebox|spycat|xsarius|zgemma)
  			BOXTYPE="$withval"
  			;;
  		cu*)
@@ -23,7 +24,7 @@
  			BOXMODEL="$withval"
  			;;
  		uf*)
-@@ -244,6 +248,22 @@
+@@ -244,6 +248,26 @@
  			;;
  		oct*)
  			BOXTYPE="octagon"
@@ -31,6 +32,10 @@
 +			;;
 +		hs*)
 +			BOXTYPE="fortis"
++			BOXMODEL="$withval"
++			;;
++		vip*)
++			BOXTYPE="vip"
 +			BOXMODEL="$withval"
 +			;;
 +		adb*)
@@ -46,7 +51,7 @@
  			BOXMODEL="$withval"
  			;;
  		vu*)
-@@ -340,11 +360,16 @@
+@@ -340,11 +364,17 @@
  				valid for dreambox: dm500, dm500plus, dm600pvr, dm56x0, dm7000, dm7020, dm7025, dm500hd, dm7020hd, dm8000, dm800, dm800se, dm520
  				valid for xtrend: et4x00,et5x00,et6x00,et7x00, et8000,et8500,et9x00, et10000
  				valid for fulan: spark, spark7162
@@ -57,13 +62,14 @@
  				valid for atevio: atevio700,atevio7000,atevio7500,atevio7600
  				valid for octagon: octagon1008
 +				valid for fortis: hs7110, hs7420, hs7810a, hs7119, hs7429, hs7819
++				valid for vip: vip1_v1, vip1_v2, vip2
 +				valid for adb: adb_box, adb_2850
 +				valid for pace: pace7241
 +				valid for vitamin_hd5000: vitamin_hd5000
  				valid for vuplus: vusolo,vuduo,vuuno,vuultimo,vuduo2,vusolo2,vusolo4k,vusolose,vuzero
  				valid for azbox: azboxhd,azboxme,azboxminime
  				valid for technomate: tmtwin,tm2t,tmsingle,tmnano
-@@ -398,6 +423,13 @@
+@@ -398,6 +428,13 @@
  				AC_MSG_ERROR([unknown model $withval for boxtype $BOXTYPE])
  			fi
  			;;
@@ -77,12 +83,19 @@
  		ufs910|ufs912|ufs913|ufs922|ufc960)
  			if test "$BOXTYPE" = "kathrein"; then
  				BOXMODEL="$withval"
-@@ -433,6 +465,34 @@
+@@ -433,6 +470,41 @@
  				AC_MSG_ERROR([unknown model $withval for boxtype $BOXTYPE])
  			fi
  			;;
 +		hs7110|hs7420|hs7810a|hs7119|hs7429|hs7819)
 +			if test "$BOXTYPE" = "fortis"; then
++				BOXMODEL="$withval"
++			else
++				AC_MSG_ERROR([unknown model $withval for boxtype $BOXTYPE])
++			fi
++			;;
++		vip1_v1|vip1_v2|vip2)
++			if test "$BOXTYPE" = "vip"; then
 +				BOXMODEL="$withval"
 +			else
 +				AC_MSG_ERROR([unknown model $withval for boxtype $BOXTYPE])
@@ -112,7 +125,7 @@
  		vusolo2|vuduo2|vusolo|vuduo|vuuno|vuultimo|vusolose|vusolo4k|vuzero)
  			if test "$BOXTYPE" = "vuplus"; then
  				BOXMODEL="$withval"
-@@ -598,13 +658,14 @@
+@@ -598,13 +670,14 @@
  			AC_MSG_ERROR([unsupported value $withval for --with-boxmodel])
  			;;
  	esac],
@@ -128,7 +141,7 @@
  AM_CONDITIONAL(BOXTYPE_GENERIC, test "$BOXTYPE" = "generic")
  AM_CONDITIONAL(BOXTYPE_DGS, test "$BOXTYPE" = "dgs")
  AM_CONDITIONAL(BOXTYPE_GIGABLUE, test "$BOXTYPE" = "gigablue")
-@@ -614,12 +675,14 @@
+@@ -614,12 +687,14 @@
  AM_CONDITIONAL(BOXTYPE_KATHREIN, test "$BOXTYPE" = "kathrein")
  AM_CONDITIONAL(BOXTYPE_IPBOX, test "$BOXTYPE" = "ipbox")
  AM_CONDITIONAL(BOXTYPE_HL101, test "$BOXTYPE" = "hl101")
@@ -146,7 +159,7 @@
  AM_CONDITIONAL(BOXTYPE_VIP, test "$BOXTYPE" = "vip")
  AM_CONDITIONAL(BOXTYPE_HOMECAST, test "$BOXTYPE" = "homecast")
  AM_CONDITIONAL(BOXTYPE_VUPLUS, test "$BOXTYPE" = "vuplus")
-@@ -647,6 +710,7 @@
+@@ -647,6 +722,7 @@
  AM_CONDITIONAL(BOXTYPE_XSARIUS, test "$BOXTYPE" = "xsarius")
  AM_CONDITIONAL(BOXTYPE_ZGEMMA, test "$BOXTYPE" = "zgemma")
  
@@ -154,7 +167,7 @@
  AM_CONDITIONAL(BOXMODEL_CUBEREVO, test "$BOXMODEL" = "cuberevo")
  AM_CONDITIONAL(BOXMODEL_CUBEREVO_MINI, test "$BOXMODEL" = "cuberevo_mini")
  AM_CONDITIONAL(BOXMODEL_CUBEREVO_MINI2, test "$BOXMODEL" = "cuberevo_mini2")
-@@ -687,6 +751,8 @@
+@@ -687,6 +763,8 @@
  AM_CONDITIONAL(BOXMODEL_SPARK,test "$BOXMODEL" = "spark")
  AM_CONDITIONAL(BOXMODEL_SPARK7162,test "$BOXMODEL" = "spark7162")
  
@@ -163,7 +176,7 @@
  AM_CONDITIONAL(BOXMODEL_UFS910, test "$BOXMODEL" = "ufs910")
  AM_CONDITIONAL(BOXMODEL_UFS912, test "$BOXMODEL" = "ufs912")
  AM_CONDITIONAL(BOXMODEL_UFS913, test "$BOXMODEL" = "ufs913")
-@@ -704,7 +770,21 @@
+@@ -704,7 +782,25 @@
  AM_CONDITIONAL(BOXMODEL_ATEVIO7500, test "$BOXMODEL" = "atevio7500")
  AM_CONDITIONAL(BOXMODEL_ATEVIO7600, test "$BOXMODEL" = "atevio7600")
  
@@ -177,6 +190,10 @@
 +AM_CONDITIONAL(BOXMODEL_HS7429, test "$BOXMODEL" = "hs7429")
 +AM_CONDITIONAL(BOXMODEL_HS7819, test "$BOXMODEL" = "hs7819")
 +
++AM_CONDITIONAL(BOXMODEL_VIP_V1, test "$BOXMODEL" = "vip_v1")
++AM_CONDITIONAL(BOXMODEL_VIP_V2, test "$BOXMODEL" = "vip_v2")
++AM_CONDITIONAL(BOXMODEL_VIP2, test "$BOXMODEL" = "vip2")
++
 +AM_CONDITIONAL(BOXMODEL_ADB_BOX, test "$BOXMODEL" = "adb_box")
 +AM_CONDITIONAL(BOXMODEL_ADB_2850, test "$BOXMODEL" = "adb_2850")
 +AM_CONDITIONAL(BOXMODEL_PACE7241, test "$BOXMODEL" = "pace7241")
@@ -185,7 +202,7 @@
  
  AM_CONDITIONAL(BOXMODEL_VUSOLO2, test "$BOXMODEL" = "vusolo2")
  AM_CONDITIONAL(BOXMODEL_VUDUO2, test "$BOXMODEL" = "vuduo2")
-@@ -785,6 +865,7 @@
+@@ -785,6 +881,7 @@
  AM_CONDITIONAL(BOXMODEL_LC, test "$BOXMODEL" = "lc")
  AM_CONDITIONAL(BOXMODEL_SH1, test "$BOXMODEL" = "sh1")
  
@@ -193,7 +210,7 @@
  if test "$BOXTYPE" = "generic"; then
  	AC_DEFINE(PLATFORM_GENERIC, 1, [building for generic])
  elif test "$BOXTYPE" = "dgs"; then
-@@ -797,6 +878,8 @@
+@@ -797,6 +894,8 @@
  	AC_DEFINE(PLATFORM_XTREND, 1, [building for xtrend])
  elif test "$BOXTYPE" = "fulan"; then
  	AC_DEFINE(PLATFORM_FULAN, 1, [building for fulan])
@@ -202,7 +219,7 @@
  elif test "$BOXTYPE" = "kathrein"; then
  	AC_DEFINE(PLATFORM_KATHREIN, 1, [building for kathrein])
  elif test "$BOXTYPE" = "ipbox"; then
-@@ -805,16 +888,18 @@
+@@ -805,16 +904,18 @@
  	AC_DEFINE(HAVE_DUCKBOX_HARDWARE, 1, [building for a duckbox])	
  elif test "$BOXTYPE" = "topfield"; then
  	AC_DEFINE(PLATFORM_TF7700, 1, [building for topfield])
@@ -227,7 +244,7 @@
  elif test "$BOXTYPE" = "vip"; then
  	AC_DEFINE(PLATFORM_VIP, 1, [building for vip])
  elif test "$BOXTYPE" = "homecast"; then
-@@ -865,6 +950,7 @@
+@@ -865,6 +966,7 @@
  	AC_DEFINE(PLATFORM_ZGEMMA, 1, [building for zgemma])
  fi
  
@@ -235,7 +252,7 @@
  if test "$BOXMODEL" = "cuberevo"; then
  	AC_DEFINE(PLATFORM_CUBEREVO, 1, [building for cuberevo])
  elif test "$BOXMODEL" = "cuberevo_mini"; then
-@@ -938,6 +1024,9 @@
+@@ -938,6 +1040,9 @@
  elif test "$BOXMODEL" = "spark7162"; then
  	AC_DEFINE(PLATFORM_SPARK7162, 1, [building for spark 7162])
  
@@ -245,7 +262,7 @@
  elif test "$BOXMODEL" = "ufs910"; then
  	AC_DEFINE(PLATFORM_UFS910, 1, [building for ufs910])
  elif test "$BOXMODEL" = "ufs912"; then
-@@ -968,8 +1057,34 @@
+@@ -968,8 +1073,41 @@
  elif test "$BOXMODEL" = "atevio7600"; then
  	AC_DEFINE(BOXMODEL_ATEVIO7600, 1, [building for atevio7600])
  
@@ -267,6 +284,13 @@
 +elif test "$BOXMODEL" = "hs7819"; then
 +	AC_DEFINE(BOXMODEL_HS7819, 1, [building for hs7819])
 +
++elif test "$BOXMODEL" = "vip_v1"; then
++	AC_DEFINE(BOXMODEL_VIP_V1, 1, [building for vip_v1])
++elif test "$BOXMODEL" = "vip_v2"; then
++	AC_DEFINE(BOXMODEL_VIP_V2, 1, [building for vip_v2])
++elif test "$BOXMODEL" = "vip2"; then
++	AC_DEFINE(BOXMODEL_VIP2, 1, [building for vip2])
++
 +elif test "$BOXMODEL" = "adb_box"; then
 +	AC_DEFINE(BOXMODEL_ADB_BOX, 1, [building for adb_box])
 +elif test "$BOXMODEL" = "adb_2850"; then
@@ -280,7 +304,7 @@
  
  elif test "$BOXMODEL" = "vusolo2"; then
  	AC_DEFINE(BOXMODEL_VUSOLO2, 1, [vuplus solo2])
-@@ -2146,4 +2261,3 @@
+@@ -2146,4 +2284,3 @@
  ])
  
  
@@ -302,17 +326,8 @@
 +	#define CODEC_DVB_SUB AV_CODEC_ID_DVB_SUBTITLE
 +#endif
  
- // Set these to 'true' for debug output:
- static bool DebugConverter = false;
-@@ -188,7 +195,7 @@
- 	avcodec_register_all();
- 
- #if LIBAVCODEC_VERSION_INT <= AV_VERSION_INT(57, 1, 99)
--	avcodec = avcodec_find_decoder(CODEC_ID_DVB_SUBTITLE);
-+	avcodec = avcodec_find_decoder(CODEC_DVB_SUB);
- #else
- 	avcodec = avcodec_find_decoder(AV_CODEC_ID_DVB_SUBTITLE);
- #endif
+ //#if LIBAVCODEC_VERSION_INT <= AV_VERSION_INT(57, 1, 99)
+ //	#define CODEC_DVB_SUB CODEC_ID_DVB_SUBTITLE
 --- neutrino-hd2.org/src/driver/rcinput.h
 +++ neutrino-hd2/src/driver/rcinput.h
 @@ -1,6 +1,6 @@
@@ -329,7 +344,7 @@
  
 -// this values are token from cuberevo3000hd
 -#ifndef KEY_PIP	
-+// this values are taken from cuberevo3000hd
++// these values are taken from cuberevo3000hd
 +#ifndef KEY_PIP
  #define KEY_PIP		0x041
  #endif
@@ -752,236 +767,6 @@
 # 	prev_video_Mode = g_settings.video_Mode;
 # 	
 # 	//analog mode
---- nhd2-exp.org/lib/libeplayer3/container/container_ffmpeg.c
-+++ nhd2-exp/lib/libeplayer3/container/container_ffmpeg.c
-@@ -146,75 +146,75 @@
- {
- 	switch (codec->codec_id)
- 	{
--		case CODEC_ID_MPEG1VIDEO:
-+		case AV_CODEC_ID_MPEG1VIDEO:
- 			return "V_MPEG1";
- 			
--		case CODEC_ID_MPEG2VIDEO:
-+		case AV_CODEC_ID_MPEG2VIDEO:
- 			return "V_MPEG2";
- 			
--		case CODEC_ID_H263:
--		case CODEC_ID_H263P:
--		case CODEC_ID_H263I:
-+		case AV_CODEC_ID_H263:
-+		case AV_CODEC_ID_H263P:
-+		case AV_CODEC_ID_H263I:
- 			return "V_H263";
- 			
--		case CODEC_ID_FLV1:
-+		case AV_CODEC_ID_FLV1:
- 			return "V_FLV";
- 			
--		case CODEC_ID_VP5:
--		case CODEC_ID_VP6:
--		case CODEC_ID_VP6F:
-+		case AV_CODEC_ID_VP5:
-+		case AV_CODEC_ID_VP6:
-+		case AV_CODEC_ID_VP6F:
- 			return "V_VP6";
- 			
--		case CODEC_ID_RV10:
--		case CODEC_ID_RV20:
-+		case AV_CODEC_ID_RV10:
-+		case AV_CODEC_ID_RV20:
- 			return "V_RMV";
- 			
--		case CODEC_ID_MPEG4:
-+		case AV_CODEC_ID_MPEG4:
- #if LIBAVCODEC_VERSION_MAJOR < 53
--		case CODEC_ID_XVID:
--#endif
--		case CODEC_ID_MSMPEG4V1:
--		case CODEC_ID_MSMPEG4V2:
--		case CODEC_ID_MSMPEG4V3:
-+		case AV_CODEC_ID_XVID:
-+#endif
-+		case AV_CODEC_ID_MSMPEG4V1:
-+		case AV_CODEC_ID_MSMPEG4V2:
-+		case AV_CODEC_ID_MSMPEG4V3:
- 			return "V_MSCOMP";
- 			
--		case CODEC_ID_WMV1:
-+		case AV_CODEC_ID_WMV1:
- 			*version = 1;
- 			return "V_WMV";
- 			
--		case CODEC_ID_WMV2:
-+		case AV_CODEC_ID_WMV2:
- 			*version = 2;
- 			return "V_WMV";
- 			
--		case CODEC_ID_WMV3:
-+		case AV_CODEC_ID_WMV3:
- 			*version = 3;
- 			return "V_WMV";
- 			
--		case CODEC_ID_VC1:
-+		case AV_CODEC_ID_VC1:
- 			return "V_VC1";
- 			
--		case CODEC_ID_H264:
-+		case AV_CODEC_ID_H264:
- #if LIBAVCODEC_VERSION_MAJOR < 54
--		case CODEC_ID_FFH264:
-+		case AV_CODEC_ID_FFH264:
- #endif
- 			return "V_MPEG4/ISO/AVC";
- 		
--		case CODEC_ID_AVS:
-+		case AV_CODEC_ID_AVS:
- 			return "V_AVS";
- 			
--		case CODEC_ID_MP2:
-+		case AV_CODEC_ID_MP2:
- 			return "A_MPEG/L3";
- 			
--		case CODEC_ID_MP3:
-+		case AV_CODEC_ID_MP3:
- 			return "A_MP3";
- 			
--		case CODEC_ID_AAC:
-+		case AV_CODEC_ID_AAC:
- 			return "A_AAC";
- 			
--		case CODEC_ID_AC3:
-+		case AV_CODEC_ID_AC3:
- 			return "A_AC3";
- 			
--		case CODEC_ID_DTS:
-+		case AV_CODEC_ID_DTS:
- 			return "A_DTS";
- 		
- //#if LIBAVCODEC_VERSION_INT > AV_VERSION_INT(52, 72, 2)			
-@@ -222,46 +222,46 @@
- //			return "A_EAC3";
- //#endif			
- 			
--		case CODEC_ID_WMAV1:
--		case CODEC_ID_WMAV2:
-+		case AV_CODEC_ID_WMAV1:
-+		case AV_CODEC_ID_WMAV2:
- 		case 86056: //CODEC_ID_WMAPRO
- 			return "A_WMA";
- 			
--		case CODEC_ID_MLP:
-+		case AV_CODEC_ID_MLP:
- 			return "A_MLP";
- 			
--		case CODEC_ID_RA_144:
-+		case AV_CODEC_ID_RA_144:
- 			return "A_RMA";
- 			
--		case CODEC_ID_RA_288:
-+		case AV_CODEC_ID_RA_288:
- 			return "A_RMA";
- 			
--		case CODEC_ID_VORBIS:
-+		case AV_CODEC_ID_VORBIS:
- 			return "A_IPCM"; //return "A_VORBIS";
- 			
--		case CODEC_ID_FLAC: //86030
-+		case AV_CODEC_ID_FLAC: //86030
- 			return "A_IPCM"; //return "A_FLAC";
- 			
- 		/* subtitle */
--		case CODEC_ID_SSA:
-+		case AV_CODEC_ID_SSA:
- 			return "S_TEXT/ASS"; /* Hellmaster1024: seems to be ASS instead of SSA */
- 			
--		case CODEC_ID_TEXT: /* Hellmaster1024: i dont have most of this, but lets hope it is normal text :-) */
--		case CODEC_ID_DVD_SUBTITLE:
--		case CODEC_ID_DVB_SUBTITLE:
--		case CODEC_ID_XSUB:
--		case CODEC_ID_MOV_TEXT:
-+		case AV_CODEC_ID_TEXT: /* Hellmaster1024: i dont have most of this, but lets hope it is normal text :-) */
-+		case AV_CODEC_ID_DVD_SUBTITLE:
-+		case AV_CODEC_ID_DVB_SUBTITLE:
-+		case AV_CODEC_ID_XSUB:
-+		case AV_CODEC_ID_MOV_TEXT:
- #if LIBAVCODEC_VERSION_INT > AV_VERSION_INT(56, 72, 2)      
--		case CODEC_ID_HDMV_PGS_SUBTITLE:
-+		case AV_CODEC_ID_HDMV_PGS_SUBTITLE:
- #endif
- 
- #if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(52,38,1)
--		case CODEC_ID_DVB_TELETEXT:
-+		case AV_CODEC_ID_DVB_TELETEXT:
- #endif      
- 			return "S_TEXT/SRT"; /* fixme */
- 		
- #if LIBAVCODEC_VERSION_INT > AV_VERSION_INT(52, 72, 2)
--		case CODEC_ID_SRT:
-+		case AV_CODEC_ID_SRT:
- 			return "S_TEXT/SRT"; /* fixme */
- #endif 
- 
-@@ -626,7 +626,9 @@
- 						{
- 							int decoded_data_size = samples_size;
- 
--#if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(52, 64, 0)
-+#if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(57, 1, 99)
-+							bytesDone = avcodec_decode_audio4(( (AVStream*) audioTrack->stream)->codec, (short *)(samples), &decoded_data_size, &avpkt);
-+#elif LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(52, 64, 0)
- 							bytesDone = avcodec_decode_audio3(( (AVStream*) audioTrack->stream)->codec, (short *)(samples), &decoded_data_size, &avpkt);
- #else
- 							bytesDone = avcodec_decode_audio2(( (AVStream*) audioTrack->stream)->codec, (short *)(samples), &decoded_data_size, avpkt.data, avpkt.size);
-@@ -735,7 +737,7 @@
- 						duration=((float)packet.duration)/1000.0;
- 					else if(packet.convergence_duration != 0 && packet.convergence_duration != AV_NOPTS_VALUE )
- 						duration=((float)packet.convergence_duration)/1000.0;		    
--					else if(((AVStream*)subtitleTrack->stream)->codec->codec_id == CODEC_ID_SSA)
-+					else if(((AVStream*)subtitleTrack->stream)->codec->codec_id == AV_CODEC_ID_SSA)
- 					{
- 						/*Hellmaster1024 if the duration is not stored in packet.duration or
- 						  packet.convergence_duration we need to calculate it any other way, for SSA it is stored in
-@@ -793,7 +795,7 @@
- 							}
- 						}
- 						else
--						if(((AVStream*)subtitleTrack->stream)->codec->codec_id == CODEC_ID_SSA)
-+						if(((AVStream*)subtitleTrack->stream)->codec->codec_id == AV_CODEC_ID_SSA)
- 						{
- 							SubtitleData_t data;
- 
-@@ -1123,7 +1125,7 @@
- 						printf("AVCODEC__INIT__FAILED\n");
- 				}
- 				// aac
--				else if(stream->codec->codec_id == CODEC_ID_AAC) 
-+				else if(stream->codec->codec_id == AV_CODEC_ID_AAC) 
- 				{
- 					ffmpeg_printf(10,"Create AAC ExtraData\n");
- 					ffmpeg_printf(10,"stream->codec->extradata_size %d\n", stream->codec->extradata_size);
-@@ -1175,7 +1177,7 @@
- 					track.have_aacheader = 1;
- 				} 
- 				// wma
--				else if(stream->codec->codec_id == CODEC_ID_WMAV1 || stream->codec->codec_id == CODEC_ID_WMAV2 || 86056 ) //CODEC_ID_WMAPRO) //if (stream->codec->extradata_size > 0)
-+				else if(stream->codec->codec_id == AV_CODEC_ID_WMAV1 || stream->codec->codec_id == AV_CODEC_ID_WMAV2 || 86056 ) //CODEC_ID_WMAPRO) //if (stream->codec->extradata_size > 0)
- 				{
- 					ffmpeg_printf(10,"Create WMA ExtraData\n");
- 					track.aacbuflen = 104 + stream->codec->extradata_size;
-@@ -1221,10 +1223,10 @@
- 						case 86056/*CODEC_ID_WMAPRO*/:
- 							codec_id = WMA_VERSION_9_PRO;
- 							break;
--						case CODEC_ID_WMAV2:
-+						case AV_CODEC_ID_WMAV2:
- 							codec_id = WMA_VERSION_2_9 ;
- 							break;
--						case CODEC_ID_WMAV1:
-+						case AV_CODEC_ID_WMAV1:
- 						default:
- 							codec_id = WMA_VERSION_1;
- 							break;
 --- nhd2-exp.org/src/driver/vfd.h
 +++ nhd2-exp/src/driver/vfd.h
 @@ -37,11 +37,31 @@
@@ -2730,15 +2515,4 @@
  
  
  #define GIT_BUILD "GIT Build:"
-
---- neutrino-hd2.git.org/lib/libupnpclient/Makefile.am
-+++ neutrino-hd2.git/lib/libupnpclient/Makefile.am
-@@ -1,6 +1,6 @@
- noinst_LIBRARIES = libtuxbox-upnpclient.a
- 
--INCLUDES = \
-+AM_CPPFLAGS = \
- 	-I$(top_srcdir)/lib/libxmltree \
- 	-I$(top_srcdir)/lib/libupnpclient \
- 	-I$(top_srcdir)/src 
 
