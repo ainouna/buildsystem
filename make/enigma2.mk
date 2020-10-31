@@ -152,7 +152,7 @@ $(D)/enigma2.do_prepare: | $(ENIGMA2_DEPS)
 		if [ "$(MEDIAFW)" == "eplayer3" ]; then \
 			set -e; cd $(SOURCE_DIR)/enigma2 && patch -p1 $(SILENT_PATCH) < "$(PATCHES)/build-enigma2/enigma2-eplayer3.patch"; \
 		fi; \
-		if [ "$(E2_DIFF)" == "0" ] || [ "$(E2_DIFF)" == "2" ] || [ "$(E2_DIFF)" == "3" ] || [ "$(E2_DIFF)" == "4" ]; then \
+		if [ "$(E2_DIFF)" != "1" ]; then \
 			if [ "$(BOXTYPE)" == "fortis_hdbox" ] || [ "$(BOXTYPE)" == "octagon1008" ] || [ "$(BOXTYPE)" == "cuberevo" ] || [ "$(BOXTYPE)" == "cuberevo_250hd" ] || [ "$(BOXTYPE)" == "cuberevo_mini_fta" ] || [ "$(BOXTYPE)" == "cuberevo_mini" ] || [ "$(BOXTYPE)" == "cuberevo_mini2" ] || [ "$(BOXTYPE)" == "tf7700" ]; then \
 				patch -p1 $(SILENT_PATCH) < "$(PATCHES)/build-enigma2/enigma2-no_hdmi_cec.$$DIFF.patch"; \
 			fi; \
