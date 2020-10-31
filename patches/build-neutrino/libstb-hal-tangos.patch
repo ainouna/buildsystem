@@ -5,16 +5,16 @@
  AC_DEFUN([TUXBOX_BOXTYPE], [
  AC_ARG_WITH(boxtype,
 -	AS_HELP_STRING([--with-boxtype], [valid values: tripledragon, spark, azbox, generic, armbox, duckbox, spark7162, mipsbox]),
-+	AS_HELP_STRING([--with-boxtype], [valid values: tripledragon, spark, azbox, generic, armbox, duckbox, mipsbox]),
++	AS_HELP_STRING([--with-boxtype], [valid values: tripledragon, azbox, generic, armbox, duckbox, mipsbox]),
  	[case "${withval}" in
 -		tripledragon|azbox|generic|armbox)
-+		tripledragon|spark|azbox|generic|armbox|duckbox)
++		tripledragon|azbox|generic|armbox|duckbox)
  			BOXTYPE="$withval"
--		;;
+ 		;;
 -		spark|spark7162)
 -			BOXTYPE="spark"
 -			BOXMODEL="$withval"
- 		;;
+-		;;
  		dm*)
  			BOXTYPE="dreambox"
  			BOXMODEL="$withval"
@@ -63,7 +63,7 @@
 -			BOXTYPE="duckbox"
 -			BOXMODEL="$withval"
 -		;;
- 		hd51|hd60|hd61|bre2ze4k|vusolo4k|vuduo4k|vuultimo4k|vuzero4k|vuuno4kse|vuuno4k)
+ 		hd51|hd60|hd61|bre2ze4k|osmio4k|osmio4kplus|h7|vusolo4k|vuduo4k|vuultimo4k|vuzero4k|vuuno4kse|vuuno4k)
  			BOXTYPE="armbox"
  			BOXMODEL="$withval"
 @@ -227,12 +179,12 @@
@@ -73,9 +73,9 @@
 -AS_HELP_STRING([], [valid for duckbox: ufs910, ufs912, ufs913, ufs922, atevio7500, fortis_hdbox, octagon1008, hs7110, hs7810a, hs7119, hs7819, dp7000, cuberevo, cuberevo_mini, cuberevo_mini2, cuberevo_250hd, cuberevo_2000hd, cuberevo_3000hd, ipbox9900, ipbox99, ipbox55, arivalink200, tf7700, hl101])
 +AS_HELP_STRING([], [valid for duckbox: ufs910, ufs912, ufs913, ufs922, atevio7500, fortis_hdbox, octagon1008, hs7110, hs7420, hs7810a, hs7119, hs7429, hs7819, dp7000, cuberevo, cuberevo_mini, cuberevo_mini2, cuberevo_250hd, cuberevo_2000hd, cuberevo_3000hd, ipbox9900, ipbox99, ipbox55, arivalink200, tf7700, hl101, adb_box, vip1_v1, vip1_v2, vip2, vitamin_hd5000, pace7241])
  AS_HELP_STRING([], [valid for spark: spark, spark7162])
- AS_HELP_STRING([], [valid for armbox: hd51, hd60, hd61, bre2ze4k, osmio4k, osmio4kplus, zgemmah7, vusolo4k, vuduo4k, vuultimo4k, vuzero4k, vuuno4kse, vuuno4k])
+ AS_HELP_STRING([], [valid for armbox: hd51, hd60, hd61, bre2ze4k, osmio4k, osmio4kplus, h7, vusolo4k, vuduo4k, vuultimo4k, vuzero4k, vuuno4kse, vuuno4k])
  AS_HELP_STRING([], [valid for mipsbox: vuduo]),
- 	[case "${withval}" in
+	[case "${withval}" in
 -		ufs910|ufs912|ufs913|ufs922|atevio7500|fortis_hdbox|octagon1008|hs7110|hs7810a|hs7119|hs7819|dp7000|cuberevo|cuberevo_mini|cuberevo_mini2|cuberevo_250hd|cuberevo_2000hd|cuberevo_3000hd|ipbox9900|ipbox99|ipbox55|arivalink200|tf7700|hl101)
 +		ufs910|ufs912|ufs913|ufs922|atevio7500|fortis_hdbox|octagon1008|hs7110|hs7420|hs7810a|hs7119|hs7429|hs7819|dp7000|cuberevo|cuberevo_mini|cuberevo_mini2|cuberevo_250hd|cuberevo_2000hd|cuberevo_3000hd|ipbox9900|ipbox99|ipbox55|arivalink200|tf7700|hl101|adb_box|vip1_v1|vip1_v2|vip2|vitamin_hd5000|pace7241)
  			if test "$BOXTYPE" = "duckbox"; then
@@ -106,7 +106,7 @@
  
  AM_CONDITIONAL(BOXMODEL_HD51, test "$BOXMODEL" = "hd51")
  AM_CONDITIONAL(BOXMODEL_HD60, test "$BOXMODEL" = "hd60")
-@@ -368,10 +329,14 @@
+@@ -374,10 +383,14 @@
  	AC_DEFINE(BOXMODEL_OCTAGON1008, 1, [octagon1008])
  elif test "$BOXMODEL" = "hs7110"; then
  	AC_DEFINE(BOXMODEL_HS7110, 1, [hs7110])
@@ -121,7 +121,7 @@
  elif test "$BOXMODEL" = "hs7819"; then
  	AC_DEFINE(BOXMODEL_HS7819, 1, [hs7819])
  elif test "$BOXMODEL" = "dp7000"; then
-@@ -400,6 +365,20 @@
+@@ -406,6 +419,20 @@
  	AC_DEFINE(BOXMODEL_TF7700, 1, [tf7700])
  elif test "$BOXMODEL" = "hl101"; then
  	AC_DEFINE(BOXMODEL_HL101, 1, [hl101])
@@ -142,6 +142,16 @@
  elif test "$BOXMODEL" = "hd51"; then
  	AC_DEFINE(BOXMODEL_HD51, 1, [hd51])
  elif test "$BOXMODEL" = "hd60"; then
+--- libstb-hal-tangos.org/common/Makefile.am
++++ libstb-hal-tangos/common/Makefile.am
+@@ -1,6 +1,6 @@
+ noinst_LTLIBRARIES = libcommon.la
+ 
+-AM_CXXFLAGS = -fno-rtti -fno-exceptions -fno-strict-aliasing
++AM_CXXFLAGS = -fno-rtti -fno-exceptions -fno-strict-aliasing -std=c++11
+ 
+ AM_CXXFLAGS += \
+ 	-I $(top_srcdir)/include
 --- libstb-hal-tangos.org/include/cs_frontpanel.h
 +++ libstb-hal-tangos/include/cs_frontpanel.h
 @@ -9,9 +9,14 @@
@@ -1185,26 +1195,20 @@
  			caps.has_SCART = 0;
 --- libstb-hal-tangos.org/libeplayer3-sh4/input.cpp
 +++ libstb-hal-tangos/libeplayer3-sh4/input.cpp
-@@ -452,14 +452,15 @@
+@@ -452,6 +452,7 @@
  	avfc->iformat->flags |= AVFMT_SEEK_TO_PTS;
  	avfc->flags = AVFMT_FLAG_GENPTS;
  	if (player->noprobe) {
--#if (LIBAVFORMAT_VERSION_MAJOR <  55) || \
--    (LIBAVFORMAT_VERSION_MAJOR == 55 && LIBAVFORMAT_VERSION_MINOR <  43) || \
--    (LIBAVFORMAT_VERSION_MAJOR == 55 && LIBAVFORMAT_VERSION_MINOR == 43 && LIBAVFORMAT_VERSION_MICRO < 100) || \
--    (LIBAVFORMAT_VERSION_MAJOR == 57 && LIBAVFORMAT_VERSION_MINOR == 25)
-+//#if (LIBAVFORMAT_VERSION_MAJOR <  55) || \
-+//    (LIBAVFORMAT_VERSION_MAJOR == 55 && LIBAVFORMAT_VERSION_MINOR <  43) || \
-+//    (LIBAVFORMAT_VERSION_MAJOR == 55 && LIBAVFORMAT_VERSION_MINOR == 43 && LIBAVFORMAT_VERSION_MICRO < 100) || \
-+//    (LIBAVFORMAT_VERSION_MAJOR == 57 && LIBAVFORMAT_VERSION_MINOR == 25)
-+//		avfc->max_analyze_duration = 1;
-+//#else
-+//		avfc->max_analyze_duration2 = 1;
-+//#endif
- 		avfc->max_analyze_duration = 1;
--#else
--		avfc->max_analyze_duration2 = 1;
--#endif
++#if 0
+ #if (LIBAVFORMAT_VERSION_MAJOR <  55) || \
+     (LIBAVFORMAT_VERSION_MAJOR == 55 && LIBAVFORMAT_VERSION_MINOR <  43) || \
+     (LIBAVFORMAT_VERSION_MAJOR == 55 && LIBAVFORMAT_VERSION_MINOR == 43 && LIBAVFORMAT_VERSION_MICRO < 100) || \
+@@ -460,6 +461,8 @@
+ #else
+ 		avfc->max_analyze_duration2 = 1;
+ #endif
++#endif
++		avfc->max_analyze_duration = 1;
  		avfc->probesize = 131072;
  	}
  #if 0

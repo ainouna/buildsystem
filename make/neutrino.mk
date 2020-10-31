@@ -140,7 +140,8 @@ GIT_URL       = https://github.com/TangoCash
 NEUTRINO      = neutrino-mp-tangos
 LIBSTB_HAL    = libstb-hal-tangos
 N_BRANCH     ?= master
-N_CHECKOUT   ?= 0028290165620b0f146c870ea8213e2201ab520a # 27/10/2020
+#N_CHECKOUT   ?= 0028290165620b0f146c870ea8213e2201ab520a # 27/10/2020
+N_CHECKOUT   ?= f5f2e6e066e99323695989f5cdf606b67256481d
 HAL_BRANCH   ?= master
 HAL_CHECKOUT ?= 8419f846e155aafc65120522974e9ee491f45428
 N_PATCHES     = $(NEUTRINO_TANGOS_PATCHES)
@@ -159,7 +160,7 @@ else ifeq ($(FLAVOUR), neutrino-hd2)
 GIT_URL       = https://github.com/mohousch/neutrinohd2
 NEUTRINO      = neutrino-hd2
 N_BRANCH     ?= master
-N_CHECKOUT   ?= 95cda4e731818785788870fb6378ee28c76c1b14 # 27/10/2020
+N_CHECKOUT   ?= d2ec257482e841563ad8c29e1aa5253145e4bd21
 N_PATCHES     = $(NEUTRINO_HD2_PATCHES)
 else
 NEUTRINO      = dummy

@@ -141,24 +141,82 @@
  elif test "$BOXMODEL" = "hd51"; then
  	AC_DEFINE(BOXMODEL_HD51, 1, [hd51])
  	AC_DEFINE(ENABLE_CHANGE_OSD_RESOLUTION, 1, [enable change the osd resolution])
+--- neutrino-mp-tangos.org/src/Makefile.am
++++ neutrino-mp-tangos/src/Makefile.am
+@@ -3,7 +3,7 @@
+ rcsim.h: $(srcdir)/driver/rcinput.h $(srcdir)/create_rcsim_h.sh
+ 	pushd $(srcdir) && sh ./create_rcsim_h.sh > $@
+ 
+-AM_CXXFLAGS = -fno-rtti -fno-exceptions -D__STDC_FORMAT_MACROS
++AM_CXXFLAGS = -fno-rtti -fno-exceptions -D__STDC_FORMAT_MACROS -D_GLIBCXX_USE_C99 -std=c++11
+ 
+ SUBDIRS = zapit gui daemonc driver system eitd timerd
+ 
 --- neutrino-mp-tangos.org/src/neutrino.cpp
 +++ neutrino-mp-tangos/src/neutrino.cpp
-@@ -4760,6 +4760,9 @@
+@@ -3314,9 +3314,11 @@
+ 				g_RemoteControl->setSubChannel(CRCInput::getNumericValue(msg));
+ 				g_InfoViewer->showSubchan();
+ 			}
++#if !defined(BOXMODEL_TF7700)  // skip KEY_LEFT & KEY_RIGHT on TF7700
+ 			else if( msg == CRCInput::RC_page_up || msg == CRCInput::RC_page_down) {
+ 				quickZap(msg == CRCInput::RC_page_up ? CRCInput::RC_right : CRCInput::RC_left);
+ 			}
++#endif
+ 			else if(msg == CRCInput::RC_rewind /* && (mode != NeutrinoModes::mode_webtv) */) {
+ 				if(g_RemoteControl->is_video_started) {
+ 					t_channel_id live_channel_id = CZapit::getInstance()->GetCurrentChannelID();
+@@ -3857,8 +3859,23 @@
+ 			}
+ #endif
+ 	}
++#if !defined(BOXMODEL_TF7700)
+ 	else if ((msg == CRCInput::RC_plus) || (msg == CRCInput::RC_minus))
+ 	{
++#else
++	else if ((msg == CRCInput::RC_left) || (msg == CRCInput::RC_right) || (msg == CRCInput::RC_plus) || (msg == CRCInput::RC_minus))
++	{
++		if ((msg == CRCInput::RC_left))  // Replace KEY_LEFT by KEY_VOLUMEDOWN on TF7700
++		{
++			printf("CNeutrinoApp::handleMsg: volume down! (key = %d, replacement = %d)\n", CRCInput::RC_left, CRCInput::RC_minus);
++			msg = CRCInput::RC_minus;
++		}
++		if ((msg == CRCInput::RC_right))  // Replace KEY_RIGHT by KEY_VOLUMEUP on TF7700
++		{
++			printf("CNeutrinoApp::handleMsg: volume up! (key = %d, replacement = %d)\n", CRCInput::RC_right, CRCInput::RC_plus);
++			msg = CRCInput::RC_plus;
++		}
++#endif
+ 		g_volume->setVolume(msg);
+ #if HAVE_DUCKBOX_HARDWARE
+ 		if((mode == NeutrinoModes::mode_tv) || (mode == NeutrinoModes::mode_radio)) {
+@@ -4714,7 +4731,7 @@
+ #ifdef ENABLE_GRAPHLCD
+ 		nGLCD::StandbyMode(true);
+ #endif
+-		CVFD::getInstance()->ShowText("standby...");
++		CVFD::getInstance()->ShowText("Standby...");
+ 		if( mode == NeutrinoModes::mode_scart ) {
+ 			//g_Controld->setScartMode( 0 );
+ 		}
+@@ -4760,6 +4777,10 @@
  
  		CVFD::getInstance()->Clear();
  		CVFD::getInstance()->setMode(CVFD::MODE_STANDBY);
-+#if defined (FORTIS_HDBOX) || defined (TF7700)
++#if defined (BOXMODEL_FORTIS_HDBOX) \
++ || defined (BOXMODEL_TF7700)
 +		CVFD::getInstance()->setlcdparameter(g_settings.lcd_setting[SNeutrinoSettings::LCD_STANDBY_BRIGHTNESS], 0);
 +#endif
  		CVFD::getInstance()->setBacklight(g_settings.backlight_standby);
  
  		InfoClock->enableInfoClock(false);
-@@ -4795,7 +4798,13 @@
+@@ -4795,7 +4816,14 @@
  		// Active standby off
  		powerManager->SetStandby(false, false);
  		CVFD::getInstance()->setMode(CVFD::MODE_TVRADIO);
 -		CVFD::getInstance()->ShowText("resume");
-+#if defined (FORTIS_HDBOX) || defined (TF7700)
++#if defined (BOXMODEL_FORTIS_HDBOX) \
++ || defined (BOXMODEL_TF7700)
 +		CVFD::getInstance()->setlcdparameter(g_settings.lcd_setting[SNeutrinoSettings::LCD_BRIGHTNESS], 1);
 +#endif
 +#ifdef HAVE_DUCKBOX_HARDWARE
@@ -168,6 +226,130 @@
  		cpuFreq->SetCpuFreq(g_settings.cpufreq * 1000 * 1000);
  		videoDecoder->Standby(false);
  		CEpgScan::getInstance()->Stop();
+--- neutrino-mp-tangos.org/src/driver/rcinput.cpp
++++ neutrino-mp-tangos/src/driver/rcinput.cpp
+@@ -1663,16 +1663,22 @@
+ #else
+ 				return "mode";
+ #endif
++#if HAVE_DUCKBOX_HARDWARE
++			case RC_switchvideomode:
++				return "mode";
++#endif
+ 			case RC_record:
+ 				return "record";
+ 			case RC_pause:
+ 				return "pause";
+ 			case RC_games:
+ 				return "games";
++#if !HAVE_DUCKBOX_HARDWARE
+ 			case RC_next:
+ 				return "next";
+ 			case RC_prev:
+ 				return "prev";
++#endif
+ 			case RC_nokey:
+ 				return "none";
+ 			case RC_power_on:
+@@ -1707,7 +1713,11 @@
+ 				return "play mode";
+ 			case RC_usb:
+ 				return "usb";
++#if !HAVE_DUCKBOX_HARDWARE
+ 			case RC_timer:
++#else
++			case RC_program:
++#endif
+ 				return "time";
+ 			case RC_f1:
+ 				return "f1";
+@@ -1742,13 +1752,21 @@
+ 			case RC_search:
+ 				return "search";
+ 			case RC_nextsong:
++#if HAVE_DUCKBOX_HARDWARE
++			case RC_next:
++#endif
+ 				return "next song";
+ 			case RC_previoussong:
++#if HAVE_DUCKBOX_HARDWARE
++			case RC_prev:
++#endif
+ 				return "previous song";
+ 			case RC_bookmarks:
+ 				return "bookmarks";
++#if !HAVE_DUCKBOX_HARDWARE
+ 			case RC_program:
+ 				return "program";
++#endif
+ 			case RC_playpause:
+ 				return "play / pause";
+ #if BOXMODEL_HD51 || BOXMODEL_HD60 || BOXMODEL_BRE2ZE4K
+--- neutrino-mp-tangos.org/src/driver/rcinput.h
++++ neutrino-mp-tangos/src/driver/rcinput.h
+@@ -211,8 +211,13 @@
+ 			RC_setup	= KEY_MENU,	    /* /include/linux/input.h: #define KEY_SETUP		141   */
+ 			RC_topleft	= KEY_TOPLEFT,	
+ 			RC_topright	= KEY_TOPRIGHT,	
++#if !HAVE_DUCKBOX_HARDWARE
+ 			RC_page_up	= KEY_PAGEUP,	    /* /include/linux/input.h: #define KEY_PAGEUP		104   */
+ 			RC_page_down	= KEY_PAGEDOWN,	    /* /include/linux/input.h: #define KEY_PAGEDOWN		109   */
++#else
++			RC_page_up	= KEY_CHANNELUP,
++			RC_page_down	= KEY_CHANNELDOWN,
++#endif
+ 			RC_ok		= KEY_OK,	    /* /include/linux/input.h: #define KEY_OK			0x160 */ /* in patched input.h */
+ 			RC_red		= KEY_RED,	    /* /include/linux/input.h: #define KEY_RED			0x18e */ /* in patched input.h */
+ 			RC_green	= KEY_GREEN,	    /* /include/linux/input.h: #define KEY_GREEN		0x18f */ /* in patched input.h */
+@@ -235,7 +240,11 @@
+ 			RC_info		= KEY_INFO,
+ 			RC_epg		= KEY_EPG,
+ #endif
++#if !HAVE_DUCKBOX_HARDWARE
+ 			RC_recall	= KEY_LAST,
++#else
++			RC_recall	= KEY_BACK,
++#endif
+ 			RC_favorites	= KEY_FAVORITES,
+ 			RC_sat		= KEY_SAT,
+ 			RC_sat2		= KEY_SAT2,
+@@ -245,7 +254,12 @@
+ 			RC_forward	= KEY_FORWARD,
+ 			RC_rewind	= KEY_REWIND,
+ 			RC_stop		= KEY_STOP,
++#if !HAVE_DUCKBOX_HARDWARE
+ 			RC_timeshift	= KEY_T,
++#else
++			RC_timeshift	= KEY_TIME,
++			RC_timer	= KEY_PROGRAM,
++#endif
+ 			RC_mode		= KEY_MODE,
+ 			RC_switchvideomode = KEY_SWITCHVIDEOMODE,
+ 			RC_games	= KEY_GAMES,
+@@ -256,8 +270,13 @@
+ 			RC_pos		= KEY_MOVE,
+ 			RC_sleep	= KEY_SLEEP,
+ 			RC_find		= KEY_FIND,
++#if !HAVE_DUCKBOX_HARDWARE
+ 			RC_pip		= KEY_PRESENTATION,
+ 			RC_archive	= KEY_ARCHIVE,
++#else
++			RC_pip		= KEY_SCREEN,
++			RC_archive	= KEY_FILE,
++#endif
+ 			RC_fastforward	= KEY_FASTFORWARD,
+ 			RC_slow		= KEY_SLOW,
+ 			RC_playmode	= KEY_P,
+@@ -293,7 +312,9 @@
+ 			/* tripledragon keys */
+ 			RC_eject	= KEY_EJECTCD,
+ 			RC_aux		= KEY_AUX,          /* 0x186 */
++#if !HAVE_DUCKBOX_HARDWARE
+ 			RC_timer	= KEY_TIME,
++#endif
+ 			RC_tttv		= KEY_TTTV,
+ 			RC_ttzoom	= KEY_TTZOOM,
+ 			RC_ttreveal	= KEY_REVEAL,
 --- neutrino-mp-tangos.org/src/driver/vfd.cpp
 +++ neutrino-mp-tangos/src/driver/vfd.cpp
 @@ -52,27 +52,43 @@
@@ -303,7 +485,7 @@
 -
 -	if (strlen(str) < VFDLENGTH && VFDLENGTH > 7) // do not center on small displays
 -		ws = (VFDLENGTH-strlen(str))/2;
-+	if (strlen(str) < disp_len && disp_len > 7) // do not center on small displays
++	if (strlen(str) < disp_len && disp_len > 7)  // do not center on small displays
 +	{
 +		ws = (disp_len - strlen(str)) / 2;
 +	}
@@ -392,7 +574,7 @@
  		}
  	}
 -	memcpy(out, str, VFDLENGTH); // display first VFDLENGTH chars after scrolling
-+	memcpy(out, str, disp_len); // display first VFDLENGTH chars after scrolling
++	memcpy(out, str, disp_len);  // display first VFDLENGTH chars after scrolling
  	ShowNormalText(out,true);
  
  	pthread_exit(0);
@@ -665,7 +847,7 @@
  #endif
  
 -void CVFD::showServicename(const std::string & name, int number) // UTF-8
-+void CVFD::showServicename(const std::string &name, int number) // UTF-8
++void CVFD::showServicename(const std::string &name, int number)  // UTF-8
  {
  	if(fd < 0) return;
  
@@ -828,7 +1010,7 @@
 -	} else if(clearClock || (recstatus != tmp_recstatus)) { // in case icon ON after record stopped
 +	}
 +	else if (clearClock || (recstatus != tmp_recstatus))
-+	{ // in case icon ON after record stopped
++	{  // in case icon ON after record stopped
  		clearClock = 0;
 -		if(has_lcd)
 +		if (has_lcd)
@@ -845,7 +1027,18 @@
  	}
  }
  #endif
-@@ -753,7 +926,8 @@
+@@ -737,6 +910,10 @@
+ 	static int oldpp = 0;
+ 	if(!has_lcd) return;
+ 
++	if (vol)
++	{
++		muted = false;
++	}
+ 	ShowIcon(FP_ICON_MUTE, muted);
+ 
+ 	if(!force_update && vol == volume)
+@@ -753,7 +930,8 @@
  		int pp = (int) round((double) vol / (double) 2);
  		if(oldpp != pp)
  		{
@@ -855,48 +1048,48 @@
  			int i;
  			unsigned char speaker[5] = {0x1C, 0x1C, 0x1C, 0x3E, 0x7F}; // speaker symbol
  			writeCG(0, speaker);
-@@ -800,15 +974,36 @@
+@@ -800,15 +978,36 @@
  			char vol_chr[64] = "";
  			snprintf(vol_chr, sizeof(vol_chr)-1, "VOL: %d%%", (int)vol);
  			ShowText(vol_chr);
 -#elif defined (BOXMODEL_OCTAGON1008)
 +#elif defined (BOXMODEL_OCTAGON1008) \
-+ || defined (BOXMODEL_HS7420) \
-+ || defined (BOXMODEL_HS7429) \
-+ || defined (BOXMODEL_HL101) \
-+ || defined (BOXMODEL_VIP1_V1) \
-+ || defined (BOXMODEL_VIP1_V2) \
-+ || defined (BOXMODEL_VIP2)
++ ||   defined (BOXMODEL_HS7420) \
++ ||   defined (BOXMODEL_HS7429) \
++ ||   defined (BOXMODEL_HL101) \
++ ||   defined (BOXMODEL_VIP1_V1) \
++ ||   defined (BOXMODEL_VIP1_V2) \
++ ||   defined (BOXMODEL_VIP2)
  			char vol_chr[64] = "";
 -			snprintf(vol_chr, sizeof(vol_chr)-1, "VOL=%3d", (int)vol);
 +			snprintf(vol_chr, sizeof(vol_chr)-1, "VOL=%3d%%", (int)vol);
  			ShowText(vol_chr);
 -#elif defined (BOXMODEL_HS7119) || defined (BOXMODEL_HS7810A) || defined (BOXMODEL_HS7819) || defined (BOXMODEL_CUBEREVO_250HD) || defined (BOXMODEL_IPBOX55)
 +#elif defined (BOXMODEL_HS7119) \
-+ || defined (BOXMODEL_HS7810A) \
-+ || defined (BOXMODEL_HS7819) \
-+ || defined (BOXMODEL_CUBEREVO_250HD) \
-+ || defined (BOXMODEL_IPBOX55) \
-+ || defined (BOXMODEL_ADB_BOX)
++ ||   defined (BOXMODEL_HS7810A) \
++ ||   defined (BOXMODEL_HS7819) \
++ ||   defined (BOXMODEL_CUBEREVO_250HD) \
++ ||   defined (BOXMODEL_IPBOX55) \
++ ||   defined (BOXMODEL_ADB_BOX)
  			char vol_chr[64] = "";
  			snprintf(vol_chr, sizeof(vol_chr)-1, "v%3d", (int)vol);
  			ShowText(vol_chr);
 -#elif defined (BOXMODEL_FORTIS_HDBOX) || defined (BOXMODEL_ATEVIO7500) || defined (BOXMODEL_UFS912) || defined (BOXMODEL_UFS913) || defined (BOXMODEL_CUBEREVO) || defined (BOXMODEL_CUBEREVO_MINI) || defined (BOXMODEL_CUBEREVO_MINI2) || defined (BOXMODEL_CUBEREVO_2000HD) || defined (BOXMODEL_CUBEREVO_3000HD) || defined (BOXMODEL_IPBOX9900) || defined (BOXMODEL_IPBOX99)
 +#elif defined (BOXMODEL_FORTIS_HDBOX) \
-+ || defined (BOXMODEL_ATEVIO7500) \
-+ || defined (BOXMODEL_UFS912) \
-+ || defined (BOXMODEL_UFS913) \
-+ || defined (BOXMODEL_CUBEREVO) \
-+ || defined (BOXMODEL_CUBEREVO_MINI) \
-+ || defined (BOXMODEL_CUBEREVO_MINI2) \
-+ || defined (BOXMODEL_CUBEREVO_2000HD) \
-+ || defined (BOXMODEL_CUBEREVO_3000HD) \
-+ || defined (BOXMODEL_IPBOX9900) \
-+ || defined (BOXMODEL_IPBOX99)
++ ||   defined (BOXMODEL_ATEVIO7500) \
++ ||   defined (BOXMODEL_UFS912) \
++ ||   defined (BOXMODEL_UFS913) \
++ ||   defined (BOXMODEL_CUBEREVO) \
++ ||   defined (BOXMODEL_CUBEREVO_MINI) \
++ ||   defined (BOXMODEL_CUBEREVO_MINI2) \
++ ||   defined (BOXMODEL_CUBEREVO_2000HD) \
++ ||   defined (BOXMODEL_CUBEREVO_3000HD) \
++ ||   defined (BOXMODEL_IPBOX9900) \
++ ||   defined (BOXMODEL_IPBOX99)
  			char vol_chr[64] = "";
  			snprintf(vol_chr, sizeof(vol_chr)-1, "Volume: %d%%", (int)vol);
  			ShowText(vol_chr);
-@@ -820,15 +1015,18 @@
+@@ -820,15 +1019,18 @@
  		int pp = (int) round((double) vol * (double) 8 / (double) 100);
  		if(pp > 8) pp = 8;
  
@@ -919,7 +1112,7 @@
  				ShowIcon((fp_icon) j, false);
  				j /= 2;
  			}
-@@ -866,7 +1064,7 @@
+@@ -866,7 +1068,7 @@
  		if(pp > 8) pp = 8;
  
  		if(pp != ppold) {
@@ -928,7 +1121,7 @@
  			int i;
  			int j = 0x00000200;
  			for(i = 0; i < pp; i++) {
-@@ -898,7 +1096,7 @@
+@@ -898,7 +1100,7 @@
  	if(fd < 0) return;
  	if (mode != MODE_AUDIO)
  		return;
@@ -937,7 +1130,7 @@
  	ShowText(title.c_str());
  	wake_up();
  
-@@ -967,6 +1163,10 @@
+@@ -967,6 +1169,10 @@
  
  void CVFD::setMode(const MODES m, const char * const title)
  {
@@ -948,7 +1141,7 @@
  	if(fd < 0) return;
  
  	// Clear colon in display if it is still there
-@@ -983,7 +1185,38 @@
+@@ -983,7 +1189,38 @@
  		ShowIcon(FP_ICON_COL2, false);
  	}
  #endif
@@ -961,8 +1154,8 @@
 +		ShowIcon(ICON_COLON2, true);
 +	}
 +#elif defined (BOXMODEL_HS7119) \
-+ || defined (BOXMODEL_HS7810A) \
-+ || defined (BOXMODEL_HS7819)
++ ||   defined (BOXMODEL_HS7810A) \
++ ||   defined (BOXMODEL_HS7819)
 +	else if (mode == MODE_STANDBY)
 +	{
 +		ShowIcon(ICON_COLON, true);
@@ -988,7 +1181,7 @@
  	if(strlen(title))
  		ShowText(title);
  	mode = m;
-@@ -1005,6 +1238,10 @@
+@@ -1005,6 +1242,10 @@
  			showPercentOver(percentOver, false);
  			break;
  #endif
@@ -999,11 +1192,12 @@
  		}
  		showServicename(servicename);
  		showclock = true;
-@@ -1086,7 +1323,20 @@
+@@ -1086,14 +1327,36 @@
  int CVFD::getBrightness()
  {
  	//FIXME for old neutrino.conf
 -#if defined (BOXMODEL_OCTAGON1008) || defined (BOXMODEL_FORTIS_HDBOX) || defined (BOXMODEL_ATEVIO7500)
+-	if(g_settings.lcd_setting[SNeutrinoSettings::LCD_BRIGHTNESS] > 7)
 +#if defined (BOXMODEL_OCTAGON1008) \
 + || defined (BOXMODEL_FORTIS_HDBOX) \
 + || defined (BOXMODEL_ATEVIO7500) \
@@ -1018,14 +1212,34 @@
 + || defined (BOXMODEL_VIP1_V1) \
 + || defined (BOXMODEL_VIP1_V2) \
 + || defined (BOXMODEL_VIP2)
- 	if(g_settings.lcd_setting[SNeutrinoSettings::LCD_BRIGHTNESS] > 7)
++	if (g_settings.lcd_setting[SNeutrinoSettings::LCD_BRIGHTNESS] > 7)
++	{
  		g_settings.lcd_setting[SNeutrinoSettings::LCD_BRIGHTNESS] = 7;
++	}
++#elif defined (BOXMODEL_TF7700)
++	if (g_settings.lcd_setting[SNeutrinoSettings::LCD_BRIGHTNESS] > 3)
++	{
++		g_settings.lcd_setting[SNeutrinoSettings::LCD_BRIGHTNESS] = 3;
++	}
++//	g_settings.lcd_setting[SNeutrinoSettings::LCD_BRIGHTNESS]++;  // TF7700 is 1..4
  #else
-@@ -1108,7 +1358,20 @@
+-	if(g_settings.lcd_setting[SNeutrinoSettings::LCD_BRIGHTNESS] > 15)
++	if (g_settings.lcd_setting[SNeutrinoSettings::LCD_BRIGHTNESS] > 15)
++	{
+ 		g_settings.lcd_setting[SNeutrinoSettings::LCD_BRIGHTNESS] = 15;
+-#endif
+-
++	}
++#endif
+ 	return g_settings.lcd_setting[SNeutrinoSettings::LCD_BRIGHTNESS];
+ }
+ 
+@@ -1108,12 +1371,35 @@
  int CVFD::getBrightnessStandby()
  {
  	//FIXME for old neutrino.conf
 -#if defined (BOXMODEL_OCTAGON1008) || defined (BOXMODEL_FORTIS_HDBOX) || defined (BOXMODEL_ATEVIO7500)
+-	if(g_settings.lcd_setting[SNeutrinoSettings::LCD_STANDBY_BRIGHTNESS] > 7)
 +#if defined (BOXMODEL_OCTAGON1008) \
 + || defined (BOXMODEL_FORTIS_HDBOX) \
 + || defined (BOXMODEL_ATEVIO7500) \
@@ -1040,10 +1254,26 @@
 + || defined (BOXMODEL_VIP1_V1) \
 + || defined (BOXMODEL_VIP1_V2) \
 + || defined (BOXMODEL_VIP2)
- 	if(g_settings.lcd_setting[SNeutrinoSettings::LCD_STANDBY_BRIGHTNESS] > 7)
++	if (g_settings.lcd_setting[SNeutrinoSettings::LCD_STANDBY_BRIGHTNESS] > 7)
++	{
  		g_settings.lcd_setting[SNeutrinoSettings::LCD_STANDBY_BRIGHTNESS] = 7;
++	}
++#elif defined (BOXMODEL_TF7700)
++	if (g_settings.lcd_setting[SNeutrinoSettings::LCD_STANDBY_BRIGHTNESS] > 3)
++	{
++		g_settings.lcd_setting[SNeutrinoSettings::LCD_STANDBY_BRIGHTNESS] = 3;
++	}
++	g_settings.lcd_setting[SNeutrinoSettings::LCD_BRIGHTNESS]++;  // TF7700 is 1..4
  #else
-@@ -1129,7 +1393,20 @@
+-	if(g_settings.lcd_setting[SNeutrinoSettings::LCD_STANDBY_BRIGHTNESS] > 15)
++	if (g_settings.lcd_setting[SNeutrinoSettings::LCD_STANDBY_BRIGHTNESS] > 15)
++	{
+ 		g_settings.lcd_setting[SNeutrinoSettings::LCD_STANDBY_BRIGHTNESS] = 15;
++	}
+ #endif
+ 	return g_settings.lcd_setting[SNeutrinoSettings::LCD_STANDBY_BRIGHTNESS];
+ }
+@@ -1129,7 +1415,20 @@
  int CVFD::getBrightnessDeepStandby()
  {
  	//FIXME for old neutrino.conf
@@ -1065,7 +1295,7 @@
  	if(g_settings.lcd_setting[SNeutrinoSettings::LCD_DEEPSTANDBY_BRIGHTNESS] > 7)
  		g_settings.lcd_setting[SNeutrinoSettings::LCD_DEEPSTANDBY_BRIGHTNESS] = 7;
  #else
-@@ -1200,14 +1474,29 @@
+@@ -1200,14 +1499,29 @@
  	else
  		text.clear();
  #else
@@ -1099,7 +1329,7 @@
  #elif !defined (BOXMODEL_HS7110)
  	ShowText("                ");
  #endif
-@@ -1217,25 +1508,56 @@
+@@ -1217,25 +1531,56 @@
  void CVFD::ShowIcon(fp_icon icon, bool show)
  {
  #if !HAVE_DUCKBOX_HARDWARE
@@ -1162,7 +1392,7 @@
  	memset(&data, 0, sizeof(struct vfd_ioctl_data));
  	data.start = 0x00;
  	data.data[0] = icon;
-@@ -1249,17 +1571,12 @@
+@@ -1249,17 +1594,12 @@
  #ifdef HAVE_DUCKBOX_HARDWARE
  void CVFD::ClearIcons()
  {
@@ -1184,7 +1414,7 @@
  			ShowIcon((fp_icon)id, false);
  	}
  	return;
-@@ -1270,8 +1586,14 @@
+@@ -1270,8 +1610,14 @@
  	memset(g_str, 0, sizeof(g_str));
  	memcpy(g_str, str, sizeof(g_str)-1);
  
@@ -1200,7 +1430,7 @@
  		g_str[60] = '.';
  		g_str[61] = '.';
  		g_str[62] = '.';
-@@ -1280,14 +1603,15 @@
+@@ -1280,14 +1626,15 @@
  	}
  	ShowNormalText(g_str, false);
  }
@@ -1218,7 +1448,7 @@
  		{
  			tmp_icon[i & 0x0F] = active_icon[i & 0x0F];
  			active_icon[i & 0x0F] = false;
-@@ -1295,7 +1619,7 @@
+@@ -1295,7 +1642,7 @@
  		}
  	}
  }
@@ -1227,7 +1457,7 @@
  void CVFD::ShowText(const char * str)
  {
  	if (fd < 0 || !support_text)
-@@ -1335,11 +1659,26 @@
+@@ -1335,11 +1682,28 @@
  	if (number < 0)
  		return;
  	
@@ -1246,7 +1476,9 @@
 +		int n;
 +
 +		memset(buffer, 0, sizeof(buffer));
-+  #if defined (BOXMODEL_HS7119) || defined (BOXMODEL_HS7810A) || defined (BOXMODEL_HS7819)
++  #if defined (BOXMODEL_HS7119) \
++   || defined (BOXMODEL_HS7810A) \
++   || defined (BOXMODEL_HS7819)
 +		n = sprintf(buffer, "%04d", number);
 +  #else
 +		n = sprintf(buffer, "%4d", number);
@@ -1255,6 +1487,26 @@
  	}
  #endif
  }
+--- neutrino-mp-tangos.org/src/driver/vfd.h
++++ neutrino-mp-tangos/src/driver/vfd.h
+@@ -108,8 +108,8 @@
+ 		CVFD();
+ 
+ 		static void* TimeThread(void*);
++#if !HAVE_DUCKBOX_HARDWARE
+ 		void setlcdparameter(int dimm, int power);
+-#if !HAVE_DUCKBOX_HARDWARE
+ 		void setled(int led1, int led2);
+ #endif
+ 	public:
+@@ -123,6 +123,7 @@
+ 		void setled(bool on_off);
+ 		void setBacklight(bool on_off);
+ #else
++		void setlcdparameter(int dimm, int power);
+ 		void setBacklight(bool /*on_off*/) { };
+ #endif
+ 		static CVFD* getInstance();
 #--- neutrino-mp-tangos/src/driver/pictureviewer/pictureviewer.cpp
 #+++ neutrino-mp-tangos/src/driver/pictureviewer/pictureviewer.cpp
 #@@ -566,8 +566,10 @@
@@ -1280,6 +1532,86 @@
 # 			// process g_settings.logo_hdd_dir
 # 			v_path.push_back(g_settings.logo_hdd_dir + "/" + v_file[f] + fileType[i]);
 # 			// process LOGODIR_VAR
+--- neutrino-mp-tangos.org/src/gui/channellist.cpp
++++ neutrino-mp-tangos/src/gui/channellist.cpp
+@@ -1502,7 +1502,11 @@
+ 
+ 		printf("CChannelList::getPrevNextChannel: selected %d total %d active bouquet %d total %d\n", (int)cactive, (int)(*chanlist).size(), bactive, bsize);
+ #if HAVE_SH4_HARDWARE
++#if !defined(BOXMODEL_TF7700)
+ 		if ((key == g_settings.key_quickzap_down) || (key == CRCInput::RC_left) || (key == CRCInput::RC_page_down)) {
++#else
++		if ((key == g_settings.key_quickzap_down) || (key == CRCInput::RC_page_down)) {
++#endif
+ #else
+ 		if ((key == g_settings.key_quickzap_down) || (key == CRCInput::RC_left)) {
+ #endif
+@@ -1516,7 +1520,11 @@
+ 				--cactive;
+ 		}
+ #if HAVE_SH4_HARDWARE
++#if !defined(BOXMODEL_TF7700)
+ 		else if ((key == g_settings.key_quickzap_up) || (key == CRCInput::RC_right) || (key == CRCInput::RC_page_up)) {
++#else
++		else if ((key == g_settings.key_quickzap_up) || (key == CRCInput::RC_page_up)) {
++#endif
+ #else
+ 		else if ((key == g_settings.key_quickzap_up) || (key == CRCInput::RC_right)) {
+ #endif
+@@ -1535,7 +1543,11 @@
+ 				(int)cactive, (int)(*chanlist).size(), bactive, bsize, channel, channel ? channel->getName().c_str(): "");
+ 	} else {
+ #if HAVE_SH4_HARDWARE
++#if !defined(BOXMODEL_TF7700)
+ 		if ((key == g_settings.key_quickzap_down) || (key == CRCInput::RC_left) || (key == CRCInput::RC_page_down)) {
++#else
++		if ((key == g_settings.key_quickzap_down) || (key == CRCInput::RC_page_down)) {
++#endif
+ #else
+ 		if ((key == g_settings.key_quickzap_down) || (key == CRCInput::RC_left)) {
+ #endif
+@@ -1545,7 +1557,11 @@
+ 				sl--;
+ 		}
+ #if HAVE_SH4_HARDWARE
++#if !defined(BOXMODEL_TF7700)
+ 		else if ((key == g_settings.key_quickzap_up) || (key == CRCInput::RC_right) || (key == CRCInput::RC_page_up)) {
++#else
++		else if ((key == g_settings.key_quickzap_up) || (key == CRCInput::RC_page_up)) {
++#endif
+ #else
+ 		else if ((key==g_settings.key_quickzap_up) || (key == CRCInput::RC_right)) {
+ #endif
+@@ -1568,7 +1584,11 @@
+ 	int old_bactive = bouquetList->getActiveBouquetNumber();
+ 	int bactive = old_bactive;
+ 
++#if !defined(BOXMODEL_TF7700)
+ 	CZapitChannel* channel = getPrevNextChannel(up ? CRCInput::RC_right : CRCInput::RC_left, sl);
++#else
++	CZapitChannel* channel = getPrevNextChannel(up ? CRCInput::RC_down : CRCInput::RC_page_up, sl);
++#endif
+ 
+ 	bool doZap = false;
+ 	bool showEPG = false;
+@@ -1581,6 +1601,7 @@
+ 		epgpos = 0;
+ 		g_RCInput->getMsg(&msg, &data, 15*10); // 15 seconds, not user changable
+ 
++#if !defined(BOXMODEL_TF7700)
+ 		if ((msg == CRCInput::RC_left) || (msg == CRCInput::RC_right)) {
+ 			if (!bouquetList->Bouquets.empty())
+ 				channel = bouquetList->Bouquets[bactive]->channelList->getPrevNextChannel(msg, sl);
+@@ -1589,6 +1610,9 @@
+ 			bactive = bouquetList->getActiveBouquetNumber();
+ 		}
+ 		else if (msg == CRCInput::RC_up || msg == CRCInput::RC_down) {
++#else
++		if (msg == CRCInput::RC_up || msg == CRCInput::RC_down) {
++#endif
+ 			epgpos = (msg == CRCInput::RC_up) ? -1 : 1;
+ 		}
+ 		else if ((msg == CRCInput::RC_ok) || (msg == CRCInput::RC_home) || (msg == CRCInput::RC_timeout)) {
 --- neutrino-mp-tangos.org/lib/jsoncpp/jsoncpp.cpp
 +++ neutrino-mp-tangos/lib/jsoncpp/jsoncpp.cpp
 @@ -101,6 +101,8 @@
@@ -1357,6 +1689,24 @@
  	pthread_t thrStartHint = 0;
  	if (is_file_player) {
  		showStartingHint = true;
+@@ -1599,7 +1599,7 @@
+ 
+ void CMoviePlayerGui::quickZap(neutrino_msg_t msg)
+ {
+-	if (msg == CRCInput::RC_right || msg == CRCInput::RC_nextsong || msg == (neutrino_msg_t) g_settings.key_quickzap_up)
++	if (msg == CRCInput::RC_right || msg == CRCInput::RC_nextsong || msg == CRCInput::RC_next || msg == (neutrino_msg_t) g_settings.key_quickzap_up)
+ 	{
+ 		//printf("CMoviePlayerGui::%s: CRCInput::RC_right or g_settings.key_quickzap_up\n", __func__);
+ 		if (isLuaPlay || isUPNP)
+@@ -1631,7 +1631,7 @@
+ 			CNeutrinoApp::getInstance()->channelList->quickZap(msg);
+ 		}
+ 	}
+-	else if (msg == CRCInput::RC_left || msg == CRCInput::RC_previoussong || msg == (neutrino_msg_t) g_settings.key_quickzap_down)
++	else if (msg == CRCInput::RC_left || msg == CRCInput::RC_previoussong || msg == CRCInput::RC_prev || msg == (neutrino_msg_t) g_settings.key_quickzap_down)
+ 	{
+ 		//printf("CMoviePlayerGui::%s: CRCInput::RC_left or g_settings.key_quickzap_down\n", __func__);
+ 		if (isLuaPlay || isUPNP)
 @@ -1672,14 +1672,14 @@
  
  	while (playstate >= CMoviePlayerGui::PLAY)
@@ -1380,6 +1730,15 @@
  		if (update_lcd || g_settings.movieplayer_display_playtime) {
  			update_lcd = false;
  			updateLcd(g_settings.movieplayer_display_playtime);
+@@ -1874,7 +1874,7 @@
+ 			}
+ 		} else if (msg == (neutrino_msg_t) g_settings.key_quickzap_up || msg == (neutrino_msg_t) g_settings.key_quickzap_down) {
+ 			quickZap(msg);
+-		} else if (msg == CRCInput::RC_previoussong || msg == CRCInput::RC_nextsong) {
++		} else if (msg == CRCInput::RC_previoussong || msg == CRCInput::RC_prev || msg == CRCInput::RC_nextsong || msg == CRCInput::RC_next) {
+ 			quickZap(msg);
+ 		} else if (fromInfoviewer && msg == CRCInput::RC_ok) {
+ 			if (!filelist.empty() && (filelist_it != vzap_it))
 @@ -2254,12 +2254,12 @@
  	CScreenSetup cSS;
  	cSS.showBorder(CZapit::getInstance()->GetCurrentChannelID());
@@ -1442,6 +1801,22 @@
  
  	if(!show)
  		return;
+--- neutrino-mp-tangos.org/src/gui/pictureviewer.cpp
++++ neutrino-mp-tangos/src/gui/pictureviewer.cpp
+@@ -609,11 +609,11 @@
+ 			{
+ 				m_audioPlayer->stop();
+ 			}
+-			else if (msg == CRCInput::RC_forward || msg == CRCInput::RC_nextsong)
++			else if (msg == CRCInput::RC_forward || msg == CRCInput::RC_nextsong || msg == CRCInput::RC_next)
+ 			{
+ 				m_audioPlayer->playNext();
+ 			}
+-			else if (msg == CRCInput::RC_rewind || msg == CRCInput::RC_previoussong)
++			else if (msg == CRCInput::RC_rewind || msg == CRCInput::RC_previoussong || msg == CRCInput::RC_prev)
+ 			{
+ 				m_audioPlayer->playPrev();
+ 			}
 --- neutrino-mp-tangos.org/src/driver/fb_generic.cpp
 +++ neutrino-mp-tangos/src/driver/fb_generic.cpp
 @@ -54,6 +54,12 @@
@@ -1876,7 +2251,7 @@
 +#if defined HAVE_SH4_HARDWARE
 +inline fb_pixel_t mergeColor(fb_pixel_t oc, int ol, fb_pixel_t ic, int il)
 +{
-+	return   ((( (oc >> 24)         * ol) + ( (ic >> 24)         * il)) >> 8) << 24
++	return   (((  (oc >> 24)         * ol) + ( (ic >> 24)         * il)) >> 8) << 24
 +	         |(((((oc >> 16) & 0xff) * ol) + (((ic >> 16) & 0xff) * il)) >> 8) << 16
 +	         |(((((oc >> 8)  & 0xff) * ol) + (((ic >>  8) & 0xff) * il)) >> 8) << 8
 +	         |(((( oc        & 0xff) * ol) + (( ic        & 0xff) * il)) >> 8);
@@ -2390,7 +2765,7 @@
  		}
  
 -		if(data) { //TODO: intercepting of possible full icon cache, that could cause strange behavior while painting of uncached icons
-+		if(data)   //TODO: intercepting of possible full icon cache, that could cause strange behavior while painting of uncached icons
++		if(data)   //TODO: intercepting of possible full icon cache, that could cause strange behaviour while painting of uncached icons
 +		{
  			int dsize = width*height*sizeof(fb_pixel_t);
  			//printf("CFrameBuffer::paintIcon: %s found, data %x size %d x %d\n", newname.c_str(), data, width, height);fflush(stdout);
@@ -2988,10 +3363,10 @@
 +	std::string     iconBasePath;
 +
 +	int             fd, tty;
-+	fb_pixel_t *    lfb;
++	fb_pixel_t      *lfb;
 +	int		available;
-+	fb_pixel_t *    background;
-+	fb_pixel_t *    backupBackground;
++	fb_pixel_t      *background;
++	fb_pixel_t      *backupBackground;
 +	fb_pixel_t      backgroundColor;
 +	std::string     backgroundFilename;
 +	bool            useBackgroundPaint;
@@ -3010,7 +3385,7 @@
 +	bool locked;
 +	std::map<std::string, rawIcon> icon_cache;
 +	int cache_size;
-+	void * int_convertRGB2FB(unsigned char *rgbbuff, unsigned long x, unsigned long y, int transp, bool alpha);
++	void *int_convertRGB2FB(unsigned char *rgbbuff, unsigned long x, unsigned long y, int transp, bool alpha);
 +	int m_transparent_default, m_transparent;
 +
 +	inline void paintHLineRelInternal2Buf(const int& x, const int& dx, const int& y, const int& box_dx, const fb_pixel_t& col, fb_pixel_t* buf);
@@ -3018,7 +3393,7 @@
 +	CFbAccel *accel_sti_ddt;
 +
 +public:
-+	///gradient direction
++	// gradient direction
 +	enum
 +	{
 +		gradientHorizontal,
@@ -3036,18 +3411,18 @@
 +
 +	~CFrameBuffer();
 +
-+	static CFrameBuffer* getInstance();
++	static CFrameBuffer *getInstance();
 +
-+	void init(const char * const fbDevice = "/dev/fb0");
++	void init(const char *const fbDevice = "/dev/fb0");
 +	int setMode(unsigned int xRes, unsigned int yRes, unsigned int bpp);
 +
 +
-+	int getFileHandle() const; //only used for plugins (games) !!
++	int getFileHandle() const;  // only used for plugins (games) !!
 +	t_fb_var_screeninfo *getScreenInfo();
 +
-+	fb_pixel_t * getFrameBufferPointer(bool real = false); // pointer to framebuffer
++	fb_pixel_t * getFrameBufferPointer(bool real = false);  // pointer to framebuffer
 +	fb_pixel_t * getBackBufferPointer() const;  // pointer to backbuffer
-+	unsigned int getStride() const;             // size of a single line in the framebuffer (in bytes)
++	unsigned int getStride() const;  // size of a single line in the framebuffer (in bytes)
 +	unsigned int getScreenWidth(bool real = false);
 +	unsigned int getScreenHeight(bool real = false);
 +	unsigned int getWindowWidth(bool force_small = false);
@@ -3055,8 +3430,8 @@
 +	unsigned int getScreenX();
 +	unsigned int getScreenY();
 +
-+	bool getActive() const;                     // is framebuffer active?
-+	void setActive(bool enable);                     // is framebuffer active?
++	bool getActive() const;  // is framebuffer active?
++	void setActive(bool enable);  // is framebuffer active?
 +
 +	void setTransparency( int tr = 0 );
 +	void setBlendMode(uint8_t mode = 1);
@@ -3269,14 +3644,130 @@
 +};
 +#endif // HAVE_SH4_HARDWARE
  #endif
---- neutrino-mp-tangos.org/src/zapit/src/Makefile.am.org
-+++ neutrino-mp-tangos/src/zapit/src/Makefile.am
-@@ -1,4 +1,4 @@
--AM_CPPFLAGS = -fno-rtti -fno-exceptions -D__STDC_FORMAT_MACROS
-+AM_CPPFLAGS = -fno-rtti -fno-exceptions -D__STDC_FORMAT_MACROS -std=c++11
+--- neutrino-mp-tangos.org/src/gui/vfd_setup.cpp
++++ neutrino-mp-tangos/src/gui/vfd_setup.cpp
+@@ -260,25 +260,101 @@
+ 	brightnessstandby = CVFD::getInstance()->getBrightnessStandby();
+ 	brightnessdeepstandby = CVFD::getInstance()->getBrightnessDeepStandby();
  
- AM_CPPFLAGS += \
- 	-I$(top_builddir) \
++#if defined (BOXMODEL_OCTAGON1008) \
++ || defined (BOXMODEL_FORTIS_HDBOX) \
++ || defined (BOXMODEL_ATEVIO7500) \
++ || defined (BOXMODEL_HS7420) \
++ || defined (BOXMODEL_HS7810A) \
++ || defined (BOXMODEL_HS7420) \
++ || defined (BOXMODEL_HS7119) \
++ || defined (BOXMODEL_HS7429) \
++ || defined (BOXMODEL_HS7819) \
++ || defined (BOXMODEL_ADB_BOX) \
++ || defined (BOXMODEL_HL101) \
++ || defined (BOXMODEL_VIP1_V1) \
++ || defined (BOXMODEL_VIP1_V2) \
++ || defined (BOXMODEL_VIP2)
++	nc = new CMenuOptionNumberChooser(LOCALE_LCDCONTROLER_BRIGHTNESS, &brightness, true, 0, 7, this, CRCInput::RC_nokey, NULL, 0, 0, NONEXISTANT_LOCALE, true);
++#elif defined (BOXMODEL_TF7700)
++	nc = new CMenuOptionNumberChooser(LOCALE_LCDCONTROLER_BRIGHTNESS, &brightness, true, 0, 3, this, CRCInput::RC_nokey, NULL, 0, 0, NONEXISTANT_LOCALE, true);
++#else
+ 	nc = new CMenuOptionNumberChooser(LOCALE_LCDCONTROLER_BRIGHTNESS, &brightness, true, 0, 15, this, CRCInput::RC_nokey, NULL, 0, 0, NONEXISTANT_LOCALE, true);
++#endif
+ 	nc->setHint("", LOCALE_MENU_HINT_VFD_BRIGHTNESS);
+ 	nc->setActivateObserver(this);
+ 	mn_widget->addItem(nc);
+ 
++#if defined (BOXMODEL_OCTAGON1008) \
++ || defined (BOXMODEL_FORTIS_HDBOX) \
++ || defined (BOXMODEL_ATEVIO7500) \
++ || defined (BOXMODEL_HS7420) \
++ || defined (BOXMODEL_HS7810A) \
++ || defined (BOXMODEL_HS7420) \
++ || defined (BOXMODEL_HS7119) \
++ || defined (BOXMODEL_HS7429) \
++ || defined (BOXMODEL_HS7819) \
++ || defined (BOXMODEL_ADB_BOX) \
++ || defined (BOXMODEL_HL101) \
++ || defined (BOXMODEL_VIP1_V1) \
++ || defined (BOXMODEL_VIP1_V2) \
++ || defined (BOXMODEL_VIP2)
++	nc = new CMenuOptionNumberChooser(LOCALE_LCDCONTROLER_BRIGHTNESSSTANDBY, &brightnessstandby, true, 0, 7, this, CRCInput::RC_nokey, NULL, 0, 0, NONEXISTANT_LOCALE, true);
++#elif defined (BOXMODEL_TF7700)
++	nc = new CMenuOptionNumberChooser(LOCALE_LCDCONTROLER_BRIGHTNESSSTANDBY, &brightnessstandby, true, 0, 3, this, CRCInput::RC_nokey, NULL, 0, 0, NONEXISTANT_LOCALE, true);
++#else
+ 	nc = new CMenuOptionNumberChooser(LOCALE_LCDCONTROLER_BRIGHTNESSSTANDBY, &brightnessstandby, true, 0, 15, this, CRCInput::RC_nokey, NULL, 0, 0, NONEXISTANT_LOCALE, true);
++#endif
+ 	nc->setHint("", LOCALE_MENU_HINT_VFD_BRIGHTNESSSTANDBY);
+ 	nc->setActivateObserver(this);
+ 	mn_widget->addItem(nc);
+ 
+ 	if (g_info.hw_caps->display_can_deepstandby)
+ 	{
++#if defined (BOXMODEL_OCTAGON1008) \
++ || defined (BOXMODEL_FORTIS_HDBOX) \
++ || defined (BOXMODEL_ATEVIO7500) \
++ || defined (BOXMODEL_HS7420) \
++ || defined (BOXMODEL_HS7810A) \
++ || defined (BOXMODEL_HS7420) \
++ || defined (BOXMODEL_HS7119) \
++ || defined (BOXMODEL_HS7429) \
++ || defined (BOXMODEL_HS7819) \
++ || defined (BOXMODEL_ADB_BOX) \
++ || defined (BOXMODEL_HL101) \
++ || defined (BOXMODEL_VIP1_V1) \
++ || defined (BOXMODEL_VIP1_V2) \
++ || defined (BOXMODEL_VIP2)
++		nc = new CMenuOptionNumberChooser(LOCALE_LCDCONTROLER_BRIGHTNESSDEEPSTANDBY, &brightnessdeepstandby, true, 0, 7, this, CRCInput::RC_nokey, NULL, 0, 0, NONEXISTANT_LOCALE, true);
++#elif defined (BOXMODEL_TF7700)
++		nc = new CMenuOptionNumberChooser(LOCALE_LCDCONTROLER_BRIGHTNESSDEEPSTANDBY, &brightnessdeepstandby, true, 0, 3, this, CRCInput::RC_nokey, NULL, 0, 0, NONEXISTANT_LOCALE, true);
++#else
+ 		nc = new CMenuOptionNumberChooser(LOCALE_LCDCONTROLER_BRIGHTNESSDEEPSTANDBY, &brightnessdeepstandby, true, 0, 15, this, CRCInput::RC_nokey, NULL, 0, 0, NONEXISTANT_LOCALE, true);
++#endif
+ 		nc->setHint("", LOCALE_MENU_HINT_VFD_BRIGHTNESSDEEPSTANDBY);
+ 		nc->setActivateObserver(this);
+ 		mn_widget->addItem(nc);
+ 	}
+ 
++#if defined (BOXMODEL_OCTAGON1008) \
++ || defined (BOXMODEL_FORTIS_HDBOX) \
++ || defined (BOXMODEL_ATEVIO7500) \
++ || defined (BOXMODEL_HS7420) \
++ || defined (BOXMODEL_HS7810A) \
++ || defined (BOXMODEL_HS7420) \
++ || defined (BOXMODEL_HS7119) \
++ || defined (BOXMODEL_HS7429) \
++ || defined (BOXMODEL_HS7819) \
++ || defined (BOXMODEL_ADB_BOX) \
++ || defined (BOXMODEL_HL101) \
++ || defined (BOXMODEL_VIP1_V1) \
++ || defined (BOXMODEL_VIP1_V2) \
++ || defined (BOXMODEL_VIP2)
++	nc = new CMenuOptionNumberChooser(LOCALE_LCDMENU_DIM_BRIGHTNESS, &g_settings.lcd_setting_dim_brightness, vfd_enabled, -1, 7, NULL, CRCInput::RC_nokey, NULL, 0, -1, LOCALE_OPTIONS_OFF, true);
++#elif defined (BOXMODEL_TF7700)
++	nc = new CMenuOptionNumberChooser(LOCALE_LCDMENU_DIM_BRIGHTNESS, &g_settings.lcd_setting_dim_brightness, vfd_enabled, -1, 3, NULL, CRCInput::RC_nokey, NULL, 0, -1, LOCALE_OPTIONS_OFF, true);
++#else
+ 	nc = new CMenuOptionNumberChooser(LOCALE_LCDMENU_DIM_BRIGHTNESS, &g_settings.lcd_setting_dim_brightness, vfd_enabled, -1, 15, NULL, CRCInput::RC_nokey, NULL, 0, -1, LOCALE_OPTIONS_OFF, true);
++#endif
+ 	nc->setHint("", LOCALE_MENU_HINT_VFD_BRIGHTNESSDIM);
+ 	nc->setActivateObserver(this);
+ 	mn_widget->addItem(nc);
+--- neutrino-mp-tangos.org/src/gui/audioplayer.cpp
++++ neutrino-mp-tangos/src/gui/audioplayer.cpp
+@@ -477,7 +477,7 @@
+ 				}
+ 			}
+ 		}
+-		else if (msg == CRCInput::RC_left || msg == CRCInput::RC_previoussong)
++		else if (msg == CRCInput::RC_left || msg == CRCInput::RC_previoussong || msg == CRCInput::RC_previous)
+ 		{
+ 			if (m_key_level == 1)
+ 			{
+@@ -504,7 +504,7 @@
+ 			}
+ 
+ 		}
+-		else if (msg == CRCInput::RC_right || msg == CRCInput::RC_nextsong)
++		else if (msg == CRCInput::RC_right || msg == CRCInput::RC_nextsong || msg == CRCInput::RC_next)
+ 		{
+ 			if (m_key_level == 1)
+ 			{
 --- neutrino-mp-tangos.org/src/gui/bedit/Makefile.am
 +++ neutrino-mp-tangos/src/gui/bedit/Makefile.am
 @@ -1,4 +1,4 @@
@@ -3365,6 +3856,34 @@
  
  SUBDIRS = pictureviewer
  
+--- neutrino-mp-tangos.org/src/gui/scan.cpp
++++ neutrino-mp-tangos/src/gui/scan.cpp
+@@ -410,7 +410,7 @@
+ 			sprintf(buffer, "%ld", data);
+ 			paintLine(xpos2, ypos_transponder, w_to_radar, buffer);
+ 			total = data;
+-			snprintf(str, sizeof(buffer), "scan: %d/%d", done, total);
++			snprintf(str, sizeof(buffer), "Scan: %d/%d", done, total);
+ 			CVFD::getInstance()->showMenuText(0, str, -1, true);
+ 			break;
+ 
+@@ -419,7 +419,7 @@
+ 			done = data;
+ 			sprintf(buffer, "%d/%d", done, total);
+ 			paintLine(xpos2, ypos_transponder, (ypos_transponder > ypos_radar + 66) ? w : w_to_radar, buffer);
+-			snprintf(str, sizeof(buffer), "scan %d/%d", done, total);
++			snprintf(str, sizeof(buffer), "Scan %d/%d", done, total);
+ 			CVFD::getInstance()->showMenuText(0, str, -1, true);
+ 			break;
+ 
+--- neutrino-mp-tangos.org/src/nhttpd/tuxboxapi/Makefile.am
++++ neutrino-mp-tangos/src/nhttpd/tuxboxapi/Makefile.am
+@@ -1,4 +1,4 @@
+-AM_CPPFLAGS = -fno-rtti -fno-exceptions -D__STDC_FORMAT_MACROS -D_FILE_OFFSET_BITS=64
++AM_CPPFLAGS = -fno-rtti -fno-exceptions -D__STDC_FORMAT_MACROS -D_FILE_OFFSET_BITS=64 -D_GLIBCXX_USE_C99 -std=c++11
+ 
+ AM_CPPFLAGS += \
+ 	-I$(top_builddir) \
 --- neutrino-mp-tangos.org/src/system/Makefile.am
 +++ neutrino-mp-tangos/src/system/Makefile.am
 @@ -2,7 +2,7 @@
@@ -3376,22 +3895,12 @@
  
  AM_CPPFLAGS = \
  	-I$(top_builddir) \
---- neutrino-mp-tangos.org/src/nhttpd/tuxboxapi/Makefile.am
-+++ neutrino-mp-tangos/src/nhttpd/tuxboxapi/Makefile.am
+--- neutrino-mp-tangos.org/src/zapit/src/Makefile.am.org
++++ neutrino-mp-tangos/src/zapit/src/Makefile.am
 @@ -1,4 +1,4 @@
--AM_CPPFLAGS = -fno-rtti -fno-exceptions -D__STDC_FORMAT_MACROS -D_FILE_OFFSET_BITS=64
-+AM_CPPFLAGS = -fno-rtti -fno-exceptions -D__STDC_FORMAT_MACROS -D_FILE_OFFSET_BITS=64 -D_GLIBCXX_USE_C99 -std=c++11
+-AM_CPPFLAGS = -fno-rtti -fno-exceptions -D__STDC_FORMAT_MACROS
++AM_CPPFLAGS = -fno-rtti -fno-exceptions -D__STDC_FORMAT_MACROS -std=c++11
  
  AM_CPPFLAGS += \
  	-I$(top_builddir) \
---- neutrino-mp-tangos.org/src/Makefile.am
-+++ neutrino-mp-tangos/src/Makefile.am
-@@ -3,7 +3,7 @@
- rcsim.h: $(srcdir)/driver/rcinput.h $(srcdir)/create_rcsim_h.sh
- 	pushd $(srcdir) && sh ./create_rcsim_h.sh > $@
- 
--AM_CXXFLAGS = -fno-rtti -fno-exceptions -D__STDC_FORMAT_MACROS
-+AM_CXXFLAGS = -fno-rtti -fno-exceptions -D__STDC_FORMAT_MACROS -D_GLIBCXX_USE_C99 -std=c++11
- 
- SUBDIRS = zapit gui daemonc driver system eitd timerd
- 
+
