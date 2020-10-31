@@ -523,9 +523,15 @@ $(TFINSTALLER_DIR)/tfpacker:
 	$(MAKE) -C $(TFINSTALLER_DIR) tfpacker
 	$(TOUCH)
 
+#ifneq ($(BS_GCC_VER), $(filter $(BS_GCC_VER), 4.6.3 4.8.4))
+#TFKERNEL_PATCHES_24  = linux-sh4-remove_m4-nofpu-arg_$(KERNEL_LABEL).patch
+#endif
+
 $(D)/tfkernel: $(D)/kernel
 	$(START_BUILD)
 	$(SILENT)cd $(KERNEL_DIR); \
+		$(call apply_patches, $(TFKERNEL_PATCHES_24)); \
+		cd $(KERNEL_DIR); \
 		$(MAKE) $(if $(TF7700),TF7700=y) ARCH=sh CROSS_COMPILE=$(TARGET)- uImage
 	$(TOUCH)
 
@@ -533,9 +539,12 @@ $(D)/tfkernel: $(D)/kernel
 # u-boot
 #
 UBOOT_VER = 1.3.1
-UBOOT_PATCH  =  u-boot-$(UBOOT_VER).patch
+UBOOT_PATCH  = u-boot-$(UBOOT_VER).patch
 ifeq ($(BOXTYPE), tf7700)
 UBOOT_PATCH += u-boot-$(UBOOT_VER)-tf7700.patch
+endif
+ifneq ($(BS_GCC_VER), $(filter $(BS_GCC_VER), 4.6.3 4.8.4))
+UBOOT_PATCH += u-boot-sh4-remove_m4-nofpu-arg.patch
 endif
 
 $(ARCHIVE)/u-boot-$(UBOOT_VER).tar.bz2:

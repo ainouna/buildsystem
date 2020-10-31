@@ -8,8 +8,12 @@ all:
 	$(SILENT)if [ -e $(TFINSTALLER_DIR)/uImage ]; then \
 		rm $(TFINSTALLER_DIR)/uImage; \
 	fi
-	$(SILENT)cp $(TFINSTALLER_DIR)/initramfs_list $(KERNEL_DIR)/initramfs_list
 	$(SILENT)cp $(KERNEL_DIR)/.config $(TFINSTALLER_DIR)/.config.org
+ifeq ($(BS_GCC_VER), $(filter $(BS_GCC_VER), 4.6.3 4.8.4))
+	$(SILENT)cp $(TFINSTALLER_DIR)/initramfs_list $(KERNEL_DIR)/initramfs_list
+else
+	$(SILENT)cp $(TFINSTALLER_DIR)/initramfs_list-gcc-4.9.4 $(KERNEL_DIR)/initramfs_list
+endif
 	$(SILENT)sed -i 's/# CONFIG_INITRAMFS_SOURCE is not set/CONFIG_INITRAMFS_SOURCE="initramfs_list"/g' $(KERNEL_DIR)/.config
 	$(SILENT)sed -i 's/CONFIG_INITRAMFS_SOURCE=""/CONFIG_INITRAMFS_SOURCE="initramfs_list"/g' $(KERNEL_DIR)/.config
 	$(SILENT)if [ `grep -x -c "CONFIG_INITRAMFS_ROOT_UID=0" $(KERNEL_DIR)/.config` == 0 ]; then \
