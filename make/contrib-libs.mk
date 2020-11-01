@@ -1972,8 +1972,9 @@ $(D)/gd: $(D)/bootstrap $(D)/libpng $(D)/libjpeg $(D)/freetype $(ARCHIVE)/$(GD_S
 LIBUSB_VER = 1.0.22
 LIBUSB_VER_MAJOR = 1.0
 LIBUSB_SOURCE = libusb-$(LIBUSB_VER).tar.bz2
-LIBUSB_PATCH = libusb-$(LIBUSB_VER).patch
-LIBUSB_PATCH += libusb-1.0.22-sh4-clock_gettime.patch
+LIBUSB_PATCH  = libusb-$(LIBUSB_VER).patch
+LIBUSB_PATCH += libusb-$(LIBUSB_VER)-automake-version.patch
+LIBUSB_PATCH += libusb-$(LIBUSB_VER)-sh4-clock_gettime.patch
 
 $(ARCHIVE)/$(LIBUSB_SOURCE):
 	$(WGET) https://sourceforge.net/projects/libusb/files/libusb-$(LIBUSB_VER_MAJOR)/libusb-$(LIBUSB_VER)/$(LIBUSB_SOURCE)
@@ -1983,7 +1984,14 @@ $(D)/libusb: $(D)/bootstrap $(ARCHIVE)/$(LIBUSB_SOURCE)
 	$(REMOVE)/libusb-$(LIBUSB_VER)
 	$(UNTAR)/$(LIBUSB_SOURCE)
 	$(CH_DIR)/libusb-$(LIBUSB_VER); \
+		rm aclocal.m4; \
+		rm compile; \
+		rm config.*; \
+		rm configure; \
+		rm depcomp; \
+		rm install-sh; \
 		$(call apply_patches, $(LIBUSB_PATCH)); \
+		chmod +x autogen.sh; \
 		$(CONFIGURE) \
 			--prefix=/usr \
 			--enable-static \
