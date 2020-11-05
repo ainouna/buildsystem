@@ -53,8 +53,8 @@
  	if (c->cut_major == -1)
  		seq_printf(m, "cut\t\t: unknown\n");
  	else if (c->cut_minor == -1)
---- linux-sh4/arch/sh/boards/mach-sat7111/setup.c.org
-+++ linux-sh4/arch/sh/boards/mach-sat7111/setup.c
+--- a/arch/sh/boards/mach-sat7111/setup.c.org
++++ b/arch/sh/boards/mach-sat7111/setup.c
 @@ -28,13 +28,14 @@
  #include <linux/mtd/nand.h>
  #include <linux/mtd/physmap.h>
@@ -80,11 +80,11 @@
 +const char *LMI_IO_partalias[] = { "v4l2-coded-video-buffers", "BPA2_Region1", "v4l2-video-buffers", "coredisplay-video", "gfx-memory", "BPA2_Region0", "LMI_VID", NULL };
 +
 +/*
-+0x40000000 - 0x403FFFFF - cocpu 1 ram (4mb)
-+0x40400000 - 0x407FFFFF - cocpu 2 ram (4mb)
-+0x40800000 - 0x47FFFFFF - linux   (120mb)
-+0x48000000 - 0x49FFFFFF - bigphys ( 32mb)
-+0x4A000000 - 0x4FFFFFFF - lmi_io  ( 96mb)
++0x40000000 - 0x403FFFFF - cocpu 1 ram (  4 Mb)
++0x40400000 - 0x407FFFFF - cocpu 2 ram (  4 Mb)
++0x40800000 - 0x47FFFFFF - linux       (120 Mb)
++0x48000000 - 0x49FFFFFF - bigphys     ( 32 Mb)
++0x4A000000 - 0x4FFFFFFF - lmi_io      ( 96 Mb)
 +*/
 +static struct bpa2_partition_desc bpa2_parts_table[] = {
 +	{
@@ -217,59 +217,54 @@
 -				.name = "Serial Flash 2",
 -				.size = MTDPART_SIZ_FULL,
 -				.offset = MTDPART_OFS_NXTBLK,
-+				.name   = "Boot firmware",      //mtd0
-+				.size   = 0x00100000,           // 1M
-+				.offset = 0x00000000,
++				.name   = "Boot firmware", // mtd0  WARNING: Loader 5.XX values!
++				.size   = 0x00100000,      // 1M
++				.offset = 0x00000000
 +			},
 +			{
-+				.name   = "Kernel",             //mtd1
-+				.size   = 0x00200000,           // 2M
-+				.offset = 0x00100000,           // 3M
++				.name   = "Kernel",        // mtd1
++				.size   = 0x00200000,      // 2M
++				.offset = 0x00100000       // 3M
 +			},
 +			{
-+				.name   = "APP",                //mtd2
-+				.size   = 0x00a00000,           //10M
-+				.offset = 0x00300000,           // 3M
++				.name   = "APP",           // mtd2
++				.size   = 0x00a00000,      // 10M
++				.offset = 0x00300000       //  3M
 +			},
 +			{
-+				.name   = "ROOT FS",            //mtd3
-+				.size   = 0x00b00000,           //11M
-+				.offset = 0x00d00000,           //13M
++				.name   = "ROOT FS",       // mtd3
++				.size   = 0x00b00000,      // 11M
++				.offset = 0x00d00000       // 13M
 +			},
 +			{
-+				.name   = "Device",             //mtd4
-+				.size   = 0x00300000,           // 3M
-+				.offset = 0x01800000,           //24M
++				.name   = "Device",        // mtd4
++				.size   = 0x00300000,      //  3M
++				.offset = 0x01800000       // 24M
 +			},
 +			{
-+				.name   = "Config",             //mtd5
-+				.size   = 0x00100000,           // 1M
-+				.offset = 0x01b00000,           //27M
++				.name   = "Config",        // mtd5
++				.size   = 0x00100000,      //  1M
++				.offset = 0x01b00000       // 27M
 +			},
 +			{
-+				.name   = "User",               //mtd6
-+				.size   = MTDPART_SIZ_FULL,     // 4M
-+				.offset = 0x01c00000,           //28M
++				.name   = "User",          // mtd6
++				.size   = 0x00400000,      //  4M
++				.offset = 0x01c00000       // 28M
 +			},
 +			{
-+				.name   = "User",               //mtd6
-+				.size   = MTDPART_SIZ_FULL,     // 4M
-+				.offset = 0x01c00000,           //28M
++				.name   = "All",           // mtd7
++				.size   = 0x02000000,      // 32M
++				.offset = 0x00000000
 +			},
 +			{
-+				.name   = "All",
-+				.size   = MTDPART_SIZ_FULL,     //32M
-+				.offset = 0x00000000,
++				.name   = "APP_ORG",       // mtd8
++				.size   = 0x00500000,      //  5M
++				.offset = 0x00300000       //  3M
 +			},
 +			{
-+				.name   = "APP_ORG",
-+				.size   = 0x00500000,           // 5M
-+				.offset = 0x00300000,           // 3M
-+			},
-+			{
-+				.name   = "APP_BAK",
-+				.size   = 0x00500000,           // 5M
-+				.offset = 0x00800000,           // 8M
++				.name   = "APP_BAK",       // mtd9
++				.size   = 0x00500000,      // 5M
++				.offset = 0x00800000       // 8M
  			},
  		},
  	},
@@ -317,8 +312,8 @@
  #define ILC_INT_IRQ(x)	(ILC_FIRST_IRQ + (x))
  #define ILC_EXT_IRQ(x)	(ILC_FIRST_IRQ + 64 + (x))
  #define ILC_IRQ(x)	ILC_INT_IRQ(x)
---- linux-sh4/drivers/stm/stx7111_comms.c	2012-03-31 15:26:54.723480793 +0200
-+++ linux-sh4/drivers/stm/stx7111_comms.c.patched	2012-03-31 15:26:54.982982566 +0200
+--- a/drivers/stm/stx7111_comms.c.org
++++ b/drivers/stm/stx7111_comms.c
 @@ -69,10 +69,10 @@
  	[3] = {
  		.gpios_num = 4,
@@ -345,8 +340,8 @@
  			STM_PLAT_RESOURCE_DMA_NAMED("rx_half_full", 14),
  			STM_PLAT_RESOURCE_DMA_NAMED("tx_half_empty", 18),
  		},
---- linux-sh4/drivers/stm/gpio.c.org
-+++ linux-sh4/drivers/stm/gpio.c
+--- a/drivers/stm/gpio.c.org
++++ b/drivers/stm/gpio.c
 @@ -27,12 +27,17 @@
  #include <linux/stm/platform.h>
  #include <linux/stm/pad.h>
@@ -361,7 +356,7 @@
  
  struct stpio_pin {
  #ifdef CONFIG_STPIO
-+	const char *pin_name;
++	char *pin_name;
  	void (*func)(struct stpio_pin *pin, void *dev);
  	void* dev;
  	unsigned short port_no, pin_no;
@@ -397,13 +392,13 @@
 +static inline const char *stpio_get_direction_name(unsigned int direction)
 +{
 +	switch (direction) {
-+	case STPIO_NONPIO:     return "IN  (pull-up)      ";
-+	case STPIO_BIDIR:      return "BI  (open-drain)   ";
-+	case STPIO_OUT:        return "OUT (push-pull)    ";
-+	case STPIO_IN:         return "IN  (Hi-Z)         ";
-+	case STPIO_ALT_OUT:    return "Alt-OUT (push-pull)";
-+	case STPIO_ALT_BIDIR:  return "Alt-BI (open-drain)";
-+	default:               return "forbidden          ";
++	case STPIO_NONPIO:		return "IN  (pull-up)      ";
++	case STPIO_BIDIR:		return "BI  (open-drain)   ";
++	case STPIO_OUT:			return "OUT (push-pull)    ";
++	case STPIO_IN:			return "IN  (Hi-Z)         ";
++	case STPIO_ALT_OUT:		return "Alt-OUT (push-pull)";
++	case STPIO_ALT_BIDIR:	return "Alt-BI (open-drain)";
++	default:				return "forbidden          ";
 +	}
 +};
 +
@@ -426,26 +421,26 @@
 +static int stpio_read_proc(char *page, char **start, off_t off, int count,
 +		int *eof, void *data_unused)
 +{
-+	int len;
-+	int port_no, pin_no;
-+	char *name;
-+	off_t begin = 0;
-+	int num_ports = stm_gpio_num / STM_GPIO_PINS_PER_PORT;
++	int                  len;
++	int                  port_no, pin_no;
++	off_t                begin = 0;
++	int                  num_ports = stm_gpio_num / STM_GPIO_PINS_PER_PORT;
 +	struct stm_gpio_port *port;
-+	struct stm_gpio_pin *pin;
++	struct stm_gpio_pin  *pin;
++	char                 *name;
 +
-+	len = sprintf(page, "  port      name          direction\n");
++	len = sprintf(page, "  Port      Name          Direction\n");
 +	for (port_no = 0; port_no < num_ports; port_no++)
 +	{
 +		for (pin_no = 0; pin_no < STM_GPIO_PINS_PER_PORT; pin_no++) {
 +
 +			port = &stm_gpio_ports[port_no];
-+			if(!port) continue;
-+
++			if (!port)
++				continue;
 +			pin = &port->pins[pin_no];
-+			if(!pin) continue;
-+
-+			*name = (char)(pin->stpio.pin_name ? pin->stpio.pin_name : "");
++			if (!pin)
++				continue;
++			name = pin->stpio.pin_name ? pin->stpio.pin_name : "";
 +			len += sprintf(page + len,
 +					"PIO %d.%d [%-10s] [%s] [%s]\n",
 +					port_no, pin_no, name,
@@ -473,7 +468,7 @@
  
  #endif /* CONFIG_STPIO */
  
-@@ -964,7 +1054,11 @@
+@@ -964,7 +1055,11 @@
  static int __init stm_gpio_init(void)
  {
  	int ret;
@@ -486,71 +481,51 @@
  	ret = sysdev_class_register(&stm_gpio_sysdev_class);
  	if (ret)
  		return ret;
-*** linux-sh4/drivers/net/phy/phy_device.c.org
---- linux-sh4/drivers/net/phy/phy_device.c
-***************
-*** 962,968 ****
-  		return retval;
-  	}
-  
-! 	pr_debug("%s: Registered new driver\n", new_driver->name);
-  
-  	return 0;
-  }
---- 962,968 ----
-  		return retval;
-  	}
-  
-! 	pr_info("%s: Registered new driver (0x%08x)\n", new_driver->name, new_driver->phy_id);
-  
-  	return 0;
-  }
-*** linux-sh4/drivers/net/stmmac/stmmac_mdio.c.org
---- linux-sh4/drivers/net/stmmac/stmmac_mdio.c
-***************
-*** 169,174 ****
---- 169,175 ----
-  	priv->mii = new_bus;
-  
-  	found = 0;
-+ 
-  	for (addr = 0; addr < PHY_MAX_ADDR; addr++) {
-  		struct phy_device *phydev = new_bus->phy_map[addr];
-  		if (phydev) {
-***************
-*** 191,202 ****
-  			 * and no PHY number was provided to the MAC,
-  			 * use the one probed here.
-  			 */
-! 			if ((priv->plat->bus_id == mdio_bus_data->bus_id) &&
-! 			    (priv->plat->phy_addr == -1))
-  				priv->plat->phy_addr = addr;
-  
-- 			act = (priv->plat->bus_id == mdio_bus_data->bus_id) &&
-- 				(priv->plat->phy_addr == addr);
-  			switch (phydev->irq) {
-  			case PHY_POLL:
-  				irq_str = "POLL";
---- 192,213 ----
-  			 * and no PHY number was provided to the MAC,
-  			 * use the one probed here.
-  			 */
-! 
-! 			act = 0;
-! 
-! 			if ((priv->plat->bus_id == mdio_bus_data->bus_id) && (/*(priv->plat->phy_addr == -1) ||*/
-! 					(phydev->phy_id == 0x0181b880) || // Davicom DM9161E
-! 					(phydev->phy_id == 0x0181b8a0) || // Davicom DM9161A
-! 					(phydev->phy_id == 0x00181b80) || // Davicom DM9131
-! 					(phydev->phy_id == 0x1c040011) || // STe100p
-! 					(phydev->phy_id == 0x00061c50) || // STe101p
-! 					(phydev->phy_id == 0x00008201) || (phydev->phy_id == 0x0007c0f1) ||
-! 					(phydev->phy_id == 0x001cc912)))  // RTL821x
-! 			{
-  				priv->plat->phy_addr = addr;
-+ 				act=1;
+--- a/drivers/net/phy/phy_device.c.org
++++ b/drivers/net/phy/phy_device.c
+@@ -962,7 +962,7 @@
+ 		return retval;
+ 	}
+ 
+-	pr_debug("%s: Registered new driver\n", new_driver->name);
++	pr_info("%s: Registered new driver (0x%08x)\n", new_driver->name, new_driver->phy_id);
+ 
+ 	return 0;
+ }
+--- a/drivers/net/stmmac/stmmac_mdio.c.org
++++ b/drivers/net/stmmac/stmmac_mdio.c
+@@ -169,6 +169,7 @@
+ 	priv->mii = new_bus;
+ 
+ 	found = 0;
++
+ 	for (addr = 0; addr < PHY_MAX_ADDR; addr++) {
+ 		struct phy_device *phydev = new_bus->phy_map[addr];
+ 		if (phydev) {
+@@ -191,12 +192,21 @@
+ 			 * and no PHY number was provided to the MAC,
+ 			 * use the one probed here.
+ 			 */
+-			if ((priv->plat->bus_id == mdio_bus_data->bus_id) &&
+-			    (priv->plat->phy_addr == -1))
++
++			act = 0;
++
++			if ((priv->plat->bus_id == mdio_bus_data->bus_id) && (/*(priv->plat->phy_addr == -1) ||*/
++					(phydev->phy_id == 0x0181b880) || // Davicom DM9161E
++					(phydev->phy_id == 0x0181b8a0) || // Davicom DM9161A
++					(phydev->phy_id == 0x00181b80) || // Davicom DM9131
++					(phydev->phy_id == 0x1c040011) || // STe100p
++					(phydev->phy_id == 0x00061c50) || // STe101p
++					(phydev->phy_id == 0x00008201) || (phydev->phy_id == 0x0007c0f1) ||
++					(phydev->phy_id == 0x001cc912)))  // RTL821x
++			{
+ 				priv->plat->phy_addr = addr;
++ 				act = 1;
 + 			}
-  
-  			switch (phydev->irq) {
-  			case PHY_POLL:
-  				irq_str = "POLL";
+-
+-			act = (priv->plat->bus_id == mdio_bus_data->bus_id) &&
+-				(priv->plat->phy_addr == addr);
+ 			switch (phydev->irq) {
+ 			case PHY_POLL:
+ 				irq_str = "POLL";

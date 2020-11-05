@@ -1,6 +1,6 @@
 --- a/arch/sh/kernel/setup.c.org
 +++ b/arch/sh/kernel/setup.c
-@@ -388,6 +388,44 @@
+@@ -389,6 +389,44 @@
  #endif
  #endif
  
@@ -8,11 +8,11 @@
 +		int command_line_len = strlen(command_line);
 +		char flash_org_command_line[] = "console=ttyAS0,115200 root=/dev/mtdblock2 ubi.mtd=2";
 +		char flash_new_command_line[] = "console=ttyAS0,115200 root=/dev/mtdblock2 ubi.mtd=2 root=ubi0:rootfs rootfstype=ubifs rw init=/bin/devinit coprocessor_mem=4m@0x40000000,4m@0x40400000 printk=1 console_loglevel=7 stmmaceth=ethaddr:";
-+		char usb_org_command_line[] = "console=ttyAS0,115200 root=/dev/root";
-+		char usb_new_command_line[] = "console=ttyAS0,115200 root=/dev/root rw init=/bin/devinit coprocessor_mem=4m@0x40000000,4m@0x40400000 nwhwconf=device:eth0,hwaddr:";
-+		char mac[] = "12:34:56:78:9A:BC";
 +		int flash_org_command_line_len = strlen(flash_org_command_line);
++		char usb_org_command_line[] = "console=ttyAS0,115200 root=/dev/root rw";
++		char usb_new_command_line[] = "console=ttyAS0,115200 root=/dev/sda2/root.img rootfstype=jffs2 rw nwhwconf=$nwhwnet init=/bin/devinit coprocessor_mem=4m@0x40000000,4m@0x40400000 coprocessor_mem=4m@0x40000000,4m@0x40400000 printk=1 console_loglevel=7 rootdelay=5 stmmaceth=ethaddr:";
 +		int usb_org_command_line_len = strlen(usb_org_command_line);
++		char mac[] = "00:00:00:00:00:00";
 +		int i;
 +
 +		for (i = 0; i < (command_line_len - 7); i++)
@@ -49,12 +49,12 @@
  	seq_printf(m, "processor\t: %d\n", cpu);
  	seq_printf(m, "cpu family\t: %s\n", init_utsname()->machine);
  	seq_printf(m, "cpu type\t: %s\n", get_cpu_subtype(c));
-+	seq_printf(m, "cpu MHz\t\t: 450\n");
++	seq_printf(m, "cpu MHz\t: 450\n");
  	if (c->cut_major == -1)
  		seq_printf(m, "cut\t\t: unknown\n");
  	else if (c->cut_minor == -1)
---- linux-sh4/arch/sh/boards/mach-hdk7111/setup.c.org
-+++ linux-sh4/arch/sh/boards/mach-hdk7111/setup.c
+--- a/arch/sh/boards/mach-hdk7111/setup.c.org
++++ b/arch/sh/boards/mach-hdk7111/setup.c
 @@ -27,125 +27,154 @@
  #include <linux/stm/pci-glue.h>
  #include <linux/mtd/mtd.h>
@@ -89,11 +89,11 @@
 +
 +#if 0 //#ifdef CONFIG_BPA2_DIRECTFBOPTIMIZED
 +/*
-+0x40000000 - 0x403FFFFF - cocpu 1 ram (4Mb)
-+0x40400000 - 0x407FFFFF - cocpu 2 ram (4Mb)
-+0x40800000 - 0x475FFFFF - linux     (110Mb)
-+0x47600000 - 0x4F1FFFFF - lmi_io    (124Mb)
-+0x4F200000 - 0x4FFFFFFF - bigphys   ( 14Mb)
++0x40000000 - 0x403FFFFF - cocpu 1 ram (  4 Mb)
++0x40400000 - 0x407FFFFF - cocpu 2 ram (  4 Mb)
++0x40800000 - 0x475FFFFF - linux       (110 Mb)
++0x47600000 - 0x4F1FFFFF - lmi_io      (124 Mb)
++0x4F200000 - 0x4FFFFFFF - bigphys     ( 14 Mb)
 +*/
 +static struct bpa2_partition_desc bpa2_parts_table[] = {
 +	{
@@ -113,11 +113,11 @@
 +};
 +#else
 +/*
-+0x40000000 - 0x403FFFFF - cocpu 1 ram (4Mb)
-+0x40400000 - 0x407FFFFF - cocpu 2 ram (4Mb)
-+0x40800000 - 0x47FFFFFF - linux     (120Mb)
-+0x48000000 - 0x49FFFFFF - bigphys   ( 32Mb)
-+0x4A000000 - 0x4FFFFFFF - lmi_io    ( 96Mb)
++0x40000000 - 0x403FFFFF - cocpu 1 ram (  4 Mb)
++0x40400000 - 0x407FFFFF - cocpu 2 ram (  4 Mb)
++0x40800000 - 0x47FFFFFF - linux       (120 Mb)
++0x48000000 - 0x49FFFFFF - bigphys     ( 32 Mb)
++0x4A000000 - 0x4FFFFFFF - lmi_io      ( 96 Mb)
 +*/
 +static struct bpa2_partition_desc bpa2_parts_table[] = {
 +	{
@@ -458,8 +458,8 @@
  }
  arch_initcall(hdk7111_devices_init);
  
---- linux-sh4/arch/sh/include/asm/irq-ilc.h	2012-03-31 15:26:54.634523363 +0200
-+++ linux-sh4/arch/sh/include/asm/irq-ilc.h.patched	2012-03-31 15:26:54.084558439 +0200
+--- a/arch/sh/include/asm/irq-ilc.h.org
++++ b/arch/sh/include/asm/irq-ilc.h
 @@ -40,7 +40,7 @@
  #define ILC_IRQ(x)	(ILC_FIRST_IRQ + (x))
  #elif	defined(CONFIG_CPU_SUBTYPE_STX7111)
@@ -469,8 +469,8 @@
  #define ILC_INT_IRQ(x)	(ILC_FIRST_IRQ + (x))
  #define ILC_EXT_IRQ(x)	(ILC_FIRST_IRQ + 64 + (x))
  #define ILC_IRQ(x)	ILC_INT_IRQ(x)
---- linux-sh4/drivers/stm/stx7111_comms.c	2012-03-31 15:26:54.723480793 +0200
-+++ linux-sh4/drivers/stm/stx7111_comms.c.patched	2012-03-31 15:26:54.982982566 +0200
+--- a/drivers/stm/stx7111_comms.c.org
++++ b/drivers/stm/stx7111_comms.c
 @@ -69,10 +69,10 @@
  	[3] = {
  		.gpios_num = 4,
@@ -492,13 +492,13 @@
  		.resource	= (struct resource[]) {
 -			STM_PLAT_RESOURCE_MEM(0xfd033000, 0x2c),
 -			STM_PLAT_RESOURCE_IRQ(evt2irq(0x1100), -1),
-+			STM_PLAT_RESOURCE_MEM(0xfd031000, 0x2c), //stasc1
++			STM_PLAT_RESOURCE_MEM(0xfd031000, 0x2c),  // stasc1
 +			STM_PLAT_RESOURCE_IRQ(evt2irq(0x2440), -1),
  			STM_PLAT_RESOURCE_DMA_NAMED("rx_half_full", 14),
  			STM_PLAT_RESOURCE_DMA_NAMED("tx_half_empty", 18),
  		},
---- linux-sh4/drivers/stm/gpio.c.org
-+++ linux-sh4/drivers/stm/gpio.c
+--- a/drivers/stm/gpio.c.org
++++ b/drivers/stm/gpio.c
 @@ -27,12 +27,17 @@
  #include <linux/stm/platform.h>
  #include <linux/stm/pad.h>
@@ -513,7 +513,7 @@
  
  struct stpio_pin {
  #ifdef CONFIG_STPIO
-+	const char *pin_name;
++	char *pin_name;
  	void (*func)(struct stpio_pin *pin, void *dev);
  	void* dev;
  	unsigned short port_no, pin_no;
@@ -549,13 +549,13 @@
 +static inline const char *stpio_get_direction_name(unsigned int direction)
 +{
 +	switch (direction) {
-+	case STPIO_NONPIO:     return "IN  (pull-up)      ";
-+	case STPIO_BIDIR:      return "BI  (open-drain)   ";
-+	case STPIO_OUT:        return "OUT (push-pull)    ";
-+	case STPIO_IN:         return "IN  (Hi-Z)         ";
-+	case STPIO_ALT_OUT:    return "Alt-OUT (push-pull)";
-+	case STPIO_ALT_BIDIR:  return "Alt-BI (open-drain)";
-+	default:               return "forbidden          ";
++	case STPIO_NONPIO:		return "IN  (pull-up)      ";
++	case STPIO_BIDIR:		return "BI  (open-drain)   ";
++	case STPIO_OUT:			return "OUT (push-pull)    ";
++	case STPIO_IN:			return "IN  (Hi-Z)         ";
++	case STPIO_ALT_OUT:		return "Alt-OUT (push-pull)";
++	case STPIO_ALT_BIDIR:	return "Alt-BI (open-drain)";
++	default:				return "forbidden          ";
 +	}
 +};
 +
@@ -578,25 +578,26 @@
 +static int stpio_read_proc(char *page, char **start, off_t off, int count,
 +		int *eof, void *data_unused)
 +{
-+	int len;
-+	int port_no, pin_no;
-+	off_t begin = 0;
-+	int num_ports = stm_gpio_num / STM_GPIO_PINS_PER_PORT;
++	int                  len;
++	int                  port_no, pin_no;
++	off_t                begin = 0;
++	int                  num_ports = stm_gpio_num / STM_GPIO_PINS_PER_PORT;
 +	struct stm_gpio_port *port;
-+	struct stm_gpio_pin *pin;
++	struct stm_gpio_pin  *pin;
++	char                 *name;
 +
-+	len = sprintf(page, "  port      name          direction\n");
++	len = sprintf(page, "  Port      Name          Direction\n");
 +	for (port_no = 0; port_no < num_ports; port_no++)
 +	{
 +		for (pin_no = 0; pin_no < STM_GPIO_PINS_PER_PORT; pin_no++) {
 +
 +			port = &stm_gpio_ports[port_no];
-+			if (!port) continue;
-+
++			if (!port)
++				continue;
 +			pin = &port->pins[pin_no];
-+			if (!pin) continue;
-+
-+			char *name = pin->stpio.pin_name ? pin->stpio.pin_name : "";
++			if (!pin)
++				continue;
++			name = pin->stpio.pin_name ? pin->stpio.pin_name : "";
 +			len += sprintf(page + len,
 +					"PIO %d.%d [%-10s] [%s] [%s]\n",
 +					port_no, pin_no, name,
@@ -637,8 +638,8 @@
  	ret = sysdev_class_register(&stm_gpio_sysdev_class);
  	if (ret)
  		return ret;
---- linux-sh4/drivers/net/phy/phy_device.c	2012-03-31 15:26:54.440157990 +0300
-+++ linux-sh4/drivers/net/phy/phy_device.c.patched	2012-03-31 15:26:54.308158605 +0300
+--- a/drivers/net/phy/phy_device.c.org
++++ b/drivers/net/phy/phy_device.c
 @@ -962,7 +962,7 @@
  		return retval;
  	}
@@ -648,8 +649,8 @@
  
  	return 0;
  }
---- linux-sh4/drivers/net/stmmac/stmmac_mdio.c	2012-03-31 15:26:54.233314199 +0300
-+++ linux-sh4/drivers/net/stmmac/stmmac_mdio.c.patched	2012-03-31 15:26:54.531239690 +0300
+--- a/drivers/net/stmmac/stmmac_mdio.c.org
++++ b/drivers/net/stmmac/stmmac_mdio.c
 @@ -169,6 +169,7 @@
  	priv->mii = new_bus;
  
@@ -658,7 +659,7 @@
  	for (addr = 0; addr < PHY_MAX_ADDR; addr++) {
  		struct phy_device *phydev = new_bus->phy_map[addr];
  		if (phydev) {
-@@ -191,12 +192,22 @@
+@@ -191,12 +192,21 @@
  			 * and no PHY number was provided to the MAC,
  			 * use the one probed here.
  			 */
@@ -679,10 +680,9 @@
  				priv->plat->phy_addr = addr;
 + 				act = 1;
 + 			}
- 
+-
 -			act = (priv->plat->bus_id == mdio_bus_data->bus_id) &&
 -				(priv->plat->phy_addr == addr);
  			switch (phydev->irq) {
  			case PHY_POLL:
  				irq_str = "POLL";
-

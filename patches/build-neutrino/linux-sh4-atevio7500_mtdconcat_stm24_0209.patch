@@ -1,5 +1,5 @@
-*** linux-sh4-2.6.23.17_stm23_0123_orig/drivers/mtd/maps/physmap.c	2011-06-19 18:34:29.000000000 +0300
---- linux-sh4/drivers/mtd/maps/physmap.c	2011-07-29 06:50:51.114192548 +0300
+--- a/drivers/mtd/maps/physmap.c.org
++++ b/drivers/mtd/maps/physmap.c
 @@ -83,6 +83,87 @@
  static const char *part_probe_types[] = { "cmdlinepart", "RedBoot", NULL };
  #endif
@@ -8,74 +8,74 @@
 +static struct mtd_partition partition_info[]=
 +{
 +	{
-+	 .name = "Boot firmware",
-+	 .size = 0x00100000,	//1M
-+	 .offset = 0x00000000,
-+	 },
++		.name   = "Boot_firmware", // mtd0
++		.size   = 0x00100000,      // 1M
++		.offset = 0x00000000,
++	},
 +	{
-+	 .name = "Kernel",
-+	 .size = 0x00300000,	//3M
-+	 .offset = 0x00100000,
-+	 },
++		.name   = "Kernel",        // mtd1
++		.size   = 0x00300000,      // 3M
++		.offset = 0x00100000,
++	},
 +	{
-+	 .name = "APP_BAK",
-+	 .size = 0x006E0000,	//6,875M
-+	 .offset = 0x00B20000,	//B00000 + 20000squasfs
-+	 },
++		.name   = "APP_BAK",       // mtd2
++		.size   = 0x006E0000,      // 6,875M
++		.offset = 0x00B20000,      // 0xB00000 + 0x20000 squashfs
++	},
 +	{
-+	 .name = "ROOT FS",
-+	 .size = 0x00BD0000,	//11,8125M + 10000error
-+	 .offset = 0x01220000,	//1200000 + 20000squasfs
-+	 },
++		.name   = "ROOT FS",       // mtd3
++		.size   = 0x00BD0000,      // 11,8125M + 0x10000 error
++		.offset = 0x01220000,      // 0x1200000 + 20000 squashfs
++	},
 +	{
-+	 .name = "Device",
-+	 .size = 0x002D0000,	// 2,8125M + 10000error
-+	 .offset = 0x01E20000,	//1E00000 + 20000squasfs
-+	 },
++		.name   = "Device",        // mtd4
++		.size   = 0x002D0000,      // 2,8125M + 0x10000 error
++		.offset = 0x01E20000,      // 0x1E00000 + 0x20000 squashfs
++	},
 +	{
-+	 .name = "Config",
-+	 .size = 0x000C0000,	// 0,75M
-+	 .offset = 0x02100000,
-+	 },
++		.name   = "Config",        // mtd5
++		.size   = 0x000C0000,      // 0,75M
++		.offset = 0x02100000,
++	},
 +	{
-+	 .name = "User",
-+	 .size = 0x01D00000,	// 30M
-+	 .offset = 0x02200000,
-+	 },
++		.name   = "User",          // mdt6
++		.size   = 0x01D00000,      // 30M
++		.offset = 0x02200000,
++	},
 +	{
-+	 .name = "APP_ORG",
-+	 .size = 0x006E0000,	//6,875M
-+	 .offset = 0x00420000,	//400000 + 20000squasfs
-+	 },
++		.name   = "APP_ORG",       // mtd7
++		.size   = 0x006E0000,      // 6,875M
++		.offset = 0x00420000,      // 0x400000 + 0x20000 squashfs
++	},
 +};
 +
 +static struct mtd_partition higlvl_partition_info[]=
 +{
 +	{
-+	 .name = "Boot firmware",
-+	 .size = 0x00100000,	//1M
-+	 .offset = 0x00000000,
-+	 },
-+	{
-+	 .name = "Kernel",
-+	 .size = 0x00300000,	//3M
-+	 .offset = 0x00100000,
-+	 },
-+	{
-+	 .name = "FW",
-+	 .size = 0x006E0000,	//6,875M
-+	 .offset = 0x00400000,
-+	 },
-+	{
-+	 .name = "ROOT",
-+	 .size = 0x02C60000,	//43,375M
-+	 .offset =	0x00AE0000,
++		.name   = "Boot_firmware", // mtd0
++		.size   = 0x00100000,      // 1M
++		.offset = 0x00000000,
 +	},
 +	{
-+	 .name = "SWAP",
-+	 .size = 0x006E0000,	//6,875M
-+	 .offset = 0x03740000,
-+	 },
++		.name = "Kernel",        // mdt1
++		.size = 0x00300000,	     // 3M
++		.offset = 0x00100000,
++	},
++	{
++		.name = "FW",            // mtd2
++		.size = 0x006E0000,      // 6,875M
++		.offset = 0x00400000,
++	},
++	{
++		.name = "ROOT",          // mtd3
++		.size = 0x02C60000,	     // 43,375M
++		.offset =	0x00AE0000,
++	},
++	{
++		.name = "SWAP",          // mtd4
++		.size = 0x006E0000,      // 6,875M
++		.offset = 0x03740000,
++	},
 +};
 +
 +#define NUM_PARTITIONS ARRAY_SIZE(partition_info)
@@ -149,9 +149,9 @@
  	return 0;
  
  err_out:
-*** linux-sh4-2.6.23.17_stm23_0123_orig/drivers/mtdpart.c	2011-06-19 18:34:29.000000000 +0300
---- linux-sh4/drivers/mtd/mtdpart.c	2011-07-29 06:50:51.114192548 +0300
-@@ -27,7 +27,9 @@ struct mtd_part {
+--- a/drivers/mtd/mtdpart.c.org
++++ b/drivers/mtd/mtdpart.c
+@@ -27,7 +27,9 @@
  	struct mtd_info mtd;
  	struct mtd_info *master;
  	uint64_t offset;
@@ -198,9 +198,9 @@
  	return slave;
  }
  
-*** linux-sh4-2.6.23.17_stm23_0123_orig/include/linux/mtd/partitions.h	2011-06-19 18:34:29.000000000 +0300
---- linux-sh4/include/linux/mtd/partitions.h	2011-07-29 06:50:51.114192548 +0300
-@@ -40,6 +40,7 @@ struct mtd_partition {
+--- a/include/linux/mtd/partitions.h.org
++++ b/include/linux/mtd/partitions.h
+@@ -40,6 +40,7 @@
  	uint64_t offset;		/* offset within the master MTD space */
  	uint32_t mask_flags;		/* master MTD flags to mask out for this partition */
  	struct nand_ecclayout *ecclayout;	/* out of band layout for this partition (NAND only)*/
