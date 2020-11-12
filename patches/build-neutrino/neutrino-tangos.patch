@@ -190,6 +190,24 @@
  		g_volume->setVolume(msg);
  #if HAVE_DUCKBOX_HARDWARE
  		if((mode == NeutrinoModes::mode_tv) || (mode == NeutrinoModes::mode_radio)) {
+#@@ -3983,7 +4000,7 @@
+# 		//FIXME better at announce ?
+# 		wakeupFromStandby();
+# #if HAVE_DUCKBOX_HARDWARE
+#-		CVFD::getInstance()->ShowIcon(FP_ICON_REC, true);
+##+		CVFD::getInstance()->ShowIcon(FP_ICON_RECORD, true);
+# #endif
+# #if 0
+# 		//zap to rec channel if box start from deepstandby
+#@@ -4022,7 +4039,7 @@
+# 	}
+# 	else if( msg == NeutrinoMessages::RECORD_STOP) {
+# #if HAVE_DUCKBOX_HARDWARE
+#-		CVFD::getInstance()->ShowIcon(FP_ICON_REC, false);
+#+		CVFD::getInstance()->ShowIcon(FP_ICON_RECORD, false);
+# #endif
+# 		CTimerd::RecordingStopInfo* recinfo = (CTimerd::RecordingStopInfo*)data;
+# 		printf("NeutrinoMessages::RECORD_STOP: eventID %d channel_id %" PRIx64 "\n", recinfo->eventID, recinfo->channel_id);
 @@ -4714,7 +4731,7 @@
  #ifdef ENABLE_GRAPHLCD
  		nGLCD::StandbyMode(true);
@@ -2103,7 +2121,7 @@
 +#if !defined HAVE_SH4_HARDWARE
  	return (g_settings.screen_EndX - g_settings.screen_StartX - 2*DETAILSLINE_WIDTH) * percent / 100;
 +#else
-+	return (g_settings.screen_EndX - g_settings.screen_StartX - 2*ConnectLineBox_Width) * percent / 100;
++	return (g_settings.screen_EndX - g_settings.screen_StartX - 2 * ConnectLineBox_Width) * percent / 100;
 +#endif
  }
  
