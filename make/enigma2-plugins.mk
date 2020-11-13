@@ -95,7 +95,7 @@ $(D)/enigma2_tuxtxt32bpp: $(D)/bootstrap $(D)/enigma2_tuxtxtlib
 # Plugins
 #
 E2_PLUGIN_DEPS  = $(D)/enigma2_openwebif
-ifeq ($(E2_DIFF), $(filter $(E2_DIFF), 0 2 3 4))
+ifneq ($(E2_DIFF), 1)
 ifeq ($(MEDIAFW), $(filter $(MEDIAFW), eplayer3 gstreamer gst-eplayer3))
 #E2_PLUGIN_DEPS = enigma2_servicemp3
 E2_PLUGIN_DEPS += enigma2_servicemp3epl
@@ -116,6 +116,8 @@ $(D)/enigma2-plugins: $(E2_PLUGIN_DEPS)
 #
 # enigma2-openwebif
 #
+OPENWEBIF_PATCH = build-enigma2/enigma2-openwebif.patch
+
 $(D)/enigma2_openwebif: $(D)/bootstrap $(D)/enigma2 $(D)/python_cheetah $(D)/python_ipaddress $(D)/python_pyopenssl
 	$(START_BUILD)
 	$(REMOVE)/e2openplugin-OpenWebif
@@ -128,17 +130,54 @@ $(D)/enigma2_openwebif: $(D)/bootstrap $(D)/enigma2 $(D)/python_cheetah $(D)/pyt
 		$(BUILDENV) \
 		cp -a plugin $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif; \
 		python -O -m compileall $(SILENT_OPT) $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif; \
+		mkdir -p $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/ar/LC_MESSAGES; \
+		mkdir -p $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/bg/LC_MESSAGES; \
+		mkdir -p $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/ca/LC_MESSAGES; \
 		mkdir -p $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/cs/LC_MESSAGES; \
+		mkdir -p $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/da/LC_MESSAGES; \
 		mkdir -p $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/de/LC_MESSAGES; \
 		mkdir -p $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/el/LC_MESSAGES; \
+		mkdir -p $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/es/LC_MESSAGES; \
+		mkdir -p $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/et/LC_MESSAGES; \
+		mkdir -p $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/el/LC_MESSAGES; \
+		mkdir -p $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/fi/LC_MESSAGES; \
+		mkdir -p $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/fr/LC_MESSAGES; \
+		mkdir -p $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/hu/LC_MESSAGES; \
+		mkdir -p $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/it/LC_MESSAGES; \
+		mkdir -p $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/lt/LC_MESSAGES; \
+		mkdir -p $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/nb/LC_MESSAGES; \
 		mkdir -p $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/nl/LC_MESSAGES; \
 		mkdir -p $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/pl/LC_MESSAGES; \
+		mkdir -p $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/pt/LC_MESSAGES; \
+		mkdir -p $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/ru/LC_MESSAGES; \
+		mkdir -p $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/sk/LC_MESSAGES; \
+		mkdir -p $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/sv/LC_MESSAGES; \
+		mkdir -p $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/tr/LC_MESSAGES; \
 		mkdir -p $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/uk/LC_MESSAGES; \
+		$(call apply_patches, $(OPENWEBIF_PATCH)); \
+		msgfmt -o $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/ar/LC_MESSAGES/OpenWebif.mo locale/ar.po; \
+		msgfmt -o $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/bg/LC_MESSAGES/OpenWebif.mo locale/bg.po; \
+		msgfmt -o $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/ca/LC_MESSAGES/OpenWebif.mo locale/ca.po; \
 		msgfmt -o $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/cs/LC_MESSAGES/OpenWebif.mo locale/cs.po; \
+		msgfmt -o $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/da/LC_MESSAGES/OpenWebif.mo locale/da.po; \
 		msgfmt -o $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/de/LC_MESSAGES/OpenWebif.mo locale/de.po; \
 		msgfmt -o $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/el/LC_MESSAGES/OpenWebif.mo locale/el.po; \
+		msgfmt -o $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/es/LC_MESSAGES/OpenWebif.mo locale/es.po; \
+		msgfmt -o $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/et/LC_MESSAGES/OpenWebif.mo locale/et.po; \
+		msgfmt -o $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/el/LC_MESSAGES/OpenWebif.mo locale/el.po; \
+		msgfmt -o $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/fi/LC_MESSAGES/OpenWebif.mo locale/fi.po; \
+		msgfmt -o $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/fr/LC_MESSAGES/OpenWebif.mo locale/fr.po; \
+		msgfmt -o $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/hu/LC_MESSAGES/OpenWebif.mo locale/hu.po; \
+		msgfmt -o $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/it/LC_MESSAGES/OpenWebif.mo locale/it.po; \
+		msgfmt -o $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/lt/LC_MESSAGES/OpenWebif.mo locale/lt.po; \
+		msgfmt -o $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/nb/LC_MESSAGES/OpenWebif.mo locale/nb.po; \
 		msgfmt -o $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/nl/LC_MESSAGES/OpenWebif.mo locale/nl.po; \
 		msgfmt -o $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/pl/LC_MESSAGES/OpenWebif.mo locale/pl.po; \
+		msgfmt -o $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/pt/LC_MESSAGES/OpenWebif.mo locale/pt.po; \
+		msgfmt -o $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/ru/LC_MESSAGES/OpenWebif.mo locale/ru.po; \
+		msgfmt -o $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/sk/LC_MESSAGES/OpenWebif.mo locale/sk.po; \
+		msgfmt -o $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/sv/LC_MESSAGES/OpenWebif.mo locale/sv.po; \
+		msgfmt -o $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/tr/LC_MESSAGES/OpenWebif.mo locale/tr.po; \
 		msgfmt -o $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/uk/LC_MESSAGES/OpenWebif.mo locale/uk.po; \
 		rm -f $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/public/images/boxes/{alphatriplehd.png,dm500hd.png,dm520.png,dm7020hd.png,dm7080.png,dm8000.png,dm800.jpg,dm800se.png,dm820.png,dm900.png,dm920.png,dsi87.jpg,duo2.png,duo4k.png,duo.png,e3hd.jpg,e4hd.png,elite.jpg,esi88.jpg,et10000.png,et11000.png,et4x00.png,et5x00.png,et6500.png,et6x00.png,et7000.png,et7500.png,et7x00mini.png,et7x00.png,et8000.png,et8500.png,et8500s.jpg,et9x00.png,formuler1.png,formuler3.png,formuler4.png,formuler4turbo.png,fusionhd.png,fusionhdse.png,galaxy4k.png,gb800ueplus.jpg,gbquad4k.png,gbquad.jpg,gbue4k.png,h3.png,h4.png,h5.png,h6.png,h7.png,h9combo.png,h9.png,hd1100.png,hd11.png,hd1200.png,hd1265.png,hd1500.png,hd2400.png,hd500c.png,hd51.png,hd530c.png,hd60.png,i55plus.png,i55.png,ini-1000.jpg,ini-3000.jpg,ini-5000.jpg,ini-7000.jpg,ixussone.jpg,ixusszero.jpg,lc.png,lunix3-4k.png,lunix4k.png,lunix.png,mbmicro.png,mbmicrov2.png,mbtwinplus.png,me.jpg,minime.jpg,miraclebox.jpg,multibox.png,optimussos1.jpg,optimussos1plus.jpg,optimussos2.jpg,optimussos2plus.jpg,osmega.png,osminiplus.png,osmini.png,osmio4kplus.png,osmio4k.png,osninoplus.png,osnino.png,osninopro.png,premium.jpg,premium+.jpg,purehd.png,purehdse.png,revo4k.png,sf4008.png,sf8008.png,sh1.png,solo2.png,solo4k.png,solo.png,solose.png,spycat4kmini.png,spycatminiplus.png,spycatmini.png,spycat.png,uhd88.jpg,ultimo4k.png,ultimo.png,ultra.jpg,uno4k.png,uno4kse.png,uno.png,vipercombohdd.png,vipercombo.png,viperslim.png,vipert2c.png,vs1000.png,vs1500.png,wetekplay.png,xcombo.jpg,xp1000.png,xpeedlx3.jpg,xpeedlx.png,zero4k.png,zero.png}
 	$(REMOVE)/e2openplugin-OpenWebif
