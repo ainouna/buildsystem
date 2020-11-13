@@ -116,7 +116,7 @@ $(D)/enigma2-plugins: $(E2_PLUGIN_DEPS)
 #
 # enigma2-openwebif
 #
-OPENWEBIF_PATCH = build-enigma2/enigma2-openwebif.patch
+#OPENWEBIF_PATCH = build-enigma2/enigma2-openwebif.patch
 
 $(D)/enigma2_openwebif: $(D)/bootstrap $(D)/enigma2 $(D)/python_cheetah $(D)/python_ipaddress $(D)/python_pyopenssl
 	$(START_BUILD)
