@@ -35,7 +35,6 @@ $(STL_ARCHIVE)/stlinux24-sh4-%.noarch.rpm:
 #
 # install the RPMs
 #
-
 ifeq ($(BS_GCC_VER), 4.6.3)
 BINUTILS_VER = 2.22-64
 GCC_VER      = 4.6.3-111
@@ -108,7 +107,7 @@ $(TARGET_DIR)/lib/libc.so.6:
 #	@echo "--------------------------------------------------------------"
 #	@echo -e "Build of $(TERM_GREEN_BOLD)$(PKG_NAME)$(TERM_NORMAL) completed."
 #	@echo
-endif  # BS_GCC_VER is not 4.6.3 or 4.8.4
+endif  # BS_GCC_VER is 4.6.3 or 4.8.4
 
 ifneq ($(BS_GCC_VER), $(filter $(BS_GCC_VER), 4.6.3 4.8.4))
 $(TARGET_DIR)/lib/libc.so.6:
@@ -135,7 +134,7 @@ $(D)/crosstool:
 	fi
 	$(TOUCH)
 endif
-endif
+endif # BS_GCC_VER is not 4.6.3 or 4.8.4
 
 #
 # crosstool-ng
