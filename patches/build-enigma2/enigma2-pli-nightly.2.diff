@@ -7344,6 +7344,17 @@
  	config.av.generalAC3delay = ConfigSelectionNumber(-1000, 1000, 5, default = 0)
  	config.av.generalPCMdelay = ConfigSelectionNumber(-1000, 1000, 5, default = 0)
  	config.av.vcrswitch = ConfigEnableDisable(default = False)
+--- enigma2.org/lib/python/Components/InputDevice.py.org
++++ enigma2/lib/python/Components/InputDevice.py
+@@ -48,7 +48,7 @@
+ 
+ 
+ 	def getInputDeviceType(self,name):
+-		if "remote control" in str(name).lower():
++		if "remote control" in str(name).lower() or "tdt rc event diver" in str(name).lower():
+ 			return "remote"
+ 		elif "keyboard" in str(name).lower():
+ 			return "keyboard"
 --- enigma2.org/lib/python/Plugins/SystemPlugins/Videomode/VideoWizard.py
 +++ enigma2.patched/lib/python/Plugins/SystemPlugins/Videomode/VideoWizard.py
 @@ -9,6 +9,7 @@
