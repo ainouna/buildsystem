@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20200927.1
+# Version 2020115.1
 
 ##############################################
 
@@ -19,7 +19,7 @@ if [ "$1" == -h ] || [ "$1" == --help ]; then
 	echo "-v or --verbose   : verbose build (very noisy!)"
 	echo "-q or --quiet     : quiet build, fastest, almost silent"
 	echo "-b or --batchmode : batch mode; do not become interactive"
-	echo "Parameter 1       : target system (1-39)"
+	echo "Parameter 1       : target system (1-38)"
 	echo "Parameter 2       : kernel (1-2)"
 	echo "Parameter 3       : optimization (1-5)"
 	echo "Parameter 4       : image (Enigma=1/2 Neutrino=3/4 Tvheadend=5 (1-5)"
@@ -118,7 +118,7 @@ fi
 ##############################################
 
 case $1 in
-	[1-9] | 1[0-9] | 2[0-9] | 3[0-9] | 40) REPLY=$1;;
+	[1-9] | 1[0-9] | 2[0-9] | 3[0-9] | 4[0-1]) REPLY=$1;;
 	*)
 		echo "Target receivers:"
 		echo
@@ -160,6 +160,7 @@ case $1 in
 		echo "   38)  Ferguson Ariva @Link 200"
 #		echo "   39)  Pace HDS-7241 (in development, kernel P0217 only)"
 #		echo "   40)  ADB ITI-2849ST/2850ST/2851S (in development, kernel P0217 only)"
+#		echo "   41)  Opticum/Orton 9600HD (both S and TS) (in development, kernel P0217 only)"
 		echo
 		read -p "Select target (1-39)? ";;
 esac
@@ -205,6 +206,7 @@ case "$REPLY" in
 	38) BOXTYPE="arivalink200";;
 	39) BOXTYPE="pace7241";;
 	40) BOXTYPE="adb_2850";;
+	41) BOXTYPE="opt9600";;
 	 *) BOXTYPE="atevio7500";;
 esac
 echo "BOXTYPE=$BOXTYPE" >> config
