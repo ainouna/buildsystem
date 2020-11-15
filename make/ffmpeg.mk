@@ -2,8 +2,8 @@
 # ffmpeg
 #
 # Select desired version by uncommenting one line
-//FFMPEG_VER = 2.8.16
-//FFMPEG_VER = 3.4.3
+#FFMPEG_VER = 2.8.16
+#FFMPEG_VER = 3.4.3
 FFMPEG_VER = 4.2.2
 
 #
