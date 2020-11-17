@@ -331,7 +331,6 @@ OPT9600_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-usbwait123_stm24.patch \
 		linux-sh4-stmmac_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-i2c-st40-pio_stm24_$(KERNEL_LABEL).patch \
-		linux-sh4-lmb_stm24_$(KERNEL_LABEL).patch \
 		$(if $(P0209),linux-sh4-i2c-stm-downgrade_stm24_$(KERNEL_LABEL).patch)
 
 #
