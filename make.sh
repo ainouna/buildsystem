@@ -160,7 +160,7 @@ case $1 in
 		echo "   38)  Ferguson Ariva @Link 200"
 #		echo "   39)  Pace HDS-7241 (in development, kernel P0217 only)"
 #		echo "   40)  ADB ITI-2849ST/2850ST/2851S (in development, kernel P0217 only)"
-#		echo "   41)  Opticum/Orton 9600HD (both S and TS) (in development, kernel P0217 only)"
+#		echo "   41)  Opticum/Orton HD 9600 (both S and TS) (in development, kernel P0217 only)"
 		echo
 		read -p "Select target (1-39)? ";;
 esac

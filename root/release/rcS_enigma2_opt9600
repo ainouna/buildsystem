@@ -1,7 +1,7 @@
 #!/bin/sh
 #Version 201115.1
 
-echo "Opticum 9600HD S/TS Enigma2"
+echo "Opticum HD 9600 S/TS Enigma2"
 
 MODDIR=/lib/modules
 
@@ -43,13 +43,12 @@ fi
 
 echo "[rcS] Init stmfb (LOAD 9)"
 echo "Load 9" > /dev/vfd
-insmod $MODDIR/stmcore-display-stx7109c3.ko
+insmod $MODDIR/stmcore-display-stx7100.ko
 if grep -q "config.av.videoport=Scart" /etc/enigma2/settings; then
   insmod $MODDIR/stmfb.ko display0=720x576i-32@50:15m::pal:cvbs:rgb #SCART
 else
   insmod $MODDIR/stmfb.ko display0=1280x720-32@50:16m::pal:cvbs:rgb #HDMI
 fi
-
 echo "[rcS] Loading modules"
 
 if [ ! -e /boot/audio.elf ] || [ ! -e /boot/video.elf ]; then
@@ -69,8 +68,8 @@ echo "Load 7" > /dev/vfd
 echo "[rcS] Init embx (LOAD 6)"
 echo "Load 6" > /dev/vfd
 insmod $MODDIR/embxshell.ko
-insmod $MODDIR/embxmailbox.ko mailbox0=0xb9211000:136:set2 mailbox1=0xb9212000:0
-insmod $MODDIR/embxshm.ko mailbox0=shm:0:7:0x60000000:0:256:256:0:1024:0xa4000000:0x10000000
+insmod $MODDIR/embxmailbox.ko mailbox0=0xb9211000:136:set2 mailbox1=0xb9212000:137:set2 ;
+insmod $MODDIR/embxshm.ko mailbox0=shm:0:7:0x60000000:0:256:256:0:512:0xa4000000:0x10000000 ;
 insmod $MODDIR/mme_host.ko transport0=shm
 
 echo "[rcS] Init AVS (LOAD 5)"
@@ -93,6 +92,8 @@ insmod $MODDIR/pseudocard.ko
 echo "[rcS] Init frontend(s)"
 insmod $MODDIR/opt9600_platform.ko  #paramDebug=20
 insmod $MODDIR/opt9600.ko
+
+echo "[rcS] Init CI"
 insmod $MODDIR/starci.ko #paramDebug=20
 
 insmod $MODDIR/pti.ko waitMS=20 videoMem=4096
@@ -106,27 +107,43 @@ insmod $MODDIR/stm_monitor.ko
 insmod $MODDIR/stmsysfs.ko
 insmod $MODDIR/stmdvb.ko
 
-echo "[rcS] LOAD 3"
+echo "[rcS] Init player2 (LOAD 3)"
 echo "Load 3" > /dev/vfd
 insmod $MODDIR/player2.ko
 insmod $MODDIR/sth264pp.ko
 insmod $MODDIR/stmalloc.ko
 insmod $MODDIR/platform.ko
+insmod $MODDIR/silencegen.ko
 
+insmod $MODDIR/bpamem.ko
+mknod /dev/bpamem c 153 0
+
+echo "[rcS] Init cardreader"
 insmod $MODDIR/smartcard.ko
 
+if [ -e /boot/bootlogo.mvi ]; then
+   showiframe -p /boot/bootlogo.mvi &
+fi
 if [ -e $MODDIR/exportfs.ko ]; then
+   echo "[rcS] Init exportfs"
    insmod $MODDIR/exportfs.ko
 fi
+
 if [ -e $MODDIR/cifs.ko ]; then
+   echo "[rcS] Init CIFS support"
    insmod $MODDIR/cifs.ko
 fi
+
 if [ -e $MODDIR/ntfs.ko ]; then
+   echo "[rcS] Init NTFS support"
    insmod $MODDIR/ntfs.ko
 fi
+
 if [ -e $MODDIR/tun.ko ]; then
+   echo "[rcS] Init tun support"
    insmod $MODDIR/tun.ko
 fi
+
 if [ -e $MODDIR/usbserial.ko ]; then
   insmod $MODDIR/usbserial.ko
   if [ -e $MODDIR/ch341.ko ]; then
@@ -147,20 +164,14 @@ if [ -e $MODDIR/usbserial.ko ]; then
   insmod $MODDIR/option.ko
 fi
 
-insmod $MODDIR/bpamem.ko
-mknod /dev/bpamem c 153 0
-
-if [ -e /boot/bootlogo.mvi ]; then
-   showiframe -p /boot/bootlogo.mvi &
-fi
 stfbcontrol a 0
 
-echo "[rcS] Init lircd (LOAD 2)"
+echo "[rcS] Init remote control (LOAD 2)"
 echo "Load 2" > /dev/vfd
-mkdir -p /var/run/lirc
-/usr/bin/lircd
-rm -rf /dev/rc
-mknod /dev/rc c 147 1 #VFD
+#mkdir -p /var/run/lirc
+#/usr/bin/lircd
+#rm -rf /dev/rc
+#mknod /dev/rc c 147 1 #VFD
 /bin/evremote2 10 120 &
 
 echo "[rcS] Init smartcard cardreader"
@@ -188,20 +199,17 @@ if [ -e $MODDIR/cifs.ko ]; then
    insmod $MODDIR/cifs.ko
 fi
 
-echo "[rcS] Init FTP & network"
-/etc/init.d/vsftpd start
-/usr/sbin/inetd
-
+echo "[rcS] Init network"
 NFS=`grep -c nfs /proc/cmdline`
 if [ "$NFS" -eq "1" ]; then
-   echo "[rcS] Booting from nfs, do not set network"
+   echo "[rcS] Booting from NFS, do not set network"
 else
    if [ -e /etc/network/interfaces ]; then
       ip addr flush eth0
       /etc/init.d/networking stop
-      DHCP=`grep -c dhcp /etc/network/interfaces`
+      DHCP=`grep -c 'iface eth0 inet dhcp' /etc/network/interfaces`
       if [ "$DHCP" -eq "1" ]; then
-         echo "[rcS] Starting DHCP on eth0"
+         echo "[rcS] Starting DHCP"
          /etc/init.d/udhcpc start
       fi
       /etc/init.d/networking start &
@@ -220,6 +228,57 @@ echo "Load 1" > /dev/vfd
 if [ -e /etc/init.d/automount ]; then
    python /etc/init.d/automount &
 fi
+
+# Handle SWAPPART and RECORD labels and USB devices
+if [ -e /usr/sbin/amount.sh ]; then
+   (sleep 20; /usr/sbin/amount.sh) &
+fi
+
+echo "[rcS] Apply various E2 settings(LOAD 1)"
+echo "$LD_PREFIX 1" > /dev/vfd
+
+# inadyn
+inadyn=`cat /etc/enigma2/settings | grep systemoptions.inadyn | cut -d "=" -f2`
+if [ ! $inadyn ] || [ ! -e /usr/bin/inadyn ]; then
+   echo "[rcS] No inadyn"
+else
+   if [ -e /usr/bin/inadyn ]; then
+      /usr/bin/inadyn &
+   fi
+fi
+
+# OpenSSh daemon
+openssh=`cat /etc/enigma2/settings | grep systemoptions.openssh | cut -d "=" -f2`
+if [ ! $openssh ] || [ ! -e /etc/init.d/sshd ]; then
+   echo "[rcS] No OpenSSH"
+else
+   if [ -e /etc/init.d/sshd ]; then
+      (sleep 30; /etc/init.d/sshd start) &
+   fi
+fi
+
+# Enable PKT plugins
+if [ ! -e /tmp/reference.dat ] && [ -e /var/bin/reference.dat ]; then
+   cp /var/bin/reference.dat /tmp
+fi
+
+# Try and synchronise time
+#inettime=`cat /etc/enigma2/settings | grep systemoptions.inettime | cut -d "=" -f2`
+#if [ ! $inettime ] && [ -h /usr/sbin/ntpd ]; then
+if [ -h /usr/sbin/ntpd ]; then
+   echo "[rcS] Set internet time"
+   (ntpd -n -p 0.europe.pool.ntp.org -q; /bin/fp_control -sst)
+else
+   if [ -e /usr/sbin/time.sh ]; then
+      echo "[rcS] Use transponder time"
+      /usr/sbin/time.sh &
+   fi
+fi
+
+echo "[rcS] Init portmap & ftp"
+/etc/init.d/portmap start
+/etc/init.d/vsftpd start
+/usr/sbin/inetd
 
 # Do own extras
 if [ -e /etc/ownscript.sh ]; then
@@ -244,14 +303,13 @@ echo "Start E2" > /dev/vfd
 
 until false
 do
-   echo "[rcS] Entering E2 main loop"
+   echo "[rcS] Entering Enigma2 main loop"
    if [ -e /usr/local/share/enigma2/backdrop.mvi ]; then
-      showiframe -p /usr/local/share/enigma2/backdrop.mvi
+      showiframe -p /usr/local/share/enigma2/backdrop.mvi &
    fi
    /usr/local/bin/enigma2
    rtv=$?
-   echo "[rcS] E2 ended <- RTV: " $rtv
-   /bin/fp_control -i 46 0
+   echo "[rcS] Enigma2 ended <- return value: " $rtv
    case "$rtv" in
       0) echo "[rcS] E2 ERROR"
          echo "E2 Error" > /dev/vfd
@@ -259,8 +317,9 @@ do
       1) echo "[rcS] SHUTDOWN"
          echo "Shutdown" > /dev/vfd
          if [ -e /usr/local/share/enigma2/shutdown.mvi ]; then
-            showiframe -p /usr/local/share/enigma2/shutdown.mvi
+            showiframe -p /usr/local/share/enigma2/shutdown.mvi &
          fi
+         sync
          umount -a
          init 0;;
       2) echo "[rcS] REBOOT"
@@ -270,11 +329,12 @@ do
          echo "RestrtE2" > /dev/vfd
          echo "0" > /proc/progress
          if [ -e /usr/local/share/enigma2/backdrop.mvi ]; then
-            showiframe -p /usr/local/share/enigma2/backdrop.mvi
+            showiframe -p /usr/local/share/enigma2/backdrop.mvi &
          else
             showiframe -p /boot/bootlogo.mvi &
-         fi;;
-      6) echo "[rcS] E2 DEBUG"
+         fi
+         echo -n " ";;
+      6) echo "[rcS] E2 DEBUG RESTART"
          echo "Rest Dbg" > /dev/vfd
          echo "0" > /proc/progress
          if [ -e /usr/local/share/enigma2/backdrop.mvi ]; then
@@ -289,6 +349,6 @@ do
 done
 
 #never reached
-echo "[rcS] REBOOT Opticum 9600HD S/TS"
+echo "[rcS] REBOOT Opticum HD 9600 S/TS"
 echo "REBOOT" > /dev/vfd
 reboot -f
