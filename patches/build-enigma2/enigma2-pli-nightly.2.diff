@@ -8940,7 +8940,7 @@
  
 --- enigma2.org/lib/python/Tools/KeyBindings.py
 +++ enigma2/lib/python/Tools/KeyBindings.py
-@@ -220,122 +220,465 @@
+@@ -220,122 +220,509 @@
  	KEYIDS["KEY_POWER2"]: ("POWER2",),
  	KEYIDS["KEY_SUSPEND"]: ("SUSPEND",),
  	KEYIDS["KEY_WAKEUP"]: ("WAKEUP",)
@@ -9248,20 +9248,6 @@
 -	KEYIDS["KEY_MUTE"]: ("MUTE",),
 -	KEYIDS["KEY_NEXT"]: ("ARROWRIGHT",),
 -	KEYIDS["KEY_OK"]: ("OK",),
--	KEYIDS["KEY_PAUSE"]: ("PAUSE",),
--	KEYIDS["KEY_PLAY"]: ("PLAY",),
--	KEYIDS["KEY_POWER"]: ("POWER",),
--	KEYIDS["KEY_PREVIOUS"]: ("ARROWLEFT",),
--	KEYIDS["KEY_RADIO"]: ("RADIO",),
--	KEYIDS["KEY_RECORD"]: ("RECORD",),
--	KEYIDS["KEY_RED"]: ("RED",),
--	KEYIDS["KEY_REWIND"]: ("REWIND",),
--	KEYIDS["KEY_RIGHT"]: ("RIGHT",),
--	KEYIDS["KEY_STOP"]: ("STOP",),
--	KEYIDS["KEY_TEXT"]: ("TEXT",),
--	KEYIDS["KEY_TV"]: ("TV",),
--	KEYIDS["KEY_UP"]: ("UP",),
--	KEYIDS["KEY_VIDEO"]: ("PVR",),
 +	KEYIDS["KEY_MEDIA"]: ("MEDIA",),
 +	KEYIDS["KEY_POWER"]: ("STANDBY",),
 +	KEYIDS["KEY_F5"]: ("KEY_F5",),
@@ -9288,7 +9274,16 @@
 +	KEYIDS["KEY_STOP"]: ("STOP",),
 +	KEYIDS["KEY_SLOW"]: ("SLOW",),
 +	KEYIDS["KEY_AGAIN"]: ("AGAIN",),
-+	KEYIDS["KEY_PAUSE"]: ("PAUSE",),
+ 	KEYIDS["KEY_PAUSE"]: ("PAUSE",),
+-	KEYIDS["KEY_PLAY"]: ("PLAY",),
+-	KEYIDS["KEY_POWER"]: ("POWER",),
+-	KEYIDS["KEY_PREVIOUS"]: ("ARROWLEFT",),
+-	KEYIDS["KEY_RADIO"]: ("RADIO",),
+-	KEYIDS["KEY_RECORD"]: ("RECORD",),
+-	KEYIDS["KEY_RED"]: ("RED",),
+-	KEYIDS["KEY_REWIND"]: ("REWIND",),
+-	KEYIDS["KEY_RIGHT"]: ("RIGHT",),
+-	KEYIDS["KEY_STOP"]: ("STOP",),
 +	KEYIDS["KEY_MENU"]: ("MENU",),
 +	KEYIDS["KEY_EXIT"]: ("EXIT",),
 +	KEYIDS["KEY_F7"]: ("KEY_F7",),
@@ -9300,7 +9295,10 @@
 +	KEYIDS["KEY_YELLOW"]: ("YELLOW",),
 +	KEYIDS["KEY_AUDIO"]: ("AUDIO",),
 +	KEYIDS["KEY_SUBTITLE"]: ("SUBTITLE",),
-+	KEYIDS["KEY_TEXT"]: ("TEXT",),
+ 	KEYIDS["KEY_TEXT"]: ("TEXT",),
+-	KEYIDS["KEY_TV"]: ("TV",),
+-	KEYIDS["KEY_UP"]: ("UP",),
+-	KEYIDS["KEY_VIDEO"]: ("PVR",),
 +	KEYIDS["KEY_CHANNELUP"]: ("CHANNELUP",),
 +	KEYIDS["KEY_CHANNELDOWN"]: ("CHANNELDOWN",),
 +	KEYIDS["KEY_VOLUMEUP"]: ("VOLUMEUP",),
@@ -9512,10 +9510,54 @@
 +	KEYIDS["KEY_GREEN"]: ("GREEN",),
 +	KEYIDS["KEY_YELLOW"]: ("YELLOW",),
 +	KEYIDS["KEY_BLUE"]: ("BLUE",),
++}, {  # id=13 - Opticum HD 9600 series
++	KEYIDS["KEY_POWER"]: ("POWER",),
++	KEYIDS["KEY_MUTE"]: ("MUTE",),
++	KEYIDS["KEY_HELP"]: ("HELP",),
++	KEYIDS["KEY_SWITCHVIDEOMODE"]: ("TV.FORMAT",),
++	KEYIDS["KEY_TV2"]: ("TV/RADIO",),
++	KEYIDS["KEY_MODE"]: ("MODE",),
++	KEYIDS["KEY_1"]: ("1",),
++	KEYIDS["KEY_2"]: ("2",),
++	KEYIDS["KEY_3"]: ("3",),
++	KEYIDS["KEY_4"]: ("4",),
++	KEYIDS["KEY_5"]: ("5",),
++	KEYIDS["KEY_6"]: ("6",),
++	KEYIDS["KEY_7"]: ("7",),
++	KEYIDS["KEY_8"]: ("8",),
++	KEYIDS["KEY_9"]: ("9",),
++	KEYIDS["KEY_MENU"]: ("MENU",),
++	KEYIDS["KEY_0"]: ("0",),
++	KEYIDS["KEY_BACK"]: ("RECALL",),
++	KEYIDS["KEY_REWIND"]: ("REWIND",),
++	KEYIDS["KEY_STOP"]: ("STOP",),
++	KEYIDS["KEY_PLAYPAUSE"]: ("PLAY_PAUSE",),
++	KEYIDS["KEY_FASTFORWARD"]: ("FASTFORWARD",),
++	KEYIDS["KEY_RECORD"]: ("RECORD",),
++	KEYIDS["KEY_UP"]: ("UP",),
++	KEYIDS["KEY_EXIT"]: ("EXIT",),
++	KEYIDS["KEY_LEFT"]: ("LEFT",),
++	KEYIDS["KEY_OK"]: ("OK",),
++	KEYIDS["KEY_INFO"]: ("INFO",),
++	KEYIDS["KEY_RIGHT"]: ("RIGHT",),
++	KEYIDS["KEY_DOWN"]: ("DOWN",),
++	KEYIDS["KEY_EPG"]: ("EPG",),
++	KEYIDS["KEY_FILE"]: ("FILELIST",),
++	KEYIDS["KEY_SLOW"]: ("STEP_FWD",),
++	KEYIDS["KEY_PREVIOUS"]: ("PREVIOUS",),
++	KEYIDS["KEY_NEXT"]: ("NEXT",),
++	KEYIDS["KEY_RED"]: ("RED",),
++	KEYIDS["KEY_GREEN"]: ("GREEN",),
++	KEYIDS["KEY_YELLOW"]: ("YELLOW",),
++	KEYIDS["KEY_BLUE"]: ("BLUE",),
++	KEYIDS["KEY_FAVORITES"]: ("FAV",),
++	KEYIDS["KEY_PROGRAM"]: ("STATUS",),
++	KEYIDS["KEY_OPTION"]: ("OPTION",),
++	KEYIDS["KEY_SUBTITLE"]: ("FIND",),
  }]
  
  def addKeyBinding(domain, key, context, action, flags):
-@@ -369,10 +711,39 @@
+@@ -369,10 +756,41 @@
  	else:
  		rcType = config.plugins.remotecontroltype.rctype.value
  		# rcType = config.misc.inputdevices.rcType.value
@@ -9550,129 +9592,18 @@
 +			idx = 6
 +		elif rcType == 20:	# Kathrein UFS913
 +			idx = 6
-+#		elif rcType == 21:	# Fortis 4G
-+#			idx = 13
-+#		elif rcType == 22:	# ...
++		elif rcType == 21:	# Opticum HD 9600 series
++			idx = 13
++#		elif rcType == 22:	# Fortis 4G
 +#			idx = 14
++#		elif rcType == 23:	# ...
++#			idx = 15
  		else:
  			idx = 2
  	return keyDescriptions[idx].get(key)
---- enigma2.org/lib/python/Screens/InputDeviceSetup.py
-+++ enigma2/lib/python/Screens/InputDeviceSetup.py
-@@ -299,62 +299,58 @@
- 	rcList = [
- 			("0", _("Default")),
- 			("4", _("DMM normal")),
--			("5", _("et9000/et9100")),
- 			("6", _("DMM advanced")),
--			("7", _("et5000/et6000")),
--			("8", _("VU+")),
--			("9", _("et8000/et10000")),
--			("11", _("et9200/et9500/et6500")),
--			("13", _("et4000")),
--			("14", _("xp1000")),
--			("16", _("HDx1/HD1xxx/HD5x0C/VS1x00/et7x00/et8500/et7000mini")),
--			("18", _("F1/F3/F4/F4-TURBO")),
--			("19", _("HD2400")),
--			("20", _("Zgemma Star S/2S/H1/H2")),
--			("21", _("Zgemma H.S/H.2S/H.2H/H5/H7(old model)")),
--			("25", _("Zgemma H9(old model)/I55Plus")),
--			("27", _("HD60")),
--			("28", _("Zgemma H7(new model)/H9(new model)/H9COMBO/H9TWIN/H10"))
-+			("7", _("Fortis universal")),
-+			("8", _("Fortis standard")),
-+			("9", _("Fortis mini")),
-+			("10", _("Spark")),
-+			("11", _("Topfield TF77X0HDPVR")),
-+			("12", _("Kathrein RC671 (UFS912")),
-+			("13", _("Cuberevo universal")),
-+			("14", _("Vitamin 5000HD")),
-+			("15", _("ADB XMP")),
-+			("16", _("Pace HDS7241")),
-+			("17", _("Edision argus")),
-+			("18", _("HL-101")),
-+			("19", _("Kathrein RC660 (UFS910/922")),
-+			("20", _("Kathrein RC675 (UFS913)")),
-+#			("21", _("fortis_4g")),
- 		]
- 
- 	defaultRcList = [
--			("et4000", 13),
--			("et5000", 7),
--			("et6000", 7),
--			("et6500", 11),
--			("et8000", 9),
--			("et9000", 5),
--			("et9100", 5),
--			("et9200", 11),
--			("et9500", 11),
--			("et10000", 9),
--			("formuler1", 18),
--			("formuler3", 18),
--			("formuler4", 18),
--			("formuler4turbo", 18),
--			("xp1000", 14),
--			("vs1000", 16),
--			("vs1500", 16),
--			("hd500c", 16),
--			("hd530c", 16),
--			("hd11", 16),
--			("hd51", 16),
--			("hd1200", 16),
--			("hd1265", 16),
--			("hd1100", 16),
--			("hd2400", 19),
--			("hd60", 27),
--			("et7000mini", 16),
--			("et7000", 16),
--			("et7500", 16),
--			("et8500", 16),
--			("sh1", 20),
--			("h3", 21),
--			("h5", 21),
--			("h7", 28), # new model /old 21
--			("h9", 28), # new model /old 25
--			("h9combo", 28),
--			("h10", 28)
-+			("fortis-hdbox", 7),
-+			("atevio7500", 7),
-+			("hs9510", 8),
-+			("hs7420", 8),
-+			("hs7429", 8),
-+			("hs7810a", 8),
-+			("hs7819", 8),
-+			("hs7110", 9),
-+			("hs7119", 9),
-+			("spark", 10),
-+			("spark7162", 10),
-+			("tf7700", 11),
-+			("ufs910", 19),
-+			("ufs912", 12),
-+			("ufs913", 20),
-+			("ufs922", 12),
-+			("cuberevo", 13),
-+			("cuberevo-mini", 13),
-+			("cuberevo-mini2", 13),
-+			("cuberevo-250hd", 13),
-+			("cuberevo-9500hd", 13),
-+			("cuberevo-2000hd", 13),
-+			("cuberevo-3000hd", 13),
-+			("cuberevo-mini-fta", 13),
-+			("vitamin-hd5000", 14),
-+			("adb-box", 15),
-+			("adb-2850", 15),
-+			("pace7241", 16),
-+			("hl101", 18),
-+			("vip1-v1", 17),
-+			("vip1-v2", 17),
-+			("vip2", 17),
-+#			("fortis_4g", 21),
- 		]
- 
- 	def __init__(self, session):
 --- enigma2.org/data/rc_models/rc_models.cfg
 +++ enigma2/data/rc_models/rc_models.cfg
-@@ -18,150 +18,35 @@
+@@ -18,150 +18,36 @@
  # a default rc model will be used for ModelName.
  #
  # When no entry matches at all, 'default' will be used as remoteName
@@ -9856,6 +9787,7 @@
 +vip1-v1           vip_1
 +vip1-v2           vip_1
 +vip2              vip_1
++opt9600           opt9600
 --- enigma2.org/data/rc_models/Makefile.am
 +++ enigma2/data/rc_models/Makefile.am
 @@ -2,15 +2,9 @@
@@ -9876,8 +9808,8 @@
 -	octagon.xml uclan.xml
 +	dmmadv.png \
 +	adb_xmp.png cuberevo_uni.png fs9000.png hs7110.png hs9510.png spark.png tf7700.png ufs912.png vitamin.png \
-+	pace7241.png hl101_1.png vip_1.png ufs910.png ufs913.png dmm.png \
++	pace7241.png hl101_1.png vip_1.png ufs910.png ufs913.png opt9600.png dmm.png \
 +	dmmadv.xml  \
 +	adb_xmp.xml cuberevo_uni.xml fs9000.xml hs7110.xml hs9510.xml spark.xml tf7700.xml ufs912.xml vitamin.xml \
-+	pace7241.xml hl101_1.xml vip_1.xml ufs910.xml ufs913.xml dmm.xml
++	pace7241.xml hl101_1.xml vip_1.xml ufs910.xml ufs913.xml opt9600.xml dmm.xml
 

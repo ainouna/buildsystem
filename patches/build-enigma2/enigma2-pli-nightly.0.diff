@@ -8943,7 +8943,7 @@
  
 --- enigma2.org/lib/python/Tools/KeyBindings.py
 +++ enigma2/lib/python/Tools/KeyBindings.py
-@@ -220,122 +220,465 @@
+@@ -220,122 +220,509 @@
  	KEYIDS["KEY_POWER2"]: ("POWER2",),
  	KEYIDS["KEY_SUSPEND"]: ("SUSPEND",),
  	KEYIDS["KEY_WAKEUP"]: ("WAKEUP",)
@@ -9251,20 +9251,6 @@
 -	KEYIDS["KEY_MUTE"]: ("MUTE",),
 -	KEYIDS["KEY_NEXT"]: ("ARROWRIGHT",),
 -	KEYIDS["KEY_OK"]: ("OK",),
--	KEYIDS["KEY_PAUSE"]: ("PAUSE",),
--	KEYIDS["KEY_PLAY"]: ("PLAY",),
--	KEYIDS["KEY_POWER"]: ("POWER",),
--	KEYIDS["KEY_PREVIOUS"]: ("ARROWLEFT",),
--	KEYIDS["KEY_RADIO"]: ("RADIO",),
--	KEYIDS["KEY_RECORD"]: ("RECORD",),
--	KEYIDS["KEY_RED"]: ("RED",),
--	KEYIDS["KEY_REWIND"]: ("REWIND",),
--	KEYIDS["KEY_RIGHT"]: ("RIGHT",),
--	KEYIDS["KEY_STOP"]: ("STOP",),
--	KEYIDS["KEY_TEXT"]: ("TEXT",),
--	KEYIDS["KEY_TV"]: ("TV",),
--	KEYIDS["KEY_UP"]: ("UP",),
--	KEYIDS["KEY_VIDEO"]: ("PVR",),
 +	KEYIDS["KEY_MEDIA"]: ("MEDIA",),
 +	KEYIDS["KEY_POWER"]: ("STANDBY",),
 +	KEYIDS["KEY_F5"]: ("KEY_F5",),
@@ -9291,7 +9277,16 @@
 +	KEYIDS["KEY_STOP"]: ("STOP",),
 +	KEYIDS["KEY_SLOW"]: ("SLOW",),
 +	KEYIDS["KEY_AGAIN"]: ("AGAIN",),
-+	KEYIDS["KEY_PAUSE"]: ("PAUSE",),
+ 	KEYIDS["KEY_PAUSE"]: ("PAUSE",),
+-	KEYIDS["KEY_PLAY"]: ("PLAY",),
+-	KEYIDS["KEY_POWER"]: ("POWER",),
+-	KEYIDS["KEY_PREVIOUS"]: ("ARROWLEFT",),
+-	KEYIDS["KEY_RADIO"]: ("RADIO",),
+-	KEYIDS["KEY_RECORD"]: ("RECORD",),
+-	KEYIDS["KEY_RED"]: ("RED",),
+-	KEYIDS["KEY_REWIND"]: ("REWIND",),
+-	KEYIDS["KEY_RIGHT"]: ("RIGHT",),
+-	KEYIDS["KEY_STOP"]: ("STOP",),
 +	KEYIDS["KEY_MENU"]: ("MENU",),
 +	KEYIDS["KEY_EXIT"]: ("EXIT",),
 +	KEYIDS["KEY_F7"]: ("KEY_F7",),
@@ -9303,7 +9298,10 @@
 +	KEYIDS["KEY_YELLOW"]: ("YELLOW",),
 +	KEYIDS["KEY_AUDIO"]: ("AUDIO",),
 +	KEYIDS["KEY_SUBTITLE"]: ("SUBTITLE",),
-+	KEYIDS["KEY_TEXT"]: ("TEXT",),
+ 	KEYIDS["KEY_TEXT"]: ("TEXT",),
+-	KEYIDS["KEY_TV"]: ("TV",),
+-	KEYIDS["KEY_UP"]: ("UP",),
+-	KEYIDS["KEY_VIDEO"]: ("PVR",),
 +	KEYIDS["KEY_CHANNELUP"]: ("CHANNELUP",),
 +	KEYIDS["KEY_CHANNELDOWN"]: ("CHANNELDOWN",),
 +	KEYIDS["KEY_VOLUMEUP"]: ("VOLUMEUP",),
@@ -9515,10 +9513,54 @@
 +	KEYIDS["KEY_GREEN"]: ("GREEN",),
 +	KEYIDS["KEY_YELLOW"]: ("YELLOW",),
 +	KEYIDS["KEY_BLUE"]: ("BLUE",),
++}, {  # id=13 - Opticum HD 9600 series
++	KEYIDS["KEY_POWER"]: ("POWER",),
++	KEYIDS["KEY_MUTE"]: ("MUTE",),
++	KEYIDS["KEY_HELP"]: ("HELP",),
++	KEYIDS["KEY_SWITCHVIDEOMODE"]: ("TV.FORMAT",),
++	KEYIDS["KEY_TV2"]: ("TV/RADIO",),
++	KEYIDS["KEY_MODE"]: ("MODE",),
++	KEYIDS["KEY_1"]: ("1",),
++	KEYIDS["KEY_2"]: ("2",),
++	KEYIDS["KEY_3"]: ("3",),
++	KEYIDS["KEY_4"]: ("4",),
++	KEYIDS["KEY_5"]: ("5",),
++	KEYIDS["KEY_6"]: ("6",),
++	KEYIDS["KEY_7"]: ("7",),
++	KEYIDS["KEY_8"]: ("8",),
++	KEYIDS["KEY_9"]: ("9",),
++	KEYIDS["KEY_MENU"]: ("MENU",),
++	KEYIDS["KEY_0"]: ("0",),
++	KEYIDS["KEY_BACK"]: ("RECALL",),
++	KEYIDS["KEY_REWIND"]: ("REWIND",),
++	KEYIDS["KEY_STOP"]: ("STOP",),
++	KEYIDS["KEY_PLAYPAUSE"]: ("PLAY_PAUSE",),
++	KEYIDS["KEY_FASTFORWARD"]: ("FASTFORWARD",),
++	KEYIDS["KEY_RECORD"]: ("RECORD",),
++	KEYIDS["KEY_UP"]: ("UP",),
++	KEYIDS["KEY_EXIT"]: ("EXIT",),
++	KEYIDS["KEY_LEFT"]: ("LEFT",),
++	KEYIDS["KEY_OK"]: ("OK",),
++	KEYIDS["KEY_INFO"]: ("INFO",),
++	KEYIDS["KEY_RIGHT"]: ("RIGHT",),
++	KEYIDS["KEY_DOWN"]: ("DOWN",),
++	KEYIDS["KEY_EPG"]: ("EPG",),
++	KEYIDS["KEY_FILE"]: ("FILELIST",),
++	KEYIDS["KEY_SLOW"]: ("STEP_FWD",),
++	KEYIDS["KEY_PREVIOUS"]: ("PREVIOUS",),
++	KEYIDS["KEY_NEXT"]: ("NEXT",),
++	KEYIDS["KEY_RED"]: ("RED",),
++	KEYIDS["KEY_GREEN"]: ("GREEN",),
++	KEYIDS["KEY_YELLOW"]: ("YELLOW",),
++	KEYIDS["KEY_BLUE"]: ("BLUE",),
++	KEYIDS["KEY_FAVORITES"]: ("FAV",),
++	KEYIDS["KEY_PROGRAM"]: ("STATUS",),
++	KEYIDS["KEY_OPTION"]: ("OPTION",),
++	KEYIDS["KEY_SUBTITLE"]: ("FIND",),
  }]
  
  def addKeyBinding(domain, key, context, action, flags):
-@@ -369,10 +711,39 @@
+@@ -369,10 +756,41 @@
  	else:
  		rcType = config.plugins.remotecontroltype.rctype.value
  		# rcType = config.misc.inputdevices.rcType.value
@@ -9553,16 +9595,18 @@
 +			idx = 6
 +		elif rcType == 20:	# Kathrein UFS913
 +			idx = 6
-+#		elif rcType == 21:	# Fortis 4G
-+#			idx = 13
-+#		elif rcType == 22:	# ...
++		elif rcType == 21:	# Opticum HD 9600 series
++			idx = 13
++#		elif rcType == 22:	# Fortis 4G
 +#			idx = 14
++#		elif rcType == 23:	# ...
++#			idx = 15
  		else:
  			idx = 2
  	return keyDescriptions[idx].get(key)
 --- enigma2.org/lib/python/Screens/InputDeviceSetup.py
 +++ enigma2/lib/python/Screens/InputDeviceSetup.py
-@@ -299,62 +299,58 @@
+@@ -299,62 +299,60 @@
  	rcList = [
  			("0", _("Default")),
  			("4", _("DMM normal")),
@@ -9596,7 +9640,8 @@
 +			("18", _("HL-101")),
 +			("19", _("Kathrein RC660 (UFS910/922")),
 +			("20", _("Kathrein RC675 (UFS913)")),
-+#			("21", _("fortis_4g")),
++			("21", _("Opticum HD 9600 series")),
++#			("22", _("fortis_4g")),
  		]
  
  	defaultRcList = [
@@ -9669,7 +9714,8 @@
 +			("vip1-v1", 17),
 +			("vip1-v2", 17),
 +			("vip2", 17),
-+#			("fortis_4g", 21),
++			("opt9600", 21),
++#			("fortis_4g", 22),
  		]
  
  	def __init__(self, session):
@@ -9860,7 +9906,7 @@
 +vip1-v1           vip_1
 +vip1-v2           vip_1
 +vip2              vip_1
-+
++opt9600           opt9600
 --- enigma2.org/data/rc_models/Makefile.am
 +++ enigma2/data/rc_models/Makefile.am
 @@ -2,15 +2,9 @@
@@ -9881,8 +9927,8 @@
 -	octagon.xml uclan.xml
 +	dmmadv.png \
 +	adb_xmp.png cuberevo_uni.png fs9000.png hs7110.png hs9510.png spark.png tf7700.png ufs912.png vitamin.png \
-+	pace7241.png hl101_1.png vip_1.png ufs910.png ufs913.png dmm.png \
++	pace7241.png hl101_1.png vip_1.png ufs910.png ufs913.png opt9600.png dmm.png \
 +	dmmadv.xml  \
 +	adb_xmp.xml cuberevo_uni.xml fs9000.xml hs7110.xml hs9510.xml spark.xml tf7700.xml ufs912.xml vitamin.xml \
-+	pace7241.xml hl101_1.xml vip_1.xml ufs910.xml ufs913.xml dmm.xml
++	pace7241.xml hl101_1.xml vip_1.xml ufs910.xml ufs913.xml opt9600.xml dmm.xml
 

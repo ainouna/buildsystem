@@ -1082,6 +1082,7 @@ endif
 	$(SILENT)cp -f $(SKEL_ROOT)/release/rc_pace7241.png $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/pace7241.png
 	$(SILENT)cp -f $(SKEL_ROOT)/release/rc_hl101_1.png $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/hl101_1.png
 	$(SILENT)cp -f $(SKEL_ROOT)/release/rc_vip_1.png $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/vip_1.png
+	$(SILENT)cp -f $(SKEL_ROOT)/release/rc_opt9600.png $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/opt9600.png
 # delete mips remote control files
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/et4x00.*
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/et6x00.*
