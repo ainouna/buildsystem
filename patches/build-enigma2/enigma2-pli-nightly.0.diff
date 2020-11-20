@@ -5551,76 +5551,6 @@
  		elif 'Creating journal' in data:
 --- enigma2.org/lib/python/Components/Network.py
 +++ enigma2/lib/python/Components/Network.py
-#@@ -62,7 +62,7 @@
-# 		return [ int(n) for n in ip.split('.') ]
-# 
-# 	def getAddrInet(self, iface, callback):
-#-		cmd = ("/sbin/ip", "/sbin/ip", "-o", "addr", "show", "dev", iface)
-#+		cmd = ("/sbin/ip", "/sbin/ip", "addr", "show", "dev", iface)
-# 		self.console.ePopen(cmd, self.IPaddrFinished, [iface, callback])
-# 
-# 	def IPaddrFinished(self, result, retval, extra_args):
-#@@ -71,37 +71,45 @@
-# 		ipRegexp = '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}'
-# 		netRegexp = '[0-9]{1,2}'
-# 		macRegexp = '[0-9a-fA-F]{2}\:[0-9a-fA-F]{2}\:[0-9a-fA-F]{2}\:[0-9a-fA-F]{2}\:[0-9a-fA-F]{2}\:[0-9a-fA-F]{2}'
-#-		ipLinePattern = re.compile('inet ' + ipRegexp + '/')
-#+		ipLinePattern = re.compile(ipRegexp + '/')
-# 		ipPattern = re.compile(ipRegexp)
-# 		netmaskLinePattern = re.compile('/' + netRegexp)
-# 		netmaskPattern = re.compile(netRegexp)
-#-		bcastLinePattern = re.compile(' brd ' + ipRegexp)
-#+		bcastLinePattern = re.compile('brd ' + ipRegexp)
-# 		upPattern = re.compile('UP')
-# 		macPattern = re.compile(macRegexp)
-#-		macLinePattern = re.compile('link/ether ' + macRegexp)
-#+		macLinePattern = re.compile(macRegexp)
-# 
-# 		for line in result.splitlines():
-# 			split = line.strip().split(' ',2)
-# 			if (split[1][:-1] == iface) or (split[1][:-1] == (iface + '@sys0')):
-# 				up = self.regExpMatch(upPattern, split[2])
-#-				mac = self.regExpMatch(macPattern, self.regExpMatch(macLinePattern, split[2]))
-#+#				print "[Network] up = ", up
-# 				if up is not None:
-# 					data['up'] = True
-# 					if iface is not 'lo':
-# 						self.configuredInterfaces.append(iface)
-#+			if (split[0] == 'link/ether'):
-#+				mac = self.regExpMatch(macPattern, self.regExpMatch(macLinePattern, split[1]))
-# 				if mac is not None:
-#+#					print "[Network] mac = ", mac
-# 					data['mac'] = mac
-#-			if split[1] == iface:
-#-				if re.search(globalIPpattern, split[2]):
-#-					ip = self.regExpMatch(ipPattern, self.regExpMatch(ipLinePattern, split[2]))
-#-					netmask = self.calc_netmask(self.regExpMatch(netmaskPattern, self.regExpMatch(netmaskLinePattern, split[2])))
-#-					bcast = self.regExpMatch(ipPattern, self.regExpMatch(bcastLinePattern, split[2]))
-#-					if ip is not None:
-#-						data['ip'] = self.convertIP(ip)
-#-					if netmask is not None:
-#-						data['netmask'] = self.convertIP(netmask)
-#-					if bcast is not None:
-#-						data['bcast'] = self.convertIP(bcast)
-#+			if (split[0] == 'inet'):
-#+				ip = self.regExpMatch(ipPattern, self.regExpMatch(ipLinePattern, split[1]))
-#+#				if ip is not None:
-#+#					print "[Network] ip = ", ip
-#+				netmask = self.calc_netmask(self.regExpMatch(netmaskPattern, self.regExpMatch(netmaskLinePattern, split[1])))
-#+#				if netmask is not None:
-#+#					print "[Network] netmask = ", netmask
-#+				bcast = self.regExpMatch(ipPattern, self.regExpMatch(bcastLinePattern, split[2]))
-#+#				if bcast is not None:
-#+#					print "[Network] bcast = ", bcast
-#+				if ip is not None:
-#+					data['ip'] = self.convertIP(ip)
-#+				if netmask is not None:
-#+					data['netmask'] = self.convertIP(netmask)
-#+				if bcast is not None:
-#+					data['bcast'] = self.convertIP(bcast)
-# 
-# 		if 'ip' not in data:
-# 			data['dhcp'] = True
 @@ -526,16 +526,18 @@
  			return True
  
@@ -7429,38 +7359,6 @@
  		</condition>
 --- enigma2.org/lib/python/Plugins/SystemPlugins/OSDPositionSetup/overscanwizard.py
 +++ enigma2/lib/python/Plugins/SystemPlugins/OSDPositionSetup/overscanwizard.py
-@@ -83,7 +83,7 @@
- 			self.yes_no = ConfigYesNo(default = True, graphic = False)
- 			self.list.append(getConfigListEntry(_("Did you see all eight arrow heads?"), self.yes_no))
- 			self.save_new_position = False
--			setPosition(0, 720, 0, 576)
-+			setPosition(0, 0, 0, 0)
- 		elif self.step == 2:
- 			self.Timer.stop()
- 			self["title"].setText(_("Overscan wizard"))
-@@ -94,17 +94,17 @@
- 			self.list.append(getConfigListEntry(_("Did you see all eight arrow heads?"), self.yes_no))
- 			self.yes_no.value = True
- 			self.save_new_position = False
--			setPosition(0, 720, 0, 576)
-+			setPosition(0, 0, 0, 0)
- 		elif self.step == 3:
- 			self["introduction"].setText(_("You did not see all eight arrow heads. This means your TV has overscan enabled "
- 				"and presents you with a zoomed-in picture, causing you to loose part of a full HD screen. In addition to this "
- 				"you may also miss parts of the user interface, for example volume bars and more.\n\n"
- 				"You can now try to resize and change the position of the user interface until you see the eight arrow heads.\n\n"
- 				"When done press OK.\n\n"))
--			self.dst_left = ConfigSlider(default = config.plugins.OSDPositionSetup.dst_left.value, increment = 1, limits = (0, 720))
--			self.dst_right = ConfigSlider(default = config.plugins.OSDPositionSetup.dst_left.value + config.plugins.OSDPositionSetup.dst_width.value, increment = 1, limits = (0, 720))
--			self.dst_top = ConfigSlider(default = config.plugins.OSDPositionSetup.dst_top.value, increment = 1, limits = (0, 576))
--			self.dst_bottom = ConfigSlider(default = config.plugins.OSDPositionSetup.dst_top.value + config.plugins.OSDPositionSetup.dst_height.value, increment = 1, limits = (0, 576))
-+			self.dst_left = ConfigSlider(default = config.plugins.OSDPositionSetup.dst_left.value, increment = 1, limits = (0, 150))
-+			self.dst_right = ConfigSlider(default = config.plugins.OSDPositionSetup.dst_right.value + 150, increment = 1, limits = (0, 150))
-+			self.dst_top = ConfigSlider(default = config.plugins.OSDPositionSetup.dst_top.value, increment = 1, limits = (0, 150))
-+			self.dst_bottom = ConfigSlider(default = config.plugins.OSDPositionSetup.dst_bottom.value + 150, increment = 1, limits = (0, 150))
- 			self.list.append(getConfigListEntry(_("left"), self.dst_left))
- 			self.list.append(getConfigListEntry(_("right"), self.dst_right))
- 			self.list.append(getConfigListEntry(_("top"), self.dst_top))
 @@ -171,7 +171,7 @@
  		if self.step == 1:
  			self.step = self.yes_no.value and 5 or 2
@@ -7470,39 +7368,6 @@
  		elif self.step == 3:
  			self.save_new_position = True
  			self.step = 5
-@@ -181,14 +181,14 @@
- 			if self.yes_no.value:
- 				if self.save_new_position:
- 					config.plugins.OSDPositionSetup.dst_left.value = self.dst_left.value
--					config.plugins.OSDPositionSetup.dst_width.value = self.dst_right.value - self.dst_left.value
-+					config.plugins.OSDPositionSetup.dst_right.value = self.dst_right.value - 150
- 					config.plugins.OSDPositionSetup.dst_top.value = self.dst_top.value
--					config.plugins.OSDPositionSetup.dst_height.value = self.dst_bottom.value - self.dst_top.value
-+					config.plugins.OSDPositionSetup.dst_bottom.value = self.dst_bottom.value -150
- 				else:
- 					config.plugins.OSDPositionSetup.dst_left.value = 0
--					config.plugins.OSDPositionSetup.dst_width.value = 720
-+					config.plugins.OSDPositionSetup.dst_right.value = 0
- 					config.plugins.OSDPositionSetup.dst_top.value = 0
--					config.plugins.OSDPositionSetup.dst_height.value = 576
-+					config.plugins.OSDPositionSetup.dst_bottom.value = 0
- 				config.misc.do_overscanwizard.value = False
- 				config.save()
- 				setConfiguredPosition()
-@@ -198,12 +198,8 @@
- 		self.setScreen()
- 
- 	def setPreviewPosition(self):
--		if self.dst_left.value > self.dst_right.value:
--			self.dst_left.value = self.dst_right.value
--		if self.dst_top.value > self.dst_bottom.value:
--			self.dst_top.value = self.dst_bottom.value
- 		self["config"].l.setList(self.list)
--		setPosition(int(self.dst_left.value), int(self.dst_right.value) - int(self.dst_left.value), int(self.dst_top.value), int(self.dst_bottom.value) - int(self.dst_top.value))
-+		setPosition(int(self.dst_left.value), int(self.dst_right.value) -150, int(self.dst_top.value), int(self.dst_bottom.value)- 150)
- 
- 	def keyCancel(self):
- 		self.step = self.step in (2, 5) and 1 or self.step in (3, 4) and 2
 --- enigma2.org/lib/python/Screens/ChannelSelection.py
 +++ enigma2/lib/python/Screens/ChannelSelection.py
 @@ -6,6 +6,11 @@
