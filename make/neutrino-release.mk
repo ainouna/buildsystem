@@ -537,8 +537,15 @@ neutrino-release-base:
 	$(SILENT)install -d $(RELEASE_DIR)/mnt/mnt{0..7}
 	$(SILENT)install -d $(RELEASE_DIR)/usr/{bin,lib,sbin,share}
 	$(SILENT)install -d $(RELEASE_DIR)/usr/lib/tuxbox/{luaplugins,plugins}
+ifneq ($(FLAVOUR), $(filter $(FLAVOUR), neutrino-hd2, neutrino-hd2 + plugins))
 	$(SILENT)install -d $(RELEASE_DIR)/usr/share/{fonts,tuxbox,udhcpc,zoneinfo,lua}
+else
+	$(SILENT)install -d $(RELEASE_DIR)/usr/share/{tuxbox,udhcpc,zoneinfo,lua}
+endif
 	$(SILENT)install -d $(RELEASE_DIR)/usr/share/tuxbox/neutrino
+ifeq ($(FLAVOUR), $(filter $(FLAVOUR), neutrino-hd2, neutrino-hd2 + plugins))
+	$(SILENT)install -d $(RELEASE_DIR)/usr/share/tuxbox/neutrino/fonts
+endif
 	$(SILENT)install -d $(RELEASE_DIR)/usr/share/tuxbox/neutrino/icons/logo
 	$(SILENT)install -d $(RELEASE_DIR)/usr/share/lua/5.2
 	$(SILENT)install -d $(RELEASE_DIR)/var/{bin,boot,emu,etc,epg,httpd,keys,lib,logos,net,tuxbox,update}
@@ -700,6 +707,7 @@ endif
 #
 # fonts
 #
+ifneq ($(FLAVOUR), $(filter $(FLAVOUR), neutrino-hd2, neutrino-hd2 + plugins))
 	$(SILENT)if [ -e $(TARGET_DIR)/usr/share/fonts/ubuntu-l-webfont.ttf ]; then \
 		cp -aR $(TARGET_DIR)/usr/share/fonts $(RELEASE_DIR)/usr/share/; \
 	else \
@@ -716,6 +724,12 @@ endif
 			cp -aR $(TARGET_DIR)/usr/share/fonts/tuxtxt.ttf $(RELEASE_DIR)/usr/share/fonts; \
 		fi; \
 	fi
+else
+	$(SILENT)if [ -d $(TARGET_DIR)/usr/share/tuxbox/neutrino/fonts ]; then \
+		cp -aR $(TARGET_DIR)/usr/share/tuxbox/neutrino/fonts $(RELEASE_DIR)/usr/share/tuxbox/neutrino/; \
+	fi
+endif
+
 #
 # neutrino
 #

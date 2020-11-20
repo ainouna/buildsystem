@@ -347,8 +347,21 @@
 +	#define CODEC_DVB_SUB AV_CODEC_ID_DVB_SUBTITLE
 +#endif
  
- //#if LIBAVCODEC_VERSION_INT <= AV_VERSION_INT(57, 1, 99)
- //	#define CODEC_DVB_SUB CODEC_ID_DVB_SUBTITLE
+ // Set these to 'true' for debug output:
+ static bool DebugConverter = false;
+--- nhd2-exp.org/lib/libeplayer3/container/container_ffmpeg.c
++++ nhd2-exp/lib/libeplayer3/container/container_ffmpeg.c
+@@ -45,7 +45,9 @@
+ #if LIBAVCODEC_VERSION_MAJOR > 54
+ #include <libavutil/opt.h>
+ #endif
+-
++//#if LIBAVCODEC_VERSION_MAJOR > 54
++#include <libavcodec/avcodec.h>
++//#endif
+ #include "common.h"
+ #include "misc.h"
+ #include "debug.h"
 --- neutrino-hd2.org/src/driver/rcinput.h
 +++ neutrino-hd2/src/driver/rcinput.h
 @@ -1,6 +1,6 @@
