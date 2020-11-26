@@ -1,4 +1,4 @@
-# revision 754d43b40487a4003b500eb68af278c401d77436 15/11/2020 14:31
+# revision 5e3bc26021679c26dc11d6c59b10e45a08e8ea8c 26/11/2020 01:33
 --- enigma2.org/configure.ac
 +++ enigma2/configure.ac
 @@ -18,6 +18,7 @@
@@ -8046,7 +8046,7 @@
  			self.createMenu()
 --- enigma2.org/lib/python/Screens/ScanSetup.py
 +++ enigma2/lib/python/Screens/ScanSetup.py
-@@ -1251,7 +1251,7 @@
+@@ -1228,7 +1228,7 @@
  		self.cable_toggle = {"single_transponder":"complete", "complete":"single_transponder"}
  		self.scan_typeterrestrial = ConfigSelection(default = defaultTerrSearchType, choices = [("single_transponder", _("User defined transponder")), ("predefined_transponder", _("Predefined transponder")), ("complete", _("Complete"))])
  		self.scan_type_atsc = ConfigSelection(default = defaultATSCSearchType, choices = [("single_transponder", _("User defined transponder")), ("predefined_transponder", _("Predefined transponder")), ("complete", _("Complete"))])
@@ -8120,7 +8120,7 @@
  
  		gotoShutdownTime = int(config.usage.standby_to_shutdown_timer.value)
  		if gotoShutdownTime:
-@@ -157,6 +199,42 @@
+@@ -158,6 +200,42 @@
  
  	def Power(self):
  		print "[Standby] leave standby"
@@ -8163,7 +8163,7 @@
  		self.close(True)
  
  	def setMute(self):
-@@ -248,6 +326,7 @@
+@@ -249,6 +327,7 @@
  			QUIT_UPGRADE_FP: _("Your frontprocessor will be updated\nPlease wait until your receiver reboots\nThis may take a few minutes"),
  			QUIT_ERROR_RESTART: _("The user interface of your receiver is restarting\ndue to an error in mytest.py"),
  			QUIT_DEBUG_RESTART: _("The user interface of your receiver is restarting in debug mode"),
@@ -8171,7 +8171,7 @@
  			QUIT_UPGRADE_PROGRAM: _("Unattended update in progress\nPlease wait until your receiver reboots\nThis may take a few minutes"),
  			QUIT_MANUFACTURER_RESET: _("Manufacturer reset in progress\nPlease wait until enigma2 restarts")
  		}.get(retvalue)
-@@ -290,6 +369,7 @@
+@@ -291,6 +370,7 @@
  				QUIT_RESTART: _("Really restart now?"),
  				QUIT_UPGRADE_FP: _("Really update the frontprocessor and reboot now?"),
  				QUIT_DEBUG_RESTART: _("Really restart in debug mode now?"),
