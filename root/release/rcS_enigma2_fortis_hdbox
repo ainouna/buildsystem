@@ -194,7 +194,7 @@ if [ ! $wlan ] || [ ! -e $MODDIR/$wlan.ko ]; then
    echo "None."
 else
    insmod $MODDIR/$wlan.ko
-   echo "[rcS] $wlan WLAN"
+   echo "$wlan WLAN"
 #   echo "$wlan WLAN" > /dev/vfd
 #   sleep 3
 fi
@@ -208,7 +208,7 @@ echo "[rcS] Do extras (LOAD 1)"
 echo "Load 1" > /dev/vfd
 # inadyn
 inadyn=`cat /etc/enigma2/settings | grep systemoptions.inadyn | cut -d "=" -f2`
-if [ ! $inadyn ] ||  [ ! -e /usr/bin/inadyn ]; then
+if [ ! $inadyn ] || [ ! -e /usr/bin/inadyn ]; then
    echo "[rcS] No inadyn"
 else
    if [ -e /usr/bin/inadyn ]; then
