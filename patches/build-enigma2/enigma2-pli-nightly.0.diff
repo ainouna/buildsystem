@@ -1,4 +1,4 @@
-# revision 5e3bc26021679c26dc11d6c59b10e45a08e8ea8c 26/11/2020 01:33
+# revision 382cb60648c477f26952090677084cda568df38a 24/12/2020 12:24
 --- enigma2.org/configure.ac
 +++ enigma2/configure.ac
 @@ -18,6 +18,7 @@
@@ -2433,10 +2433,11 @@
  #if ENABLE_FREESAT
 --- enigma2.org/lib/dvb/filepush.cpp
 +++ enigma2/lib/dvb/filepush.cpp
-@@ -4,6 +4,14 @@
- #include <fcntl.h>
+@@ -5,6 +5,15 @@
  #include <sys/ioctl.h>
  #include <poll.h>
+ #include <signal.h>
++
 +// this allows filesystem tasks to be prioritised
 +#include <sys/vfs.h>
 +#define USBDEVICE_SUPER_MAGIC 0x9fa2
@@ -2448,7 +2449,7 @@
  
  //#define SHOW_WRITE_TIME
  
-@@ -28,7 +36,10 @@
+@@ -34,7 +43,10 @@
  eFilePushThread::~eFilePushThread()
  {
  	stop(); /* eThread is borked, always call stop() from d'tor */
@@ -2459,16 +2460,17 @@
 +	}
  }
  
- static void signal_handler(int x)
-@@ -60,10 +71,27 @@
+ void eFilePushThread::thread()
+@@ -61,10 +73,28 @@
  	size_t current_span_remaining = 0;
  	m_sof = 0;
  
 +// opens video device for the reverse playback workaround
 +// Changes in this file are because E2 does not tell the player to play reverse
 +	int fd_video = open("/dev/dvb/adapter0/video0", O_RDONLY);
-+// Fix to ensure that event evtEOF is called at end of playbackl part 1/3
++// Fix to ensure that event evtEOF is called at end of playback part 1/3
 +	bool already_empty = false;
++
  	while (!m_stop)
  	{
  		if (m_sg && !current_span_remaining)
@@ -2488,12 +2490,12 @@
  			m_sg->getNextSourceSpan(m_current_position, bytes_read, current_span_offset, current_span_remaining, m_blocksize, m_sof);
  			ASSERT(!(current_span_remaining % m_blocksize));
  			m_current_position = current_span_offset;
-@@ -130,7 +158,16 @@
+@@ -131,7 +161,16 @@
  				{
  					case 0:
  						eDebug("[eFilePushThread] wait for driver eof timeout");
 -						continue;
-+// Fix to ensure that event evtEOF is called at end of playbackl part 2/3
++// Fix to ensure that event evtEOF is called at end of playback part 2/3
 +						if (already_empty)
 +						{
 +							break;
@@ -2506,32 +2508,35 @@
  					case 1:
  						eDebug("[eFilePushThread] wait for driver eof ok");
  						break;
-@@ -175,6 +212,10 @@
+@@ -176,6 +215,14 @@
  			filterRecordData(m_buffer, buf_end);
  			while ((buf_start != buf_end) && !m_stop)
  			{
 +				struct pollfd pfd;
-+                                pfd.fd = m_fd_dest;
-+                                pfd.events = POLLOUT;
-+                                if (0 == poll(&pfd, 1, 250)) continue;
++
++				pfd.fd = m_fd_dest;
++				pfd.events = POLLOUT;
++				if (0 == poll(&pfd, 1, 250))
++				{
++					continue;
++				}
  				int w = write(m_fd_dest, m_buffer + buf_start, buf_end - buf_start);
  
  				if (w <= 0)
-@@ -196,12 +237,18 @@
+@@ -197,12 +244,18 @@
  			}
  
  			eofcount = 0;
-+// Fix to ensure that event evtEOF is called at end of playbackl part 3/3
++// Fix to ensure that event evtEOF is called at end of playback part 3/3
 +			already_empty = false;
  			m_current_position += buf_end;
-+			if (m_sg)
+-			bytes_read += buf_end;
+ 			if (m_sg)
 +			{
-+				current_span_remaining -= buf_end;
- 			bytes_read += buf_end;
--			if (m_sg)
--				current_span_remaining -= buf_end;
+ 				current_span_remaining -= buf_end;
 -		}
 -	}
++				bytes_read += buf_end;
 +			}
 +		}
 +	}
@@ -5642,20 +5647,10 @@
  SystemInfo["HasBypassEdidChecking"] = fileCheck("/proc/stb/hdmi/bypass_edid_checking")
  SystemInfo["HasColorspace"] = fileCheck("/proc/stb/video/hdmi_colorspace")
  SystemInfo["HasColorspaceSimple"] = SystemInfo["HasColorspace"] and model in "vusolo4k"
-@@ -96,19 +96,19 @@
- SystemInfo["HasMMC"] = "root" in cmdline and cmdline["root"].startswith("/dev/mmcblk")
- SystemInfo["HasTranscoding"] = pathExists("/proc/stb/encoder/0") or fileCheck("/dev/bcm_enc0")
- SystemInfo["HasH265Encoder"] = fileHas("/proc/stb/encoder/0/vcodec_choices", "h265")
--SystemInfo["CanNotDoSimultaneousTranscodeAndPIP"] = model in "vusolo4k"
-+SystemInfo["CanNotDoSimultaneousTranscodeAndPIP"] = True
- SystemInfo["HasColordepth"] = fileCheck("/proc/stb/video/hdmi_colordepth")
--SystemInfo["HasFrontDisplayPicon"] = model in ("et8500", "vusolo4k", "vuuno4kse", "vuduo4k", "vuduo4kse", "vuultimo4k")
-+SystemInfo["HasFrontDisplayPicon"] = False
- SystemInfo["Has24hz"] = fileCheck("/proc/stb/video/videomode_24hz")
- SystemInfo["Has2160p"] = fileHas("/proc/stb/video/videomode_preferred", "2160p50")
- SystemInfo["HasHDMIpreemphasis"] = fileCheck("/proc/stb/hdmi/preemphasis")
+@@ -105,11 +105,11 @@
  SystemInfo["HasColorimetry"] = fileCheck("/proc/stb/video/hdmi_colorimetry")
  SystemInfo["HasHdrType"] = fileCheck("/proc/stb/video/hdmi_hdrtype")
+ SystemInfo["HasHDMIin"] = model in ("vuduo4k", "vuduo4kse", "vuultimo4k", "vuuno4kse", "gbquad4k", "hd2400", "et10000")
 -SystemInfo["HasHDMI-CEC"] = HardwareInfo().has_hdmi() and fileExists(resolveFilename(SCOPE_PLUGINS, "SystemPlugins/HdmiCEC/plugin.pyo")) and (fileExists("/dev/cec0") or fileExists("/dev/hdmi_cec") or fileExists("/dev/misc/hdmi_cec0"))
 -SystemInfo["HasYPbPr"] = model in ("dm8000", "et5000", "et6000", "et6500", "et9000", "et9200", "et9500", "et10000", "formuler1", "mbtwinplus", "spycat", "vusolo", "vuduo", "vuduo2", "vuultimo")
 -SystemInfo["HasScart"] = model in ("dm8000", "et4000", "et6500", "et8000", "et9000", "et9200", "et9500", "et10000", "formuler1", "hd1100", "hd1200", "hd1265", "hd2400", "vusolo", "vusolo2", "vuduo", "vuduo2", "vuultimo", "vuuno", "xp1000")
@@ -5669,23 +5664,23 @@
  SystemInfo["HasAutoVolume"] = fileExists("/proc/stb/audio/avl_choices") and fileCheck("/proc/stb/audio/avl")
  SystemInfo["HasAutoVolumeLevel"] = fileExists("/proc/stb/audio/autovolumelevel_choices") and fileCheck("/proc/stb/audio/autovolumelevel")
  SystemInfo["Has3DSurround"] = fileExists("/proc/stb/audio/3d_surround_choices") and fileCheck("/proc/stb/audio/3d_surround")
-@@ -118,13 +118,13 @@
+@@ -119,13 +119,13 @@
  SystemInfo["hasXcoreVFD"] = model in ("osmega", "spycat4k", "spycat4kmini", "spycat4kcombo") and fileCheck("/sys/module/brcmstb_%s/parameters/pt6302_cgram" % model)
  SystemInfo["HasOfflineDecoding"] = model not in ("osmini", "osminiplus", "et7000mini", "et11000", "mbmicro", "mbtwinplus", "mbmicrov2", "et7000", "et8500")
  SystemInfo["MultibootStartupDevice"] = getMultibootStartupDevice()
 -SystemInfo["canMode12"] = "%s_4.boxmode" % model in cmdline and cmdline["%s_4.boxmode" % model] in ("1", "12") and "192M"
 -SystemInfo["canMultiBoot"] = getMultibootslots()
 -SystemInfo["canFlashWithOfgwrite"] = not(model.startswith("dm"))
-+SystemInfo["canMode12"] = False
-+SystemInfo["canMultiBoot"] = False
-+SystemInfo["canFlashWithOfgwrite"] = False
+++SystemInfo["canMode12"] = False
+++SystemInfo["canMultiBoot"] = False
+++SystemInfo["canFlashWithOfgwrite"] = False
  SystemInfo["HDRSupport"] = fileExists("/proc/stb/hdmi/hlg_support_choices") and fileCheck("/proc/stb/hdmi/hlg_support")
  SystemInfo["CanDownmixAC3"] = fileHas("/proc/stb/audio/ac3_choices", "downmix")
  SystemInfo["CanDownmixDTS"] = fileHas("/proc/stb/audio/dts_choices", "downmix")
  SystemInfo["CanDownmixAAC"] = fileHas("/proc/stb/audio/aac_choices", "downmix")
  SystemInfo["HDMIAudioSource"] = fileCheck("/proc/stb/hdmi/audio_source")
  SystemInfo["BootDevice"] = getBootdevice()
--SystemInfo["FbcTunerPowerAlwaysOn"] = model in ("vusolo4k", "vuduo4k", "vuultimo4k", "vuuno4k", "vuuno4kse", "gbquad4k", "gbue4k")
+-SystemInfo["FbcTunerPowerAlwaysOn"] = model in ("vusolo4k", "vuduo4k", "vuduo4kse", "vuultimo4k", "vuuno4k", "vuuno4kse", "gbquad4k", "gbue4k")
 +SystemInfo["FbcTunerPowerAlwaysOn"] = False
 --- enigma2.org/lib/python/Components/Renderer/Makefile.am
 +++ enigma2/lib/python/Components/Renderer/Makefile.am
@@ -7391,7 +7386,7 @@
  
  		self["actions"] = ActionMap(["OkCancelActions", "ColorActions", "NumberActions", "MenuActions"],
  			{
-@@ -336,7 +341,7 @@
+@@ -337,7 +342,7 @@
  		if answer:
  			self.csel.protectContextMenu = False
  		elif answer is not None:
@@ -7400,7 +7395,7 @@
  		else:
  			self.close()
  
-@@ -480,7 +485,7 @@
+@@ -481,7 +486,7 @@
  		self.close()
  
  	def removeParentalProtection(self, service):
@@ -7409,7 +7404,7 @@
  
  	def pinEntered(self, service, answer):
  		if answer:
-@@ -489,13 +494,13 @@
+@@ -490,13 +495,13 @@
  				self.csel.servicelist.resetRoot()
  			self.close()
  		elif answer is not None:
@@ -7425,7 +7420,7 @@
  		else:
  			self.unhideParentalServicesCallback(True)
  
-@@ -508,7 +513,7 @@
+@@ -509,7 +514,7 @@
  			self.csel.servicelist.setCurrent(service)
  			self.close()
  		elif answer is not None:
@@ -7434,7 +7429,7 @@
  		else:
  			self.close()
  
-@@ -884,6 +889,9 @@
+@@ -885,6 +890,9 @@
  		self.saved_title = None
  		self.saved_root = None
  		self.current_ref = None
@@ -7444,7 +7439,7 @@
  		self.editMode = False
  		self.confirmRemove = True
  
-@@ -984,7 +992,7 @@
+@@ -985,7 +993,7 @@
  				if mutableAlternatives:
  					mutableAlternatives.setListName(name)
  					if mutableAlternatives.addService(cur_service.ref):
@@ -7453,7 +7448,7 @@
  					mutableAlternatives.flushChanges()
  					self.servicelist.addService(new_ref.ref, True)
  					self.servicelist.removeCurrent()
-@@ -995,7 +1003,7 @@
+@@ -996,7 +1004,7 @@
  					if self.startServiceRef and cur_service.ref == self.startServiceRef:
  						self.startServiceRef = new_ref.ref
  				else:
@@ -7462,7 +7457,7 @@
  			else:
  				print "add", str, "to", cur_root.getServiceName(), "failed"
  		else:
-@@ -1019,10 +1027,10 @@
+@@ -1020,10 +1028,10 @@
  					if services is not None:
  						for service in services:
  							if mutableBouquet.addService(service):
@@ -7475,7 +7470,7 @@
  				# do some voodoo to check if current_root is equal to bouquet_root
  				cur_root = self.getRoot()
  				str1 = cur_root and cur_root.toString()
-@@ -1032,9 +1040,9 @@
+@@ -1033,9 +1041,9 @@
  					self.servicelist.addService(new_bouquet_ref)
  					self.servicelist.resetRoot()
  			else:
@@ -7488,7 +7483,7 @@
  
  	def copyCurrentToBouquetList(self):
  		provider = ServiceReference(self.getCurrentSelection())
-@@ -1060,11 +1068,11 @@
+@@ -1061,11 +1069,11 @@
  					if self.startServiceRef and cur_service.ref == self.startServiceRef:
  						self.startServiceRef = first_in_alternative
  				else:
@@ -7505,7 +7500,7 @@
  		self.removeBouquet()
  		if not end:
  			self.servicelist.moveUp()
-@@ -1146,6 +1154,9 @@
+@@ -1147,6 +1155,9 @@
  			else:
  				new_title += ' ' + _("[favourite edit]")
  		self.setTitle(new_title)
@@ -7515,7 +7510,7 @@
  		self.__marked = self.servicelist.getRootServices()
  		for x in self.__marked:
  			self.servicelist.addMarked(eServiceReference(x))
-@@ -1173,6 +1184,9 @@
+@@ -1174,6 +1185,9 @@
  		self.bouquet_mark_edit = OFF
  		self.mutableList = None
  		self.setTitle(self.saved_title)
@@ -7525,7 +7520,7 @@
  		self.saved_title = None
  		# self.servicePath is just a reference to servicePathTv or Radio...
  		# so we never ever do use the asignment operator in self.servicePath
-@@ -1251,6 +1265,9 @@
+@@ -1252,6 +1266,9 @@
  			self.mutableList.flushChanges() # FIXME add check if changes was made
  			self.mutableList = None
  			self.setTitle(self.saved_title)
@@ -7535,7 +7530,7 @@
  			self.saved_title = None
  			self.servicelist.resetRoot()
  			self.servicelist.l.setHideNumberMarker(config.usage.hide_number_markers.value)
-@@ -1262,6 +1279,9 @@
+@@ -1263,6 +1280,9 @@
  			self.saved_title = self.getTitle()
  			pos = self.saved_title.find(')')
  			self.setTitle(self.saved_title[:pos+1] + ' ' + _("[move mode]") + self.saved_title[pos+1:])
@@ -7545,7 +7540,7 @@
  			self.servicelist.l.setHideNumberMarker(False)
  			self.setCurrentSelection(self.servicelist.getCurrent())
  		self["Service"].editmode = True
-@@ -1316,6 +1336,11 @@
+@@ -1317,6 +1337,11 @@
  
  		self["list"] = ServiceList(self)
  		self.servicelist = self["list"]
@@ -7557,7 +7552,7 @@
  
  		self.numericalTextInput = NumericalTextInput(handleTimeout=False)
  		self.numericalTextInput.setUseableChars(u'1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ')
-@@ -1410,6 +1435,9 @@
+@@ -1411,6 +1436,9 @@
  			title = title[:pos]
  		title += _(" (TV)")
  		self.setTitle(title)
@@ -7567,7 +7562,7 @@
  
  	def setRadioMode(self):
  		self.mode = MODE_RADIO
-@@ -1421,6 +1449,9 @@
+@@ -1422,6 +1450,9 @@
  			title = title[:pos]
  		title += _(" (Radio)")
  		self.setTitle(title)
@@ -7577,7 +7572,7 @@
  
  	def setRoot(self, root, justSet=False):
  		if self.startRoot is None:
-@@ -1475,6 +1506,9 @@
+@@ -1476,6 +1507,9 @@
  					end_ref = None
  				nameStr = self.getServiceName(base_ref)
  				titleStr += ' - ' + nameStr
@@ -7587,7 +7582,7 @@
  				if end_ref is not None:
  					if Len > 2:
  						titleStr += '/../'
-@@ -1482,7 +1516,13 @@
+@@ -1483,7 +1517,13 @@
  						titleStr += '/'
  					nameStr = self.getServiceName(end_ref)
  					titleStr += nameStr
@@ -7723,7 +7718,7 @@
  	def zapDown(self):
  		if self.servicelist.inBouquet():
  			prev = self.servicelist.getCurrentSelection()
-@@ -888,7 +937,7 @@
+@@ -892,7 +941,7 @@
  	def __init__(self):
  		self["MenuActions"] = HelpableActionMap(self, "InfobarMenuActions",
  			{
@@ -7732,7 +7727,7 @@
  			})
  		self.session.infobar = None
  
-@@ -1003,7 +1052,7 @@
+@@ -1007,7 +1056,7 @@
  
  		self["EPGActions"] = HelpableActionMap(self, "InfobarEPGActions",
  			{
@@ -7741,7 +7736,7 @@
  				"showEventInfoSingleEPG": (self.showSingleEPG, _("Show single service EPG")),
  				"showEventInfoMultiEPG": (self.showMultiEPG, _("Show multi channel EPG")),
  				"showInfobarOrEpgWhenInfobarAlreadyVisible": self.showEventInfoWhenNotVisible,
-@@ -1014,7 +1063,7 @@
+@@ -1018,7 +1067,7 @@
  				if 'selectedevent' not in p.__call__.func_code.co_varnames] or []
  		from Components.ServiceEventTracker import InfoBarCount
  		if getAll or InfoBarCount == 1:
@@ -7750,7 +7745,7 @@
  		pluginlist.append((_("Multi EPG"), self.openMultiServiceEPG, _("Display EPG as MultiEPG")))
  		pluginlist.append((_("Current event EPG"), self.openEventView, _("Display EPG info for current event")))
  		return pluginlist
-@@ -1168,7 +1217,7 @@
+@@ -1172,7 +1221,7 @@
  	def showEventInfoPlugins(self):
  		pluginlist = self.getEPGPluginList()
  		if pluginlist:
@@ -7759,7 +7754,7 @@
  		else:
  			self.openSingleServiceEPG()
  
-@@ -1241,7 +1290,7 @@
+@@ -1245,7 +1294,7 @@
  				self.eventView = self.session.openWithCallback(self.closed, EventViewEPGSelect, epglist[0], ServiceReference(ref), self.eventViewCallback, self.openSingleServiceEPG, self.openMultiServiceEPG, self.openSimilarList)
  				self.dlg_stack.append(self.eventView)
  		if not epglist:
@@ -7768,7 +7763,7 @@
  			self.openMultiServiceEPG(False)
  
  	def eventViewCallback(self, setEvent, setService, val): #used for now/next displaying
-@@ -2144,7 +2193,7 @@
+@@ -2148,7 +2197,7 @@
  		self.addExtension((lambda: _("Manually import from fallback tuner"), self.importChannels, lambda: config.usage.remote_fallback_extension_menu.value and config.usage.remote_fallback_import.value))
  		self["InstantExtensionsActions"] = HelpableActionMap(self, "InfobarExtensions",
  			{
@@ -7777,7 +7772,7 @@
  			}, 1) # lower priority
  
  	def openSoftcamSetup(self):
-@@ -2174,7 +2223,7 @@
+@@ -2178,7 +2227,7 @@
  
  	def updateExtensions(self):
  		self.extensionsList = []
@@ -7786,7 +7781,7 @@
  		self.extensionKeys = {}
  		for x in self.list:
  			if x[0] == self.EXTENSION_SINGLE:
-@@ -2201,7 +2250,7 @@
+@@ -2205,7 +2254,7 @@
  				else:
  					extensionsList.remove(extension)
  		list.extend([(x[0](), x) for x in extensionsList])
@@ -7795,7 +7790,7 @@
  
  	def extensionCallback(self, answer):
  		if answer is not None:
-@@ -2406,11 +2455,11 @@
+@@ -2410,11 +2459,11 @@
  
  class InfoBarInstantRecord:
  	"""Instant Record - handles the instantRecord action in order to
@@ -7809,7 +7804,7 @@
  			})
  		self.SelectedInstantServiceRef = None
  		if isStandardInfoBar(self):
-@@ -2493,7 +2542,7 @@
+@@ -2497,7 +2546,7 @@
  	def startInstantRecording(self, limitEvent = False):
  		begin = int(time())
  		end = begin + 3600      # dummy
@@ -7818,7 +7813,7 @@
  		info = { }
  
  		self.getProgramInfoAndEvent(info, name)
-@@ -2722,7 +2771,7 @@
+@@ -2726,7 +2775,7 @@
  	def __init__(self):
  		self["AudioSelectionAction"] = HelpableActionMap(self, "InfobarAudioSelectionActions",
  			{
@@ -7827,7 +7822,7 @@
  			})
  
  	def audioSelection(self):
-@@ -2736,7 +2785,7 @@
+@@ -2740,7 +2789,7 @@
  	def __init__(self):
  		self["SubserviceSelectionAction"] = HelpableActionMap(self, "InfobarSubserviceSelectionActions",
  			{
