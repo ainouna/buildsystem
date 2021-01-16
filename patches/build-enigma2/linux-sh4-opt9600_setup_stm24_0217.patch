@@ -59,7 +59,7 @@
  /*
   * arch/sh/boards/st/mb442/mach.c
   *
-+ * Modified for use on Opticum HD 9600 (TS) by
++ * Modified for use on Opticum (TS) HD 9600 by
 + * Audioniek.
 + *
 + * Original code by:
@@ -70,7 +70,7 @@
   * License.  See linux/COPYING for more information.
   *
 - * Machine vector for the STMicroelectronics STb7100 Reference board.
-+ * Machine vector for the  Opticum HD 9600 (TS) board.
++ * Machine vector for the  Opticum HD (TS) 9600 board.
   */
  
  #include <linux/init.h>
@@ -102,7 +102,7 @@
  static struct sh_machine_vector mv_mb442 __initmv = {
 -	.mv_name		= "STb7100 Reference board",
 -	.mv_setup		= mb442_setup,
-+	.mv_name		= "Opticum HD 9600 (TS)",
++	.mv_name		= "Opticum HD (TS) 9600",
 +	.mv_setup		= opt9600_setup,
  	.mv_nr_irqs		= NR_IRQS,
 -	.mv_init_irq		= mb442_init_irq,
@@ -117,7 +117,7 @@
  /*
   * arch/sh/boards/st/mb442/setup.c
   *
-+ * Modified for use on Opticum HD 9600 (TS) by
++ * Modified for use on Opticum HD (TS) 9600 by
 + * Audioniek.
 + *
 + * Original code by:
@@ -128,11 +128,11 @@
   * License.  See linux/COPYING for more information.
   *
 - * STMicroelectronics STb7100 Reference board support.
-+ * Opticum HD 9600 (TS) support.
++ * Opticum HD (TS) 9600 support.
   */
  
  #include <linux/init.h>
-@@ -22,30 +26,119 @@
+@@ -22,142 +26,237 @@
  #include <linux/stm/platform.h>
  #include <linux/stm/stx7100.h>
  #include <asm/irl.h>
@@ -216,22 +216,22 @@
 +#define OPT9600_PIO_STE100P_RESET stm_gpio(3, 6)
 +#define OPT9600_PIO_FLASH_VPP stm_gpio(2, 7)
 +
-+const char *LMI_VID_partalias[] = { "BPA2_Region1", "coredisplay-video", "gfx-memory", "v4l2-video-buffers", NULL };
-+const char *LMI_SYS_partalias[] = { "BPA2_Region0", "bigphysarea", "v4l2-coded-video-buffers", NULL };
++const char *LMI_VID_partalias[] = { "BPA2_Region1", "coredisplay-video", "gfx-memory", "v4l2-video-buffers", "v4l2-coded-video-buffers", NULL };
++const char *LMI_SYS_partalias[] = { "BPA2_Region0", "bigphysarea", NULL };
 +
 +static struct bpa2_partition_desc bpa2_parts_table[] =
 +{
 +	{
 +		.name  = "LMI_VID",
 +		.start = 0x10800000,
-+		.size  = 0x01800000,  // 24 Mbyte (qas 0x3800000)
++		.size  = 0x03400000,  // 52 Mbyte
 +		.flags = 0,
 +		.aka   = LMI_VID_partalias
 +	},
 +	{
 +		.name  = "LMI_SYS",
 +		.start = 0x00000000,  // -> 1st free low RAM address
-+		.size  = 0x01400000,  // 20 Mbyte
++		.size  = 0x01800000,  // 24 Mbyte
 +		.flags = 0,
 +		.aka   = LMI_SYS_partalias
 +	}
@@ -239,7 +239,7 @@
 +
 +void __init opt9600_setup(char** cmdline_p)
 +{
-+	printk("Opticum HD 9600 (TS)\n");
++	printk("Opticum HD (TS) 9600\n");
  
  	stx7100_early_device_init();
  
@@ -252,6 +252,31 @@
 -}
 -
 -static struct resource mb442_smc91x_resources[] = {
+-	[0] = {
+-		.start	= 0x02000300,
+-		.end	= 0x02000300 + 0xff,
+-		.flags	= IORESOURCE_MEM,
+-	},
+-	[1] = {
+-		.start	= IRL0_IRQ,
+-		.end	= IRL0_IRQ,
+-		.flags	= IORESOURCE_IRQ,
+-	},
+-};
+-
+-static struct platform_device mb442_smc91x_device = {
+-	.name		= "smc91x",
+-	.id		= 0,
+-	.num_resources	= ARRAY_SIZE(mb442_smc91x_resources),
+-	.resource	= mb442_smc91x_resources,
+-};
+-
+-static void mb442_set_vpp(struct map_info *info, int enable)
+-{
+-	gpio_set_value(MB442_PIO_FLASH_VPP, enable);
+-}
+-
+-static struct platform_device mb442_physmap_flash = {
 +//	Console UART
 +	stx7100_configure_asc(2, &(struct stx7100_asc_config)
 +	{
@@ -268,34 +293,6 @@
 +	bpa2_init(bpa2_parts_table, ARRAY_SIZE(bpa2_parts_table));
 +}
 +
-+#if 0
-+static struct resource opt9600_smc91x_resources[] = {
- 	[0] = {
- 		.start	= 0x02000300,
- 		.end	= 0x02000300 + 0xff,
-@@ -58,106 +151,115 @@
- 	},
- };
- 
--static struct platform_device mb442_smc91x_device = {
-+static struct platform_device opt9600_smc91x_device = {
- 	.name		= "smc91x",
- 	.id		= 0,
--	.num_resources	= ARRAY_SIZE(mb442_smc91x_resources),
--	.resource	= mb442_smc91x_resources,
--};
--
--static void mb442_set_vpp(struct map_info *info, int enable)
--{
--	gpio_set_value(MB442_PIO_FLASH_VPP, enable);
--}
--
--static struct platform_device mb442_physmap_flash = {
-+	.num_resources	= ARRAY_SIZE(opt9600_smc91x_resources),
-+	.resource	= opt9600_smc91x_resources,
-+};
-+#endif
-+
 +static void opt9600_set_vpp(struct map_info *info, int enable)
 +{
 +	gpio_set_value(OPT9600_PIO_FLASH_VPP, enable);
@@ -308,19 +305,19 @@
  	.num_resources	= 1,
 -	.resource	= (struct resource[]) {
 -		STM_PLAT_RESOURCE_MEM(0, 8*1024*1024),
--	},
--	.dev.platform_data = &(struct physmap_flash_data) {
 +	.resource	= (struct resource[])
 +	{
 +		STM_PLAT_RESOURCE_MEM(0, 8 * 1024 * 1024),
-+	},
+ 	},
+-	.dev.platform_data = &(struct physmap_flash_data) {
 +	.dev.platform_data = &(struct physmap_flash_data)
 +	{
  		.width		= 2,
 -		.set_vpp	= mb442_set_vpp,
--	},
--};
--
++		.set_vpp	= opt9600_set_vpp,
+ 	},
+ };
+ 
 -
 -static int mb442_phy_reset(void* bus)
 -{
@@ -329,10 +326,7 @@
 -	gpio_set_value(MB442_PIO_STE100P_RESET, 0);
 -	udelay(1);
 -	gpio_set_value(MB442_PIO_STE100P_RESET, 1);
-+		.set_vpp	= opt9600_set_vpp,
-+	},
-+};
-+
+-
 +static int opt9600_phy_reset(void* bus)
 +{
 +	gpio_set_value(OPT9600_PIO_STE100P_RESET, 1);
@@ -340,7 +334,6 @@
 +	gpio_set_value(OPT9600_PIO_STE100P_RESET, 0);
 +	udelay(1);
 +	gpio_set_value(OPT9600_PIO_STE100P_RESET, 1);
- 
  	return 1;
  }
  
@@ -372,27 +365,58 @@
 -			.out1_enabled = 1, });
 -
 -	stx7100_configure_ssc_i2c(0, NULL);
+-	stx7100_configure_ssc_spi(1, NULL);
+-	stx7100_configure_ssc_i2c(2, NULL);
 +static struct platform_device *opt9600_devices[] __initdata =
 +{
-+//	&opt9600_smc91x_device,
 +	&opt9600_physmap_flash,
 +};
 +
 +static int __init opt9600_device_init(void)
 +{
++#if 0
++	/* Temporary: try and find the PIO's */
++	int i;
++	int j;
++#define SLEEP 300
++	for (i = 0; i < 6; i++)
++	{
++		for (j = 0; j < 8; j++)
++		{
++
++			if ((j == 2 && i == 4) || (j == 3 && i == 4))
++			{
++				printk("Skip GPIO(%1d.%1d)\n", i, j);
++			}
++			else
++			{
++				stm_gpio_direction(stm_gpio(i, j), STM_GPIO_DIRECTION_OUT);
++				gpio_set_value(stm_gpio(i, j), 0);
++				printk("GPIO(%1d.%1d): ", i, j);
++				printk("off ");
++				mdelay(SLEEP);
++				gpio_set_value(stm_gpio(i, j), 1);
++				printk("on ");
++				mdelay(SLEEP);
++				gpio_set_value(stm_gpio(i, j), 0);
++				printk("off ");
++				mdelay(SLEEP);
++				stm_gpio_direction(stm_gpio(i, j), STM_GPIO_DIRECTION_IN);
++				printk("set to input\n");
++				mdelay(SLEEP);
++				mdelay(SLEEP);
++				mdelay(SLEEP);
++				mdelay(SLEEP);
++				mdelay(SLEEP);
++				mdelay(SLEEP);
++			}
++		}
++	}
++#endif
 +//	stx7100_configure_sata();
 +
-+# if 0
-+	stx7100_configure_pwm(&(struct stx7100_pwm_config)
-+	{
-+		.out0_enabled = 0,
-+		.out1_enabled = 1,
-+	});
-+
-+#endif
 +	stx7100_configure_ssc_i2c(0);
- 	stx7100_configure_ssc_spi(1, NULL);
--	stx7100_configure_ssc_i2c(2, NULL);
++	stx7100_configure_ssc_i2c(1);
 +	stx7100_configure_ssc_i2c(2);
  
  	stx7100_configure_usb();
@@ -433,16 +457,6 @@
 -			ARRAY_SIZE(mb442_devices));
 -}
 -device_initcall(mb442_device_init);
-+
-+#if 0
-+	stx7100_configure_pata(&(struct stx7100_pata_config)
-+	{
-+		.emi_bank = 3,
-+		.pc_mode = 1,
-+		.irq = IRL1_IRQ,
-+	});
-+#endif
-+
 +	gpio_request(OPT9600_PIO_FLASH_VPP, "Flash VPP");
 +	gpio_direction_output(OPT9600_PIO_FLASH_VPP, 0);
 +
@@ -729,14 +743,14 @@
 +	len = sprintf(page, " port name direction\n");
 +	for (port_no = 0; port_no < num_ports; port_no++)
 +	{
-+		for (pin_no = 0; pin_no < STM_GPIO_PINS_PER_PORT; pin_no++) {
-+
++		for (pin_no = 0; pin_no < STM_GPIO_PINS_PER_PORT; pin_no++)
++		{
 +			port = &stm_gpio_ports[port_no];
-+			if (!port) continue;
-+
++			if (!port)
++				continue;
 +			pin = &port->pins[pin_no];
-+			if (!pin) continue;
-+
++			if (!pin)
++				continue;
 +			name = pin->stpio.pin_name ? pin->stpio.pin_name : "";
 +			len += sprintf(page + len,
 +				"PIO %d.%d [%-10s] [%s] [%s]\n",
