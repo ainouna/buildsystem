@@ -685,7 +685,7 @@ enigma2_release_opt9600:
 		cp -rf $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/opt9600VFD/* $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/SystemPlugins/VFD-Icons; \
 		rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/opt96002VFD; \
 	fi
-	$(SILENT)cp -f $(SKEL_ROOT)/root_enigma2/usr/local/share/enigma2/keymap_hl101.xml $(RELEASE_DIR)/usr/local/share/enigma2/keymap.xml
+	$(SILENT)cp -f $(SKEL_ROOT)/root_enigma2/usr/local/share/enigma2/keymap_opt9600.xml $(RELEASE_DIR)/usr/local/share/enigma2/keymap.xml
 
 #
 # release_base
@@ -896,6 +896,7 @@ endif
 # copy root_enigma2
 #
 	$(SILENT)cp -aR $(SKEL_ROOT)/root_enigma2/etc/* $(RELEASE_DIR)/etc/
+	$(SILENT)cp -aR $(SKEL_ROOT)/root_enigma2/usr/lib/* $(RELEASE_DIR)/usr/lib/
 #
 # python2.7
 #
