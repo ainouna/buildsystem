@@ -676,14 +676,12 @@ enigma2_release_opt9600:
 	$(SILENT)cp $(SKEL_ROOT)/boot/audio_7109.elf $(RELEASE_DIR)/boot/audio.elf
 	$(SILENT)cp $(SKEL_ROOT)/firmware/dvb-fe-avl2108.fw $(RELEASE_DIR)/lib/firmware/
 	$(SILENT)cp -f $(SKEL_ROOT)/release/fstab_vip2 $(RELEASE_DIR)/etc/fstab
-#	$(SILENT)cp -dp $(SKEL_ROOT)/release/lircd_hl101.conf $(RELEASE_DIR)/etc/lircd.conf
-#	$(SILENT)mkdir -p $(RELEASE_DIR)/var/run/lirc
 	$(SILENT)rm -f $(RELEASE_DIR)/bin/vdstandby
-	$(SILENT)if [ -e $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/opt9600/plugin.py ]; then \
+	$(SILENT)if [ -e $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/opt9600VFD/plugin.py ]; then \
 		rm -f $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/SystemPlugins/VFD-Icons/*; \
-		cp -f $(SKEL_ROOT)/release/vfddisplay.png $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/spark7162VFD; \
+		cp -f $(SKEL_ROOT)/release/vfddisplay.png $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/opt96000VFD; \
 		cp -rf $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/opt9600VFD/* $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/SystemPlugins/VFD-Icons; \
-		rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/opt96002VFD; \
+		rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/opt9600VFD; \
 	fi
 	$(SILENT)cp -f $(SKEL_ROOT)/root_enigma2/usr/local/share/enigma2/keymap_opt9600.xml $(RELEASE_DIR)/usr/local/share/enigma2/keymap.xml
 
