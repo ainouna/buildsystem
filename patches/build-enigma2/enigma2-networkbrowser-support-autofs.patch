@@ -194,7 +194,7 @@
  
  	def sanitizeOptions(self, origOptions, mounttype=None, username=None, password=None):
  		# split the options into their components
-@@ -179,118 +188,13 @@
+@@ -178,118 +187,13 @@
  		return ",".join(options)
  
  	def CheckMountPoint(self, item, callback):
@@ -318,7 +318,7 @@
  
  	def CheckMountPointFinished(self, result, retval, extra_args):
  		print "[AutoMount.py] CheckMountPointFinished", result, retval
-@@ -298,25 +202,12 @@
+@@ -297,25 +201,12 @@
  		path = os.path.join('/media/net', data['sharename'])
  		print "[AutoMount.py] CheckMountPointFinished, verifying: ", path
  
@@ -350,7 +350,7 @@
  
  		if self.checkList:
  			# Go to next item in list...
-@@ -351,14 +242,6 @@
+@@ -350,14 +241,6 @@
  			except Exception, ex:
  				print "[AutoMount.py] Failed to create ", movie, "Error:", ex
  
@@ -365,7 +365,7 @@
  	def getMountsList(self):
  		return self.automounts
  
-@@ -374,30 +257,31 @@
+@@ -373,30 +256,31 @@
  
  	def writeMountsConfig(self):
  		# Generate List in RAM
@@ -418,7 +418,7 @@
  
  		# Try Saving to Flash
  		try:
-@@ -405,9 +289,6 @@
+@@ -404,9 +288,6 @@
  		except Exception, e:
  			print "[AutoMount.py] Error Saving Mounts List:", e
  
@@ -428,7 +428,7 @@
  
  	def removeMount(self, mountpoint, callback = None):
  		print "[AutoMount.py] removing mount: ",mountpoint
-@@ -417,28 +298,6 @@
+@@ -416,28 +297,6 @@
  				self.newautomounts[sharename] = sharedata
  		self.automounts.clear()
  		self.automounts = self.newautomounts
