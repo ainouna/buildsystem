@@ -1,7 +1,7 @@
 #
 # busybox
 #
-BUSYBOX_VER = 1.32.0
+BUSYBOX_VER = 1.33.0
 BUSYBOX_SOURCE = busybox-$(BUSYBOX_VER).tar.bz2
 BUSYBOX_PATCH  = busybox-$(BUSYBOX_VER)-nandwrite.patch
 BUSYBOX_PATCH += busybox-$(BUSYBOX_VER)-unicode.patch
@@ -9,12 +9,13 @@ BUSYBOX_PATCH += busybox-$(BUSYBOX_VER)-extra.patch
 BUSYBOX_PATCH += busybox-$(BUSYBOX_VER)-extra2.patch
 BUSYBOX_PATCH += busybox-$(BUSYBOX_VER)-flashcp-small-output.patch
 BUSYBOX_PATCH += busybox-$(BUSYBOX_VER)-block-telnet-internet.patch
+BUSYBOX_PATCH += busybox-$(BUSYBOX_VER)-recursive_action-fix.patch
 #BUSYBOX_PATCH += busybox-$(BUSYBOX_VER)-sh4-revert_ifa_flags.patch
 
 $(ARCHIVE)/$(BUSYBOX_SOURCE):
 	$(WGET) https://busybox.net/downloads/$(BUSYBOX_SOURCE)
 
-ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs7119 hs7429 hs7819 spark spark7162 ufs912 ufs913 vitamin_hd5000))
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE), adb_box hs7119 hs7429 hs7819 spark spark7162 ufs912 ufs913 vitamin_hd5000))
 BUSYBOX_CONFIG = busybox-$(BUSYBOX_VER).config_nandwrite
 else
 BUSYBOX_CONFIG = busybox-$(BUSYBOX_VER).config
@@ -318,7 +319,8 @@ $(D)/portmap: $(D)/bootstrap $(D)/lsb $(ARCHIVE)/$(PORTMAP_SOURCE) $(ARCHIVE)/po
 #
 E2FSPROGS_VER = 1.45.6
 E2FSPROGS_SOURCE = e2fsprogs-$(E2FSPROGS_VER).tar.gz
-E2FSPROGS_PATCH = e2fsprogs-$(E2FSPROGS_VER).patch
+E2FSPROGS_PATCH  = e2fsprogs-$(E2FSPROGS_VER).patch
+E2FSPROGS_PATCH += e2fsprogs-$(E2FSPROGS_VER)-configure.ac-correct.patch
 
 $(ARCHIVE)/$(E2FSPROGS_SOURCE):
 	$(WGET) https://sourceforge.net/projects/e2fsprogs/files/e2fsprogs/v$(E2FSPROGS_VER)/$(E2FSPROGS_SOURCE)

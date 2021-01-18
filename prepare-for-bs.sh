@@ -113,7 +113,7 @@ PACKAGES="\
 	                                                             ${FEDORA:+byacc}                                 \
 	${UBUNTU:+libssl-dev}           ${SUSE:+libopenssl-devel}    ${FEDORA:+openssl-devel}                         \
 	${UBUNTU:+libmount-dev}                                      ${FEDORA:+help2man}                              \
-	${UBUNTU:+mtools}                                                                                             \
+	${UBUNTU:+mtools}                                            ${FEDORA:+rpcgen}                                \
 	${UBUNTU:+u-boot-tools}                                                                                       \
 	${UBUNTU:+curl}
 ";
