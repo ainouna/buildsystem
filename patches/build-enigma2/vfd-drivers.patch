@@ -7619,7 +7619,7 @@
 +	vfddisplay.png
 --- enigma2.org/lib/python/Plugins/Extensions/opt9600VFD/plugin.py
 +++ enigma2/lib/python/Plugins/Extensions/opt9600VFD/plugin.py
-@@ -0,0 +1,372 @@
+@@ -0,0 +1,392 @@
 +# -*- coding: utf-8 -*-
 +from Plugins.Plugin import PluginDescriptor
 +from ServiceReference import ServiceReference
@@ -7639,7 +7639,7 @@
 +from Screens.Screen import Screen
 +import os
 +import gettext
-+#Version 210116.1
++#Version 210117.1
 +stb = HardwareInfo().get_device_name()
 +lang = language.getLanguage()
 +environ['LANGUAGE'] = lang[:2]
@@ -7661,10 +7661,11 @@
 +
 +try:
 +	DisplayType = evfd.getInstance().getVfdType()
-+	if DisplayType !=20:
++	if DisplayType != 20:
 +		DisplayType = None
 +except:
 +	DisplayType = None
++DisplayTypevfd = DisplayType
 +
 +if DisplayTypevfd is None:
 +	if stb.lower() == 'opt9600':
@@ -7696,9 +7697,6 @@
 +		])
 +config.plugins.vfdicon.contrast = ConfigSlider(default = 6, limits = (0, 7))
 +config.plugins.vfdicon.stbcontrast = ConfigSlider(default = 0, limits = (0, 7))
-+config.plugins.vfdicon.ledbright = ConfigSlider(default = 6, limits = (0, 7))
-+config.plugins.vfdicon.stbledbright = ConfigSlider(default = 4, limits = (0, 7))
-+config.plugins.vfdicon.uppercase = ConfigYesNo(default = False)
 +config.plugins.vfdicon.textscroll = ConfigSelection(default = "1",
 +	choices = [
 +		("0", _("no")),
@@ -7710,20 +7708,8 @@
 +		("0", _("no")),
 +		("1", _("yes"))
 +		])
-+config.plugins.vfdicon.powerledcolour = ConfigSelection(default = "2",
-+	choices = [
-+		("0", _("off")),
-+		("1", _("red")),
-+		("2", _("green")),
-+		("3", _("orange"))
-+		])
-+config.plugins.vfdicon.standbyledcolour = ConfigSelection(default = "1",
-+	choices = [
-+		("0", _("off")),
-+		("1", _("red")),
-+		("2", _("green")),
-+		("3", _("orange"))
-+		])
++config.plugins.vfdicon.vfd_enable = ConfigYesNo(default = False)
++config.plugins.vfdicon.extMenu = ConfigYesNo(default = True)
 +
 +class ConfigVFDDisplay(Screen, ConfigListScreen):
 +	def __init__(self, session):
@@ -7755,10 +7741,8 @@
 +		if DisplayType == 20:
 +			self.cfglist.append(getConfigListEntry(_("Display brightness"), config.plugins.vfdicon.contrast))
 +			self.cfglist.append(getConfigListEntry(_("Standby brightness"), config.plugins.vfdicon.stbcontrast))
-+		self.cfglist.append(getConfigListEntry(_("Uppercase letters only"), config.plugins.vfdicon.uppercase))
 +		self.cfglist.append(getConfigListEntry(_("Scroll text"), config.plugins.vfdicon.textscroll))
-+		if self.disp == 'vfd':
-+			self.cfglist.append(getConfigListEntry(_("Center text"), config.plugins.vfdicon.textcenter))
++		self.cfglist.append(getConfigListEntry(_("Center text"), config.plugins.vfdicon.textcenter))
 +	        self.cfglist.append(getConfigListEntry(_('Show this plugin in plugin menu'), config.plugins.vfdicon.extMenu))
 +		self["config"].list = self.cfglist
 +		self["config"].l.setList(self.cfglist)
@@ -7824,11 +7808,14 @@
 +		self.session = session
 +		self.onClose = []
 +		print '[VFD-Icons] Start'
++		self.play = False
++		self.record = False
++		self.timeshift = False
 +		self.standby = False
-+
 +		self.timer = eTimer()
 +		self.timer.callback.append(self.timerEvent)
 +		self.timer.start(60000, False) # start one minute timer
++		global DisplayType
 +		print '[VFD-Icons] Hardware displaytype:', DisplayType
 +		print '[VFD-Icons] VFD displaytype     :', DisplayTypevfd
 +		if DisplayType == 20:
@@ -7836,6 +7823,7 @@
 +				{
 +					iPlayableService.evUpdatedInfo: self.UpdatedInfo,
 +					iPlayableService.evUpdatedEventInfo: self.__evUpdatedEventInfo,
++					iPlayableService.evSeekableStatusChanged: self.__evSeekableStatusChanged,
 +					iPlayableService.evStart: self.__evStart
 +				})
 +			config.misc.standbyCounter.addNotifier(self.onEnterStandby, initial_call = False)
@@ -7851,10 +7839,9 @@
 +		else:
 +			evfd.getInstance().vfd_set_SCROLL(1)
 +		evfd.getInstance().vfd_set_CENTER(False)
-+		if self.display == 'vfd':
-+			print "[VFD-Icons] Set text centering option"
-+			if config.plugins.vfdicon.textcenter.value == "1":
-+				evfd.getInstance().vfd_set_CENTER(True)
++		print "[VFD-Icons] Set text centering option"
++		if config.plugins.vfdicon.textcenter.value == "1":
++			evfd.getInstance().vfd_set_CENTER(True)
 +		print '[VFD-Icons] End initialisation'
 +
 +	def __evStart(self):
@@ -7902,10 +7889,43 @@
 +						else:
 +							servicename = ServiceReference(service).getServiceName() #show the channel name
 +						self.play = False
-+			if config.plugins.vfdicon.uppercase.value == True:
-+				servicename = servicename.upper()
++			servicename = servicename.upper()
 +			servicename = servicename.replace('  ', ' ')
 +			evfd.getInstance().vfd_write_string(servicename[0:63])
++
++	def timerEvent(self):
++#		print '[VFD-Icons] timerEvent'
++		if self.record == False and self.timeshift == False:
++	 		if self.standby == False:
++				disptype = config.plugins.vfdicon.displayshow.value
++			else:
++				disptype = config.plugins.vfdicon.stbshow.value
++			self.writeDate(disptype)
++
++	def __evSeekableStatusChanged(self):
++		service = self.session.nav.getCurrentService()
++		if service:
++			if self.play == False:
++				ts = service and service.timeshift()
++#				if ts and ts.isTimeshiftEnabled() > 0:
++				if ts and ts.isTimeshiftActive() > 0:
++					self.timeshift = True
++				else:
++					self.timeshift = False
++
++	def gotRecordEvent(self, service, event):
++		if event in (iRecordableService.evEnd, iRecordableService.evStart, None):
++			recs = self.session.nav.getRecordings()
++			nrecs = len(recs)
++			if nrecs > 0: #recording active
++				self.record = True
++			else: # no recording active
++				self.RecordEnd()
++
++	def RecordEnd(self):
++		if self.record:
++			self.record = False
++			self.session.nav.record_event.remove(self.gotRecordEvent)
 +
 +	def writeDate(self, disp): #TODO: replace with case
 +		if disp == "date" or disp == "day_date" or disp == "time" or disp == "timeHM" or disp == "time_date" or disp == "nothing":
@@ -7928,35 +7948,25 @@
 +		self.standby = False
 +		global DisplayType
 +		self.timer.stop() # stop one second timer
-+		evfd.getInstance().vfd_write_string("               ")
++		evfd.getInstance().vfd_write_string("        ")
 +		self.timer.start(60000, False) # start one minute timer
 +		print "[VFD-Icons] minute timer started"
 +		if DisplayType == 20:
 +			evfd.getInstance().vfd_set_brightness(config.plugins.vfdicon.contrast.value)
-+			if self.display == 'vfd':
-+				Console().ePopen("fp_control -led " + str(config.plugins.vfdicon.ledbright.value))
 +			print "[VFD-Icons] set brightness", config.plugins.vfdicon.contrast.value
 +			self.timerEvent()
-+			b = str(config.plugins.vfdicon.powerledcolour)
-+			Console().ePopen("fp_control -l 1 " + b)  #Power LED
 +
 +	def onEnterStandby(self, configElement):
 +		from Screens.Standby import inStandby
 +		inStandby.onClose.append(self.onLeaveStandby)
 +		global DisplayType
 +		if DisplayType == 20:
-+			print "[VFD-Icons] set display & icons on Enter Standby"
++			print "[VFD-Icons] set display on Enter Standby"
 +			if config.plugins.vfdicon.stbshow.value == "nothing":
 +				evfd.getInstance().vfd_set_light(0)
 +			else:
 +				evfd.getInstance().vfd_set_brightness(config.plugins.vfdicon.stbcontrast.value)
-+				if self.display == 'vfd':
-+					Console().ePopen("fp_control -led " + str(config.plugins.vfdicon.stbledbright.value))
 +			print "[VFD-Icons] set standby brightness", config.plugins.vfdicon.stbcontrast.value
-+			if config.plugins.vfdicon.standbyledcolour.value:
-+				Console().ePopen("fp_control -l 1 " + str(config.plugins.vfdicon.standbyledcolour.value)) #Power LED
-+			else:
-+				Console().ePopen("fp_control -l 1 0") #Power LED red
 +		if (config.plugins.vfdicon.stbshow.value == "time" or config.plugins.vfdicon.stbshow.value == "time_date"):
 +			self.timer.stop() # stop minute timer
 +			self.timer.start(999, False) # start one second timer
@@ -7970,7 +7980,17 @@
 +VFDIconsInstance = None
 +
 +def main(session, **kwargs):
++	global VFDIconsInstance
++	global DisplayType
++	if VFDIconsInstance is None:
++		VFDIconsInstance = VFDIcons(session)
 +	if DisplayType == 20:
++		if (config.plugins.vfdicon.displayshow.value == "date" or config.plugins.vfdicon.displayshow.value == "day_date"
++			or config.plugins.vfdicon.displayshow.value == "time" or config.plugins.vfdicon.displayshow.value == "time_date"):
++			sleep(1)
++			VFDIconsInstance.timerEvent()
++		VFDIconsInstance.UpdatedInfo()
++	else:
 +		VFDIconsInstance.writeName()
 +
 +def Plugins(**kwargs):

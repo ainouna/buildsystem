@@ -679,7 +679,7 @@ enigma2_release_opt9600:
 	$(SILENT)rm -f $(RELEASE_DIR)/bin/vdstandby
 	$(SILENT)if [ -e $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/opt9600VFD/plugin.py ]; then \
 		rm -f $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/SystemPlugins/VFD-Icons/*; \
-		cp -f $(SKEL_ROOT)/release/vfddisplay.png $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/opt96000VFD; \
+		cp -f $(SKEL_ROOT)/release/vfddisplay.png $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/opt9600VFD; \
 		cp -rf $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/opt9600VFD/* $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/SystemPlugins/VFD-Icons; \
 		rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/opt9600VFD; \
 	fi
