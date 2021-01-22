@@ -2,7 +2,7 @@
 
 start()
 {
-  echo "[makedev] Starting makedev..."
+  echo "[makedev] Starting makedev for $TARGET..."
   # Check if started on target or on host
   MACHINE=`uname -m`
   if [ $MACHINE == "sh4" ]; then
@@ -22,7 +22,7 @@ start()
   # Decide if we have CI and/or TWIN/TRIPLET
   CI="No"
   TUNER="1"
-  for TARGET in cuberevo-9500hd cuberevo-mini2 cuberevo-mini cuberevo cuberevo-3000hd ufs922 ufs912 ufs913 ufc960 fortis atevio7500 octagon1008 hs7110 hs7420 hs7810a hs7119 hs7429 hs7819 ufs910 hl101 vip1_v1 vip1_v2 tf7700 ipbox9900; do
+  for TARGET in cuberevo-9500hd cuberevo-mini2 cuberevo-mini cuberevo cuberevo-3000hd ufs922 ufs912 ufs913 ufc960 fortis atevio7500 octagon1008 hs7110 hs7420 hs7810a hs7119 hs7429 hs7819 ufs910 hl101 vip1_v1 vip1_v2 tf7700 ipbox9900 opt9600; do
     if [ ${HOST} == ${TARGET} ]; then
       CI="Yes"
       break
