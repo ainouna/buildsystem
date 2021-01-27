@@ -1,4 +1,4 @@
-# revision 382cb60648c477f26952090677084cda568df38a 24/12/2020 12:24
+# revision 7e2109d2626ef881a1679d3574294a7b9f03d3c5 26/01/2021 17:46
 --- enigma2.org/configure.ac
 +++ enigma2/configure.ac
 @@ -18,6 +18,7 @@
@@ -373,11 +373,10 @@
  )
  if test x"$with_alsa" == xyes ; then
  	AC_DEFINE(HAVE_ALSA, 1,[Enables ALSA support])
-@@ -196,6 +499,26 @@
- elif test x"$with_alphablendingacceleration" = xalways ; then
+@@ -197,6 +500,26 @@
  	AC_DEFINE_UNQUOTED(FORCE_ALPHABLENDING_ACCELERATION, 1, [Accelerate alphablending blits])
  fi
-+
+ 
 +AC_ARG_WITH(graphlcd,
 +	AC_HELP_STRING([--with-graphlcd], [use GraphLCD color display, yes or no]),
 +	[[withgraphlcd=$withval]],
@@ -397,10 +396,37 @@
 +	AC_DEFINE(HAVE_LCD4LINUX, 1,[Define when using a LCD4Linux color display device])
 +fi
 +AM_CONDITIONAL(HAVE_LCD4LINUX, test x"$withlcd4linux" != xno)
- 
++
  AC_ARG_WITH(accelerationthreshold,
  	AC_HELP_STRING([--with-accelerationthreshold=n], [use acceleration threshold of n bytes]),
-@@ -303,8 +626,6 @@
+ 	[[with_accelerationthreshold=$withval]],
+@@ -248,17 +571,16 @@
+ 
+ CPPFLAGS="$CPPFLAGS $PYTHON_CPPFLAGS"
+ CFLAGS="$CFLAGS -Wall"
+-CXXFLAGS="$CXXFLAGS -Wall -Wextra -Werror \
+-	-Wformat=2 -Wformat-overflow=2 -Wformat-nonliteral -Wformat-security \
+-	-Wimplicit-fallthrough=5 -Wduplicated-branches -Wtrampolines \
+-	-Wdangling-else -Wshift-overflow=2 -Wswitch \
+-	-Wunused-but-set-parameter -Wunused-const-variable=1 -Wuninitialized \
+-	-Wstringop-overflow=3 -Woverlength-strings \
++CXXFLAGS="$CXXFLAGS -Wall -Wextra \
++	-Wformat=2 -Wformat-nonliteral -Wformat-security \
++	-Wtrampolines \
++	-Wswitch \
++	-Wunused-but-set-parameter -Wuninitialized \
++	-Woverlength-strings \
+ 	-Wunsafe-loop-optimizations -Wpointer-arith \
+ 	-Wfloat-equal -Wlogical-op \
+-	-Wno-error=cast-align=strict -Wno-error=ignored-qualifiers \
+-	-Wno-error=cast-function-type \
+-	-Wno-error=stringop-truncation -Wno-error=shadow -Wno-error=cast-qual \
++	-Wno-error=ignored-qualifiers \
++	-Wno-error=shadow -Wno-error=cast-qual \
+ 	-Wno-error=aggregate-return -Wno-error=missing-field-initializers \
+ 	-Wno-error=packed -Wno-error=vla -Wno-error=clobbered -Wno-error=unused-parameter \
+ 	$BASE_CFLAGS $ENIGMA2_CFLAGS $PTHREAD_CFLAGS $OPENMP_CFLAGS $ALSA_CFLAGS"
+@@ -319,8 +641,6 @@
  lib/python/Plugins/Extensions/SocketMMI/meta/Makefile
  lib/python/Plugins/Extensions/SocketMMI/src/Makefile
  lib/python/Plugins/PLi/Makefile
@@ -409,7 +435,7 @@
  lib/python/Plugins/SystemPlugins/DefaultServicesScanner/Makefile
  lib/python/Plugins/SystemPlugins/DefaultServicesScanner/meta/Makefile
  lib/python/Plugins/SystemPlugins/DiseqcTester/Makefile
-@@ -332,6 +653,60 @@
+@@ -348,6 +668,65 @@
  lib/python/Plugins/SystemPlugins/Videomode/meta/Makefile
  lib/python/Plugins/SystemPlugins/WirelessLan/Makefile
  lib/python/Plugins/SystemPlugins/WirelessLan/meta/Makefile
@@ -449,6 +475,11 @@
 +lib/python/Plugins/Extensions/hs9510VFD/locale/Makefile
 +lib/python/Plugins/Extensions/hs9510VFD/locale/nl/Makefile
 +lib/python/Plugins/Extensions/hs9510VFD/locale/nl/LC_MESSAGES/Makefile
++lib/python/Plugins/Extensions/opt9600VFD/Makefile
++lib/python/Plugins/Extensions/opt9600VFD/meta/Makefile
++lib/python/Plugins/Extensions/opt9600VFD/locale/Makefile
++lib/python/Plugins/Extensions/opt9600VFD/locale/nl/Makefile
++lib/python/Plugins/Extensions/opt9600VFD/locale/nl/LC_MESSAGES/Makefile
 +lib/python/Plugins/Extensions/pace7241VFD/Makefile
 +lib/python/Plugins/Extensions/pace7241VFD/meta/Makefile
 +lib/python/Plugins/Extensions/pace7241VFD/locale/Makefile
@@ -550,22 +581,25 @@
  			int i, j = 0;	   // remove leading whitespace and control chars, and comments
 --- enigma2.org/lib/base/estring.cpp
 +++ enigma2/lib/base/estring.cpp
-@@ -692,10 +692,10 @@
- 		eLog(6, "[convertDVBUTF8] %d chars converted, and %d chars left..", convertedLen, len-convertedLen);
- 	eLog(6, "[convertDVBUTF8] table=0x%02X twochar=%d output:%s\n", table, useTwoCharMapping, output.c_str());
+@@ -693,12 +693,12 @@
+ 		eTrace("[convertDVBUTF8] %d chars converted, and %d chars left..", convertedLen, len-convertedLen);
+ 	eTrace("[convertDVBUTF8] table=0x%02X twochar=%d output:%s\n", table, useTwoCharMapping, output.c_str());
  
--	eLog(6, "[convertDVBUTF8] table=0x%02X tsid:onid=0x%X:0x%X data[0..14]=%s   output:%s\n",
+-	eTrace("[convertDVBUTF8] table=0x%02X tsid:onid=0x%X:0x%X data[0..14]=%s   output:%s\n",
 -		table, (unsigned int)tsidonid >> 16, tsidonid & 0xFFFFU,
 -		string_to_hex(std::string((char*)data, len < 15 ? len : 15)).c_str(),
 -		output.c_str());
-+//	eLog(6, "[convertDVBUTF8] table=0x%02X tsid:onid=0x%X:0x%X data[0..14]=%s   output:%s\n",
++//	eTrace("[convertDVBUTF8] table=0x%02X tsid:onid=0x%X:0x%X data[0..14]=%s   output:%s\n",
 +//		table, (unsigned int)tsidonid >> 16, tsidonid & 0xFFFFU,
 +//		string_to_hex(std::string((char*)data, len < 15 ? len : 15)).c_str(),
 +//		output.c_str());
- 
+ 	// replace EIT CR/LF with standard newline:
+-	output = replace_all(replace_all(output, "\xC2\x8A", "\n"), "\xEE\x82\x8A", "\n");
++//	output = replace_all(replace_all(output, "\xC2\x8A", "\n"), "\xEE\x82\x8A", "\n");
  	return output;
  }
-@@ -995,13 +995,13 @@
+ 
+@@ -998,13 +998,13 @@
      return output;
  }
  
@@ -747,7 +781,7 @@
  		}
  		bool hdmicec_enabled = eConfigManager::getConfigBoolValue("config.hdmicec.enabled", false);
  		if (hasdata && hdmicec_enabled)
-@@ -540,12 +500,7 @@
+@@ -541,13 +501,8 @@
  		}
  		else
  		{
@@ -755,7 +789,8 @@
 -			message.flag = 1;
 -			::ioctl(hdmiFd, 3, &message);
 -#else
- 			::write(hdmiFd, &message, 2 + message.length);
+ 			ssize_t ret = ::write(hdmiFd, &message, 2 + message.length);
+ 			if (ret < 0) eDebug("[eHdmiCEC] write failed: %m");
 -#endif
  		}
  	}
@@ -1929,7 +1964,7 @@
 +// vim:ts=4
 --- enigma2.org/lib/dvb/decoder.cpp
 +++ enigma2/lib/dvb/decoder.cpp
-@@ -44,12 +44,10 @@
+@@ -50,12 +50,10 @@
  		m_fd_demux = -1;
  	}
  
@@ -1942,7 +1977,7 @@
  }
  
  int eDVBAudio::startPid(int pid, int type)
-@@ -76,21 +74,16 @@
+@@ -82,21 +80,16 @@
  			pes.pes_type = DMX_PES_AUDIO3;
  			break;
  		}
@@ -1957,7 +1992,6 @@
  			return -errno;
  		}
  		eDebugNoNewLine("ok\n");
-+// already started because of DMX_IMMEDIATE_START
 -		eDebugNoNewLineStart("[eDVBAudio%d] DEMUX_START ", m_dev);
 -		if (::ioctl(m_fd_demux, DMX_START) < 0)
 -		{
@@ -1965,10 +1999,11 @@
 -			return -errno;
 -		}
 -		eDebugNoNewLine("ok\n");
++// already started because of DMX_IMMEDIATE_START
  	}
  
  	if (m_fd >= 0)
-@@ -125,11 +118,7 @@
+@@ -131,11 +124,7 @@
  			bypass = 0x40;
  			break;
  		case aDDP:
@@ -1980,7 +2015,7 @@
  		break;
  		}
  
-@@ -138,7 +127,6 @@
+@@ -144,7 +133,6 @@
  			eDebugNoNewLine("failed: %m\n");
  		else
  			eDebugNoNewLine("ok\n");
@@ -1988,7 +2023,7 @@
  		eDebugNoNewLineStart("[eDVBAudio%d] AUDIO_PLAY ", m_dev);
  		if (::ioctl(m_fd, AUDIO_PLAY) < 0)
  			eDebugNoNewLine("failed: %m\n");
-@@ -235,7 +223,7 @@
+@@ -241,7 +229,7 @@
  
  eDVBAudio::~eDVBAudio()
  {
@@ -1997,7 +2032,7 @@
  	if (m_fd >= 0)
  		::close(m_fd);
  	if (m_fd_demux >= 0)
-@@ -276,12 +264,10 @@
+@@ -282,12 +270,10 @@
  		m_fd_demux = -1;
  	}
  
@@ -2010,7 +2045,7 @@
  	if (m_close_invalidates_attributes < 0)
  	{
  		/*
-@@ -374,7 +360,8 @@
+@@ -380,7 +366,8 @@
  			pes.pes_type = DMX_PES_VIDEO3;
  			break;
  		}
@@ -2020,11 +2055,10 @@
  		eDebugNoNewLineStart("[eDVBVideo%d] DMX_SET_PES_FILTER pid=0x%04x ", m_dev, pid);
  		if (::ioctl(m_fd_demux, DMX_SET_PES_FILTER, &pes) < 0)
  		{
-@@ -382,18 +369,11 @@
+@@ -388,18 +375,11 @@
  			return -errno;
  		}
  		eDebugNoNewLine("ok\n");
-+// already started because of DMX_IMMEDIATE_START
 -		eDebugNoNewLineStart("[eDVBVideo%d] DEMUX_START ", m_dev);
 -		if (::ioctl(m_fd_demux, DMX_START) < 0)
 -		{
@@ -2037,6 +2071,7 @@
 -	if (m_fd >= 0)
 -	{
 -		freeze();  // why freeze here?!? this is a problem when only a pid change is requested... because of the unfreeze logic in Decoder::setState
++// already started because of DMX_IMMEDIATE_START
 +	}
 +
 +	if (m_fd >= 0)
@@ -2044,7 +2079,7 @@
  		eDebugNoNewLineStart("[eDVBVideo%d] VIDEO_PLAY ", m_dev);
  		if (::ioctl(m_fd, VIDEO_PLAY) < 0)
  			eDebugNoNewLine("failed: %m\n");
-@@ -711,7 +691,8 @@
+@@ -717,7 +697,8 @@
  		pes.pes_type = DMX_PES_PCR3;
  		break;
  	}
@@ -2054,11 +2089,10 @@
  	eDebugNoNewLineStart("[eDVBPCR%d] DMX_SET_PES_FILTER pid=0x%04x ", m_dev, pid);
  	if (::ioctl(m_fd_demux, DMX_SET_PES_FILTER, &pes) < 0)
  	{
-@@ -719,13 +700,7 @@
+@@ -725,13 +706,7 @@
  		return -errno;
  	}
  	eDebugNoNewLine("ok\n");
-+// already started because of DMX_IMMEDIATE_START
 -	eDebugNoNewLineStart("[eDVBPCR%d] DEMUX_START ", m_dev);
 -	if (::ioctl(m_fd_demux, DMX_START) < 0)
 -	{
@@ -2066,10 +2100,11 @@
 -		return -errno;
 -	}
 -	eDebugNoNewLine("ok\n");
++// already started because of DMX_IMMEDIATE_START
  	return 0;
  }
  
-@@ -781,7 +756,8 @@
+@@ -787,7 +762,8 @@
  		pes.pes_type = DMX_PES_TELETEXT3;
  		break;
  	}
@@ -2079,11 +2114,10 @@
  
  	eDebugNoNewLineStart("[eDVBText%d] DMX_SET_PES_FILTER pid=0x%04x ", m_dev, pid);
  	if (::ioctl(m_fd_demux, DMX_SET_PES_FILTER, &pes) < 0)
-@@ -790,13 +766,7 @@
+@@ -796,13 +772,7 @@
  		return -errno;
  	}
  	eDebugNoNewLine("ok\n");
-+// already started because of DMX_IMMEDIATE_START
 -	eDebugNoNewLineStart("[eDVBText%d] DEMUX_START ", m_dev);
 -	if (::ioctl(m_fd_demux, DMX_START) < 0)
 -	{
@@ -2091,16 +2125,17 @@
 -		return -errno;
 -	}
 -	eDebugNoNewLine("ok\n");
++// already started because of DMX_IMMEDIATE_START
  	return 0;
  }
  
-@@ -933,12 +903,23 @@
+@@ -939,12 +909,23 @@
  		int *s = state_table[m_state];
  		if (changed & (changeState|changeVideo) && m_video)
  		{
-+// see comment below
 -			m_video->setSlowMotion(s[1]);
 -			m_video->setFastForward(s[2]);
++// see comment below
  			if (s[0])
  				m_video->unfreeze();
  			else
@@ -2120,7 +2155,7 @@
  		}
  		if (changed & (changeState|changeAudio) && m_audio)
  		{
-@@ -1239,6 +1220,9 @@
+@@ -1245,6 +1226,9 @@
  		{
  			struct stat s;
  			fstat(f, &s);
@@ -2130,19 +2165,64 @@
  			if (m_video_clip_fd == -1)
  				m_video_clip_fd = open("/dev/dvb/adapter0/video0", O_WRONLY);
  			if (m_video_clip_fd >= 0)
-@@ -1259,8 +1243,6 @@
- 
+@@ -1258,36 +1242,56 @@
+ 				int streamtype;
+ 				memset(stuffing, 0, sizeof(stuffing));
+ 				ssize_t ret = read(f, iframe, s.st_size);
+-				if (ret < 0) eDebug("[eTSMPEGDecoder] read failed: %m");
++				if (ret < 0)
++				{
++					eDebug("[eTSMPEGDecoder] read failed: %m");
++				}
+ 				if (iframe[0] == 0x00 && iframe[1] == 0x00 && iframe[2] == 0x00 && iframe[3] == 0x01 && (iframe[4] & 0x0f) == 0x07)
++				{
+ 					streamtype = VIDEO_STREAMTYPE_MPEG4_H264;
++				}
+ 				else
++				{
+ 					streamtype = VIDEO_STREAMTYPE_MPEG2;
+-
++				}
  				if (ioctl(m_video_clip_fd, VIDEO_SELECT_SOURCE, VIDEO_SOURCE_MEMORY) < 0)
++				{
  					eDebug("[eTSMPEGDecoder] VIDEO_SELECT_SOURCE MEMORY failed: %m");
 -				if (ioctl(m_video_clip_fd, VIDEO_SET_STREAMTYPE, streamtype) < 0)
 -					eDebug("[eTSMPEGDecoder] VIDEO_SET_STREAMTYPE failed: %m");
++				}
  				if (ioctl(m_video_clip_fd, VIDEO_PLAY) < 0)
++				{
  					eDebug("[eTSMPEGDecoder] VIDEO_PLAY failed: %m");
++				}
  				if (ioctl(m_video_clip_fd, VIDEO_CONTINUE) < 0)
-@@ -1276,8 +1258,7 @@
++				{
+ 					eDebug("[eTSMPEGDecoder] VIDEO_CONTINUE: %m");
++				}
+ 				if (ioctl(m_video_clip_fd, VIDEO_CLEAR_BUFFER) < 0)
++				{
+ 					eDebug("[eTSMPEGDecoder] VIDEO_CLEAR_BUFFER: %m");
++				}
+ 				while(pos <= static_cast<size_t>(s.st_size-4) && !(seq_end_avail = (!iframe[pos] && !iframe[pos+1] && iframe[pos+2] == 1 && iframe[pos+3] == 0xB7)))
++				{
+ 					++pos;
++				}
+ 				if ((iframe[3] >> 4) != 0xE) // no pes header
++				{
+ 					writeAll(m_video_clip_fd, pes_header, sizeof(pes_header));
++				}
+ 				else
++				{
+ 					iframe[4] = iframe[5] = 0x00;
++				}
  				writeAll(m_video_clip_fd, iframe, s.st_size);
  				if (!seq_end_avail)
- 					write(m_video_clip_fd, seq_end, sizeof(seq_end));
+ 				{
+ 					ret = write(m_video_clip_fd, seq_end, sizeof(seq_end));
+-					if (ret < 0) eDebug("[eTSMPEGDecoder] write failed: %m");
++					if (ret < 0)
++					{
++						eDebug("[eTSMPEGDecoder] write failed: %m");
++					}
+ 				}
 -				writeAll(m_video_clip_fd, stuffing, 8192);
 -				m_showSinglePicTimer->start(150, true);
 +				writeAll(m_video_clip_fd, stuffing, sizeof(stuffing));
@@ -2375,68 +2455,68 @@
  	spec.pid = TimeAndDateSection::PID;
  	spec.tid = TimeAndDateSection::TID;
  	spec.tid_mask = 0xFC;
---- enigma2.org/lib/dvb/epgcache.cpp
-+++ enigma2/lib/dvb/epgcache.cpp
-@@ -2548,6 +2548,42 @@
- {
- 	int map;
- 	iDVBSectionReader *reader = NULL;
-+/* Dagobert: this is still very hacky, but currently I cannot find
-+ * the origin of the readData call. I think the caller is
-+ * responsible for the unaligned data pointer in this call.
-+ * So we malloc our own memory here which _should_ be aligned.
-+ *
-+ * TODO: We should search for the origin of this call. As I
-+ * said before I need an UML Diagram or must try to import
-+ * e2 and all libs into an IDE for better overview ;)
-+ *
-+ */
-+	const __u8 *aligned_data;
-+	bool isNotAligned = false;
-+
-+	if ((unsigned int) data % 4 != 0)
-+		isNotAligned = true;
-+
-+	if (isNotAligned)
-+	{
-+		int len = ((data[1] & 0x0F) << 8 | data[2]) - 1;
-+
-+		/*eDebug("len %d %x, %x %x\n", len, len, data[1], data[2]);*/
-+
-+		if (EIT_SIZE >= len)
-+			return;
-+
-+		aligned_data = (const __u8 *) malloc(len);
-+
-+		if ((unsigned int)aligned_data % 4 != 0)
-+		{
-+			eDebug("eEPGCache::channel_data::readData: ERRORERRORERROR: unaligned data pointer %p\n", aligned_data);
-+		}
-+
-+		/*eDebug("%p %p\n", aligned_data, data); */
-+		memcpy((void *) aligned_data, (const __u8 *) data, len);
-+		data = aligned_data;
-+	}
- 	switch (source)
- 	{
- 		case NOWNEXT:
-@@ -2672,6 +2708,10 @@
- 			cache->sectionRead(data, source, this);
- 		}
- 	}
-+#ifdef __sh__
-+	if (isNotAligned)
-+		free((void *)aligned_data);
-+#endif
- }
- 
- #if ENABLE_FREESAT
+#--- enigma2.org/lib/dvb/epgcache.cpp
+#+++ enigma2/lib/dvb/epgcache.cpp
+#@@ -2548,6 +2548,42 @@
+# {
+# 	int map;
+# 	iDVBSectionReader *reader = NULL;
+#+/* Dagobert: this is still very hacky, but currently I cannot find
+#+ * the origin of the readData call. I think the caller is
+#+ * responsible for the unaligned data pointer in this call.
+#+ * So we malloc our own memory here which _should_ be aligned.
+#+ *
+#+ * TODO: We should search for the origin of this call. As I
+#+ * said before I need an UML Diagram or must try to import
+#+ * e2 and all libs into an IDE for better overview ;)
+#+ *
+##+ */
+#+	const __u8 *aligned_data;
+#+	bool isNotAligned = false;
+#+
+#+	if ((unsigned int) data % 4 != 0)
+#+		isNotAligned = true;
+#+
+#+	if (isNotAligned)
+#+	{
+#+		int len = ((data[1] & 0x0F) << 8 | data[2]) - 1;
+#+
+#+		/*eDebug("len %d %x, %x %x\n", len, len, data[1], data[2]);*/
+#+
+#+		if (EIT_SIZE >= len)
+#+			return;
+#+
+#+		aligned_data = (const __u8 *) malloc(len);
+#+
+#+		if ((unsigned int)aligned_data % 4 != 0)
+#+		{
+#+			eDebug("eEPGCache::channel_data::readData: ERRORERRORERROR: unaligned data pointer %p\n", aligned_data);
+#+		}
+#+
+#+		/*eDebug("%p %p\n", aligned_data, data); */
+#+		memcpy((void *) aligned_data, (const __u8 *) data, len);
+#+		data = aligned_data;
+#+	}
+# 	switch (source)
+# 	{
+# 		case NOWNEXT:
+#@@ -2672,6 +2708,10 @@
+# 			cache->sectionRead(data, source, this);
+# 		}
+# 	}
+#+#ifdef __sh__
+#+	if (isNotAligned)
+#+		free((void *)aligned_data);
+#+#endif
+# }
+# 
+# #if ENABLE_FREESAT
 --- enigma2.org/lib/dvb/filepush.cpp
 +++ enigma2/lib/dvb/filepush.cpp
-@@ -5,6 +5,15 @@
- #include <sys/ioctl.h>
+@@ -6,6 +6,16 @@
  #include <poll.h>
- #include <signal.h>
+ #include <time.h>
+ 
 +
 +// this allows filesystem tasks to be prioritised
 +#include <sys/vfs.h>
@@ -2446,10 +2526,11 @@
 +#define SMB_SUPER_MAGIC       0x517B
 +#define NFS_SUPER_MAGIC       0x6969
 +#define MSDOS_SUPER_MAGIC     0x4d44 /* MD */
- 
++ 
  //#define SHOW_WRITE_TIME
  
-@@ -34,7 +43,10 @@
+ DEFINE_REF(eFilePushThread);
+@@ -29,7 +39,10 @@
  eFilePushThread::~eFilePushThread()
  {
  	stop(); /* eThread is borked, always call stop() from d'tor */
@@ -2460,91 +2541,86 @@
 +	}
  }
  
- void eFilePushThread::thread()
-@@ -61,10 +73,28 @@
- 	size_t current_span_remaining = 0;
- 	m_sof = 0;
+ static void signal_handler(int x)
+@@ -63,10 +76,27 @@
+ 		size_t current_span_remaining = 0;
+ 		m_sof = 0;
  
 +// opens video device for the reverse playback workaround
 +// Changes in this file are because E2 does not tell the player to play reverse
-+	int fd_video = open("/dev/dvb/adapter0/video0", O_RDONLY);
++		int fd_video = open("/dev/dvb/adapter0/video0", O_RDONLY);
 +// Fix to ensure that event evtEOF is called at end of playback part 1/3
-+	bool already_empty = false;
++		bool already_empty = false;
 +
- 	while (!m_stop)
- 	{
- 		if (m_sg && !current_span_remaining)
+ 		while (!m_stop)
  		{
+ 			if (m_sg && !current_span_remaining)
+ 			{
 +// tells the player to play in reverse
 +#define VIDEO_DISCONTINUITY                   _IO('o', 84)
 +#define DVB_DISCONTINUITY_SKIP                0x01
 +#define DVB_DISCONTINUITY_CONTINUOUS_REVERSE  0x02
-+			if ((m_sg->getSkipMode() != 0))
-+			{
++				if ((m_sg->getSkipMode() != 0))
++				{
 +				// inform the player about the jump in the stream data
 +				// this only works if the video device allows the discontinuity ioctl in read-only mode (patched)
-+				int param = DVB_DISCONTINUITY_SKIP; // | DVB_DISCONTINUITY_CONTINUOUS_REVERSE;
-+				int rc = ioctl(fd_video, VIDEO_DISCONTINUITY, (void*)param);
-+			}
-+
- 			m_sg->getNextSourceSpan(m_current_position, bytes_read, current_span_offset, current_span_remaining, m_blocksize, m_sof);
- 			ASSERT(!(current_span_remaining % m_blocksize));
- 			m_current_position = current_span_offset;
-@@ -131,7 +161,16 @@
- 				{
- 					case 0:
- 						eDebug("[eFilePushThread] wait for driver eof timeout");
--						continue;
-+// Fix to ensure that event evtEOF is called at end of playback part 2/3
-+						if (already_empty)
-+						{
-+							break;
-+						}
-+						else
-+						{
-+							already_empty = true;
-+							continue;
-+						}
- 					case 1:
- 						eDebug("[eFilePushThread] wait for driver eof ok");
- 						break;
-@@ -176,6 +215,14 @@
- 			filterRecordData(m_buffer, buf_end);
- 			while ((buf_start != buf_end) && !m_stop)
- 			{
-+				struct pollfd pfd;
-+
-+				pfd.fd = m_fd_dest;
-+				pfd.events = POLLOUT;
-+				if (0 == poll(&pfd, 1, 250))
-+				{
-+					continue;
++					int param = DVB_DISCONTINUITY_SKIP; // | DVB_DISCONTINUITY_CONTINUOUS_REVERSE;
++					int rc = ioctl(fd_video, VIDEO_DISCONTINUITY, (void*)param);
 +				}
- 				int w = write(m_fd_dest, m_buffer + buf_start, buf_end - buf_start);
+ 				m_sg->getNextSourceSpan(m_current_position, bytes_read, current_span_offset, current_span_remaining, m_blocksize, m_sof);
+ 				ASSERT(!(current_span_remaining % m_blocksize));
+ 				m_current_position = current_span_offset;
+@@ -132,7 +162,16 @@
+ 					{
+ 						case 0:
+ 							eDebug("[eFilePushThread] wait for driver eof timeout");
+-							continue;
++// Fix to ensure that event evtEOF is called at end of playback part 2/3
++							if (already_empty)
++							{
++								break;
++							}
++							else
++							{
++								already_empty = true;
++								continue;
++							}
+ 						case 1:
+ 							eDebug("[eFilePushThread] wait for driver eof ok");
+ 							break;
+@@ -177,6 +216,13 @@
+ 				filterRecordData(m_buffer, buf_end);
+ 				while ((buf_start != buf_end) && !m_stop)
+ 				{
++					struct pollfd pfd;
++					pfd.fd = m_fd_dest;
++					pfd.events = POLLOUT;
++					if (0 == poll(&pfd, 1, 250))
++					{
++						continue;
++					}
+ 					int w = write(m_fd_dest, m_buffer + buf_start, buf_end - buf_start);
  
- 				if (w <= 0)
-@@ -197,12 +244,18 @@
+ 					if (w <= 0)
+@@ -199,12 +245,18 @@
+ 				}
+ 
+ 				eofcount = 0;
++// Fix to ensure that event evtEOF is called at end of playbackl part 3/3
++				already_empty = false;
+ 				m_current_position += buf_end;
+ 				bytes_read += buf_end;
+ 				if (m_sg)
++				{
+ 					current_span_remaining -= buf_end;
++				}
  			}
+ 		}
+++// closes video device for the reverse playback workaround
++		close(fd_video);
+ 		sendEvent(evtStopped);
  
- 			eofcount = 0;
-+// Fix to ensure that event evtEOF is called at end of playback part 3/3
-+			already_empty = false;
- 			m_current_position += buf_end;
--			bytes_read += buf_end;
- 			if (m_sg)
-+			{
- 				current_span_remaining -= buf_end;
--		}
--	}
-+				bytes_read += buf_end;
-+			}
-+		}
-+	}
-+// closes video device for the reverse playback workaround
-+	close(fd_video);
- 	sendEvent(evtStopped);
- 
- 	{ /* mutex lock scope */
+ 		{ /* mutex lock scope */
 --- enigma2.org/lib/dvb/filepush.h
 +++ enigma2/lib/dvb/filepush.h
 @@ -13,6 +13,8 @@
@@ -2609,7 +2685,7 @@
  	{
  		ret = (int)(snr / 37.5);
  		sat_max = 1700;
-@@ -2982,7 +2994,11 @@
+@@ -2985,7 +2997,11 @@
  	}
  	else if (!strcmp(type, "DVB-C"))
  	{
@@ -2621,7 +2697,7 @@
  		fetype = feCable;
  	}
  	else if (!strcmp(type, "ATSC"))
-@@ -3114,11 +3130,16 @@
+@@ -3117,11 +3133,16 @@
  		case SYS_ISDBS:		ss << " ISDBS"; break;
  		case SYS_ISDBT:		ss << " ISDBT"; break;
  		case SYS_UNDEFINED:	ss << " UNDEFINED"; break;
@@ -2669,7 +2745,7 @@
  		{
 --- enigma2.org/lib/dvb/scan.cpp
 +++ enigma2/lib/dvb/scan.cpp
-@@ -1047,9 +1047,9 @@
+@@ -1049,9 +1049,9 @@
  			if( m_chid_current )
  				tsonid = ( m_chid_current.transport_stream_id.get() << 16 )
  					| m_chid_current.original_network_id.get();
@@ -2681,7 +2757,7 @@
  		}
  
  		if (!(m_flags & scanOnlyFree) || !m_pmt_in_progress->second.scrambled) {
-@@ -1485,10 +1485,10 @@
+@@ -1487,10 +1487,10 @@
  
  					ref.setServiceType(servicetype);
  					int tsonid=(sdt.getTransportStreamId() << 16) | sdt.getOriginalNetworkId();
@@ -2705,35 +2781,34 @@
  
  #ifndef SWIG
  class eStreamServer;
---- enigma2.org/lib/dvb/tstools.cpp
-+++ enigma2/lib/dvb/tstools.cpp
-@@ -170,7 +170,7 @@
- 			const unsigned char* match = (const unsigned char*)memchr(packet+1, 0x47, 188-1);
- 			if (match != NULL)
- 			{
--				eDebug("[eDVBTSTools] getPTS resync %ld", match - packet);
-+				eDebug("[eDVBTSTools] getPTS resync %ld", (long int)(match - packet));
- 				offset += (match - packet) - 188;
- 			}
- 			else
-@@ -413,7 +413,7 @@
- 					continue;
- 				}
- 
--				eDebug("[eDVBTSTools] getOffset using: %lld:%lld -> %ld:%ld", l->first, u->first, l->second, u->second);
-+				eDebug("[eDVBTSTools] getOffset using: %lld:%lld -> %ld:%ld", l->first, u->first, (long int)l->second, (long int)u->second);
- 
- 				int bitrate;
- 
-@@ -690,7 +690,7 @@
- 				if ((l->second > off) || (u->second < off))
- 				{
- 					eDebug("[eDVBTSTools] takeSample ignoring sample %ld %jd %ld (%llu %llu %llu)",
--						l->second, (intmax_t)off, u->second, l->first, p, u->first);
-+						(long int)l->second, (intmax_t)off, (long int)u->second, l->first, p, u->first);
- 					return 1;
- 				}
- 			}
+#--- enigma2.org/lib/dvb/tstools.cpp
+#+++ enigma2/lib/dvb/tstools.cpp
+#@@ -170,7 +170,7 @@
+# 			const unsigned char* match = (const unsigned char*)memchr(packet+1, 0x47, 188-1);
+# 			if (match != NULL)
+# 			{
+#-				eDebug("[eDVBTSTools] getPTS resync %ld", match - packet);
+# 				offset += (match - packet) - 188;
+# 			}
+# 			else
+#@@ -413,7 +413,7 @@
+# 					continue;
+# 				}
+# 
+#-				eDebug("[eDVBTSTools] getOffset using: %lld:%lld -> %ld:%ld", l->first, u->first, l->second, u->second);
+#+				eDebug("[eDVBTSTools] getOffset using: %lld:%lld -> %ld:%ld", l->first, u->first, (long int)l->second, (long int)u->second);
+# 
+# 				int bitrate;
+# 
+#@@ -690,7 +690,7 @@
+# 				if ((l->second > off) || (u->second < off))
+# 				{
+# 					eDebug("[eDVBTSTools] takeSample ignoring sample %ld %jd %ld (%llu %llu %llu)",
+#-						l->second, (intmax_t)off, u->second, l->first, p, u->first);
+#+						(long int)l->second, (intmax_t)off, (long int)u->second, l->first, p, u->first);
+# 					return 1;
+# 				}
+# 			}
 --- enigma2.org/lib/dvb/volume.cpp
 +++ enigma2/lib/dvb/volume.cpp
 @@ -45,7 +45,9 @@
@@ -3414,7 +3489,7 @@
  
 --- enigma2.org/lib/dvb_ci/dvbci_session.cpp
 +++ enigma2/lib/dvb_ci/dvbci_session.cpp
-@@ -297,6 +297,10 @@
+@@ -298,6 +298,10 @@
  		if ((!session_nb) || (session_nb >= SLMS))
  		{
  			eDebug("[CI SESS] PROTOCOL: illegal session number %x", session_nb);
@@ -4254,9 +4329,9 @@
 +#else
  		lcd->update();
 +#endif
+ 		[[fallthrough]];
  	default:
  		gDC::exec(o);
- 		break;
 --- enigma2.org/lib/gdi/glcddc.h
 +++ enigma2/lib/gdi/glcddc.h
 @@ -11,6 +11,9 @@
@@ -4271,6 +4346,7 @@
  	~gLCDDC();
 --- enigma2.org/lib/gdi/gpixmap.cpp
 +++ enigma2/lib/gdi/gpixmap.cpp
+@@ -191,14 +191,20 @@
  static bool is_a_candidate_for_accel(const gUnmanagedSurface* surface)
  {
  	if (surface->stride < 48)
@@ -4291,7 +4367,7 @@
  	}
  }
  
-@@ -222,11 +228,13 @@
+@@ -224,11 +230,13 @@
  	if (data)
  	{
  		delete [] (unsigned char*)data;
@@ -4305,7 +4381,7 @@
  	}
  }
  
-@@ -242,8 +250,9 @@
+@@ -244,8 +252,9 @@
  		if (surface->bpp == 8)
  		{
  			for (int y=area.top(); y<area.bottom(); y++)
@@ -4317,7 +4393,7 @@
  		{
  			uint32_t icol;
  
-@@ -270,9 +279,14 @@
+@@ -272,9 +281,14 @@
  			if (surface->clut.data && color < surface->clut.colors)
  				col = surface->clut.data[color].argb();
  			else
@@ -4334,7 +4410,7 @@
  
  #ifdef GPIXMAP_DEBUG
  			Stopwatch s;
-@@ -327,7 +341,11 @@
+@@ -329,7 +343,11 @@
  			uint32_t col;
  
  			col = color.argb();
@@ -4347,7 +4423,7 @@
  
  #ifdef GPIXMAP_DEBUG
  			Stopwatch s;
-@@ -615,7 +633,8 @@
+@@ -617,7 +635,8 @@
  		Stopwatch s;
  #endif
  		if (accel) {
@@ -4357,7 +4433,7 @@
  #ifdef GPIXMAP_DEBUG
  				s.stop();
  				eDebug("[gPixmap] [BLITBENCH] accel blit (%d bytes) took %u us", srcarea.surface() * src.surface->bypp, s.elapsed_us());
-@@ -1004,6 +1023,7 @@
+@@ -1006,6 +1025,7 @@
  	}
  
  	delete [] lookup;
@@ -4662,7 +4738,7 @@
  gdiinclude_HEADERS = \
 --- enigma2.org/lib/gdi/picload.cpp
 +++ enigma2/lib/gdi/picload.cpp
-@@ -4,13 +4,19 @@
+@@ -4,14 +4,20 @@
  
  #include <lib/base/cfile.h>
  #include <lib/gdi/picload.h>
@@ -4677,12 +4753,27 @@
  #include <jpeglib.h>
  #include <gif_lib.h>
  }
-+
-+//#define HARDWARE_DECODING
  
++//#define HARDWARE_DECODING
++
  extern const uint32_t crc32_table[256];
  
-@@ -35,7 +41,7 @@
+ DEFINE_REF(ePicLoad);
+@@ -19,9 +25,12 @@
+ static std::string getSize(const char* file)
+ {
+ 	struct stat64 s;
++	char tmp[20];
++
+ 	if (stat64(file, &s) < 0)
+ 		return "";
+-	return std::to_string((long)(s.st_size / 1024)) + " kB";
++	snprintf(tmp, 20, "%ld kB", (long)s.st_size / 1024);
++	return tmp;
+ }
+ 
+ static unsigned char *color_resize(unsigned char * orgin, int ox, int oy, int dx, int dy)
+@@ -33,7 +42,7 @@
  		return orgin;
  	}
  	const int stride = 3 * dx;
@@ -4691,7 +4782,7 @@
  	for (int j = 0; j < dy; j++)
  	{
  		unsigned char* p = cr + (j * stride);
-@@ -528,12 +534,9 @@
+@@ -528,12 +537,9 @@
  	ColorMapObject *cmap;
  	int cmaps;
  	int extcode;
@@ -4707,7 +4798,7 @@
  	if (gft == NULL)
  		return;
  	do
-@@ -623,19 +626,11 @@
+@@ -623,19 +629,11 @@
  	}
  	while (rt != TERMINATE_RECORD_TYPE);
  
@@ -4729,7 +4820,7 @@
  }
  
  //---------------------------------------------------------------------------------------------
-@@ -700,9 +695,10 @@
+@@ -700,9 +698,10 @@
  
  void ePicLoad::decodePic()
  {
@@ -4741,7 +4832,7 @@
  	switch(m_filepara->id)
  	{
  		case F_PNG:	png_load(m_filepara, m_conf.background);
-@@ -714,6 +710,37 @@
+@@ -714,6 +713,37 @@
  		case F_GIF:	gif_load(m_filepara);
  				break;
  	}
@@ -4779,7 +4870,7 @@
  }
  
  void ePicLoad::decodeThumb()
-@@ -726,6 +753,7 @@
+@@ -726,6 +756,7 @@
  	std::string cachedir = "/.Thumbnails";
  
  	getExif(m_filepara->file, m_filepara->id, 1);
@@ -4787,7 +4878,7 @@
  	if (m_exif && m_exif->m_exifinfo->IsExif)
  	{
  		if (m_exif->m_exifinfo->Thumnailstate == 2)
-@@ -782,8 +810,53 @@
+@@ -782,8 +813,53 @@
  		}
  	}
  
@@ -4843,7 +4934,7 @@
  		case F_PNG:	png_load(m_filepara, m_conf.background, true);
  				break;
  		case F_JPEG:	m_filepara->pic_buffer = jpeg_load(m_filepara->file, &m_filepara->ox, &m_filepara->oy, m_filepara->max_x, m_filepara->max_y);
-@@ -792,6 +865,7 @@
+@@ -792,6 +868,7 @@
  				break;
  		case F_GIF:	gif_load(m_filepara, true);
  				break;
@@ -4851,7 +4942,7 @@
  	}
  	//eDebug("[ePicLoad] getThumb picture loaded %s", m_filepara->file);
  
-@@ -807,25 +881,32 @@
+@@ -807,25 +884,32 @@
  				::mkdir(cachedir.c_str(), 0755);
  
  			// Resize for Thumbnail
@@ -4900,7 +4991,7 @@
  		}
  	}
  }
-@@ -936,7 +1017,7 @@
+@@ -936,7 +1020,7 @@
  {
  	ePyObject list;
  
@@ -4909,7 +5000,7 @@
  	getExif(filename, m_filepara ? m_filepara->id : -1);
  	if(m_exif && m_exif->m_exifinfo->IsExif)
  	{
-@@ -1095,11 +1176,11 @@
+@@ -1095,11 +1179,11 @@
  					*row_buffer++ = background;
  			}
  			int y;
@@ -4923,7 +5014,7 @@
  			for (y = yoff + scry; y < m_filepara->max_y; ++y)
  				memcpy(tmp_buffer + y * surface->stride, tmp_buffer,
  					m_filepara->max_x * surface->bypp);
-@@ -1124,7 +1205,7 @@
+@@ -1124,7 +1208,7 @@
  				for (x = xoff + scrx; x < m_filepara->max_x; ++x) // fill right side of first line
  					*row_buffer++ = background;
  			}
@@ -4932,7 +5023,7 @@
  			for (int y = yoff + 1; y < scry; ++y) { // copy from first line
  				memcpy(tmp_buffer + y*surface->stride,
  					tmp_buffer + yoff * surface->stride,
-@@ -1207,7 +1288,7 @@
+@@ -1207,7 +1291,7 @@
  	// Fill surface with image data, resize and correct for orientation on the fly
  	if (m_filepara->bits == 8)
  	{
@@ -4941,7 +5032,7 @@
  		for (int y = 0; y < scry; ++y) {
  			const unsigned char *irow, *irowy = origin + iyfac * (int)(y * yscale);
  			unsigned char *srow = tmp_buffer + surface->stride * y;
-@@ -1221,7 +1302,7 @@
+@@ -1221,7 +1305,7 @@
  	}
  	else // 24-bit images
  	{
@@ -5082,7 +5173,7 @@
  void eWidget::raise()
 --- enigma2.org/lib/gui/esubtitle.cpp
 +++ enigma2/lib/gui/esubtitle.cpp
-@@ -237,11 +237,20 @@
+@@ -253,11 +253,20 @@
  	invalidate(m_visible_region); // invalidate new regions
  }
  
@@ -5103,7 +5194,7 @@
  	invalidate(m_visible_region);
  	m_visible_region.rects.clear();
  }
-@@ -259,6 +268,7 @@
+@@ -275,6 +284,7 @@
  		changed.scale(size().width(), pixmap->size().width(), size().height(), pixmap->size().height());
  
  	invalidate(changed);
@@ -5787,7 +5878,7 @@
 +		self.text = text
 --- enigma2.org/lib/python/Components/UsageConfig.py
 +++ enigma2/lib/python/Components/UsageConfig.py
-@@ -292,7 +292,7 @@
+@@ -294,7 +294,7 @@
  
  	config.misc.disable_background_scan = ConfigYesNo(default = False)
  	config.misc.use_ci_assignment = ConfigYesNo(default = False)
@@ -8520,19 +8611,7 @@
  	AC_SUBST([PYTHON_SITE_PKG])
 --- enigma2.org/main/bsod.cpp
 +++ enigma2/main/bsod.cpp
-@@ -10,22 +10,20 @@
- #include <lib/base/nconfig.h>
- #include <lib/gdi/gmaindc.h>
- 
--#if defined(__MIPSEL__)
--#include <asm/ptrace.h>
--#else
--#warning "no oops support!"
-+//#warning "no oops support!"
- #define NO_OOPS_SUPPORT
--#endif
- 
- #include "version_info.h"
+@@ -14,11 +14,13 @@
  
  /************************************************/
  
@@ -8546,7 +8625,7 @@
  #endif
  
  /* Defined in bsod.cpp */
-@@ -105,7 +103,14 @@
+@@ -98,7 +100,14 @@
  {
  	/* show no more than one bsod while shutting down/crashing */
  	if (bsodhandled)
@@ -8561,7 +8640,7 @@
  	bsodhandled = true;
  
  	if (!component)
-@@ -172,7 +177,6 @@
+@@ -165,7 +174,6 @@
  			component);
  
  		stringFromFile(f, "stbmodel", "/proc/stb/info/boxtype");
@@ -8569,7 +8648,7 @@
  		stringFromFile(f, "stbmodel", "/proc/stb/info/model");
  		stringFromFile(f, "kernelcmdline", "/proc/cmdline");
  		stringFromFile(f, "nimsockets", "/proc/bus/nim_sockets");
-@@ -198,7 +202,7 @@
+@@ -191,7 +199,7 @@
  	gPainter p(my_dc);
  	p.resetOffset();
  	p.resetClip(eRect(ePoint(0, 0), my_dc->size()));
@@ -8578,7 +8657,7 @@
  	p.setForegroundColor(gRGB(0xFFFFFF));
  
  	int hd =  my_dc->size().width() == 1920;
-@@ -212,14 +216,14 @@
+@@ -205,14 +213,14 @@
  	os.clear();
  	os << "We are really sorry. Your STB encountered "
  		"a software problem, and needs to be restarted.\n"
@@ -8596,7 +8675,7 @@
  	
  	if (logp2)
  	{
-@@ -263,12 +267,12 @@
+@@ -256,12 +264,12 @@
  
  	if (!logtail.empty())
  	{
@@ -8621,16 +8700,7 @@
  
  #include "bsod.h"
  #include "version_info.h"
-@@ -201,7 +202,7 @@
- 	printf("DVB_API_VERSION %d DVB_API_VERSION_MINOR %d\n", DVB_API_VERSION, DVB_API_VERSION_MINOR);
- 
- 	// get enigma2 debug level settings
--	debugLvl = getenv("ENIGMA_DEBUG_LVL") ? atoi(getenv("ENIGMA_DEBUG_LVL")) : 3;
-+	debugLvl = getenv("ENIGMA_DEBUG_LVL") ? atoi(getenv("ENIGMA_DEBUG_LVL")) : 4;
- 	if (debugLvl < 0)
- 		debugLvl = 0;
- 	printf("ENIGMA_DEBUG_LVL=%d\n", debugLvl);
-@@ -232,6 +233,12 @@
+@@ -235,6 +236,12 @@
  	eWidgetDesktop dsk_lcd(my_lcd_dc->size());
  
  	dsk.setStyleID(0);
@@ -8643,7 +8713,7 @@
  	dsk_lcd.setStyleID(1);
  
  /*	if (double_buffer)
-@@ -276,16 +283,20 @@
+@@ -279,16 +286,20 @@
  				break;
  			}
  		}
