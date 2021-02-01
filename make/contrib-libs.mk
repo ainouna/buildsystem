@@ -651,7 +651,7 @@ $(D)/bzip2: $(D)/bootstrap $(ARCHIVE)/$(BZIP2_SOURCE)
 #
 # timezone
 #
-TZDATA_VER = 2020a
+TZDATA_VER = 2021a
 TZDATA_SOURCE = tzdata$(TZDATA_VER).tar.gz
 TZDATA_ZONELIST = africa antarctica asia australasia europe northamerica southamerica pacificnew etcetera backzone
 DEFAULT_TIMEZONE ?= "CET"
