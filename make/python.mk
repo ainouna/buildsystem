@@ -227,7 +227,7 @@ PYTHON_IMAGING_SOURCE = Imaging-$(PYTHON_IMAGING_VER).tar.gz
 PYTHON_IMAGING_PATCH = python-imaging-$(PYTHON_IMAGING_VER).patch
 
 $(ARCHIVE)/$(PYTHON_IMAGING_SOURCE):
-	$(WGET) http://effbot.org/downloads/$(PYTHON_IMAGING_SOURCE)
+	$(WGET) https://src.fedoraproject.org/repo/pkgs/python-imaging/$(PYTHON_IMAGING_SOURCE)/fc14a54e1ce02a0225be8854bfba478e/$(PYTHON_IMAGING_SOURCE)
 
 $(D)/python_imaging: $(D)/bootstrap $(D)/libjpeg $(D)/freetype $(D)/zlib $(D)/python $(D)/python_setuptools $(ARCHIVE)/$(PYTHON_IMAGING_SOURCE)
 	$(START_BUILD)
