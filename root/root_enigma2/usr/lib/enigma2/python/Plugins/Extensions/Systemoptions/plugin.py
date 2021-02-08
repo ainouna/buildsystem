@@ -22,7 +22,7 @@ import os
 #from Components.AVSwitch import AVSwitch
 from Tools.HardwareInfo import HardwareInfo
 import gettext
-#Version 210115.2
+#Version 210208.1
 
 lang = language.getLanguage()
 environ['LANGUAGE'] = lang[:2]
@@ -50,15 +50,15 @@ config.plugins.systemoptions = ConfigSubsection()
 config.plugins.systemoptions.wlan = ConfigSelection(default='0',
 	choices=[
 		('0', 'none'),
-		('mt7601Usta', 'MT7601U'),
+		('8712u', 'RTL8712U'),
 		('8188eu', 'RTL8188EU'),
 		('8192cu', 'RTL8192CU'),
 		('8192du', 'RTL8192DU'),
 		('8192eu', 'RTL8192EU'),
-		('8712u', 'RT8712U'),
+		('mt7601Usta', 'MT7601U'),
 		('rt2870sta', 'RT2870STA'),
 		('rt3070sta', 'RT3070STA'),
-		('rt5370sta', 'RT5370STA')
+		('rt5370sta', 'RT5370STA'),
 		])
 config.plugins.systemoptions.autologin = ConfigSelection(default='yes',
 	choices = [
@@ -77,7 +77,7 @@ config.plugins.systemoptions.swapsize = ConfigSelection(default='32768',
 		('65536', _('64 Mbyte')),
 		('131072', _('128 Mbyte'))
 		])
-if os.path.isfile("/sbin/ntpdate"):
+if os.path.isfile("/sbin/ntpd"):
 	config.plugins.systemoptions.inettime = ConfigSelection(default='yes',
 		choices = [
 			('yes', _('yes')),
@@ -115,29 +115,29 @@ if stb.lower() == 'spark7162' or stb.lower() == 'spark':
 			('t', _('terrestrial (DVB-T)')),
 			('c', _('cable (DVB-C)'))
 			])
-	config.plugins.systemoptions.freq = ConfigSelection(default='540',
-		choices = [
-			('200', _('200 MHz')),
-			('300', _('300 MHz')),
-			('450', _('450 MHz')),
-			('500', _('500 MHz')),
-			('540', _('540 MHz (default)')),
-			('600', _('600 MHz')),
-			('630', _('630 MHz')),
-			('650', _('650 MHz')),
-			('700', _('700 MHz')),
-			('710', _('710 MHz')),
-			('775', _('775 MHz')),
-			('800', _('800 MHz'))
-			])
-	config.plugins.systemoptions.stbyfreq = ConfigSelection(default='540',
-		choices = [
-			('200', _('200 MHz')),
-			('300', _('300 MHz')),
-			('450', _('450 MHz')),
-			('500', _('500 MHz')),
-			('540', _('540 MHz (default)'))
-			])
+#	config.plugins.systemoptions.freq = ConfigSelection(default='540',
+#		choices = [
+#			('200', _('200 MHz')),
+#			('300', _('300 MHz')),
+#			('450', _('450 MHz')),
+#			('500', _('500 MHz')),
+#			('540', _('540 MHz (default)')),
+#			('600', _('600 MHz')),
+#			('630', _('630 MHz')),
+#			('650', _('650 MHz')),
+#			('700', _('700 MHz')),
+#			('710', _('710 MHz')),
+#			('775', _('775 MHz')),
+#			('800', _('800 MHz'))
+#			])
+#	config.plugins.systemoptions.stbyfreq = ConfigSelection(default='540',
+#		choices = [
+#			('200', _('200 MHz')),
+#			('300', _('300 MHz')),
+#			('450', _('450 MHz')),
+#			('500', _('500 MHz')),
+#			('540', _('540 MHz (default)'))
+#			])
 config.plugins.systemoptions.extMenu = ConfigYesNo(default=True)
 
 config.plugins.wireless = ConfigSubsection()
@@ -197,47 +197,6 @@ config.plugins.wireless.adapter.mask = ConfigIP(default=[255,255,255,0])
 config.plugins.wireless.adapter.gateway = ConfigIP(default=[192,168,178,1])
 
 class ConfigOptions(Screen, ConfigListScreen):
-#	skin = """
-#		<screen name="System_option_configuration" position="160,150" size="450,200" title="Spark 7162 option configuration">
-#			<ePixmap pixmap="skin_default/buttons/red.png" position="10,0" size="140,40" alphatest="on" />
-#			<ePixmap pixmap="skin_default/buttons/green.png" position="190,0" size="140,40" alphatest="on" />
-#			<ePixmap pixmap="skin_default/buttons/yellow.png" position="470,0" size="140,40" alphatest="on" />
-#			<ePixmap pixmap="skin_default/buttons/blue.png" position="650,0" size="140,40" alphatest="on" />
-#			<widget source="key_red" render="Label" position="10,0" zPosition="1" size="140,40" font="Regular;20" halign="center" valign="center" backgroundColor="#9f1313" transparent="1" />
-#			<widget source="key_green" render="Label" position="190,0" zPosition="1" size="140,40" font="Regular;20" halign="center" valign="center" backgroundColor="#1f771f" transparent="1" />
-#			<widget source="key_yellow" render="Label" position="470,0" zPosition="1" size="140,40" font="Regular;20" halign="center" valign="center" backgroundColor="#9f1313" transparent="1" />
-#			<widget source="key_blue" render="Label" position="650,0" zPosition="1" size="140,40" font="Regular;20" halign="center" valign="center" backgroundColor="#1f771f" transparent="1" />
-#			<widget name="config" position="10,44" size="430,146" />
-#		</screen>"""
-
-#	skin = """
-#	<screen name="FlashBackup" position="center,center" size="700,300" title="Overclock settings" flags="wfNoBorder" backgroundColor="black">
-#		<eLabel position="21,12" size="658,50" text="Overclock settings" font="Regular; 30" valign="center" transparent="1" backgroundColor="black" />
-#		<eLabel position="21,100" size="658,1" backgroundColor="white" />
-#		<eLabel position="21,60" size="658,50" text="Settings:" font="Regular; 18" valign="center" transparent="1" backgroundColor="black" />
-#		<widget name="config" position="21,110" size="658,100" scrollbarMode="showOnDemand" />
-#		<eLabel position="37,255" size="150,5" backgroundColor="red" />
-#		<eLabel position="196,255" size="150,5" backgroundColor="green" />
-#		<eLabel position="355,255" size="150,5" backgroundColor="yellow" />
-#		<eLabel position="514,255" size="150,5" backgroundColor="blue" />
-#		<eLabel font="Regular; 20" foregroundColor="white" backgroundColor="black" halign="center" position="37,259" size="150,33" text="Cancel" transparent="1" />
-#		<eLabel font="Regular; 20" foregroundColor="white" backgroundColor="black" halign="center" position="196,259" size="150,33" text="OK" transparent="1" />
-#		<eLabel font="Regular; 20" foregroundColor="white" backgroundColor="black" halign="center" position="355,259" size="150,33" text="Save stby.freq" transparent="1" />
-#		<eLabel font="Regular; 20" foregroundColor="white" backgroundColor="black" halign="center" position="514,259" size="150,33" text="Test" transparent="1" />
-#		<widget name="OptionVersion" position="279,11" size="400,30" backgroundColor="black" foregroundColor="white" transparent="1" halign="right" />
-#	</screen>"""
-
-#	skin = """
-#	<screen name="Setupp" title="Setup" position="fill" flags="wfNoBorder">
-#		<panel name="PigTemplate"/>
-#		<panel name="ButtonTemplate_4S"/>
-#		<!--widget name="HelpWindow" pixmap="skin_default/vkey_icon.png" position="50,410" zPosition="1" size="1,1" transparent="1" alphatest="on" /-->
-#		<widget name="config" position="530,110" size="690,500" scrollbarMode="showOnDemand" selectionPixmap="PLi-HD/buttons/sel.png" />
-#	</screen>
-#	<screen name="PigTemplate">
-#		<panel name="SelectionTemplate"/>
-#		<ePixmap pixmap="PLi-HD/logos/pli.png" position="85,590" size="135,34" alphatest="on" />
-#	</screen>"""
 
 	skin = """
 	<screen name="dummy" title="Setup" position="fill" flags="wfNoBorder">
@@ -255,31 +214,14 @@ class ConfigOptions(Screen, ConfigListScreen):
 		self["key_red"] = self["red"] = Label(_("Cancel"))
 		if stb.lower() == 'spark7162' or stb.lower() == 'spark':
 			self["key_green"] = self["green"] = Label(_("OK (reboots)"))
-			self["key_blue"] = self["blue"] = Label(_("Test overclock"))
+#			self["key_blue"] = self["blue"] = Label(_("Test overclock"))
 		else:
 			self["key_green"] = self["green"] = Label(_("OK"))
 		self["key_yellow"] = self["yellow"] = Label(_("Reboot receiver"))
-#		self["key_red"] = StaticText(_("Cancel"))
-#		self["key_green"] = StaticText(_("OK (reboots)"))
-#		self["key_yellow"] = StaticText(_("Reboot receiver"))
-#		self["key_blue"] = StaticText(_("Test overclock"))
 
 	        self.cfglist = []
 	        ConfigListScreen.__init__(self, self.cfglist)
 		self.setTitle(_("System option configuration"))
-#		self["OKCancelActions"] = ActionMap(self, "OkCancelActions",
-#			{
-#			"cancel": (self.cancel, _("Cancel Spark 7162 options configuration")),
-#			"ok": (self.keySave, _("Store Spark 7162 options"))
-#			})
-#		self["ColorActions"] = ActionMap(self, "ColorActions",
-#			{
-#			"red": (self.cancel, _("Cancel Spark 7162 options configuration")),
-#			"green": (self.keySave, _("Store Spark 7162 options and reboot receiver")),
-#			"yellow": (self.keyYellow, _("Reboot receiver")),
-#			"blue": (self.keyBlue, _("Test current overclock value"))
-#			})
-#		self["actions"] = ActionMap('SetupActions',
 		if stb.lower() == 'spark7162' or stb.lower() == 'spark':
 			self["actions"] = ActionMap(['OkCancelActions', 'DirectionActions', 'InputActions', 'ColorActions'],
 				{
@@ -291,8 +233,8 @@ class ConfigOptions(Screen, ConfigListScreen):
 				"ok": self.keySave,
 				"red": self.cancel,
 				"green": self.keySaveSpark,
-				"yellow": self.keyYellow,
-				"blue": self.keyBlue
+				"yellow": self.keyYellow
+#				"blue": self.keyBlue
 				}, -2)
 		else:
 			self["actions"] = ActionMap(['OkCancelActions', 'DirectionActions', 'InputActions', 'ColorActions'],
@@ -307,26 +249,19 @@ class ConfigOptions(Screen, ConfigListScreen):
 				"green": self.keySave,
 				"yellow": self.keyYellow,
 				}, -2)
-#	        self.cfglist = []
-#	        ConfigListScreen.__init__(self, self.cfglist)
 		self.createSetup()
-#		self.onLayoutFinish.append(self.layoutFinished)
-#		self.onClose.append(self.cleanup)
-
-#		self["HelpWindow"] = Pixmap()
-#		self["HelpWindow"].hide()
 
 	def createSetup(self):
 		self.cfglist = []
-		if stb.lower() == 'spark7162' or stb.lower() == 'spark':
-			self.cfglist.append(getConfigListEntry(_('CPU clock frequency:'), config.plugins.systemoptions.freq))
-			self.cfglist.append(getConfigListEntry(_('Standby clock frequency:'), config.plugins.systemoptions.stbyfreq))
+#		if stb.lower() == 'spark7162' or stb.lower() == 'spark':
+#			self.cfglist.append(getConfigListEntry(_('CPU clock frequency:'), config.plugins.systemoptions.freq))
+#			self.cfglist.append(getConfigListEntry(_('Standby clock frequency:'), config.plugins.systemoptions.stbyfreq))
 		if stb.lower() == 'spark7162':
 			self.cfglist.append(getConfigListEntry(_('Tuner C type:'), config.plugins.systemoptions.tunertype))
 		if os.path.isfile("/boot/audio_dts.elf"):
 			listadd = [getConfigListEntry(_('DTS downmix:'), config.plugins.systemoptions.dtsdownmix)]
 			self.cfglist.extend(listadd)
-		if os.path.isfile("/sbin/ntpdate"):
+		if os.path.isfile("/sbin/ntpd"):
 			listadd = [getConfigListEntry(_('Synchronise with internet time:'), config.plugins.systemoptions.inettime)]
 			self.cfglist.extend(listadd)
 		self.cfglist.append(getConfigListEntry(_('Enable auto telnet login:'), config.plugins.systemoptions.autologin))
@@ -362,7 +297,7 @@ class ConfigOptions(Screen, ConfigListScreen):
 			if self.wlan_encryption != "no":
 				if self.wlan_encryption == "WPA2-AES":
 					listadd = [getConfigListEntry(_('    Pass phrase:'), config.plugins.wireless.encryption.key)]
-				if self.wlan_encryption != "WPA2-AES":
+				else:
 					listadd = [getConfigListEntry(_('    Encryption key:'), config.plugins.wireless.encryption.key)]
 				self.cfglist.extend(listadd)
 				if self.wlan_encryption == "WEP":
@@ -402,40 +337,40 @@ class ConfigOptions(Screen, ConfigListScreen):
 		restartbox = self.session.openWithCallback(self.restartE2, MessageBox, _('Do you really want to restart the receiver now?'), MessageBox.TYPE_YESNO)
 		restartbox.setTitle(_('Reboot receiver'))
 
-	if stb.lower() == 'spark7162' or stb.lower() == 'spark':
-		def keyBlue(self):
-			#apply CPU clock frequency
-			if config.plugins.systemoptions.freq.value:
-				if config.plugins.systemoptions.freq.value == "200":
-					overclk=5123
-				elif config.plugins.systemoptions.freq.value == "300":
-					overclk=2561
-				elif config.plugins.systemoptions.freq.value == "450":
-					overclk=3841
-				elif config.plugins.systemoptions.freq.value == "500":
-					overclk=12803
-				elif config.plugins.systemoptions.freq.value == "540":
-					overclk=4609
-				elif config.plugins.systemoptions.freq.value == "600":
-					overclk=5121
-				elif config.plugins.systemoptions.freq.value == "630":
-					overclk=5377
-				elif config.plugins.systemoptions.freq.value == "650":
-					overclk=16643
-				elif config.plugins.systemoptions.freq.value == "700":
-					overclk=17923
-				elif config.plugins.systemoptions.freq.value == "710":
-					overclk=18179
-				elif config.plugins.systemoptions.freq.value == "750":
-					overclk=19203
-				elif config.plugins.systemoptions.freq.value == "775":
-					overclk=39686
-				elif config.plugins.systemoptions.freq.value == "800":
-					overclk=20483
-			else:
-				overclk=4609
-			print "[System options] Clockspeed =", config.plugins.systemoptions.freq.value, "MHz, PLL =", str(overclk)
-			open(pll0, 'w').write(str(overclk))
+#	if stb.lower() == 'spark7162' or stb.lower() == 'spark':
+#		def keyBlue(self):
+#			#apply CPU clock frequency
+#			if config.plugins.systemoptions.freq.value:
+#				if config.plugins.systemoptions.freq.value == "200":
+#					overclk=5123
+#				elif config.plugins.systemoptions.freq.value == "300":
+#					overclk=2561
+#				elif config.plugins.systemoptions.freq.value == "450":
+#					overclk=3841
+#				elif config.plugins.systemoptions.freq.value == "500":
+#					overclk=12803
+#				elif config.plugins.systemoptions.freq.value == "540":
+#					overclk=4609
+#				elif config.plugins.systemoptions.freq.value == "600":
+#					overclk=5121
+#				elif config.plugins.systemoptions.freq.value == "630":
+#					overclk=5377
+#				elif config.plugins.systemoptions.freq.value == "650":
+#					overclk=16643
+#				elif config.plugins.systemoptions.freq.value == "700":
+#					overclk=17923
+#				elif config.plugins.systemoptions.freq.value == "710":
+#					overclk=18179
+#				elif config.plugins.systemoptions.freq.value == "750":
+#					overclk=19203
+#				elif config.plugins.systemoptions.freq.value == "775":
+#					overclk=39686
+#				elif config.plugins.systemoptions.freq.value == "800":
+#					overclk=20483
+#			else:
+#				overclk=4609
+#			print "[System options] Clockspeed =", config.plugins.systemoptions.freq.value, "MHz, PLL =", str(overclk)
+#			open(pll0, 'w').write(str(overclk))
 
 	def keyLeft(self):
 		self["config"].handleKey(KEY_LEFT)
