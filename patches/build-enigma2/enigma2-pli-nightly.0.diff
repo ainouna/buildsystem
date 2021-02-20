@@ -1,4 +1,4 @@
-# revision 9563ac22e68821ad1370609802e9414295acf5b9 29/01/2021 08:59
+# revision 57322db7b7386adf0fec6d2f4337f648a881a541 20/02/2021 05:12
 --- enigma2.org/configure.ac
 +++ enigma2/configure.ac
 @@ -18,6 +18,7 @@
@@ -2684,7 +2684,7 @@
  
  	if (!m_multitype)
  		m_type = feSatellite;
-@@ -943,12 +951,16 @@
+@@ -945,12 +953,16 @@
  	int cab_max = 4200;
  	int atsc_max = 4200;
  
@@ -2703,7 +2703,7 @@
  	{
  		ret = (int)(snr / 37.5);
  		sat_max = 1700;
-@@ -2985,7 +2997,11 @@
+@@ -2119,7 +3031,11 @@
  	}
  	else if (!strcmp(type, "DVB-C"))
  	{
@@ -2715,7 +2715,7 @@
  		fetype = feCable;
  	}
  	else if (!strcmp(type, "ATSC"))
-@@ -3117,11 +3133,16 @@
+@@ -3151,11 +3167,16 @@
  		case SYS_ISDBS:		ss << " ISDBS"; break;
  		case SYS_ISDBT:		ss << " ISDBT"; break;
  		case SYS_UNDEFINED:	ss << " UNDEFINED"; break;
@@ -8074,7 +8074,7 @@
  			self.openMultiServiceEPG(False)
  
  	def eventViewCallback(self, setEvent, setService, val): #used for now/next displaying
-@@ -2148,7 +2197,7 @@
+@@ -2149,7 +2198,7 @@
  		self.addExtension((lambda: _("Manually import from fallback tuner"), self.importChannels, lambda: config.usage.remote_fallback_extension_menu.value and config.usage.remote_fallback_import.value))
  		self["InstantExtensionsActions"] = HelpableActionMap(self, "InfobarExtensions",
  			{
@@ -8083,7 +8083,7 @@
  			}, 1) # lower priority
  
  	def openSoftcamSetup(self):
-@@ -2178,7 +2227,7 @@
+@@ -2179,7 +2228,7 @@
  
  	def updateExtensions(self):
  		self.extensionsList = []
@@ -8092,7 +8092,7 @@
  		self.extensionKeys = {}
  		for x in self.list:
  			if x[0] == self.EXTENSION_SINGLE:
-@@ -2205,7 +2254,7 @@
+@@ -2206,7 +2255,7 @@
  				else:
  					extensionsList.remove(extension)
  		list.extend([(x[0](), x) for x in extensionsList])
@@ -8101,7 +8101,7 @@
  
  	def extensionCallback(self, answer):
  		if answer is not None:
-@@ -2410,11 +2459,11 @@
+@@ -2411,11 +2460,11 @@
  
  class InfoBarInstantRecord:
  	"""Instant Record - handles the instantRecord action in order to
@@ -8115,7 +8115,7 @@
  			})
  		self.SelectedInstantServiceRef = None
  		if isStandardInfoBar(self):
-@@ -2497,7 +2546,7 @@
+@@ -2498,7 +2547,7 @@
  	def startInstantRecording(self, limitEvent = False):
  		begin = int(time())
  		end = begin + 3600      # dummy
@@ -8124,7 +8124,7 @@
  		info = { }
  
  		self.getProgramInfoAndEvent(info, name)
-@@ -2726,7 +2775,7 @@
+@@ -2727,7 +2776,7 @@
  	def __init__(self):
  		self["AudioSelectionAction"] = HelpableActionMap(self, "InfobarAudioSelectionActions",
  			{
@@ -8133,7 +8133,7 @@
  			})
  
  	def audioSelection(self):
-@@ -2740,7 +2789,7 @@
+@@ -2741,7 +2790,7 @@
  	def __init__(self):
  		self["SubserviceSelectionAction"] = HelpableActionMap(self, "InfobarSubserviceSelectionActions",
  			{
@@ -9034,16 +9034,15 @@
  	export HOME=/home/root
 --- enigma2.org/lib/python/Components/About.py
 +++ enigma2/lib/python/Components/About.py
-@@ -48,12 +48,15 @@
  	return enigma_version
  
- def getGStreamerVersionString(cpu):
+ def getGStreamerVersionString():
 -	try:
 -		from glob import glob
 -		gst = [x.split("Version: ") for x in open(glob("/var/lib/opkg/info/gstreamer[0-9].[0-9].control")[0], "r") if x.startswith("Version:")][0]
 -		return "%s" % gst[1].split("+")[0].replace("\n","")
 -	except:
--		return _("Not Required") if cpu.upper().startswith('HI') else _("Not Installed")
+-		return _("Not Installed")
 +	from glob import glob
 +	if os.path.isfile('/usr/lib/pkgconfig/gstreamer-1.0.pc'):
 +		gstversion = [x.split("Version:") for x in open(glob("/usr/lib/pkgconfig/gstreamer-1.0.pc")[0], "r") if x.startswith("Version:")][0]
@@ -9054,9 +9053,9 @@
 +	else:
 +		return _("eplayer3")
  
- def getKernelVersionString():
+ def getffmpegVersionString():
  	try:
-@@ -62,7 +65,7 @@
+@@ -70,7 +73,7 @@
  		return _("unknown")
  
  def getHardwareTypeString():
@@ -9065,7 +9064,7 @@
  
  def getImageTypeString():
  	try:
-@@ -74,29 +77,19 @@
+@@ -82,29 +85,19 @@
  def getCPUInfoString():
  	try:
  		cpu_count = 0
@@ -9104,11 +9103,11 @@
  
  		AboutText += _("DVB driver version: ") + about.getDriverInstalledDate() + "\n"
  
--		GStreamerVersion = _("GStreamer version: ") + about.getGStreamerVersionString(cpu).replace("GStreamer","")
-+		GStreamerVersion = "Media framework: " + about.getGStreamerVersionString(cpu)
+-		GStreamerVersion = _("Media player: GStreamer, version ") + about.getGStreamerVersionString().replace("GStreamer","")
++		GStreamerVersion = "Media framework: " + about.getGStreamerVersionString()
  		self["GStreamerVersion"] = StaticText(GStreamerVersion)
- 		AboutText += GStreamerVersion + "\n"
  
+ 		ffmpegVersion = _("Media player: ffmpeg, version ") + about.getffmpegVersionString()
 --- enigma2.org/lib/python/Tools/KeyBindings.py
 +++ enigma2/lib/python/Tools/KeyBindings.py
 @@ -220,122 +220,509 @@
