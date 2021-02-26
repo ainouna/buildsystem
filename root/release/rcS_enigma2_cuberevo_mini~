@@ -2,7 +2,7 @@
 #Version 201008.1
 
 echo "[rcS] Start"
-echo "CubeRevo 9500HD Enigma2"
+echo "CubeRevo Mini Enigma2"
 
 MODDIR=/lib/modules
 
@@ -101,14 +101,42 @@ insmod $MODDIR/mpeg2hw.ko mmeName=MPEG2_TRANSFORMER1
 insmod $MODDIR/ksound.ko
 insmod $MODDIR/p2div64.ko
 insmod $MODDIR/stm_v4l2.ko
+#insmod $MODDIR/stmvout.ko
+#insmod $MODDIR/stmvbi.ko
 
 insmod $MODDIR/pseudocard.ko
 
-echo "[rcS] Init frontends"
-insmod $MODDIR/tuner.ko
+echo "[rcS] Init frontend"
+insmod $MODDIR/frontend_platform.ko
+insmod $MODDIR/socket.ko
+insmod $MODDIR/lnbh221.ko
+insmod $MODDIR/lnb_pio.ko
+# DVB-S(2)
+if [ -f $MODDIR/cx24116.ko ]; then
+   insmod $MODDIR/cx24116.ko
+fi
+if [ -f $MODDIR/stv090x.ko ]; then
+   insmod $MODDIR/stv090x.ko
+fi
+# DVB-S
+if [ -f $MODDIR/stv0288.ko ]; then
+   insmod $MODDIR/stv0288.ko
+fi
+# DVB-C
+if [ -f $MODDIR/tda10023.ko ]; then
+   insmod $MODDIR/tda10023.ko
+fi
+# DVB-T
+if [ -f $MODDIR/dvb-pll.ko ]; then
+   insmod $MODDIR/dvb-pll.ko
+   if [ -f $MODDIR/zl10353.ko ]; then
+      insmod $MODDIR/zl10353.ko
+   fi
+fi
 
 echo "[rcS] Init CI & cardreader"
 insmod $MODDIR/starci.ko
+insmod $MODDIR/smartcard.ko
 
 insmod $MODDIR/pti.ko waitMS=20 videoMem=4096
 if [ $? -ne 0 ]; then
@@ -118,7 +146,7 @@ else
    echo "[rcS] Full feature pti"
 fi
 insmod $MODDIR/stm_monitor.ko
-
+insmod $MODDIR/stmsysfs.ko
 insmod $MODDIR/stmdvb.ko
 
 echo "[rcS] Init player2 (LOAD 3)"
@@ -306,11 +334,12 @@ do
          fi;;
       *) echo "ERROR"
          echo "Error" > /dev/vfd
-         fp_control -r 00:00:00 01-01-1980;;
+         fp_control -r 00:00:00 01.01.1980;;
    esac
 done
 
 #never reached
-echo "Reboot" > /dev/vfd
-echo "[rcS] Reboot Cuberevo 9500HD"
-init 6
+/bin/fp_control -t "REBOOT CubeRevo Mini"
+echo "[rcS] Reboot Cuberevo Mini"
+reboot
+

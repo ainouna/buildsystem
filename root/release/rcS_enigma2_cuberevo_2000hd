@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 200722.1
+#Version 201008.1
 
 echo "[rcS] Start"
 echo "CubeRevo 2000HD Enigma2"
@@ -9,7 +9,7 @@ MODDIR=/lib/modules
 insmod $MODDIR/e2_proc.ko
 
 echo "[rcS] Init frontpanel"
-insmod $MODDIR/cuberevo_micom.ko  # paramDebug=10
+insmod $MODDIR/cuberevo_micom.ko # paramDebug=10
 
 if [ -e /var/etc/.firstboot ]; then
    echo "config.plugins.remotecontroltype.rctype=13" >> /etc/enigma2/settings
@@ -51,19 +51,19 @@ insmod $MODDIR/stmcore-display-stx7109c3.ko
 TVMODE=$?
 case "$TVMODE" in
    0) echo "[rcS] Video mode: SD-PAL (576i)"
-      insmod $MODDIR/stmfb.ko display0=720x576-32@50i:16m::pal:cvbs:rgb;;
+      insmod $MODDIR/stmfb.ko display0=720x576-32@50i:16m:0:pal:cvbs:rgb;;
    1) echo "[rcS] Video mode: SD-NTSC (480i)"
-      insmod $MODDIR/stmfb.ko display0=720x480-32@60i:16m::ntsc-m:cvbs:rgb;;
+      insmod $MODDIR/stmfb.ko display0=720x480-32@60i:16m:0:ntsc-m:cvbs:rgb;;
    2) echo "[rcS] Video mode: 720p-50"
-      insmod $MODDIR/stmfb.ko display0=1280x720-32@50:16m::pal:cvbs:rgb;;
+      insmod $MODDIR/stmfb.ko display0=1280x720-32@50:16m:0:pal:cvbs:rgb;;
    3) echo "[rcS] Video mode: 720p-60"
-      insmod $MODDIR/stmfb.ko display0=1280x720-32@60:16m::ntsc-m:cvbs:rgb;;
+      insmod $MODDIR/stmfb.ko display0=1280x720-32@60:16m:0:ntsc-m:cvbs:rgb;;
    4) echo "[rcS] Video mode: 1080i-50"
-      insmod $MODDIR/stmfb.ko display0=1920x1080-32@50i:16m::pal:cvbs:rgb;;
+      insmod $MODDIR/stmfb.ko display0=1920x1080-32@50i:16m:0:pal:cvbs:rgb;;
    5) echo "[rcS] Video mode: 1080i-60"
-      insmod $MODDIR/stmfb.ko display0=1920x1080-32@60i:16m::ntsc-m:cvbs:rgb;;
+      insmod $MODDIR/stmfb.ko display0=1920x1080-32@60i:16m:0:ntsc-m:cvbs:rgb;;
    *) echo "[rcS] Video mode: use default 720p-50"
-      insmod $MODDIR/stmfb.ko display0=1280x720-32@50:16m::pal:cvbs:rgb;;
+      insmod $MODDIR/stmfb.ko display0=1280x720-32@50:16m:0:pal:cvbs:rgb;;
 esac
 
 echo "[rcS] Loading modules"
@@ -85,8 +85,8 @@ echo "Load 7" > /dev/vfd
 echo "[rcS] Init embx (LOAD 6)"
 echo "Load 6" > /dev/vfd
 insmod $MODDIR/embxshell.ko
-insmod $MODDIR/embxmailbox.ko mailbox0=0xb9211000:136:set2 mailbox1=0xb9212000:0 ;
-insmod $MODDIR/embxshm.ko mailbox0=shm:0:7:0x60000000:0:256:256:0:512:0xa4000000:0x10000000 ;
+insmod $MODDIR/embxmailbox.ko mailbox0=0xb9211000:136:set2 mailbox1=0xb9212000:0
+insmod $MODDIR/embxshm.ko mailbox0=shm:0:7:0x60000000:0:256:256:0:512:0xa4000000:0x10000000
 insmod $MODDIR/mme_host.ko transport0=shm
 
 echo "[rcS] Init AVS (LOAD 5)"
@@ -129,9 +129,9 @@ fi
 # DVB-T
 if [ -f $MODDIR/dvb-pll.ko ]; then
    insmod $MODDIR/dvb-pll.ko
-fi
-if [ -f $MODDIR/zl10353.ko ]; then
-   insmod $MODDIR/zl10353.ko
+   if [ -f $MODDIR/zl10353.ko ]; then
+      insmod $MODDIR/zl10353.ko
+   fi
 fi
 
 echo "[rcS] Init CI & cardreader"
@@ -184,6 +184,7 @@ if [ -e $MODDIR/usbserial.ko ]; then
       insmod $MODDIR/pl2303.ko
    fi
 fi
+
 echo "[rcS] Init frontpanel keyboard"
 #insmod $MODDIR/boxtype.ko
 insmod $MODDIR/simu_button.ko
@@ -207,7 +208,7 @@ echo "[rcS] Initialize network (LOAD 2)"
 echo "Load 2" >/dev/vfd
 NFS=`grep -c nfs /proc/cmdline`
 if [ "$NFS" -eq "1" ]; then
-   echo "[rcS] Booting from nfs, do not set network"
+   echo "[rcS] Booting from NFS, do not set network"
 else
    if [ -e /etc/network/interfaces ]; then
       ip addr flush eth0
@@ -313,7 +314,8 @@ do
          init 0;;
       2) echo "REBOOT"
          echo "Reboot" > /dev/vfd
-         fp_control -r 00:00:00 01.01.1980;;
+         fp_control -r 00:00:00 01-01-1980;;
+#         init 6;;
       3) echo "E2 RESTART"
          echo "Restart GUI" > /dev/vfd
          echo "0" > /proc/progress
@@ -330,7 +332,7 @@ do
          else
             showiframe -p /boot/bootlogo.mvi &
          fi;;
-       *) echo "ERROR"
+      *) echo "ERROR"
          echo "Error" > /dev/vfd
          fp_control -r 00:00:00 01.01.1980;;
    esac
