@@ -69,12 +69,6 @@ else ifeq ($(IMAGE), $(filter $(IMAGE), enigma2 enigma2-wlandriver))
 	@echo "LOCAL_ENIGMA2_BUILD_OPTIONS : $(LOCAL_ENIGMA2_BUILD_OPTIONS)"
 	@echo "LOCAL_ENIGMA2_CPPFLAGS      : $(LOCAL_ENIGMA2_CPPFLAGS)"
 	@echo "LOCAL_ENIGMA2_DEPS          : $(LOCAL_ENIGMA2_DEPS)"
-else ifeq ($(IMAGE), $(filter $(IMAGE), tvheadend))
-	@echo "TVHEADEND_DIFF                : $(TVHEADEND_DIFF)"
-	@echo "THVEADEND_REVISION            : $(TVHEADEND_REVISION)"
-	@echo "LOCAL_TVHEADEND_BUILD_OPTIONS : $(LOCAL_TVHEADEND_BUILD_OPTIONS)"
-	@echo "LOCAL_TVHEADEND_CPPFLAGS      : $(LOCAL_TVHEADEND_CPPFLAGS)"
-	@echo "LOCAL_TVHEADEND_DEPS          : $(LOCAL_TVHEADEND_DEPS)"
 endif
 	@echo '================================================================================'
 	@echo ""
@@ -123,8 +117,6 @@ include make/neutrino.mk
 include make/neutrino-plugins.mk
 include make/neutrino-release.mk
 include make/neutrino-patches.mk
-include make/tvheadend.mk
-include make/tvheadend-release.mk
 include make/cleantargets.mk
 include make/bootstrap.mk
 

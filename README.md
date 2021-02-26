@@ -1,10 +1,6 @@
 # buildsystem
 Build system for Audioniek's Development Toolchain
 
-CAUTION: The ability to build tvheadend will be removed some time after
-         February 1st, 2021. If you want to continue building tvheadend,
-         either make a local copy of this git, or fork it.
-
 Instructions
 ------------
 

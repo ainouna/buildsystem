@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20210129.1
+# Version 20210226.1
 
 ##############################################
 
@@ -22,9 +22,9 @@ if [ "$1" == -h ] || [ "$1" == --help ]; then
 	echo "Parameter 1       : target system (1-38)"
 	echo "Parameter 2       : kernel (1-2)"
 	echo "Parameter 3       : optimization (1-5)"
-	echo "Parameter 4       : image (Enigma=1/2 Neutrino=3/4 Tvheadend=5 (1-5)"
-	echo "Parameter 5       : Neutrino variant (1-6) or Enigma2/Tvheadend diff (0-5)"
-	echo "Parameter 6       : media Framework (Enigma2: 1-5; Neutrino, Tvheadend: ignored)"
+	echo "Parameter 4       : image (Enigma=1/2 Neutrino=3/4 (1-4)"
+	echo "Parameter 5       : Neutrino variant (1-6) or Enigma2 diff (0-5)"
+	echo "Parameter 6       : media Framework (Enigma2: 1-5; Neutrino: ignored)"
 	echo "Parameter 7       : external LCD (1=none, 2=graphlcd, 3=lcd4linux, 4=both)"
 	echo "Parameter 8       : destination (1-2, 1=flash, 2=USB)"
 	exit
@@ -56,12 +56,8 @@ if [ -e ./config ]; then
 	LASTBOX=`grep -e "BOXTYPE=" ./config.old | awk '{print substr($0,9,length($0)-7)}'`
 	LASTIMAGE1=`grep -e "enigma2" ./config.old | awk '{print substr($0,7,length($0)-7)}'`
 	LASTIMAGE2=`grep -e "neutrino" ./config.old | awk '{print substr($0,7,length($0)-7)}'`
-	LASTIMAGE3=`grep -e "tvheadend" ./config.old | awk '{print substr($0,7,length($0)-6)}'`
 	if [ $LASTIMAGE1 ]; then
 		LASTDIFF=`grep -e "E2_DIFF=" ./config.old | awk '{print substr($0,9,length($0)-7)}'`
-	fi
-	if [ $LASTIMAGE3 ]; then
-		LASTDIFF=`grep -e "TVHEADEND_DIFF=" ./config.old | awk '{print substr($0,16,length($0)-7)}'`
 	fi
 	rm -f ./config.old
 fi
@@ -290,14 +286,13 @@ export BS_GCC_VER
 ##############################################
 
 case $4 in
-	[1-5])	REPLY=$4;;
+	[1-4])	REPLY=$4;;
 	*)	echo -e "\nWhich Image do you want to build:"
 		echo "   1)  Enigma2"
 		echo "   2*) Enigma2 (includes WLAN drivers)"
 		echo "   3)  Neutrino"
 		echo "   4)  Neutrino (includes WLAN drivers)"
-		echo "   5)  Tvheadend"
-		read -p "Select Image to build (1-5)? ";;
+		read -p "Select Image to build (1-4)? ";;
 esac
 
 case "$REPLY" in
@@ -305,7 +300,6 @@ case "$REPLY" in
 #	2) IMAGE="enigma2-wlandriver";;
 	3) IMAGE="neutrino";;
 	4) IMAGE="neutrino-wlandriver";;
-	5) IMAGE="tvheadend";;
 	*) IMAGE="enigma2-wlandriver";;
 esac
 echo "IMAGE=$IMAGE" >> config
@@ -383,53 +377,6 @@ case "$IMAGE" in
 				make distclean 2> /dev/null > /dev/null
 				echo "[Done]"
 			fi
-		fi;;
-	tvheadend)
-		MEDIAFW="buildinplayer"
-		# Determine the Tvheadend diff-level
-		case $5 in
-			[0-3])	REPLY=$5;;
-			*)	echo
-				echo "Please select one of the following Tvheadend revisions (default = 1):"
-				echo "=================================================================================================="
-				echo " 0)  Newest                 - Tvheadend  built-in player (CAUTION: may fail due to outdated patch)"
-				echo "=================================================================================================="
-				echo " 1)  Fri, 26 Jul 2019 18:46 - Tvheadend  built-in player  6c6e0e5103b874fdd926b0f1bcdaed4d7e8b464e"
-				echo " 2)  Wed, 13 Dec 2017 22:23 - Tvheadend  built-in player  3b232b66e02fc46f1e7e97efb5ef48c6968cf779"
-				echo " 3*) Fri, 24 Feb 2017 18:23 - Tvheadend  built-in player  4931c0544885371b85146efad4eacd9683ba3dad"
-				echo "=================================================================================================="
-				echo "Media Framework         : $MEDIAFW"
-				read -p "Select Tvheadend revision : ";;
-		esac
-
-		case "$REPLY" in
-			0)	DIFF="0"
-				REVISION="newest";;
-			1)	DIFF="1"
-				REVISION="6c6e0e5103b874fdd926b0f1bcdaed4d7e8b464e";;
-			2)	DIFF="2"
-				REVISION="3b232b66e02fc46f1e7e97efb5ef48c6968cf779";;
-			*)	DIFF="3"
-				REVISION="4931c0544885371b85146efad4eacd9683ba3dad";;
-		esac
-		echo "TVHEADEND_DIFF=$DIFF" >> config
-		echo "TVHEADEND_REVISION=$REVISION" >> config
-
-		echo "make yaud-tvheadend" >> $CURDIR/build
-
-		if [ "$OPTIMIZATIONS" == "small" ]; then
-			OPTIMIZATIONS="size"
-		fi
-
-		if [ "$LASTIMAGE1" ] || [ "$LASTIMAGE2" ] || [ ! "$LASTBOX" == "$BOXTYPE" ]; then
-			if [ -e ./.deps/ ]; then
-				echo -n -e "\nSettings changed, performing distclean..."
-				make distclean 2> /dev/null > /dev/null
-				echo " [Done]"
-			fi
-		elif [ ! "$DIFF" == "$LASTDIFF" ]; then
-			echo -n -e "\nDiff changed, Tvheadend will be rebuilt."
-			rm -f ./.deps/tvheadend.do_prepare
 		fi;;
 #	enigma*)
 	*)
