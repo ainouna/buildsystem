@@ -1,6 +1,6 @@
 --- a/event.c.org
 +++ b/event.c
-@@ -920,7 +920,7 @@
+@@ -926,7 +926,7 @@
  
  	if (n_deleted)
  		event_debug(("%s: "EV_SIZE_FMT" events were still set in base",
@@ -11,7 +11,7 @@
  		struct event_once *eonce = LIST_FIRST(&base->once_events);
 --- a/test/regress_http.c.org
 +++ b/test/regress_http.c
-@@ -5302,7 +5302,7 @@
+@@ -5473,7 +5473,7 @@
  	    "POST /postit HTTP/1.1\r\n"
  	    "Host: somehost\r\n"
  	    "Content-Length: " EV_SIZE_FMT "\r\n"
@@ -33,7 +33,7 @@
  	evutil_timersub(&te, &ts, &te);
 --- a/test/regress_ssl.c.org
 +++ b/test/regress_ssl.c
-@@ -835,9 +835,9 @@
+@@ -530,9 +530,9 @@
  		"out: " EV_SIZE_FMT ", "
  		"got: " EV_SIZE_FMT "",
  		ctx->server ? "server" : "client", bev,
@@ -46,7 +46,7 @@
  
  	evbuffer_add_buffer_reference(out, ctx->data);
  }
-@@ -928,10 +928,10 @@
+@@ -673,10 +673,10 @@
  		"wm_high = " EV_SIZE_FMT ", "
  		"limit = " EV_SIZE_FMT ", "
  		"to_read: " EV_SIZE_FMT "",
