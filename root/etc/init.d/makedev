@@ -106,7 +106,9 @@ start()
   fi
   ${MAKEDEV} ttyusb
   ${MAKEDEV} rfkill
-
+  if [ "${HOST}" == "spark7162" ]; then
+    ${MAKEDEV} rfmod
+  fi
   if [ "${HOST}" == "fortis" ]; then
     ${MAKEDEV} sci_fortis
   else
