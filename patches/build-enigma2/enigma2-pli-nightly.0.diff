@@ -1,4 +1,4 @@
-# revision 57322db7b7386adf0fec6d2f4337f648a881a541 20/02/2021 05:12
+# revision 57322db7b7386adf0fec6d2f4337f648a881a541 25/03/2021 21:54
 --- enigma2.org/configure.ac
 +++ enigma2/configure.ac
 @@ -18,6 +18,7 @@
@@ -864,7 +864,7 @@
  		{
 --- enigma2.org/lib/driver/vfd.cpp
 +++ enigma2/lib/driver/vfd.cpp
-@@ -0,0 +1,972 @@
+@@ -0,0 +1,1054 @@
 +/*
 + * vfd.cpp
 + *
@@ -914,6 +914,9 @@
 + * 20200719 Audioniek       hl101, vip1_v2 and vip2_v1 added.
 + * 20200828 Audioniek       Add vip1_v1, rename vip2.
 + * 20201115 Audioniek       Add opt9600.
++ * 20210322 Audioniek       Set display width on spark7162 to match actual
++ *                          display type and time mode.
++ * 20210325 Audioniek       Set correct display width on spark with VFD.
 + *
 + ****************************************************************************/
 +#include <stdarg.h>
@@ -940,6 +943,7 @@
 +static int led_onoff[7];
 +static pthread_t thread_start_loop = 0;
 +void *start_loop (void *arg);
++int  vfd_width;
 +bool blocked    = false;
 +bool requested  = false;
 +bool VFD_CENTER = false;
@@ -968,18 +972,47 @@
 +
 +evfd::evfd()
 +{
++#if defined (ENABLE_SPARK) \
++ || defined (ENABLE_SPARK7162)
++	int fd;
++	int n;
++	unsigned char display_type[2];
++#endif
++
 +	file_vfd = 0;
 +	memset (chars, ' ', 63);
-+#if defined (ENABLE_SPARK)
-+	vfd_type = 4;
++#if defined (ENABLE_SPARK) \
++ || defined (ENABLE_SPARK7162)
++	fd = open ("/proc/stb/fp/displaytype", O_RDONLY);
++	n = read(fd, display_type, sizeof(display_type));
++	close(fd);
++
++	if (fd < 0)
++	{
++		printf("[vfd] open /proc/stb/fp/displaytype failed\n");
++		vfd_type = 8;
++		return;
++	}
++	if (n < 0)
++	{
++		n = 0;
++	}
++
++	if (display_type[0] == '1')  // if VFD
++	{
++		vfd_type = 8;
++	}
++	else
++	{
++		vfd_type = 4;
++	}		
 +#elif defined (ENABLE_ATEVIO7500)
 +	vfd_type = 5;
 +#elif defined (ENABLE_FORTIS_HDBOX)
 +	vfd_type = 6;
 +#elif defined (ENABLE_OCTAGON1008)
 +	vfd_type = 7;
-+#elif defined (ENABLE_SPARK7162) \
-+   || defined (ENABLE_HL101) \
++#elif defined (ENABLE_HL101) \
 +   || defined (ENABLE_VIP1_V1) \
 +   || defined (ENABLE_VIP1_V2) \
 +   || defined (ENABLE_VIP2)
@@ -1050,7 +1083,7 @@
 +	{
 +		n = 0;
 +	}
-+	else if((n > 1) && (progress[n- 1] == 0xa))
++	else if((n > 1) && (progress[n - 1] == 0xa))
 +	{
 +		n--;
 +	}
@@ -1067,7 +1100,7 @@
 +
 +	if ((fplarge < 0) || (fpsmall < 0) || (fpc < 0))
 +	{
-+		printf("Failed opening devices (%d, %d, %d)\n", fplarge, fpsmall, fpc);
++		printf("[vfd] Failed opening devices (%d, %d, %d)\n", fplarge, fpsmall, fpc);
 +		return NULL;
 +	}
 +	blocked = true;
@@ -1145,9 +1178,67 @@
 +}
 +#else  // next code for boxes other than Topfield TF77X0HDPVR
 +
++	// set display width
++void set_display_width(void)
++{
++	#if !defined (ENABLE_SPARK) \
++	 && !defined (ENABLE_SPARK7162)
++	vfd_width = VFDLENGTH;
++	#else
++	int fd;
++	int n;
++	int tmp;
++	unsigned char display_type[2] = "1";  // default to VFD
++	unsigned char time_mode[2] = "1";  // default to time mode on
++
++	vfd_width = 8;  // default to VFD
++	fd = open ("/proc/stb/fp/displaytype", O_RDONLY);
++	n = read(fd, display_type, sizeof(display_type));
++	close(fd);
++
++	if (fd < 0)
++	{
++		printf("[vfd] open /proc/stb/fp/displaytype failed\n");
++		return;
++	}
++	if (n < 0)
++	{
++		n = 0;
++	}
++
++	if (display_type[0] == '2')  // if DVFD
++	{
++		fd = open ("/proc/stb/fp/timemode", O_RDONLY);
++		n = read(fd, time_mode, sizeof(time_mode));
++		close(fd);
++
++		if (fd < 0)
++		{
++			vfd_width = 10;  // default to time on
++			return;
++		}
++
++		if (time_mode[0] == '0')
++		{
++			vfd_width = 16;
++		}
++		else
++		{
++			vfd_width = 10;
++		}
++	}
++	else if (display_type[0] == '1')  // if VFD
++	{
++		vfd_width = 8;  // reflect correct values on spark with VFD (Edision Argus Pingulux Plus)
++	}
++	#endif  // !defined(SPARK) && !defined(SPARK7162)
++}
++
 +void *start_loop(void *arg)
 +{
 +	evfd vfd;
++
++	set_display_width();
 +
 +	// display signon string
 +	blocked = true;
@@ -1210,37 +1301,38 @@
 +	#else
 +		char str[] = "SH4 Git Enigma2";
 +	#endif
++
 +	int vfddev = open ("/dev/vfd", O_WRONLY);
 +	write(vfddev, str, strlen(str));
 +	close(vfddev);
 +
 +	/* These boxes can control display brightness */
 +	#if defined (ENABLE_FORTIS_HDBOX) \
-+	 && defined (ENABLE_OCTAGON1008) \
-+	 && defined (ENABLE_ATEVIO7500) \
-+	 && defined (ENABLE_CUBEREVO) \
-+	 && defined (ENABLE_CUBEREVO_MINI) \
-+	 && defined (ENABLE_CUBEREVO_MINI2) \
-+	 && defined (ENABLE_CUBEREVO_MINI_FTA) \
-+	 && defined (ENABLE_CUBEREVO_250HD) \
-+	 && defined (ENABLE_CUBEREVO_2000HD) \
-+	 && defined (ENABLE_CUBEREVO_3000HD) \
-+	 && defined (ENABLE_CUBEREVO_9500HD) \
-+	 && defined (ENABLE_SPARK7162) \
-+	 && defined (ENABLE_UFS912) \
-+	 && defined (ENABLE_UFS913) \
-+	 && defined (ENABLE_HS7119) \
-+	 && defined (ENABLE_HS7420) \
-+	 && defined (ENABLE_HS7429) \
-+	 && defined (ENABLE_HS7810A) \
-+	 && defined (ENABLE_HS7819) \
-+	 && defined (ENABLE_VITAMIN_HD5000) \
-+	 && defined (ENABLE_ADB_BOX) \
-+	 && defined (ENABLE_PACE7241) \
-+	 && defined (ENABLE_HL101) \
-+	 && defined (ENABLE_VIP1_V1) \
-+	 && defined (ENABLE_VIP1_V2) \
-+	 && defined (ENABLE_VIP2)
++	 || defined (ENABLE_OCTAGON1008) \
++	 || defined (ENABLE_ATEVIO7500) \
++	 || defined (ENABLE_CUBEREVO) \
++	 || defined (ENABLE_CUBEREVO_MINI) \
++	 || defined (ENABLE_CUBEREVO_MINI2) \
++	 || defined (ENABLE_CUBEREVO_MINI_FTA) \
++	 || defined (ENABLE_CUBEREVO_250HD) \
++	 || defined (ENABLE_CUBEREVO_2000HD) \
++	 || defined (ENABLE_CUBEREVO_3000HD) \
++	 || defined (ENABLE_CUBEREVO_9500HD) \
++	 || defined (ENABLE_SPARK7162) \
++	 || defined (ENABLE_UFS912) \
++	 || defined (ENABLE_UFS913) \
++	 || defined (ENABLE_HS7119) \
++	 || defined (ENABLE_HS7420) \
++	 || defined (ENABLE_HS7429) \
++	 || defined (ENABLE_HS7810A) \
++	 || defined (ENABLE_HS7819) \
++	 || defined (ENABLE_VITAMIN_HD5000) \
++	 || defined (ENABLE_ADB_BOX) \
++	 || defined (ENABLE_PACE7241) \
++	 || defined (ENABLE_HL101) \
++	 || defined (ENABLE_VIP1_V1) \
++	 || defined (ENABLE_VIP1_V2) \
++	 || defined (ENABLE_VIP2)
 +	// Modulate brightness 3 times
 +	for (int vloop = 0; vloop < 3 * 14; vloop++)
 +	{
@@ -1331,6 +1423,13 @@
 +	 && !defined (ENABLE_CUBEREVO_3000HD) \
 +	 && !defined (ENABLE_CUBEREVO_9500HD) \
 +	 && !defined (ENABLE_SPARK7162) \
++	 && !defined (ENABLE_UFS912) \
++	 && !defined (ENABLE_UFS913) \
++	 && !defined (ENABLE_HS7119) \
++	 && !defined (ENABLE_HS7420) \
++	 && !defined (ENABLE_HS7429) \
++	 && !defined (ENABLE_HS7810A) \
++	 && !defined (ENABLE_HS7819) \
 +	 && !defined (ENABLE_VITAMIN_HD5000) \
 +	 && !defined (ENABLE_ADB_BOX) \
 +	 && !defined (ENABLE_PACE7241) \
@@ -1421,7 +1520,7 @@
 +static void *vfd_write_string_scrollText1(void *arg)
 +{
 +	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
-+	char out[VFDLENGTH + 1];
++	char out[vfd_width + 1];
 +	int i, j, len;
 +	evfd vfd;
 +
@@ -1430,18 +1529,18 @@
 +	len = strlen((char *)g_str);
 +
 +// initial display is handled outside this thread
-+//	memcpy(out, g_str, VFDLENGTH);  // get 1st VFDLENGTH characters
-+//	vfd.vfd_write_string(out, true);  // initial display: write 1st VFDLENGTH characters
++//	memcpy(out, g_str, vfd_width);  // get 1st vfd_width characters
++//	vfd.vfd_write_string(out, true);  // initial display: write 1st vfd_width characters
 +
 +	// scroll ?
-+	if (scroll_loop && (len > VFDLENGTH))
++	if (scroll_loop && (len > vfd_width))
 +	{
 +		for (i = 0; i < scroll_repeat; i++)
 +		{
 +			for (j = 1; j <= len; j++)
 +			{
-+				memset(out, ' ', VFDLENGTH + 1);  // clear scroll buffer
-+				memcpy(out, g_str + j, VFDLENGTH);  // then put string in
++				memset(out, ' ', vfd_width + 1);  // clear scroll buffer
++				memcpy(out, g_str + j, vfd_width);  // then put string in
 +				vfd.vfd_write_string(out, true);  // print string on VFD
 +				if (blocked)
 +				{
@@ -1454,7 +1553,7 @@
 +			}
 +		}
 +		// final display
-+		memcpy(out, g_str, VFDLENGTH); // put string in
++		memcpy(out, g_str, vfd_width); // put string in
 +		vfd.vfd_write_string(out, true);  // print string on VFD
 +		if (VFD_SCROLL != 2 || !blocked)
 +		{
@@ -1469,17 +1568,19 @@
 +static void *vfd_write_string_scrollText1(void *arg)
 +{
 +	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
-+	char out[VFDLENGTH + 1];
++	char out[vfd_width + 1];
 +	int i, len;
 +	evfd vfd;
 +
-+
++	#if defined (ENABLE_SPARK) \
++	 || defined (ENABLE_SPARK7162)
++	set_display_width();
++	#endif
 +	scroll_loop = true;
 +	len = strlen((char *)g_str);
-+	memset(out, ' ', VFDLENGTH + 1);
++	memset(out, ' ', vfd_width + 1);
 +
-+	printf("%s: Text: [%s], len=%d\n", __func__, g_str, len);
-+	while (scroll_loop && (len > VFDLENGTH))
++	while (scroll_loop && (len > vfd_width))
 +	{
 +		if (blocked)
 +		{
@@ -1489,44 +1590,25 @@
 +		{
 +			scroll_loop = false;
 +		}
-+//		for (i = 0; i <= (len - VFDLENGTH); i++)  // scroll part 1: write full string scrolling and wait 0.75s between scrolls
-+//		{
-+//			if (blocked)
-+//			{
-+//				memset(out, ' ', VFDLENGTH);  // fill buffer with spaces
-+//				memcpy(out, g_str + i, VFDLENGTH);  // then put string in
-+//				out[VFDLENGTH] = 0;  // terminate string
-+//				printf("%s Scroll #%d, Text: [%s], len=%d\n", __func__, i + 1, out, VFDLENGTH); 
-+//				vfd.vfd_write_string(out, true);  // print string on VFD
-+//				usleep(750000);  // 0.75 sec character delay
-+//			}
-+//			else
-+//			{
-+//				scroll_loop = false;
-+//				i = len - VFDLENGTH;
-+//			}
-+//		}
 +		for (i = 0; i < len; i++)
 +		{
 +			if (blocked)
 +			{
-+				memset(out, ' ', VFDLENGTH);  // fill buffer with spaces
-+				memcpy(out, g_str + i, (len - i > VFDLENGTH ? VFDLENGTH : len - i));  // copy string shifted i character(s)
-+				out[VFDLENGTH] = 0;  // terminate string
-+				printf("%s Scroll #%d, Text: [%s], len=%d\n", __func__, i, out, (len - i > VFDLENGTH ? VFDLENGTH : len - i)); 
++				memset(out, ' ', vfd_width);  // fill buffer with spaces
++				memcpy(out, g_str + i, (len - i > vfd_width ? vfd_width : len - i));  // copy string shifted i character(s)
++				out[vfd_width] = 0;  // terminate string
 +				vfd.vfd_write_string(out, true);
 +				usleep(750000);  // 0.75 sec character delay
 +			}
 +			else
 +			{
 +				scroll_loop = false;
-+				i = VFDLENGTH;
++				i = vfd_width;
 +			}
 +		}
-+		memcpy(out, g_str, VFDLENGTH);
-+		out[VFDLENGTH] = 0;  // terminate string
-+		printf("%s Final display Text: [%s], len=%d\n", __func__, out, VFDLENGTH); 
-+		vfd.vfd_write_string(out, true);  // final display: write 1st VFDLENGTH characters
++		memcpy(out, g_str, vfd_width);
++		out[vfd_width] = 0;  // terminate string
++		vfd.vfd_write_string(out, true);  // final display: write 1st vfd_width characters
 +		if (VFD_SCROLL != 2 || !blocked)
 +		{
 +			scroll_loop = false;
@@ -1557,8 +1639,8 @@
 +	}
 +	memset(g_str, ' ', 64);  // clear scroll buffer
 +	strcpy(g_str, str);  // and set display string in it
-+	vfd_write_string(str, false);  // initial display: 1st VFDLENGTH characters
-+	if (i > VFDLENGTH && VFD_SCROLL)  // if string longer than display and scroll mode
++	vfd_write_string(str, false);  // initial display: 1st vfd_width characters
++	if (i > vfd_width && VFD_SCROLL)  // if string longer than display and scroll mode
 +	{
 +//		usleep(initial_scroll_delay * 1000);  // wait initial delay
 +		blocked = true;  // flag scrolling
@@ -1575,9 +1657,9 @@
 +
 +	if (VFD_CENTER == true)
 +	{
-+		if (i < VFDLENGTH)
++		if (i < vfd_width)
 +		{
-+			ws = (VFDLENGTH - i) / 2;
++			ws = (vfd_width - i) / 2;
 +		}
 +		else
 +		{
@@ -1585,14 +1667,14 @@
 +		}
 +	}
 +
-+	if (i > VFDLENGTH)
++	if (i > vfd_width)
 +	{
-+		i = VFDLENGTH;
++		i = vfd_width;
 +	}
-+	memset(data.data, ' ', VFDLENGTH);
++	memset(data.data, ' ', vfd_width);
 +	if (VFD_CENTER == true)
 +	{
-+		memcpy(data.data + ws, str, VFDLENGTH - ws);
++		memcpy(data.data + ws, str, vfd_width - ws);
 +	}
 +	else
 +	{
@@ -1601,7 +1683,7 @@
 +	data.start = 0;
 +	if (VFD_CENTER == true)
 +	{
-+		data.length = i + ws <= VFDLENGTH ? i + ws : VFDLENGTH;
++		data.length = i + ws <= vfd_width ? i + ws : vfd_width;
 +	}
 +	else
 +	{
@@ -1675,7 +1757,7 @@
 +			vfd_write_string(out);
 +			usleep(750000);
 +		}
-+		memcpy(out, text, VFDLENGTH);  // final: display first VFDLENGTH chars after scrolling
++		memcpy(out, text, vfd_width);  // final: display first vfd_width chars after scrolling
 +		vfd_write_string(out);
 +		free (out);
 +	}
@@ -1684,9 +1766,9 @@
 +
 +void evfd::vfd_clear_string()
 +{
-+	char out[VFDLENGTH + 1];
-+	memset(out, 0, VFDLENGTH + 1);
-+	memset(out, ' ', VFDLENGTH);
++	char out[vfd_width + 1];
++	memset(out, 0, vfd_width + 1);
++	memset(out, ' ', vfd_width);
 +	vfd_write_string(out, true);
 +}
 +
@@ -1971,7 +2053,7 @@
 +		void vfd_write_string(char *string);
 +		void vfd_write_string(char *str, bool force);
 +		void vfd_write_string_scrollText(char *text);
-+	void vfd_clear_string();
++		void vfd_clear_string();
 +
 +		void vfd_set_brightness(unsigned int setting);
 +		void vfd_set_light(bool onoff);
@@ -2473,62 +2555,6 @@
  	spec.pid = TimeAndDateSection::PID;
  	spec.tid = TimeAndDateSection::TID;
  	spec.tid_mask = 0xFC;
-#--- enigma2.org/lib/dvb/epgcache.cpp
-#+++ enigma2/lib/dvb/epgcache.cpp
-#@@ -2548,6 +2548,42 @@
-# {
-# 	int map;
-# 	iDVBSectionReader *reader = NULL;
-#+/* Dagobert: this is still very hacky, but currently I cannot find
-#+ * the origin of the readData call. I think the caller is
-#+ * responsible for the unaligned data pointer in this call.
-#+ * So we malloc our own memory here which _should_ be aligned.
-#+ *
-#+ * TODO: We should search for the origin of this call. As I
-#+ * said before I need an UML Diagram or must try to import
-#+ * e2 and all libs into an IDE for better overview ;)
-#+ *
-##+ */
-#+	const __u8 *aligned_data;
-#+	bool isNotAligned = false;
-#+
-#+	if ((unsigned int) data % 4 != 0)
-#+		isNotAligned = true;
-#+
-#+	if (isNotAligned)
-#+	{
-#+		int len = ((data[1] & 0x0F) << 8 | data[2]) - 1;
-#+
-#+		/*eDebug("len %d %x, %x %x\n", len, len, data[1], data[2]);*/
-#+
-#+		if (EIT_SIZE >= len)
-#+			return;
-#+
-#+		aligned_data = (const __u8 *) malloc(len);
-#+
-#+		if ((unsigned int)aligned_data % 4 != 0)
-#+		{
-#+			eDebug("eEPGCache::channel_data::readData: ERRORERRORERROR: unaligned data pointer %p\n", aligned_data);
-#+		}
-#+
-#+		/*eDebug("%p %p\n", aligned_data, data); */
-#+		memcpy((void *) aligned_data, (const __u8 *) data, len);
-#+		data = aligned_data;
-#+	}
-# 	switch (source)
-# 	{
-# 		case NOWNEXT:
-#@@ -2672,6 +2708,10 @@
-# 			cache->sectionRead(data, source, this);
-# 		}
-# 	}
-#+#ifdef __sh__
-#+	if (isNotAligned)
-#+		free((void *)aligned_data);
-#+#endif
-# }
-# 
-# #if ENABLE_FREESAT
 --- enigma2.org/lib/dvb/filepush.cpp
 +++ enigma2/lib/dvb/filepush.cpp
 @@ -6,6 +6,16 @@
@@ -2703,7 +2729,7 @@
  	{
  		ret = (int)(snr / 37.5);
  		sat_max = 1700;
-@@ -2119,7 +3031,11 @@
+@@ -3019,7 +3031,11 @@
  	}
  	else if (!strcmp(type, "DVB-C"))
  	{
@@ -2799,34 +2825,6 @@
  
  #ifndef SWIG
  class eStreamServer;
-#--- enigma2.org/lib/dvb/tstools.cpp
-#+++ enigma2/lib/dvb/tstools.cpp
-#@@ -170,7 +170,7 @@
-# 			const unsigned char* match = (const unsigned char*)memchr(packet+1, 0x47, 188-1);
-# 			if (match != NULL)
-# 			{
-#-				eDebug("[eDVBTSTools] getPTS resync %ld", match - packet);
-# 				offset += (match - packet) - 188;
-# 			}
-# 			else
-#@@ -413,7 +413,7 @@
-# 					continue;
-# 				}
-# 
-#-				eDebug("[eDVBTSTools] getOffset using: %lld:%lld -> %ld:%ld", l->first, u->first, l->second, u->second);
-#+				eDebug("[eDVBTSTools] getOffset using: %lld:%lld -> %ld:%ld", l->first, u->first, (long int)l->second, (long int)u->second);
-# 
-# 				int bitrate;
-# 
-#@@ -690,7 +690,7 @@
-# 				if ((l->second > off) || (u->second < off))
-# 				{
-# 					eDebug("[eDVBTSTools] takeSample ignoring sample %ld %jd %ld (%llu %llu %llu)",
-#-						l->second, (intmax_t)off, u->second, l->first, p, u->first);
-#+						(long int)l->second, (intmax_t)off, (long int)u->second, l->first, p, u->first);
-# 					return 1;
-# 				}
-# 			}
 --- enigma2.org/lib/dvb/volume.cpp
 +++ enigma2/lib/dvb/volume.cpp
 @@ -45,7 +45,9 @@
@@ -4756,9 +4754,9 @@
  gdiinclude_HEADERS = \
 --- enigma2.org/lib/gdi/picload.cpp
 +++ enigma2/lib/gdi/picload.cpp
-@@ -4,14 +4,20 @@
- 
+@@ -5,13 +5,19 @@
  #include <lib/base/cfile.h>
+ #include <lib/base/wrappers.h>
  #include <lib/gdi/picload.h>
 +#include <libmme_image/libmmeimage.h>
  
@@ -4771,13 +4769,12 @@
  #include <jpeglib.h>
  #include <gif_lib.h>
  }
- 
-+//#define HARDWARE_DECODING
 +
- extern const uint32_t crc32_table[256];
++//#define HARDWARE_DECODING
  
- DEFINE_REF(ePicLoad);
-@@ -19,9 +25,12 @@
+ #define NANOSVG_ALL_COLOR_KEYWORDS
+ #define NANOSVG_IMPLEMENTATION
+@@ -26,9 +32,12 @@
  static std::string getSize(const char* file)
  {
  	struct stat64 s;
@@ -4791,7 +4788,7 @@
  }
  
  static unsigned char *color_resize(unsigned char * orgin, int ox, int oy, int dx, int dy)
-@@ -33,7 +42,7 @@
+@@ -40,7 +49,7 @@
  		return orgin;
  	}
  	const int stride = 3 * dx;
@@ -4800,7 +4797,7 @@
  	for (int j = 0; j < dy; j++)
  	{
  		unsigned char* p = cr + (j * stride);
-@@ -528,12 +537,9 @@
+@@ -603,12 +612,9 @@
  	ColorMapObject *cmap;
  	int cmaps;
  	int extcode;
@@ -4816,7 +4813,7 @@
  	if (gft == NULL)
  		return;
  	do
-@@ -623,19 +629,11 @@
+@@ -698,19 +704,11 @@
  	}
  	while (rt != TERMINATE_RECORD_TYPE);
  
@@ -4838,7 +4835,7 @@
  }
  
  //---------------------------------------------------------------------------------------------
-@@ -700,9 +698,10 @@
+@@ -775,9 +773,10 @@
  
  void ePicLoad::decodePic()
  {
@@ -4850,8 +4847,8 @@
  	switch(m_filepara->id)
  	{
  		case F_PNG:	png_load(m_filepara, m_conf.background);
-@@ -714,6 +713,37 @@
- 		case F_GIF:	gif_load(m_filepara);
+@@ -791,6 +790,37 @@
+ 		case F_SVG:	svg_load(m_filepara);
  				break;
  	}
 +#else
@@ -4888,7 +4885,7 @@
  }
  
  void ePicLoad::decodeThumb()
-@@ -726,6 +756,7 @@
+@@ -803,6 +833,7 @@
  	std::string cachedir = "/.Thumbnails";
  
  	getExif(m_filepara->file, m_filepara->id, 1);
@@ -4896,7 +4893,7 @@
  	if (m_exif && m_exif->m_exifinfo->IsExif)
  	{
  		if (m_exif->m_exifinfo->Thumnailstate == 2)
-@@ -782,8 +813,53 @@
+@@ -859,8 +890,53 @@
  		}
  	}
  
@@ -4952,15 +4949,15 @@
  		case F_PNG:	png_load(m_filepara, m_conf.background, true);
  				break;
  		case F_JPEG:	m_filepara->pic_buffer = jpeg_load(m_filepara->file, &m_filepara->ox, &m_filepara->oy, m_filepara->max_x, m_filepara->max_y);
-@@ -792,6 +868,7 @@
+@@ -871,6 +947,7 @@
  				break;
- 		case F_GIF:	gif_load(m_filepara, true);
+ 		case F_SVG:	svg_load(m_filepara, true);
  				break;
 +		}
  	}
  	//eDebug("[ePicLoad] getThumb picture loaded %s", m_filepara->file);
  
-@@ -807,25 +884,32 @@
+@@ -886,25 +963,32 @@
  				::mkdir(cachedir.c_str(), 0755);
  
  			// Resize for Thumbnail
@@ -5009,7 +5006,7 @@
  		}
  	}
  }
-@@ -936,7 +1020,7 @@
+@@ -1015,7 +1099,7 @@
  {
  	ePyObject list;
  
@@ -5018,7 +5015,7 @@
  	getExif(filename, m_filepara ? m_filepara->id : -1);
  	if(m_exif && m_exif->m_exifinfo->IsExif)
  	{
-@@ -1095,11 +1179,11 @@
+@@ -1174,11 +1258,11 @@
  					*row_buffer++ = background;
  			}
  			int y;
@@ -5032,7 +5029,7 @@
  			for (y = yoff + scry; y < m_filepara->max_y; ++y)
  				memcpy(tmp_buffer + y * surface->stride, tmp_buffer,
  					m_filepara->max_x * surface->bypp);
-@@ -1124,7 +1208,7 @@
+@@ -1203,7 +1287,7 @@
  				for (x = xoff + scrx; x < m_filepara->max_x; ++x) // fill right side of first line
  					*row_buffer++ = background;
  			}
@@ -5041,7 +5038,7 @@
  			for (int y = yoff + 1; y < scry; ++y) { // copy from first line
  				memcpy(tmp_buffer + y*surface->stride,
  					tmp_buffer + yoff * surface->stride,
-@@ -1207,7 +1291,7 @@
+@@ -1286,7 +1370,7 @@
  	// Fill surface with image data, resize and correct for orientation on the fly
  	if (m_filepara->bits == 8)
  	{
@@ -5050,7 +5047,7 @@
  		for (int y = 0; y < scry; ++y) {
  			const unsigned char *irow, *irowy = origin + iyfac * (int)(y * yscale);
  			unsigned char *srow = tmp_buffer + surface->stride * y;
-@@ -1221,7 +1305,7 @@
+@@ -1300,7 +1384,7 @@
  	}
  	else // 24-bit images
  	{
@@ -8352,7 +8349,7 @@
  			self.createMenu()
 --- enigma2.org/lib/python/Screens/ScanSetup.py
 +++ enigma2/lib/python/Screens/ScanSetup.py
-@@ -1228,7 +1228,7 @@
+@@ -1246,7 +1246,7 @@
  		self.cable_toggle = {"single_transponder":"complete", "complete":"single_transponder"}
  		self.scan_typeterrestrial = ConfigSelection(default = defaultTerrSearchType, choices = [("single_transponder", _("User defined transponder")), ("predefined_transponder", _("Predefined transponder")), ("complete", _("Complete"))])
  		self.scan_type_atsc = ConfigSelection(default = defaultATSCSearchType, choices = [("single_transponder", _("User defined transponder")), ("predefined_transponder", _("Predefined transponder")), ("complete", _("Complete"))])
@@ -8688,7 +8685,7 @@
  };
 --- enigma2.org/lib/service/listboxservice.cpp
 +++ enigma2/lib/service/listboxservice.cpp
-@@ -192,14 +192,14 @@
+@@ -193,14 +193,14 @@
  	{
  		--i;
  		--index;
@@ -8705,7 +8702,7 @@
  			break;
  	}
  	return cursorResolve(index);
-@@ -215,7 +215,7 @@
+@@ -216,7 +216,7 @@
  	{
  		++i;
  		++index;
@@ -9099,7 +9096,31 @@
  		if os.path.isfile('/proc/stb/fp/temp_sensor_avs'):
 --- enigma2.org/lib/python/Screens/About.py
 +++ enigma2/lib/python/Screens/About.py
-@@ -48,7 +48,7 @@
+@@ -13,6 +13,7 @@
+ from Components.ProgressBar import ProgressBar
+ 
+ from Tools.StbHardware import getFPVersion
++from Tools.Directories import fileExists, pathExists
+ from enigma import eTimer, eLabel, eConsoleAppContainer, getDesktop, eGetEnigmaDebugLvl
+ 
+ from Components.GUIComponent import GUIComponent
+@@ -25,6 +26,15 @@
+ 		hddsplit = skin.parameters.get("AboutHddSplit", 0)
+ 
+ 		AboutText = _("Hardware: ") + about.getHardwareTypeString() + "\n"
++		if fileExists("/proc/stb/info/model_name"):
++			resellername = open("/proc/stb/info/model_name", "r").read().strip()
++			AboutText += _("Model name: ") + resellername + "\n"
++		if fileExists("/proc/stb/fp/resellerID"):
++			resellerid = open("/proc/stb/fp/resellerID", "r").read().strip()
++			AboutText += _("Reseller ID: ") + resellerid + "\n"
++		if fileExists("/proc/stb/info/adb_variant"):
++			adbvariant = open("/proc/stb/info/adb_variant", "r").read().strip().upper()
++			AboutText += _("ADB variant: ") + adbvariant + "\n"
+ 		cpu = about.getCPUInfoString()
+ 		AboutText += _("CPU: ") + cpu + "\n"
+ 		AboutText += _("Image: ") + about.getImageTypeString() + "\n"
+@@ -48,7 +58,7 @@
  
  		AboutText += _("DVB driver version: ") + about.getDriverInstalledDate() + "\n"
  
@@ -9108,6 +9129,20 @@
  		self["GStreamerVersion"] = StaticText(GStreamerVersion)
  
  		ffmpegVersion = _("Media player: ffmpeg, version ") + about.getffmpegVersionString()
+@@ -68,8 +78,11 @@
+ 		if fp_version is None:
+ 			fp_version = ""
+ 		else:
+-			fp_version = _("Frontprocessor version: %s") % fp_version
+-			AboutText += fp_version + "\n"
++			if fileExists("/proc/stb/fp/resellerID"):
++				fp_version = _("Loader version: %d.%02d") % (fp_version / 100, fp_version % 100)
++			else:
++				fp_version = _("Frontprocessor version: %d.%02d") % (fp_version / 100, fp_version % 100)
++		AboutText += fp_version + "\n"
+ 
+ 		self["FPVersion"] = StaticText(fp_version)
+ 
 --- enigma2.org/lib/python/Tools/KeyBindings.py
 +++ enigma2/lib/python/Tools/KeyBindings.py
 @@ -220,122 +220,509 @@
@@ -9773,7 +9808,7 @@
  	return keyDescriptions[idx].get(key)
 --- enigma2.org/lib/python/Screens/InputDeviceSetup.py
 +++ enigma2/lib/python/Screens/InputDeviceSetup.py
-@@ -299,62 +299,60 @@
+@@ -299,68 +299,60 @@
  	rcList = [
  			("0", _("Default")),
  			("4", _("DMM normal")),
@@ -9791,8 +9826,8 @@
 -			("20", _("Zgemma Star S/2S/H1/H2")),
 -			("21", _("Zgemma H.S/H.2S/H.2H/H5/H7(old model)")),
 -			("25", _("Zgemma H9(old model)/I55Plus")),
--			("27", _("HD60")),
--			("28", _("Zgemma H7(new model)/H9(new model)/H9COMBO/H9TWIN/H10"))
+-			("27", _("HD60/Multibox/Multibox SE")),
+-			("28", _("I55SE/H7(new model)/H9(new model)/H9COMBO/H9TWIN/H9SE/H9COMBOSE/H10"))
 +			("7", _("Fortis universal")),
 +			("8", _("Fortis standard")),
 +			("9", _("Fortis mini")),
@@ -9838,6 +9873,8 @@
 -			("hd1100", 16),
 -			("hd2400", 19),
 -			("hd60", 27),
+-			("multibox", 27),
+-			("multiboxse", 27),
 -			("et7000mini", 16),
 -			("et7000", 16),
 -			("et7500", 16),
@@ -9845,6 +9882,10 @@
 -			("sh1", 20),
 -			("h3", 21),
 -			("h5", 21),
+-			("h9se", 28),
+-			("h9combo", 28),
+-			("h9combose", 28),
+-			("i55se", 28),
 -			("h7", 28), # new model /old 21
 -			("h9", 28), # new model /old 25
 -			("h9combo", 28),
@@ -9888,7 +9929,7 @@
  	def __init__(self, session):
 --- enigma2.org/data/rc_models/rc_models.cfg
 +++ enigma2/data/rc_models/rc_models.cfg
-@@ -19,152 +19,36 @@
+@@ -19,153 +19,36 @@
  #
  # When no entry matches at all, 'default' will be used as remoteName
  #
@@ -9932,6 +9973,7 @@
 -#
 -# MaXitec
 -multibox        multibox
+-multiboxse	multibox
 -#
 -# Miraclebox
 -mbtwinplus      miraclebox
