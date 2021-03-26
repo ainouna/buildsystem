@@ -397,7 +397,7 @@ def opencfg(session, **kwargs):
 #		evfd.getInstance().vfd_write_string( "System options" )
 
 def Optionsmenu(menuid, **kwargs):
-	if menuid == "system":
+	if menuid == "expert":
 		return [(_("System options"), opencfg, "systemoptions_setting", 46)]
 	else:
 		return []
