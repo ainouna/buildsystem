@@ -124,7 +124,7 @@ tunertype=`cat /etc/enigma2/settings | grep systemoptions.tunertype | cut -d "="
 if [ ! $tunertype ]; then
    tunertype='t'
 fi
-insmod $MODDIR/spark7162-fe.ko paramDebug=99 UnionTunerType=$tunertype
+insmod $MODDIR/spark7162.ko UnionTunerType=$tunertype
 
 insmod $MODDIR/pti.ko waitMS=20 videoMem=4096
 if [ $? -ne 0 ]; then
