@@ -1,47 +1,109 @@
---- linux-sh4/arch/sh/kernel/setup.c.org
-+++ linux-sh4/arch/sh/kernel/setup.c
-@@ -389,6 +389,31 @@
+--- a/arch/sh/kernel/setup.c.org
++++ b/arch/sh/kernel/setup.c
+@@ -389,6 +389,94 @@
  #endif
  #endif
  
 +	{
-+		/* spider: remove bigphysarea allocation from command line */
-+		int i;
-+		int command_line_len = strlen(command_line);
++		int i, j;
++		int cmd_line_len = strlen(command_line);
++		int pos = cmd_line_len;
++		unsigned char org_cmd_line[] = "console=ttyAS0,115200 rw root=/dev/mtdblock6 rootfstype=jffs2";
++		unsigned char org_cmd_line2[] = "console=ttyAS1,115200 rw root=/dev/mtdblock6 rootfstype=jffs2";
++		unsigned char new_cmd_line[] = "console=ttyAS0,115200 rw root=/dev/mtdblock6 rootfstype=jffs2 init=/bin/devinit coprocessor_mem=4m@0x40000000,4m@0x40400000 printk=1 console_loglevel=7 stmmaceth=msglvl:0,phyaddr:2,watchdog:5000 nwhwconf=device:eth0,hwaddr:";
++		unsigned char final_cmd_line[512] = { '\0' };
++		unsigned char mac[] = "12:34:56:78:9A:BC";
++		unsigned char stb_id_name[] = " STB_ID=";
++		unsigned char stb_id[] = "12:34:56:78:9A:BC:EF";
++		int org_cmd_line_len = strlen(org_cmd_line);
 +
-+		for(i = 0; i < (command_line_len - 11); i++)
++		/* spider: remove bigphysarea allocation from command line */
++		for (i = 0; i < (cmd_line_len - 11); i++)
 +		{
-+			if(!strncmp(command_line + i + 1, "bigphysarea", 11))
++			if (!strncmp(command_line + i + 1, "bigphysarea", 11))
 +			{
 +				// search for next pos
-+				int k;
-+				int pos = command_line_len;
-+				for(k = i + 1; k < command_line_len; k++)
-+					if (command_line[k] == ' ')
++				for (j = i + 1; j < cmd_line_len; j++)
++				{
++					if (command_line[j] == ' ')
 +					{
-+						pos = k;
++						pos = j;
 +						break;
 +					}
-+				memmove(command_line + i, command_line + pos, command_line_len - pos);
-+				memset(&command_line[command_line_len - (pos - i)], '\0', pos - i);
++				}
++				memmove(command_line + i, command_line + pos, cmd_line_len - pos);
++				memset(&command_line[cmd_line_len - (pos - i)], '\0', pos - i);
 +				break;
 +			}
 +		}
++		// look for MAC (detect either 'ethaddr' or 'hwaddr')
++		cmd_line_len = strlen(command_line);  // get new length
++		for (i = 0; i < (cmd_line_len - 7); i++)
++		{
++			if (!strncmp(command_line + i, "ethaddr", 7))
++			{
++				strlcpy(mac, command_line + i + 8, sizeof(mac));
++				break;
++			}
++			if (!strncmp(command_line + i, "hwaddr", 6))
++			{
++				strlcpy(mac, command_line + i + 7, sizeof(mac));
++				break;
++			}
++		}
++		// append MAC
++		strlcpy(final_cmd_line, new_cmd_line, sizeof(new_cmd_line));
++		strlcat(final_cmd_line, mac, sizeof(mac));
++
++#if 1
++		// look for STB_ID=
++		for (i = 0; i < (cmd_line_len - 7); i++)
++		{
++			if (!strncmp(command_line + i, "STB_ID=", 6))
++			{
++				strlcpy(stb_id, command_line + i + 7, sizeof(stb_id));
++				printk("STB_ID: found: [%s] (length = %d\n", stb_id, strlen(stb_id));
++				break;
++			}
++		}
++		// append STB_ID
++		strlcat(final_cmd_line, stb_id_name, sizeof(stb_id_name));
++		strlcat(final_cmd_line, stb_id, sizeof(stb_id));
++		printk("\nLength: %d (%d), Final cmd_line[%s]\n\n", sizeof(new_cmd_line) + sizeof(mac) + sizeof(stb_id_name) + sizeof(stb_id) - 4, strlen(final_cmd_line), final_cmd_line);
++#endif
++#if 1
++		/* Overwrite the original command line under the following conditions:
++		 *
++		 * 1. The test string with console=ttyAS0,115200 is shorter than the
++		 *    original commandline;
++		 * 2. The original command line starts with either the test string
++		 *    with console=ttyAS0,115200 or the test string with
++		 *    console=ttyAS1,115200.
++		 * The net result of all this is that the STB_ID and MAC are retained,
++		 * the console tty is always ttyAS0 and the file system for the root
++		 * is UBI.
++		 */
++		if (cmd_line_len >= org_cmd_line_len
++		&& ((!strncmp(command_line, org_cmd_line, org_cmd_line_len))
++		 || (!strncmp(command_line, org_cmd_line2, org_cmd_line_len))))
++		{
++			strlcpy(command_line, final_cmd_line, strlen(final_cmd_line) + 1);
++		}
++#endif
 +	}
 +
  	/* Save unparsed command line copy for /proc/cmdline */
  	memcpy(boot_command_line, command_line, COMMAND_LINE_SIZE);
  	*cmdline_p = command_line;
-@@ -555,6 +580,7 @@
  	seq_printf(m, "cpu family\t: %s\n", init_utsname()->machine);
  	seq_printf(m, "cpu variant\t: %s\n", get_cpu_variant(c));
  	seq_printf(m, "cpu type\t: %s\n", get_cpu_subtype(c));
 +	seq_printf(m, "cpu MHz\t\t: 540\n");
  	if (c->cut_major == -1)
  		seq_printf(m, "cut\t\t: unknown\n");
- 	else if (c->cut_minor == -1)
---- linux-sh4/arch/sh/boards/mach-hdk7105/setup.c.org
-+++ linux-sh4/arch/sh/boards/mach-hdk7105/setup.c
+ 	else if (c->cut_minor == -1)@@ -555,6 +649,7 @@
+--- a/arch/sh/boards/mach-hdk7105/setup.c.org
++++ b/arch/sh/boards/mach-hdk7105/setup.c
 @@ -29,10 +29,44 @@
  #include <linux/mtd/physmap.h>
  #include <linux/mtd/nand.h>
@@ -354,8 +416,8 @@
  
  	stx7105_configure_nand(&(struct stm_nand_config) {
  			.driver = stm_nand_flex,
---- linux-sh4/drivers/mtd/devices/m25p80.c.org
-+++ linux-sh4/drivers/mtd/devices/m25p80.c
+--- a/drivers/mtd/devices/m25p80.c.org
++++ b/drivers/mtd/devices/m25p80.c
 @@ -28,6 +28,14 @@
  
  #include <linux/spi/spi.h>
@@ -619,8 +681,8 @@
  	flash->spi = spi;
  	mutex_init(&flash->lock);
  	dev_set_drvdata(&spi->dev, flash);
---- linux-sh4/drivers/mtd/nand/nand_base.c.org
-+++ linux-sh4/drivers/mtd/nand/nand_base.c
+--- a/drivers/mtd/nand/nand_base.c.org
++++ b/drivers/mtd/nand/nand_base.c
 @@ -1386,20 +1386,15 @@
  
  			/* Now read the page into the buffer */
@@ -656,8 +718,8 @@
  		return ERR_PTR(-EINVAL);
  	}
  
---- linux-sh4/drivers/mtd/nand/nand_ecc.c.org
-+++ linux-sh4/drivers/mtd/nand/nand_ecc.c
+--- a/drivers/mtd/nand/nand_ecc.c.org
++++ b/drivers/mtd/nand/nand_ecc.c
 @@ -492,12 +492,12 @@
  	}
  	/* count nr of bits; use table lookup, faster than calculating it */
@@ -674,8 +736,8 @@
  	return -1;
  }
  EXPORT_SYMBOL(__nand_correct_data);
---- linux-sh4/drivers/mtd/nand/stm_nand_flex.c.org
-+++ linux-sh4/drivers/mtd/nand/stm_nand_flex.c
+--- a/drivers/mtd/nand/stm_nand_flex.c.org
++++ b/drivers/mtd/nand/stm_nand_flex.c
 @@ -1449,7 +1449,16 @@
  	platform_driver_unregister(&stm_nand_flex_driver);
  }
@@ -693,8 +755,8 @@
  module_exit(stm_nand_flex_exit);
  
  MODULE_LICENSE("GPL");
---- linux-sh4/drivers/net/phy/phy_device.c.org
-+++ linux-sh4/drivers/net/phy/phy_device.c
+--- a/drivers/net/phy/phy_device.c.org
++++ b/drivers/net/phy/phy_device.c
 @@ -1104,7 +1104,7 @@
  		return retval;
  	}
@@ -704,8 +766,8 @@
  
  	return 0;
  }
---- linux-sh4/drivers/net/stmmac/stmmac_mdio.c.org
-+++ linux-sh4/drivers/net/stmmac/stmmac_mdio.c
+--- a/drivers/net/stmmac/stmmac_mdio.c.org
++++ b/drivers/net/stmmac/stmmac_mdio.c
 @@ -170,6 +170,7 @@
  	priv->mii = new_bus;
  
@@ -741,8 +803,8 @@
  			switch (phydev->irq) {
  			case PHY_POLL:
  				irq_str = "POLL";
---- linux-sh4/drivers/spi/spi_stm.c.org
-+++ linux-sh4/drivers/spi/spi_stm.c
+--- a/drivers/spi/spi_stm.c.org
++++ b/drivers/spi/spi_stm.c
 @@ -338,7 +338,7 @@
  
  }
@@ -752,8 +814,8 @@
  {
  	struct stm_plat_ssc_data *plat_data = pdev->dev.platform_data;
  	struct spi_master *master;
---- linux-sh4/drivers/stm/gpio.c.org
-+++ linux-sh4/drivers/stm/gpio.c
+--- a/drivers/stm/gpio.c.org
++++ b/drivers/stm/gpio.c
 @@ -28,12 +28,17 @@
  #include <linux/stm/pad.h>
  #include <linux/stm/pio.h>
@@ -954,8 +1016,8 @@
  	ret = platform_driver_register(&stm_gpio_driver);
  	if (ret)
  		return ret;
---- linux-sh4/drivers/stm/miphy365x.c.org
-+++ linux-sh4/drivers/stm/miphy365x.c
+--- a/drivers/stm/miphy365x.c.org
++++ b/drivers/stm/miphy365x.c
 @@ -99,6 +99,7 @@
  
  static void miphy365x_tap_start_port0(const struct stm_miphy_device *miphy_dev)
@@ -1220,8 +1282,8 @@
  	case 2:
  		pad_config = stm_pad_config_alloc(3, 2);
  
---- linux-sh4/include/linux/stm/stx7105.h.org
-+++ linux-sh4/include/linux/stm/stx7105.h
+--- a/include/linux/stm/stx7105.h.org
++++ b/include/linux/stm/stx7105.h
 @@ -113,6 +113,7 @@
  };
  /* SSC configure functions return I2C/SPI bus number */
@@ -1230,8 +1292,8 @@
  int stx7105_configure_ssc_spi(int ssc, struct stx7105_ssc_config *config);
  
  
---- linux-sh4/arch/sh/drivers/pci/pci.c.org
-+++ linux-sh4/arch/sh/drivers/pci/pci.c
+--- a/arch/sh/drivers/pci/pci.c.org
++++ b/arch/sh/drivers/pci/pci.c
 @@ -86,7 +86,7 @@
  	for (hose = hose_head; hose; hose = hose->next)
  		pcibios_scanbus(hose);
@@ -1241,8 +1303,8 @@
  
  	dma_debug_add_bus(&pci_bus_type);
  
---- linux-sh4/arch/sh/include/asm/pci.h.org
-+++ linux-sh4/arch/sh/include/asm/pci.h
+--- a/arch/sh/include/asm/pci.h.org
++++ b/arch/sh/include/asm/pci.h
 @@ -128,7 +128,7 @@
  #endif
  
@@ -1252,8 +1314,8 @@
  
  extern void pcibios_resource_to_bus(struct pci_dev *dev,
  	struct pci_bus_region *region, struct resource *res);
---- linux-sh4/drivers/stm/stx7105_pci.c.org
-+++ linux-sh4/drivers/stm/stx7105_pci.c
+--- a/drivers/stm/stx7105_pci.c.org
++++ b/drivers/stm/stx7105_pci.c
 @@ -24,6 +24,7 @@
  /* You may pass one of the PCI_PIN_* constants to use dedicated pin or
   * just pass interrupt number generated with gpio_to_irq() when PIO pads
