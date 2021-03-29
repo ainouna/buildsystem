@@ -1009,7 +1009,7 @@ $(D)/libconfig: $(D)/bootstrap $(ARCHIVE)/$(LIBCONFIG_SOURCE)
 #
 # libcurl
 #7
-LIBCURL_VER = 7.73.0
+LIBCURL_VER = 7.75.0
 LIBCURL_SOURCE = curl-$(LIBCURL_VER).tar.bz2
 LIBCURL_PATCH = libcurl-$(LIBCURL_VER).patch
 
@@ -1826,7 +1826,7 @@ $(D)/libroxml: $(D)/bootstrap $(ARCHIVE)/$(LIBROXML_SOURCE)
 #
 # pugixml
 #
-PUGIXML_VER = 1.10
+PUGIXML_VER = 1.11
 PUGIXML_SOURCE = pugixml-$(PUGIXML_VER).tar.gz
 PUGIXML_PATCH = pugixml-$(PUGIXML_VER)-config.patch
 
@@ -2259,7 +2259,7 @@ $(D)/lzo: $(D)/bootstrap $(ARCHIVE)/$(LZO_SOURCE)
 #
 # minidlna
 #
-MINIDLNA_VER = 1.2.1
+MINIDLNA_VER = 1.3.0
 MINIDLNA_SOURCE = minidlna-$(MINIDLNA_VER).tar.gz
 MINIDLNA_PATCH = minidlna-$(MINIDLNA_VER).patch
 
@@ -2748,3 +2748,4 @@ $(D)/libevent: $(D)/bootstrap $(D)/openssl
 	$(REWRITE_LIBTOOL)/libevent_pthreads.la
 	$(REMOVE)/libevent-$(LIBEVENT_VER)
 	$(TOUCH)
+
