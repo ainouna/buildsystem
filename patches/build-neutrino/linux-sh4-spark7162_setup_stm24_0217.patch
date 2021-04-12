@@ -1,6 +1,39 @@
-diff --git a/arch/sh/boards/mach-hdk7105/setup.c b/arch/sh/boards/mach-hdk7105/setup.c
-index 78e905e..5d19d2a 100644
---- a/arch/sh/boards/mach-hdk7105/setup.c
+--- a/arch/sh/kernel/setup.c.org
++++ b/arch/sh/kernel/setup.c
+@@ -389,6 +389,32 @@
+ #endif
+ #endif
+ 
++	{
++		int i, j;
++		int cmd_line_len = strlen(command_line);
++		int pos = cmd_line_len;
++
++		/* spider: remove bigphysarea allocation from command line */
++		for (i = 0; i < (cmd_line_len - 11); i++)
++		{
++			if (!strncmp(command_line + i + 1, "bigphysarea", 11))
++			{
++				// search for next pos
++				for (j = i + 1; j < cmd_line_len; j++)
++				{
++					if (command_line[j] == ' ')
++					{
++						pos = j;
++						break;
++					}
++				}
++				memmove(command_line + i, command_line + pos, cmd_line_len - pos);
++				memset(&command_line[cmd_line_len - (pos - i)], '\0', pos - i);
++				break;
++			}
++		}
++	}
++
+ 	/* Save unparsed command line copy for /proc/cmdline */
+ 	memcpy(boot_command_line, command_line, COMMAND_LINE_SIZE);
+ 	*cmdline_p = command_line;
+--- a/arch/sh/boards/mach-hdk7105/setup.c.org
 +++ b/arch/sh/boards/mach-hdk7105/setup.c
 @@ -29,10 +29,44 @@
  #include <linux/mtd/physmap.h>
@@ -63,7 +96,7 @@ index 78e905e..5d19d2a 100644
  
  
  
-@@ -70,8 +105,11 @@ static void __init hdk7105_setup(char **cmdline_p)
+@@ -70,8 +105,11 @@
  	stx7105_configure_asc(3, &(struct stx7105_asc_config) {
  			.hw_flow_control = 1,
  			.is_console = 0, });
@@ -75,7 +108,7 @@ index 78e905e..5d19d2a 100644
  /* PCI configuration */
  static struct stm_plat_pci_config hdk7105_pci_config = {
  	.pci_irq = {
-@@ -98,6 +136,7 @@ int pcibios_map_platform_irq(struct pci_dev *dev, u8 slot, u8 pin)
+@@ -98,6 +136,7 @@
          /* We can use the standard function on this board */
  	return stx7105_pcibios_map_platform_irq(&hdk7105_pci_config, pin);
  }
@@ -83,7 +116,7 @@ index 78e905e..5d19d2a 100644
  
  static struct platform_device hdk7105_leds = {
  	.name = "leds-gpio",
-@@ -162,7 +201,7 @@ static struct platform_device hdk7105_front_panel = {
+@@ -162,7 +201,7 @@
  static int hdk7105_phy_reset(void *bus)
  {
  	gpio_set_value(HDK7105_PIO_PHY_RESET, 0);
@@ -92,20 +125,20 @@ index 78e905e..5d19d2a 100644
  	gpio_set_value(HDK7105_PIO_PHY_RESET, 1);
  
  	return 1;
-@@ -212,8 +251,11 @@ static struct platform_device hdk7105_nor_flash = {
+@@ -212,8 +251,11 @@
  struct stm_nand_bank_data hdk7105_nand_flash = {
  	.csn		= 1,
  	.options	= NAND_NO_AUTOINCR | NAND_USE_FLASH_BBT,
 -	.nr_partitions	= 2,
 +//	.nr_partitions	= 2,
-+	.nr_partitions	= 8,
++	.nr_partitions	= 7,
  	.partitions	= (struct mtd_partition []) {
 +
 +#if 0
  		{
  			.name	= "NAND Flash 1",
  			.offset	= 0,
-@@ -223,22 +265,77 @@ struct stm_nand_bank_data hdk7105_nand_flash = {
+@@ -223,22 +265,71 @@
  			.offset = MTDPART_OFS_NXTBLK,
  			.size	= MTDPART_SIZ_FULL
  		},
@@ -113,48 +146,42 @@ index 78e905e..5d19d2a 100644
 +		{
 +			.name	= "uboot",
 +			.offset	= 0,
-+			.size 	= 0x00100000 //1M  //uboot boot mode
++			.size 	= 0x00100000  // 1 Mbyte, uboot boot code
 +		},
 +		{
 +			.name	= "Spark kernel",
 +			.offset	= 0x00100000,
-+			.size 	= 0x00a00000 //10M
++			.size 	= 0x00a00000  // 10 Mbyte
 +		},
 +		{
 +			.name   = "Reserve0",
 +			.offset = 0x00b00000,
-+			.size   = 0x00700000, //7M
++			.size   = 0x00700000,  // 7 Mbyte
 +		},
 +		{
 +			.name   = "Reserve1",
 +			.offset = 0x01200000,
-+			.size   = 0x00200000, //2M
++			.size   = 0x00200000,  // 2 Mbyte
 +		},
 +		{
 +			.name	= "Spark Userfs",
 +			.offset	= 0x01400000,
-+			.size	= 0x16c00000  //364M
++			.size	= 0x16c00000  // 364 Mbyte
 +		},
 +		{
-+			.name	= "E2 kernel",
++			.name	= "Neutrino kernel",
 +			.offset	= 0x18000000,
-+			.size	= 0x00800000 //8M
++			.size	= 0x00800000  // 8 Mbyte
 +		},
 +		{
-+			.name	= "E2 Userfs",
++			.name	= "Neutrino Userfs",
 +			.offset	= 0x18800000,
-+			.size	= 0x04000000 //64M
-+		},
-+		{
-+			.name	= "NAND DATA",
-+			.offset	= 0x1C800000,
-+			.size	= 0x03700000 //55M	cc changed reserved 1024KB for u-boot bbt
++			.size	= 0x07700000  // 119 Mbyte,	cc changed; reserved 1024KB for u-boot bbt
 +		},
  	},
  	.timing_spec	= &NAND_TSPEC_HYNIX_HY27UH08AG5B,
  };
  
-+
  /* Serial Flash */
  static struct spi_board_info hdk7105_serial_flash = {
  	.modalias       = "m25p80",
@@ -184,7 +211,7 @@ index 78e905e..5d19d2a 100644
  			{
  				.name = "Serial Flash 1",
  				.size = 0x00080000,
-@@ -248,16 +345,43 @@ static struct spi_board_info hdk7105_serial_flash = {
+@@ -248,16 +340,43 @@
  				.size = MTDPART_SIZ_FULL,
  				.offset = MTDPART_OFS_NXTBLK,
  			},
@@ -220,17 +247,17 @@ index 78e905e..5d19d2a 100644
 +
 +EXPORT_SYMBOL(hdk7105_configure_ssc_spi);
 +
-+void hdk7105_spi_register(void)
++void __init hdk7105_spi_register(void)
 +{
 +	spi_register_board_info(&hdk7105_serial_flash, 1);
 +}
 +
-+EXPORT_SYMBOL(hdk7105_spi_register);
++//EXPORT_SYMBOL(hdk7105_spi_register);
 +
  static int __init hdk7105_device_init(void)
  {
  	struct sysconf_field *sc;
-@@ -288,7 +412,11 @@ static int __init hdk7105_device_init(void)
+@@ -288,7 +409,11 @@
  		/* NOR mapped to EMIB, with physical offset of 0x06000000! */
  		nor_bank_base = emi_bank_base(1);
  		nor_bank_size = emi_bank_base(2) - nor_bank_base;
@@ -242,7 +269,7 @@ index 78e905e..5d19d2a 100644
  		break;
  	default:
  		BUG();
-@@ -303,7 +431,7 @@ static int __init hdk7105_device_init(void)
+@@ -303,7 +428,7 @@
  	/*     - update resource parameters */
  	hdk7105_nor_flash.resource[0].start += nor_bank_base;
  	hdk7105_nor_flash.resource[0].end += nor_bank_base;
@@ -251,7 +278,7 @@ index 78e905e..5d19d2a 100644
  	/* Setup the PCI_SERR# PIO */
  	if (gpio_request(HDK7105_PIO_PCI_SERR, "PCI_SERR#") == 0) {
  		gpio_direction_input(HDK7105_PIO_PCI_SERR);
-@@ -314,12 +442,15 @@ static int __init hdk7105_device_init(void)
+@@ -314,12 +439,15 @@
  		printk(KERN_WARNING "hdk7105: Failed to claim PCI SERR PIO!\n");
  	}
  	stx7105_configure_pci(&hdk7105_pci_config);
@@ -267,7 +294,7 @@ index 78e905e..5d19d2a 100644
  
  	/* Set SPI Boot pads as inputs to avoid contention with SSC1 */
  	gpio_request(stm_gpio(15, 0), "SPI Boot CLK");
-@@ -345,10 +476,15 @@ static int __init hdk7105_device_init(void)
+@@ -345,10 +473,15 @@
  			.routing.ssc0.sclk = stx7105_ssc0_sclk_pio2_2,
  			.routing.ssc0.mtsr = stx7105_ssc0_mtsr_pio2_3, });
  	/* SPI - SerialFLASH */
@@ -283,7 +310,7 @@ index 78e905e..5d19d2a 100644
  	/* I2C_xxxC - JN1 (NIM), JN3, UT1 (CI chip), US2 (EEPROM) */
  	stx7105_configure_ssc_i2c(2, &(struct stx7105_ssc_config) {
  			.routing.ssc2.sclk = stx7105_ssc2_sclk_pio3_4,
-@@ -361,13 +497,13 @@ static int __init hdk7105_device_init(void)
+@@ -361,13 +494,13 @@
  	stx7105_configure_usb(0, &(struct stx7105_usb_config) {
  			.ovrcur_mode = stx7105_usb_ovrcur_active_low,
  			.pwr_enabled = 1,
@@ -301,7 +328,7 @@ index 78e905e..5d19d2a 100644
  
  	gpio_request(HDK7105_PIO_PHY_RESET, "eth_phy_reset");
  	gpio_direction_output(HDK7105_PIO_PHY_RESET, 1);
-@@ -397,8 +533,8 @@ static int __init hdk7105_device_init(void)
+@@ -397,8 +530,8 @@
  	 * since NAND MTD has no concept of write-protect, we permanently
  	 * disable WP.
  	 */
@@ -312,53 +339,8 @@ index 78e905e..5d19d2a 100644
  
  	stx7105_configure_nand(&(struct stm_nand_config) {
  			.driver = stm_nand_flex,
---- a/arch/sh/kernel/setup.c	2014-05-28 20:17:26.866809000 +0200
-+++ b/arch/sh/kernel/setup.c	2014-05-28 20:23:17.026798000 +0200
-@@ -389,6 +389,30 @@
- #endif
- #endif
- 
-+	{
-+		/* spider: remove bigphysarea allocation from command line */
-+		int i;
-+		int command_line_len = strlen(command_line);
-+
-+		for(i = 0; i < (command_line_len-11); i++)
-+		{
-+			if(!strncmp(command_line + i + 1, "bigphysarea", 11))
-+			{
-+				// search for next pos
-+				int k;
-+				int pos=command_line_len;
-+				for(k=i+1; k<command_line_len; k++)
-+					if(command_line[k]==' ') {
-+						pos=k;
-+						break;
-+					}
-+				memmove(command_line+i, command_line+pos, command_line_len-pos);
-+				memset(&command_line[command_line_len-(pos-i)], '\0', pos-i);
-+				break;
-+			}
-+		}
-+	}
-+
- 	/* Save unparsed command line copy for /proc/cmdline */
- 	memcpy(boot_command_line, command_line, COMMAND_LINE_SIZE);
- 	*cmdline_p = command_line;
---- a/drivers/i2c/i2c-boardinfo.c	2009-12-03 04:51:21.000000000 +0100
-+++ b/drivers/i2c/i2c-boardinfo.c	2014-05-28 20:23:17.046798000 +0200
-@@ -58,8 +58,7 @@
-  * The board info passed can safely be __initdata, but be careful of embedded
-  * pointers (for platform_data, functions, etc) since that won't be copied.
-  */
--int __init
--i2c_register_board_info(int busnum,
-+int i2c_register_board_info(int busnum,
- 	struct i2c_board_info const *info, unsigned len)
- {
- 	int status;
---- a/drivers/mtd/devices/m25p80.c	2014-05-19 22:57:34.000000000 +0200
-+++ b/drivers/mtd/devices/m25p80.c	2014-05-28 20:23:17.026798000 +0200
+--- a/drivers/mtd/devices/m25p80.c.org
++++ b/drivers/mtd/devices/m25p80.c
 @@ -28,6 +28,14 @@
  
  #include <linux/spi/spi.h>
@@ -622,9 +604,9 @@ index 78e905e..5d19d2a 100644
  	flash->spi = spi;
  	mutex_init(&flash->lock);
  	dev_set_drvdata(&spi->dev, flash);
---- a/drivers/mtd/nand/nand_base.c	2014-05-19 22:57:34.000000000 +0200
-+++ b/drivers/mtd/nand/nand_base.c	2014-05-28 20:23:17.026798000 +0200
-@@ -1386,19 +1386,14 @@
+--- a/drivers/mtd/nand/nand_base.c.org
++++ b/drivers/mtd/nand/nand_base.c
+@@ -1386,20 +1386,15 @@
  
  			/* Now read the page into the buffer */
  			if (unlikely(ops->mode == MTD_OOB_RAW))
@@ -643,9 +625,11 @@ index 78e905e..5d19d2a 100644
  			/* Transfer not aligned data */
  			if (!aligned) {
 -				if (!NAND_SUBPAGE_READ(chip) && !oob)
- 					chip->pagebuf = realpage;
+-					chip->pagebuf = realpage;
++				chip->pagebuf = realpage;
  				memcpy(buf, chip->buffers->databuf + col, bytes);
  			}
+ 
 @@ -2911,8 +2906,8 @@
  	/* Decode ID string */
  	if (nand_decode_id(mtd, chip, type, id_data, 8) != 0) {
@@ -657,8 +641,8 @@ index 78e905e..5d19d2a 100644
  		return ERR_PTR(-EINVAL);
  	}
  
---- a/drivers/mtd/nand/nand_ecc.c	2014-05-19 22:57:34.000000000 +0200
-+++ b/drivers/mtd/nand/nand_ecc.c	2014-05-28 20:23:17.030798000 +0200
+--- a/drivers/mtd/nand/nand_ecc.c.org
++++ b/drivers/mtd/nand/nand_ecc.c
 @@ -492,12 +492,12 @@
  	}
  	/* count nr of bits; use table lookup, faster than calculating it */
@@ -675,8 +659,8 @@ index 78e905e..5d19d2a 100644
  	return -1;
  }
  EXPORT_SYMBOL(__nand_correct_data);
---- a/drivers/mtd/nand/stm_nand_flex.c	2014-05-19 22:57:34.000000000 +0200
-+++ b/drivers/mtd/nand/stm_nand_flex.c	2014-05-28 20:23:17.038798000 +0200
+--- a/drivers/mtd/nand/stm_nand_flex.c.org
++++ b/drivers/mtd/nand/stm_nand_flex.c
 @@ -1449,7 +1449,16 @@
  	platform_driver_unregister(&stm_nand_flex_driver);
  }
@@ -694,8 +678,8 @@ index 78e905e..5d19d2a 100644
  module_exit(stm_nand_flex_exit);
  
  MODULE_LICENSE("GPL");
---- a/drivers/net/phy/phy_device.c	2014-05-19 22:57:34.000000000 +0200
-+++ b/drivers/net/phy/phy_device.c	2014-05-28 20:23:17.038798000 +0200
+--- a/drivers/net/phy/phy_device.c.org
++++ b/drivers/net/phy/phy_device.c
 @@ -1104,7 +1104,7 @@
  		return retval;
  	}
@@ -705,8 +689,8 @@ index 78e905e..5d19d2a 100644
  
  	return 0;
  }
---- a/drivers/net/stmmac/stmmac_mdio.c	2014-05-19 22:57:34.000000000 +0200
-+++ b/drivers/net/stmmac/stmmac_mdio.c	2014-05-28 20:23:17.042798000 +0200
+--- a/drivers/net/stmmac/stmmac_mdio.c.org
++++ b/drivers/net/stmmac/stmmac_mdio.c
 @@ -170,6 +170,7 @@
  	priv->mii = new_bus;
  
@@ -742,8 +726,8 @@ index 78e905e..5d19d2a 100644
  			switch (phydev->irq) {
  			case PHY_POLL:
  				irq_str = "POLL";
---- a/drivers/spi/spi.c	2009-12-03 04:51:21.000000000 +0100
-+++ b/drivers/spi/spi.c	2014-05-28 20:23:17.050798000 +0200
+--- a/drivers/spi/spi.c.org
++++ b/drivers/spi/spi.c
 @@ -381,8 +381,7 @@
   * The board info passed can safely be __initdata ... but be careful of
   * any embedded pointers (platform_data, etc), they're copied as-is.
@@ -754,8 +738,8 @@ index 78e905e..5d19d2a 100644
  {
  	struct boardinfo	*bi;
  
---- a/drivers/spi/spi_stm.c	2014-05-19 22:57:35.000000000 +0200
-+++ b/drivers/spi/spi_stm.c	2014-05-28 20:23:17.042798000 +0200
+--- a/drivers/spi/spi_stm.c.org
++++ b/drivers/spi/spi_stm.c
 @@ -338,7 +338,7 @@
  
  }
@@ -765,8 +749,8 @@ index 78e905e..5d19d2a 100644
  {
  	struct stm_plat_ssc_data *plat_data = pdev->dev.platform_data;
  	struct spi_master *master;
---- a/drivers/stm/gpio.c	2014-05-19 22:57:35.000000000 +0200
-+++ b/drivers/stm/gpio.c	2014-05-28 20:23:17.042798000 +0200
+--- a/drivers/stm/gpio.c.org
++++ b/drivers/stm/gpio.c
 @@ -28,12 +28,17 @@
  #include <linux/stm/pad.h>
  #include <linux/stm/pio.h>
@@ -785,7 +769,15 @@ index 78e905e..5d19d2a 100644
  	void (*func)(struct stpio_pin *pin, void *dev);
  	void* dev;
  	unsigned short port_no, pin_no;
-@@ -49,9 +54,9 @@
+@@ -42,16 +47,16 @@
+ 
+ struct stm_gpio_pin {
+ 	unsigned char flags;
+-#define PIN_FAKE_EDGE		4
++#define PIN_FAKE_EDGE			4
+ #define PIN_IGNORE_EDGE_FLAG	2
+ #define PIN_IGNORE_EDGE_VAL	1
+ #define PIN_IGNORE_RISING_EDGE	(PIN_IGNORE_EDGE_FLAG | 0)
  #define PIN_IGNORE_FALLING_EDGE	(PIN_IGNORE_EDGE_FLAG | 1)
  #define PIN_IGNORE_EDGE_MASK	(PIN_IGNORE_EDGE_FLAG | PIN_IGNORE_EDGE_VAL)
  
@@ -858,7 +850,7 @@ index 78e905e..5d19d2a 100644
  	stm_pad_release_gpio(stm_gpio(pin->port_no, pin->pin_no));
  }
  EXPORT_SYMBOL(stpio_free_pin);
-@@ -625,6 +644,87 @@
+@@ -625,6 +644,88 @@
  }
  EXPORT_SYMBOL(stpio_set_irq_type);
  
@@ -904,6 +896,7 @@ index 78e905e..5d19d2a 100644
 +	int num_ports = stm_gpio_num / STM_GPIO_PINS_PER_PORT;
 +	struct stm_gpio_port *port;
 +	struct stm_gpio_pin *pin;
++	const char *name;
 +
 +	len = sprintf(page, "  port      name          direction\n");
 +	for (port_no = 0; port_no < num_ports; port_no++)
@@ -916,7 +909,7 @@ index 78e905e..5d19d2a 100644
 +			pin = &port->pins[pin_no];
 +			if(!pin) continue;
 +
-+			char *name = pin->stpio.pin_name ? pin->stpio.pin_name : "";
++			name = pin->stpio.pin_name ? pin->stpio.pin_name : "";
 +			len += sprintf(page + len,
 +					"PIO %d.%d [%-10s] [%s] [%s]\n",
 +					port_no, pin_no, name,
@@ -946,7 +939,7 @@ index 78e905e..5d19d2a 100644
  #endif /* CONFIG_STPIO */
  
  
-@@ -1032,6 +1132,12 @@
+@@ -1032,6 +1133,12 @@
  {
  	int ret;
  
@@ -959,8 +952,8 @@ index 78e905e..5d19d2a 100644
  	ret = platform_driver_register(&stm_gpio_driver);
  	if (ret)
  		return ret;
---- a/drivers/stm/miphy365x.c	2014-05-19 22:57:35.000000000 +0200
-+++ b/drivers/stm/miphy365x.c	2014-05-28 20:23:17.042798000 +0200
+--- a/drivers/stm/miphy365x.c.org
++++ b/drivers/stm/miphy365x.c
 @@ -99,6 +99,7 @@
  
  static void miphy365x_tap_start_port0(const struct stm_miphy_device *miphy_dev)
@@ -986,8 +979,8 @@ index 78e905e..5d19d2a 100644
  
  	/* Enable macro1 to use rx_lspd  & tx_lspd from link interface */
  	reg_write(0, 0x10, 0x00);
---- a/drivers/stm/pad.c	2014-05-19 22:57:35.000000000 +0200
-+++ b/drivers/stm/pad.c	2014-05-28 20:23:17.050798000 +0200
+--- a/drivers/stm/pad.c.org
++++ b/drivers/stm/pad.c
 @@ -790,7 +790,7 @@
  	struct stm_pad_config config;
  };
@@ -1015,8 +1008,8 @@ index 78e905e..5d19d2a 100644
  		unsigned gpio, enum stm_pad_gpio_direction direction,
  		int out_value, int function, const char *name)
  {
---- a/drivers/stm/stx7105_comms.c	2014-05-19 22:57:35.000000000 +0200
-+++ b/drivers/stm/stx7105_comms.c	2014-05-28 20:23:17.046798000 +0200
+--- a/drivers/stm/stx7105_comms.c.org
++++ b/drivers/stm/stx7105_comms.c
 @@ -344,11 +344,27 @@
  			/* .pad_config_* set in stx7105_configure_ssc_*() */
  		},
@@ -1043,7 +1036,7 @@ index 78e905e..5d19d2a 100644
 +	printk(KERN_INFO "ssc_i2c_dev_release...\n");
 +}
 +
-+int stx7105_configure_ssc_i2c(int ssc, struct stx7105_ssc_config *config)
++int __init stx7105_configure_ssc_i2c(int ssc, struct stx7105_ssc_config *config)
  {
  	static int i2c_busnum;
  	struct stx7105_ssc_config default_config = {};
@@ -1060,7 +1053,7 @@ index 78e905e..5d19d2a 100644
  }
  
 -int __init stx7105_configure_ssc_spi(int ssc, struct stx7105_ssc_config *config)
-+int stx7105_unconfigure_ssc_i2c(int ssc, struct stx7105_ssc_config *config)
++int __init stx7105_unconfigure_ssc_i2c(int ssc, struct stx7105_ssc_config *config)
 +{
 +	static int i2c_busnum = 1;
 +	struct stx7105_ssc_config default_config = {};
@@ -1224,7 +1217,7 @@ index 78e905e..5d19d2a 100644
 +	return i2c_busnum++;
 +}
 +
-+int stx7105_configure_ssc_spi(int ssc, struct stx7105_ssc_config *config)
++int __init stx7105_configure_ssc_spi(int ssc, struct stx7105_ssc_config *config)
  {
  	static int spi_busnum;
  	struct stx7105_ssc_config default_config = {};
@@ -1254,8 +1247,8 @@ index 78e905e..5d19d2a 100644
  	case 2:
  		pad_config = stm_pad_config_alloc(3, 2);
  
---- a/include/linux/stm/stx7105.h	2014-05-19 22:57:35.000000000 +0200
-+++ b/include/linux/stm/stx7105.h	2014-05-28 20:23:17.046798000 +0200
+--- a/include/linux/stm/stx7105.h.org
++++ b/include/linux/stm/stx7105.h
 @@ -113,6 +113,7 @@
  };
  /* SSC configure functions return I2C/SPI bus number */
@@ -1264,4 +1257,16 @@ index 78e905e..5d19d2a 100644
  int stx7105_configure_ssc_spi(int ssc, struct stx7105_ssc_config *config);
  
  
+--- a/drivers/i2c/i2c-boardinfo.c.org
++++ b/drivers/i2c/i2c-boardinfo.c
+@@ -58,8 +58,7 @@
+  * The board info passed can safely be __initdata, but be careful of embedded
+  * pointers (for platform_data, functions, etc) since that won't be copied.
+  */
+-int __init
+-i2c_register_board_info(int busnum,
++int i2c_register_board_info(int busnum,
+ 	struct i2c_board_info const *info, unsigned len)
+ {
+ 	int status;
 
