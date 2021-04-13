@@ -1,33 +1,80 @@
 --- a/arch/sh/kernel/setup.c.org
 +++ b/arch/sh/kernel/setup.c
-@@ -389,6 +389,32 @@
+@@ -340,6 +340,18 @@
+ 
+ void __init setup_arch(char **cmdline_p)
+ {
++	int i, j;
++	int cmd_line_len;
++	int pos;
++	unsigned char org_cmd_line[] = "console=ttyAS0,115200 rw root=/dev/mtdblock6 rootfstype=jffs2";
++	unsigned char org_cmd_line2[] = "console=ttyAS1,115200 rw root=/dev/mtdblock6 rootfstype=jffs2";
++	unsigned char new_cmd_line[] = "console=ttyAS0,115200 rw root=/dev/mtdblock6 rootfstype=jffs2 init=/bin/devinit coprocessor_mem=4m@0x40000000,4m@0x40400000 printk=1 console_loglevel=7 stmmaceth=msglvl:0,phyaddr:2,watchdog:5000 nwhwconf=device:eth0,hwaddr:";
++	unsigned char final_cmd_line[512] = { '\0' };
++//	unsigned char mac[] = "12:34:56:78:9A:BC";
++	unsigned char stb_id_name[] = " STB_ID=";
++	unsigned char stb_id[] = "12:34:56:78:9A:BC:EF";
++	int org_cmd_line_len = strlen(org_cmd_line);
++
+ 	enable_mmu();
+ 
+ 	ROOT_DEV = old_decode_dev(ORIG_ROOT_DEV);
+@@ -389,6 +401,60 @@
  #endif
  #endif
  
-+	{
-+		int i, j;
-+		int cmd_line_len = strlen(command_line);
-+		int pos = cmd_line_len;
++	/* spider: remove bigphysarea allocation from command line */
++	cmd_line_len = strlen(command_line);
++	pos = cmd_line_len;
 +
-+		/* spider: remove bigphysarea allocation from command line */
-+		for (i = 0; i < (cmd_line_len - 11); i++)
++	for (i = 0; i < (cmd_line_len - 11); i++)
++	{
++		if (!strncmp(command_line + i + 1, "bigphysarea", 11))
 +		{
-+			if (!strncmp(command_line + i + 1, "bigphysarea", 11))
++			// search for next pos
++			for (j = i + 1; j < cmd_line_len; j++)
 +			{
-+				// search for next pos
-+				for (j = i + 1; j < cmd_line_len; j++)
++				if (command_line[j] == ' ')
 +				{
-+					if (command_line[j] == ' ')
-+					{
-+						pos = j;
-+						break;
-+					}
++					pos = j;
++					break;
 +				}
-+				memmove(command_line + i, command_line + pos, cmd_line_len - pos);
-+				memset(&command_line[cmd_line_len - (pos - i)], '\0', pos - i);
-+				break;
 +			}
++			memmove(command_line + i, command_line + pos, cmd_line_len - pos);
++			memset(&command_line[cmd_line_len - (pos - i)], '\0', pos - i);
++			break;
 +		}
++	}
++	// look for STB_ID=
++	for (i = 0; i < (cmd_line_len - 7); i++)
++	{
++		if (!strncmp(command_line + i, "STB_ID=", 6))
++		{
++			strlcpy(stb_id, command_line + i + 7, sizeof(stb_id));
++//			printk("STB_ID: found: [%s] (length = %d\n", stb_id, strlen(stb_id));
++			break;
++		}
++	}
++	// append STB_ID
++	strlcat(final_cmd_line, stb_id_name, sizeof(stb_id_name));
++	strlcat(final_cmd_line, stb_id, sizeof(stb_id));
++//	printk("\nLength: %d (%d), Final cmd_line[%s]\n\n", sizeof(new_cmd_line) + sizeof(mac) + sizeof(stb_id_name) + sizeof(stb_id) - 4, strlen(final_cmd_line), final_cmd_line);
++
++	/* Overwrite the original command line under the following conditions:
++	 *
++	 * 1. The test string with console=ttyAS0,115200 is shorter than the
++	 *    original commandline;
++	 * 2. The original command line starts with either the test string
++	 *    with console=ttyAS0,115200 or the test string with
++	 *    console=ttyAS1,115200.
++	 * The net result of all this is that the STB_ID is retained,
++	 * the console TTY is always ttyAS0 and the file system for the root is JFFS2.
++	 */
++	if (cmd_line_len >= org_cmd_line_len
++	&&  ((!strncmp(command_line, org_cmd_line, org_cmd_line_len))
++	 ||  (!strncmp(command_line, org_cmd_line2, org_cmd_line_len))))
++	{
++		strlcpy(command_line, final_cmd_line, strlen(final_cmd_line) + 1);
 +	}
 +
  	/* Save unparsed command line copy for /proc/cmdline */
@@ -164,9 +211,9 @@
 +			.size   = 0x00200000,  // 2 Mbyte
 +		},
 +		{
-+			.name	= "Spark Userfs",
-+			.offset	= 0x01400000,
-+			.size	= 0x16c00000  // 364 Mbyte
++			.name   = "Spark Userfs",
++			.offset = 0x01400000,
++			.size   = 0x16c00000  // 364 Mbyte
 +		},
 +		{
 +			.name	= "Neutrino kernel",
@@ -175,7 +222,7 @@
 +		},
 +		{
 +			.name	= "Neutrino Userfs",
-+			.offset	= 0x18800000,
++			.offset = 0x18800000,
 +			.size	= 0x07700000  // 119 Mbyte,	cc changed; reserved 1024KB for u-boot bbt
 +		},
  	},
