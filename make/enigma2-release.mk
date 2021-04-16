@@ -157,7 +157,7 @@ enigma2_release_ufs913:
 	$(SILENT)cp $(SKEL_ROOT)/boot/audio_7105.elf $(RELEASE_DIR)/boot/audio.elf
 	$(SILENT)cp $(SKEL_ROOT)/firmware/component_7105_pdk7105.fw $(RELEASE_DIR)/lib/firmware/component.fw
 	$(SILENT)cp $(SKEL_ROOT)/firmware/dvb-fe-avl6222.fw $(RELEASE_DIR)/lib/firmware/
-	$(SILENT)cp -f $(SKEL_ROOT)/root_enigma2/usr/local/share/enigma2/keymap_ufs912.xml $(RELEASE_DIR)/usr/local/share/enigma2/keymap.xml
+	$(SILENT)cp -f $(SKEL_ROOT)/root_enigma2/usr/local/share/enigma2/keymap_ufs913.xml $(RELEASE_DIR)/usr/local/share/enigma2/keymap.xml
 
 #
 # ufs922
@@ -1099,7 +1099,7 @@ endif
 #
 	$(SILENT)find $(RELEASE_DIR)/usr/lib/enigma2/ -name '*.pyc' -exec rm -f {} \;
 ifeq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), small size))
-ifneq ($(BOXTYPE), $(filter $(BOXTYPE), adb_box atevio7500))
+ifneq ($(BOXTYPE), $(filter $(BOXTYPE), adb_box atevio7500 ufs913))
 	$(SILENT)find $(RELEASE_DIR)/usr/lib/enigma2/ -not -name 'mytest.py' -name '*.py' -exec rm -f {} \;
 else
 	$(SILENT)find $(RELEASE_DIR)/usr/lib/enigma2/ -not -name 'mytest.py' -not -name 'Language.py' -name '*.py' -exec rm -f {} \;

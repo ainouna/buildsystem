@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 201004.1
+#Version 210411.1
 
 echo "Kathrein UFS913 Neutrino"
 
@@ -11,8 +11,8 @@ echo "[rcS] Init frontpanel"
 insmod $MODDIR/kathrein_micom.ko # paramDebug=30
 
 if [ -e /var/etc/.firstboot ]; then
-   echo "WAIT 1 min" > /dev/vfd
-   echo "WAIT 1 minute"
+   echo "Wait 1 minute" > /dev/vfd
+   echo "[rcS] Wait 1 minute"
    rm /var/etc/.firstboot
    sleep 1
    touch /dev/.devfsd
@@ -55,12 +55,12 @@ fi
 echo "[rcS] Load video firmware (LOAD 8)"
 echo "LOAD 8" > /dev/vfd
 /bin/dd if=/dev/zero of=/dev/st231-0 bs=1024 count=4096
-/bin/ustslave /dev/st231-0 /lib/firmware/video.elf
+/bin/ustslave /dev/st231-0 /lib/firmware/video.elf > /dev/null
 
 echo "[rcS] Load audio firmware (LOAD 7)"
 echo "LOAD 7" > /dev/vfd
 /bin/dd if=/dev/zero of=/dev/st231-1 bs=1024 count=4096
-/bin/ustslave /dev/st231-1 /lib/firmware/audio.elf
+/bin/ustslave /dev/st231-1 /lib/firmware/audio.elf > /dev/null
 
 echo "[rcS] Init embx (LOAD 6)"
 echo "LOAD 6" > /dev/vfd
@@ -88,7 +88,7 @@ insmod $MODDIR/socket.ko
 insmod $MODDIR/lnbh221.ko
 insmod $MODDIR/lnb_pio.ko
 insmod $MODDIR/lnb_a8293.ko
-insmod $MODDIR/avl6222.ko paramDebug=50
+insmod $MODDIR/avl6222.ko # paramDebug=50
 
 insmod $MODDIR/ufs913_cic.ko
 
@@ -142,7 +142,7 @@ insmod $MODDIR/simu_button.ko
 echo "[rcS] Init remote control"
 /bin/evremote2 10 120 &
 
-# Module aus modules.extra laden
+# Load module(s) from modules.extra
 [ -f /var/etc/modules.extra ] && eval `sed -e 's/#.*//' -e '/^\s*$/d' -e 's/^\(.*\)/insmod \0;/' < /var/etc/modules.extra`
 
 NFS=`grep -c nfs /proc/cmdline`
@@ -194,8 +194,8 @@ echo "[rcS] Init portmap & ftp"
 /usr/sbin/inetd
 
 # Do own extras
-if [ -e /etc/ownscript.sh ]; then
-   /etc/ownscript.sh &
+if [ -e /var/etc/ownscript.sh ]; then
+   /var/etc/ownscript.sh &
 fi
 
 echo "LOAD Neutrino" > /dev/vfd

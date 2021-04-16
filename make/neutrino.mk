@@ -113,9 +113,9 @@ N_CONFIG_OPTS += --enable-freesatepg
 N_CONFIG_OPTS += --enable-pip
 #N_CONFIG_OPTS += --disable-webif
 #N_CONFIG_OPTS += --disable-upnp
-ifeq ($(FLAVOUR), neutrino-tangos)
-N_CONFIG_OPTS += --enable-tangos
-endif
+#ifeq ($(FLAVOUR), neutrino-tangos)
+#N_CONFIG_OPTS += --enable-tangos
+#endif
 
 ifeq ($(EXTERNAL_LCD), graphlcd)
 N_CONFIG_OPTS += --enable-graphlcd
@@ -137,13 +137,12 @@ endif
 
 ifeq ($(FLAVOUR), neutrino-tangos)
 GIT_URL       = https://github.com/TangoCash
-NEUTRINO      = neutrino-mp-tangos
+NEUTRINO      = neutrino-tangos
 LIBSTB_HAL    = libstb-hal-tangos
 N_BRANCH     ?= master
-#N_CHECKOUT   ?= 0028290165620b0f146c870ea8213e2201ab520a # 27/10/2020
-N_CHECKOUT   ?= f5f2e6e066e99323695989f5cdf606b67256481d
+N_CHECKOUT   ?= 066a0703b51588c500977763b8145df82f4270ce
 HAL_BRANCH   ?= master
-HAL_CHECKOUT ?= 8419f846e155aafc65120522974e9ee491f45428
+HAL_CHECKOUT ?= 2a909d72ae12e5c030cd3f21854f247c72823daf
 N_PATCHES     = $(NEUTRINO_TANGOS_PATCHES)
 HAL_PATCHES   = $(NEUTRINO_LIBSTB_TANGOS_PATCHES)
 else ifeq ($(FLAVOUR), neutrino-ddt)
