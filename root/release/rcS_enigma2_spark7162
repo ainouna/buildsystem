@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 210315.1
+#Version 210416.1
 
 echo "Spark 7162 Enigma2"
 
@@ -8,7 +8,7 @@ MODDIR=/lib/modules
 insmod $MODDIR/e2_proc.ko
 
 echo "Init frontpanel"
-insmod $MODDIR/aotom.ko paramDebug=0
+insmod $MODDIR/aotom.ko #paramDebug=0
 insmod $MODDIR/simu_button.ko
 if [ -e $MODDIR/encrypt.ko ]; then
    insmod $MODDIR/encrypt.ko
@@ -124,7 +124,7 @@ tunertype=`cat /etc/enigma2/settings | grep systemoptions.tunertype | cut -d "="
 if [ ! $tunertype ]; then
    tunertype='t'
 fi
-insmod $MODDIR/spark7162.ko UnionTunerType=$tunertype
+insmod $MODDIR/spark7162-fe.ko UnionTunerType=$tunertype # paramDebug=0
 
 insmod $MODDIR/pti.ko waitMS=20 videoMem=4096
 if [ $? -ne 0 ]; then
@@ -170,7 +170,7 @@ if [ -e $MODDIR/dvb-usb-rtl2832u.ko ]; then
 fi
 
 if [ -e $MODDIR/rfmod.ko ]; then
-  insmod $MODDIR/rfmod.ko paramDebug=0 type=74t1
+  insmod $MODDIR/rfmod.ko type=74t1 # paramDebug=0
 fi
 
 if [ -e $MODDIR/usbserial.ko ]; then
@@ -203,12 +203,8 @@ mknod /dev/rc c 147 1 #VFD
 /bin/evremote2 10 120 &
 
 echo "[rcS] Init smartcard cardreader"
-mknod /dev/sci0 c 169 0
-mknod /dev/sci1 c 169 1
-
-#major=$(awk "\$2==\"sparkid\" {print \$1}" /proc/devices)
-#rm -f /dev/sparkid
-#mknod /dev/sparkid c $major 0
+#mknod /dev/sci0 c 169 0
+#mknod /dev/sci1 c 169 1
 
 stfbcontrol a 255
 
@@ -237,7 +233,7 @@ echo "[rcS] Init FTP & network"
 
 NFS=`grep -c nfs /proc/cmdline`
 if [ "$NFS" -eq "1" ]; then
-   echo "Booting from nfs, do not set network"
+   echo "Booting from NFS, do not set network"
 else
    if [ -e /etc/network/interfaces ]; then
       ip addr flush eth0
@@ -330,17 +326,17 @@ do
              echo "fw_env.config not found - will create it"
              echo '/dev/mtd7 0x000A0000 0x00020000 0x20000' > /etc/fw_env.config
           fi
-          var=`fw_printenv | grep 'bootargs_spark='` ; fw_setenv bootargs ${var#*=}
-          var=`fw_printenv | grep 'bootcmd_spark='` ; fw_setenv bootcmd ${var#*=}
-          var=`fw_printenv | grep 'boot_system_spark='` ; fw_setenv boot_system ${var#*=}
-          var=`fw_printenv | grep 'userfs_base_spark='` ; fw_setenv userfs_base ${var#*=}
-          var=`fw_printenv | grep 'userfs_len_spark='` ; fw_setenv userfs_len ${var#*=}
-          var=`fw_printenv | grep 'kernel_base_spark='` ; fw_setenv kernel_base ${var#*=}
-          var=`fw_printenv | grep 'kernel_name_spark='` ; fw_setenv kernel_name ${var#*=}
-          var=`fw_printenv | grep 'userfs_name_spark='` ; fw_setenv userfs_name ${var#*=} 
-          var=`fw_printenv | grep 'loadu_userfs_spark='` ; fw_setenv loadu_userfs ${var#*=}
-          var=`fw_printenv | grep 'loadu_kernel_spark='` ; fw_setenv loadu_kernel ${var#*=}
-          var=`fw_printenv | grep 'kernel_len_spark='` ; fw_setenv kernel_len ${var#*=}
+          var=`fw_printenv | grep 'bootargs_spark='`; fw_setenv bootargs ${var#*=}
+          var=`fw_printenv | grep 'bootcmd_spark='`; fw_setenv bootcmd ${var#*=}
+          var=`fw_printenv | grep 'boot_system_spark='`; fw_setenv boot_system ${var#*=}
+          var=`fw_printenv | grep 'userfs_base_spark='`; fw_setenv userfs_base ${var#*=}
+          var=`fw_printenv | grep 'userfs_len_spark='`; fw_setenv userfs_len ${var#*=}
+          var=`fw_printenv | grep 'kernel_base_spark='`; fw_setenv kernel_base ${var#*=}
+          var=`fw_printenv | grep 'kernel_name_spark='`; fw_setenv kernel_name ${var#*=}
+          var=`fw_printenv | grep 'userfs_name_spark='`; fw_setenv userfs_name ${var#*=} 
+          var=`fw_printenv | grep 'loadu_userfs_spark='`; fw_setenv loadu_userfs ${var#*=}
+          var=`fw_printenv | grep 'loadu_kernel_spark='`; fw_setenv loadu_kernel ${var#*=}
+          var=`fw_printenv | grep 'kernel_len_spark='`; fw_setenv kernel_len ${var#*=}
           sync
           init 6;;
       *)  echo "[rcS] ERROR"
