@@ -1,18 +1,17 @@
 --- enigma2-networkbrowser/src/MountView.py.org
 +++ enigma2-networkbrowser/src/MountView.py
-@@ -114,7 +114,7 @@
+@@ -115,7 +115,7 @@
                  cur = self["config"].getCurrent()
                  if cur:
                          returnValue = cur[1]
--                        self.applyConfigRef = self.session.openWithCallback(self.applyConfigfinishedCB, MessageBox, _("Please wait while removing your network mount..."), type = MessageBox.TYPE_INFO, enable_input = False)
+-                        self.applyConfigRef = self.session.openWithCallback(self.applyConfigfinishedCB, MessageBox, _("Please wait while removing your network mount..."), type=MessageBox.TYPE_INFO, enable_input=False)
 +                        self.applyConfigRef = self.session.openWithCallback(self.applyConfigfinishedCB, MessageBox, _("Please wait while removing your network mount..."), type = MessageBox.TYPE_INFO, timeout = 10)
-                         iAutoMount.removeMount(returnValue,self.removeDataAvail)
+                         iAutoMount.removeMount(returnValue, self.removeDataAvail)
  
          def removeDataAvail(self, data):
-
 --- enigma2-networkbrowser/src/NetworkBrowser.py.org
 +++ enigma2-networkbrowser/src/NetworkBrowser.py
-@@ -129,7 +129,6 @@
+@@ -134,7 +134,6 @@
  
  	def cleanup(self):
  		del self.Timer
@@ -22,28 +21,30 @@
  
 --- enigma2-networkbrowser/src/plugin.py.org
 +++ enigma2-networkbrowser/src/plugin.py
-@@ -27,22 +27,10 @@
- def MountManagerCallFunction(iface):
+@@ -32,24 +32,10 @@
  	return MountManagerMain
  
--def RemountMain(session, iface = None, **kwargs):
+ 
+-def RemountMain(session, iface=None, **kwargs):
 -	from AutoMount import iAutoMount
 -	iAutoMount.getAutoMountPoints()
+-
 -
 -def RemountCallFunction(iface):
 -	if iNetwork.getAdapterAttribute(iface, "up"):
 -		return RemountMain
 -
+-
  def Plugins(path, **kwargs):
  	global plugin_path
  	plugin_path = path
  	return [
- 		PluginDescriptor(name=_("NetworkBrowser"), description=_("Search for network shares")+"\n", where = PluginDescriptor.WHERE_NETWORKSETUP, fnc={"ifaceSupported": NetworkBrowserCallFunction, "menuEntryName": lambda x: _("NetworkBrowser"), "menuEntryDescription": lambda x: _("Search for network shares...")+"\n"}),
- 		PluginDescriptor(name=_("MountManager"), description=_("Manage network shares")+"\n", where = PluginDescriptor.WHERE_NETWORKSETUP, fnc={"ifaceSupported": MountManagerCallFunction, "menuEntryName": lambda x: _("MountManager"), "menuEntryDescription": lambda x: _("Manage your network shares...")+"\n"}),
--		PluginDescriptor(name=_("Mount again"), description=_("Attempt to mount shares again")+"\n", where = PluginDescriptor.WHERE_NETWORKSETUP,
+ 		PluginDescriptor(name=_("NetworkBrowser"), description=_("Search for network shares") + "\n", where=PluginDescriptor.WHERE_NETWORKSETUP, fnc={"ifaceSupported": NetworkBrowserCallFunction, "menuEntryName": lambda x: _("NetworkBrowser"), "menuEntryDescription": lambda x: _("Search for network shares...") + "\n"}),
+ 		PluginDescriptor(name=_("MountManager"), description=_("Manage network shares") + "\n", where=PluginDescriptor.WHERE_NETWORKSETUP, fnc={"ifaceSupported": MountManagerCallFunction, "menuEntryName": lambda x: _("MountManager"), "menuEntryDescription": lambda x: _("Manage your network shares...") + "\n"}),
+-		PluginDescriptor(name=_("Mount again"), description=_("Attempt to mount shares again") + "\n", where=PluginDescriptor.WHERE_NETWORKSETUP,
 -			fnc={"ifaceSupported": RemountCallFunction,
 -				"menuEntryName": lambda x: _("Mount again"),
--				"menuEntryDescription": lambda x: _("Attempt to recover lost mounts (in background)")+"\n"})
+-				"menuEntryDescription": lambda x: _("Attempt to recover lost mounts (in background)") + "\n"})
  	]
 --- enigma2-networkbrowser/src/AutoMount.py.org
 +++ enigma2-networkbrowser/src/AutoMount.py
@@ -63,10 +64,10 @@
 +
 +XML_FSTAB = "/etc/auto.network"
  
+ 
  def rm_rf(d): # only for removing the ipkg stuff from /media/hdd subdirs
- 	try:
-@@ -26,14 +26,11 @@
- 	"""Manages Mounts declared in a XML-Document."""
+@@ -29,14 +29,11 @@
+ 
  	def __init__(self):
  		self.automounts = {}
 -		self.restartConsole = Console()
@@ -80,7 +81,7 @@
  
  		self.getAutoMountPoints()
  
-@@ -47,7 +44,7 @@
+@@ -50,7 +47,7 @@
  			return
  
  		try:
@@ -89,9 +90,9 @@
  		except Exception, e:
  			print "[MountManager] Error reading /etc/enigma2/automounts.xml:", e
  			try:
-@@ -63,56 +60,68 @@
+@@ -66,56 +63,67 @@
  			Len = len(definitions)
- 			return Len > 0 and definitions[Len-1].text or default
+ 			return Len > 0 and definitions[Len - 1].text or default
  
 -		# Config is stored in "mountmanager" element
 -		# Read out NFS Mounts
@@ -102,8 +103,8 @@
 +			print "LINE", line
 +			# Read out NFS Mounts
 +			if "-fstype=nfs" in line or "-fstype=cifs" in line:
- 				data = { 'isMounted': False, 'active': False, 'ip': False, 'host': False, 'sharename': False, 'sharedir': False, 'username': False, \
- 							'password': False, 'mounttype' : False, 'options' : False, 'hdd_replacement' : False }
+ 				data = {'isMounted': False, 'active': False, 'ip': False, 'host': False, 'sharename': False, 'sharedir': False, 'username': False,
+ 							'password': False, 'mounttype': False, 'options': False, 'hdd_replacement': False}
  				try:
 -					data['mounttype'] = 'nfs'.encode("UTF-8")
 -					data['active'] = getValue(mount.findall("active"), False).encode("UTF-8")
@@ -119,7 +120,7 @@
 +						data['active'] = 'True'.encode("UTF-8")
 +
 +					if data["active"] == 'True':
- 						self.activeMountsCounter +=1
+ 						self.activeMountsCounter += 1
 -					data['hdd_replacement'] = getValue(mount.findall("hdd_replacement"), "False").encode("UTF-8")
 -					data['ip'] = getValue(mount.findall("ip"), "").encode("UTF-8")
 -					data['host'] = getValue(mount.findall("host"), "").encode("UTF-8")
@@ -162,13 +163,13 @@
 -		# Read out CIFS Mounts
 -		for nfs in tree.findall("cifs"):
 -			for mount in nfs.findall("mount"):
--				data = { 'isMounted': False, 'active': False, 'ip': False, 'host': False, 'sharename': False, 'sharedir': False, 'username': False, \
--							'password': False, 'mounttype' : False, 'options' : False, 'hdd_replacement' : False }
+-				data = {'isMounted': False, 'active': False, 'ip': False, 'host': False, 'sharename': False, 'sharedir': False, 'username': False,
+-							'password': False, 'mounttype': False, 'options': False, 'hdd_replacement': False}
 -				try:
 -					data['mounttype'] = 'cifs'.encode("UTF-8")
 -					data['active'] = getValue(mount.findall("active"), False).encode("UTF-8")
 -					if data["active"] == 'True' or data["active"] == True:
--						self.activeMountsCounter +=1
+-						self.activeMountsCounter += 1
 -					data['hdd_replacement'] = getValue(mount.findall("hdd_replacement"), "False").encode("UTF-8")
 -					data['ip'] = getValue(mount.findall("ip"), "").encode("UTF-8")
 -					data['host'] = getValue(mount.findall("host"), "").encode("UTF-8")
@@ -180,10 +181,10 @@
 -					self.automounts[data['sharename']] = data
 -				except Exception, e:
 -					print "[MountManager] Error reading Mounts:", e
- 
+-
  		self.checkList = self.automounts.keys()
  		if not self.checkList:
- 			print "[AutoMount.py] self.automounts without mounts",self.automounts
+ 			print "[AutoMount.py] self.automounts without mounts", self.automounts
 -			if callback is not None:
 -				callback(True)
  		else:
@@ -194,15 +195,15 @@
  
  	def sanitizeOptions(self, origOptions, mounttype=None, username=None, password=None):
  		# split the options into their components
-@@ -178,118 +187,13 @@
+@@ -181,118 +189,13 @@
  		return ",".join(options)
  
  	def CheckMountPoint(self, item, callback):
 -		# possible CIFS version/security combinations
--		secvers = ( \
--			'vers=3,sec=ntlmssp', 'vers=3,sec=ntlmv2', 'vers=2.1,sec=ntlmssp', 'vers=2.1,sec=ntlmv2', \
--			'vers=2.1,sec=ntlm', 'vers=1.0,sec=ntlmssp', 'vers=1.0,sec=ntlmv2', 'vers=1.0,sec=ntlm', \
--			'vers=default', '' \
+-		secvers = (
+-			'vers=3,sec=ntlmssp', 'vers=3,sec=ntlmv2', 'vers=2.1,sec=ntlmssp', 'vers=2.1,sec=ntlmv2',
+-			'vers=2.1,sec=ntlm', 'vers=1.0,sec=ntlmssp', 'vers=1.0,sec=ntlmv2', 'vers=1.0,sec=ntlm',
+-			'vers=default', ''
 -		)
 -
 -		# create a console object if it doesnt exist
@@ -318,7 +319,7 @@
  
  	def CheckMountPointFinished(self, result, retval, extra_args):
  		print "[AutoMount.py] CheckMountPointFinished", result, retval
-@@ -297,25 +201,12 @@
+@@ -300,25 +203,12 @@
  		path = os.path.join('/media/net', data['sharename'])
  		print "[AutoMount.py] CheckMountPointFinished, verifying: ", path
  
@@ -350,22 +351,7 @@
  
  		if self.checkList:
  			# Go to next item in list...
-@@ -350,14 +241,6 @@
- 			except Exception, ex:
- 				print "[AutoMount.py] Failed to create ", movie, "Error:", ex
- 
--	def mountTimeout(self):
--		self.timer.stop()
--		if self.MountConsole:
--			if len(self.MountConsole.appContainers) == 0:
--				print "self.automounts after mounting",self.automounts
--				if self.callback is not None:
--					self.callback(True)
--
- 	def getMountsList(self):
- 		return self.automounts
- 
-@@ -373,30 +256,31 @@
+@@ -376,40 +266,37 @@
  
  	def writeMountsConfig(self):
  		# Generate List in RAM
@@ -418,30 +404,30 @@
  
  		# Try Saving to Flash
  		try:
-@@ -404,9 +288,6 @@
+ 			open(XML_FSTAB, "w").writelines(list)
  		except Exception, e:
  			print "[AutoMount.py] Error Saving Mounts List:", e
- 
+-
 -	def stopMountConsole(self):
 -		if self.MountConsole is not None:
 -			self.MountConsole = None
  
- 	def removeMount(self, mountpoint, callback = None):
- 		print "[AutoMount.py] removing mount: ",mountpoint
-@@ -416,28 +297,6 @@
+ 	def removeMount(self, mountpoint, callback=None):
+ 		print "[AutoMount.py] removing mount: ", mountpoint
+@@ -419,28 +306,5 @@
  				self.newautomounts[sharename] = sharedata
  		self.automounts.clear()
  		self.automounts = self.newautomounts
 -		if not self.removeConsole:
 -			self.removeConsole = Console()
--		path = '/media/net/'+ mountpoint
+-		path = '/media/net/' + mountpoint
 -		umountcmd = "umount -fl '%s'" % path
--		print "[AutoMount.py] UMOUNT-CMD--->",umountcmd
+-		print "[AutoMount.py] UMOUNT-CMD--->", umountcmd
 -		self.removeConsole.ePopen(umountcmd, self.removeMountPointFinished, [path, callback])
 -
 -	def removeMountPointFinished(self, result, retval, extra_args):
 -		print "[AutoMount.py] removeMountPointFinished result", result, "retval", retval
--		(path, callback ) = extra_args
+-		(path, callback) = extra_args
 -		if os.path.exists(path):
 -			if not os.path.ismount(path):
 -			        try:
@@ -454,7 +440,7 @@
 -				if callback is not None:
 -					self.callback = callback
 -					self.timer.startLongTimer(1)
- 
+-
  
  iAutoMount = AutoMount()
 
