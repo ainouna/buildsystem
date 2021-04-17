@@ -5915,11 +5915,13 @@
  		if x[0] == orbpos:
 --- enigma2-nightly.org/lib/python/Components/SystemInfo.py
 +++ enigma2-nightly/lib/python/Components/SystemInfo.py
-@@ -52,12 +52,12 @@
+@@ -51,13 +51,13 @@
+ SystemInfo["12V_Output"] = Misc_Options.getInstance().detected_12V_output()
  SystemInfo["ZapMode"] = fileCheck("/proc/stb/video/zapmode") or fileCheck("/proc/stb/video/zapping_mode")
  SystemInfo["NumFrontpanelLEDs"] = countFrontpanelLEDs()
- SystemInfo["FrontpanelDisplay"] = fileExists("/dev/dbox/oled0") or fileExists("/dev/dbox/lcd0")
+-SystemInfo["FrontpanelDisplay"] = fileExists("/dev/dbox/oled0") or fileExists("/dev/dbox/lcd0")
 -SystemInfo["LCDsymbol_circle_recording"] = fileCheck("/proc/stb/lcd/symbol_circle") or model in ("hd51", "vs1500") and fileCheck("/proc/stb/lcd/symbol_recording")
++SystemInfo["FrontpanelDisplay"] = fileCheck("/proc/stb/lcd/scroll_repeats") or fileCheck("/proc/stb/lcd/scroll_delay") or fileCheck("/proc/stb/lcd/initial_scroll_delay") or fileCheck("/proc/stb/lcd/final_scroll_delay")
 +SystemInfo["LCDsymbol_circle_recording"] = fileCheck("/proc/stb/lcd/symbol_circle")
  SystemInfo["LCDsymbol_timeshift"] = fileCheck("/proc/stb/lcd/symbol_timeshift")
  SystemInfo["LCDshow_symbols"] = (model.startswith("et9") or model in ("hd51", "vs1500")) and fileCheck("/proc/stb/lcd/show_symbols")
@@ -7346,7 +7348,7 @@
  			if level >= 1:
 --- enigma2.org/lib/python/Plugins/SystemPlugins/Videomode/VideoHardware.py
 +++ enigma2/lib/python/Plugins/SystemPlugins/Videomode/VideoHardware.py
-@@ -16,74 +16,43 @@
+@@ -16,74 +16,59 @@
  
  	modes = { }  # a list of (high-level) modes for a certain port.
  
@@ -7361,9 +7363,12 @@
 -	rates["480i"] =			{ "60Hz": 	{ 60: "480i" } }
 -
 -	rates["576i"] =			{ "50Hz": 	{ 50: "576i" } }
--
--	rates["480p"] =			{ "60Hz": 	{ 60: "480p" } }
--
++	rates["NTSC"] =			{ "60Hz":	{ 60: "ntsc" } }
++
++	rates["480i"] =			{ "60Hz":	{ 60: "480i" } }
+ 
+ 	rates["480p"] =			{ "60Hz": 	{ 60: "480p" } }
+ 
 -	rates["576p"] =			{ "50Hz": 	{ 50: "576p" } }
 -
 -	rates["720p"] =			{ "50Hz": 	{ 50: "720p50" },
@@ -7377,7 +7382,7 @@
 +	rates["576p"] =			{ "50Hz":	{ 50: "576p50" } }
 +
 +	rates["720p"] =			{ "50Hz":	{ 50: "720p50" },
-+					  "60Hz":	{ 60: "720p60" } }
++							  "60Hz":	{ 60: "720p60" } }
  
  	rates["1080i"] =		{ "50Hz":	{ 50: "1080i50" },
 -								"60Hz":		{ 60: "1080i" },
@@ -7398,17 +7403,8 @@
 -								"60Hz":		{ 60: "2160p" },
 -								"multi":	{ 50: "2160p50", 60: "2160p" }, 
 -								"auto":		{ 50: "2160p50", 60: "2160p", 24: "2160p24" }}
-+					  "60Hz":	{ 60: "1080i60" } }
-+
-+	rates["1080p"] =		{ "23Hz":	{ 50: "1080p23" },
-+					  "24Hz":	{ 60: "1080p24" },
-+					  "25Hz":	{ 60: "1080p25" },
-+					  "29Hz":	{ 60: "1080p29" },
-+					  "30Hz":	{ 60: "1080p30" },
-+					  "50Hz":	{ 60: "1080p50" },
-+					  "60Hz":	{ 60: "1080p60" } }
- 
- 	rates["PC"] = {
+-
+-	rates["PC"] = {
 -		"1024x768": { 60: "1024x768" }, # not possible on DM7025
 -		"800x600" : { 60: "800x600" },  # also not possible
 -		"720x480" : { 60: "720x480" },
@@ -7422,9 +7418,30 @@
 -		"1366x768 multi" : { 50: "1366x768", 60: "1366x768_50" },
 -		"1280x768": { 60: "1280x768" },
 -		"640x480" : { 60: "640x480" }
-+		"1024x768"  : { 60: "1024x768_60", 70: "1024x768_70", 75: "1024x768_75", 90: "1024x768_90", 100: "1024x768_100" }, #43 60 70 72 75 90 100
-+		"1280x1024" : { 60: "1280x1024_60", 70: "1280x1024_70", 75: "1280x1024_75" }, #43 47 60 70 74 75
-+		"1600x1200" : { 60: "1600x1200_60" }, #60 66 76
++							  "60Hz":	{ 60: "1080i60" } }
++
++	rates["1080p"] =		{ "23Hz":	{ 50: "1080p23" },
++							  "24Hz":	{ 60: "1080p24" },
++							  "25Hz":	{ 60: "1080p25" },
++							  "29Hz":	{ 60: "1080p29" },
++							  "30Hz":	{ 60: "1080p30" },
++							  "50Hz":	{ 60: "1080p50" },
++							  "60Hz":	{ 60: "1080p60" } }
++
++	rates["PC"] =			{ "1024x768"  : { 60: "1024x768_60", 70: "1024x768_70", 75: "1024x768_75", 90: "1024x768_90", 100: "1024x768_100" }, #43 60 70 72 75 90 100
++							  "1280x1024" : { 60: "1280x1024_60", 70: "1280x1024_70", 75: "1280x1024_75" }, #43 47 60 70 74 75
++							  "1600x1200" : { 60: "1600x1200_60" }, #60 66 76
++							  "720x480" : { 60: "720x480" },
++							  "720x576" : { 60: "720x576" },
++							  "1280x720": { 60: "1280x720" },
++							  "1280x720 multi": { 50: "1280x720_50", 60: "1280x720" },
++							  "1920x1080": { 60: "1920x1080"},
++							  "1920x1080 multi": { 50: "1920x1080", 60: "1920x1080_50" },
++							  "1280x1024" : { 60: "1280x1024"},
++							  "1366x768" : { 60: "1366x768"},
++							  "1366x768 multi" : { 50: "1366x768", 60: "1366x768_50" },
++							  "1280x768": { 60: "1280x768" },
++							  "640x480" : { 60: "640x480" }
  	}
  
  	if SystemInfo["HasScart"]:
@@ -7441,25 +7458,25 @@
 -	else:
 -		modes["DVI"] = ["720p", "1080p", "2160p", "2160p30", "1080i", "576p", "480p", "576i", "480i"]
 -	modes["DVI-PC"] = ["PC"]
-+		modes["Component"] = ["720p", "1080p", "1080i", "576p", "576i"]
++		modes["Component"] = ["720p", "1080p", "1080i", "576p", "576i", "480p", "480i"]
 +#	if SystemInfo["Has2160p"]:
 +#		modes["DVI"] = ["720p", "1080p", "2160p", "1080i", "576p", "480p", "576i", "480i"]
 +#	else:
-+	modes["HDMI"] = ["720p", "1080p", "1080i", "576p", "576i"]
++	modes["HDMI"] = ["720p", "1080p", "1080i", "576p", "576i", "480p", "480i"]
 +	modes["HDMI-PC"] = ["PC"]
  
  	def getOutputAspect(self):
  		ret = (16,9)
-@@ -121,7 +90,7 @@
+@@ -121,7 +106,7 @@
  
  		self.readAvailableModes()
  		self.readPreferredModes()
 -		self.widescreen_modes = set(["720p", "1080i", "1080p", "2160p", "2160p30"]).intersection(*[self.modes_available])
-+		self.widescreen_modes = set(["576i", "576p", "720p", "1080i", "1080p"]).intersection(*[self.modes_available])
++		self.widescreen_modes = set(["480i", "480p", "576i", "576p", "720p", "1080i", "1080p"]).intersection(*[self.modes_available])
  
  		if "DVI-PC" in self.modes and not self.getModeList("DVI-PC"):
  			print "[VideoHardware] remove DVI-PC because of not existing modes"
-@@ -139,6 +108,16 @@
+@@ -139,6 +124,16 @@
  		config.av.wss.notifiers = [ ]
  		AVSwitch.getOutputAspect = self.getOutputAspect
  
@@ -7476,7 +7493,7 @@
  		config.av.aspect.addNotifier(self.updateAspect)
  		config.av.wss.addNotifier(self.updateAspect)
  		config.av.policy_169.addNotifier(self.updateAspect)
-@@ -175,9 +154,8 @@
+@@ -175,9 +170,8 @@
  	def isModeAvailable(self, port, mode, rate):
  		rate = self.rates[mode][rate]
  		for mode in rate.values():
@@ -7488,7 +7505,7 @@
  			else:
  				if mode not in self.modes_available:
  					return False
-@@ -226,8 +204,12 @@
+@@ -226,8 +220,12 @@
  				open("/proc/stb/video/videomode_24hz", "w").write(mode_24)
  			except IOError:
  				print "[VideoHardware] cannot open /proc/stb/video/videomode_24hz"
@@ -7501,7 +7518,7 @@
  
  	def saveMode(self, port, mode, rate):
  		print "[VideoHardware] saveMode", port, mode, rate
-@@ -245,7 +227,8 @@
+@@ -245,7 +243,8 @@
  		return True
  
  	def isPortUsed(self, port):
@@ -7511,7 +7528,7 @@
  			self.readPreferredModes()
  			return len(self.modes_preferred) != 0
  		else:
-@@ -352,7 +335,7 @@
+@@ -352,7 +351,7 @@
  				aspect = "16:9"
  			else:
  				aspect = {"16_9": "16:9", "16_10": "16:10"}[config.av.aspect.value]
@@ -7520,7 +7537,7 @@
  			policy = policy_choices[config.av.policy_43.value]
  			policy2_choices = {"letterbox": "letterbox", "panscan": "panscan", "scale": "bestfit", "full": "full", "auto": "auto"}
  			policy2 = policy2_choices[config.av.policy_169.value]
-@@ -383,5 +366,30 @@
+@@ -383,5 +382,30 @@
  		except IOError:
  			pass
  
