@@ -50,7 +50,7 @@ NEUTRINO_DEPS += $(D)/parted
 NEUTRINO_DEPS += $(D)/mtd_utils
 NEUTRINO_DEPS += $(D)/gptfdisk
 endif
-NEUTRINO_DEPS +=  $(D)/minidlna
+NEUTRINO_DEPS += $(D)/minidlna
 endif
 
 ifeq ($(IMAGE), neutrino-wlandriver)
@@ -108,14 +108,9 @@ else
 LH_CONFIG_OPTS += --with-boxtype=duckbox
 N_CONFIG_OPTS  += --with-boxtype=duckbox
 endif
-N_CONFIG_OPTS += --with-boxmodel=$(BOXTYPE)
-N_CONFIG_OPTS += --enable-freesatepg
-N_CONFIG_OPTS += --enable-pip
-#N_CONFIG_OPTS += --disable-webif
-#N_CONFIG_OPTS += --disable-upnp
-#ifeq ($(FLAVOUR), neutrino-tangos)
-#N_CONFIG_OPTS += --enable-tangos
-#endif
+N_CONFIG_OPTS  += --with-boxmodel=$(BOXTYPE)
+N_CONFIG_OPTS  += --enable-freesatepg
+N_CONFIG_OPTS  += --enable-pip
 
 ifeq ($(EXTERNAL_LCD), graphlcd)
 N_CONFIG_OPTS += --enable-graphlcd
