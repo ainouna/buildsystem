@@ -325,7 +325,7 @@
  
 -		if os.path.exists(path):
 -			if os.path.ismount(path):
--				if self.automounts.has_key(data['sharename']):
+-				if data['sharename'] in self.automounts:
 -					self.automounts[data['sharename']]['isMounted'] = True
 -					desc = data['sharename']
 -					if self.automounts[data['sharename']]['hdd_replacement'] == 'True': #hdd replacement hack
@@ -333,7 +333,7 @@
 -					harddiskmanager.addMountedPartition(path, desc)
 -			else:
 -				print "[AutoMount.py] CheckMountPointFinished, path not found, disabling..."
--				if self.automounts.has_key(data['sharename']):
+-				if data['sharename'] in self.automounts:
 -					self.automounts[data['sharename']]['isMounted'] = False
 -				if os.path.exists(path):
 -					if not os.path.ismount(path):
