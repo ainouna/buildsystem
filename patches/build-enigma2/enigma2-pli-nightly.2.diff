@@ -8197,7 +8197,7 @@
  
  		self.__event_tracker = ServiceEventTracker(screen=self, eventmap=
  			{
-@@ -77,6 +84,88 @@
+@@ -77,6 +84,93 @@
  		assert InfoBar.instance is None, "class InfoBar is a singleton class and just one instance of this class is allowed!"
  		InfoBar.instance = self
  
@@ -8241,8 +8241,12 @@
 +
 +		selection = 0
 +		tlist = []
-+		tlist.append(("Video: " + str(xres) + "x" + str(yres) + "@" + str(fpsFloat) + "hz", ""))
++		tlist.append(("Video: " + str(xres) + "x" + str(yres) + "@" + str(fpsFloat) + "Hz", ""))
 +		tlist.append(("--", ""))
++		tlist.append(("NTSC", "ntsc"))
++		tlist.append(("480i", "480i"))
++		tlist.append(("480p", "480p"))
++		tlist.append(("PAL", "pal"))
 +		tlist.append(("576i", "576i50"))
 +		tlist.append(("576p", "576p50"))
 +		tlist.append(("720p@50hz", "720p50"))
@@ -8252,9 +8256,10 @@
 +		tlist.append(("1080p@23.976hz", "1080p23"))
 +		tlist.append(("1080p@24hz", "1080p24"))
 +		tlist.append(("1080p@25hz", "1080p25"))
++		tlist.append(("1080p@29.97hz", "1080p29"))
 +		tlist.append(("1080p@30hz", "1080p30"))
 +		tlist.append(("1080p@50hz", "1080p50"))
-+		tlist.append(("1080p@59hz", "1080p59"))
++		tlist.append(("1080p@59.94hz", "1080p59"))
 +		tlist.append(("1080p@60hz", "1080p60"))
 +		keys = ["green", "", "yellow", "blue", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" ]
 +
@@ -8263,7 +8268,7 @@
 +			if tlist[x][1] == mode:
 +				selection = x
 +		from Screens.ChoiceBox import ChoiceBox
-+		self.session.openWithCallback(self.ResolutionSelect, ChoiceBox, title=_("Please select a resolution..."), list = tlist, selection = selection, keys = keys)
++		self.session.openWithCallback(self.ResolutionSelect, ChoiceBox, title=_("Please select a resolution"), list = tlist, selection = selection, keys = keys)
 +
 +	def ResolutionSelect(self, Resolution):
 +		if not Resolution is None:
@@ -8286,7 +8291,7 @@
  	def __onClose(self):
  		InfoBar.instance = None
  
-@@ -95,6 +184,22 @@
+@@ -95,6 +189,22 @@
  		self.__serviceStarted(True)
  		self.onExecBegin.remove(self.__checkServiceStarted)
  
@@ -8309,7 +8314,7 @@
  	def serviceStarted(self):  #override from InfoBarShowHide
  		new = self.servicelist.newServicePlayed()
  		if self.execing:
-@@ -118,6 +223,19 @@
+@@ -118,6 +228,19 @@
  			from Screens.ChannelSelection import ChannelSelectionRadio
  			self.session.openWithCallback(self.ChannelSelectionRadioClosed, ChannelSelectionRadio, self)
  
@@ -8329,7 +8334,7 @@
  	def toggleTvRadio(self):
  		if self.radioTV == 1:
  			self.radioTV = 0
-@@ -151,6 +269,7 @@
+@@ -151,6 +274,7 @@
  class MoviePlayer(InfoBarBase, InfoBarShowHide, InfoBarMenu, InfoBarSeek, InfoBarShowMovies, InfoBarInstantRecord, InfoBarVmodeButton,
  		InfoBarAudioSelection, HelpableScreen, InfoBarNotifications, InfoBarServiceNotifications, InfoBarPVRState,
  		InfoBarCueSheetSupport, InfoBarMoviePlayerSummarySupport, InfoBarSubtitleSupport, Screen, InfoBarTeletextPlugin,
@@ -8337,7 +8342,7 @@
  		InfoBarServiceErrorPopupSupport, InfoBarExtensions, InfoBarPlugins, InfoBarPiP, InfoBarHDMI, InfoBarHotkey):
  
  	ENABLE_RESUME_SUPPORT = True
-@@ -162,10 +281,10 @@
+@@ -162,10 +286,10 @@
  
  		self["actions"] = HelpableActionMap(self, "MoviePlayerActions",
  			{
@@ -8352,7 +8357,7 @@
  			})
  
  		self["DirectionActions"] = HelpableActionMap(self, "DirectionActions",
-@@ -543,3 +662,7 @@
+@@ -543,3 +667,7 @@
  
  	def ref2HumanName(self, ref):
  		return enigma.eServiceCenter.getInstance().info(ref).getName(ref)
@@ -9129,13 +9134,14 @@
  from enigma import eTimer, eLabel, eConsoleAppContainer, getDesktop, eGetEnigmaDebugLvl
  
  from Components.GUIComponent import GUIComponent
-@@ -25,6 +26,15 @@
+@@ -25,6 +26,16 @@
  		hddsplit = skin.parameters.get("AboutHddSplit", 0)
  
  		AboutText = _("Hardware: ") + about.getHardwareTypeString() + "\n"
-+		if fileExists("/proc/stb/info/model_name"):
-+			resellername = open("/proc/stb/info/model_name", "r").read().strip()
-+			AboutText += _("Model name: ") + resellername + "\n"
++		if fileExists("/proc/stb/info/brand") and fileExists("/proc/stb/info/model_name"):
++			brandname = open("/proc/stb/info/brand", "r").read().strip()
++			modelname = open("/proc/stb/info/model_name", "r").read().strip()
++			AboutText += _("Model name: ") + brandname + _(" ") + modelname + "\n"
 +		if fileExists("/proc/stb/fp/resellerID"):
 +			resellerid = open("/proc/stb/fp/resellerID", "r").read().strip()
 +			AboutText += _("Reseller ID: ") + resellerid + "\n"
@@ -9145,7 +9151,7 @@
  		cpu = about.getCPUInfoString()
  		AboutText += _("CPU: ") + cpu + "\n"
  		AboutText += _("Image: ") + about.getImageTypeString() + "\n"
-@@ -48,7 +58,7 @@
+@@ -48,7 +59,7 @@
  
  		AboutText += _("DVB driver version: ") + about.getDriverInstalledDate() + "\n"
  
@@ -9154,7 +9160,7 @@
  		self["GStreamerVersion"] = StaticText(GStreamerVersion)
  
  		ffmpegVersion = _("Media player: ffmpeg, version ") + about.getffmpegVersionString()
-@@ -68,8 +78,11 @@
+@@ -68,8 +79,11 @@
  		if fp_version is None:
  			fp_version = ""
  		else:

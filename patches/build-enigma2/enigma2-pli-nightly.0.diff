@@ -1,4 +1,4 @@
-# revision 6dcd3efde0064f897ff32c8dfb5422519a6616a8 17/04/2021 16:43
+# revision 0614357941c3d82a915d22c1fffeb67b4a308f23 23/04/2021 22:23
 --- enigma2.org/configure.ac
 +++ enigma2/configure.ac
 @@ -18,6 +18,7 @@
@@ -587,7 +587,7 @@
  			int i, j = 0;	   // remove leading whitespace and control chars, and comments
 --- enigma2.org/lib/base/estring.cpp
 +++ enigma2/lib/base/estring.cpp
-@@ -693,12 +693,12 @@
+@@ -772,12 +772,12 @@
  		eTrace("[convertDVBUTF8] %d chars converted, and %d chars left..", convertedLen, len-convertedLen);
  	eTrace("[convertDVBUTF8] table=0x%02X twochar=%d output:%s\n", table, useTwoCharMapping, output.c_str());
  
@@ -605,7 +605,7 @@
  	return output;
  }
  
-@@ -998,13 +998,13 @@
+@@ -1077,13 +1077,13 @@
      return output;
  }
  
@@ -628,7 +628,7 @@
  {
 --- enigma2.org/lib/base/estring.h
 +++ enigma2/lib/base/estring.h
-@@ -33,7 +33,7 @@
+@@ -35,7 +35,7 @@
  
  std::string urlDecode(const std::string &s);
  std::string string_to_hex(const std::string& input);
@@ -8092,7 +8092,7 @@
  			self.openMultiServiceEPG(False)
  
  	def eventViewCallback(self, setEvent, setService, val): #used for now/next displaying
-@@ -2193,7 +2242,7 @@
+@@ -2199,7 +2248,7 @@
  		self.addExtension((lambda: _("Manually import from fallback tuner"), self.importChannels, lambda: config.usage.remote_fallback_extension_menu.value and config.usage.remote_fallback_import.value))
  		self["InstantExtensionsActions"] = HelpableActionMap(self, "InfobarExtensions",
  			{
@@ -8101,7 +8101,7 @@
  			}, 1) # lower priority
  
  	def openSoftcamSetup(self):
-@@ -2223,7 +2272,7 @@
+@@ -2229,7 +2278,7 @@
  
  	def updateExtensions(self):
  		self.extensionsList = []
@@ -8110,7 +8110,7 @@
  		self.extensionKeys = {}
  		for x in self.list:
  			if x[0] == self.EXTENSION_SINGLE:
-@@ -2250,7 +2299,7 @@
+@@ -2256,7 +2305,7 @@
  				else:
  					extensionsList.remove(extension)
  		list.extend([(x[0](), x) for x in extensionsList])
@@ -8119,7 +8119,7 @@
  
  	def extensionCallback(self, answer):
  		if answer is not None:
-@@ -2464,12 +2513,12 @@
+@@ -2470,12 +2519,12 @@
  
  class InfoBarInstantRecord:
  	"""Instant Record - handles the instantRecord action in order to
@@ -8134,7 +8134,7 @@
  			})
  		self.SelectedInstantServiceRef = None
  		if isStandardInfoBar(self):
-@@ -2551,7 +2600,7 @@
+@@ -2557,7 +2606,7 @@
  	def startInstantRecording(self, limitEvent=False):
  		begin = int(time())
  		end = begin + 3600      # dummy
@@ -8143,7 +8143,7 @@
  		info = {}
  
  		self.getProgramInfoAndEvent(info, name)
-@@ -2781,7 +2830,7 @@
+@@ -2787,7 +2836,7 @@
  	def __init__(self):
  		self["AudioSelectionAction"] = HelpableActionMap(self, "InfobarAudioSelectionActions",
  			{
@@ -8152,7 +8152,7 @@
  			})
  
  	def audioSelection(self):
-@@ -2796,7 +2845,7 @@
+@@ -2802,7 +2851,7 @@
  	def __init__(self):
  		self["SubserviceSelectionAction"] = HelpableActionMap(self, "InfobarSubserviceSelectionActions",
  			{
@@ -8161,7 +8161,7 @@
  			})
  
  		self["SubserviceQuickzapAction"] = HelpableActionMap(self, "InfobarSubserviceQuickzapActions",
-@@ -2873,7 +2922,7 @@
+@@ -2879,7 +2928,7 @@
  					keys = ["red", "", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
  					selection += 2
  				if tlist:
@@ -8170,7 +8170,7 @@
  				else:
  					self.session.open(MessageBox, _("No active subservices available."), MessageBox.TYPE_INFO, timeout=5, simple=True)
  
-@@ -2923,7 +2972,7 @@
+@@ -2929,7 +2978,7 @@
  	def __init__(self):
  		self["RedButtonActions"] = HelpableActionMap(self, "InfobarRedButtonActions",
  			{
@@ -8179,7 +8179,7 @@
  			})
  		self.onHBBTVActivation = []
  		self.onRedButtonActivation = []
-@@ -2943,7 +2992,7 @@
+@@ -2949,7 +2998,7 @@
  	def __init__(self):
  		self["TimerButtonActions"] = HelpableActionMap(self, "InfobarTimerButtonActions",
  			{
@@ -8188,7 +8188,7 @@
  			})
  
  	def timerSelection(self):
-@@ -3360,7 +3409,7 @@
+@@ -3366,7 +3415,7 @@
  		if self.teletext_plugin is not None:
  			self["TeletextActions"] = HelpableActionMap(self, "InfobarTeletextActions",
  				{
@@ -8197,7 +8197,7 @@
  				})
  		else:
  			print "no teletext plugin found!"
-@@ -3374,8 +3423,8 @@
+@@ -3380,8 +3429,8 @@
  		object.__init__(self)
  		self["SubtitleSelectionAction"] = HelpableActionMap(self, "InfobarSubtitleSelectionActions",
  			{
@@ -8242,7 +8242,7 @@
  
  		self.__event_tracker = ServiceEventTracker(screen=self, eventmap={
  				enigma.iPlayableService.evUpdatedEventInfo: self.__eventInfoChanged
-@@ -77,6 +84,88 @@
+@@ -77,6 +84,93 @@
  		assert InfoBar.instance is None, "class InfoBar is a singleton class and just one instance of this class is allowed!"
  		InfoBar.instance = self
  
@@ -8286,8 +8286,12 @@
 +
 +		selection = 0
 +		tlist = []
-+		tlist.append(("Video: " + str(xres) + "x" + str(yres) + "@" + str(fpsFloat) + "hz", ""))
++		tlist.append(("Video: " + str(xres) + "x" + str(yres) + "@" + str(fpsFloat) + "Hz", ""))
 +		tlist.append(("--", ""))
++		tlist.append(("NTSC", "ntsc"))
++		tlist.append(("480i", "480i"))
++		tlist.append(("480p", "480p"))
++		tlist.append(("PAL", "pal"))
 +		tlist.append(("576i", "576i50"))
 +		tlist.append(("576p", "576p50"))
 +		tlist.append(("720p@50hz", "720p50"))
@@ -8297,9 +8301,10 @@
 +		tlist.append(("1080p@23.976hz", "1080p23"))
 +		tlist.append(("1080p@24hz", "1080p24"))
 +		tlist.append(("1080p@25hz", "1080p25"))
++		tlist.append(("1080p@29.97hz", "1080p29"))
 +		tlist.append(("1080p@30hz", "1080p30"))
 +		tlist.append(("1080p@50hz", "1080p50"))
-+		tlist.append(("1080p@59hz", "1080p59"))
++		tlist.append(("1080p@59.94hz", "1080p59"))
 +		tlist.append(("1080p@60hz", "1080p60"))
 +		keys = ["green", "", "yellow", "blue", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" ]
 +
@@ -8308,7 +8313,7 @@
 +			if tlist[x][1] == mode:
 +				selection = x
 +		from Screens.ChoiceBox import ChoiceBox
-+		self.session.openWithCallback(self.ResolutionSelect, ChoiceBox, title=_("Please select a resolution..."), list = tlist, selection = selection, keys = keys)
++		self.session.openWithCallback(self.ResolutionSelect, ChoiceBox, title=_("Please select a resolution"), list = tlist, selection = selection, keys = keys)
 +
 +	def ResolutionSelect(self, Resolution):
 +		if not Resolution is None:
@@ -8331,7 +8336,7 @@
  	def __onClose(self):
  		InfoBar.instance = None
  
-@@ -95,6 +184,22 @@
+@@ -95,6 +189,22 @@
  		self.__serviceStarted(True)
  		self.onExecBegin.remove(self.__checkServiceStarted)
  
@@ -8354,7 +8359,7 @@
  	def serviceStarted(self):  #override from InfoBarShowHide
  		new = self.servicelist.newServicePlayed()
  		if self.execing:
-@@ -118,6 +223,19 @@
+@@ -118,6 +228,19 @@
  			from Screens.ChannelSelection import ChannelSelectionRadio
  			self.session.openWithCallback(self.ChannelSelectionRadioClosed, ChannelSelectionRadio, self)
  
@@ -8374,7 +8379,7 @@
  	def toggleTvRadio(self):
  		if self.radioTV == 1:
  			self.radioTV = 0
-@@ -152,6 +270,7 @@
+@@ -152,6 +275,7 @@
  class MoviePlayer(InfoBarBase, InfoBarShowHide, InfoBarMenu, InfoBarSeek, InfoBarShowMovies, InfoBarInstantRecord, InfoBarVmodeButton,
  		InfoBarAudioSelection, HelpableScreen, InfoBarNotifications, InfoBarServiceNotifications, InfoBarPVRState,
  		InfoBarCueSheetSupport, InfoBarMoviePlayerSummarySupport, InfoBarSubtitleSupport, Screen, InfoBarTeletextPlugin,
@@ -8382,7 +8387,7 @@
  		InfoBarServiceErrorPopupSupport, InfoBarExtensions, InfoBarPlugins, InfoBarPiP, InfoBarHDMI, InfoBarHotkey):
  
  	ENABLE_RESUME_SUPPORT = True
-@@ -163,10 +282,10 @@
+@@ -163,10 +287,10 @@
  
  		self["actions"] = HelpableActionMap(self, "MoviePlayerActions",
  			{
@@ -8397,7 +8402,7 @@
  			})
  
  		self["DirectionActions"] = HelpableActionMap(self, "DirectionActions",
-@@ -544,3 +663,7 @@
+@@ -544,3 +668,7 @@
  
  	def ref2HumanName(self, ref):
  		return enigma.eServiceCenter.getInstance().info(ref).getName(ref)
@@ -9174,13 +9179,14 @@
  from enigma import eTimer, eLabel, eConsoleAppContainer, getDesktop, eGetEnigmaDebugLvl
  
  from Components.GUIComponent import GUIComponent
-@@ -27,6 +28,15 @@
- 		hddsplit = skin.parameters.get("AboutHddSplit", 0)
+@@ -28,6 +29,16 @@
+ 		hddsplit = parameters.get("AboutHddSplit", 0)
  
  		AboutText = _("Hardware: ") + about.getHardwareTypeString() + "\n"
-+		if fileExists("/proc/stb/info/model_name"):
-+			resellername = open("/proc/stb/info/model_name", "r").read().strip()
-+			AboutText += _("Model name: ") + resellername + "\n"
++		if fileExists("/proc/stb/info/brand") and fileExists("/proc/stb/info/model_name"):
++			brandname = open("/proc/stb/info/brand", "r").read().strip()
++			modelname = open("/proc/stb/info/model_name", "r").read().strip()
++			AboutText += _("Model name: ") + brandname + _(" ") + modelname + "\n"
 +		if fileExists("/proc/stb/fp/resellerID"):
 +			resellerid = open("/proc/stb/fp/resellerID", "r").read().strip()
 +			AboutText += _("Reseller ID: ") + resellerid + "\n"
@@ -9190,7 +9196,7 @@
  		cpu = about.getCPUInfoString()
  		AboutText += _("CPU: ") + cpu + "\n"
  		AboutText += _("Image: ") + about.getImageTypeString() + "\n"
-@@ -50,7 +60,7 @@
+@@ -51,7 +62,7 @@
  
  		AboutText += _("DVB driver version: ") + about.getDriverInstalledDate() + "\n"
  
@@ -9199,7 +9205,7 @@
  		self["GStreamerVersion"] = StaticText(GStreamerVersion)
  
  		ffmpegVersion = _("Media player: ffmpeg, version ") + about.getffmpegVersionString()
-@@ -71,8 +81,11 @@
+@@ -72,8 +83,11 @@
  		if fp_version is None:
  			fp_version = ""
  		else:
