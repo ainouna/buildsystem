@@ -255,9 +255,9 @@ enigma2_release_fortis_hdbox:
 	$(SILENT)cp -f $(SKEL_ROOT)/root_enigma2/usr/local/share/enigma2/keymap_fortis.xml $(RELEASE_DIR)/usr/local/share/enigma2/keymap.xml
 
 #
-# atevio7500
+# hs8200
 #
-enigma2_release_atevio7500:
+enigma2_release_hs8200:
 	$(SILENT)install -m 0755 $(SKEL_ROOT)/release/halt_fortis_hdbox $(RELEASE_DIR)/etc/init.d/halt
 	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/frontcontroller/nuvoton/nuvoton.ko $(RELEASE_DIR)/lib/modules/
 	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/frontends/multituner/*.ko $(RELEASE_DIR)/lib/modules/
@@ -747,7 +747,7 @@ enigma2_release_base:
 	$(SILENT)ln -sf ../../bin/showiframe $(RELEASE_DIR)/usr/bin/showiframe
 	$(SILENT)ln -sf ../../usr/sbin/fw_printenv $(RELEASE_DIR)/usr/sbin/fw_setenv
 	$(SILENT)ln -sf ../../bin/grab $(RELEASE_DIR)/usr/bin/grab
-ifeq ($(BOXTYPE), $(filter $(BOXTYPE), atevio7500 fortis_hdbox octagon1008 ufs910 ufs912 ufs913 ufs922 ufc960 spark spark7162 ipbox55 ipbox99 ipbox9900 cuberevo cuberevo_mini cuberevo_mini2 cuberevo_250hd cuberevo_2000hd cuberevo_3000hd adb_box tf7700 vitamin_hd5000))
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs8200 fortis_hdbox octagon1008 ufs910 ufs912 ufs913 ufs922 ufc960 spark spark7162 ipbox55 ipbox99 ipbox9900 cuberevo cuberevo_mini cuberevo_mini2 cuberevo_250hd cuberevo_2000hd cuberevo_3000hd adb_box tf7700 vitamin_hd5000))
 	$(SILENT)cp $(SKEL_ROOT)/release/fw_env.config_$(BOXTYPE) $(RELEASE_DIR)/etc/fw_env.config
 endif
 	$(SILENT)install -m 0755 $(SKEL_ROOT)/release/rcS_enigma2_$(BOXTYPE) $(RELEASE_DIR)/etc/init.d/rcS
@@ -1099,7 +1099,7 @@ endif
 #
 	$(SILENT)find $(RELEASE_DIR)/usr/lib/enigma2/ -name '*.pyc' -exec rm -f {} \;
 ifeq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), small size))
-ifneq ($(BOXTYPE), $(filter $(BOXTYPE), adb_box atevio7500 ufs913))
+ifneq ($(BOXTYPE), $(filter $(BOXTYPE), adb_box hs8200 ufs913))
 	$(SILENT)find $(RELEASE_DIR)/usr/lib/enigma2/ -not -name 'mytest.py' -name '*.py' -exec rm -f {} \;
 else
 	$(SILENT)find $(RELEASE_DIR)/usr/lib/enigma2/ -not -name 'mytest.py' -not -name 'Language.py' -name '*.py' -exec rm -f {} \;

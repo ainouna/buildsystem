@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20210326.1
+# Version 20210423.1
 
 ##############################################
 
@@ -129,14 +129,14 @@ case $1 in
 		echo "    6)  TF77X0 HDPVR    14)  HS7810A"
 		echo "                        15)  HS7819"
 		echo
-		echo "  AB IPBox             Cuberevo"
-		echo "   16)  55HD            19)  id."
-		echo "   17)  99HD            20)  mini"
-		echo "   18)  9900HD          21)  mini2"
-		echo "   19)  9000HD          22)  250HD"
-		echo "   20)  900HD           23)  9500HD / 7000HD"
-		echo "   21)  910HD           24)  2000HD"
-		echo "   22)  91HD            25)  mini_fta / 200HD"
+		echo "  ABcom                Cuberevo"
+		echo "   16)  IPBox 55HD      19)  id."
+		echo "   17)  IPBox 99HD      20)  mini"
+		echo "   18)  IPBox 9900HD    21)  mini2"
+		echo "   19)  IPBox 9000HD    22)  250HD"
+		echo "   20)  IPBox 900HD     23)  9500HD / 7000HD"
+		echo "   21)  IPBox 910HD     24)  2000HD"
+		echo "   22)  IPBox 91HD      25)  mini_fta / 200HD"
 		echo "                        26)  3000HD / Xsarius Alpha"
 		echo
 		echo "  Fulan                Atemio"
@@ -148,7 +148,7 @@ case $1 in
 		echo "   32)  Edision argus VIP V2 [ 1 plugin tuner + 2 CI + 1 USB ]"
 		echo "   33)  Edision argus VIP2   [ 2 plugin tuners + 1 USB ]"
 		echo
-		echo "  Various sh4-based receivers"
+		echo "  Various SH4-based receivers"
 		echo "   34)  SpiderBox HL-101"
 		echo "   35)  ADB ITI-5800S(X) (nBox BSKA, BSLA, BXZB or BZZB)"
 		echo "   36)  Showbox Vitamin HD5000 (256Mbyte flash version)"
@@ -170,7 +170,7 @@ case "$REPLY" in
 	 6) BOXTYPE="tf7700";;
 	 7) BOXTYPE="fortis_hdbox";;
 	 8) BOXTYPE="octagon1008";;
-#	 9) BOXTYPE="atevio7500";;
+#	 9) BOXTYPE="hs8200";;
 	10) BOXTYPE="hs7110";;
 	11) BOXTYPE="hs7119";;
 	12) BOXTYPE="hs7420";;
@@ -203,7 +203,7 @@ case "$REPLY" in
 	39) BOXTYPE="pace7241";;
 	40) BOXTYPE="adb_2850";;
 	41) BOXTYPE="opt9600";;
-	 *) BOXTYPE="atevio7500";;
+	 *) BOXTYPE="hs8200";;
 esac
 echo "BOXTYPE=$BOXTYPE" >> config
 

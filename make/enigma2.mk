@@ -228,7 +228,7 @@ $(D)/enigma2: $(D)/enigma2.do_prepare $(D)/enigma2.do_compile
 	$(SILENT)cp -ra $(ARCHIVE)/PLi-HD_skin.git/usr/share/enigma2/* $(TARGET_DIR)/usr/local/share/enigma2
 	@echo -e "$(TERM_RED)Applying Patch:$(TERM_NORMAL) $(PLI_SKIN_PATCH)"; $(PATCH)/$(PLI_SKIN_PATCH)
 	@echo -e "Patching $(TERM_GREEN_BOLD)PLi-HD skin$(TERM_NORMAL) completed."
-#ifneq ($(BOXTYPE), $(filter $(BOXTYPE), spark spark7162 atevio7500 cuberevo cuberevo_250hd cuberevo_mini_fta cuberevo_mini cuberevo_mini2 cuberevo_2000hd cuberevo3000hd cuberevo_9500hd fortis_hdbox hs7110 hs7420 hs7810a hs7119 hs7429 hs7819 octagon1008 tf7700 ufs912 ufs913))
+#ifneq ($(BOXTYPE), $(filter $(BOXTYPE), spark spark7162 cuberevo cuberevo_250hd cuberevo_mini_fta cuberevo_mini cuberevo_mini2 cuberevo_2000hd cuberevo3000hd cuberevo_9500hd fortis_hdbox hs7110 hs7420 hs7810a hs7119 hs7429 hs7819 hs8200 octagon1008 tf7700 ufs912 ufs913))
 #	$(SILENT)rm -rf $(TARGET_DIR)/usr/local/share/enigma2/PLi-FullHD
 #	$(SILENT)rm -rf $(TARGET_DIR)/usr/local/share/enigma2/PLi-FullNightHD
 #endif

@@ -4,38 +4,29 @@
 tools-clean:
 	rm -f $(D)/tools-*
 	-$(MAKE) -C $(TOOLS_DIR)/aio-grab distclean
-	-$(MAKE) -C $(TOOLS_DIR)/gitVCInfo distclean
-	-$(MAKE) -C $(TOOLS_DIR)/satfind distclean
-	-$(MAKE) -C $(TOOLS_DIR)/showiframe distclean
-	-$(MAKE) -C $(TOOLS_DIR)/minimon distclean
-	-$(MAKE) -C $(TOOLS_DIR)/msgbox distclean
-	-$(MAKE) -C $(TOOLS_DIR)/spf_tool distclean
 	-$(MAKE) -C $(TOOLS_DIR)/devinit distclean
+	-$(MAKE) -C $(TOOLS_DIR)/eeprom_fortis distclean
+	-$(MAKE) -C $(TOOLS_DIR)/eeprom_ipbox distclean
+	-$(MAKE) -C $(TOOLS_DIR)/eeprom_ufs913 distclean
 	-$(MAKE) -C $(TOOLS_DIR)/eplayer3 distclean
 	-$(MAKE) -C $(TOOLS_DIR)/exteplayer3 distclean
 	-$(MAKE) -C $(TOOLS_DIR)/evremote2 distclean
 	-$(MAKE) -C $(TOOLS_DIR)/fp_control distclean
+	-$(MAKE) -C $(TOOLS_DIR)/gitVCInfo distclean
 	-$(MAKE) -C $(TOOLS_DIR)/hotplug distclean
-ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs7110 hs7420 hs7810a hs7119 hs7429 hs7819))
-	-$(MAKE) -C $(TOOLS_DIR)/eeprom_fortis distclean
-endif
-ifeq ($(BOXTYPE), $(filter $(BOXTYPE), ipbox55 ipbox99 ipbox9900 cuberevo cuberevo_mini cuberevo_mini2 cuberevo_250hd cuberevo_2000hd cuberevo_3000hd))
-	-$(MAKE) -C $(TOOLS_DIR)/eeprom_ipbox distclean
-endif
-ifeq ($(MEDIAFW), $(filter $(MEDIAFW), eplayer3 gst-eplayer3))
 	-$(MAKE) -C $(TOOLS_DIR)/libeplayer3_org distclean
 	-$(MAKE) -C $(TOOLS_DIR)/libeplayer3 distclean
-endif
-ifeq ($(IMAGE), $(filter $(IMAGE), enigma2 enigma2-wlandriver))
 	-$(MAKE) -C $(TOOLS_DIR)/libmme_host distclean
 	-$(MAKE) -C $(TOOLS_DIR)/libmme_image distclean
-endif
+	-$(MAKE) -C $(TOOLS_DIR)/minimon distclean
+	-$(MAKE) -C $(TOOLS_DIR)/msgbox distclean
+	-$(MAKE) -C $(TOOLS_DIR)/satfind distclean
+	-$(MAKE) -C $(TOOLS_DIR)/showiframe distclean
+	-$(MAKE) -C $(TOOLS_DIR)/spf_tool distclean
 	-$(MAKE) -C $(TOOLS_DIR)/stfbcontrol distclean
 	-$(MAKE) -C $(TOOLS_DIR)/streamproxy distclean
-ifeq ($(BOXTYPE), $(filter $(BOXTYPE), tf7700))
 	-$(MAKE) -C $(TOOLS_DIR)/tfd2mtd distclean
 	-$(MAKE) -C $(TOOLS_DIR)/tffpctl distclean
-endif
 	-$(MAKE) -C $(TOOLS_DIR)/tuxcom distclean
 	-$(MAKE) -C $(TOOLS_DIR)/ustslave distclean
 	-$(MAKE) -C $(TOOLS_DIR)/vfdctl distclean
@@ -476,7 +467,7 @@ ifeq ($(BOXTYPE), $(filter $(BOXTYPE), ufs913))
 TOOLS += $(D)/tools-eeprom-ufs913
 endif
 TOOLS += $(D)/tools-evremote2
-ifeq ($(BOXTYPE), $(filter $(BOXTYPE), adb_box atemio520 atemio530 atevio7500 cuberevo cuberevo_250hd cuberevo_2000hd cuberevo_3000hd cuberevo_9500hd cuberevo_mini cuberevo_mini2 cuberevo_mini_fta fortis_hdbox hl101 hs5101 hs7110 hs7420 hs7810a hs7119 hs7429 hs7819 octagon1008 opt9600 ufc960 ufs910 ufs912 ufs913 ufs922 spark spark7162 tf7700hdpvr vip1_v1 vip1_v2 vip2 vitamin_hd5000))
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE), adb_box atemio520 atemio530 cuberevo cuberevo_250hd cuberevo_2000hd cuberevo_3000hd cuberevo_9500hd cuberevo_mini cuberevo_mini2 cuberevo_mini_fta fortis_hdbox hl101 hs5101 hs7110 hs7420 hs7810a hs7119 hs7429 hs7819 hs8200 octagon1008 opt9600 ufc960 ufs910 ufs912 ufs913 ufs922 spark spark7162 tf7700hdpvr vip1_v1 vip1_v2 vip2 vitamin_hd5000))
 TOOLS += $(D)/tools-fp_control
 endif
 TOOLS += $(D)/tools-hotplug
@@ -486,7 +477,7 @@ TOOLS += $(D)/tools-libmme_image
 endif
 ifneq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), small size))
 ifneq ($(EXTERNAL_LCD), none)
-#TOOLS += $(D)/tools-minimon
+TOOLS += $(D)/tools-minimon
 endif
 endif
 ifeq ($(PLUGINS_NEUTRINO), Yes)
@@ -523,3 +514,4 @@ endif
 $(D)/tools: $(TOOLS)
 	$(START_BUILD)
 	$(TOUCH)
+

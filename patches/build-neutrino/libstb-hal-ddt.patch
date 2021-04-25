@@ -52,19 +52,19 @@
  
  AC_ARG_WITH(boxmodel,
  	AS_HELP_STRING([--with-boxmodel], [valid for generic: raspi])
--AS_HELP_STRING([], [valid for duckbox: ufs910, ufs912, ufs913, ufs922, atevio7500, fortis_hdbox, octagon1008, cuberevo, cuberevo_mini, cuberevo_mini2, cuberevo_250hd, cuberevo_2000hd, cuberevo_3000hd, ipbox9900, ipbox99, ipbox55, tf7700])
-+AS_HELP_STRING([], [valid for duckbox: ufs910, ufs912, ufs913, ufs922, atevio7500, fortis_hdbox, octagon1008, hs7110, hs7420, hs7810a, hs7119, hs7429, hs7819, dp7000, cuberevo, cuberevo_mini, cuberevo_mini2, cuberevo_250hd, cuberevo_2000hd, cuberevo_3000hd, ipbox9900, ipbox99, ipbox55, tf7700, hl101, vip1_v1, vip1_v2, vip2, adb_box, vitamin_hd5000, pace7241, opt9600])
+-AS_HELP_STRING([], [valid for duckbox: ufs910, ufs912, ufs913, ufs922, hs8200, fortis_hdbox, octagon1008, cuberevo, cuberevo_mini, cuberevo_mini2, cuberevo_250hd, cuberevo_2000hd, cuberevo_3000hd, ipbox9900, ipbox99, ipbox55, tf7700])
++AS_HELP_STRING([], [valid for duckbox: ufs910, ufs912, ufs913, ufs922, hs8200, fortis_hdbox, octagon1008, hs7110, hs7420, hs7810a, hs7119, hs7429, hs7819, dp7000, cuberevo, cuberevo_mini, cuberevo_mini2, cuberevo_250hd, cuberevo_2000hd, cuberevo_3000hd, ipbox9900, ipbox99, ipbox55, tf7700, hl101, vip1_v1, vip1_v2, vip2, adb_box, vitamin_hd5000, pace7241, opt9600])
  AS_HELP_STRING([], [valid for spark: spark, spark7162])
  AS_HELP_STRING([], [valid for armbox: bre2ze4k, hd51, hd60, hd61, vusolo4k, vuduo4k, vuduo4kse, vuultimo4k, vuzero4k, vuuno4kse, vuuno4k, h7, osmio4k, osmio4kplus])
  AS_HELP_STRING([], [valid for mipsbox: vuduo]),
  	[case "${withval}" in
--		ufs910|ufs912|ufs913|ufs922|atevio7500|fortis_hdbox|octagon1008|cuberevo|cuberevo_mini|cuberevo_mini2|cuberevo_250hd|cuberevo_2000hd|cuberevo_3000hd|ipbox9900|ipbox99|ipbox55|tf7700)
-+		ufs910|ufs912|ufs913|ufs922|atevio7500|fortis_hdbox|octagon1008|hs7110|hs7420|hs7810a|hs7119|hs7429|hs7819|dp7000|cuberevo|cuberevo_mini|cuberevo_mini2|cuberevo_250hd|cuberevo_2000hd|cuberevo_3000hd|ipbox9900|ipbox99|ipbox55|tf7700|hl101|vip1_v1|vip1_v2|vip2|adb_box|vitamin_hd5000|pace7241|opt9600)
+-		ufs910|ufs912|ufs913|ufs922|hs8200|fortis_hdbox|octagon1008|cuberevo|cuberevo_mini|cuberevo_mini2|cuberevo_250hd|cuberevo_2000hd|cuberevo_3000hd|ipbox9900|ipbox99|ipbox55|tf7700)
++		ufs910|ufs912|ufs913|ufs922|hs8200|fortis_hdbox|octagon1008|hs7110|hs7420|hs7810a|hs7119|hs7429|hs7819|dp7000|cuberevo|cuberevo_mini|cuberevo_mini2|cuberevo_250hd|cuberevo_2000hd|cuberevo_3000hd|ipbox9900|ipbox99|ipbox55|tf7700|hl101|vip1_v1|vip1_v2|vip2|adb_box|vitamin_hd5000|pace7241|opt9600)
  			if test "$BOXTYPE" = "duckbox"; then
  				BOXMODEL="$withval"
  			else
 @@ -276,6 +244,12 @@
- AM_CONDITIONAL(BOXMODEL_ATEVIO7500, test "$BOXMODEL" = "atevio7500")
+ AM_CONDITIONAL(BOXMODEL_HS8200, test "$BOXMODEL" = "hs8200")
  AM_CONDITIONAL(BOXMODEL_FORTIS_HDBOX, test "$BOXMODEL" = "fortis_hdbox")
  AM_CONDITIONAL(BOXMODEL_OCTAGON1008, test "$BOXMODEL" = "octagon1008")
 +AM_CONDITIONAL(BOXMODEL_HS7110, test "$BOXMODEL" = "hs7110")
@@ -258,7 +258,7 @@
 +	FP_ICON_DOWNLOAD = 0,
 +	FP_ICON_CAM1 = 0,
 +	FP_ICON_MAX = ICON_COLON
-+#elif defined(BOXMODEL_ATEVIO7500)
++#elif defined(BOXMODEL_HS8200)
 +	ICON_STANDBY = 1, // 01
 +	ICON_REC,         // 02
 +	ICON_TIMESHIFT,   // 03
@@ -594,7 +594,7 @@
 + && !defined(BOXMODEL_UFS913) \
 + && !defined(BOXMODEL_FORTIS_HDBOX) \
 + && !defined(BOXMODEL_OCTAGON1008) \
-+ && !defined(BOXMODEL_ATEVIO7500) \
++ && !defined(BOXMODEL_HS8200) \
 + && !defined(BOXMODEL_HS7110) \
 + && !defined(BOXMODEL_HS7420) \
 + && !defined(BOXMODEL_HS7810A) \

@@ -98,11 +98,11 @@ ifeq ($(IMAGE), $(filter $(IMAGE), neutrino neutrino-wlandriver))
 OCTAGON1008_PATCHES_24 += linux-sh4-octagon1008_mtdconcat_stm24_$(KERNEL_LABEL).patch
 endif
 
-ATEVIO7500_PATCHES_24 = $(COMMON_PATCHES_24) \
+HS8200_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-sh4-lmb_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-7105_clocks_no_warnings_stm24_$(KERNEL_LABEL).patch \
-		linux-sh4-atevio7500_setup_stm24_$(KERNEL_LABEL).patch \
-		linux-sh4-atevio7500_mtdconcat_stm24_$(KERNEL_LABEL).patch \
+		linux-sh4-hs8200_setup_stm24_$(KERNEL_LABEL).patch \
+		linux-sh4-hs8200_mtdconcat_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-stmmac_stm24_$(KERNEL_LABEL).patch
 
 HS7110_PATCHES_24 = $(COMMON_PATCHES_24) \

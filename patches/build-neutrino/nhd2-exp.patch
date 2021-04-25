@@ -63,7 +63,7 @@
  				valid for kathrein: ufs910, ufs922, ufs912, ufs913, ufc960
  				valid for ipbox: ipbox55, ipbox99, ipbox9900
  				valid for ipbox: hl101
- 				valid for atevio: atevio700,atevio7000,atevio7500,atevio7600
+ 				valid for atevio: atevio700,atevio7000,hs8200,atevio7600
  				valid for octagon: octagon1008
 +				valid for fortis: hs7110, hs7420, hs7810a, hs7119, hs7429, hs7819
 +				valid for vip: vip1_v1, vip1_v2, vip2
@@ -189,7 +189,7 @@
  AM_CONDITIONAL(BOXMODEL_UFS912, test "$BOXMODEL" = "ufs912")
  AM_CONDITIONAL(BOXMODEL_UFS913, test "$BOXMODEL" = "ufs913")
 @@ -704,7 +794,27 @@
- AM_CONDITIONAL(BOXMODEL_ATEVIO7500, test "$BOXMODEL" = "atevio7500")
+ AM_CONDITIONAL(BOXMODEL_HS8200, test "$BOXMODEL" = "hs8200")
  AM_CONDITIONAL(BOXMODEL_ATEVIO7600, test "$BOXMODEL" = "atevio7600")
  
 +AM_CONDITIONAL(BOXMODEL_FORTIS_HDBOX, test "$BOXMODEL" = "fortis_hdbox")
@@ -814,7 +814,7 @@
 + || defined(BOXMODEL_HS7429)
 +#define VFD_LENGTH 8
 +#elif defined(BOXMODEL_FORTIS_HDBOX) \
-+ ||   defined(BOXMODEL_ATEVIO7500)
++ ||   defined(BOXMODEL_HS8200)
 +#define VFD_LENGTH 12
 +#elif defined(BOXMODEL_HS7119) \
 + || defined(BOXMODEL_HS7810A) \
@@ -993,7 +993,7 @@
 +	VFD_ICON_STANDBY	= 0
 +} vfd_icon;
 +
-+#elif defined(BOXMODEL_ATEVIO7500)
++#elif defined(BOXMODEL_HS8200)
 +typedef enum //HS8200 icon numbers and their names
 +{
 +	HS8200_ICON_STANDBY = 1, // 01
@@ -1019,7 +1019,7 @@
 +	HS8200_ICON_TV,          // 21
 +	HS8200_ICON_RADIO,       // 22
 +	ICON_ALL                 // 23 new nuvoton will set/clear all icons with this number
-+} atevio7500_vfd_icon;
++} hs8200_vfd_icon;
 +
 +typedef enum
 +{
@@ -1295,7 +1295,7 @@
 +
 +#elif defined(BOXMODEL_FORTIS_HDBOX) \
 +   || defined(BOXMODEL_OCTAGON1008) \
-+   || defined(BOXMODEL_ATEVIO7500) \
++   || defined(BOXMODEL_HS8200) \
 +   || defined(BOXMODEL_HS7110) \
 +   || defined(BOXMODEL_HS7420) \
 +   || defined(BOXMODEL_HS7810A) \
@@ -1410,7 +1410,7 @@
 -#if defined (PLATFORM_KATHREIN) || defined (PLATFORM_SPARK7162)
 +  #elif defined(BOXMODEL_FORTIS_HDBOX) \
 +     || defined(BOXMODEL_OCTAGON1008) \
-+     || defined(BOXMODEL_ATEVIO7500) \
++     || defined(BOXMODEL_HS8200) \
 +     || defined(BOXMODEL_HS7110) \
 +     || defined(BOXMODEL_HS7420) \
 +     || defined(BOXMODEL_HS7810A) \
@@ -1424,7 +1424,7 @@
 +   || defined(PLATFORM_SPARK7162) \
 +   || defined(BOXMODEL_FORTIS_HDBOX) \
 +   || defined(BOXMODEL_OCTAGON1008) \
-+   || defined(BOXMODEL_ATEVIO7500) \
++   || defined(BOXMODEL_HS8200) \
 +   || defined(BOXMODEL_ADB_BOX)
  static bool usb_icon = false;
  static bool timer_icon = false;
@@ -1540,7 +1540,7 @@
 +#if defined(BOXMODEL_OCTAGON1008)
 +			ShowIcon((vfd_icon)HS9510_ICON_REWIND, false);
 +			ShowIcon((vfd_icon)HS9510_ICON_FF, false);
-+#elif defined(BOXMODEL_ATEVIO7500)
++#elif defined(BOXMODEL_HS8200)
 +			ShowIcon((vfd_icon)HS8200_ICON_REWIND, false);
 +			ShowIcon((vfd_icon)HS8200_ICON_FF, false);
 +			ShowIcon((vfd_icon)HS8200_ICON_PAUSE, false);
@@ -1563,7 +1563,7 @@
 +#if defined(BOXMODEL_OCTAGON1008)
 +			ShowIcon((vfd_icon)HS9510_ICON_REWIND, false);
 +			ShowIcon((vfd_icon)HS9510_ICON_FF, false);
-+#elif defined(BOXMODEL_ATEVIO7500)
++#elif defined(BOXMODEL_HS8200)
 +			ShowIcon((vfd_icon)HS8200_ICON_REWIND, false);
 +			ShowIcon((vfd_icon)HS8200_ICON_FF, false);
 +			ShowIcon((vfd_icon)HS8200_ICON_PAUSE, false);
@@ -1586,7 +1586,7 @@
 +#if defined(BOXMODEL_OCTAGON1008)
 +			ShowIcon((vfd_icon)HS9510_ICON_REWIND, false);
 +			ShowIcon((vfd_icon)HS9510_ICON_FF, false);
-+#elif defined(BOXMODEL_ATEVIO7500)
++#elif defined(BOXMODEL_HS8200)
 +			ShowIcon((vfd_icon)HS8200_ICON_REWIND, false);
 +			ShowIcon((vfd_icon)HS8200_ICON_FF, false);
 +			ShowIcon((vfd_icon)HS8200_ICON_PAUSE, true);
@@ -1607,7 +1607,7 @@
 +#if defined(BOXMODEL_OCTAGON1008)
 +			ShowIcon((vfd_icon)HS9510_ICON_REWIND, false);
 +			ShowIcon((vfd_icon)HS9510_ICON_FF, true);
-+#elif defined(BOXMODEL_ATEVIO7500)
++#elif defined(BOXMODEL_HS8200)
 +			ShowIcon((vfd_icon)HS8200_ICON_REWIND, false);
 +			ShowIcon((vfd_icon)HS8200_ICON_FF, true);
 +			ShowIcon((vfd_icon)HS8200_ICON_PAUSE, false);
@@ -1627,7 +1627,7 @@
 +#if defined(BOXMODEL_OCTAGON1008)
 +			ShowIcon((vfd_icon)HS9510_ICON_REWIND, true);
 +			ShowIcon((vfd_icon)HS9510_ICON_FF, false);
-+#elif defined(BOXMODEL_ATEVIO7500)
++#elif defined(BOXMODEL_HS8200)
 +			ShowIcon((vfd_icon)HS8200_ICON_REWIND, true);
 +			ShowIcon((vfd_icon)HS8200_ICON_FF, false);
 +			ShowIcon((vfd_icon)HS8200_ICON_PAUSE, false);
@@ -1665,7 +1665,7 @@
  			ShowDiskLevel();
  			ShowIcon(VFD_ICON_STANDBY, false);	
 -#endif
-+#elif defined(BOXMODEL_FORTIS_HDBOX) || defined(BOXMODEL_ATEVIO7500)
++#elif defined(BOXMODEL_FORTIS_HDBOX) || defined(BOXMODEL_HS8200)
 +			ShowIcon(VFD_ICON_USB, usb_icon);	
 +			ShowIcon(VFD_ICON_STANDBY, false);	
  			showclock = true;
@@ -1770,7 +1770,7 @@
 -	data.start_address = power;
 +
 +	data.start_address = 0;
-+#if defined(BOXMODEL_FORTIS_HDBOX) || defined(BOXMODEL_ATEVIO7500)
++#if defined(BOXMODEL_FORTIS_HDBOX) || defined(BOXMODEL_HS8200)
 +	data.data[0] = power ? 0xf2 : 1;
 +	data.data[4] = power * 2;
 +#elif defined(BOXMODEL_OCTAGON1008) \
@@ -1859,7 +1859,7 @@
 +	}	closeDevice();
 +  #elif defined(BOXMODEL_FORTIS_HDBOX) \
 +     || defined(BOXMODEL_OCTAGON1008)  \
-+     || defined(BOXMODEL_ATEVIO7500)   \
++     || defined(BOXMODEL_HS8200)   \
 +     || defined(BOXMODEL_HS7420)       \
 +     || defined(BOXMODEL_HS7810A)      \
 +     || defined(BOXMODEL_HS7119)       \
@@ -1939,7 +1939,7 @@
 +   || defined(PLATFORM_SPARK7162) \
 +   || defined(BOXMODEL_FORTIS_HDBOX) \
 +   || defined(BOXMODEL_OCTAGON1008) \
-+   || defined(BOXMODEL_ATEVIO7500) \
++   || defined(BOXMODEL_HS8200) \
 +   || defined(BOXMODEL_ADB_BOX)
  	switch (icon)
  	{
@@ -1974,7 +1974,7 @@
 +	}
 +  #elif defined(BOXMODEL_FORTIS_HDBOX) \
 +     || defined(BOXMODEL_OCTAGON1008) \
-+     || defined(BOXMODEL_ATEVIO7500) \
++     || defined(BOXMODEL_HS8200) \
 +     || defined(BOXMODEL_HS7420) \
 +     || defined(BOXMODEL_HS7810A) \
 +     || defined(BOXMODEL_HS7119) \
@@ -2046,7 +2046,7 @@
 -	if(write(fd , text.c_str(), len > 16? 16 : len ) < 0)
 +//  #if defined(BOXMODEL_OCTAGON1008) || defined(BOXMODEL_HS7420) || defined(BOXMODEL_HS7429)
 +//	if (write(fd, text.c_str(), len > 8 ? 8 : len ) < 0)
-+//  #elif defined(BOXMODEL_FORTIS_HDBOX) || defined(BOXMODEL_ATEVIO7500)
++//  #elif defined(BOXMODEL_FORTIS_HDBOX) || defined(BOXMODEL_HS8200)
 +//	if (write(fd, text.c_str(), len > 12 ? 12 : len ) < 0)
 +//  #elif defined(BOXMODEL_HS7810A) || defined(BOXMODEL_HS7119) || defined(BOXMODEL_HS7819)
 +//	if (write(fd, text.c_str(), len > 4 ? 4 : len ) < 0)
@@ -2112,7 +2112,7 @@
  	
 -#if defined (PLATFORM_VENTON)	
 +#if defined (PLATFORM_VENTON) \
-+ || defined (BOXMODEL_ATEVIO7500) \
++ || defined (BOXMODEL_HS8200) \
 + || defined (BOXMODEL_FORTIS_HDBOX) \
 + || defined (BOXMODEL_TF7700) \
 + || defined (BOXMODEL_ADB_BOX)
@@ -2144,7 +2144,7 @@
 --- nhd2-exp.org/src/nhttpd/tuxboxapi/neutrinoyparser.cpp
 +++ nhd2-exp/src/nhttpd/tuxboxapi/neutrinoyparser.cpp
 @@ -679,6 +679,26 @@
- 	return "atevio7500";
+ 	return "hs8200";
  #elif defined (BOXMODEL_ATEVIO7600)
  	return "atevio7600";
 +#elif defined (BOXMODEL_FORTIS_HDBOX)

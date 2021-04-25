@@ -131,13 +131,13 @@
 +	AC_DEFINE(ENABLE_OCTAGON1008, 1, [enable octagon1008 stuff])
 +fi
 +
-+AC_ARG_ENABLE(atevio7500,
-+	[  --enable-atevio7500      enable atevio7500 stuff],
-+	[AC_DEFINE(ENABLE_ATEVIO7500, 1, [enable atevio7500 stuff])])
++AC_ARG_ENABLE(hs8200,
++	[  --enable-hs8200      enable hs8200 stuff],
++	[AC_DEFINE(ENABLE_HS8200, 1, [enable hs8200 stuff])])
 +
-+AM_CONDITIONAL(ENABLE_ATEVIO7500, test "$enable_atevio7500" = "yes")
-+if test "$enable_atevio7500" = "yes"; then
-+	AC_DEFINE(ENABLE_ATEVIO7500, 1, [enable atevio7500 stuff])
++AM_CONDITIONAL(ENABLE_HS8200, test "$enable_hs8200" = "yes")
++if test "$enable_hs8200" = "yes"; then
++	AC_DEFINE(ENABLE_HS8200, 1, [enable hs8200 stuff])
 +fi
 +
 +AC_ARG_ENABLE(fortis_hdbox,
@@ -337,8 +337,8 @@
  AC_ARG_WITH(boxtype,
 -	[  --with-boxtype=NAME box type [[none,dm800...]]],
 -	[BOXTYPE="$withval"],[BOXTYPE="dm800"])
-+	[  --with-boxtype=NAME box type [[none,atevio7500...]]],
-+	[BOXTYPE="$withval"],[BOXTYPE="atevio7500"])
++	[  --with-boxtype=NAME box type [[none,hs8200...]]],
++	[BOXTYPE="$withval"],[BOXTYPE="hs8200"])
  AC_SUBST(BOXTYPE)
  AC_DEFINE_UNQUOTED(BOXTYPE,"$BOXTYPE",[box type])
  
@@ -937,7 +937,7 @@
 +	memset (chars, ' ', 63);
 +#if defined (ENABLE_SPARK)
 +	vfd_type = 4;
-+#elif defined (ENABLE_ATEVIO7500)
++#elif defined (ENABLE_HS8200)
 +	vfd_type = 5;
 +#elif defined (ENABLE_FORTIS_HDBOX)
 +	vfd_type = 6;
@@ -1138,7 +1138,7 @@
 +		char str[] = "FS9000/9200 Enigma2";
 +	#elif defined (ENABLE_OCTAGON1008)
 +		char str[] = "HS9510 Enigma2";
-+	#elif defined (ENABLE_ATEVIO7500)
++	#elif defined (ENABLE_HS8200)
 +		char str[] = "HS8200 Enigma2";
 +	#elif defined (ENABLE_HS7119)
 +		char str[] = "7119 Enigma2";
@@ -1182,7 +1182,7 @@
 +	/* These boxes can control display brightness */
 +	#if !defined (ENABLE_FORTIS_HDBOX) \
 +	 && !defined (ENABLE_OCTAGON1008) \
-+	 && !defined (ENABLE_ATEVIO7500) \
++	 && !defined (ENABLE_HS8200) \
 +	 && !defined (ENABLE_CUBEREVO) \
 +	 && !defined (ENABLE_CUBEREVO_MINI) \
 +	 && !defined (ENABLE_CUBEREVO_MINI2) \
@@ -1283,7 +1283,7 @@
 +	vfd.vfd_clear_icons();
 +	#if !defined (ENABLE_FORTIS_HDBOX) \
 +	 && !defined (ENABLE_OCTAGON1008) \
-+	 && !defined (ENABLE_ATEVIO7500) \
++	 && !defined (ENABLE_HS8200) \
 +	 && !defined (ENABLE_CUBEREVO) \
 +	 && !defined (ENABLE_CUBEREVO_MINI) \
 +	 && !defined (ENABLE_CUBEREVO_MINI2) \
@@ -1314,7 +1314,7 @@
 +// These models handle display scrolling in a separate thread
 +#if defined (ENABLE_FORTIS_HDBOX) \
 + || defined (ENABLE_OCTAGON1008) \
-+ || defined (ENABLE_ATEVIO7500) \
++ || defined (ENABLE_HS8200) \
 + || defined (ENABLE_HS7420) \
 + || defined (ENABLE_HS7429) \
 + || defined (ENABLE_HS7119) \
@@ -1819,7 +1819,7 @@
 +#elif defined (ENABLE_VITAMIN_HD5000)
 +	#define VFDLENGTH 11
 +#elif defined (ENABLE_FORTIS_HDBOX) \
-+   || defined (ENABLE_ATEVIO7500) \
++   || defined (ENABLE_HS8200) \
 +   || defined (ENABLE_CUBEREVO)
 +	#define VFDLENGTH 12
 +#elif defined (ENABLE_CUBEREVO_9500HD)
@@ -1844,7 +1844,7 @@
 +#define ICON_MAX 39
 +#elif defined (ENABLE_OCTAGON1008)
 +#define ICON_MAX 28
-+#elif defined (ENABLE_ATEVIO7500)
++#elif defined (ENABLE_HS8200)
 +#define ICON_MAX 22
 +#elif defined (ENABLE_UFS912) \
 + ||   defined (ENABLE_UFS913)
@@ -5643,7 +5643,7 @@
  SystemInfo["Blindscan_t2_available"] = fileCheck("/proc/stb/info/vumodel") and model.startswith("vu")
  SystemInfo["RcTypeChangable"] = not(model.startswith("et8500") or model.startswith("et7")) and pathExists("/proc/stb/ir/rc/type")
 -SystemInfo["HasFullHDSkinSupport"] = model not in ("et4000", "et5000", "sh1", "hd500c", "hd1100", "xp1000", "lc")
-+SystemInfo["HasFullHDSkinSupport"] = HardwareInfo().get_device_model() in ("adb_box", "atevio7500", "cuberevo", "cuberevo_mini-fta", "cuberevo-250hd", "cuberevo-mini", "cuberevo-mini2", "cuberevo-2000hd", "cuberevo-3000hd", "cuberevo-9500hd", "hdbox", "hs7110", "hs7420", "hs7810a", "hs7119", "hs7429", "hs7819", "hl101", "octagon1008", "spark", "spark7162", "tf7700hdpvr", "ufs912", "ufs913", "vip1_v1", "vip1_v2", "vip2", "vitamin-hd5000", "opt9600")
++SystemInfo["HasFullHDSkinSupport"] = HardwareInfo().get_device_model() in ("adb_box", "hs8200", "cuberevo", "cuberevo_mini-fta", "cuberevo-250hd", "cuberevo-mini", "cuberevo-mini2", "cuberevo-2000hd", "cuberevo-3000hd", "cuberevo-9500hd", "hdbox", "hs7110", "hs7420", "hs7810a", "hs7119", "hs7429", "hs7819", "hl101", "octagon1008", "spark", "spark7162", "tf7700hdpvr", "ufs912", "ufs913", "vip1_v1", "vip1_v2", "vip2", "vitamin-hd5000", "opt9600")
  SystemInfo["HasBypassEdidChecking"] = fileCheck("/proc/stb/hdmi/bypass_edid_checking")
  SystemInfo["HasColorspace"] = fileCheck("/proc/stb/video/hdmi_colorspace")
  SystemInfo["HasColorspaceSimple"] = SystemInfo["HasColorspace"] and model in "vusolo4k"
@@ -5667,7 +5667,7 @@
 -SystemInfo["HasSVideo"] = model in ("dm8000")
 -SystemInfo["HasComposite"] = model not in ("i55", "gbquad4k", "gbue4k", "hd1500", "osnino", "osninoplus", "purehd", "purehdse", "revo4k", "vusolo4k", "vuzero4k", "vuduo4k", "vuduo4kse", "vuuno4k", "vuuno4kse", "vuultimo4k")
 +SystemInfo["HasHDMI-CEC"] = fileExists("/lib/modules/cec.ko") and (fileExists("proc/stb/cec/send") or fileExists("stb/hdmi/cec"))
-+SystemInfo["HasYPbPr"] = HardwareInfo().get_device_model() in ("adb_box", "atevio7500", "cuberevo", "cuberevo-mini-fta", "cuberevo-250hd", "cuberevo-mini", "cuberevo-mini2", "cuberevo-2000hd", "cuberevo-3000hd", "cuberevo-9500hd", "hdbox", "octagon1008", "hs7420", "hs7429", "hl101", "tf7700hdpvr", "ufs912", "ufs913", "vip1_v1", "vip1_v2", "vip2", "vitamin_hd5000", "opt9600")
++SystemInfo["HasYPbPr"] = HardwareInfo().get_device_model() in ("adb_box", "hs8200", "cuberevo", "cuberevo-mini-fta", "cuberevo-250hd", "cuberevo-mini", "cuberevo-mini2", "cuberevo-2000hd", "cuberevo-3000hd", "cuberevo-9500hd", "hdbox", "octagon1008", "hs7420", "hs7429", "hl101", "tf7700hdpvr", "ufs912", "ufs913", "vip1_v1", "vip1_v2", "vip2", "vitamin_hd5000", "opt9600")
 +SystemInfo["HasScart"] = HardwareInfo().get_device_model() not in ("hs7110", "hs7119")
 +SystemInfo["HasSVideo"] = HardwareInfo().get_device_model() in ("cuberevo")
 +SystemInfo["HasComposite"] = HardwareInfo().get_device_model() not in ("cuberevo_mini_fta", "cuberevo_250hd")
@@ -8353,7 +8353,7 @@
 +					if perc > 20:
 +						if os.path.isfile('/proc/stb/info/model'):
 +							model = str(open("/proc/stb/info/model").read())
-+							if model.startswith("spark7162") or model.startswith("tf7700hdpvr") or model.startswith("octagon1008") or model.startswith("hdbox") or model.startswith("atevio7500") or model.startswith("hs7420") or model.startswith("hs7429") or model.startswith("vitamin-hd5000") or model.startswith("hl101") or model.startswith("vip1-v1") or model.startswith("vip1-v2") or model.startswith("vip2"):
++							if model.startswith("spark7162") or model.startswith("tf7700hdpvr") or model.startswith("octagon1008") or model.startswith("hdbox") or model.startswith("hs8200") or model.startswith("hs7420") or model.startswith("hs7429") or model.startswith("vitamin-hd5000") or model.startswith("hl101") or model.startswith("vip1-v1") or model.startswith("vip1-v2") or model.startswith("vip2"):
 +								evfd.getInstance().vfd_write_string("START %02d" % perc)
 +							elif model.startswith("ufs912") or model.startswith("ufs913"):
 +								evfd.getInstance().vfd_write_string("Enigma2 START %02d" % perc)
@@ -9447,7 +9447,7 @@
 +			idx = 4
 +		elif rcType == 11:	# Topfield TF77X0HDPVR
 +			idx = 5
-+		elif rcType == 12:	# Kathrein UFS912, UFS913
++		elif rcType == 12:	# Kathrein UFS912
 +			idx = 6
 +		elif rcType == 13:	# CubeRevo Universal
 +			idx = 7
@@ -9553,7 +9553,7 @@
 -			("h9combo", 28),
 -			("h10", 28)
 +			("fortis-hdbox", 7),
-+			("atevio7500", 7),
++			("hs8200", 7),
 +			("hs9510", 8),
 +			("hs7420", 8),
 +			("hs7429", 8),
@@ -9746,7 +9746,7 @@
 -ustym4kpro     uclan
 +hdbox             fs9000
 +octagon1008       hs9510
-+atevio7500        fs9000
++hs8200            fs9000
 +hs7110            hs7110
 +hs7119            hs7110
 +hs7420            hs9510

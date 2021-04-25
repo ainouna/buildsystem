@@ -50,7 +50,7 @@ GIT_NAME_FLASH       ?= Audioniek
 # default config...
 KBUILD_VERBOSE       ?= normal
 BOXARCH              ?= sh4
-BOXTYPE              ?= atevio7500
+BOXTYPE              ?= hs8200
 BOXARCH              ?= sh4
 KERNEL_STM           ?= p0217
 IMAGE                ?= neutrino-wlandriver
@@ -484,11 +484,11 @@ PLATFORM_CPPFLAGS += -DPLATFORM_ATEMIO530
 DRIVER_PLATFORM   += ATEMIO530=atemio530
 E_CONFIG_OPTS     += --enable-atemio530
 endif
-ifeq ($(BOXTYPE), atevio7500)
-KERNEL_PATCHES_24  = $(ATEVIO7500_PATCHES_24)
-PLATFORM_CPPFLAGS += -DPLATFORM_ATEVIO7500
-DRIVER_PLATFORM   += ATEVIO7500=atevio7500
-E_CONFIG_OPTS     += --enable-atevio7500
+ifeq ($(BOXTYPE), hs8200)
+KERNEL_PATCHES_24  = $(HS8200_PATCHES_24)
+PLATFORM_CPPFLAGS += -DPLATFORM_HS8200
+DRIVER_PLATFORM   += HS8200=hs8200
+E_CONFIG_OPTS     += --enable-hs8200
 endif
 ifeq ($(BOXTYPE), octagon1008)
 KERNEL_PATCHES_24  = $(OCTAGON1008_PATCHES_24)
