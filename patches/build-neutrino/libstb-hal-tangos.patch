@@ -71,20 +71,26 @@
  
  AC_ARG_WITH(boxmodel,
  	AS_HELP_STRING([--with-boxmodel], [valid for generic: raspi])
--AS_HELP_STRING([], [valid for duckbox: ufs910, ufs912, ufs913, ufs922, hs8200, fortis_hdbox, octagon1008, hs7110, hs7810a, hs7119, hs7819, dp7000, cuberevo, cuberevo_mini, cuberevo_mini2, cuberevo_250hd, cuberevo_2000hd, cuberevo_3000hd, ipbox9900, ipbox99, ipbox55, arivalink200, tf7700, hl101])
-+AS_HELP_STRING([], [valid for duckbox: ufs910, ufs912, ufs913, ufs922, hs8200, fortis_hdbox, octagon1008, hs7110, hs7420, hs7810a, hs7119, hs7429, hs7819, dp7000, cuberevo, cuberevo_mini, cuberevo_mini2, cuberevo_250hd, cuberevo_2000hd, cuberevo_3000hd, ipbox9900, ipbox99, ipbox55, arivalink200, tf7700, hl101, adb_box, vip1_v1, vip1_v2, vip2, vitamin_hd5000, pace7241, opt9600])
+-AS_HELP_STRING([], [valid for duckbox: ufs910, ufs912, ufs913, ufs922, atevio7500, fortis_hdbox, octagon1008, hs7110, hs7810a, hs7119, hs7819, dp7000, cuberevo, cuberevo_mini, cuberevo_mini2, cuberevo_250hd, cuberevo_2000hd, cuberevo_3000hd, ipbox9900, ipbox99, ipbox55, arivalink200, tf7700, hl101])
++AS_HELP_STRING([], [valid for duckbox: ufs910, ufs912, ufs913, ufs922, fortis_hdbox, hs7110, hs7810a, hs7119, hs7819, hs8200, hs9510, dp7000, cuberevo, cuberevo_mini, cuberevo_mini2, cuberevo_250hd, cuberevo_2000hd, cuberevo_3000hd, ipbox9900, ipbox99, ipbox55, arivalink200, tf7700, hl101])
  AS_HELP_STRING([], [valid for spark: spark, spark7162])
  AS_HELP_STRING([], [valid for armbox: hd51, hd60, hd61, bre2ze4k, osmini4k, osmio4k, osmio4kplus, h7, vusolo4k, vuduo4k, vuultimo4k, vuzero4k, vuuno4kse, vuuno4k])
  AS_HELP_STRING([], [valid for mipsbox: vuduo, gb800se, osnino, osninoplus, osninopro]),
  	[case "${withval}" in
--		ufs910|ufs912|ufs913|ufs922|hs8200|fortis_hdbox|octagon1008|hs7110|hs7810a|hs7119|hs7819|dp7000|cuberevo|cuberevo_mini|cuberevo_mini2|cuberevo_250hd|cuberevo_2000hd|cuberevo_3000hd|ipbox9900|ipbox99|ipbox55|arivalink200|tf7700|hl101)
-+		ufs910|ufs912|ufs913|ufs922|hs8200|fortis_hdbox|octagon1008|hs7110|hs7420|hs7810a|hs7119|hs7429|hs7819|dp7000|cuberevo|cuberevo_mini|cuberevo_mini2|cuberevo_250hd|cuberevo_2000hd|cuberevo_3000hd|ipbox9900|ipbox99|ipbox55|arivalink200|tf7700|hl101|adb_box|vip1_v1|vip1_v2|vip2|vitamin_hd5000|pace7241|opt9600)
+-		ufs910|ufs912|ufs913|ufs922|atevio7500|fortis_hdbox|octagon1008|hs7110|hs7810a|hs7119|hs7819|dp7000|cuberevo|cuberevo_mini|cuberevo_mini2|cuberevo_250hd|cuberevo_2000hd|cuberevo_3000hd|ipbox9900|ipbox99|ipbox55|arivalink200|tf7700|hl101)
++		ufs910|ufs912|ufs913|ufs922|fortis_hdbox|hs7110|hs7810a|hs7119|hs7819|hs8200|hs9510|dp7000|cuberevo|cuberevo_mini|cuberevo_mini2|cuberevo_250hd|cuberevo_2000hd|cuberevo_3000hd|ipbox9900|ipbox99|ipbox55|arivalink200|tf7700|hl101)
  			if test "$BOXTYPE" = "duckbox"; then
  				BOXMODEL="$withval"
  			else
-@@ -293,8 +245,10 @@
+@@ -289,12 +241,14 @@
+ AM_CONDITIONAL(BOXMODEL_UFS922, test "$BOXMODEL" = "ufs922")
+ AM_CONDITIONAL(BOXMODEL_SPARK, test "$BOXMODEL" = "spark")
+ AM_CONDITIONAL(BOXMODEL_SPARK7162, test "$BOXMODEL" = "spark7162")
+-AM_CONDITIONAL(BOXMODEL_ATEVIO7500, test "$BOXMODEL" = "atevio7500")
++AM_CONDITIONAL(BOXMODEL_HS8200, test "$BOXMODEL" = "hs8200")
  AM_CONDITIONAL(BOXMODEL_FORTIS_HDBOX, test "$BOXMODEL" = "fortis_hdbox")
- AM_CONDITIONAL(BOXMODEL_OCTAGON1008, test "$BOXMODEL" = "octagon1008")
+-AM_CONDITIONAL(BOXMODEL_OCTAGON1008, test "$BOXMODEL" = "octagon1008")
++AM_CONDITIONAL(BOXMODEL_HS9510, test "$BOXMODEL" = "hs9510")
  AM_CONDITIONAL(BOXMODEL_HS7110, test "$BOXMODEL" = "hs7110")
 +AM_CONDITIONAL(BOXMODEL_HS7420, test "$BOXMODEL" = "hs7420")
  AM_CONDITIONAL(BOXMODEL_HS7810A, test "$BOXMODEL" = "hs7810a")
@@ -174,15 +180,15 @@
  #define VFDGETWAKEUPMODE     0xc0425af9
  #define VFDGETTIME           0xc0425afa
  #define VFDSETTIME           0xc0425afb
-@@ -28,7 +33,7 @@
+@@ -27,7 +32,7 @@
+ #define VFDDISPLAYCLR        0xc0425b00
  
  typedef enum {
- #if defined(BOXMODEL_OCTAGON1008)
--	ICON_DOLBY = 0x10,
-+	ICON_DOLBY = 1,
+-#if defined(BOXMODEL_OCTAGON1008)
++#if defined(BOXMODEL_HS9510)
+ 	ICON_DOLBY = 0x10,
  	ICON_DTS,
  	ICON_VIDEO,
- 	ICON_AUDIO,
 @@ -49,6 +54,7 @@
  	ICON_PLAY,
  	ICON_REWIND,
@@ -779,83 +785,160 @@
  	unsigned int		segment_count;
 --- libstb-hal-tangos.org/libduckbox/hardware_caps.c
 +++ libstb-hal-tangos/libduckbox/hardware_caps.c
-@@ -39,8 +39,8 @@
+@@ -38,8 +38,8 @@
+ 	}
  	if (len > 0) {
  		buf[len] = 0;
- 		if (!strncmp(buf, "hs8200", 10)) {
+-		if (!strncmp(buf, "atevio7500", 10)) {
 -			strcpy(caps.boxvendor, "DUCKBOX");
--			strcpy(caps.boxname, buf);
++		if (!strncmp(buf, "hs8200", 6)) {
 +			strcpy(caps.boxvendor, "Fortis");
-+			strcpy(caps.boxname, "HS8200");
+ 			strcpy(caps.boxname, buf);
  			caps.can_shutdown = 1;
  			caps.has_HDMI = 1;
- 			caps.has_SCART = 1;
-@@ -52,8 +52,8 @@
+@@ -52,76 +52,76 @@
  			caps.display_xres = 12;
  		}
  		else if (!strncmp(buf, "ufs912", 6)) {
 -			strcpy(caps.boxvendor, "DUCKBOX");
--			strcpy(caps.boxname, buf);
 +			strcpy(caps.boxvendor, "Kathrein");
 +			strcpy(caps.boxname, "UFS912");
- 			caps.can_shutdown = 1;
- 			caps.has_HDMI = 1;
- 			caps.has_SCART = 1;
-@@ -65,8 +65,8 @@
- 			caps.display_xres = 16;
- 		}
- 		else if (!strncmp(buf, "ufs913", 6)) {
--			strcpy(caps.boxvendor, "DUCKBOX");
--			strcpy(caps.boxname, buf);
++			caps.can_shutdown = 1;
++			caps.has_HDMI = 1;
++			caps.has_SCART = 1;
++			caps.can_cec = 1;
++			caps.has_fan = 0;
++			caps.has_CI = 2;
++			caps.display_can_set_brightness = 1;
++			caps.display_type = HW_DISPLAY_LINE_TEXT;
++			caps.display_xres = 16;
++		}
++		else if (!strncmp(buf, "ufs913", 6)) {
 +			strcpy(caps.boxvendor, "Kathrein");
 +			strcpy(caps.boxname, "UFS913");
- 			caps.can_shutdown = 1;
- 			caps.has_HDMI = 1;
- 			caps.has_SCART = 1;
-@@ -78,8 +78,8 @@
- 			caps.display_xres = 16;
- 		}
- 		else if (!strncmp(buf, "ufs922", 6)) {
--			strcpy(caps.boxvendor, "DUCKBOX");
--			strcpy(caps.boxname, buf);
++			caps.can_shutdown = 1;
++			caps.has_HDMI = 1;
++			caps.has_SCART = 1;
++			caps.can_cec = 1;
++			caps.has_fan = 0;
++			caps.has_CI = 2;
++			caps.display_can_set_brightness = 1;
++			caps.display_type = HW_DISPLAY_LINE_TEXT;
++			caps.display_xres = 16;
++		}
++		else if (!strncmp(buf, "ufs922", 6)) {
 +			strcpy(caps.boxvendor, "Kathrein");
 +			strcpy(caps.boxname, "UFS922");
- 			caps.can_shutdown = 1;
- 			caps.has_HDMI = 1;
- 			caps.has_SCART = 1;
-@@ -91,8 +91,8 @@
- 			caps.display_xres = 16;
- 		}
- 		else if (!strncmp(buf, "ufs910", 6)) {
--			strcpy(caps.boxvendor, "DUCKBOX");
--			strcpy(caps.boxname, buf);
++			caps.can_shutdown = 1;
++			caps.has_HDMI = 1;
++			caps.has_SCART = 1;
++			caps.can_cec = 0;
++			caps.has_fan = 1;
++			caps.has_CI = 2;
++			caps.display_can_set_brightness = 1;
++			caps.display_type = HW_DISPLAY_LINE_TEXT;
++			caps.display_xres = 16;
++		}
++		else if (!strncmp(buf, "ufs910", 6)) {
 +			strcpy(caps.boxvendor, "Kathrein");
 +			strcpy(caps.boxname, "UFS910");
- 			caps.can_shutdown = 1;
- 			caps.has_HDMI = 1;
- 			caps.has_SCART = 1;
-@@ -104,8 +104,8 @@
- 			caps.display_xres = 16;
- 		}
- 		else if (!strncmp(buf, "hdbox", 5)) {
--			strcpy(caps.boxvendor, "DUCKBOX");
--			strcpy(caps.boxname, buf);
++			caps.can_shutdown = 1;
++			caps.has_HDMI = 1;
++			caps.has_SCART = 1;
++			caps.can_cec = 0;
++			caps.has_fan = 0;
++			caps.has_CI = 2;
++			caps.display_can_set_brightness = 1;
++			caps.display_type = HW_DISPLAY_LINE_TEXT;
++			caps.display_xres = 16;
++		}
++		else if (!strncmp(buf, "hdbox", 5)) {
 +			strcpy(caps.boxvendor, "Fortis");
 +			strcpy(caps.boxname, "FS9000/9200");
++			caps.can_shutdown = 1;
++			caps.has_HDMI = 1;
++			caps.has_SCART = 1;
++			caps.can_cec = 0;
++			caps.has_fan = 0;
++			caps.has_CI = 2;
++			caps.display_can_set_brightness = 1;
++			caps.display_type = HW_DISPLAY_LINE_TEXT;
++			caps.display_xres = 12;
++		}
++		else if (!strncmp(buf, "hs9510", 6)) {
++			strcpy(caps.boxvendor, "Fortis");
+ 			strcpy(caps.boxname, buf);
  			caps.can_shutdown = 1;
  			caps.has_HDMI = 1;
  			caps.has_SCART = 1;
-@@ -117,8 +117,8 @@
- 			caps.display_xres = 12;
- 		}
- 		else if (!strncmp(buf, "octagon1008", 11)) {
+-			caps.can_cec = 1;
+-			caps.has_fan = 0;
+-			caps.has_CI = 2;
+-			caps.display_can_set_brightness = 1;
+-			caps.display_type = HW_DISPLAY_LINE_TEXT;
+-			caps.display_xres = 16;
+-		}
+-		else if (!strncmp(buf, "ufs913", 6)) {
 -			strcpy(caps.boxvendor, "DUCKBOX");
 -			strcpy(caps.boxname, buf);
-+			strcpy(caps.boxvendor, "Fortis");
-+			strcpy(caps.boxname, "HS9510");
- 			caps.can_shutdown = 1;
- 			caps.has_HDMI = 1;
- 			caps.has_SCART = 1;
+-			caps.can_shutdown = 1;
+-			caps.has_HDMI = 1;
+-			caps.has_SCART = 1;
+-			caps.can_cec = 1;
+-			caps.has_fan = 0;
+-			caps.has_CI = 2;
+-			caps.display_can_set_brightness = 1;
+-			caps.display_type = HW_DISPLAY_LINE_TEXT;
+-			caps.display_xres = 16;
+-		}
+-		else if (!strncmp(buf, "ufs922", 6)) {
+-			strcpy(caps.boxvendor, "DUCKBOX");
+-			strcpy(caps.boxname, buf);
+-			caps.can_shutdown = 1;
+-			caps.has_HDMI = 1;
+-			caps.has_SCART = 1;
+-			caps.can_cec = 0;
+-			caps.has_fan = 1;
+-			caps.has_CI = 2;
+-			caps.display_can_set_brightness = 1;
+-			caps.display_type = HW_DISPLAY_LINE_TEXT;
+-			caps.display_xres = 16;
+-		}
+-		else if (!strncmp(buf, "ufs910", 6)) {
+-			strcpy(caps.boxvendor, "DUCKBOX");
+-			strcpy(caps.boxname, buf);
+-			caps.can_shutdown = 1;
+-			caps.has_HDMI = 1;
+-			caps.has_SCART = 1;
+-			caps.can_cec = 0;
+-			caps.has_fan = 0;
+-			caps.has_CI = 2;
+-			caps.display_can_set_brightness = 1;
+-			caps.display_type = HW_DISPLAY_LINE_TEXT;
+-			caps.display_xres = 16;
+-		}
+-		else if (!strncmp(buf, "hdbox", 5)) {
+-			strcpy(caps.boxvendor, "DUCKBOX");
+-			strcpy(caps.boxname, buf);
+-			caps.can_shutdown = 1;
+-			caps.has_HDMI = 1;
+-			caps.has_SCART = 1;
+-			caps.can_cec = 0;
+-			caps.has_fan = 0;
+-			caps.has_CI = 2;
+-			caps.display_can_set_brightness = 1;
+-			caps.display_type = HW_DISPLAY_LINE_TEXT;
+-			caps.display_xres = 12;
+-		}
+-		else if (!strncmp(buf, "octagon1008", 11)) {
+-			strcpy(caps.boxvendor, "DUCKBOX");
+-			strcpy(caps.boxname, buf);
+-			caps.can_shutdown = 1;
+-			caps.has_HDMI = 1;
+-			caps.has_SCART = 1;
+ 			caps.can_cec = 0;
+ 			caps.has_fan = 0;
+ 			caps.has_CI = 2;
 @@ -130,35 +130,61 @@
  			caps.display_xres = 8;
  		}
