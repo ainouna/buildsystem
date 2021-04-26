@@ -89,13 +89,13 @@ UFS913_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-sh4-7105_clocks_no_warnings_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-ufs913_setup_stm24_$(KERNEL_LABEL).patch
 
-OCTAGON1008_PATCHES_24 = $(COMMON_PATCHES_24) \
-		linux-sh4-octagon1008_setup_stm24_$(KERNEL_LABEL).patch \
+HS9510_PATCHES_24 = $(COMMON_PATCHES_24) \
+		linux-sh4-hs9510_setup_stm24_$(KERNEL_LABEL).patch \
 		linux-usbwait123_stm24.patch \
 		linux-sh4-stmmac_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-i2c-st40-pio_stm24_$(KERNEL_LABEL).patch
 ifeq ($(IMAGE), $(filter $(IMAGE), neutrino neutrino-wlandriver))
-OCTAGON1008_PATCHES_24 += linux-sh4-octagon1008_mtdconcat_stm24_$(KERNEL_LABEL).patch
+HS9510_PATCHES_24 += linux-sh4-hs9510_mtdconcat_stm24_$(KERNEL_LABEL).patch
 endif
 
 HS8200_PATCHES_24 = $(COMMON_PATCHES_24) \
@@ -449,7 +449,7 @@ ifeq ($(DESTINATION), USB)
 	$(SILENT)echo "CONFIG_DECOMPRESS_BZIP2=y" >> $(KERNEL_DIR)/.config
 endif
 endif
-ifeq ($(BOXTYPE), $(filter $(BOXTYPE), fortis_hdbox octagon1008))
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE), fortis_hdbox hs9510))
 ifeq ($(DESTINATION), HDD)
 	@echo "Configuring kernel for running on HDD."
 	$(SILENT)grep -v "CONFIG_BLK_DEV_INITRD" "$(KERNEL_DIR)/.config" > $(KERNEL_DIR)/.config.tmp

@@ -229,10 +229,10 @@ neutrino-release-hs8200:
 	$(SILENT)rm  -f $(RELEASE_DIR)/lib/modules/mpeg2hw.ko
 
 #
-# octagon1008
+# hs9510
 #
-neutrino-release-octagon1008:
-	$(SILENT)install -m 0755 $(SKEL_ROOT)/release/halt_octagon1008 $(RELEASE_DIR)/etc/init.d/halt
+neutrino-release-hs9510:
+	$(SILENT)install -m 0755 $(SKEL_ROOT)/release/halt_hs9510 $(RELEASE_DIR)/etc/init.d/halt
 	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/frontcontroller/nuvoton/nuvoton.ko $(RELEASE_DIR)/lib/modules/
 	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/frontends/*.ko $(RELEASE_DIR)/lib/modules/
 	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/stgfb/stmfb/stmcore-display-stx7109c3.ko $(RELEASE_DIR)/lib/modules/
@@ -588,7 +588,7 @@ endif
 	$(SILENT)ln -sf ../../bin/busybox $(RELEASE_DIR)/usr/bin/ether-wake
 	$(SILENT)ln -sf ../../bin/showiframe $(RELEASE_DIR)/usr/bin/showiframe
 	$(SILENT)ln -sf ../../usr/sbin/fw_printenv $(RELEASE_DIR)/usr/sbin/fw_setenv
-ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs8200 fortis_hdbox octagon1008 ufs910 ufs912 ufs913 ufs922 ufc960 spark ipbox55 ipbox99 ipbox9900 cuberevo cuberevo_mini cuberevo_mini2 cuberevo_250hd cuberevo_2000hd cuberevo_3000hd adb_box tf7700 vitamin_hd5000))
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs8200 fortis_hdbox hs9510 ufs910 ufs912 ufs913 ufs922 ufc960 spark ipbox55 ipbox99 ipbox9900 cuberevo cuberevo_mini cuberevo_mini2 cuberevo_250hd cuberevo_2000hd cuberevo_3000hd adb_box tf7700 vitamin_hd5000))
 	$(SILENT)cp $(SKEL_ROOT)/release/fw_env.config_$(BOXTYPE) $(RELEASE_DIR)/etc/fw_env.config
 endif
 	$(SILENT)install -m 0755 $(SKEL_ROOT)/release/rcS_neutrino_$(BOXTYPE) $(RELEASE_DIR)/etc/init.d/rcS

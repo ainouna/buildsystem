@@ -169,7 +169,7 @@ case "$REPLY" in
 	 5) BOXTYPE="ufc960";;
 	 6) BOXTYPE="tf7700";;
 	 7) BOXTYPE="fortis_hdbox";;
-	 8) BOXTYPE="octagon1008";;
+	 8) BOXTYPE="hs9510";;
 #	 9) BOXTYPE="hs8200";;
 	10) BOXTYPE="hs7110";;
 	11) BOXTYPE="hs7119";;
