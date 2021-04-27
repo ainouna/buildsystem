@@ -107,8 +107,8 @@ if os.path.isfile("/boot/audio_dts.elf"):
 			('on', _('on')),
 			('off', _('off'))
 			])
-#if stb.lower() == 'hdbox':
-#	hdbox specific options go here
+#if stb.lower() == 'fs9000':
+#	fs9000 specific options go here
 if stb.lower() == 'spark7162' or stb.lower() == 'spark':
 	config.plugins.systemoptions.tunertype = ConfigSelection(default='t',
 		choices = [

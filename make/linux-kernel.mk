@@ -174,13 +174,13 @@ UFS922_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-sh4-ufs922_setup_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-stmmac_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-i2c-st40-pio_stm24_$(KERNEL_LABEL).patch \
-		linux-sh4-fortis_hdbox_i2c_st40_stm24_$(KERNEL_LABEL).patch
+		linux-sh4-fs9000_i2c_st40_stm24_$(KERNEL_LABEL).patch
 
 UFC960_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-sh4-ufs922_setup_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-stmmac_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-i2c-st40-pio_stm24_$(KERNEL_LABEL).patch \
-		linux-sh4-fortis_hdbox_i2c_st40_stm24_$(KERNEL_LABEL).patch
+		linux-sh4-fs9000_i2c_st40_stm24_$(KERNEL_LABEL).patch
 
 SPARK_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-sh4-stmmac_stm24_$(KERNEL_LABEL).patch \
@@ -195,14 +195,14 @@ SPARK7162_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-sh4-7105_clocks_no_warnings_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-spark7162_setup_stm24_$(KERNEL_LABEL).patch
 
-FORTIS_HDBOX_PATCHES_24 = $(COMMON_PATCHES_24) \
-		linux-sh4-fortis_hdbox_setup_stm24_$(KERNEL_LABEL).patch \
+FS9000_PATCHES_24 = $(COMMON_PATCHES_24) \
+		linux-sh4-fs9000_setup_stm24_$(KERNEL_LABEL).patch \
 		linux-usbwait123_stm24.patch \
 		linux-sh4-stmmac_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-i2c-st40-pio_stm24_$(KERNEL_LABEL).patch \
-		$(if $(P0209),linux-sh4-fortis_hdbox_i2c_st40_stm24_$(KERNEL_LABEL).patch)
+		$(if $(P0209),linux-sh4-fs9000_i2c_st40_stm24_$(KERNEL_LABEL).patch)
 ifeq ($(IMAGE), $(filter $(IMAGE), neutrino neutrino-wlandriver))
-FORTIS_HDBOX_PATCHES_24 += linux-sh4-fortis_hdbox_mtdconcat_stm24_$(KERNEL_LABEL).patch
+FS9000_PATCHES_24 += linux-sh4-fs9000_mtdconcat_stm24_$(KERNEL_LABEL).patch
 endif
 
 ADB_BOX_PATCHES_24 = $(COMMON_PATCHES_24) \
@@ -449,7 +449,7 @@ ifeq ($(DESTINATION), USB)
 	$(SILENT)echo "CONFIG_DECOMPRESS_BZIP2=y" >> $(KERNEL_DIR)/.config
 endif
 endif
-ifeq ($(BOXTYPE), $(filter $(BOXTYPE), fortis_hdbox hs9510))
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE), fs9000 hs9510))
 ifeq ($(DESTINATION), HDD)
 	@echo "Configuring kernel for running on HDD."
 	$(SILENT)grep -v "CONFIG_BLK_DEV_INITRD" "$(KERNEL_DIR)/.config" > $(KERNEL_DIR)/.config.tmp

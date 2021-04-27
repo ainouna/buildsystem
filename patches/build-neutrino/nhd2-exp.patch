@@ -6,28 +6,36 @@
  
  AC_ARG_WITH(boxtype,
 -	[  --with-boxtype          valid values: generic,dgs,gigablue,dreambox,xtrend,fulan,kathrein,ipbox,topfield,fortis_hdbox,octagon,atevio,adb_box,whitebox,vip,homecast,vuplus,azbox,technomate,coolstream,hypercube,venton,xp1000,odin,ixuss,iqonios,e3hd,ebox5000,wetek,edision,hd,gi,xpeedc,formuler,miraclebox,spycat,xsarius,zgemma],
-+	[  --with-boxtype          valid values: generic,duckbox,dgs,gigablue,dreambox,xtrend,fulan,kathrein,ipbox,topfield,fortis_hdbox,octagon,atevio,hs7,adb_box,adb_2850,vip_v1,vip_2,vip2,homecast,vitamin_hd5000,pace7241,opt9600,vuplus,azbox,technomate,coolstream,hypercube,venton,xp1000,odin,ixuss,iqonios,e3hd,ebox5000,wetek,edision,hd,gi,xpeedc,formuler,miraclebox,spycat,xsarius,zgemma],
++	[  --with-boxtype          valid values: generic,duckbox,dgs,gigablue,dreambox,xtrend,fulan,kathrein,ipbox,topfield,fs9000,octagon,atevio,hs7,adb_box,adb_2850,vip_v1,vip_2,vip2,homecast,vitamin_hd5000,pace7241,opt9600,vuplus,azbox,technomate,coolstream,hypercube,venton,xp1000,odin,ixuss,iqonios,e3hd,ebox5000,wetek,edision,hd,gi,xpeedc,formuler,miraclebox,spycat,xsarius,zgemma],
  	[case "${withval}" in
 -		generic|dgs|gigablue|dreambox|xtrend|fulan|kathrein|ipbox|hl101|topfield|fortis_hdbox|octagon|atevio|adb_box|whitebox|vip|homecast|vuplus|azbox|technomate|coolstream|hypercube|venton|xp1000|odin|ixuss|iqonios|e3hd|ebox5000|wetek|edision|hd|gi|xpeedc|formuler|miraclebox|spycat|xsarius|zgemma)
-+		generic|duckbox|dgs|gigablue|dreambox|xtrend|fulan|kathrein|ipbox|hl101|topfield|fortis_hdbox|octagon|atevio|hs7|vitamin|vip|homecast|pace|opt|vuplus|azbox|technomate|coolstream|hypercube|venton|xp1000|odin|ixuss|iqonios|e3hd|ebox5000|wetek|edision|hd|gi|xpeedc|formuler|miraclebox|spycat|xsarius|zgemma)
++		generic|duckbox|dgs|gigablue|dreambox|xtrend|fulan|kathrein|ipbox|hl101|vuplus|azbox|technomate|coolstream|hypercube|venton|xp1000|odin|ixuss|iqonios|e3hd|ebox5000|wetek|edision|hd|gi|xpeedc|formuler|miraclebox|spycat|xsarius|zgemma)
  			BOXTYPE="$withval"
  			;;
  		cu*)
-@@ -224,6 +224,10 @@
- 			;;
- 		spa*)
+@@ -226,6 +226,10 @@
  			BOXTYPE="fulan"
-+			BOXMODEL="$withval"
-+			;;
-+		tf*)
-+			BOXTYPE="topfield"
  			BOXMODEL="$withval"
  			;;
++		tf*)
++			BOXTYPE="topfield"
++			BOXMODEL="$withval"
++			;;
  		uf*)
-@@ -244,6 +248,30 @@
- 			;;
- 		oct*)
- 			BOXTYPE="octagon"
+ 			BOXTYPE="kathrein"
+ 			BOXMODEL="$withval"
+@@ -238,12 +242,32 @@
+ 			BOXTYPE="duckbox"
+ 			BOXMODEL="$withval"
+ 			;;	
+-		at*)
+-			BOXTYPE="atevio"
+-			BOXMODEL="$withval"
+-			;;
+-		oct*)
+-			BOXTYPE="octagon"
++		fs9*)
++			BOXTYPE="fortis"
 +			BOXMODEL="$withval"
 +			;;
 +		hs*)
@@ -55,17 +63,16 @@
  			BOXMODEL="$withval"
  			;;
  		vu*)
-@@ -340,11 +368,18 @@
- 				valid for dreambox: dm500, dm500plus, dm600pvr, dm56x0, dm7000, dm7020, dm7025, dm500hd, dm7020hd, dm8000, dm800, dm800se, dm520
+@@ -341,10 +365,15 @@
  				valid for xtrend: et4x00,et5x00,et6x00,et7x00, et8000,et8500,et9x00, et10000
  				valid for fulan: spark, spark7162
-+				valid for topfield: tf7700
  				valid for kathrein: ufs910, ufs922, ufs912, ufs913, ufc960
++				valid for topfield: tf7700
  				valid for ipbox: ipbox55, ipbox99, ipbox9900
  				valid for ipbox: hl101
- 				valid for atevio: atevio700,atevio7000,hs8200,atevio7600
- 				valid for octagon: hs9510
-+				valid for fortis: hs7110, hs7420, hs7810a, hs7119, hs7429, hs7819
+-				valid for atevio: atevio700,atevio7000,atevio7500,atevio7600
+-				valid for octagon: octagon1008
++				valid for fortis: fs9000, hs7110, hs7420, hs7810a, hs7119, hs7429, hs7819, hs8200, hs9510
 +				valid for vip: vip1_v1, vip1_v2, vip2
 +				valid for adb: adb_box, adb_2850
 +				valid for pace: pace7241
@@ -74,7 +81,7 @@
  				valid for vuplus: vusolo,vuduo,vuuno,vuultimo,vuduo2,vusolo2,vusolo4k,vusolose,vuzero
  				valid for azbox: azboxhd,azboxme,azboxminime
  				valid for technomate: tmtwin,tm2t,tmsingle,tmnano
-@@ -398,6 +433,13 @@
+@@ -398,6 +427,13 @@
  				AC_MSG_ERROR([unknown model $withval for boxtype $BOXTYPE])
  			fi
  			;;
@@ -88,11 +95,20 @@
  		ufs910|ufs912|ufs913|ufs922|ufc960)
  			if test "$BOXTYPE" = "kathrein"; then
  				BOXMODEL="$withval"
-@@ -433,6 +475,48 @@
+@@ -419,15 +455,43 @@
  				AC_MSG_ERROR([unknown model $withval for boxtype $BOXTYPE])
  			fi
  			;;
-+		hs7110|hs7420|hs7810a|hs7119|hs7429|hs7819)
+-		atevio700|atevio7000|atevio7500|atevio7600)
+-			if test "$BOXTYPE" = "atevio"; then
+-				BOXMODEL="$withval"
+-			else
+-				AC_MSG_ERROR([unknown model $withval for boxtype $BOXTYPE])
+-			fi
+-			;;
+-		octagon1008)
+-			if test "$BOXTYPE" = "octagon"; then
++		fs9000|hs7110|hs7420|hs7810a|hs7119|hs7429|hs7819|hs8200|hs9510)
 +			if test "$BOXTYPE" = "fortis"; then
 +				BOXMODEL="$withval"
 +			else
@@ -129,15 +145,10 @@
 +			;;
 +		opt9600)
 +			if test "$BOXTYPE" = "opticum"; then
-+				BOXMODEL="$withval"
-+			else
-+				AC_MSG_ERROR([unknown model $withval for boxtype $BOXTYPE])
-+			fi
-+			;;
- 		vusolo2|vuduo2|vusolo|vuduo|vuuno|vuultimo|vusolose|vusolo4k|vuzero)
- 			if test "$BOXTYPE" = "vuplus"; then
  				BOXMODEL="$withval"
-@@ -598,13 +682,14 @@
+ 			else
+ 				AC_MSG_ERROR([unknown model $withval for boxtype $BOXTYPE])
+@@ -598,13 +662,14 @@
  			AC_MSG_ERROR([unsupported value $withval for --with-boxmodel])
  			;;
  	esac],
@@ -153,25 +164,20 @@
  AM_CONDITIONAL(BOXTYPE_GENERIC, test "$BOXTYPE" = "generic")
  AM_CONDITIONAL(BOXTYPE_DGS, test "$BOXTYPE" = "dgs")
  AM_CONDITIONAL(BOXTYPE_GIGABLUE, test "$BOXTYPE" = "gigablue")
-@@ -614,12 +699,14 @@
+@@ -614,10 +679,8 @@
  AM_CONDITIONAL(BOXTYPE_KATHREIN, test "$BOXTYPE" = "kathrein")
  AM_CONDITIONAL(BOXTYPE_IPBOX, test "$BOXTYPE" = "ipbox")
  AM_CONDITIONAL(BOXTYPE_HL101, test "$BOXTYPE" = "hl101")
 -AM_CONDITIONAL(BOXTYPE_TOPFIELD, test "$BOXTYPE" = "toptfield")
 -AM_CONDITIONAL(BOXTYPE_FORTIS_HDBOX, test "$BOXTYPE" = "fortis_hdbox")
+-AM_CONDITIONAL(BOXTYPE_OCTAGON, test "$BOXTYPE" = "octagon")
+-AM_CONDITIONAL(BOXTYPE_ATEVIO, test "$BOXTYPE" = "atevio")
 +AM_CONDITIONAL(BOXTYPE_TOPFIELD, test "$BOXTYPE" = "topfield")
 +AM_CONDITIONAL(BOXTYPE_FORTIS, test "$BOXTYPE" = "fortis")
- AM_CONDITIONAL(BOXTYPE_OCTAGON, test "$BOXTYPE" = "octagon")
- AM_CONDITIONAL(BOXTYPE_ATEVIO, test "$BOXTYPE" = "atevio")
  AM_CONDITIONAL(BOXTYPE_ADB_BOX, test "$BOXTYPE" = "adb_box")
--AM_CONDITIONAL(BOXTYPE_WHITEBOX, test "$BOXTYPE" = "whitebox")
-+AM_CONDITIONAL(BOXTYPE_ADB, test "$BOXTYPE" = "adb")
-+AM_CONDITIONAL(BOXTYPE_VITAMIN, test "$BOXTYPE" = "vitamin")
-+AM_CONDITIONAL(BOXTYPE_PACE, test "$BOXTYPE" = "pace")
+ AM_CONDITIONAL(BOXTYPE_WHITEBOX, test "$BOXTYPE" = "whitebox")
  AM_CONDITIONAL(BOXTYPE_VIP, test "$BOXTYPE" = "vip")
- AM_CONDITIONAL(BOXTYPE_HOMECAST, test "$BOXTYPE" = "homecast")
- AM_CONDITIONAL(BOXTYPE_VUPLUS, test "$BOXTYPE" = "vuplus")
-@@ -647,6 +734,7 @@
+@@ -647,6 +710,7 @@
  AM_CONDITIONAL(BOXTYPE_XSARIUS, test "$BOXTYPE" = "xsarius")
  AM_CONDITIONAL(BOXTYPE_ZGEMMA, test "$BOXTYPE" = "zgemma")
  
@@ -179,7 +185,7 @@
  AM_CONDITIONAL(BOXMODEL_CUBEREVO, test "$BOXMODEL" = "cuberevo")
  AM_CONDITIONAL(BOXMODEL_CUBEREVO_MINI, test "$BOXMODEL" = "cuberevo_mini")
  AM_CONDITIONAL(BOXMODEL_CUBEREVO_MINI2, test "$BOXMODEL" = "cuberevo_mini2")
-@@ -687,6 +775,8 @@
+@@ -687,6 +751,8 @@
  AM_CONDITIONAL(BOXMODEL_SPARK,test "$BOXMODEL" = "spark")
  AM_CONDITIONAL(BOXMODEL_SPARK7162,test "$BOXMODEL" = "spark7162")
  
@@ -188,35 +194,38 @@
  AM_CONDITIONAL(BOXMODEL_UFS910, test "$BOXMODEL" = "ufs910")
  AM_CONDITIONAL(BOXMODEL_UFS912, test "$BOXMODEL" = "ufs912")
  AM_CONDITIONAL(BOXMODEL_UFS913, test "$BOXMODEL" = "ufs913")
-@@ -704,7 +794,27 @@
- AM_CONDITIONAL(BOXMODEL_HS8200, test "$BOXMODEL" = "hs8200")
- AM_CONDITIONAL(BOXMODEL_ATEVIO7600, test "$BOXMODEL" = "atevio7600")
+@@ -699,12 +765,24 @@
  
-+AM_CONDITIONAL(BOXMODEL_FORTIS_HDBOX, test "$BOXMODEL" = "fortis_hdbox")
- AM_CONDITIONAL(BOXMODEL_OCTAGON_1008, test "$BOXMODEL" = "hs9510")
-+
+ AM_CONDITIONAL(BOXMODEL_HL101, test "$BOXMODEL" = "hl101")
+ 
+-AM_CONDITIONAL(BOXMODEL_ATEVIO700, test "$BOXMODEL" = "atevio700")
+-AM_CONDITIONAL(BOXMODEL_ATEVIO7000, test "$BOXMODEL" = "atevio7000")
+-AM_CONDITIONAL(BOXMODEL_ATEVIO7500, test "$BOXMODEL" = "atevio7500")
+-AM_CONDITIONAL(BOXMODEL_ATEVIO7600, test "$BOXMODEL" = "atevio7600")
+-
+-AM_CONDITIONAL(BOXMODEL_OCTAGON_1008, test "$BOXMODEL" = "octagon1008")
++AM_CONDITIONAL(BOXMODEL_FS9000, test "$BOXMODEL" = "fs9000")
 +AM_CONDITIONAL(BOXMODEL_HS7110, test "$BOXMODEL" = "hs7110")
 +AM_CONDITIONAL(BOXMODEL_HS7420, test "$BOXMODEL" = "hs7420")
 +AM_CONDITIONAL(BOXMODEL_HS7810A, test "$BOXMODEL" = "hs7810a")
 +AM_CONDITIONAL(BOXMODEL_HS7119, test "$BOXMODEL" = "hs7119")
 +AM_CONDITIONAL(BOXMODEL_HS7429, test "$BOXMODEL" = "hs7429")
 +AM_CONDITIONAL(BOXMODEL_HS7819, test "$BOXMODEL" = "hs7819")
++AM_CONDITIONAL(BOXMODEL_HS8200, test "$BOXMODEL" = "hs8200")
++AM_CONDITIONAL(BOXMODEL_HS9510, test "$BOXMODEL" = "hs9510")
 +
-+AM_CONDITIONAL(BOXMODEL_VIP_V1, test "$BOXMODEL" = "vip_v1")
-+AM_CONDITIONAL(BOXMODEL_VIP_V2, test "$BOXMODEL" = "vip_v2")
++AM_CONDITIONAL(BOXMODEL_VIP1_V1, test "$BOXMODEL" = "vip1_v1")
++AM_CONDITIONAL(BOXMODEL_VIP1_V2, test "$BOXMODEL" = "vip1_v2")
 +AM_CONDITIONAL(BOXMODEL_VIP2, test "$BOXMODEL" = "vip2")
-+
 +AM_CONDITIONAL(BOXMODEL_ADB_BOX, test "$BOXMODEL" = "adb_box")
 +AM_CONDITIONAL(BOXMODEL_ADB_2850, test "$BOXMODEL" = "adb_2850")
 +AM_CONDITIONAL(BOXMODEL_PACE7241, test "$BOXMODEL" = "pace7241")
-+
 +AM_CONDITIONAL(BOXMODEL_VITAMIN_HD5000, test "$BOXMODEL" = "vitamin_hd5000")
-+
 +AM_CONDITIONAL(BOXMODEL_OPT9600, test "$BOXMODEL" = "opt9600")
  
  AM_CONDITIONAL(BOXMODEL_VUSOLO2, test "$BOXMODEL" = "vusolo2")
  AM_CONDITIONAL(BOXMODEL_VUDUO2, test "$BOXMODEL" = "vuduo2")
-@@ -785,6 +895,7 @@
+@@ -785,6 +863,7 @@
  AM_CONDITIONAL(BOXMODEL_LC, test "$BOXMODEL" = "lc")
  AM_CONDITIONAL(BOXMODEL_SH1, test "$BOXMODEL" = "sh1")
  
@@ -224,7 +233,7 @@
  if test "$BOXTYPE" = "generic"; then
  	AC_DEFINE(PLATFORM_GENERIC, 1, [building for generic])
  elif test "$BOXTYPE" = "dgs"; then
-@@ -797,6 +908,8 @@
+@@ -797,6 +876,8 @@
  	AC_DEFINE(PLATFORM_XTREND, 1, [building for xtrend])
  elif test "$BOXTYPE" = "fulan"; then
  	AC_DEFINE(PLATFORM_FULAN, 1, [building for fulan])
@@ -233,16 +242,16 @@
  elif test "$BOXTYPE" = "kathrein"; then
  	AC_DEFINE(PLATFORM_KATHREIN, 1, [building for kathrein])
  elif test "$BOXTYPE" = "ipbox"; then
-@@ -805,18 +918,22 @@
+@@ -805,18 +886,18 @@
  	AC_DEFINE(HAVE_DUCKBOX_HARDWARE, 1, [building for a duckbox])	
  elif test "$BOXTYPE" = "topfield"; then
  	AC_DEFINE(PLATFORM_TF7700, 1, [building for topfield])
 -elif test "$BOXTYPE" = "fortis_hdbox"; then
 -	AC_DEFINE(PLATFORM_FORTIS_HDBOX, 1, [building for fortis_hdbox])
- elif test "$BOXTYPE" = "octagon"; then
- 	AC_DEFINE(PLATFORM_OCTAGON, 1, [building for octagon])
- elif test "$BOXTYPE" = "atevio"; then
- 	AC_DEFINE(PLATFORM_ATEVIO, 1, [building for atevio])
+-elif test "$BOXTYPE" = "octagon"; then
+-	AC_DEFINE(PLATFORM_OCTAGON, 1, [building for octagon])
+-elif test "$BOXTYPE" = "atevio"; then
+-	AC_DEFINE(PLATFORM_ATEVIO, 1, [building for atevio])
 -elif test "$BOXTYPE" = "adb_box"; then
 -	AC_DEFINE(PLATFORM_ADB_BOX, 1, [building for adb_box])
 -elif test "$BOXTYPE" = "whitebox"; then
@@ -262,7 +271,7 @@
  elif test "$BOXTYPE" = "homecast"; then
  	AC_DEFINE(PLATFORM_HOMECAST, 1, [building for homecast])
  elif test "$BOXTYPE" = "vuplus"; then
-@@ -865,6 +982,7 @@
+@@ -865,6 +946,7 @@
  	AC_DEFINE(PLATFORM_ZGEMMA, 1, [building for zgemma])
  fi
  
@@ -270,7 +279,7 @@
  if test "$BOXMODEL" = "cuberevo"; then
  	AC_DEFINE(PLATFORM_CUBEREVO, 1, [building for cuberevo])
  elif test "$BOXMODEL" = "cuberevo_mini"; then
-@@ -938,6 +1056,9 @@
+@@ -938,6 +1020,9 @@
  elif test "$BOXMODEL" = "spark7162"; then
  	AC_DEFINE(PLATFORM_SPARK7162, 1, [building for spark 7162])
  
@@ -280,52 +289,26 @@
  elif test "$BOXMODEL" = "ufs910"; then
  	AC_DEFINE(PLATFORM_UFS910, 1, [building for ufs910])
  elif test "$BOXMODEL" = "ufs912"; then
-@@ -968,8 +1089,44 @@
- elif test "$BOXMODEL" = "atevio7600"; then
- 	AC_DEFINE(BOXMODEL_ATEVIO7600, 1, [building for atevio7600])
- 
-+elif test "$BOXMODEL" = "fortis_hdbox"; then
-+	AC_DEFINE(BOXMODEL_FORTIS_HDBOX, 1, [building for fortis_hdbox])
- elif test "$BOXMODEL" = "hs9510"; then
- 	AC_DEFINE(BOXMODEL_OCTAGON_1008, 1, [building for hs9510])
-+
-+elif test "$BOXMODEL" = "hs7110"; then
-+	AC_DEFINE(BOXMODEL_HS7110, 1, [building for hs7110])
-+elif test "$BOXMODEL" = "hs7420"; then
-+	AC_DEFINE(BOXMODEL_HS7420, 1, [building for hs7420])
-+elif test "$BOXMODEL" = "hs7810a"; then
-+	AC_DEFINE(BOXMODEL_HS7810A, 1, [building for hs7810a])
-+elif test "$BOXMODEL" = "hs7119"; then
-+	AC_DEFINE(BOXMODEL_HS7119, 1, [building for hs7119])
-+elif test "$BOXMODEL" = "hs7429"; then
-+	AC_DEFINE(BOXMODEL_HS7429, 1, [building for hs7429])
-+elif test "$BOXMODEL" = "hs7819"; then
-+	AC_DEFINE(BOXMODEL_HS7819, 1, [building for hs7819])
-+
-+elif test "$BOXMODEL" = "vip_v1"; then
-+	AC_DEFINE(BOXMODEL_VIP_V1, 1, [building for vip_v1])
-+elif test "$BOXMODEL" = "vip_v2"; then
-+	AC_DEFINE(BOXMODEL_VIP_V2, 1, [building for vip_v2])
-+elif test "$BOXMODEL" = "vip2"; then
-+	AC_DEFINE(BOXMODEL_VIP2, 1, [building for vip2])
-+
-+elif test "$BOXMODEL" = "adb_box"; then
-+	AC_DEFINE(BOXMODEL_ADB_BOX, 1, [building for adb_box])
-+elif test "$BOXMODEL" = "adb_2850"; then
-+	AC_DEFINE(BOXMODEL_ADB_2850, 1, [building for adb_2850])
-+
-+elif test "$BOXMODEL" = "pace7241"; then
-+	AC_DEFINE(BOXMODEL_PACE7241, 1, [building for pace7241])
-+
-+elif test "$BOXMODEL" = "vitamin_hd5000"; then
-+	AC_DEFINE(BOXMODEL_VITAMIN_HD5000, 1, [building for vitamin_hd5000])
-+
-+elif test "$BOXMODEL" = "opt9600"; then
-+	AC_DEFINE(BOXMODEL_OPT9600, 1, [building for opt9600])
+@@ -958,18 +1043,6 @@
+ 	
+ elif test "$BOXMODEL" = "hl101"; then
+ 	AC_DEFINE(BOXMODEL_HL101, 1, [hl101])
+-
+-elif test "$BOXMODEL" = "atevio700"; then
+-	AC_DEFINE(BOXMODEL_ATEVIO700, 1, [building for atevio700])
+-elif test "$BOXMODEL" = "atevio7000"; then
+-	AC_DEFINE(BOXMODEL_ATEVIO7000, 1, [building for atevio7000])
+-elif test "$BOXMODEL" = "atevio7500"; then
+-	AC_DEFINE(BOXMODEL_ATEVIO7500, 1, [building for atevio7500])
+-elif test "$BOXMODEL" = "atevio7600"; then
+-	AC_DEFINE(BOXMODEL_ATEVIO7600, 1, [building for atevio7600])
+-
+-elif test "$BOXMODEL" = "octagon1008"; then
+-	AC_DEFINE(BOXMODEL_OCTAGON_1008, 1, [building for octagon1008])
  
  elif test "$BOXMODEL" = "vusolo2"; then
  	AC_DEFINE(BOXMODEL_VUSOLO2, 1, [vuplus solo2])
-@@ -2146,4 +2303,3 @@
+@@ -2146,4 +2219,3 @@
  ])
  
  
@@ -813,7 +796,7 @@
 + || defined(BOXMODEL_HS7420) \
 + || defined(BOXMODEL_HS7429)
 +#define VFD_LENGTH 8
-+#elif defined(BOXMODEL_FORTIS_HDBOX) \
++#elif defined(BOXMODEL_FS9000) \
 + ||   defined(BOXMODEL_HS8200)
 +#define VFD_LENGTH 12
 +#elif defined(BOXMODEL_HS7119) \
@@ -868,7 +851,7 @@
 -// duckbox
 -// token from micom
 +
-+#elif defined(BOXMODEL_FORTIS_HDBOX)
++#elif defined(BOXMODEL_FS9000)
 +typedef enum
 +{
 +	HDBOX_ICON_USB = 0x1,  // 01
@@ -911,7 +894,7 @@
 +	HDBOX_ICON_TV,         // 38
 +	HDBOX_ICON_RADIO,      // 39
 +	ICON_ALL               // 40 new nuvoton will set/clear all icons with this number
-+} fortis_hdbox_vfd_icon;
++} fs9000_vfd_icon;
 +
 +typedef enum
 +{
@@ -1293,7 +1276,7 @@
 -
 -struct set_brightness_s {
 +
-+#elif defined(BOXMODEL_FORTIS_HDBOX) \
++#elif defined(BOXMODEL_FS9000) \
 +   || defined(BOXMODEL_HS9510) \
 +   || defined(BOXMODEL_HS8200) \
 +   || defined(BOXMODEL_HS7110) \
@@ -1408,7 +1391,7 @@
 -#endif
 -
 -#if defined (PLATFORM_KATHREIN) || defined (PLATFORM_SPARK7162)
-+  #elif defined(BOXMODEL_FORTIS_HDBOX) \
++  #elif defined(BOXMODEL_FS9000) \
 +     || defined(BOXMODEL_HS9510) \
 +     || defined(BOXMODEL_HS8200) \
 +     || defined(BOXMODEL_HS7110) \
@@ -1422,7 +1405,7 @@
 +
 +  #if defined(PLATFORM_KATHREIN) \
 +   || defined(PLATFORM_SPARK7162) \
-+   || defined(BOXMODEL_FORTIS_HDBOX) \
++   || defined(BOXMODEL_FS9000) \
 +   || defined(BOXMODEL_HS9510) \
 +   || defined(BOXMODEL_HS8200) \
 +   || defined(BOXMODEL_ADB_BOX)
@@ -1665,7 +1648,7 @@
  			ShowDiskLevel();
  			ShowIcon(VFD_ICON_STANDBY, false);	
 -#endif
-+#elif defined(BOXMODEL_FORTIS_HDBOX) || defined(BOXMODEL_HS8200)
++#elif defined(BOXMODEL_FS9000) || defined(BOXMODEL_HS8200)
 +			ShowIcon(VFD_ICON_USB, usb_icon);	
 +			ShowIcon(VFD_ICON_STANDBY, false);	
  			showclock = true;
@@ -1770,7 +1753,7 @@
 -	data.start_address = power;
 +
 +	data.start_address = 0;
-+#if defined(BOXMODEL_FORTIS_HDBOX) || defined(BOXMODEL_HS8200)
++#if defined(BOXMODEL_FS9000) || defined(BOXMODEL_HS8200)
 +	data.data[0] = power ? 0xf2 : 1;
 +	data.data[4] = power * 2;
 +#elif defined(BOXMODEL_HS9510) \
@@ -1857,7 +1840,7 @@
 +	{
  		perror("VFDICONDISPLAYONOFF");
 +	}	closeDevice();
-+  #elif defined(BOXMODEL_FORTIS_HDBOX) \
++  #elif defined(BOXMODEL_FS9000) \
 +     || defined(BOXMODEL_HS9510)  \
 +     || defined(BOXMODEL_HS8200)   \
 +     || defined(BOXMODEL_HS7420)       \
@@ -1937,7 +1920,7 @@
 -#if defined (PLATFORM_KATHREIN) || defined(PLATFORM_SPARK7162)
 +  #if defined (PLATFORM_KATHREIN) \
 +   || defined(PLATFORM_SPARK7162) \
-+   || defined(BOXMODEL_FORTIS_HDBOX) \
++   || defined(BOXMODEL_FS9000) \
 +   || defined(BOXMODEL_HS9510) \
 +   || defined(BOXMODEL_HS8200) \
 +   || defined(BOXMODEL_ADB_BOX)
@@ -1972,7 +1955,7 @@
 +	{
  		perror("VFDICONDISPLAYONOFF");	
 +	}
-+  #elif defined(BOXMODEL_FORTIS_HDBOX) \
++  #elif defined(BOXMODEL_FS9000) \
 +     || defined(BOXMODEL_HS9510) \
 +     || defined(BOXMODEL_HS8200) \
 +     || defined(BOXMODEL_HS7420) \
@@ -2046,7 +2029,7 @@
 -	if(write(fd , text.c_str(), len > 16? 16 : len ) < 0)
 +//  #if defined(BOXMODEL_HS9510) || defined(BOXMODEL_HS7420) || defined(BOXMODEL_HS7429)
 +//	if (write(fd, text.c_str(), len > 8 ? 8 : len ) < 0)
-+//  #elif defined(BOXMODEL_FORTIS_HDBOX) || defined(BOXMODEL_HS8200)
++//  #elif defined(BOXMODEL_FS9000) || defined(BOXMODEL_HS8200)
 +//	if (write(fd, text.c_str(), len > 12 ? 12 : len ) < 0)
 +//  #elif defined(BOXMODEL_HS7810A) || defined(BOXMODEL_HS7119) || defined(BOXMODEL_HS7819)
 +//	if (write(fd, text.c_str(), len > 4 ? 4 : len ) < 0)
@@ -2113,7 +2096,7 @@
 -#if defined (PLATFORM_VENTON)	
 +#if defined (PLATFORM_VENTON) \
 + || defined (BOXMODEL_HS8200) \
-+ || defined (BOXMODEL_FORTIS_HDBOX) \
++ || defined (BOXMODEL_FS9000) \
 + || defined (BOXMODEL_TF7700) \
 + || defined (BOXMODEL_ADB_BOX)
  	FILE *f;
@@ -2143,12 +2126,22 @@
 +// vim:ts=4
 --- nhd2-exp.org/src/nhttpd/tuxboxapi/neutrinoyparser.cpp
 +++ nhd2-exp/src/nhttpd/tuxboxapi/neutrinoyparser.cpp
-@@ -679,6 +679,26 @@
- 	return "hs8200";
- #elif defined (BOXMODEL_ATEVIO7600)
- 	return "atevio7600";
-+#elif defined (BOXMODEL_FORTIS_HDBOX)
-+	return "fortis_hdbox";
+@@ -671,14 +671,40 @@
+ std::string  CNeutrinoYParser::func_get_boxtype(CyhookHandler *, std::string)
+ {
+ 	//return "generic";//FIXME
+-#if defined (BOXMODEL_ATEVIO700)
+-	return "atevio700";
+-#elif defined (BOXMODEL_ATEVIO7000)
+-	return "atevio7000";
+-#elif defined (BOXMODEL_ATEVIO7500)
+-	return "atevio7500";
+-#elif defined (BOXMODEL_ATEVIO7600)
+-	return "atevio7600";
++#if defined (BOXMODEL_HS8200)
++	return "hs82000";
++#elif defined (BOXMODEL_FS9000)
++	return "fs9000";
 +#elif defined (BOXMODEL_HS9510)
 +	return "hs9510";
 +#elif defined (BOXMODEL_HS7110)
@@ -2167,6 +2160,18 @@
 +	return "tf7700";
 +#elif defined (BOXMODEL_ADB_BOX)
 +	return "adb_box";
++#elif defined (BOXMODEL_ADB2850)
++	return "adb2850";
++#elif defined (BOXMODEL_VIP1_V1)
++	return "vip1_v1";
++#elif defined (BOXMODEL_VIP1_V2)
++	return "vip1_v2";
++#elif defined (BOXMODEL_VIP2)
++	return "vip2";
++#elif defined (BOXMODEL_VITAMIN_HD5000)
++	return "vitamin_hd5000";
++#elif defined (BOXMODEL_OP9600)
++	return "opt9600";
  #elif defined (BOXMODEL_AZBOXHD)
  	return "azboxhd";
  #elif defined (BOXMODEL_AZBOXME)

@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20210423.1
+# Version 20210426.1
 
 ##############################################
 
@@ -168,7 +168,7 @@ case "$REPLY" in
 	 4) BOXTYPE="ufs922";;
 	 5) BOXTYPE="ufc960";;
 	 6) BOXTYPE="tf7700";;
-	 7) BOXTYPE="fortis_hdbox";;
+	 7) BOXTYPE="fs9000";;
 	 8) BOXTYPE="hs9510";;
 #	 9) BOXTYPE="hs8200";;
 	10) BOXTYPE="hs7110";;

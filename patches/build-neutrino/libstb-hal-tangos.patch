@@ -72,13 +72,13 @@
  AC_ARG_WITH(boxmodel,
  	AS_HELP_STRING([--with-boxmodel], [valid for generic: raspi])
 -AS_HELP_STRING([], [valid for duckbox: ufs910, ufs912, ufs913, ufs922, atevio7500, fortis_hdbox, octagon1008, hs7110, hs7810a, hs7119, hs7819, dp7000, cuberevo, cuberevo_mini, cuberevo_mini2, cuberevo_250hd, cuberevo_2000hd, cuberevo_3000hd, ipbox9900, ipbox99, ipbox55, arivalink200, tf7700, hl101])
-+AS_HELP_STRING([], [valid for duckbox: ufs910, ufs912, ufs913, ufs922, fortis_hdbox, hs7110, hs7810a, hs7119, hs7819, hs8200, hs9510, dp7000, cuberevo, cuberevo_mini, cuberevo_mini2, cuberevo_250hd, cuberevo_2000hd, cuberevo_3000hd, ipbox9900, ipbox99, ipbox55, arivalink200, tf7700, hl101])
++AS_HELP_STRING([], [valid for duckbox: ufs910, ufs912, ufs913, ufs922, fs9000, hs7110, hs7810a, hs7119, hs7819, hs8200, hs9510, dp7000, cuberevo, cuberevo_mini, cuberevo_mini2, cuberevo_250hd, cuberevo_2000hd, cuberevo_3000hd, ipbox9900, ipbox99, ipbox55, arivalink200, tf7700, hl101])
  AS_HELP_STRING([], [valid for spark: spark, spark7162])
  AS_HELP_STRING([], [valid for armbox: hd51, hd60, hd61, bre2ze4k, osmini4k, osmio4k, osmio4kplus, h7, vusolo4k, vuduo4k, vuultimo4k, vuzero4k, vuuno4kse, vuuno4k])
  AS_HELP_STRING([], [valid for mipsbox: vuduo, gb800se, osnino, osninoplus, osninopro]),
  	[case "${withval}" in
 -		ufs910|ufs912|ufs913|ufs922|atevio7500|fortis_hdbox|octagon1008|hs7110|hs7810a|hs7119|hs7819|dp7000|cuberevo|cuberevo_mini|cuberevo_mini2|cuberevo_250hd|cuberevo_2000hd|cuberevo_3000hd|ipbox9900|ipbox99|ipbox55|arivalink200|tf7700|hl101)
-+		ufs910|ufs912|ufs913|ufs922|fortis_hdbox|hs7110|hs7810a|hs7119|hs7819|hs8200|hs9510|dp7000|cuberevo|cuberevo_mini|cuberevo_mini2|cuberevo_250hd|cuberevo_2000hd|cuberevo_3000hd|ipbox9900|ipbox99|ipbox55|arivalink200|tf7700|hl101)
++		ufs910|ufs912|ufs913|ufs922|fs9000|hs7110|hs7810a|hs7119|hs7819|hs8200|hs9510|dp7000|cuberevo|cuberevo_mini|cuberevo_mini2|cuberevo_250hd|cuberevo_2000hd|cuberevo_3000hd|ipbox9900|ipbox99|ipbox55|arivalink200|tf7700|hl101)
  			if test "$BOXTYPE" = "duckbox"; then
  				BOXMODEL="$withval"
  			else
@@ -87,9 +87,10 @@
  AM_CONDITIONAL(BOXMODEL_SPARK, test "$BOXMODEL" = "spark")
  AM_CONDITIONAL(BOXMODEL_SPARK7162, test "$BOXMODEL" = "spark7162")
 -AM_CONDITIONAL(BOXMODEL_ATEVIO7500, test "$BOXMODEL" = "atevio7500")
-+AM_CONDITIONAL(BOXMODEL_HS8200, test "$BOXMODEL" = "hs8200")
- AM_CONDITIONAL(BOXMODEL_FORTIS_HDBOX, test "$BOXMODEL" = "fortis_hdbox")
+-AM_CONDITIONAL(BOXMODEL_FORTIS_HDBOX, test "$BOXMODEL" = "fortis_hdbox")
 -AM_CONDITIONAL(BOXMODEL_OCTAGON1008, test "$BOXMODEL" = "octagon1008")
++AM_CONDITIONAL(BOXMODEL_HS8200, test "$BOXMODEL" = "hs8200")
++AM_CONDITIONAL(BOXMODEL_FS9000, test "$BOXMODEL" = "fs9000")
 +AM_CONDITIONAL(BOXMODEL_HS9510, test "$BOXMODEL" = "hs9510")
  AM_CONDITIONAL(BOXMODEL_HS7110, test "$BOXMODEL" = "hs7110")
 +AM_CONDITIONAL(BOXMODEL_HS7420, test "$BOXMODEL" = "hs7420")
@@ -114,8 +115,22 @@
  
  AM_CONDITIONAL(BOXMODEL_HD51, test "$BOXMODEL" = "hd51")
  AM_CONDITIONAL(BOXMODEL_HD60, test "$BOXMODEL" = "hd60")
-@@ -379,10 +341,14 @@
- 	AC_DEFINE(BOXMODEL_OCTAGON1008, 1, [octagon1008])
+@@ -371,18 +333,22 @@
+ 	AC_DEFINE(BOXMODEL_SPARK, 1, [spark])
+ elif test "$BOXMODEL" = "spark7162"; then
+ 	AC_DEFINE(BOXMODEL_SPARK7162, 1, [spark7162])
+-elif test "$BOXMODEL" = "atevio7500"; then
+-	AC_DEFINE(BOXMODEL_ATEVIO7500, 1, [atevio7500])
+-elif test "$BOXMODEL" = "fortis_hdbox"; then
+-	AC_DEFINE(BOXMODEL_FORTIS_HDBOX, 1, [fortis_hdbox])
+-elif test "$BOXMODEL" = "octagon1008"; then
+-	AC_DEFINE(BOXMODEL_OCTAGON1008, 1, [octagon1008])
++elif test "$BOXMODEL" = "hs8200"; then
++	AC_DEFINE(BOXMODEL_HS8200, 1, [hs8200])
++elif test "$BOXMODEL" = "fs9000"; then
++	AC_DEFINE(BOXMODEL_FS9000, 1, [fs9000])
++elif test "$BOXMODEL" = "hs9510"; then
++	AC_DEFINE(BOXMODEL_HS9510, 1, [hs9510])
  elif test "$BOXMODEL" = "hs7110"; then
  	AC_DEFINE(BOXMODEL_HS7110, 1, [hs7110])
 +elif test "$BOXMODEL" = "hs7420"; then
@@ -227,6 +242,9 @@
  	FP_ICON_TV = ICON_VIDEO,
  	FP_ICON_DOWNLOAD = ICON_LINK,
  	FP_ICON_CAM1 = ICON_REC,
+-#elif defined(BOXMODEL_FORTIS_HDBOX)
+-	ICON_USB = 0x10,
+-	ICON_STANDBY,
 +	FP_ICON_MAX = ICON_MAX
 +#elif defined(BOXMODEL_HS7420) \
 + || defined(BOXMODEL_HS7429)
@@ -361,9 +379,7 @@
 +	FP_ICON_DOWNLOAD = 0,
 +	FP_ICON_CAM1 = 0,
 +	FP_ICON_MAX = ICON_MAX
- #elif defined(BOXMODEL_FORTIS_HDBOX)
--	ICON_USB = 0x10,
--	ICON_STANDBY,
++#elif defined(BOXMODEL_FS9000)
 +	ICON_STANDBY = 1,
  	ICON_SAT,
  	ICON_REC,
@@ -685,7 +701,7 @@
 + && !defined(BOXMODEL_UFS922)
 + && !defined(BOXMODEL_UFS912)
 + && !defined(BOXMODEL_UFS913)
-+ && !defined(BOXMODEL_FORTIS_HDBOX)
++ && !defined(BOXMODEL_FS9000)
 + && !defined(BOXMODEL_TF7700)
 + && !defined(BOXMODEL_UFS910)
 + && !defined(BOXMODEL_UFS922)
@@ -852,7 +868,7 @@
 +			caps.display_type = HW_DISPLAY_LINE_TEXT;
 +			caps.display_xres = 16;
 +		}
-+		else if (!strncmp(buf, "hdbox", 5)) {
++		else if (!strncmp(buf, "fs9000", 6)) {
 +			strcpy(caps.boxvendor, "Fortis");
 +			strcpy(caps.boxname, "FS9000/9200");
 +			caps.can_shutdown = 1;
