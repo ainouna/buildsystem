@@ -89,11 +89,6 @@ E_CPPFLAGS   += -I$(KERNEL_DIR)/include
 E_CPPFLAGS   += -I$(TOOLS_DIR)
 ifeq ($(E2_DIFF), $(filter $(E2_DIFF), 1))
 E_CPPFLAGS   += -I$(TOOLS_DIR)/libeplayer3/include
-#else
-#ifeq ($(E2_DIFF), $(filter $(E2_DIFF), 5))
-#E_CPPFLAGS   += -I$(TOOLS_DIR)/libeplayer3/include
-#else
-#endif
 endif
 E_CPPFLAGS   += $(LOCAL_ENIGMA2_CPPFLAGS)
 E_CPPFLAGS   += $(PLATFORM_CPPFLAGS)
@@ -150,7 +145,7 @@ $(D)/enigma2.do_prepare: | $(ENIGMA2_DEPS)
 		echo "Applying diff-$$DIFF patch..."; \
 		set -e; cd $(SOURCE_DIR)/enigma2 && patch -p1 $(SILENT_PATCH) < "$(PATCHES)/build-enigma2/enigma2-pli-nightly.$$DIFF.diff"; \
 		if [ "$(MEDIAFW)" == "eplayer3" ]; then \
-			set -e; cd $(SOURCE_DIR)/enigma2 && patch -p1 $(SILENT_PATCH) < "$(PATCHES)/build-enigma2/enigma2-eplayer3.patch"; \
+			set -e; cd $(SOURCE_DIR)/enigma2 && patch -p1 $(SILENT_PATCH) < "$(PATCHES)/build-enigma2/enigma2-eplayer3.$$DIFF.patch"; \
 		fi; \
 		if [ "$(E2_DIFF)" != "1" ]; then \
 			if [ "$(BOXTYPE)" == "fs9000" ] || [ "$(BOXTYPE)" == "hs9510" ] || [ "$(BOXTYPE)" == "cuberevo" ] || [ "$(BOXTYPE)" == "cuberevo_250hd" ] || [ "$(BOXTYPE)" == "cuberevo_mini_fta" ] || [ "$(BOXTYPE)" == "cuberevo_mini" ] || [ "$(BOXTYPE)" == "cuberevo_mini2" ] || [ "$(BOXTYPE)" == "tf7700" ]; then \

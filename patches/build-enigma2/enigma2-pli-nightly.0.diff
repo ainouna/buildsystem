@@ -9511,7 +9511,7 @@
 +	KEYIDS["KEY_PAUSE"]: ("PAUSE",),
 +	KEYIDS["KEY_RECORD"]: ("RECORD",),
 +	KEYIDS["KEY_STOP"]: ("STOP",),
-+}, {  # id=7 - Cuberevo universal
++}, {  # id=7 - Cuberevo standard & universal
 +	KEYIDS["KEY_F1"]: ("KEY_F1",),
 +	KEYIDS["KEY_F2"]: ("KEY_F2",),
 +	KEYIDS["KEY_F3"]: ("KEY_F3",),
@@ -9841,7 +9841,7 @@
  }]
  
  
-@@ -374,10 +761,41 @@
+@@ -374,10 +761,31 @@
  	else:
  		rcType = config.plugins.remotecontroltype.rctype.value
  		# rcType = config.misc.inputdevices.rcType.value
@@ -9860,7 +9860,7 @@
 +			idx = 5
 +		elif rcType == 12:	# Kathrein UFS912
 +			idx = 6
-+		elif rcType == 13:	# CubeRevo Universal
++		elif rcType == 13:	# Cuberevo Universal
 +			idx = 7
 +		elif rcType == 14:	# Vitamin HD5000
 +			idx = 8
@@ -9878,16 +9878,18 @@
 +			idx = 6
 +		elif rcType == 21:	# Opticum HD 9600 series
 +			idx = 13
-+#		elif rcType == 22:	# Fortis 4G
++		elif rcType == 22:	# Cuberevo Standard
++			idx = 7
++#		elif rcType == 23:	# Fortis 4G
 +#			idx = 14
-+#		elif rcType == 23:	# ...
++#		elif rcType == 24:	# ...
 +#			idx = 15
  		else:
  			idx = 2
  	return keyDescriptions[idx].get(key)
 --- enigma2.org/lib/python/Screens/InputDeviceSetup.py
 +++ enigma2/lib/python/Screens/InputDeviceSetup.py
-@@ -300,68 +300,60 @@
+@@ -299,68 +299,61 @@
  	rcList = [
  			("0", _("Default")),
  			("4", _("DMM normal")),
@@ -9922,7 +9924,8 @@
 +			("19", _("Kathrein RC660 (UFS910/922")),
 +			("20", _("Kathrein RC675 (UFS913)")),
 +			("21", _("Opticum HD 9600 series")),
-+#			("22", _("fortis_4g")),
++			("22", _("Cuberevo standard")),
++#			("23", _("fortis_4g")),
  		]
  
  	defaultRcList = [
@@ -9969,7 +9972,7 @@
 -			("h9", 28), # new model /old 25
 -			("h9combo", 28),
 -			("h10", 28)
-+			("fortis-hdbox", 7),
++			("fs9000", 7),
 +			("hs8200", 7),
 +			("hs9510", 8),
 +			("hs7420", 8),
@@ -9988,11 +9991,11 @@
 +			("cuberevo", 13),
 +			("cuberevo-mini", 13),
 +			("cuberevo-mini2", 13),
-+			("cuberevo-250hd", 13),
++			("cuberevo-250hd", 22),
 +			("cuberevo-9500hd", 13),
 +			("cuberevo-2000hd", 13),
 +			("cuberevo-3000hd", 13),
-+			("cuberevo-mini-fta", 13),
++			("cuberevo-mini-fta", 22),
 +			("vitamin-hd5000", 14),
 +			("adb-box", 15),
 +			("adb-2850", 15),
@@ -10002,7 +10005,7 @@
 +			("vip1-v2", 17),
 +			("vip2", 17),
 +			("opt9600", 21),
-+#			("fortis_4g", 22),
++#			("fortis_4g", 23),
  		]
  
  	def __init__(self, session):
@@ -10179,8 +10182,8 @@
 +ufs913            ufs913
 +ufs922            ufs912
 +cuberevo          cuberevo_uni
-+cuberevo-mini-fta cuberevo_uni
-+cuberevo-250hd    cuberevo_uni
++cuberevo-mini-fta cuberevo
++cuberevo-250hd    cuberevo
 +cuberevo-mini     cuberevo_uni
 +cuberevo-mini2    cuberevo_uni
 +cuberevo-2000hd   cuberevo_uni
@@ -10215,8 +10218,8 @@
 -	octagon.xml uclan.xml
 +	dmmadv.png \
 +	adb_xmp.png cuberevo_uni.png fs9000.png hs7110.png hs9510.png spark.png tf7700.png ufs912.png vitamin.png \
-+	pace7241.png hl101_1.png vip_1.png ufs910.png ufs913.png opt9600.png dmm.png \
++	pace7241.png hl101_1.png vip_1.png ufs910.png ufs913.png opt9600.png cuberevo.png dmm.png \
 +	dmmadv.xml  \
 +	adb_xmp.xml cuberevo_uni.xml fs9000.xml hs7110.xml hs9510.xml spark.xml tf7700.xml ufs912.xml vitamin.xml \
-+	pace7241.xml hl101_1.xml vip_1.xml ufs910.xml ufs913.xml opt9600.xml dmm.xml
++	pace7241.xml hl101_1.xml vip_1.xml ufs910.xml ufs913.xml opt9600.xml cuberevo.xml dmm.xml
 
