@@ -36,11 +36,16 @@ FLASH_DIR             = $(BASE_DIR)/flash
 # for local extensions
 -include $(BASE_DIR)/config.local
 
+ifneq ($(GIT_USER), "")
+ifneq ($(GIT_TOKEN), "")
+GIT_ACCESS            = $(GIT_USER):$(GIT_TOKEN)@
+endif
+endif
 GIT_PROTOCOL         ?= http
 ifneq ($(GIT_PROTOCOL), http)
-GITHUB               ?= git://github.com
+GITHUB               ?= git://$(GIT_ACCESS)github.com
 else
-GITHUB               ?= https://github.com
+GITHUB               ?= https://$(GIT_ACCESS)github.com
 endif
 GIT_NAME             ?= Audioniek
 GIT_NAME_DRIVER      ?= Audioniek
