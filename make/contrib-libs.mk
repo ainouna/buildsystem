@@ -1104,10 +1104,11 @@ $(D)/libfribidi: $(D)/bootstrap $(ARCHIVE)/$(LIBFRIBIDI_SOURCE)
 # libsigc
 #
 LIBSIGC_VER_MAJOR = 2
-LIBSIGC_VER_MINOR = 4
-LIBSIGC_VER_MICRO = 1
+LIBSIGC_VER_MINOR = 10
+LIBSIGC_VER_MICRO = 6
 LIBSIGC_VER = $(LIBSIGC_VER_MAJOR).$(LIBSIGC_VER_MINOR).$(LIBSIGC_VER_MICRO)
 LIBSIGC_SOURCE = libsigc++-$(LIBSIGC_VER).tar.xz
+LIBSIGC_PATCH = libsigc-$(LIBSIGC_VER_MAJOR).$(LIBSIGC_VER_MINOR).$(LIBSIGC_VER_MICRO).patch
 
 $(ARCHIVE)/$(LIBSIGC_SOURCE):
 	$(WGET) https://ftp.gnome.org/pub/GNOME/sources/libsigc++/$(LIBSIGC_VER_MAJOR).$(LIBSIGC_VER_MINOR)/$(LIBSIGC_SOURCE)
@@ -1117,6 +1118,7 @@ $(D)/libsigc: $(D)/bootstrap $(ARCHIVE)/$(LIBSIGC_SOURCE)
 	$(REMOVE)/libsigc++-$(LIBSIGC_VER)
 	$(UNTAR)/$(LIBSIGC_SOURCE)
 	$(CH_DIR)/libsigc++-$(LIBSIGC_VER); \
+		$(call apply_patches, $(LIBSIGC_PATCH)); \
 		$(CONFIGURE) \
 			--prefix=/usr \
 			--enable-shared \
