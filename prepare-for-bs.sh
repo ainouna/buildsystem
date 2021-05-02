@@ -115,7 +115,8 @@ PACKAGES="\
 	${UBUNTU:+libmount-dev}                                      ${FEDORA:+help2man}                              \
 	${UBUNTU:+mtools}                                            ${FEDORA:+rpcgen}                                \
 	${UBUNTU:+u-boot-tools}                                                                                       \
-	${UBUNTU:+curl}
+	${UBUNTU:+curl}                                                                                               \
+	${UBUNTU:+mm-common}            ${SUSE:+mm-common}           ${FEDORA:+mm-common}     ${GENTOO:+mm-common}
 ";
 
 if [ "$UBUNTU" == 1 ]; then
