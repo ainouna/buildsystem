@@ -1137,6 +1137,40 @@ $(D)/libsigc: $(D)/bootstrap $(ARCHIVE)/$(LIBSIGC_SOURCE)
 	$(TOUCH)
 
 #
+# libsigc241
+#
+LIBSIGC241_VER_MAJOR = 2
+LIBSIGC241_VER_MINOR = 4
+LIBSIGC241_VER_MICRO = 1
+LIBSIGC241_VER = $(LIBSIGC241_VER_MAJOR).$(LIBSIGC241_VER_MINOR).$(LIBSIGC241_VER_MICRO)
+LIBSIGC241_SOURCE = libsigc++-$(LIBSIGC241_VER).tar.xz
+
+$(ARCHIVE)/$(LIBSIGC241_SOURCE):
+	$(WGET) https://ftp.gnome.org/pub/GNOME/sources/libsigc++/$(LIBSIGC241_VER_MAJOR).$(LIBSIGC241_VER_MINOR)/$(LIBSIGC241_SOURCE)
+
+$(D)/libsigc241: $(D)/bootstrap $(ARCHIVE)/$(LIBSIGC241_SOURCE)
+	$(START_BUILD)
+	$(REMOVE)/libsigc++-$(LIBSIGC241_VER)
+	$(UNTAR)/$(LIBSIGC241_SOURCE)
+	$(CH_DIR)/libsigc++-$(LIBSIGC241_VER); \
+		$(CONFIGURE) \
+			--prefix=/usr \
+			--enable-shared \
+			--disable-documentation \
+		; \
+		$(MAKE); \
+		$(MAKE) install DESTDIR=$(TARGET_DIR); \
+		if [ -d $(TARGET_DIR)/usr/include/sigc++-2.0/sigc++ ] ; then \
+			ln -sf ./sigc++-2.0/sigc++ $(TARGET_DIR)/usr/include/sigc++; \
+		fi;
+		mv $(TARGET_DIR)/usr/lib/sigc++-2.0/include/sigc++config.h $(TARGET_DIR)/usr/include; \
+		rm -fr $(TARGET_DIR)/usr/lib/sigc++-2.0
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/sigc++-2.0.pc
+	$(REWRITE_LIBTOOL)/libsigc-2.0.la
+	$(REMOVE)/libsigc++-$(LIBSIGC241_VER)
+	$(TOUCH)
+
+#
 # libmad
 #
 LIBMAD_VER = 0.15.1b
