@@ -828,9 +828,9 @@ endif
 #
 # libjpeg_turbo2
 #
-LIBJPEG_TURBO2_VER = 2.0.6
+LIBJPEG_TURBO2_VER = 2.1.0
 LIBJPEG_TURBO2_SOURCE = libjpeg-turbo-$(LIBJPEG_TURBO2_VER).tar.gz
-LIBJPEG_TURBO2_PATCH = libjpeg-turbo-tiff-ojpeg.patch
+LIBJPEG_TURBO2_PATCH = libjpeg-turbo-$(LIBJPEG_TURBO2_VER)-tiff-ojpeg.patch
 
 $(ARCHIVE)/$(LIBJPEG_TURBO2_SOURCE):
 	$(WGET) https://sourceforge.net/projects/libjpeg-turbo/files/$(LIBJPEG_TURBO2_VER)/$(LIBJPEG_TURBO2_SOURCE)
