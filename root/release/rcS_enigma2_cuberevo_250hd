@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 220427.1
+#Version 210514.1
 
 echo "[rcS] Start"
 echo "CubeRevo 250HD Enigma2"
@@ -107,35 +107,30 @@ insmod $MODDIR/stm_v4l2.ko
 insmod $MODDIR/pseudocard.ko
 
 echo "[rcS] Init frontend"
-insmod $MODDIR/frontend_platform.ko
+insmod $MODDIR/frontend_platform.ko # paramDebug=10
 insmod $MODDIR/socket.ko
 insmod $MODDIR/lnbh221.ko
 insmod $MODDIR/lnb_pio.ko
 # DVB-S(2)
 if [ -f $MODDIR/cx24116.ko ]; then
-   insmod $MODDIR/cx24116.ko
+   insmod $MODDIR/cx24116.ko # paramDebug=10
 fi
 if [ -f $MODDIR/stv090x.ko ]; then
-   insmod $MODDIR/stv090x.ko
+   insmod $MODDIR/stv090x.ko # paramDebug=10
 fi
 # DVB-S
 if [ -f $MODDIR/stv0288.ko ]; then
-   insmod $MODDIR/stv0288.ko
-fi
-# DVB-C
-if [ -f $MODDIR/tda10023.ko ]; then
-   insmod $MODDIR/tda10023.ko
+   insmod $MODDIR/stv0288.ko # paramDebug=10
 fi
 # DVB-T
 if [ -f $MODDIR/dvb-pll.ko ]; then
    insmod $MODDIR/dvb-pll.ko
    if [ -f $MODDIR/zl10353.ko ]; then
-      insmod $MODDIR/zl10353.ko
+      insmod $MODDIR/zl10353.ko # paramDebug=10
    fi
 fi
 
 echo "[rcS] Init CI & cardreader"
-insmod $MODDIR/starci.ko
 insmod $MODDIR/smartcard.ko
 
 insmod $MODDIR/pti.ko waitMS=20 videoMem=4096
