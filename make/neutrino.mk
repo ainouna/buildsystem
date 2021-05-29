@@ -19,7 +19,11 @@ NEUTRINO_DEPS += $(D)/ffmpeg
 NEUTRINO_DEPS += $(D)/libopenthreads
 NEUTRINO_DEPS += $(LIRC)
 NEUTRINO_DEPS += $(D)/libcurl
+ifneq ($(FLAVOUR), neutrino-hd2)
+NEUTRINO_DEPS += $(D)/libsigc241
+else
 NEUTRINO_DEPS += $(D)/libsigc
+endif
 NEUTRINO_DEPS += $(D)/pugixml
 NEUTRINO_DEPS += $(D)/libdvbsi
 NEUTRINO_DEPS += $(D)/libfribidi

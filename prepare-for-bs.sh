@@ -116,7 +116,8 @@ PACKAGES="\
 	${UBUNTU:+mtools}                                            ${FEDORA:+rpcgen}                                \
 	${UBUNTU:+u-boot-tools}                                                                                       \
 	${UBUNTU:+curl}                                                                                               \
-	${UBUNTU:+mm-common}            ${SUSE:+mm-common}           ${FEDORA:+mm-common}     ${GENTOO:+mm-common}
+	${UBUNTU:+mm-common}            ${SUSE:+mm-common}           ${FEDORA:+mm-common}     ${GENTOO:+mm-common}    \
+	${UBUNTU:+autoconf-archive}
 ";
 
 if [ "$UBUNTU" == 1 ]; then

@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 201008.1
+#Version 210529.1
 
 echo "[rcS] Start"
 echo "CubeRevo Enigma2"
@@ -9,11 +9,11 @@ MODDIR=/lib/modules
 insmod $MODDIR/e2_proc.ko
 
 echo "[rcS] Init frontpanel"
-insmod $MODDIR/cuberevo_micom.ko # paramDebug=10
+insmod $MODDIR/cuberevo_micom.ko # paramDebug=50
 
 if [ -e /var/etc/.firstboot ]; then
    echo "config.plugins.remotecontroltype.rctype=13" >> /etc/enigma2/settings
-   echo "WAIT 3 minutes" > /dev/vfd
+   echo "WAIT 3 min." > /dev/vfd
    echo "[rcS] WAIT 3 minutes"
    rm /var/etc/.firstboot
    sleep 1
@@ -28,10 +28,6 @@ fi
 echo "[rcS] Starting DEBUG Interface"
 /etc/init.d/mountall start
 /etc/init.d/hostname start
-
-#if [ -e /dev/ttyAS1 ]; then
-#   rm -f /dev/ttyAS1
-#fi
 
 echo -n "[rcS] Starting telnetd "
 autologin=`cat /etc/enigma2/settings | grep systemoptions.autologin | cut -d "=" -f2`
@@ -74,13 +70,13 @@ if [ ! -e /boot/audio.elf ] || [ ! -e /boot/video.elf ]; then
    sleep 5
 fi
 
-echo "[rcS] Load audio firmware (LOAD 8)"
+echo "[rcS] Load video firmware (LOAD 8)"
 echo "Load 8" > /dev/vfd
-/bin/ustslave /dev/st231-1 /boot/audio.elf > /dev/null
-
-echo "[rcS] Load video firmware (LOAD 7)"
-echo "Load 7" > /dev/vfd
 /bin/ustslave /dev/st231-0 /boot/video.elf > /dev/null
+
+echo "[rcS] Load audio firmware (LOAD 7)"
+echo "Load 7" > /dev/vfd
+/bin/ustslave /dev/st231-1 /boot/audio.elf > /dev/null
 
 echo "[rcS] Init embx (LOAD 6)"
 echo "Load 6" > /dev/vfd
@@ -107,30 +103,30 @@ insmod $MODDIR/stm_v4l2.ko
 insmod $MODDIR/pseudocard.ko
 
 echo "[rcS] Init frontend"
-insmod $MODDIR/frontend_platform.ko
+insmod $MODDIR/frontend_platform.ko # paramDebug=10
 insmod $MODDIR/socket.ko
 insmod $MODDIR/lnbh221.ko
 insmod $MODDIR/lnb_pio.ko
 # DVB-S(2)
 if [ -f $MODDIR/cx24116.ko ]; then
-   insmod $MODDIR/cx24116.ko
+   insmod $MODDIR/cx24116.ko # paramDebug=50
 fi
 if [ -f $MODDIR/stv090x.ko ]; then
-   insmod $MODDIR/stv090x.ko
+   insmod $MODDIR/stv090x.ko # paramDebug=50
 fi
 # DVB-S
 if [ -f $MODDIR/stv0288.ko ]; then
-   insmod $MODDIR/stv0288.ko
+   insmod $MODDIR/stv0288.ko # paramDebug=50
 fi
 # DVB-C
 if [ -f $MODDIR/tda10023.ko ]; then
-   insmod $MODDIR/tda10023.ko
+   insmod $MODDIR/tda10023.ko # paramDebug=50
 fi
 # DVB-T
 if [ -f $MODDIR/dvb-pll.ko ]; then
    insmod $MODDIR/dvb-pll.ko
    if [ -f $MODDIR/zl10353.ko ]; then
-      insmod $MODDIR/zl10353.ko
+      insmod $MODDIR/zl10353.ko # paramDebug=50
    fi
 fi
 
@@ -186,7 +182,6 @@ if [ -e $MODDIR/usbserial.ko ]; then
 fi
 
 echo "[rcS] Init frontpanel keyboard"
-#insmod $MODDIR/boxtype.ko
 insmod $MODDIR/simu_button.ko
 
 stfbcontrol a 0
@@ -334,12 +329,11 @@ do
          fi;;
       *) echo "ERROR"
          echo "Error" > /dev/vfd
-         fp_control -r 00:00:00 01.01.1980;;
+         fp_control -r 00:00:00 01-01-1980;;
    esac
 done
 
 #never reached
 /bin/fp_control -t "REBOOT CubeRevo"
 echo "[rcS] Reboot Cuberevo"
-reboot
-
+init 6

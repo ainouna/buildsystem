@@ -60,11 +60,11 @@
  AS_HELP_STRING([], [valid for generic: raspi]),
  	[case "${withval}" in
 -		ufs910|ufs912|ufs913|ufs922|atevio7500|fortis_hdbox|octagon1008|cuberevo|cuberevo_mini|cuberevo_mini2|cuberevo_250hd|cuberevo_2000hd|cuberevo_3000hd|ipbox9900|ipbox99|ipbox55|tf7700)
-+		ufs910|ufs912|ufs913|ufs922|fs9000|hs7110|hs7420|hs7810a|hs7119|hs7429|hs7819|hs8200|hs9510|cuberevo|cuberevo_mini|cuberevo_mini2|cuberevo_250hd|cuberevo_2000hd|cuberevo_3000hd|ipbox9900|ipbox99|ipbox55|tf7700|hl101|adb_box|vip1_v1|vip1_v2|vip2|vitamin_hd5000|pace7241|adb_2850|opt9600)
++		ufs910|ufs912|ufs913|ufs922|fs9000|hs7110|hs7420|hs7810a|hs7119|hs7429|hs7819|hs8200|hs9510|cuberevo|cuberevo_mini|cuberevo_mini2|cuberevo_250hd|cuberevo_mini_fta|cuberevo_2000hd|cuberevo_3000hd|ipbox9900|ipbox99|ipbox55|tf7700|hl101|adb_box|vip1_v1|vip1_v2|vip2|vitamin_hd5000|pace7241|adb_2850|opt9600)
  			if test "$BOXTYPE" = "duckbox"; then
  				BOXMODEL="$withval"
  			else
-@@ -419,9 +387,16 @@
+@@ -419,13 +387,21 @@
  AM_CONDITIONAL(BOXMODEL_UFS922, test "$BOXMODEL" = "ufs922")
  AM_CONDITIONAL(BOXMODEL_SPARK, test "$BOXMODEL" = "spark")
  AM_CONDITIONAL(BOXMODEL_SPARK7162, test "$BOXMODEL" = "spark7162")
@@ -84,7 +84,12 @@
  
  AM_CONDITIONAL(BOXMODEL_CUBEREVO, test "$BOXMODEL" = "cuberevo")
  AM_CONDITIONAL(BOXMODEL_CUBEREVO_MINI, test "$BOXMODEL" = "cuberevo_mini")
-@@ -433,6 +408,15 @@
+ AM_CONDITIONAL(BOXMODEL_CUBEREVO_MINI2, test "$BOXMODEL" = "cuberevo_mini2")
++AM_CONDITIONAL(BOXMODEL_CUBEREVO_250HD, test "$BOXMODEL" = "cuberevo_mini_fta")
+ AM_CONDITIONAL(BOXMODEL_CUBEREVO_250HD, test "$BOXMODEL" = "cuberevo_250hd")
+ AM_CONDITIONAL(BOXMODEL_CUBEREVO_2000HD, test "$BOXMODEL" = "cuberevo_2000hd")
+ AM_CONDITIONAL(BOXMODEL_CUBEREVO_3000HD, test "$BOXMODEL" = "cuberevo_3000hd")
+@@ -433,6 +409,15 @@
  AM_CONDITIONAL(BOXMODEL_IPBOX99, test "$BOXMODEL" = "ipbox99")
  AM_CONDITIONAL(BOXMODEL_IPBOX55, test "$BOXMODEL" = "ipbox55")
  AM_CONDITIONAL(BOXMODEL_TF7700, test "$BOXMODEL" = "tf7700")
@@ -100,7 +105,7 @@
  
  AM_CONDITIONAL(BOXMODEL_HD51, test "$BOXMODEL" = "hd51")
  AM_CONDITIONAL(BOXMODEL_HD60, test "$BOXMODEL" = "hd60")
-@@ -483,12 +467,12 @@
+@@ -483,12 +468,12 @@
  	AC_DEFINE(BOXMODEL_SPARK, 1, [spark])
  elif test "$BOXMODEL" = "spark7162"; then
  	AC_DEFINE(BOXMODEL_SPARK7162, 1, [spark7162])
@@ -119,7 +124,16 @@
  elif test "$BOXMODEL" = "cuberevo"; then
  	AC_DEFINE(BOXMODEL_CUBEREVO, 1, [cuberevo])
  elif test "$BOXMODEL" = "cuberevo_mini"; then
-@@ -509,6 +493,25 @@
+@@ -497,6 +482,8 @@
+ 	AC_DEFINE(BOXMODEL_CUBEREVO_MINI2, 1, [cuberevo_mini2])
+ elif test "$BOXMODEL" = "cuberevo_250hd"; then
+ 	AC_DEFINE(BOXMODEL_CUBEREVO_250HD, 1, [cuberevo_250hd])
++elif test "$BOXMODEL" = "cuberevo_mini_fta"; then
++	AC_DEFINE(BOXMODEL_CUBEREVO_MINI_FTA, 1, [cuberevo_mini_fta])
+ elif test "$BOXMODEL" = "cuberevo_2000hd"; then
+ 	AC_DEFINE(BOXMODEL_CUBEREVO_2000HD, 1, [cuberevo_2000hd])
+ elif test "$BOXMODEL" = "cuberevo_3000hd"; then
+@@ -509,6 +496,25 @@
  	AC_DEFINE(BOXMODEL_IPBOX55, 1, [ipbox55])
  elif test "$BOXMODEL" = "tf7700"; then
  	AC_DEFINE(BOXMODEL_TF7700, 1, [tf7700])
@@ -152,7 +166,7 @@
  	backbuf_sz = 1280 * 720 * sizeof(fb_pixel_t);
  	BPAMemAllocMemData bpa_data;
 -#if BOXMODEL_OCTAGON1008 || BOXMODEL_FORTIS_HDBOX || BOXMODEL_CUBEREVO || BOXMODEL_CUBEREVO_MINI || BOXMODEL_CUBEREVO_MINI2 || BOXMODEL_CUBEREVO_250HD || BOXMODEL_CUBEREVO_2000HD || BOXMODEL_CUBEREVO_3000HD || BOXMODEL_IPBOX9900 || BOXMODEL_IPBOX99 || BOXMODEL_IPBOX55 || BOXMODEL_TF7700
-+#if BOXMODEL_HS9510 || BOXMODEL_FS9000 || BOXMODEL_CUBEREVO || BOXMODEL_CUBEREVO_MINI || BOXMODEL_CUBEREVO_MINI2 || BOXMODEL_CUBEREVO_250HD || BOXMODEL_CUBEREVO_2000HD || BOXMODEL_CUBEREVO_3000HD || BOXMODEL_IPBOX9900 || BOXMODEL_IPBOX99 || BOXMODEL_IPBOX55 || BOXMODEL_TF7700
++#if BOXMODEL_HS9510 || BOXMODEL_FS9000 || BOXMODEL_CUBEREVO || BOXMODEL_CUBEREVO_MINI || BOXMODEL_CUBEREVO_MINI2 || BOXMODEL_CUBEREVO_250HD || BOXMODEL_CUBEREVO_MINI_FTA|| BOXMODEL_CUBEREVO_2000HD || BOXMODEL_CUBEREVO_3000HD || BOXMODEL_IPBOX9900 || BOXMODEL_IPBOX99 || BOXMODEL_IPBOX55 || BOXMODEL_TF7700
  	bpa_data.bpa_part = (char *)"LMI_SYS";
  #else
  	bpa_data.bpa_part = (char *)"LMI_VID";
@@ -163,7 +177,7 @@
  	backbuf_sz = DEFAULT_XRES * DEFAULT_YRES * sizeof(fb_pixel_t);
  	BPAMemAllocMemData bpa_data;
 -#if BOXMODEL_OCTAGON1008 || BOXMODEL_FORTIS_HDBOX || BOXMODEL_CUBEREVO || BOXMODEL_CUBEREVO_MINI || BOXMODEL_CUBEREVO_MINI2 || BOXMODEL_CUBEREVO_250HD || BOXMODEL_CUBEREVO_2000HD || BOXMODEL_CUBEREVO_3000HD || BOXMODEL_IPBOX9900 || BOXMODEL_IPBOX99 || BOXMODEL_IPBOX55 || BOXMODEL_TF7700
-+#if BOXMODEL_HS9510 || BOXMODEL_FS9000 || BOXMODEL_CUBEREVO || BOXMODEL_CUBEREVO_MINI || BOXMODEL_CUBEREVO_MINI2 || BOXMODEL_CUBEREVO_250HD || BOXMODEL_CUBEREVO_2000HD || BOXMODEL_CUBEREVO_3000HD || BOXMODEL_IPBOX9900 || BOXMODEL_IPBOX99 || BOXMODEL_IPBOX55 || BOXMODEL_TF7700
++#if BOXMODEL_HS9510 || BOXMODEL_FS9000 || BOXMODEL_CUBEREVO || BOXMODEL_CUBEREVO_MINI || BOXMODEL_CUBEREVO_MINI2 || BOXMODEL_CUBEREVO_250HD || BOXMODEL_CUBEREVO_MINI_FTA || BOXMODEL_CUBEREVO_2000HD || BOXMODEL_CUBEREVO_3000HD || BOXMODEL_IPBOX9900 || BOXMODEL_IPBOX99 || BOXMODEL_IPBOX55 || BOXMODEL_TF7700
  	bpa_data.bpa_part = (char *)"LMI_SYS";
  #else
  	bpa_data.bpa_part = (char *)"LMI_VID";
@@ -295,7 +309,7 @@
  	if (blocked)
  	{
  		printf("[CVFD] - blocked\n");
-@@ -156,32 +216,65 @@
+@@ -156,32 +216,69 @@
  			vfd_scrollText = 0;
  		}
  	}
@@ -317,7 +331,9 @@
 -		ws = (VFDLENGTH-strlen(str))/2;
 +#if defined (BOXMODEL_CUBEREVO_MINI) \
 + || defined (BOXMODEL_CUBEREVO_MINI2) \
-+ || defined (BOXMODEL_CUBEREVO_2000HD) \
++ || defined (BOXMODEL_CUBEREVO_MINI2) \
++ || defined (BOXMODEL_CUBEREVO_MINI_FTA) \
++ || defined (BOXMODEL_CUBEREVO_250HD) \
 + || defined (BOXMODEL_CUBEREVO_3000HD) \
 + || defined (BOXMODEL_CUBEREVO_9500HD) \
 + || defined (BOXMODEL_CUBEREVO) // CubeRevo's center in the display driver
@@ -341,6 +357,8 @@
 + || defined (BOXMODEL_CUBEREVO_MINI2) \
 + || defined (BOXMODEL_CUBEREVO_2000HD) \
 + || defined (BOXMODEL_CUBEREVO_3000HD) \
++ || defined (BOXMODEL_CUBEREVO_MINI_FTA) \
++ || defined (BOXMODEL_CUBEREVO_250HD) \
 + || defined (BOXMODEL_CUBEREVO_9500HD) \
 + || defined (BOXMODEL_CUBEREVO) // CubeRevo's center in the display driver
 +		memcpy(data.data, str, strlen(str));
@@ -373,7 +391,7 @@
  	write_to_vfd(VFDDISPLAYCHARS, &data);
  	return;
  }
-@@ -217,17 +310,18 @@
+@@ -217,17 +314,18 @@
  	int i;
  	char *str = (char *)arg;
  	int len = strlen(str);
@@ -398,7 +416,7 @@
  		memcpy(buf, str, len);
  
  		while(retries--)
-@@ -237,20 +331,20 @@
+@@ -237,20 +335,20 @@
  			for (i = 0; i <= (len-1); i++)
  			{
  				// scroll text until end
@@ -422,7 +440,7 @@
  
  CVFD::CVFD()
  {
-@@ -348,7 +442,7 @@
+@@ -348,7 +446,7 @@
  	if(g_settings.lcd_info_line){
  		switch_name_time_cnt = g_settings.timing[SNeutrinoSettings::TIMING_INFOBAR] + 10;
  	}
@@ -431,7 +449,7 @@
  	ShowIcon(ICON_COLON2, false);
  #endif
  
-@@ -370,6 +464,9 @@
+@@ -370,6 +468,9 @@
  
  void CVFD::init(const char * /*fontfile*/, const char * /*fontname*/)
  {
@@ -441,7 +459,7 @@
  	//InitNewClock(); /FIXME
  
  	brightness = -1;
-@@ -398,7 +495,7 @@
+@@ -398,7 +499,7 @@
  
  	brightness = dimm;
  
@@ -450,7 +468,7 @@
  #if !HAVE_DUCKBOX_HARDWARE
  	int ret = ioctl(fd, IOC_FP_SET_BRIGHT, dimm);
  	if(ret < 0)
-@@ -406,43 +503,87 @@
+@@ -406,43 +507,87 @@
  #else
  // Brightness
  	struct vfd_ioctl_data data;
@@ -550,7 +568,7 @@
  // Power on/off
  	if (power) {
  		data.start = 0x01;
-@@ -452,6 +593,7 @@
+@@ -452,6 +597,7 @@
  	data.length = 0;
  	write_to_vfd(VFDDISPLAYWRITEONOFF, &data, true);
  #endif
@@ -558,7 +576,7 @@
  }
  
  void CVFD::setlcdparameter(void)
-@@ -462,21 +604,34 @@
+@@ -462,21 +608,34 @@
  			last_toggle_state_power);
  }
  
@@ -601,7 +619,7 @@
  	wake_up();
  }
  
-@@ -484,59 +639,112 @@
+@@ -484,59 +643,113 @@
  {
  	//unsigned int system_rev = cs_get_revision();
  	static int recstatus = 0;
@@ -672,7 +690,8 @@
 +					strftime(timestr, 6, (second % 2 == 0 ? "%H:%M" : "%H %M"), t);
 +				}
 +				ShowText(timestr);
-+#elif defined (BOXMODEL_CUBEREVO_250HD)
++#elif defined (BOXMODEL_CUBEREVO_250HD) \
++ ||   defined (BOXMODEL_CUBEREVO_MINI_FTA)
 +				strftime(timestr, 5, "%H%M", t);
 +				ShowText(timestr);
  #else
@@ -733,7 +752,7 @@
  	}
  
  	recstatus = tmp_recstatus;
-@@ -551,7 +759,10 @@
+@@ -551,7 +764,10 @@
  		ShowIcon(FP_ICON_HD,chan->isHD());
  		ShowIcon(FP_ICON_LOCK,!chan->camap.empty());
  		if (chan->getAudioChannel() != NULL)
@@ -744,7 +763,7 @@
  	}
  }
  #endif
-@@ -573,25 +784,32 @@
+@@ -573,25 +789,32 @@
  void CVFD::showVolume(const char vol, const bool force_update)
  {
  	static int oldpp = 0;
@@ -786,7 +805,7 @@
  			int i;
  			unsigned char speaker[5] = {0x1C, 0x1C, 0x1C, 0x3E, 0x7F}; // speaker symbol
  			writeCG(0, speaker);
-@@ -608,7 +826,7 @@
+@@ -608,7 +831,7 @@
  			memset (VolumeBar, 0, sizeof(VolumeBar));
  			char act[2] = {0x01, 0x20};
  			strncat(VolumeBar, act, 2);
@@ -795,7 +814,7 @@
  			{
  				strncat(VolumeBar, c5, 1);
  			}
-@@ -629,24 +847,56 @@
+@@ -629,24 +852,57 @@
  				break;
  			}
  			//dprintf(DEBUG_DEBUG,"CVFD::showVolume: vol %d - pp %d - fullblocks %d - mod %d - %s\n", vol, pp, j, i, VolumeBar);
@@ -825,6 +844,7 @@
 +#elif defined (BOXMODEL_HS7119) \
 + ||   defined (BOXMODEL_HS7810A) \
 + ||   defined (BOXMODEL_HS7819) \
++ ||   defined (BOXMODEL_CUBEREVO_MINI_FTA) \
 + ||   defined (BOXMODEL_CUBEREVO_250HD) \
 + ||   defined (BOXMODEL_IPBOX55)
  			char vol_chr[64] = "";
@@ -858,7 +878,7 @@
  			char vol_chr[64] = "";
  			snprintf(vol_chr, sizeof(vol_chr)-1, "Volume: %d%%", (int)vol);
  			ShowText(vol_chr);
-@@ -656,17 +906,23 @@
+@@ -656,17 +912,23 @@
  #else
  		ShowIcon(FP_ICON_FRAME, true);
  		int pp = (int) round((double) vol * (double) 8 / (double) 100);
@@ -888,7 +908,7 @@
  				ShowIcon((fp_icon) j, false);
  				j /= 2;
  			}
-@@ -704,7 +960,7 @@
+@@ -704,7 +966,7 @@
  		if(pp > 8) pp = 8;
  
  		if(pp != ppold) {
@@ -897,7 +917,7 @@
  			int i;
  			int j = 0x00000200;
  			for(i = 0; i < pp; i++) {
-@@ -736,7 +992,7 @@
+@@ -736,7 +998,7 @@
  	if(fd < 0) return;
  	if (mode != MODE_AUDIO)
  		return;
@@ -906,7 +926,7 @@
  	ShowText(title.c_str());
  	wake_up();
  
-@@ -805,19 +1061,60 @@
+@@ -805,19 +1067,60 @@
  
  void CVFD::setMode(const MODES m, const char * const title)
  {
@@ -971,7 +991,7 @@
  	if(strlen(title))
  		ShowText(title);
  	mode = m;
-@@ -839,6 +1136,10 @@
+@@ -839,6 +1142,10 @@
  			showPercentOver(percentOver, false);
  			break;
  #endif
@@ -982,7 +1002,7 @@
  		}
  		showServicename(servicename);
  		showclock = true;
-@@ -915,12 +1216,28 @@
+@@ -915,12 +1222,28 @@
  int CVFD::getBrightness()
  {
  	//FIXME for old neutrino.conf
@@ -1014,7 +1034,7 @@
  #endif
  
  	return g_settings.lcd_setting[SNeutrinoSettings::LCD_BRIGHTNESS];
-@@ -937,7 +1254,7 @@
+@@ -937,7 +1260,7 @@
  int CVFD::getBrightnessStandby()
  {
  	//FIXME for old neutrino.conf
@@ -1023,7 +1043,7 @@
  	if(g_settings.lcd_setting[SNeutrinoSettings::LCD_STANDBY_BRIGHTNESS] > 7)
  		g_settings.lcd_setting[SNeutrinoSettings::LCD_STANDBY_BRIGHTNESS] = 7;
  #else
-@@ -958,12 +1275,28 @@
+@@ -958,12 +1281,28 @@
  int CVFD::getBrightnessDeepStandby()
  {
  	//FIXME for old neutrino.conf
@@ -1055,7 +1075,7 @@
  #endif
  	return g_settings.lcd_setting[SNeutrinoSettings::LCD_DEEPSTANDBY_BRIGHTNESS];
  }
-@@ -1029,14 +1362,32 @@
+@@ -1029,14 +1368,33 @@
  	else
  		text.clear();
  #else
@@ -1063,6 +1083,7 @@
 +#if defined (BOXMODEL_HS7810A) \
 + || defined (BOXMODEL_HS7119) \
 + || defined (BOXMODEL_HS7819) \
++ || defined (BOXMODEL_CUBEREVO_MINI_FTA) \
 + || defined (BOXMODEL_CUBEREVO_250HD) \
 + || defined (BOXMODEL_IPBOX55)
  	ShowText("    ");
@@ -1092,7 +1113,7 @@
  #endif
  #endif
  }
-@@ -1044,25 +1395,69 @@
+@@ -1044,25 +1402,69 @@
  void CVFD::ShowIcon(fp_icon icon, bool show)
  {
  #if !HAVE_DUCKBOX_HARDWARE
@@ -1170,7 +1191,7 @@
  	memset(&data, 0, sizeof(struct vfd_ioctl_data));
  	data.start = 0x00;
  	data.data[0] = icon;
-@@ -1076,29 +1471,47 @@
+@@ -1076,29 +1478,47 @@
  #ifdef HAVE_DUCKBOX_HARDWARE
  void CVFD::ClearIcons()
  {
@@ -1223,7 +1244,7 @@
  		g_str[60] = '.';
  		g_str[61] = '.';
  		g_str[62] = '.';
-@@ -1107,20 +1520,23 @@
+@@ -1107,20 +1527,23 @@
  	}
  	ShowNormalText(g_str, false);
  }
@@ -1259,7 +1280,7 @@
  void CVFD::ShowText(const char * str)
  {
  	if (fd < 0 || !support_text)
-@@ -1154,11 +1570,25 @@
+@@ -1154,11 +1577,30 @@
  
  void CVFD::ShowNumber(int number)
  {
@@ -1279,7 +1300,12 @@
 +	}
 +
 +	memset (buffer, 0, sizeof(buffer));
-+#if defined (BOXMODEL_HS7119) || defined (BOXMODEL_HS7810A) || defined (BOXMODEL_HS7819)
++#if defined (BOXMODEL_HS7119) \
++ || defined (BOXMODEL_HS7810A) \
++ || defined (BOXMODEL_HS7819) \
++ || defined (BOXMODEL_CUBEREVO_MINI_FTA) \
++ || defined (BOXMODEL_CUBEREVO_250HD) \
++
 +	n = sprintf(buffer, "%04d", number);
 +#else
 +	n = sprintf(buffer, "%4d", number);
@@ -1288,7 +1314,7 @@
  }
  
  #ifdef VFD_UPDATE
-@@ -1245,10 +1675,10 @@
+@@ -1245,10 +1687,10 @@
  /*****************************************************************************************/
  //showFilelist
  /*****************************************************************************************/
@@ -1303,7 +1329,7 @@
  
  void CVFD::showFilelist(int flist_pos,CFileList* flist,const char * const mainDir)
  {
-@@ -1485,5 +1915,4 @@
+@@ -1485,5 +1927,4 @@
  }
  /*****************************************************************************************/
  #endif // VFD_UPDATE

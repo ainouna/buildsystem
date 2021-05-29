@@ -78,6 +78,34 @@ $(D)/tools-evremote2: $(D)/bootstrap
 	$(TOUCH)
 
 #
+# eeprom_cuberevo_led
+#
+$(D)/tools-eeprom-cuberevo_led: $(D)/bootstrap
+	$(START_BUILD)
+	$(SET) -e; cd $(TOOLS_DIR)/eeprom_cuberevo_led; \
+		if [ ! -d m4 ]; then mkdir m4; fi; \
+		$(CONFIGURE_TOOLS) \
+			--prefix= \
+		; \
+		$(MAKE); \
+		$(MAKE) install DESTDIR=$(TARGET_DIR)
+	$(TOUCH)
+
+#
+# eeprom_dgs
+#
+$(D)/tools-eeprom-dgs: $(D)/bootstrap
+	$(START_BUILD)
+	$(SET) -e; cd $(TOOLS_DIR)/eeprom_dgs; \
+		if [ ! -d m4 ]; then mkdir m4; fi; \
+		$(CONFIGURE_TOOLS) \
+			--prefix= \
+		; \
+		$(MAKE); \
+		$(MAKE) install DESTDIR=$(TARGET_DIR)
+	$(TOUCH)
+
+#
 # eeprom_fortis
 #
 $(D)/tools-eeprom-fortis: $(D)/bootstrap
@@ -460,7 +488,10 @@ TOOLS += $(D)/tools-devinit
 ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs7110 hs7420 hs7810a hs7119 hs7249 hs7819))
 TOOLS += $(D)/tools-eeprom-fortis
 endif
-ifeq ($(BOXTYPE), $(filter $(BOXTYPE), ipbox55 ipbox99 ipbox9900 cuberevo cuberevo_mini cuberevo_mini2 cuberevo_250hd cuberevo_2000hd cuberevo_3000hd))
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE), cuberevo cuberevo_mini cuberevo_mini2 cuberevo_mini_fta cuberevo_250hd cuberevo_2000hd cuberevo_3000hd))
+TOOLS += $(D)/tools-eeprom-dgs
+endif
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE), ipbox55 ipbox99 ipbox9900))
 TOOLS += $(D)/tools-eeprom-ipbox
 endif
 ifeq ($(BOXTYPE), $(filter $(BOXTYPE), ufs913))

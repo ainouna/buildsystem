@@ -78,8 +78,8 @@
  				valid for kathrein: ufs910, ufs922, ufs912, ufs913, ufc960
  				valid for ipbox: ipbox55, ipbox99, ipbox9900
  				valid for ipbox: hl101
- 				valid for atevio: atevio700,atevio7000,hs8200,atevio7600
- 				valid for octagon: hs9510
+ 				valid for atevio: atevio700,atevio7000,atevio7500,atevio7600
+ 				valid for octagon: octagon1008
 +				valid for fortis: hs7110, hs7420, hs7810a, hs7119, hs7429, hs7819
 +				valid for adb: adb_box, adb_2850
 +				valid for pace: pace7241
@@ -111,7 +111,7 @@
  				BOXMODEL="$withval"
 @@ -428,6 +492,69 @@
  			;;
- 		hs9510)
+ 		octagon1008)
  			if test "$BOXTYPE" = "octagon"; then
 +				BOXMODEL="$withval"
 +			else
@@ -179,7 +179,7 @@
  				BOXMODEL="$withval"
  			else
  				AC_MSG_ERROR([unknown model $withval for boxtype $BOXTYPE])
-@@ -611,6 +738,7 @@
+@@ -611,14 +738,19 @@
  AM_CONDITIONAL(BOXTYPE_DREAMBOX, test "$BOXTYPE" = "dreambox")
  AM_CONDITIONAL(BOXTYPE_XTREND, test "$BOXTYPE" = "xtrend")
  AM_CONDITIONAL(BOXTYPE_FULAN, test "$BOXTYPE" = "fulan")
@@ -187,7 +187,7 @@
  AM_CONDITIONAL(BOXTYPE_KATHREIN, test "$BOXTYPE" = "kathrein")
  AM_CONDITIONAL(BOXTYPE_IPBOX, test "$BOXTYPE" = "ipbox")
  AM_CONDITIONAL(BOXTYPE_HL101, test "$BOXTYPE" = "hl101")
-@@ -618,7 +746,11 @@
+ AM_CONDITIONAL(BOXTYPE_TOPFIELD, test "$BOXTYPE" = "toptfield")
 -AM_CONDITIONAL(BOXTYPE_FORTIS_HDBOX, test "$BOXTYPE" = "fortis_hdbox")
 +AM_CONDITIONAL(BOXTYPE_FS9000, test "$BOXTYPE" = "fs9000")
  AM_CONDITIONAL(BOXTYPE_OCTAGON, test "$BOXTYPE" = "octagon")
@@ -213,10 +213,10 @@
 +AM_CONDITIONAL(BOXMODEL_OCTAGON_1008, test "$BOXMODEL" = "hs9510")
  AM_CONDITIONAL(BOXMODEL_ATEVIO700, test "$BOXMODEL" = "atevio700")
  AM_CONDITIONAL(BOXMODEL_ATEVIO7000, test "$BOXMODEL" = "atevio7000")
- AM_CONDITIONAL(BOXMODEL_HS8200, test "$BOXMODEL" = "hs8200")
+ AM_CONDITIONAL(BOXMODEL_ATEVIO7500, test "$BOXMODEL" = "atevio7500")
  AM_CONDITIONAL(BOXMODEL_ATEVIO7600, test "$BOXMODEL" = "atevio7600")
- 
--AM_CONDITIONAL(BOXMODEL_OCTAGON_1008, test "$BOXMODEL" = "hs9510")
+-
+-AM_CONDITIONAL(BOXMODEL_OCTAGON_1008, test "$BOXMODEL" = "octagon1008")
 +AM_CONDITIONAL(BOXMODEL_HS711O, test "$BOXMODEL" = "hs7110")
 +AM_CONDITIONAL(BOXMODEL_HS7119, test "$BOXMODEL" = "hs7119")
 +AM_CONDITIONAL(BOXMODEL_HS742O, test "$BOXMODEL" = "hs7420")
@@ -232,6 +232,7 @@
 +AM_CONDITIONAL(BOXMODEL_VITAMIN_HD5000, test "$BOXMODEL" = "vitamin_hd5000")
 +
 +AM_CONDITIONAL(BOXMODEL_OPT9600, test "$BOXMODEL" = "opt9600")
++
  
  AM_CONDITIONAL(BOXMODEL_VUSOLO2, test "$BOXMODEL" = "vusolo2")
  AM_CONDITIONAL(BOXMODEL_VUDUO2, test "$BOXMODEL" = "vuduo2")
@@ -263,23 +264,24 @@
  elif test "$BOXTYPE" = "whitebox"; then
  	AC_DEFINE(PLATFORM_WHITEBOX, 1, [building for whitebox])
  elif test "$BOXTYPE" = "vip"; then
-@@ -959,6 +1119,12 @@
+@@ -959,6 +1119,9 @@
  elif test "$BOXMODEL" = "hl101"; then
  	AC_DEFINE(BOXMODEL_HL101, 1, [hl101])
  
 +elif test "$BOXMODEL" = "tf7700"; then
 +	AC_DEFINE(BOXMODEL_TF7700, 1, [tf7700])
 +
-+elif test "$BOXMODEL" = "tf7700"; then
-+	AC_DEFINE(BOXMODEL_TF7700, 1, [tf7700])
-+
  elif test "$BOXMODEL" = "atevio700"; then
  	AC_DEFINE(BOXMODEL_ATEVIO700, 1, [building for atevio700])
  elif test "$BOXMODEL" = "atevio7000"; then
-@@ -970,6 +1136,29 @@
+@@ -968,8 +1131,31 @@
+ elif test "$BOXMODEL" = "atevio7600"; then
+ 	AC_DEFINE(BOXMODEL_ATEVIO7600, 1, [building for atevio7600])
  
- elif test "$BOXMODEL" = "hs9510"; then
- 	AC_DEFINE(BOXMODEL_OCTAGON_1008, 1, [building for hs9510])
+-elif test "$BOXMODEL" = "octagon1008"; then
+-	AC_DEFINE(BOXMODEL_OCTAGON_1008, 1, [building for octagon1008])
++ elif test "$BOXMODEL" = "hs9510"; then
++ 	AC_DEFINE(BOXMODEL_OCTAGON_1008, 1, [building for hs9510])
 +
 +elif test "$BOXMODEL" = "hs7110"; then
 +	AC_DEFINE(BOXMODEL_HS7110, 1, [building for hs7110])
