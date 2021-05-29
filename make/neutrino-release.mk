@@ -37,13 +37,13 @@ neutrino-release-cuberevo_2000hd: neutrino-release-cube_common neutrino-release-
 # cuberevo_250hd
 #
 neutrino-release-cuberevo_250hd: neutrino-release-cube_common neutrino-release-cube_common_tuner
-	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/frontcontroller/ipbox/micom.ko $(RELEASE_DIR)/lib/modules/
+	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/frontcontroller/cuberevo_micom/cuberevo_micom.ko $(RELEASE_DIR)/lib/modules/
 
 #
 # cuberevo_mini_fta
 #
 neutrino-release-cuberevo_mini_fta: neutrino-release-cube_common neutrino-release-cube_common_tuner
-	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/frontcontroller/ipbox/micom.ko $(RELEASE_DIR)/lib/modules/
+	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/frontcontroller/cuberevo_micom/cuberevo_micom.ko $(RELEASE_DIR)/lib/modules/
 
 #
 # cuberevo_mini2
