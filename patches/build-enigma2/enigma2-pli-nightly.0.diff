@@ -8723,7 +8723,7 @@
  
  
  def profile(id):
-@@ -42,7 +43,23 @@
+@@ -42,7 +43,25 @@
  				perc = PERCENTAGE_START
  			try:
  				open("/proc/progress", "w").write("%d \n" % perc)
@@ -8736,9 +8736,11 @@
 +							model = str(open("/proc/stb/info/model").read())
 +							if model.startswith("spark7162") or model.startswith("tf7700hdpvr") or model.startswith("hs9510") or model.startswith("hdbox") or model.startswith("hs8200") or model.startswith("hs7420") or model.startswith("hs7429") or model.startswith("vitamin-hd5000") or model.startswith("hl101") or model.startswith("vip1-v1") or model.startswith("vip1-v2") or model.startswith("vip2"):
 +								evfd.getInstance().vfd_write_string("START %02d" % perc)
++							elif model.startswith("cuberevo") or model.startswith("cuberevo_mini") or model.startswith("cuberevo_mini2") or model.startswith("cuberevo_2000hd") or model.startswith("cuberevo_3000hd") or model.startswith("cuberevo_9500hd"):
++								evfd.getInstance().vfd_write_string("E2 Start %02d" % perc)
 +							elif model.startswith("ufs912") or model.startswith("ufs913"):
 +								evfd.getInstance().vfd_write_string("Enigma2 START %02d" % perc)
-+							elif model.startswith("spark") or model.startswith("hs7119") or model.startswith("hs7810a") or model.startswith("hs7819"):
++							elif model.startswith("spark") or model.startswith("hs7119") or model.startswith("hs7810a") or model.startswith("hs7819") or model.startswith("cuberevo_250hd") or model.startswith("cuberevo_mini_fta"):
 +								evfd.getInstance().vfd_write_string("St%02d" % perc)
 +				elif perc > 98:
 +					value = 0
