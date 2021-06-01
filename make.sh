@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20210530.1
+# Version 20210601.1
 
 ##############################################
 
@@ -136,7 +136,7 @@ case $1 in
 		echo "   19)  IPBox 9000HD    22)  250HD"
 		echo "   20)  IPBox 900HD     23)  9500HD / 7000HD"
 		echo "   21)  IPBox 910HD     24)  2000HD"
-		echo "   22)  IPBox 91HD      25)  mini_fta / 200HD"
+		echo "   22)  IPBox 91HD      25)  200HD / mini FTA"
 		echo "                        26)  3000HD / Xsarius Alpha"
 		echo
 		echo "  Fulan                Atemio"
@@ -144,9 +144,9 @@ case $1 in
 		echo "   28)  Spark7162       30)  AM530"
 		echo
 		echo "  Edision"
-		echo "   31)  Edision argus VIP V1 [ 1 fixed tuner + 2 CI + 1.5 USB ]"
-		echo "   32)  Edision argus VIP V2 [ 1 plugin tuner + 2 CI + 1 USB ]"
-		echo "   33)  Edision argus VIP2   [ 2 plugin tuners + 1 USB ]"
+		echo "   31)  argus VIP V1 [ 1 fixed tuner + 2 CI + 1.5 USB ]"
+		echo "   32)  argus VIP V2 [ 1 plugin tuner + 2 CI + 1 USB ]"
+		echo "   33)  argus VIP2   [ 2 plugin tuners + 1 USB ]"
 		echo
 		echo "  Various SH4-based receivers"
 		echo "   34)  SpiderBox HL-101"
