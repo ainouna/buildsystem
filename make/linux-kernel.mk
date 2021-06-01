@@ -234,30 +234,43 @@ CUBEREVO_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-sh4-cuberevo_setup_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-i2c-st40-pio_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-cuberevo_rtl8201_stm24_$(KERNEL_LABEL).patch
+ifeq ($(IMAGE), $(filter $(IMAGE), neutrino neutrino-wlandriver))
+CUBEREVO_PATCHES_24 += linux-sh4-cuberevo_mtdconcat_stm24_$(KERNEL_LABEL).patch
+endif
 
 CUBEREVO_MINI_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-sh4-cuberevo_mini_setup_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-i2c-st40-pio_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-cuberevo_rtl8201_stm24_$(KERNEL_LABEL).patch
+ifeq ($(IMAGE), $(filter $(IMAGE), neutrino neutrino-wlandriver))
+CUBEREVO_MINI_PATCHES_24 += linux-sh4-cuberevo_mtdconcat_stm24_$(KERNEL_LABEL).patch
+endif
 
 CUBEREVO_MINI2_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-sh4-cuberevo_mini2_setup_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-i2c-st40-pio_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-cuberevo_rtl8201_stm24_$(KERNEL_LABEL).patch
 ifeq ($(IMAGE), $(filter $(IMAGE), neutrino neutrino-wlandriver))
-CUBEREVO_MINI2_PATCHES_24 += linux-sh4-cuberevo_mini2_mtdconcat_stm24_$(KERNEL_LABEL).patch
+CUBEREVO_MINI2_PATCHES_24 += linux-sh4-cuberevo_mtdconcat_stm24_$(KERNEL_LABEL).patch
 endif
 
 CUBEREVO_MINI_FTA_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-sh4-cuberevo_setup_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-i2c-st40-pio_stm24_$(KERNEL_LABEL).patch \
-		linux-sh4-cuberevo_rtl8201_stm24_$(KERNEL_LABEL).patch
+		linux-sh4-cuberevo_rtl8201_stm24_$(KERNEL_LABEL).patch \
+		$(if $(P0217),linux-sh4-cuberevo_250hd_sound_stm24_$(KERNEL_LABEL).patch)
+ifeq ($(IMAGE), $(filter $(IMAGE), neutrino neutrino-wlandriver))
+CUBEREVO_MINI_FTA_PATCHES_24 += linux-sh4-cuberevo_mtdconcat_stm24_$(KERNEL_LABEL).patch
+endif
 
 CUBEREVO_250HD_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-sh4-cuberevo_250hd_setup_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-i2c-st40-pio_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-cuberevo_rtl8201_stm24_$(KERNEL_LABEL).patch \
 		$(if $(P0217),linux-sh4-cuberevo_250hd_sound_stm24_$(KERNEL_LABEL).patch)
+ifeq ($(IMAGE), $(filter $(IMAGE), neutrino neutrino-wlandriver))
+CUBEREVO_250HD_PATCHES_24 += linux-sh4-cuberevo_mtdconcat_stm24_$(KERNEL_LABEL).patch
+endif
 
 CUBEREVO_2000HD_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-sh4-cuberevo_2000hd_setup_stm24_$(KERNEL_LABEL).patch \

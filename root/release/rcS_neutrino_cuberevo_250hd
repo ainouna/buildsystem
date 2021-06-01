@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 191113.1
+#Version 2105019.1
 
 echo "[rcS] Start"
 echo "CubeRevo 250HD Neutrino"
@@ -9,16 +9,16 @@ MODDIR=/lib/modules
 insmod $MODDIR/e2_proc.ko
 
 echo "[rcS] Init frontpanel"
-insmod $MODDIR/micom.ko paramDebug=10
+insmod $MODDIR/cuberevo_micom.ko  # paramDebug=100
 
 if [ -e /var/etc/.firstboot ]; then
-   echo "WAIT 3 minutes" > /dev/vfd
-   echo "[rcS] WAIT 3 min"
+   echo "1min" > /dev/vfd
+   echo "[rcS] Wait 1 min"
    rm /var/etc/.firstboot
    sleep 1
    touch /dev/.devfsd
 else
-   echo "Load 10" > /dev/vfd
+   echo "Ld10" > /dev/vfd
    echo "[rcS] LOAD 10"
 fi
 
@@ -32,18 +32,11 @@ echo "[rcS] Starting DEBUG Interface"
 #   rm -f /dev/ttyAS1
 #fi
 
-echo -n "[rcS] Starting telnetd "
-autologin=`cat /etc/enigma2/settings | grep systemoptions.autologin | cut -d "=" -f2`
-if [ ! $autologin ]; then
-   /usr/sbin/telnetd -l /bin/autologin
-   echo "with autologin"
-else
-   /usr/sbin/telnetd -l /bin/login
-   echo "with normal login"
-fi
+echo -n "[rcS] Starting telnetd"
+/usr/sbin/telnetd -l /bin/autologin
 
 echo "[rcS] Init stmfb (LOAD 9)"
-echo "Load 9" > /dev/vfd
+echo "Ld 9" > /dev/vfd
 insmod $MODDIR/stmcore-display-stx7109c3.ko
 
 /bin/eeprom tvmode
@@ -74,26 +67,26 @@ if [ ! -e /lib/firmware/audio.elf ] || [ ! -e /lib/firmware/video.elf ]; then
 fi
 
 echo "[rcS] Load video firmware (LOAD 8)"
-echo "Load 8" > /dev/vfd
+echo "Ld 8" > /dev/vfd
 /bin/ustslave /dev/st231-0 /lib/firmware/video.elf > /dev/null
 
 echo "[rcS] Load audio firmware (LOAD 7)"
-echo "Load 7" > /dev/vfd
+echo "Ld 7" > /dev/vfd
 /bin/ustslave /dev/st231-1 /lib/firmware/audio.elf > /dev/null
 
 echo "[rcS] Init embx (LOAD 6)"
-echo "Load 6" > /dev/vfd
+echo "Ld 6" > /dev/vfd
 insmod $MODDIR/embxshell.ko
-insmod $MODDIR/embxmailbox.ko mailbox0=0xb9211000:136:set2 mailbox1=0xb9212000:0 ;
-insmod $MODDIR/embxshm.ko mailbox0=shm:0:7:0x60000000:0:256:256:0:512:0xa4000000:0x10000000 ;
+insmod $MODDIR/embxmailbox.ko mailbox0=0xb9211000:136:set2 mailbox1=0xb9212000:0
+insmod $MODDIR/embxshm.ko mailbox0=shm:0:7:0x60000000:0:256:256:0:512:0xa4000000:0x10000000
 insmod $MODDIR/mme_host.ko transport0=shm
 
 echo "[rcS] Init AVS (LOAD 5)"
-echo "Load 5" > /dev/vfd
+echo "Ld 5" > /dev/vfd
 insmod $MODDIR/avs.ko type=stv6412
 
 echo "[rcS] Init player (LOAD 4)"
-echo "Load 4" > /dev/vfd
+echo "Ld 4" > /dev/vfd
 insmod $MODDIR/mmelog.ko
 insmod $MODDIR/mpeg2hw.ko mmeName=MPEG2_TRANSFORMER1
 insmod $MODDIR/ksound.ko
@@ -111,29 +104,24 @@ insmod $MODDIR/lnbh221.ko
 insmod $MODDIR/lnb_pio.ko
 # DVB-S(2)
 if [ -f $MODDIR/cx24116.ko ]; then
-   insmod $MODDIR/cx24116.ko
+   insmod $MODDIR/cx24116.ko #paramDebug=50
 fi
 if [ -f $MODDIR/stv090x.ko ]; then
-   insmod $MODDIR/stv090x.ko
+   insmod $MODDIR/stv090x.ko #paramDebug=50
 fi
 # DVB-S
 if [ -f $MODDIR/stv0288.ko ]; then
-   insmod $MODDIR/stv0288.ko
-fi
-# DVB-C
-if [ -f $MODDIR/tda10023.ko ]; then
-   insmod $MODDIR/tda10023.ko
+   insmod $MODDIR/stv0288.ko #paramDebug=50
 fi
 # DVB-T
 if [ -f $MODDIR/dvb-pll.ko ]; then
    insmod $MODDIR/dvb-pll.ko
-fi
-if [ -f $MODDIR/zl10353.ko ]; then
-   insmod $MODDIR/zl10353.ko
+   if [ -f $MODDIR/zl10353.ko ]; then
+      insmod $MODDIR/zl10353.ko #paramDebug=50
+   fi
 fi
 
-echo "[rcS] Init CI & cardreader"
-insmod $MODDIR/starci.ko
+echo "[rcS] Init cardreader"
 insmod $MODDIR/smartcard.ko
 
 insmod $MODDIR/pti.ko waitMS=20 videoMem=4096
@@ -148,7 +136,7 @@ insmod $MODDIR/stmsysfs.ko
 insmod $MODDIR/stmdvb.ko
 
 echo "[rcS] Init player2 (LOAD 3)"
-echo "Load 3" > /dev/vfd
+echo "Ld 3" > /dev/vfd
 insmod $MODDIR/player2.ko discardlateframe=0
 insmod $MODDIR/sth264pp.ko
 insmod $MODDIR/stmalloc.ko
@@ -180,13 +168,13 @@ if [ -e $MODDIR/usbserial.ko ]; then
    fi
 fi
 echo "[rcS] Init frontpanel keyboard (LOAD 2)"
-echo "Load 2" > /dev/vfd
+echo "Ld 2" > /dev/vfd
 #insmod $MODDIR/boxtype.ko
 insmod $MODDIR/simu_button.ko
 
-if [ -e /boot/neutrinologo.mvi ]; then
-   showiframe -p /boot/neutrinologo.mvi &
-fi
+#if [ -e /boot/neutrinologo.mvi ]; then
+#   showiframe -p /boot/neutrinologo.mvi &
+#fi
 stfbcontrol a 0
 
 echo "[rcS] Init remote control"
@@ -207,10 +195,10 @@ else
 fi
 
 echo "[rcS] Initialize network (LOAD 1)"
-echo "Load 1" >/dev/vfd
+echo "Ld 1" >/dev/vfd
 NFS=`grep -c nfs /proc/cmdline`
 if [ "$NFS" -eq "1" ]; then
-   echo "[rcS] Booting from nfs, do not set network"
+   echo "[rcS] Booting from NFS, do not set network"
 else
    if [ -e /etc/network/interfaces ]; then
       ip addr flush eth0
@@ -224,9 +212,6 @@ else
    fi
 fi
 
-echo "[rcS] Starting telnetd"
-/usr/sbin/telnetd -l /bin/autologin
-
 echo "[rcS] Init portmap & ftp"
 /etc/init.d/portmap start
 /etc/init.d/vsftpd start
@@ -239,34 +224,34 @@ stfbcontrol a 255
 /bin/fp_control -l 0 1 #power LED on
 
 echo "[rcS] LOADING neutrino"
-echo "Loading Neutrino" > /dev/vfd
+echo "LdNe" > /dev/vfd
 
 until false
 do
-   if [ -e /boot/neutrinologo.mvi ]; then
-      killall -9 showiframe
-   fi
+#   if [ -e /boot/neutrinologo.mvi ]; then
+#      killall -9 showiframe
+#   fi
    echo "[rcS] Starting neutrino"
    /usr/bin/neutrino
    rtv=$?
    echo "[rcS] Neutrino ended <- return value: " $rtv
    case "$rtv" in
       0) echo "SHUTDOWN"
-         echo "Shutdown" > /dev/vfd
+         echo "Shdn" > /dev/vfd
          init 0;;
       1) echo "REBOOT"
-         echo "Reboot" > /dev/vfd
+         echo "rebt" > /dev/vfd
          init 6;;
       3) echo "RESTART"
-         echo "Restart" > /dev/vfd
+         echo "Rstr" > /dev/vfd
          ;;
       *) echo "ERROR"
-         echo "Error" > /dev/vfd
+         echo "Err" > /dev/vfd
          init 6;;
    esac
 done
 
 #never reached
-/bin/fp_control -t "REBOOT CubeRevo 250HD"
+/bin/fp_control -t "REBT"
 echo "[rcS] Reboot Cuberevo 250HD"
 init 6

@@ -1,20 +1,19 @@
 #!/bin/sh
-#Version 210529.1
+#Version 210523.1
 
 echo "[rcS] Start"
-echo "CubeRevo Enigma2"
+echo "CubeRevo Neutrino"
 
 MODDIR=/lib/modules
 
 insmod $MODDIR/e2_proc.ko
 
 echo "[rcS] Init frontpanel"
-insmod $MODDIR/cuberevo_micom.ko # paramDebug=50
+insmod $MODDIR/cuberevo_micom.ko  paramDebug=100
 
 if [ -e /var/etc/.firstboot ]; then
-   echo "config.plugins.remotecontroltype.rctype=13" >> /etc/enigma2/settings
-   echo "WAIT 3 min." > /dev/vfd
-   echo "[rcS] WAIT 3 minutes"
+   echo "WAIT 1 min." > /dev/vfd
+   echo "[rcS] WAIT 1 min"
    rm /var/etc/.firstboot
    sleep 1
    touch /dev/.devfsd
@@ -30,14 +29,8 @@ echo "[rcS] Starting DEBUG Interface"
 /etc/init.d/hostname start
 
 echo -n "[rcS] Starting telnetd "
-autologin=`cat /etc/enigma2/settings | grep systemoptions.autologin | cut -d "=" -f2`
-if [ ! $autologin ]; then
-   /usr/sbin/telnetd -l /bin/autologin
-   echo "with autologin"
-else
-   /usr/sbin/telnetd -l /bin/login
-   echo "with normal login"
-fi
+/usr/sbin/telnetd -l /bin/autologin
+echo "with autologin"
 
 echo "[rcS] Init stmfb (LOAD 9)"
 echo "Load 9" > /dev/vfd
@@ -47,24 +40,24 @@ insmod $MODDIR/stmcore-display-stx7109c3.ko
 TVMODE=$?
 case "$TVMODE" in
    0) echo "[rcS] Video mode: SD-PAL (576i)"
-      insmod $MODDIR/stmfb.ko display0=720x576-32@50i:16m:0:pal:cvbs:rgb;;
+      insmod $MODDIR/stmfb.ko display0=720x576-32@50i:16m::pal:cvbs:rgb;;
    1) echo "[rcS] Video mode: SD-NTSC (480i)"
-      insmod $MODDIR/stmfb.ko display0=720x480-32@60i:16m:0:ntsc-m:cvbs:rgb;;
+      insmod $MODDIR/stmfb.ko display0=720x480-32@60i:16m::ntsc-m:cvbs:rgb;;
    2) echo "[rcS] Video mode: 720p-50"
-      insmod $MODDIR/stmfb.ko display0=1280x720-32@50:16m:0:pal:cvbs:rgb;;
+      insmod $MODDIR/stmfb.ko display0=1280x720-32@50:16m::pal:cvbs:rgb;;
    3) echo "[rcS] Video mode: 720p-60"
-      insmod $MODDIR/stmfb.ko display0=1280x720-32@60:16m:0:ntsc-m:cvbs:rgb;;
+      insmod $MODDIR/stmfb.ko display0=1280x720-32@60:16m::ntsc-m:cvbs:rgb;;
    4) echo "[rcS] Video mode: 1080i-50"
-      insmod $MODDIR/stmfb.ko display0=1920x1080-32@50i:16m:0:pal:cvbs:rgb;;
+      insmod $MODDIR/stmfb.ko display0=1920x1080-32@50i:16m::pal:cvbs:rgb;;
    5) echo "[rcS] Video mode: 1080i-60"
-      insmod $MODDIR/stmfb.ko display0=1920x1080-32@60i:16m:0:ntsc-m:cvbs:rgb;;
+      insmod $MODDIR/stmfb.ko display0=1920x1080-32@60i:16m::ntsc-m:cvbs:rgb;;
    *) echo "[rcS] Video mode: use default 720p-50"
-      insmod $MODDIR/stmfb.ko display0=1280x720-32@50:16m:0:pal:cvbs:rgb;;
+      insmod $MODDIR/stmfb.ko display0=1280x720-32@50:16m::pal:cvbs:rgb;;
 esac
 
 echo "[rcS] Loading modules"
 
-if [ ! -e /boot/audio.elf ] || [ ! -e /boot/video.elf ]; then
+if [ ! -e /lib/firmware/audio.elf ] || [ ! -e /lib/firmware/video.elf ]; then
    echo "[rcS] Firmware(s) missing!"
    echo "FW MISSING!" > /dev/vfd
    sleep 5
@@ -72,11 +65,11 @@ fi
 
 echo "[rcS] Load video firmware (LOAD 8)"
 echo "Load 8" > /dev/vfd
-/bin/ustslave /dev/st231-0 /boot/video.elf > /dev/null
+/bin/ustslave /dev/st231-0 /lib/firmware/video.elf > /dev/null
 
 echo "[rcS] Load audio firmware (LOAD 7)"
 echo "Load 7" > /dev/vfd
-/bin/ustslave /dev/st231-1 /boot/audio.elf > /dev/null
+/bin/ustslave /dev/st231-1 /lib/firmware/audio.elf > /dev/null
 
 echo "[rcS] Init embx (LOAD 6)"
 echo "Load 6" > /dev/vfd
@@ -89,8 +82,7 @@ echo "[rcS] Init AVS (LOAD 5)"
 echo "Load 5" > /dev/vfd
 insmod $MODDIR/avs.ko type=stv6412
 
-player=`cat /proc/stb/player/version | awk '{ print substr( $0, length($0) - 2, length($0) ) }'`
-echo "[rcS] Init player $player (LOAD 4)"
+echo "[rcS] Init player (LOAD 4)"
 echo "Load 4" > /dev/vfd
 insmod $MODDIR/mmelog.ko
 insmod $MODDIR/mpeg2hw.ko mmeName=MPEG2_TRANSFORMER1
@@ -103,30 +95,30 @@ insmod $MODDIR/stm_v4l2.ko
 insmod $MODDIR/pseudocard.ko
 
 echo "[rcS] Init frontend"
-insmod $MODDIR/frontend_platform.ko # paramDebug=10
+insmod $MODDIR/frontend_platform.ko
 insmod $MODDIR/socket.ko
 insmod $MODDIR/lnbh221.ko
 insmod $MODDIR/lnb_pio.ko
 # DVB-S(2)
 if [ -f $MODDIR/cx24116.ko ]; then
-   insmod $MODDIR/cx24116.ko # paramDebug=50
+   insmod $MODDIR/cx24116.ko #paramDebug=50
 fi
 if [ -f $MODDIR/stv090x.ko ]; then
-   insmod $MODDIR/stv090x.ko # paramDebug=50
+   insmod $MODDIR/stv090x.ko #paramDebug=50
 fi
 # DVB-S
 if [ -f $MODDIR/stv0288.ko ]; then
-   insmod $MODDIR/stv0288.ko # paramDebug=50
+   insmod $MODDIR/stv0288.ko #paramDebug=50
 fi
 # DVB-C
 if [ -f $MODDIR/tda10023.ko ]; then
-   insmod $MODDIR/tda10023.ko # paramDebug=50
+   insmod $MODDIR/tda10023.ko #paramDebug=50
 fi
 # DVB-T
 if [ -f $MODDIR/dvb-pll.ko ]; then
    insmod $MODDIR/dvb-pll.ko
    if [ -f $MODDIR/zl10353.ko ]; then
-      insmod $MODDIR/zl10353.ko # paramDebug=50
+      insmod $MODDIR/zl10353.ko #paramDebug=50
    fi
 fi
 
@@ -147,15 +139,12 @@ insmod $MODDIR/stmdvb.ko
 
 echo "[rcS] Init player2 (LOAD 3)"
 echo "Load 3" > /dev/vfd
-insmod $MODDIR/player2.ko
+insmod $MODDIR/player2.ko discardlateframe=0
 insmod $MODDIR/sth264pp.ko
 insmod $MODDIR/stmalloc.ko
 insmod $MODDIR/platform.ko
 insmod $MODDIR/silencegen.ko
 
-if [ -e /boot/bootlogo.mvi ]; then
-   showiframe -p /boot/bootlogo.mvi &
-fi
 insmod $MODDIR/bpamem.ko
 #mknod /dev/bpamem c 153 0
 
@@ -180,14 +169,21 @@ if [ -e $MODDIR/usbserial.ko ]; then
       insmod $MODDIR/pl2303.ko
    fi
 fi
-
 echo "[rcS] Init frontpanel keyboard"
+#insmod $MODDIR/boxtype.ko
 insmod $MODDIR/simu_button.ko
 
+#if [ -e /boot/neutrinologo.mvi ]; then
+#   showiframe -p /boot/neutrinologo.mvi &
+#fi
 stfbcontrol a 0
 
 echo "[rcS] Init remote control"
 /bin/evremote2 10 140 &
+
+# Load modules from /var/etc/modules.extra
+echo "[rcS] Load extra modules"
+[ -f /var/etc/modules.extra ] && eval `sed -e 's/#.*//' -e '/^\s*$/d' -e 's/^\(.*\)/insmod \0;/' < /var/etc/modules.extra`
 
 #wlan=rtl8188cu
 if [ ! $wlan ] || [ ! -e $MODDIR/$wlan.ko ]; then
@@ -203,7 +199,7 @@ echo "[rcS] Initialize network (LOAD 2)"
 echo "Load 2" >/dev/vfd
 NFS=`grep -c nfs /proc/cmdline`
 if [ "$NFS" -eq "1" ]; then
-   echo "[rcS] Booting from NFS, do not set network"
+   echo "[rcS] Booting from nfs, do not set network"
 else
    if [ -e /etc/network/interfaces ]; then
       ip addr flush eth0
@@ -223,17 +219,6 @@ sleep 2
 #echo "IP $ip" > /dev/vfd
 #sleep 3
 
-echo -n "[rcS] Init WLAN: "
-wlan=`cat /etc/enigma2/settings | grep systemoptions.wlan | cut -d "=" -f2`
-if [ ! $wlan ] || [ ! -e $MODDIR/$wlan.ko ]; then
-   echo "None."
-else
-   insmod $MODDIR/$wlan.ko
-   echo "[rcS] $wlan WLAN"
-#   echo "$wlan WLAN" > /dev/vfd
-#   sleep 3
-fi
-
 if [ -e $MODDIR/autofs4.ko ]; then
    insmod $MODDIR/autofs4.ko
 fi
@@ -242,31 +227,16 @@ if [ -e /etc/init.d/automount ]; then
    /usr/sbin/automount --timeout=5 /autofs file /etc/auto.usb
 fi
 
-echo "[rcS] Do extras (LOAD 1)"
-echo "Load 1" >/dev/vfd
 # inadyn
-inadyn=`cat /etc/enigma2/settings | grep systemoptions.inadyn | cut -d "=" -f2`
-if [ ! $inadyn ] ||  [ ! -e /usr/bin/inadyn ]; then
+if [ ! -e /usr/bin/inadyn ]; then
    echo "[rcS] No inadyn"
 else
-   if [ -e /usr/bin/inadyn ]; then
-      /usr/bin/inadyn &
-   fi
+   /usr/bin/inadyn &
 fi
 
 # OpenSSh daemon
-openssh=`cat /etc/enigma2/settings | grep systemoptions.openssh | cut -d "=" -f2`
-if [ ! $openssh ] || [ ! -e /etc/init.d/sshd ]; then
-   echo "[rcS] No OpenSSH"
-else
-   if [ -e /etc/init.d/sshd ]; then
-      (sleep 30; /etc/init.d/sshd start) &
-   fi
-fi
-
-# Enable PKT plugins
-if [ ! -e /tmp/reference.dat ] && [ -e /var/bin/reference.dat ]; then
-   cp /var/bin/reference.dat /tmp
+if [ -e /etc/init.d/sshd ]; then
+   (sleep 30; /etc/init.d/sshd start) &
 fi
 
 echo "[rcS] Set internet time"
@@ -277,59 +247,34 @@ echo "[rcS] Init portmap & ftp"
 /etc/init.d/vsftpd start
 /usr/sbin/inetd
 
-# Do own extras
-if [ -e /etc/ownscript.sh ]; then
-   /etc/ownscript.sh &
-fi
-
 stfbcontrol a 255
+/bin/fp_control -l 0 1 #power LED on
 
-echo "Loading E2" > /dev/vfd
-echo "[rcS] Loading E2"
+echo "[rcS] LOADING neutrino"
+echo "Loading Neutrino" > /dev/vfd
 
 until false
 do
-   /bin/fp_control -l 0 1 #power LED on
-   echo "[rcS] Entering E2 main loop"
-   if [ -e /usr/local/share/enigma2/backdrop.mvi ]; then
-      showiframe -p /usr/local/share/enigma2/backdrop.mvi &
-   fi
-   /usr/local/bin/enigma2
+#   if [ -e /boot/neutrinologo.mvi ]; then
+#      killall -9 showiframe
+#   fi
+   echo "[rcS] Starting neutrino"
+   /usr/bin/neutrino
    rtv=$?
-   echo "[rcS] E2 ended <- return value: " $rtv
+   echo "[rcS] Neutrino ended <- return value: " $rtv
    case "$rtv" in
-      0) echo "E2 ERROR"
-         echo "E2 Error" > /dev/vfd
-         init 6;;
-      1) echo "SHUTDOWN"
+      0) echo "SHUTDOWN"
          echo "Shutdown" > /dev/vfd
-         if [ -e /usr/local/share/enigma2/shutdown.mvi ]; then
-            showiframe -p /usr/local/share/enigma2/shutdown.mvi &
-         fi
          init 0;;
-      2) echo "REBOOT"
+      1) echo "REBOOT"
          echo "Reboot" > /dev/vfd
-         fp_control -r 00:00:00 01-01-1980;;
-#         init 6;;
-      3) echo "E2 RESTART"
-         echo "Restart GUI" > /dev/vfd
-         echo "0" > /proc/progress
-         if [ -e /usr/local/share/enigma2/backdrop.mvi ]; then
-            showiframe -p /usr/local/share/enigma2/backdrop.mvi &
-         else
-            showiframe -p /boot/bootlogo.mvi &
-         fi;;
-      6) echo "E2 DEBUG RESTART"
-         echo "Restart Debug" > /dev/vfd
-         echo "0" > /proc/progress
-         if [ -e /usr/local/share/enigma2/backdrop.mvi ]; then
-            showiframe -p /usr/local/share/enigma2/backdrop.mvi &
-         else
-            showiframe -p /boot/bootlogo.mvi &
-         fi;;
+         init 6;;
+      3) echo "RESTART"
+         echo "Restart" > /dev/vfd
+         ;;
       *) echo "ERROR"
          echo "Error" > /dev/vfd
-         fp_control -r 00:00:00 01-01-1980;;
+         init 6;;
    esac
 done
 
