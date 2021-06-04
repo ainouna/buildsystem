@@ -20,6 +20,7 @@ tools-clean:
 	-$(MAKE) -C $(TOOLS_DIR)/libmme_image distclean
 	-$(MAKE) -C $(TOOLS_DIR)/minimon distclean
 	-$(MAKE) -C $(TOOLS_DIR)/msgbox distclean
+	-$(MAKE) -C $(TOOLS_DIR)/read-edid distclean
 	-$(MAKE) -C $(TOOLS_DIR)/satfind distclean
 	-$(MAKE) -C $(TOOLS_DIR)/showiframe distclean
 	-$(MAKE) -C $(TOOLS_DIR)/spf_tool distclean
@@ -278,6 +279,20 @@ $(D)/tools-msgbox: $(D)/bootstrap $(D)/libpng $(D)/freetype
 	$(TOUCH)
 
 #
+# read-edid
+#
+$(D)/tools-read-edid: $(D)/bootstrap
+	$(START_BUILD)
+	$(SET) -e; cd $(TOOLS_DIR)/read-edid; \
+		if [ ! -d m4 ]; then mkdir m4; fi; \
+		$(CONFIGURE_TOOLS) \
+			--prefix= \
+		; \
+		$(MAKE); \
+		$(MAKE) install DESTDIR=$(TARGET_DIR)
+	$(TOUCH)
+
+#
 # satfind
 #
 $(D)/tools-satfind: $(D)/bootstrap
@@ -498,7 +513,7 @@ ifeq ($(BOXTYPE), $(filter $(BOXTYPE), ufs913))
 TOOLS += $(D)/tools-eeprom-ufs913
 endif
 TOOLS += $(D)/tools-evremote2
-ifeq ($(BOXTYPE), $(filter $(BOXTYPE), adb_box atemio520 atemio530 cuberevo cuberevo_250hd cuberevo_2000hd cuberevo_3000hd cuberevo_9500hd cuberevo_mini cuberevo_mini2 cuberevo_mini_fta fs9000 hl101 hs5101 hs7110 hs7420 hs7810a hs7119 hs7429 hs7819 hs8200 hs9510 opt9600 ufc960 ufs910 ufs912 ufs913 ufs922 spark spark7162 tf7700hdpvr vip1_v1 vip1_v2 vip2 vitamin_hd5000))
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE), adb_box atemio520 atemio530 cuberevo cuberevo_mini cuberevo_mini2 cuberevo_mini_fta cuberevo_250hd cuberevo_2000hd cuberevo_3000hd cuberevo_9500hd fs9000 hl101 hs5101 hs7110 hs7420 hs7810a hs7119 hs7429 hs7819 hs8200 hs9510 opt9600 ufc960 ufs910 ufs912 ufs913 ufs922 spark spark7162 tf7700hdpvr vip1_v1 vip1_v2 vip2 vitamin_hd5000))
 TOOLS += $(D)/tools-fp_control
 endif
 TOOLS += $(D)/tools-hotplug
@@ -515,6 +530,7 @@ ifeq ($(PLUGINS_NEUTRINO), Yes)
 TOOLS += $(D)/tools-msgbox
 endif
 ifneq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), small size))
+TOOLS += $(D)/tools-read-edid
 TOOLS += $(D)/tools-satfind
 endif
 TOOLS += $(D)/tools-showiframe
