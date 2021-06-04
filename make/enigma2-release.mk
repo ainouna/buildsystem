@@ -1100,10 +1100,18 @@ endif
 #
 	$(SILENT)find $(RELEASE_DIR)/usr/lib/enigma2/ -name '*.pyc' -exec rm -f {} \;
 ifeq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), small size))
-ifneq ($(BOXTYPE), $(filter $(BOXTYPE), adb_box hs8200 ufs913))
+ifeq ($(E2_DIFF), $(filter $(E2_DIFF), 0 2))
+ifneq ($(BOXTYPE), $(filter $(BOXTYPE), adb_box hs8200 ufs912 ufs913))
+	$(SILENT)find $(RELEASE_DIR)/usr/lib/enigma2/ -not -name 'StartEnigma.py' -name '*.py' -exec rm -f {} \;
+else
+	$(SILENT)find $(RELEASE_DIR)/usr/lib/enigma2/ -not -name 'StartEnigma.py' -not -name 'Language.py' -name '*.py' -exec rm -f {} \;
+endif
+else
+ifneq ($(BOXTYPE), $(filter $(BOXTYPE), adb_box hs8200 ufs912 ufs913))
 	$(SILENT)find $(RELEASE_DIR)/usr/lib/enigma2/ -not -name 'mytest.py' -name '*.py' -exec rm -f {} \;
 else
 	$(SILENT)find $(RELEASE_DIR)/usr/lib/enigma2/ -not -name 'mytest.py' -not -name 'Language.py' -name '*.py' -exec rm -f {} \;
+endif
 endif
 endif
 	$(SILENT)find $(RELEASE_DIR)/usr/lib/enigma2/ -name '*.a' -exec rm -f {} \;
