@@ -1,4 +1,4 @@
---- a/arch/sh/Makefile
+--- a/arch/sh/Makefile.org
 +++ b/arch/sh/Makefile
 @@ -74,7 +74,7 @@
  cflags-y	+= $(isaflags-y) -ffreestanding
@@ -9,7 +9,7 @@
  
  # Give the various platforms the opportunity to set default image types
  defaultimage-$(CONFIG_SUPERH32)			:= zImage
---- a/drivers/stm/stx7100_comms.c
+--- a/drivers/stm/stx7100_comms.c.org
 +++ b/drivers/stm/stx7100_comms.c
 @@ -238,14 +238,14 @@
  		.gpios_num = 2,
@@ -39,7 +39,7 @@
  	stx7100_ssc_devices[ssc].id = i2c_busnum;
  
  	plat_data = stx7100_ssc_devices[ssc].dev.platform_data;
---- a/arch/sh/boards/mach-mb442/setup.c
+--- a/arch/sh/boards/mach-mb442/setup.c.org
 +++ b/arch/sh/boards/mach-mb442/setup.c
 @@ -22,6 +22,7 @@
  #include <linux/stm/platform.h>
@@ -81,7 +81,7 @@
 +	{
 +		.name  = "LMI_VID",
 +		.start = 0x10800000,
-+		.size  = 0x03000000,
++		.size  = 0x03C00000,
 +		.flags = 0,
 +		.aka   = LMI_VID_partalias
 +	},
@@ -241,11 +241,11 @@
 +	{
 +		.name       = "nor.root",
 +		.offset     = BOOT_SIZE + WELCOME_SIZE + KERNEL_SIZE,  // 0x0280000
-+		.size       = ROOT_SIZE,      // 
++		.size       = ROOT_SIZE,
 +	},
 +	{
 +		.name       = "nor.var",
-+		.offset     = BOOT_SIZE+WELCOME_SIZE + KERNEL_SIZE + ROOT_SIZE,
++		.offset     = BOOT_SIZE + WELCOME_SIZE + KERNEL_SIZE + ROOT_SIZE,
 +		.size       = DB_SIZE,
 +	},
 +	/* partitions for upgrade */
@@ -485,7 +485,7 @@
  		/* Can't use dev_name() here as we can be called early */
  		ascport->pad_state = stm_pad_claim(ascport->pad_config,
  				"stasc");
---- a/arch/sh/boards/mach-mb442/mach.c
+--- a/arch/sh/boards/mach-mb442/mach.c.org
 +++ b/arch/sh/boards/mach-mb442/mach.c
 @@ -43,7 +43,7 @@
  	/* Set the ILC to route external interrupts to the the INTC */
@@ -496,13 +496,13 @@
  	ilc_route_external(ILC_EXT_IRQ1, 5, 0);		/* ATA */
  	ilc_route_external(ILC_EXT_IRQ2, 6, 0);		/* Unused */
  	ilc_route_external(ILC_EXT_MDINT, 7, 0);	/* STe100 PHY */
---- a/arch/sh/include/asm/setup.h
+--- a/arch/sh/include/asm/setup.h.org
 +++ b/arch/sh/include/asm/setup.h
 @@ -15,12 +15,48 @@
  #define LOADER_TYPE (*(unsigned long *) (PARAM+0x00c))
  #define INITRD_START (*(unsigned long *) (PARAM+0x010))
  #define INITRD_SIZE (*(unsigned long *) (PARAM+0x014))
-+#define BDINFO                  ((char*)PARAM+0x018)
++#define BDINFO      ((char *) PARAM+0x018)
  /* ... */
  #define COMMAND_LINE ((char *) (PARAM+0x100))
  
@@ -511,7 +511,7 @@
  
 +typedef struct bd_info
 +{
-+	int bi_baudrate;        	/* serial console baudrate */
++	int bi_baudrate;                /* serial console baudrate */
 +	unsigned long bi_ip_addr;       /* IP Address */
 +	unsigned char bi_enetaddr[6];   /* Ethernet adress */
 +	unsigned long bi_arch_number;   /* unique id for this board */
@@ -604,7 +604,7 @@
  	/*
  	 * Find the highest page frame number we have available
  	 */
---- a/drivers/net/stmmac/stmmac_main.c
+--- a/drivers/net/stmmac/stmmac_main.c.org
 +++ b/drivers/net/stmmac/stmmac_main.c
 @@ -44,6 +44,7 @@
  #include <linux/debugfs.h>
