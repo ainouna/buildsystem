@@ -53,25 +53,25 @@
  
  AC_ARG_WITH(boxmodel,
 -	AS_HELP_STRING([--with-boxmodel], [valid for duckbox: ufs910, ufs912, ufs913, ufs922, atevio7500, fortis_hdbox, octagon1008, cuberevo, cuberevo_mini, cuberevo_mini2, cuberevo_250hd, cuberevo_2000hd, cuberevo_3000hd, ipbox9900, ipbox99, ipbox55, tf7700])
-+	AS_HELP_STRING([--with-boxmodel], [valid for duckbox: ufs910, ufs912, ufs913, ufs922, fs9000, hs7110, hs7420, hs7810a, hs7119, hs7429, hs7819, hs8200, hs9510, cuberevo, cuberevo, cuberevo_mini, cuberevo_mini2, cuberevo_250hd, cuberevo_2000hd, cuberevo_3000hd, ipbox9900, ipbox99, ipbox55, tf7700, hl101, adb_box, vip1_v1, vip1_v2, vip2, vitamin_hd5000, pace7241, adb_2850, opt9600])
++	AS_HELP_STRING([--with-boxmodel], [valid for duckbox: ufs910, ufs912, ufs913, ufs922, fs9000, hs7110, hs7420, hs7810a, hs7119, hs7429, hs7819, hs8200, hs9510, cuberevo, cuberevo-mini, cuberevo-mini2, cuberevo-mini-fta, cuberevo-250hd, cuberevo-2000hd, cuberevo-3000hd, ipbox9900, ipbox99, ipbox55, tf7700, hl101, adb-box, vip1-v1, vip1-v2, vip2, vitamin-hd5000, pace7241, adb2850, opt9600])
  AS_HELP_STRING([], [valid for spark: spark, spark7162])
  AS_HELP_STRING([], [valid for armbox: bre2ze4k, hd51, vusolo4k, vuduo4k, vuduo4kse, vuultimo4k, vuzero4k, vuuno4kse, vuuno4k, h7])
  AS_HELP_STRING([], [valid for mipsbox: vuduo])
  AS_HELP_STRING([], [valid for generic: raspi]),
  	[case "${withval}" in
 -		ufs910|ufs912|ufs913|ufs922|atevio7500|fortis_hdbox|octagon1008|cuberevo|cuberevo_mini|cuberevo_mini2|cuberevo_250hd|cuberevo_2000hd|cuberevo_3000hd|ipbox9900|ipbox99|ipbox55|tf7700)
-+		ufs910|ufs912|ufs913|ufs922|fs9000|hs7110|hs7420|hs7810a|hs7119|hs7429|hs7819|hs8200|hs9510|cuberevo|cuberevo_mini|cuberevo_mini2|cuberevo_250hd|cuberevo_mini_fta|cuberevo_2000hd|cuberevo_3000hd|ipbox9900|ipbox99|ipbox55|tf7700|hl101|adb_box|vip1_v1|vip1_v2|vip2|vitamin_hd5000|pace7241|adb_2850|opt9600)
++		ufs910|ufs912|ufs913|ufs922|fs9000|hs7110|hs7420|hs7810a|hs7119|hs7429|hs7819|hs8200|hs9510|cuberevo|cuberevo-mini|cuberevo-mini2|cuberevo-mini-fta|cuberevo-250hd|cuberevo-2000hd|cuberevo-3000hd|ipbox9900|ipbox99|ipbox55|tf7700|hl101|adb_box|vip1-v1|vip1-v2|vip2|vitamin-hd5000|pace7241|adb2850|opt9600)
  			if test "$BOXTYPE" = "duckbox"; then
  				BOXMODEL="$withval"
  			else
-@@ -419,13 +387,21 @@
+@@ -419,20 +387,37 @@
  AM_CONDITIONAL(BOXMODEL_UFS922, test "$BOXMODEL" = "ufs922")
  AM_CONDITIONAL(BOXMODEL_SPARK, test "$BOXMODEL" = "spark")
  AM_CONDITIONAL(BOXMODEL_SPARK7162, test "$BOXMODEL" = "spark7162")
 -AM_CONDITIONAL(BOXMODEL_ATEVIO7500, test "$BOXMODEL" = "atevio7500")
 -AM_CONDITIONAL(BOXMODEL_FORTIS_HDBOX, test "$BOXMODEL" = "fortis_hdbox")
 -AM_CONDITIONAL(BOXMODEL_OCTAGON1008, test "$BOXMODEL" = "octagon1008")
-+AM_CONDITIONAL(BOXMODEL_FS9000, test "$BOXMODEL" = "FS9000")
++AM_CONDITIONAL(BOXMODEL_FS9000, test "$BOXMODEL" = "fs9000")
 +AM_CONDITIONAL(BOXMODEL_HS8200, test "$BOXMODEL" = "hs8200")
 +AM_CONDITIONAL(BOXMODEL_HS7110, test "$BOXMODEL" = "hs7110")
 +AM_CONDITIONAL(BOXMODEL_HS7420, test "$BOXMODEL" = "hs7420")
@@ -83,29 +83,34 @@
 +AM_CONDITIONAL(BOXMODEL_DP7000, test "$BOXMODEL" = "dp7000")
  
  AM_CONDITIONAL(BOXMODEL_CUBEREVO, test "$BOXMODEL" = "cuberevo")
- AM_CONDITIONAL(BOXMODEL_CUBEREVO_MINI, test "$BOXMODEL" = "cuberevo_mini")
- AM_CONDITIONAL(BOXMODEL_CUBEREVO_MINI2, test "$BOXMODEL" = "cuberevo_mini2")
-+AM_CONDITIONAL(BOXMODEL_CUBEREVO_250HD, test "$BOXMODEL" = "cuberevo_mini_fta")
- AM_CONDITIONAL(BOXMODEL_CUBEREVO_250HD, test "$BOXMODEL" = "cuberevo_250hd")
- AM_CONDITIONAL(BOXMODEL_CUBEREVO_2000HD, test "$BOXMODEL" = "cuberevo_2000hd")
- AM_CONDITIONAL(BOXMODEL_CUBEREVO_3000HD, test "$BOXMODEL" = "cuberevo_3000hd")
-@@ -433,6 +409,15 @@
+-AM_CONDITIONAL(BOXMODEL_CUBEREVO_MINI, test "$BOXMODEL" = "cuberevo_mini")
+-AM_CONDITIONAL(BOXMODEL_CUBEREVO_MINI2, test "$BOXMODEL" = "cuberevo_mini2")
+-AM_CONDITIONAL(BOXMODEL_CUBEREVO_250HD, test "$BOXMODEL" = "cuberevo_250hd")
+-AM_CONDITIONAL(BOXMODEL_CUBEREVO_2000HD, test "$BOXMODEL" = "cuberevo_2000hd")
+-AM_CONDITIONAL(BOXMODEL_CUBEREVO_3000HD, test "$BOXMODEL" = "cuberevo_3000hd")
++AM_CONDITIONAL(BOXMODEL_CUBEREVO_MINI, test "$BOXMODEL" = "cuberevo-mini")
++AM_CONDITIONAL(BOXMODEL_CUBEREVO_MINI2, test "$BOXMODEL" = "cuberevo-mini2")
++AM_CONDITIONAL(BOXMODEL_CUBEREVO_250HD, test "$BOXMODEL" = "cuberevo-mini-fta")
++AM_CONDITIONAL(BOXMODEL_CUBEREVO_250HD, test "$BOXMODEL" = "cuberevo-250hd")
++AM_CONDITIONAL(BOXMODEL_CUBEREVO_2000HD, test "$BOXMODEL" = "cuberevo-2000hd")
++AM_CONDITIONAL(BOXMODEL_CUBEREVO_3000HD, test "$BOXMODEL" = "cuberevo-3000hd")
+ AM_CONDITIONAL(BOXMODEL_IPBOX9900, test "$BOXMODEL" = "ipbox9900")
  AM_CONDITIONAL(BOXMODEL_IPBOX99, test "$BOXMODEL" = "ipbox99")
  AM_CONDITIONAL(BOXMODEL_IPBOX55, test "$BOXMODEL" = "ipbox55")
  AM_CONDITIONAL(BOXMODEL_TF7700, test "$BOXMODEL" = "tf7700")
 +AM_CONDITIONAL(BOXMODEL_HL101, test "$BOXMODEL" = "hl101")
-+AM_CONDITIONAL(BOXMODEL_VIP1_V1, test "$BOXMODEL" = "vip1_v1")
-+AM_CONDITIONAL(BOXMODEL_VIP1_V2, test "$BOXMODEL" = "vip1_v2")
++AM_CONDITIONAL(BOXMODEL_VIP1_V1, test "$BOXMODEL" = "vip1-v1")
++AM_CONDITIONAL(BOXMODEL_VIP1_V2, test "$BOXMODEL" = "vip1-v2")
 +AM_CONDITIONAL(BOXMODEL_VIP2, test "$BOXMODEL" = "vip2")
-+AM_CONDITIONAL(BOXMODEL_ADB_BOX, test "$BOXMODEL" = "adb_box")
-+AM_CONDITIONAL(BOXMODEL_VITAMIN_HD5000, test "$BOXMODEL" = "vitamin_hd5000")
++AM_CONDITIONAL(BOXMODEL_ADB_BOX, test "$BOXMODEL" = "adb-box")
++AM_CONDITIONAL(BOXMODEL_VITAMIN_HD5000, test "$BOXMODEL" = "vitamin-hd5000")
 +AM_CONDITIONAL(BOXMODEL_PACE7241, test "$BOXMODEL" = "pace7241")
-+AM_CONDITIONAL(BOXMODEL_ADB_2850, test "$BOXMODEL" = "adb_2850")
++AM_CONDITIONAL(BOXMODEL_ADB_2850, test "$BOXMODEL" = "adb2850")
 +AM_CONDITIONAL(BOXMODEL_OPT9600, test "$BOXMODEL" = "opt9600")
  
  AM_CONDITIONAL(BOXMODEL_HD51, test "$BOXMODEL" = "hd51")
  AM_CONDITIONAL(BOXMODEL_HD60, test "$BOXMODEL" = "hd60")
-@@ -483,12 +468,12 @@
+@@ -483,24 +468,26 @@
  	AC_DEFINE(BOXMODEL_SPARK, 1, [spark])
  elif test "$BOXMODEL" = "spark7162"; then
  	AC_DEFINE(BOXMODEL_SPARK7162, 1, [spark7162])
@@ -123,36 +128,51 @@
 +	AC_DEFINE(BOXMODEL_HS9510, 1, [hs9510])
  elif test "$BOXMODEL" = "cuberevo"; then
  	AC_DEFINE(BOXMODEL_CUBEREVO, 1, [cuberevo])
- elif test "$BOXMODEL" = "cuberevo_mini"; then
-@@ -497,6 +482,8 @@
- 	AC_DEFINE(BOXMODEL_CUBEREVO_MINI2, 1, [cuberevo_mini2])
- elif test "$BOXMODEL" = "cuberevo_250hd"; then
- 	AC_DEFINE(BOXMODEL_CUBEREVO_250HD, 1, [cuberevo_250hd])
-+elif test "$BOXMODEL" = "cuberevo_mini_fta"; then
-+	AC_DEFINE(BOXMODEL_CUBEREVO_MINI_FTA, 1, [cuberevo_mini_fta])
- elif test "$BOXMODEL" = "cuberevo_2000hd"; then
- 	AC_DEFINE(BOXMODEL_CUBEREVO_2000HD, 1, [cuberevo_2000hd])
- elif test "$BOXMODEL" = "cuberevo_3000hd"; then
+-elif test "$BOXMODEL" = "cuberevo_mini"; then
+-	AC_DEFINE(BOXMODEL_CUBEREVO_MINI, 1, [cuberevo_mini])
+-elif test "$BOXMODEL" = "cuberevo_mini2"; then
+-	AC_DEFINE(BOXMODEL_CUBEREVO_MINI2, 1, [cuberevo_mini2])
+-elif test "$BOXMODEL" = "cuberevo_250hd"; then
+-	AC_DEFINE(BOXMODEL_CUBEREVO_250HD, 1, [cuberevo_250hd])
+-elif test "$BOXMODEL" = "cuberevo_2000hd"; then
+-	AC_DEFINE(BOXMODEL_CUBEREVO_2000HD, 1, [cuberevo_2000hd])
+-elif test "$BOXMODEL" = "cuberevo_3000hd"; then
+-	AC_DEFINE(BOXMODEL_CUBEREVO_3000HD, 1, [cuberevo_3000hd])
++elif test "$BOXMODEL" = "cuberevo-mini"; then
++	AC_DEFINE(BOXMODEL_CUBEREVO_MINI, 1, [cuberevo-mini])
++elif test "$BOXMODEL" = "cuberevo-mini2"; then
++	AC_DEFINE(BOXMODEL_CUBEREVO_MINI2, 1, [cuberevo-mini2])
++elif test "$BOXMODEL" = "cuberevo-mini-fta"; then
++	AC_DEFINE(BOXMODEL_CUBEREVO_MINI_FTA, 1, [cuberevo-mini-fta])
++elif test "$BOXMODEL" = "cuberevo-250hd"; then
++	AC_DEFINE(BOXMODEL_CUBEREVO_250HD, 1, [cuberevo-250hd])
++elif test "$BOXMODEL" = "cuberevo-2000hd"; then
++	AC_DEFINE(BOXMODEL_CUBEREVO_2000HD, 1, [cuberevo-2000hd])
++elif test "$BOXMODEL" = "cuberevo-3000hd"; then
++	AC_DEFINE(BOXMODEL_CUBEREVO_3000HD, 1, [cuberevo-3000hd])
+ elif test "$BOXMODEL" = "ipbox9900"; then
+ 	AC_DEFINE(BOXMODEL_IPBOX9900, 1, [ipbox9900])
+ elif test "$BOXMODEL" = "ipbox99"; then
 @@ -509,6 +496,25 @@
  	AC_DEFINE(BOXMODEL_IPBOX55, 1, [ipbox55])
  elif test "$BOXMODEL" = "tf7700"; then
  	AC_DEFINE(BOXMODEL_TF7700, 1, [tf7700])
 + elif test "$BOXMODEL" = "hl101"; then
 + 	AC_DEFINE(BOXMODEL_HL101, 1, [hl101])
-+ elif test "$BOXMODEL" = "vip1_v1"; then
-+ 	AC_DEFINE(BOXMODEL_VIP1_V1, 1, [vip1_v1])
-+ elif test "$BOXMODEL" = "vip1_v2"; then
-+ 	AC_DEFINE(BOXMODEL_VIP1_V2, 1, [vip1_v2])
++ elif test "$BOXMODEL" = "vip1-v1"; then
++ 	AC_DEFINE(BOXMODEL_VIP1_V1, 1, [vip1-v1])
++ elif test "$BOXMODEL" = "vip1-v2"; then
++ 	AC_DEFINE(BOXMODEL_VIP1_V2, 1, [vip1-v2])
 + elif test "$BOXMODEL" = "vip2"; then
 + 	AC_DEFINE(BOXMODEL_VIP2, 1, [vip2])
-+elif test "$BOXMODEL" = "adb_box"; then
-+	AC_DEFINE(BOXMODEL_ADB_BOX, 1, [adb_box])
-+elif test "$BOXMODEL" = "vitamin_hd5000"; then
-+	AC_DEFINE(BOXMODEL_VITAMIN_HD5000, 1, [vitamin_hd5000])
++elif test "$BOXMODEL" = "adb-box"; then
++	AC_DEFINE(BOXMODEL_ADB_BOX, 1, [adb-box])
++elif test "$BOXMODEL" = "vitamin-hd5000"; then
++	AC_DEFINE(BOXMODEL_VITAMIN_HD5000, 1, [vitamin-hd5000])
 +elif test "$BOXMODEL" = "pace7241"; then
 +	AC_DEFINE(BOXMODEL_PACE7241, 1, [pace7241])
-+elif test "$BOXMODEL" = "adb_2850"; then
-+	AC_DEFINE(BOXMODEL_ADB_2850, 1, [adb_2850])
++elif test "$BOXMODEL" = "adb2850"; then
++	AC_DEFINE(BOXMODEL_ADB_2850, 1, [adb2850])
 +elif test "$BOXMODEL" = "opt9600"; then
 +	AC_DEFINE(BOXMODEL_OPT9600, 1, [opt9600])
 +
@@ -201,6 +221,18 @@
  		CVFD::getInstance()->ShowIcon(FP_ICON_TIMESHIFT, true);
  #endif
  		bool tstarted = false;
+--- neutrino-ddt.org/src/neutrino.cpp
++++ neutrino-ddt/src/neutrino.cpp
+@@ -3463,6 +3463,9 @@
+ #if defined (BOXMODEL_IPBOX9900) || defined (BOXMODEL_IPBOX99)
+ 		system("echo 0 > /proc/stb/misc/fan");
+ #endif
++#if defined (BOXMODEL_CUBEREVO) || defined (BOXMODEL_CUBEREVO_9500HD)
++		system("echo 0 > /proc/stb/fan");
++#endif
+ 	}
+ }
+ 
 --- neutrino-ddt.org/src/driver/vfd.cpp
 +++ neutrino-ddt/src/driver/vfd.cpp
 @@ -52,19 +52,40 @@
@@ -1336,6 +1368,20 @@
 -
 -
 +// vim:ts=4
+--- neutrino-ddt.org/src/gui/miscsettings_menu.cpp
++++ neutrino-ddt/src/gui/miscsettings_menu.cpp
+@@ -400,7 +400,10 @@
+ 	//fan speed
+ 	if (g_info.hw_caps->has_fan)
+ 	{
+-#if defined (BOXMODEL_IPBOX9900) || defined (BOXMODEL_IPBOX99)
++#if defined (BOXMODEL_IPBOX9900) \
++ || defined (BOXMODEL_IPBOX99) \
++ || defined (BOXMODEL_CUBEREVO) \
++ || defined (BOXMODEL_CUBEREVO_9500HD)
+ 		CMenuOptionNumberChooser * mn = new CMenuOptionNumberChooser(LOCALE_FAN_SPEED, &g_settings.fan_speed, true, 0, 1, fanNotifier, CRCInput::RC_nokey, NULL, 0, 0, LOCALE_OPTIONS_OFF);
+ #else
+ 		CMenuOptionNumberChooser * mn = new CMenuOptionNumberChooser(LOCALE_FAN_SPEED, &g_settings.fan_speed, true, 1, 14, fanNotifier, CRCInput::RC_nokey, NULL, 0, 0, LOCALE_OPTIONS_OFF);
 --- neutrino-ddt.org/src/gui/movieplayer.cpp
 +++ neutrino-ddt/src/gui/movieplayer.cpp
 @@ -541,7 +541,7 @@
@@ -1386,4 +1432,38 @@
  
  AM_CPPFLAGS += \
  	-I$(top_builddir) \
+--- neutrino-ddt.org/src/system/setting_helpers.cpp
++++ neutrino-ddt/src/system/setting_helpers.cpp
+@@ -634,6 +634,10 @@
+ 	cfd = open("/proc/stb/misc/fan", O_WRONLY);
+ 	if(cfd < 0) {
+ 		perror("Cannot open /proc/stb/misc/fan");
++#elif defined (BOXMODEL_CUBEREVO) || defined (BOXMODEL_CUBEREVO_9500HD)
++	cfd = open("/proc/stb/fp/fan", O_WRONLY);
++	if(cfd < 0) {
++		perror("Cannot open /proc/stb/fp/fan");
+ #else
+ 	cfd = open("/proc/stb/fan/fan_ctrl", O_WRONLY);
+ 	if(cfd < 0) {
+@@ -644,7 +648,10 @@
+ 
+ 	switch (speed)
+ 
+-#if defined (BOXMODEL_IPBOX9900) || defined (BOXMODEL_IPBOX99)
++#if defined (BOXMODEL_IPBOX9900) \
++ || defined (BOXMODEL_IPBOX99) \
++ || defined (BOXMODEL_CUBEREVO) \
++ || defined (BOXMODEL_CUBEREVO_9500HD)
+ 	{
+ 	case 0:
+ 		write(cfd,"0",1);
+@@ -696,7 +703,7 @@
+ extern cCpuFreqManager * cpuFreq;
+ 	int freq = * (int *) data;
+ 
+-	printf("CCpuFreqNotifier: %d Mhz\n", freq);
++	printf("CCpuFreqNotifier: %d MHz\n", freq);
+ 	freq *= 1000*1000;
+ 
+ 	cpuFreq->SetCpuFreq(freq);
 
