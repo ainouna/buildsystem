@@ -32,7 +32,7 @@ $(D)/busybox: $(D)/bootstrap $(ARCHIVE)/$(BUSYBOX_SOURCE) $(PATCHES)/$(BUSYBOX_C
 		$(BUILDENV) \
 		$(MAKE) busybox ARCH=sh4 CROSS_COMPILE=$(TARGET)- CFLAGS_EXTRA="$(TARGET_CFLAGS)"; \
 		$(MAKE) install ARCH=sh4 CROSS_COMPILE=$(TARGET)- CFLAGS_EXTRA="$(TARGET_CFLAGS)" CONFIG_PREFIX=$(TARGET_DIR)
-	$(REMOVE)/busybox-$(BUSYBOX_VER)
+#	$(REMOVE)/busybox-$(BUSYBOX_VER)
 	$(TOUCH)
 
 #
@@ -65,19 +65,50 @@ $(D)/busybox_usb: $(D)/bootstrap $(ARCHIVE)/$(BUSYBOX_SOURCE) $(PATCHES)/$(BUSYB
 #
 # mtd_utils
 #
-MTD_UTILS_VER = 1.5.2
+MTD_UTILS_OLD_VER = 1.5.2
+MTD_UTILS_OLD_SOURCE = mtd-utils-$(MTD_UTILS_OLD_VER).tar.bz2
+
+$(ARCHIVE)/$(MTD_UTILS_OLD_SOURCE):
+	$(WGET) ftp://ftp.infradead.org/pub/mtd-utils/$(MTD_UTILS_OLD_SOURCE)
+
+$(D)/mtd_utils: $(D)/bootstrap $(D)/zlib $(D)/lzo $(D)/e2fsprogs $(ARCHIVE)/$(MTD_UTILS_OLD_SOURCE)
+	$(START_BUILD)
+	$(REMOVE)/mtd-utils-$(MTD_UTILS_OLD_VER)
+	$(UNTAR)/$(MTD_UTILS_OLD_SOURCE)
+	$(CH_DIR)/mtd-utils-$(MTD_UTILS_OLD_VER); \
+		$(BUILDENV) \
+		$(MAKE) PREFIX= CC=$(TARGET)-gcc LD=$(TARGET)-ld STRIP=$(TARGET)-strip WITHOUT_XATTR=1 DESTDIR=$(TARGET_DIR); \
+		cp -a $(BUILD_TMP)/mtd-utils-$(MTD_UTILS_OLD_VER)/mkfs.jffs2 $(TARGET_DIR)/usr/sbin
+		cp -a $(BUILD_TMP)/mtd-utils-$(MTD_UTILS_OLD_VER)/sumtool $(TARGET_DIR)/usr/sbin
+#		$(MAKE) install DESTDIR=$(TARGET_DIR)
+	$(REMOVE)/mtd-utils-$(MTD_UTILS_OLD_VER)
+	$(TOUCH)
+
+#
+# mtd_utils
+#
+MTD_UTILS_VER = 2.1.2
 MTD_UTILS_SOURCE = mtd-utils-$(MTD_UTILS_VER).tar.bz2
+#MTD_UTILS_PATCH = mtd-utils-$(MTD_UTILS_VER).patch
 
 $(ARCHIVE)/$(MTD_UTILS_SOURCE):
 	$(WGET) ftp://ftp.infradead.org/pub/mtd-utils/$(MTD_UTILS_SOURCE)
 
-$(D)/mtd_utils: $(D)/bootstrap $(D)/zlib $(D)/lzo $(D)/e2fsprogs $(ARCHIVE)/$(MTD_UTILS_SOURCE)
+$(D)/mtd_utils_new: $(D)/bootstrap $(D)/zlib $(D)/lzo $(D)/e2fsprogs $(ARCHIVE)/$(MTD_UTILS_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/mtd-utils-$(MTD_UTILS_VER)
 	$(UNTAR)/$(MTD_UTILS_SOURCE)
 	$(CH_DIR)/mtd-utils-$(MTD_UTILS_VER); \
-		$(BUILDENV) \
-		$(MAKE) PREFIX= CC=$(TARGET)-gcc LD=$(TARGET)-ld STRIP=$(TARGET)-strip WITHOUT_XATTR=1 DESTDIR=$(TARGET_DIR); \
+		$(call apply_patches, $(MTD_UTILS_PATCH)); \
+		$(CONFIGURE) \
+			--target=$(TARGET) \
+			--prefix= \
+			--program-suffix="" \
+			--mandir=/.remove \
+			--docdir=/.remove \
+			--disable-builddir \
+		; \
+		$(MAKE); \
 		cp -a $(BUILD_TMP)/mtd-utils-$(MTD_UTILS_VER)/mkfs.jffs2 $(TARGET_DIR)/usr/sbin
 		cp -a $(BUILD_TMP)/mtd-utils-$(MTD_UTILS_VER)/sumtool $(TARGET_DIR)/usr/sbin
 #		$(MAKE) install DESTDIR=$(TARGET_DIR)
@@ -111,7 +142,7 @@ $(D)/module_init_tools: $(D)/bootstrap $(D)/lsb $(ARCHIVE)/$(MODULE_INIT_TOOLS_S
 			--disable-builddir \
 		; \
 		$(MAKE); \
-		$(MAKE) install sbin_PROGRAMS="depmod modinfo" bin_PROGRAMS= DESTDIR=$(TARGET_DIR)
+		$(MAKE) install sbin_PROGRAMS="depmod insmod modinfo" bin_PROGRAMS= DESTDIR=$(TARGET_DIR)
 	$(call adapted-etc-files, $(MODULE_INIT_TOOLS_ADAPTED_ETC_FILES))
 	$(REMOVE)/module-init-tools-$(MODULE_INIT_TOOLS_VER)
 	$(TOUCH)
