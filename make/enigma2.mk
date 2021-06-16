@@ -3,7 +3,7 @@
 #
 ENIGMA2_DEPS  = $(D)/bootstrap $(D)/opkg $(D)/ncurses $(LIRC)
 ENIGMA2_DEPS += $(D)/libpng $(D)/libjpeg $(D)/giflib $(D)/libfribidi $(D)/libglib2 $(D)/libdvbsi $(D)/libxml2
-ENIGMA2_DEPS += $(D)/openssl $(D)/enigma2_tuxtxt32bpp $(D)/enigma2_hotplug_e2_helper $(D)/avahi
+ENIGMA2_DEPS += $(D)/openssl $(D)/enigma2_tuxtxt32bpp $(D)/enigma2_hotplug_e2_helper $(D)/avahi $(D)/module_init_tools
 ENIGMA2_DEPS += python-all
 ifneq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), small))
 ENIGMA2_DEPS += $(D)/ethtool
