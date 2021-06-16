@@ -89,10 +89,6 @@ endif
 E_CPPFLAGS   += $(LOCAL_ENIGMA2_CPPFLAGS)
 E_CPPFLAGS   += $(PLATFORM_CPPFLAGS)
 
-ifeq ($(BOXTYPE), tf7700)
-YAUD_ENIGMA2_DEPS = $(D)/uboot_tf7700 $(D)/u-boot.ftfd $(D)/tfinstaller
-endif
-
 #
 # yaud-enigma2
 #
