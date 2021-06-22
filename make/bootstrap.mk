@@ -70,19 +70,47 @@ $(D)/host_module_init_tools: $(ARCHIVE)/$(HOST_MODULE_INIT_TOOLS_SOURCE)
 #
 # host_mtd_utils
 #
+HOST_MTD_UTILS_OLD_VER    = $(MTD_UTILS_OLD_VER)
+HOST_MTD_UTILS_OLD_SOURCE = $(MTD_UTILS_OLD_SOURCE)
+HOST_MTD_UTILS_OLD_PATCH  = host-mtd-utils-$(HOST_MTD_UTILS_OLD_VER).patch
+HOST_MTD_UTILS_OLD_PATCH += host-mtd-utils-$(HOST_MTD_UTILS_OLD_VER)-sysmacros.patch
+
+$(D)/host_mtd_utils_old: directories $(ARCHIVE)/$(HOST_MTD_UTILS_OLD_SOURCE)
+	$(START_BUILD)
+	$(REMOVE)/mtd-utils-$(HOST_MTD_UTILS_OLD_VER)
+	$(UNTAR)/$(HOST_MTD_UTILS_OLD_SOURCE)
+	$(CH_DIR)/mtd-utils-$(HOST_MTD_UTILS_OLD_VER); \
+		$(call apply_patches,$(HOST_MTD_UTILS_OLD_PATCH)); \
+		$(MAKE) `pwd`/mkfs.jffs2 `pwd`/sumtool BUILDDIR=`pwd` WITHOUT_XATTR=1 DESTDIR=$(HOST_DIR); \
+		$(MAKE) install DESTDIR=$(HOST_DIR)/bin
+	$(REMOVE)/mtd-utils-$(HOST_MTD_UTILS_OLD_VER)
+	$(TOUCH)
+
+#
+# mtd_utils
+#
 HOST_MTD_UTILS_VER    = $(MTD_UTILS_VER)
 HOST_MTD_UTILS_SOURCE = $(MTD_UTILS_SOURCE)
 HOST_MTD_UTILS_PATCH  = host-mtd-utils-$(HOST_MTD_UTILS_VER).patch
-HOST_MTD_UTILS_PATCH += host-mtd-utils-$(HOST_MTD_UTILS_VER)-sysmacros.patch
 
 $(D)/host_mtd_utils: directories $(ARCHIVE)/$(HOST_MTD_UTILS_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/mtd-utils-$(HOST_MTD_UTILS_VER)
 	$(UNTAR)/$(HOST_MTD_UTILS_SOURCE)
 	$(CH_DIR)/mtd-utils-$(HOST_MTD_UTILS_VER); \
-		$(call apply_patches,$(HOST_MTD_UTILS_PATCH)); \
-		$(MAKE) `pwd`/mkfs.jffs2 `pwd`/sumtool BUILDDIR=`pwd` WITHOUT_XATTR=1 DESTDIR=$(HOST_DIR); \
-		$(MAKE) install DESTDIR=$(HOST_DIR)/bin
+		$(call apply_patches, $(HOST_MTD_UTILS_PATCH)); \
+		$(CONFIGURE) \
+			--target=$(TARGET) \
+			--prefix= \
+			--program-suffix="" \
+			--mandir=/.remove \
+			--docdir=/.remove \
+			--disable-builddir \
+		; \
+		$(MAKE); \
+		cp -a $(BUILD_TMP)/mtd-utils-$(HOST_MTD_UTILS_VER)/mkfs.jffs2 $(HOST_DIR)/bin
+		cp -a $(BUILD_TMP)/mtd-utils-$(HOST_MTD_UTILS_VER)/sumtool $(HOST_DIR)/bin
+#		$(MAKE) install DESTDIR=$(TARGET_DIR)
 	$(REMOVE)/mtd-utils-$(HOST_MTD_UTILS_VER)
 	$(TOUCH)
 

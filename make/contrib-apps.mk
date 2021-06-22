@@ -71,7 +71,7 @@ MTD_UTILS_OLD_SOURCE = mtd-utils-$(MTD_UTILS_OLD_VER).tar.bz2
 $(ARCHIVE)/$(MTD_UTILS_OLD_SOURCE):
 	$(WGET) ftp://ftp.infradead.org/pub/mtd-utils/$(MTD_UTILS_OLD_SOURCE)
 
-$(D)/mtd_utils: $(D)/bootstrap $(D)/zlib $(D)/lzo $(D)/e2fsprogs $(ARCHIVE)/$(MTD_UTILS_OLD_SOURCE)
+$(D)/mtd_utils_old: $(D)/bootstrap $(D)/zlib $(D)/lzo $(D)/e2fsprogs $(ARCHIVE)/$(MTD_UTILS_OLD_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/mtd-utils-$(MTD_UTILS_OLD_VER)
 	$(UNTAR)/$(MTD_UTILS_OLD_SOURCE)
@@ -94,7 +94,7 @@ MTD_UTILS_SOURCE = mtd-utils-$(MTD_UTILS_VER).tar.bz2
 $(ARCHIVE)/$(MTD_UTILS_SOURCE):
 	$(WGET) ftp://ftp.infradead.org/pub/mtd-utils/$(MTD_UTILS_SOURCE)
 
-$(D)/mtd_utils_new: $(D)/bootstrap $(D)/zlib $(D)/lzo $(D)/e2fsprogs $(ARCHIVE)/$(MTD_UTILS_SOURCE)
+$(D)/mtd_utils: $(D)/bootstrap $(D)/zlib $(D)/lzo $(D)/e2fsprogs $(ARCHIVE)/$(MTD_UTILS_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/mtd-utils-$(MTD_UTILS_VER)
 	$(UNTAR)/$(MTD_UTILS_SOURCE)
