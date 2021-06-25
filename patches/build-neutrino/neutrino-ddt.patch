@@ -491,7 +491,37 @@
  	//InitNewClock(); /FIXME
  
  	brightness = -1;
-@@ -398,7 +499,7 @@
+@@ -387,9 +488,28 @@
+ 
+ 	if(dimm < 0)
+ 		dimm = 0;
++#if defined (BOXMODEL_HS9510) \
++ || defined (BOXMODEL_FS9000) \
++ || defined (BOXMODEL_HS8200) \
++ || defined (BOXMODEL_HS7420) \
++ || defined (BOXMODEL_HS7429) \
++ || defined (BOXMODEL_CUBEREVO) \
++ || defined (BOXMODEL_CUBEREVO_MINI) \
++ || defined (BOXMODEL_CUBEREVO_MINI2) \
++ || defined (BOXMODEL_CUBEREVO_2000HD) \
++ || defined (BOXMODEL_CUBEREVO_3000HD) \
++ || defined (BOXMODEL_IPBOX9900) \
++ || defined (BOXMODEL_IPBOX99) \
++ || defined (BOXMODEL_ADB_BOX) \
++ || defined (BOXMODEL_UFS912) \
++ || defined (BOXMODEL_UFS913) \
++ || defined (BOXMODEL_UFS922)
++	else if(dimm > 7)
++		dimm = 7;
++#else
+ 	else if(dimm > 15)
+ 		dimm = 15;
+-
++#endif
+ 	if(!power)
+ 		dimm = 0;
+ 
+@@ -398,7 +518,7 @@
  
  	brightness = dimm;
  
@@ -500,18 +530,16 @@
  #if !HAVE_DUCKBOX_HARDWARE
  	int ret = ioctl(fd, IOC_FP_SET_BRIGHT, dimm);
  	if(ret < 0)
-@@ -406,43 +507,87 @@
+@@ -406,43 +526,87 @@
  #else
  // Brightness
  	struct vfd_ioctl_data data;
-+#if !defined (BOXMODEL_HS7810A) \
-+ && !defined (BOXMODEL_HS7119) \
-+ && !defined (BOXMODEL_HS7819)
++
  	memset(&data, 0, sizeof(struct vfd_ioctl_data));
  	data.start = brightness & 0x07;
  	data.length = 0;
  	write_to_vfd(VFDBRIGHTNESS, &data);
- #endif
+-#endif
 -#if defined (BOXMODEL_FORTIS_HDBOX) || defined (BOXMODEL_ATEVIO7500)
 +#if defined (BOXMODEL_FS9000) \
 + || defined (BOXMODEL_HS8200)
@@ -520,40 +548,41 @@
 -	data.start = 0;
 +	data.data[0] = 0;
  	data.length = 5;
- 	if (power) {
+-	if (power) {
 -		data.data[0] = 0x01; // red led
-+		data.start = 0x01; // red led
++	if (power
++	{
++		data.start = 0x01;  // red led
  	}
  	else
  	{
 -		data.data[0] = 0xf2; // cross plus blue led
 -	}
 -	data.start = 0;
-+		data.start = 0xf2; // cross plus blue led
+-	data.data[4] = 0; // off
++		data.start = 0xf2;  // cross plus blue led
 +	}
- 	data.data[4] = 0; // off
++	data.data[4] = 0;  // off
  	data.length = 5;
 -	write_to_vfd(VFDPWRLED, &data);
 +	write_to_vfd(VFDSETLED, &data);
  	usleep(100000);
  	memset(&data, 0, sizeof(struct vfd_ioctl_data));
--	data.start = 0;
 +	data.data[0] = 0;
- 	data.length = 5;
- 	if (power) {
--		data.data[0] = 0xf2; // cross plus blue led
++	data.length = 5;
++	if (power)
++	{
 +		data.start = 0xf2; // cross plus blue led
- 	}
- 	else
- 	{
--		data.data[0] = 0x01; // red led
++	}
++	else
++	{
 +		data.start = 0x01; // red led
- 	}
++	}
  	data.start = 0;
- 	data.data[4] = brightness*2;
++	data.data[4] = brightness * 2;
  	data.length = 5;
--	write_to_vfd(VFDPWRLED, &data);
--#elif !defined (BOXMODEL_UFS912) && !defined (BOXMODEL_UFS913) && !defined (BOXMODEL_OCTAGON1008)
+-	if (power) {
+-		data.data[0] = 0xf2; // cross plus blue led
 +	write_to_vfd(VFDSETLED, &data);
 +#elif defined (BOXMODEL_HS7420) \
 + ||   defined (BOXMODEL_HS7810A) \
@@ -574,9 +603,16 @@
 +	if (adb_led == 1)
 +	{
 +		write_to_vfd(VFDLEDBRIGHTNESS, &data);
-+	}
-+	else
-+	{
+ 	}
+ 	else
+ 	{
+-		data.data[0] = 0x01; // red led
+-	}
+-	data.start = 0;
+-	data.data[4] = brightness*2;
+-	data.length = 5;
+-	write_to_vfd(VFDPWRLED, &data);
+-#elif !defined (BOXMODEL_UFS912) && !defined (BOXMODEL_UFS913) && !defined (BOXMODEL_OCTAGON1008)
 +		write_to_vfd(VFDBRIGHTNESS, &data);
 +	}
 +//	memset(&data, 0, sizeof(struct vfd_ioctl_data));
@@ -596,11 +632,12 @@
 +//	write_to_vfd(VFDSETLED, &data);
 +#elif !defined (BOXMODEL_UFS912) \
 + &&   !defined (BOXMODEL_UFS913) \
++ &&   !defined (BOXMODEL_UFS922) \
 + &&   !defined (BOXMODEL_HS9510)
  // Power on/off
  	if (power) {
  		data.start = 0x01;
-@@ -452,6 +597,7 @@
+@@ -452,6 +616,7 @@
  	data.length = 0;
  	write_to_vfd(VFDDISPLAYWRITEONOFF, &data, true);
  #endif
@@ -608,7 +645,7 @@
  }
  
  void CVFD::setlcdparameter(void)
-@@ -462,21 +608,34 @@
+@@ -462,21 +627,34 @@
  			last_toggle_state_power);
  }
  
@@ -651,7 +688,7 @@
  	wake_up();
  }
  
-@@ -484,59 +643,113 @@
+@@ -484,59 +662,109 @@
  {
  	//unsigned int system_rev = cs_get_revision();
  	static int recstatus = 0;
@@ -690,25 +727,21 @@
 -#elif defined (BOXMODEL_OCTAGON1008) || defined (BOXMODEL_CUBEREVO_250HD)
 +				second = t->tm_sec;
 +#if defined (BOXMODEL_HS9510)
-+
 +				ShowIcon(ICON_COLON2, second % 2 == 0 ? true : false);
 + 				strftime(timestr, 5, "%H%M", t);
 +				ShowText(timestr);
 +#elif defined (BOXMODEL_HS7420) \
 + ||   defined (BOXMODEL_HS7429)
-+
 +				ShowIcon(ICON_COLON2, second % 2 == 0 ? true : false);
  				strftime(timestr, 5, "%H%M", t);
 +				ShowText(timestr);
 +#elif defined (BOXMODEL_HS7119) \
 + ||   defined (BOXMODEL_HS7810A) \
 + ||   defined (BOXMODEL_HS7819)
-+
 +				strftime(timestr, 5, "%H%M", t);
 +				ShowText(timestr);
 +				ShowIcon(ICON_COLON, second % 2 == 0 ? true : false);
 +#elif defined (BOXMODEL_FS9000)
-+
 +				ShowIcon(ICON_COLON3, second % 2 == 0 ? true : false);
 +				strftime(timestr, 13, "        %H%M", t);
 +				ShowText(timestr);
@@ -784,18 +817,17 @@
  	}
  
  	recstatus = tmp_recstatus;
-@@ -551,7 +764,10 @@
+@@ -551,7 +779,9 @@
  		ShowIcon(FP_ICON_HD,chan->isHD());
  		ShowIcon(FP_ICON_LOCK,!chan->camap.empty());
  		if (chan->getAudioChannel() != NULL)
 +		{
-+
  			ShowIcon(FP_ICON_DD, chan->getAudioChannel()->audioChannelType == CZapitAudioChannel::AC3);
 +		}
  	}
  }
  #endif
-@@ -573,25 +789,32 @@
+@@ -573,25 +803,32 @@
  void CVFD::showVolume(const char vol, const bool force_update)
  {
  	static int oldpp = 0;
@@ -837,7 +869,7 @@
  			int i;
  			unsigned char speaker[5] = {0x1C, 0x1C, 0x1C, 0x3E, 0x7F}; // speaker symbol
  			writeCG(0, speaker);
-@@ -608,7 +831,7 @@
+@@ -608,7 +845,7 @@
  			memset (VolumeBar, 0, sizeof(VolumeBar));
  			char act[2] = {0x01, 0x20};
  			strncat(VolumeBar, act, 2);
@@ -846,7 +878,7 @@
  			{
  				strncat(VolumeBar, c5, 1);
  			}
-@@ -629,24 +852,57 @@
+@@ -629,24 +866,57 @@
  				break;
  			}
  			//dprintf(DEBUG_DEBUG,"CVFD::showVolume: vol %d - pp %d - fullblocks %d - mod %d - %s\n", vol, pp, j, i, VolumeBar);
@@ -910,7 +942,7 @@
  			char vol_chr[64] = "";
  			snprintf(vol_chr, sizeof(vol_chr)-1, "Volume: %d%%", (int)vol);
  			ShowText(vol_chr);
-@@ -656,17 +912,23 @@
+@@ -656,17 +926,23 @@
  #else
  		ShowIcon(FP_ICON_FRAME, true);
  		int pp = (int) round((double) vol * (double) 8 / (double) 100);
@@ -940,7 +972,7 @@
  				ShowIcon((fp_icon) j, false);
  				j /= 2;
  			}
-@@ -704,7 +966,7 @@
+@@ -704,7 +980,7 @@
  		if(pp > 8) pp = 8;
  
  		if(pp != ppold) {
@@ -949,7 +981,7 @@
  			int i;
  			int j = 0x00000200;
  			for(i = 0; i < pp; i++) {
-@@ -736,7 +998,7 @@
+@@ -736,7 +1012,7 @@
  	if(fd < 0) return;
  	if (mode != MODE_AUDIO)
  		return;
@@ -958,7 +990,7 @@
  	ShowText(title.c_str());
  	wake_up();
  
-@@ -805,19 +1067,60 @@
+@@ -805,19 +1081,60 @@
  
  void CVFD::setMode(const MODES m, const char * const title)
  {
@@ -1023,7 +1055,7 @@
  	if(strlen(title))
  		ShowText(title);
  	mode = m;
-@@ -839,6 +1142,10 @@
+@@ -839,6 +1156,10 @@
  			showPercentOver(percentOver, false);
  			break;
  #endif
@@ -1034,7 +1066,7 @@
  		}
  		showServicename(servicename);
  		showclock = true;
-@@ -915,12 +1222,28 @@
+@@ -915,14 +1236,32 @@
  int CVFD::getBrightness()
  {
  	//FIXME for old neutrino.conf
@@ -1052,7 +1084,10 @@
 + || defined (BOXMODEL_CUBEREVO_3000HD) \
 + || defined (BOXMODEL_IPBOX9900) \
 + || defined (BOXMODEL_IPBOX99) \
-+ || defined (BOXMODEL_ADB_BOX)
++ || defined (BOXMODEL_ADB_BOX) \
++ || defined (BOXMODEL_UFS912) \
++ || defined (BOXMODEL_UFS913) \
++ || defined (BOXMODEL_UFS922)
 +	if (g_settings.lcd_setting[SNeutrinoSettings::LCD_BRIGHTNESS] > 7)
 +	{
  		g_settings.lcd_setting[SNeutrinoSettings::LCD_BRIGHTNESS] = 7;
@@ -1062,20 +1097,38 @@
 +	if (g_settings.lcd_setting[SNeutrinoSettings::LCD_BRIGHTNESS] > 15)
 +	{
  		g_settings.lcd_setting[SNeutrinoSettings::LCD_BRIGHTNESS] = 15;
+-#endif
+-
 +	}
- #endif
- 
++#endif
  	return g_settings.lcd_setting[SNeutrinoSettings::LCD_BRIGHTNESS];
-@@ -937,7 +1260,7 @@
+ }
+ 
+@@ -937,7 +1276,22 @@
  int CVFD::getBrightnessStandby()
  {
  	//FIXME for old neutrino.conf
 -#if defined (BOXMODEL_OCTAGON1008) || defined (BOXMODEL_FORTIS_HDBOX) || defined (BOXMODEL_ATEVIO7500)
-+#if defined (BOXMODEL_HS9510) || defined (BOXMODEL_FS9000) || defined (BOXMODEL_HS8200)
++#if defined (BOXMODEL_HS9510) \
++ || defined (BOXMODEL_FS9000) \
++ || defined (BOXMODEL_HS8200) \
++ || defined (BOXMODEL_HS7420) \
++ || defined (BOXMODEL_HS7429) \
++ || defined (BOXMODEL_CUBEREVO) \
++ || defined (BOXMODEL_CUBEREVO_MINI) \
++ || defined (BOXMODEL_CUBEREVO_MINI2) \
++ || defined (BOXMODEL_CUBEREVO_2000HD) \
++ || defined (BOXMODEL_CUBEREVO_3000HD) \
++ || defined (BOXMODEL_IPBOX9900) \
++ || defined (BOXMODEL_IPBOX99) \
++ || defined (BOXMODEL_ADB_BOX) \
++ || defined (BOXMODEL_UFS912) \
++ || defined (BOXMODEL_UFS913) \
++ || defined (BOXMODEL_UFS922)
  	if(g_settings.lcd_setting[SNeutrinoSettings::LCD_STANDBY_BRIGHTNESS] > 7)
  		g_settings.lcd_setting[SNeutrinoSettings::LCD_STANDBY_BRIGHTNESS] = 7;
  #else
-@@ -958,12 +1281,28 @@
+@@ -958,12 +1312,28 @@
  int CVFD::getBrightnessDeepStandby()
  {
  	//FIXME for old neutrino.conf
@@ -1107,7 +1160,7 @@
  #endif
  	return g_settings.lcd_setting[SNeutrinoSettings::LCD_DEEPSTANDBY_BRIGHTNESS];
  }
-@@ -1029,14 +1368,33 @@
+@@ -1029,14 +1399,33 @@
  	else
  		text.clear();
  #else
@@ -1145,7 +1198,7 @@
  #endif
  #endif
  }
-@@ -1044,25 +1402,69 @@
+@@ -1044,25 +1433,69 @@
  void CVFD::ShowIcon(fp_icon icon, bool show)
  {
  #if !HAVE_DUCKBOX_HARDWARE
@@ -1223,7 +1276,7 @@
  	memset(&data, 0, sizeof(struct vfd_ioctl_data));
  	data.start = 0x00;
  	data.data[0] = icon;
-@@ -1076,29 +1478,47 @@
+@@ -1076,29 +1509,51 @@
  #ifdef HAVE_DUCKBOX_HARDWARE
  void CVFD::ClearIcons()
  {
@@ -1244,10 +1297,14 @@
 +//	printf("CVFD::ClearIcons, min=%02d, max=%02d\n", FP_ICON_MIN, FP_ICON_MAX);
 +	for (int id = 1; id < FP_ICON_MAX; id++)
 +	{
-+#if defined (BOXMODEL_HS9510)
++#if defined (BOXMODEL_HS9510) \
++ || defined (BOXMODEL_UFS912) \
++ || defined (BOXMODEL_UFS913) \
++ || defined (BOXMODEL_UFS922)
  		if (id != FP_ICON_USB && id != FP_ICON_HDD)
 -#elif defined(BOXMODEL_FORTIS_HDBOX) || defined (BOXMODEL_TF7700)
-+#elif defined(BOXMODEL_FS9000) || defined (BOXMODEL_TF7700)
++#elif defined(BOXMODEL_FS9000) \
++ || defined (BOXMODEL_TF7700)
  		if (id != FP_ICON_USB)
  #else
  		if (id != 0x10 && id != 0x12)
@@ -1276,7 +1333,7 @@
  		g_str[60] = '.';
  		g_str[61] = '.';
  		g_str[62] = '.';
-@@ -1107,20 +1527,23 @@
+@@ -1107,20 +1562,23 @@
  	}
  	ShowNormalText(g_str, false);
  }
@@ -1312,7 +1369,7 @@
  void CVFD::ShowText(const char * str)
  {
  	if (fd < 0 || !support_text)
-@@ -1154,11 +1577,30 @@
+@@ -1154,11 +1612,29 @@
  
  void CVFD::ShowNumber(int number)
  {
@@ -1336,8 +1393,7 @@
 + || defined (BOXMODEL_HS7810A) \
 + || defined (BOXMODEL_HS7819) \
 + || defined (BOXMODEL_CUBEREVO_MINI_FTA) \
-+ || defined (BOXMODEL_CUBEREVO_250HD) \
-+
++ || defined (BOXMODEL_CUBEREVO_250HD)
 +	n = sprintf(buffer, "%04d", number);
 +#else
 +	n = sprintf(buffer, "%4d", number);
@@ -1346,7 +1402,7 @@
  }
  
  #ifdef VFD_UPDATE
-@@ -1245,10 +1687,10 @@
+@@ -1245,10 +1721,10 @@
  /*****************************************************************************************/
  //showFilelist
  /*****************************************************************************************/
@@ -1361,7 +1417,7 @@
  
  void CVFD::showFilelist(int flist_pos,CFileList* flist,const char * const mainDir)
  {
-@@ -1485,5 +1927,4 @@
+@@ -1485,5 +1961,4 @@
  }
  /*****************************************************************************************/
  #endif // VFD_UPDATE
@@ -1434,18 +1490,29 @@
  	-I$(top_builddir) \
 --- neutrino-ddt.org/src/system/setting_helpers.cpp
 +++ neutrino-ddt/src/system/setting_helpers.cpp
-@@ -634,6 +634,10 @@
+@@ -630,10 +630,20 @@
+ 	int cfd;
+ 
+ 	printf("FAN Speed %d\n", speed);
+-#if defined (BOXMODEL_IPBOX9900) || defined (BOXMODEL_IPBOX99)
++#if defined (BOXMODEL_IPBOX9900) \
++ || defined (BOXMODEL_IPBOX99)
  	cfd = open("/proc/stb/misc/fan", O_WRONLY);
  	if(cfd < 0) {
  		perror("Cannot open /proc/stb/misc/fan");
-+#elif defined (BOXMODEL_CUBEREVO) || defined (BOXMODEL_CUBEREVO_9500HD)
++#elif defined (BOXMODEL_CUBEREVO) \
++ ||   defined (BOXMODEL_CUBEREVO_9500HD)
 +	cfd = open("/proc/stb/fp/fan", O_WRONLY);
 +	if(cfd < 0) {
 +		perror("Cannot open /proc/stb/fp/fan");
++#elif defined (BOXMODEL_UFS922)
++	cfd = open("/proc/stb/fp/fan_pwm", O_WRONLY);
++	if(cfd < 0) {
++		perror("Cannot open /proc/stb/fp/fan_pwm");
  #else
  	cfd = open("/proc/stb/fan/fan_ctrl", O_WRONLY);
  	if(cfd < 0) {
-@@ -644,7 +648,10 @@
+@@ -644,7 +654,10 @@
  
  	switch (speed)
  
@@ -1457,7 +1524,26 @@
  	{
  	case 0:
  		write(cfd,"0",1);
-@@ -696,7 +703,7 @@
+@@ -653,6 +666,18 @@
+ 		write(cfd,"1",1);
+ 		break;
+ 	}
++#elif defined (BOXMODEL_UFS922)
++	{
++	case 0:
++		write(cfd,"0",1);
++		break;
++	case 1:
++		write(cfd,"128",1);
++		break;
++	case 2:
++		write(cfd,"255",1);
++		break;
++	}
+ #else
+ 	{
+ 	case 1:
+@@ -696,7 +721,7 @@
  extern cCpuFreqManager * cpuFreq;
  	int freq = * (int *) data;
  
