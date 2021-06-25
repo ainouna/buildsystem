@@ -5,9 +5,11 @@ tools-clean:
 	rm -f $(D)/tools-*
 	-$(MAKE) -C $(TOOLS_DIR)/aio-grab distclean
 	-$(MAKE) -C $(TOOLS_DIR)/devinit distclean
+	-$(MAKE) -C $(TOOLS_DIR)/eeprom_dgs distclean
 	-$(MAKE) -C $(TOOLS_DIR)/eeprom_fortis distclean
 	-$(MAKE) -C $(TOOLS_DIR)/eeprom_ipbox distclean
 	-$(MAKE) -C $(TOOLS_DIR)/eeprom_ufs913 distclean
+	-$(MAKE) -C $(TOOLS_DIR)/eeprom_ufs922 distclean
 	-$(MAKE) -C $(TOOLS_DIR)/eplayer3 distclean
 	-$(MAKE) -C $(TOOLS_DIR)/exteplayer3 distclean
 	-$(MAKE) -C $(TOOLS_DIR)/evremote2 distclean
