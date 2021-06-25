@@ -14,6 +14,7 @@ NEUTRINO_DEPS  = $(D)/bootstrap
 NEUTRINO_DEPS += $(KERNEL)
 NEUTRINO_DEPS += $(D)/system-tools
 #NEUTRINO_DEPS += $(D)/ncurses
+NEUTRINO_DEPS += $(D)/module_init_tools
 NEUTRINO_DEPS += $(D)/alsa_utils
 NEUTRINO_DEPS += $(D)/ffmpeg
 NEUTRINO_DEPS += $(D)/libopenthreads

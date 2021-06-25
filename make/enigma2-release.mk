@@ -591,7 +591,9 @@ enigma2_release_tf7700:
 	$(SILENT)cp -f $(SKEL_ROOT)/release/fstab_tf7700 $(RELEASE_DIR)/etc/fstab
 	$(SILENT)rm -f $(RELEASE_DIR)/bin/vdstandby
 	$(SILENT)cp -f $(SKEL_ROOT)/root_enigma2/usr/local/share/enigma2/keymap_tf7700.xml $(RELEASE_DIR)/usr/local/share/enigma2/keymap.xml
+ifeq ($(DESTINATION), flash)
 	$(MAKE) $(D)/tfinstaller
+endif
 
 #
 # vitamin_hd5000

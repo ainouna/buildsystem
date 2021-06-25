@@ -3,7 +3,7 @@
 #
 ENIGMA2_DEPS  = $(D)/bootstrap $(D)/opkg $(D)/ncurses $(LIRC)
 ENIGMA2_DEPS += $(D)/libpng $(D)/libjpeg $(D)/giflib $(D)/libfribidi $(D)/libglib2 $(D)/libdvbsi $(D)/libxml2
-ENIGMA2_DEPS += $(D)/openssl $(D)/enigma2_tuxtxt32bpp $(D)/enigma2_hotplug_e2_helper $(D)/avahi
+ENIGMA2_DEPS += $(D)/openssl $(D)/enigma2_tuxtxt32bpp $(D)/enigma2_hotplug_e2_helper $(D)/avahi $(D)/module_init_tools
 ENIGMA2_DEPS += python-all
 ifneq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), small))
 ENIGMA2_DEPS += $(D)/ethtool
@@ -88,10 +88,6 @@ E_CPPFLAGS   += -I$(TOOLS_DIR)/libeplayer3/include
 endif
 E_CPPFLAGS   += $(LOCAL_ENIGMA2_CPPFLAGS)
 E_CPPFLAGS   += $(PLATFORM_CPPFLAGS)
-
-ifeq ($(BOXTYPE), tf7700)
-YAUD_ENIGMA2_DEPS = $(D)/uboot_tf7700 $(D)/u-boot.ftfd $(D)/tfinstaller
-endif
 
 #
 # yaud-enigma2
