@@ -13,7 +13,6 @@ $(TARGET_DIR)/.version:
 NEUTRINO_DEPS  = $(D)/bootstrap
 NEUTRINO_DEPS += $(KERNEL)
 NEUTRINO_DEPS += $(D)/system-tools
-#NEUTRINO_DEPS += $(D)/ncurses
 NEUTRINO_DEPS += $(D)/module_init_tools
 NEUTRINO_DEPS += $(D)/alsa_utils
 NEUTRINO_DEPS += $(D)/ffmpeg
@@ -52,7 +51,7 @@ ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs8200 spark spark7162 ufs912 ufs913 ufs9
 NEUTRINO_DEPS += $(D)/ntfs_3g
 ifneq ($(BOXTYPE), $(filter $(BOXTYPE), ufs910))
 NEUTRINO_DEPS += $(D)/parted
-NEUTRINO_DEPS += $(D)/mtd_utils
+NEUTRINO_DEPS += $(D)/mtd_utils_old
 NEUTRINO_DEPS += $(D)/gptfdisk
 endif
 NEUTRINO_DEPS += $(D)/minidlna

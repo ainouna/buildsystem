@@ -1,9 +1,22 @@
 #
 # enigma2
 #
-ENIGMA2_DEPS  = $(D)/bootstrap $(D)/opkg $(D)/ncurses $(LIRC)
-ENIGMA2_DEPS += $(D)/libpng $(D)/libjpeg $(D)/giflib $(D)/libfribidi $(D)/libglib2 $(D)/libdvbsi $(D)/libxml2
-ENIGMA2_DEPS += $(D)/openssl $(D)/enigma2_tuxtxt32bpp $(D)/enigma2_hotplug_e2_helper $(D)/avahi $(D)/module_init_tools
+ENIGMA2_DEPS  = $(D)/bootstrap
+ENIGMA2_DEPS += $(D)/opkg
+ENIGMA2_DEPS += $(D)/ncurses
+ENIGMA2_DEPS += $(D)/module_init_tools
+ENIGMA2_DEPS += $(LIRC)
+ENIGMA2_DEPS += $(D)/libpng
+ENIGMA2_DEPS += $(D)/libjpeg
+ENIGMA2_DEPS += $(D)/giflib
+ENIGMA2_DEPS += $(D)/libfribidi
+ENIGMA2_DEPS += $(D)/libglib2
+ENIGMA2_DEPS += $(D)/libdvbsi
+ENIGMA2_DEPS += $(D)/libxml2
+ENIGMA2_DEPS += $(D)/openssl
+ENIGMA2_DEPS += $(D)/enigma2_tuxtxt32bpp
+ENIGMA2_DEPS += $(D)/enigma2_hotplug_e2_helper
+ENIGMA2_DEPS += $(D)/avahi
 ENIGMA2_DEPS += python-all
 ifneq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), small))
 ENIGMA2_DEPS += $(D)/ethtool

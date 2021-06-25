@@ -556,12 +556,39 @@ $(D)/tfkernel: $(D)/kernel
 	$(TOUCH)
 
 #
+# UFS922 installer
+#
+
+UFSINSTALLER_DIR := $(BASE_DIR)/ufsinstaller
+
+$(D)/ufsinstaller: $(D)/bootstrap $(D)/kernel
+	$(START_BUILD)
+	$(MAKE) $(MAKE_OPTS) -C $(UFSINSTALLER_DIR) HOST_DIR=$(HOST_DIR) BASE_DIR=$(BASE_DIR) KERNEL_DIR=$(KERNEL_DIR)
+	$(TOUCH)
+
+
+#ifneq ($(BS_GCC_VER), $(filter $(BS_GCC_VER), 4.6.3 4.8.4))
+#UFSKERNEL_PATCHES_24  = linux-sh4-remove_m4-nofpu-arg_$(KERNEL_LABEL).patch
+#endif
+
+$(D)/ufskernel: $(D)/kernel
+	$(START_BUILD)
+	$(SILENT)cd $(KERNEL_DIR); \
+		$(call apply_patches, $(UFSKERNEL_PATCHES_24)); \
+		cd $(KERNEL_DIR); \
+		$(MAKE) $(if $(UFS922),UFS922=y) ARCH=sh CROSS_COMPILE=$(TARGET)- uImage
+	$(TOUCH)
+
+#
 # u-boot
 #
 UBOOT_VER = 1.3.1
 UBOOT_PATCH  = u-boot-$(UBOOT_VER).patch
 ifeq ($(BOXTYPE), tf7700)
 UBOOT_PATCH += u-boot-$(UBOOT_VER)-tf7700.patch
+endif
+ifeq ($(BOXTYPE), ufs922)
+UBOOT_PATCH += u-boot-$(UBOOT_VER)-ufs922.patch
 endif
 ifneq ($(BS_GCC_VER), $(filter $(BS_GCC_VER), 4.6.3 4.8.4))
 UBOOT_PATCH += u-boot-sh4-remove_m4-nofpu-arg.patch
