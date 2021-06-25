@@ -865,7 +865,7 @@
  		{
 --- enigma2.org/lib/driver/vfd.cpp
 +++ enigma2/lib/driver/vfd.cpp
-@@ -0,0 +1,1061 @@
+@@ -0,0 +1,1069 @@
 +/***************************************************************************
 + *
 + * vfd.cpp
@@ -919,6 +919,7 @@
 + * 20210322 Audioniek       Set display width on spark7162 to match actual
 + *                          display type and time mode.
 + * 20210326 Audioniek       Set correct display width on spark with VFD.
++ * 20210625 Audioniek       Kathrein UFS922 added.
 + *
 + ***************************************************************************/
 +#include <stdarg.h>
@@ -1029,7 +1030,8 @@
 +   || defined (ENABLE_HS7429)
 +	vfd_type = 11;
 +#elif defined (ENABLE_UFS912) \
-+   || defined (ENABLE_UFS913)
++   || defined (ENABLE_UFS913) \
++   || defined (ENABLE_UFS922)
 +	vfd_type = 12;
 +#elif defined (ENABLE_CUBEREVO)
 +	vfd_type = 13;
@@ -1290,6 +1292,8 @@
 +		char str[] = "UFS912 Enigma2";
 +	#elif defined (ENABLE_UFS913)
 +		char str[] = "UFS913 Enigma2";
++	#elif defined (ENABLE_UFS922)
++		char str[] = "UFS922 Enigma2";
 +	#elif defined (ENABLE_VITAMIN_HD5000)
 +		char str[] = "Vitamin E2";
 +	#elif defined (ENABLE_ADB_BOX)
@@ -1326,8 +1330,10 @@
 +	 || defined (ENABLE_CUBEREVO_3000HD) \
 +	 || defined (ENABLE_CUBEREVO_9500HD) \
 +	 || defined (ENABLE_SPARK7162) \
++	 || defined (ENABLE_UFS910) \
 +	 || defined (ENABLE_UFS912) \
 +	 || defined (ENABLE_UFS913) \
++	 || defined (ENABLE_UFS922) \
 +	 || defined (ENABLE_HS7119) \
 +	 || defined (ENABLE_HS7420) \
 +	 || defined (ENABLE_HS7429) \
@@ -1431,8 +1437,10 @@
 +	 && !defined (ENABLE_CUBEREVO_3000HD) \
 +	 && !defined (ENABLE_CUBEREVO_9500HD) \
 +	 && !defined (ENABLE_SPARK7162) \
++	 && !defined (ENABLE_UFS910) \
 +	 && !defined (ENABLE_UFS912) \
 +	 && !defined (ENABLE_UFS913) \
++	 && !defined (ENABLE_UFS922) \
 +	 && !defined (ENABLE_HS7119) \
 +	 && !defined (ENABLE_HS7420) \
 +	 && !defined (ENABLE_HS7429) \
@@ -1929,7 +1937,7 @@
 +// vim:ts=4
 --- enigma2.org/lib/driver/vfd.h
 +++ enigma2/lib/driver/vfd.h
-@@ -0,0 +1,140 @@
+@@ -0,0 +1,142 @@
 +#ifndef VFD_H_
 +#define VFD_H_
 +
@@ -1984,8 +1992,10 @@
 +#define ICON_MAX 28
 +#elif defined (ENABLE_HS8200)
 +#define ICON_MAX 22
-+#elif defined (ENABLE_UFS912) \
++#elif defined (ENABLE_UFS910) \
++ ||   defined (ENABLE_UFS912)
 + ||   defined (ENABLE_UFS913)
++ ||   defined (ENABLE_UFS922)
 +#define ICON_MAX 15
 +#elif defined (ENABLE_CUBEREVO)
 +#define ICON_MAX 27
@@ -5935,7 +5945,8 @@
 +SystemInfo["LCDsymbol_circle_recording"] = fileCheck("/proc/stb/lcd/symbol_circle")
  SystemInfo["LCDsymbol_timeshift"] = fileCheck("/proc/stb/lcd/symbol_timeshift")
  SystemInfo["LCDshow_symbols"] = (model.startswith("et9") or model in ("hd51", "vs1500")) and fileCheck("/proc/stb/lcd/show_symbols")
- SystemInfo["LCDsymbol_hdd"] = model in ("hd51", "vs1500") and fileCheck("/proc/stb/lcd/symbol_hdd")
+-SystemInfo["LCDsymbol_hdd"] = model in ("hd51", "vs1500") and fileCheck("/proc/stb/lcd/symbol_hdd")
++SystemInfo["LCDsymbol_hdd"] = fileCheck("/proc/stb/lcd/symbol_hdd")
  SystemInfo["FrontpanelDisplayGrayscale"] = fileExists("/dev/dbox/oled0")
 -SystemInfo["DeepstandbySupport"] = HardwareInfo().get_device_name() != "dm800"
 +SystemInfo["DeepstandbySupport"] = HardwareInfo().get_device_name() != model in ("adb_box", "hl101", "vip1_v1")
@@ -5986,7 +5997,7 @@
 -SystemInfo["HasComposite"] = model not in ("i55", "gbquad4k", "gbue4k", "hd1500", "osnino", "osninoplus", "purehd", "purehdse", "revo4k", "vusolo4k", "vuzero4k", "vuduo4k", "vuduo4kse", "vuuno4k", "vuuno4kse", "vuultimo4k")
 +SystemInfo["HasHDMIin"] = False
 +SystemInfo["HasHDMI-CEC"] = fileExists("/lib/modules/cec.ko") and (fileExists("proc/stb/cec/send") or fileExists("stb/hdmi/cec"))
-+SystemInfo["HasYPbPr"] = HardwareInfo().get_device_model() in ("adb_box", "hs8200", "cuberevo", "cuberevo-mini-fta", "cuberevo-250hd", "cuberevo-mini", "cuberevo-mini2", "cuberevo-2000hd", "cuberevo-3000hd", "cuberevo-9500hd", "hdbox", "hs9510", "hs7420", "hs7429", "hl101", "tf7700hdpvr", "ufs912", "ufs913", "vip1_v1", "vip1_v2", "vip2", "vitamin_hd5000", "opt9600")
++SystemInfo["HasYPbPr"] = HardwareInfo().get_device_model() in ("adb_box", "hs8200", "cuberevo", "cuberevo-mini-fta", "cuberevo-250hd", "cuberevo-mini", "cuberevo-mini2", "cuberevo-2000hd", "cuberevo-3000hd", "cuberevo-9500hd", "hdbox", "hs9510", "hs7420", "hs7429", "hl101", "tf7700hdpvr", "ufs910", "ufs912", "ufs913", "ufs922", "vip1_v1", "vip1_v2", "vip2", "vitamin_hd5000", "opt9600")
 +SystemInfo["HasScart"] = HardwareInfo().get_device_model() not in ("hs7110", "hs7119")
 +SystemInfo["HasSVideo"] = HardwareInfo().get_device_model() in ("cuberevo")
 +SystemInfo["HasComposite"] = HardwareInfo().get_device_model() not in ("cuberevo_mini_fta", "cuberevo_250hd")
