@@ -1,9 +1,10 @@
 --- a/tuxtxt_common.h
 +++ b/tuxtxt_common.h
-@@ -23,6 +23,68 @@
- 
+@@ -24,6 +24,68 @@
  #include <linux/input.h>
  
+ void writeproc(const char* dest, const char *value);
++
 +#ifdef __sh__
 +#include <linux/stmfb.h>
 +
@@ -65,11 +66,10 @@
 +	}
 +}
 +#endif
-+
+ 
  const char *ObjectSource[] =
  {
- 	"(illegal)",
-@@ -4863,8 +4925,10 @@
+@@ -4865,8 +4927,10 @@
  			renderinfo->var_screeninfo.yoffset = 0;
  		else
  			renderinfo->var_screeninfo.yoffset = renderinfo->var_screeninfo.yres;
@@ -80,7 +80,7 @@
  #ifdef HAVE_TRIPLEDRAGON
  		tdfb_attr();
  #endif
-@@ -5397,6 +5461,9 @@
+@@ -5399,6 +5463,9 @@
  
  		tuxtxt_cache.pageupdate=0;
  	}
@@ -90,7 +90,7 @@
  }
  /******************************************************************************
   * MyFaceRequester
-@@ -5566,6 +5633,15 @@
+@@ -5568,6 +5635,15 @@
  		return 0;
  	}
  
@@ -106,7 +106,7 @@
  	/* change to PAL resolution */
  	if (renderinfo->var_screeninfo.xres != 720) 
  	{
-@@ -5585,6 +5661,7 @@
+@@ -5587,6 +5663,7 @@
  		FT_Done_FreeType(renderinfo->library);
  		return 0;
  	}
@@ -114,7 +114,7 @@
  
  	/* get fixed screeninfo */
  	if (ioctl(renderinfo->fb, FBIOGET_FSCREENINFO, &renderinfo->fix_screeninfo) == -1)
-@@ -5610,8 +5687,17 @@
+@@ -5612,8 +5689,17 @@
  	renderinfo->var_screeninfo.yoffset);
  #endif
  		/* map framebuffer into memory */
@@ -132,7 +132,7 @@
  	/* set new colormap */
  	tuxtxt_setcolors(renderinfo,(unsigned short *)tuxtxt_defaultcolors, 0, tuxtxt_color_SIZECOLTABLE);
  
-@@ -5654,8 +5740,10 @@
+@@ -5656,8 +5742,10 @@
  	{
  		renderinfo->var_screeninfo.yoffset = 0;
  
