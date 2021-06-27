@@ -114,7 +114,7 @@ neutrino-release-ipbox55: neutrino-release-common_ipbox
 #
 # ufs910
 #
-neutrino-release-ufs910:
+neutrino-release-ufs910: $(D)/uboot-utils
 	$(SILENT)install -m 0755 $(SKEL_ROOT)/release/halt_ufs $(RELEASE_DIR)/etc/init.d/halt
 	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/frontcontroller/ufs910_fp/ufs910_fp.ko $(RELEASE_DIR)/lib/modules/
 	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/frontends/*.ko $(RELEASE_DIR)/lib/modules/
@@ -124,6 +124,8 @@ neutrino-release-ufs910:
 	$(SILENT)cp $(SKEL_ROOT)/firmware/dvb-fe-cx21143.fw $(RELEASE_DIR)/lib/firmware/dvb-fe-cx24116.fw
 	$(SILENT)cp -dp $(SKEL_ROOT)/release/lircd_ufs910.conf $(RELEASE_DIR)/etc/lircd.conf
 	$(SILENT)rm -f $(RELEASE_DIR)/bin/vdstandby
+	$(SILENT)cp $(TARGET_DIR)/usr/bin/fw_setenv $(RELEASE_DIR)/usr/bin/
+	$(SILENT)ln -sf $(RELEASE_DIR)/usr/bin/fw_setenv $(RELEASE_DIR)/usr/bin/fw_printenv
 
 #
 # ufs912

@@ -32,7 +32,7 @@ $(D)/busybox: $(D)/bootstrap $(ARCHIVE)/$(BUSYBOX_SOURCE) $(PATCHES)/$(BUSYBOX_C
 		$(BUILDENV) \
 		$(MAKE) busybox ARCH=sh4 CROSS_COMPILE=$(TARGET)- CFLAGS_EXTRA="$(TARGET_CFLAGS)"; \
 		$(MAKE) install ARCH=sh4 CROSS_COMPILE=$(TARGET)- CFLAGS_EXTRA="$(TARGET_CFLAGS)" CONFIG_PREFIX=$(TARGET_DIR)
-	$(REMOVE)/busybox-$(BUSYBOX_VER)
+#	$(REMOVE)/busybox-$(BUSYBOX_VER)
 	$(TOUCH)
 
 #
@@ -1905,5 +1905,29 @@ $(D)/ofgwrite: $(D)/bootstrap $(ARCHIVE)/$(OFGWRITE_SOURCE)
 	$(SILENT)install -m 755 $(BUILD_TMP)/ofgwrite-git-$(OFGWRITE_VER)/ofgwrite_tgz $(TARGET_DIR)/usr/bin
 	$(SILENT)install -m 755 $(BUILD_TMP)/ofgwrite-git-$(OFGWRITE_VER)/ofgwrite $(TARGET_DIR)/usr/bin
 	$(REMOVE)/ofgwrite-git-$(OFGWRITE_VER)
+	$(TOUCH)
+
+#
+# uboot-utils
+#
+UBOOT_UTILS_VER = 20081215
+UBOOT_UTILS_URL = https://github.com/mcmilk/uboot-utils
+UBOOT_UTILS_PATCH = uboot-utils-$(UBOOT_UTILS_VER)_sh4.patch
+
+$(D)/uboot-utils: $(D)/bootstrap
+	$(START_BUILD)
+	$(REMOVE)/uboot-utils-$(UBOOT_UTILS_VER)
+	$(SET) -e; if [ -d $(ARCHIVE)/uboot-utils.git ]; \
+		then cd $(ARCHIVE)/uboot-utils.git; git pull $(MINUS_Q); \
+		else cd $(ARCHIVE); git clone $(MINUS_Q) $(UBOOT_UTILS_URL) uboot-utils.git; \
+		fi
+	$(SILENT)cp -ra $(ARCHIVE)/uboot-utils.git $(BUILD_TMP)/uboot-utils-$(UBOOT_UTILS_VER)
+	$(SET) -e; cd $(BUILD_TMP)/uboot-utils-$(UBOOT_UTILS_VER); \
+		$(call apply_patches, $(UBOOT_UTILS_PATCH)); \
+		$(BUILDENV) \
+		$(MAKE)
+	$(SILENT)install -m 755 $(BUILD_TMP)/uboot-utils-$(UBOOT_UTILS_VER)/fw_setenv $(TARGET_DIR)/usr/bin
+#	ln -s $(TARGET_DIR)/usr/bin/fw_setenv $(TARGET_DIR)/usr/bin/fw_printenv
+##	$(REMOVE)/uboot-utils-$(UBOOT_UTILS_VER)
 	$(TOUCH)
 
