@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20210601.1
+# Version 20210704.1
 
 ##############################################
 
@@ -137,7 +137,7 @@ case $1 in
 		echo "   20)  IPBox 900HD     23)  9500HD / 7000HD"
 		echo "   21)  IPBox 910HD     24)  2000HD"
 		echo "   22)  IPBox 91HD      25)  200HD / mini FTA"
-		echo "                        26)  3000HD / Xsarius Alpha"
+		echo "                        26)  3000HD / Xsarius Alpha HD10"
 		echo
 		echo "  Fulan                Atemio"
 		echo "   27)  Spark           29)  AM520"

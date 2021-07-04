@@ -5981,7 +5981,7 @@
  SystemInfo["Blindscan_t2_available"] = fileCheck("/proc/stb/info/vumodel") and model.startswith("vu")
  SystemInfo["RcTypeChangable"] = not(model.startswith("et8500") or model.startswith("et7")) and pathExists("/proc/stb/ir/rc/type")
 -SystemInfo["HasFullHDSkinSupport"] = model not in ("et4000", "et5000", "sh1", "hd500c", "hd1100", "xp1000", "lc")
-+SystemInfo["HasFullHDSkinSupport"] = HardwareInfo().get_device_model() in ("adb_box", "hs8200", "cuberevo", "cuberevo_mini-fta", "cuberevo-250hd", "cuberevo-mini", "cuberevo-mini2", "cuberevo-2000hd", "cuberevo-3000hd", "cuberevo-9500hd", "hdbox", "hs7110", "hs7420", "hs7810a", "hs7119", "hs7429", "hs7819", "hl101", "hs9510", "spark", "spark7162", "tf7700hdpvr", "ufs912", "ufs913", "vip1_v1", "vip1_v2", "vip2", "vitamin-hd5000", "opt9600")
++SystemInfo["HasFullHDSkinSupport"] = HardwareInfo().get_device_model() in ("adb_box", "hs8200", "cuberevo", "cuberevo_mini-fta", "cuberevo-250hd", "cuberevo-mini", "cuberevo-mini2", "cuberevo-2000hd", "cuberevo-3000hd", "cuberevo-9500hd", "fs9000", "hs7110", "hs7420", "hs7810a", "hs7119", "hs7429", "hs7819", "hl101", "hs9510", "spark", "spark7162", "tf7700hdpvr", "ufs912", "ufs913", "vip1_v1", "vip1_v2", "vip2", "vitamin-hd5000", "opt9600")
  SystemInfo["HasBypassEdidChecking"] = fileCheck("/proc/stb/hdmi/bypass_edid_checking")
  SystemInfo["HasColorspace"] = fileCheck("/proc/stb/video/hdmi_colorspace")
  SystemInfo["HasColorspaceSimple"] = SystemInfo["HasColorspace"] and model in "vusolo4k"
@@ -5997,7 +5997,7 @@
 -SystemInfo["HasComposite"] = model not in ("i55", "gbquad4k", "gbue4k", "hd1500", "osnino", "osninoplus", "purehd", "purehdse", "revo4k", "vusolo4k", "vuzero4k", "vuduo4k", "vuduo4kse", "vuuno4k", "vuuno4kse", "vuultimo4k")
 +SystemInfo["HasHDMIin"] = False
 +SystemInfo["HasHDMI-CEC"] = fileExists("/lib/modules/cec.ko") and (fileExists("proc/stb/cec/send") or fileExists("stb/hdmi/cec"))
-+SystemInfo["HasYPbPr"] = HardwareInfo().get_device_model() in ("adb_box", "hs8200", "cuberevo", "cuberevo-mini-fta", "cuberevo-250hd", "cuberevo-mini", "cuberevo-mini2", "cuberevo-2000hd", "cuberevo-3000hd", "cuberevo-9500hd", "hdbox", "hs9510", "hs7420", "hs7429", "hl101", "tf7700hdpvr", "ufs910", "ufs912", "ufs913", "ufs922", "vip1_v1", "vip1_v2", "vip2", "vitamin_hd5000", "opt9600")
++SystemInfo["HasYPbPr"] = HardwareInfo().get_device_model() in ("adb_box", "hs8200", "cuberevo", "cuberevo-mini-fta", "cuberevo-250hd", "cuberevo-mini", "cuberevo-mini2", "cuberevo-2000hd", "cuberevo-3000hd", "cuberevo-9500hd", "fs9000", "hs9510", "hs7420", "hs7429", "hl101", "tf7700hdpvr", "ufs910", "ufs912", "ufs913", "ufs922", "vip1_v1", "vip1_v2", "vip2", "vitamin_hd5000", "opt9600")
 +SystemInfo["HasScart"] = HardwareInfo().get_device_model() not in ("hs7110", "hs7119")
 +SystemInfo["HasSVideo"] = HardwareInfo().get_device_model() in ("cuberevo")
 +SystemInfo["HasComposite"] = HardwareInfo().get_device_model() not in ("cuberevo_mini_fta", "cuberevo_250hd")
@@ -8745,7 +8745,7 @@
 +					if perc > 20:
 +						if os.path.isfile('/proc/stb/info/model'):
 +							model = str(open("/proc/stb/info/model").read())
-+							if model.startswith("spark7162") or model.startswith("tf7700hdpvr") or model.startswith("hs9510") or model.startswith("hdbox") or model.startswith("hs8200") or model.startswith("hs7420") or model.startswith("hs7429") or model.startswith("vitamin-hd5000") or model.startswith("hl101") or model.startswith("vip1-v1") or model.startswith("vip1-v2") or model.startswith("vip2"):
++							if model.startswith("spark7162") or model.startswith("tf7700hdpvr") or model.startswith("hs9510") or model.startswith("fs9000") or model.startswith("hs8200") or model.startswith("hs7420") or model.startswith("hs7429") or model.startswith("vitamin-hd5000") or model.startswith("hl101") or model.startswith("vip1-v1") or model.startswith("vip1-v2") or model.startswith("vip2"):
 +								evfd.getInstance().vfd_write_string("START %02d" % perc)
 +							elif model.startswith("cuberevo") or model.startswith("cuberevo_mini") or model.startswith("cuberevo_mini2") or model.startswith("cuberevo_2000hd") or model.startswith("cuberevo_3000hd") or model.startswith("cuberevo_9500hd"):
 +								evfd.getInstance().vfd_write_string("E2 Start %02d" % perc)
@@ -9193,15 +9193,16 @@
  		if os.path.isfile('/proc/stb/fp/temp_sensor_avs'):
 --- enigma2.org/lib/python/Screens/About.py
 +++ enigma2/lib/python/Screens/About.py
-@@ -13,6 +13,7 @@
+@@ -13,6 +13,8 @@
  from Components.ProgressBar import ProgressBar
  
  from Tools.StbHardware import getFPVersion
 +from Tools.Directories import fileExists, pathExists
++from Tools.HardwareInfo import HardwareInfo
  from enigma import eTimer, eLabel, eConsoleAppContainer, getDesktop, eGetEnigmaDebugLvl
  
  from Components.GUIComponent import GUIComponent
-@@ -28,6 +29,16 @@
+@@ -28,6 +30,16 @@
  		hddsplit = parameters.get("AboutHddSplit", 1)
  
  		AboutText = _("Hardware: ") + about.getHardwareTypeString() + "\n"
@@ -9218,7 +9219,7 @@
  		cpu = about.getCPUInfoString()
  		AboutText += _("CPU: ") + cpu + "\n"
  		AboutText += _("Image: ") + about.getImageTypeString() + "\n"
-@@ -51,7 +62,7 @@
+@@ -51,7 +63,7 @@
  
  		AboutText += _("DVB driver version: ") + about.getDriverInstalledDate() + "\n"
  
@@ -9227,7 +9228,7 @@
  		self["GStreamerVersion"] = StaticText(GStreamerVersion)
  
  		ffmpegVersion = _("Media player: ffmpeg, version ") + about.getffmpegVersionString()
-@@ -72,8 +83,11 @@
+@@ -72,8 +84,15 @@
  		if fp_version is None:
  			fp_version = ""
  		else:
@@ -9236,11 +9237,36 @@
 +			if fileExists("/proc/stb/fp/resellerID"):
 +				fp_version = _("Loader version: %d.%02d") % (fp_version / 100, fp_version % 100)
 +			else:
-+				fp_version = _("Frontprocessor version: %d.%02d") % (fp_version / 100, fp_version % 100)
-+		AboutText += fp_version + "\n"
++				model = HardwareInfo().get_device_model()
++				if (model in ("cuberevo", "cuberevo_mini-fta", "cuberevo-250hd", "cuberevo-mini", "cuberevo-mini2", "cuberevo-2000hd", "cuberevo-3000hd", "cuberevo-9500hd")):
++					fp_version = _("Frontprocessor version: %s") % fp_version
++				else:
++					fp_version = _("Frontprocessor version: %s") % (fp_version / 100, fp_version % 100)
++			AboutText += fp_version + "\n"
  
  		self["FPVersion"] = StaticText(fp_version)
  
+--- enigma2.org/lib/python/Tools/StbHardware.py
++++ enigma2/lib/python/Tools/StbHardware.py
+@@ -2,12 +2,16 @@
+ from fcntl import ioctl
+ from struct import pack, unpack
+ from time import time, localtime, gmtime
+-
++from Tools.HardwareInfo import HardwareInfo
+ 
+ def getFPVersion():
+ 	ret = None
++	model = HardwareInfo().get_device_model()
+ 	try:
+-		ret = long(open("/proc/stb/fp/version", "r").read())
++		if (model in ("cuberevo", "cuberevo_mini-fta", "cuberevo-250hd", "cuberevo-mini", "cuberevo-mini2", "cuberevo-2000hd", "cuberevo-3000hd", "cuberevo-9500hd")):
++			ret = open("/proc/stb/fp/version", "r").read()
++		else:
++			ret = long(open("/proc/stb/fp/version", "r").read())
+ 	except IOError:
+ 		try:
+ 			fp = open("/dev/dbox/fp0")
 --- enigma2.org/lib/python/Tools/KeyBindings.py
 +++ enigma2/lib/python/Tools/KeyBindings.py
 @@ -220,122 +220,509 @@
