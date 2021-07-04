@@ -276,6 +276,9 @@ CUBEREVO_2000HD_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-sh4-cuberevo_2000hd_setup_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-i2c-st40-pio_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-cuberevo_rtl8201_stm24_$(KERNEL_LABEL).patch
+ifeq ($(IMAGE), $(filter $(IMAGE), neutrino neutrino-wlandriver))
+CUBEREVO_2000HD_PATCHES_24 += linux-sh4-cuberevo_mtdconcat_stm24_$(KERNEL_LABEL).patch
+endif
 
 CUBEREVO_9500HD_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-sh4-cuberevo_9500hd_setup_stm24_$(KERNEL_LABEL).patch \
@@ -286,6 +289,9 @@ CUBEREVO_3000HD_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-sh4-cuberevo_3000hd_setup_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-i2c-st40-pio_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-cuberevo_rtl8201_stm24_$(KERNEL_LABEL).patch
+ifeq ($(IMAGE), $(filter $(IMAGE), neutrino neutrino-wlandriver))
+CUBEREVO_3000HD_PATCHES_24 += linux-sh4-cuberevo_mtdconcat_stm24_$(KERNEL_LABEL).patch
+endif
 
 VITAMIN_HD5000_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-sh4-lmb_stm24_$(KERNEL_LABEL).patch \

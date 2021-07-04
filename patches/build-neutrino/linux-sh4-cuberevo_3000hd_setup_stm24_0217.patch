@@ -1,4 +1,4 @@
---- a/arch/sh/Makefile
+--- a/arch/sh/Makefile.org
 +++ b/arch/sh/Makefile
 @@ -74,7 +74,7 @@
  cflags-y	+= $(isaflags-y) -ffreestanding
@@ -9,7 +9,7 @@
  
  # Give the various platforms the opportunity to set default image types
  defaultimage-$(CONFIG_SUPERH32)			:= zImage
---- a/drivers/stm/stx7100_comms.c
+--- a/drivers/stm/stx7100_comms.c.org
 +++ b/drivers/stm/stx7100_comms.c
 @@ -238,14 +238,14 @@
  		.gpios_num = 2,
@@ -39,25 +39,37 @@
  	stx7100_ssc_devices[ssc].id = i2c_busnum;
  
  	plat_data = stx7100_ssc_devices[ssc].dev.platform_data;
---- a/arch/sh/boards/mach-mb442/setup.c
+--- a/arch/sh/boards/mach-mb442/setup.c.org
 +++ b/arch/sh/boards/mach-mb442/setup.c
-@@ -22,6 +22,7 @@
+@@ -1,6 +1,9 @@
+ /*
+  * arch/sh/boards/st/mb442/setup.c
+  *
++ * Modified for use on CubeRevo 3000HD main board.
++ *
++ * Original code:
+  * Copyright (C) 2005 STMicroelectronics Limited
+  * Author: Stuart Menefy (stuart.menefy@st.com)
+  *
+@@ -22,47 +25,201 @@
  #include <linux/stm/platform.h>
  #include <linux/stm/stx7100.h>
  #include <asm/irl.h>
+-
+-
 +#include <linux/bpa2.h>
  
- 
- 
-@@ -29,7 +30,81 @@
+ #define MB442_PIO_STE100P_RESET stm_gpio(2, 4)
  #define MB442_PIO_SMC91X_RESET stm_gpio(2, 6)
  #define MB442_PIO_FLASH_VPP stm_gpio(2, 7)
  
+-
 +const char *LMI_VID_partalias[] = { "BPA2_Region1", "coredisplay-video", "gfx-memory", "v4l2-video-buffers", NULL };
 +const char *LMI_SYS_partalias[] = { "BPA2_Region0", "bigphysarea", "v4l2-coded-video-buffers", NULL };
 + 
 +#if defined(CONFIG_32BIT)
-+static struct bpa2_partition_desc bpa2_parts_table[] = {
++static struct bpa2_partition_desc bpa2_parts_table[] =
++{
 +	{
 +		.name  = "LMI_VID",
 +		.start = 0x81000000,
@@ -74,7 +86,8 @@
 +	}
 +};
 +#else
-+static struct bpa2_partition_desc bpa2_parts_table[] = {
++static struct bpa2_partition_desc bpa2_parts_table[] =
++{
 +	{
 +		.name  = "LMI_VID",
 +		.start = 0x10800000,
@@ -91,7 +104,7 @@
 +	}
 +};
 +#endif /* CONFIG_32BIT */
- 
++
 +/* configure the hdmi hotplug pio (2.2) to STPIO_BIDIR_Z1 as requested
 + * in the stmfb code and in bugzilla 9728
 + *
@@ -131,21 +144,19 @@
  
  void __init mb442_setup(char** cmdline_p)
  {
-@@ -39,30 +114,109 @@
+-	printk("STMicroelectronics STb7100 Reference board initialisation\n");
++	printk("DGStation CubeRevo 3000HD main board initialisation\n");
  
- 	stx7100_configure_asc(2, &(struct stx7100_asc_config) {
- 			.hw_flow_control = 0,
+ 	stx7100_early_device_init();
+ 
+-	stx7100_configure_asc(2, &(struct stx7100_asc_config) {
+-			.hw_flow_control = 0,
 -			.is_console = 1, });
-+			.is_console = 0, });
-+
- 	stx7100_configure_asc(3, &(struct stx7100_asc_config) {
- 			.hw_flow_control = 0,
+-	stx7100_configure_asc(3, &(struct stx7100_asc_config) {
+-			.hw_flow_control = 0,
 -			.is_console = 0, });
-+			.is_console = 1, });
-+
-+	bpa2_init(bpa2_parts_table, ARRAY_SIZE(bpa2_parts_table));
- }
- 
+-}
+-
 -static struct resource mb442_smc91x_resources[] = {
 -	[0] = {
 -		.start	= 0x02000300,
@@ -158,54 +169,66 @@
 -		.flags	= IORESOURCE_IRQ,
 -	},
 -};
-+#define FLASH_32MB
-+//#define FLASH_16MB
-+
-+#if defined(FLASH_32MB)
- 
+-
 -static struct platform_device mb442_smc91x_device = {
 -	.name		= "smc91x",
 -	.id		= 0,
 -	.num_resources	= ARRAY_SIZE(mb442_smc91x_resources),
 -	.resource	= mb442_smc91x_resources,
-+// 32MB flash
-+#define WINDOW_ADDR	0xA0000000
-+#define WINDOW_SIZE	0x02000000
++	stx7100_configure_asc(2, &(struct stx7100_asc_config)
++	{
++		.hw_flow_control = 0,
++		.is_console = 0
++	});
 +
-+#define BOOT_SIZE	0x040000	// boot loader
-+#define WELCOME_SIZE	0x020000	// bootargs (welcomeboot config)
-+#define KERNEL_SIZE	0x220000	// kernel size
-+#define ROOT_SIZE	(WINDOW_SIZE-WELCOME_SIZE-KERNEL_SIZE-DB_SIZE-BOOT_SIZE)
-+#define DB_SIZE	0xa00000
++	stx7100_configure_asc(3, &(struct stx7100_asc_config)
++	{
++		.hw_flow_control = 0,
++		.is_console = 1
++	});
++	bpa2_init(bpa2_parts_table, ARRAY_SIZE(bpa2_parts_table));
++}
++
++#define FLASH_32MB
++
++#if defined(FLASH_32MB)
++// 32MB flash
++#define WINDOW_ADDR  0xA0000000
++#define WINDOW_SIZE  0x02000000
++
++#define BOOT_SIZE    0x040000	// boot loader
++#define WELCOME_SIZE 0x020000	// bootargs (welcomeboot config)
++#define KERNEL_SIZE  0x220000	// kernel size
++#define ROOT_SIZE    (WINDOW_SIZE - WELCOME_SIZE - KERNEL_SIZE - DB_SIZE - BOOT_SIZE)
++#define DB_SIZE      0xA00000
 +
 +#elif defined(FLASH_16MB) 
-+
 +// 16MB flash
-+#define WINDOW_ADDR	0xA0000000
-+#define WINDOW_SIZE	0x01000000
++#define WINDOW_ADDR  0xA0000000
++#define WINDOW_SIZE  0x01000000
 +
-+#define BOOT_SIZE	0x040000	// boot loader
-+#define WELCOME_SIZE	0x020000	// bootargs (welcomeboot config)
-+#define KERNEL_SIZE	0x1A0000	// kernel size
-+#define ROOT_SIZE	(WINDOW_SIZE - WELCOME_SIZE - KERNEL_SIZE - DB_SIZE-BOOT_SIZE)
-+#define DB_SIZE	0x600000
++#define BOOT_SIZE    0x040000	// boot loader
++#define WELCOME_SIZE 0x020000	// bootargs (welcomeboot config)
++#define KERNEL_SIZE  0x1A0000	// kernel size
++#define ROOT_SIZE    (WINDOW_SIZE - WELCOME_SIZE - KERNEL_SIZE - DB_SIZE-BOOT_SIZE)
++#define DB_SIZE      0x600000
 +#else
 +
 +// 8MB flash
-+#define WINDOW_ADDR     0xA0000000 	 
-+#define WINDOW_SIZE     0x00800000 	 
++#define WINDOW_ADDR  0xA0000000 	 
++#define WINDOW_SIZE  0x00800000 	 
 +
-+#define BOOT_SIZE       0x030000        // boot loader 	 
-+#define WELCOME_SIZE    0x010000        // bootargs (welcomeboot config)
-+#define KERNEL_SIZE     0x180000        // kernel size 	 
-+#define ROOT_SIZE       (WINDOW_SIZE - WELCOME_SIZE - KERNEL_SIZE - DB_SIZE-BOOT_SIZE) 	 
-+#define DB_SIZE         0x230000
++#define BOOT_SIZE    0x030000        // boot loader 	 
++#define WELCOME_SIZE 0x010000        // bootargs (welcomeboot config)
++#define KERNEL_SIZE  0x180000        // kernel size 	 
++#define ROOT_SIZE    (WINDOW_SIZE - WELCOME_SIZE - KERNEL_SIZE - DB_SIZE-BOOT_SIZE) 	 
++#define DB_SIZE      0x230000
 +#endif
 +
 +#define ONBOARD_ADDR 0x00000000
 +
-+#define ONBOARD_SIZE		WINDOW_SIZE
-+#define ONBOARD_BANKWIDTH	2
++#define ONBOARD_SIZE      WINDOW_SIZE
++#define ONBOARD_BANKWIDTH 2
 +
 +static struct mtd_partition mtd_parts_table[] =
 +{
@@ -213,7 +236,7 @@
 +		.name       = "nor.boot",
 +		.offset     = 0x00000000,
 +		.size       = BOOT_SIZE,
-+		.mask_flags = MTD_WRITEABLE,    /* force read-only */
++		.mask_flags = MTD_WRITEABLE,  /* force read-only */
 +	},
 +	{
 +		.name       = "nor.config_welcome",
@@ -232,7 +255,7 @@
 +	},
 +	{
 +		.name       = "nor.var",
-+		.offset     = BOOT_SIZE+WELCOME_SIZE + KERNEL_SIZE + ROOT_SIZE,
++		.offset     = BOOT_SIZE + WELCOME_SIZE + KERNEL_SIZE + ROOT_SIZE,
 +		.size       = DB_SIZE,
 +	},
 +	/* partitions for upgrade */
@@ -260,18 +283,35 @@
  };
  
  static void mb442_set_vpp(struct map_info *info, int enable)
-@@ -75,27 +231,30 @@
- 	.id		= -1,
- 	.num_resources	= 1,
- 	.resource	= (struct resource[]) {
+@@ -70,94 +227,143 @@
+ 	gpio_set_value(MB442_PIO_FLASH_VPP, enable);
+ }
+ 
+-static struct platform_device mb442_physmap_flash = {
+-	.name		= "physmap-flash",
+-	.id		= -1,
+-	.num_resources	= 1,
+-	.resource	= (struct resource[]) {
 -		STM_PLAT_RESOURCE_MEM(0, 8*1024*1024),
+-	},
+-	.dev.platform_data = &(struct physmap_flash_data) {
+-		.width		= 2,
+-		.set_vpp	= mb442_set_vpp,
++static struct platform_device mb442_physmap_flash =
++{
++	.name          = "physmap-flash",
++	.id            = -1,
++	.num_resources = 1,
++	.resource      = (struct resource[])
++	{
 +		STM_PLAT_RESOURCE_MEM(0, 32 * 1024 * 1024),
- 	},
- 	.dev.platform_data = &(struct physmap_flash_data) {
- 		.width		= 2,
- 		.set_vpp	= mb442_set_vpp,
-+		.nr_parts	= ARRAY_SIZE(mtd_parts_table),
-+		.parts		= mtd_parts_table
++	},
++	.dev.platform_data = &(struct physmap_flash_data)
++	{
++		.width     = 2,
++		.set_vpp   = mb442_set_vpp,
++		.nr_parts  = ARRAY_SIZE(mtd_parts_table),
++		.parts     = mtd_parts_table
  	},
  };
  
@@ -290,54 +330,113 @@
  }
  
 -#define STMMAC_PHY_ADDR 14
+-static int stmmac_phy_irqs[PHY_MAX_ADDR] = {
 +#define STMMAC_PHY_ADDR 1
- static int stmmac_phy_irqs[PHY_MAX_ADDR] = {
++static int stmmac_phy_irqs[PHY_MAX_ADDR] =
++{
  	[STMMAC_PHY_ADDR] = IRL3_IRQ,
  };
-@@ -106,41 +267,43 @@
- 	.irqs = stmmac_phy_irqs,
- };
- 
-+static struct platform_device pdiusbd12_device = {
+-static struct stmmac_mdio_bus_data stmmac_mdio_bus = {
+-	.bus_id = 0,
++static struct stmmac_mdio_bus_data stmmac_mdio_bus =
++{
++	.bus_id    = 0,
+ 	.phy_reset = mb442_phy_reset,
+-	.phy_mask = 1,
+-	.irqs = stmmac_phy_irqs,
+-};
+-
+-static struct platform_device *mb442_devices[] __initdata = {
+-	&mb442_smc91x_device,
++	.phy_mask  = 1,
++	.irqs      = stmmac_phy_irqs,
++};
++
++static struct platform_device pdiusbd12_device =
++{
 +	.name           = "pdiusbd12",
 +	.id             = -1,
 +	.num_resources  = 2,
-+	.resource       = (struct resource[]) {
++	.resource       = (struct resource[])
++	{
 +		{
-+	                .start = 0xa2000000,
-+		        .end   = 0xa200ffff,
-+	        	.flags  = IORESOURCE_MEM,
++			.start = 0xa2000000,
++			.end   = 0xa200ffff,
++			.flags = IORESOURCE_MEM,
 +		},
 +		{
 +			.name   = "usbirq",
-+	        	.start  = IRL0_IRQ,
-+	        	.end    = IRL0_IRQ,
-+	        	.flags  = IORESOURCE_IRQ,
++			.start  = IRL0_IRQ,
++			.end    = IRL0_IRQ,
++			.flags  = IORESOURCE_IRQ,
 +		},
 +	},
 +};
 +
- static struct platform_device *mb442_devices[] __initdata = {
--	&mb442_smc91x_device,
++static struct platform_device *mb442_devices[] __initdata =
++{
  	&mb442_physmap_flash,
 +	&pdiusbd12_device,
  };
  
  static int __init mb442_device_init(void)
  {
- 	stx7100_configure_sata();
- 
+-	stx7100_configure_sata();
+-
 -	stx7100_configure_pwm(&(struct stx7100_pwm_config) {
 -			.out0_enabled = 0,
 -			.out1_enabled = 1, });
 -
++//	stx7100_configure_sata();  // 3000HD uses JM20336 USB->SATA bridge
++
++/* i2c-0
++     0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
++00:          -- -- -- -- -- -- -- -- -- -- -- -- -- 
++10: -- -- -- -- -- -- -- -- -- -- 1a -- -- -- -- -- 
++20: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++30: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++40: 40 -- -- -- -- -- -- -- -- -- UU -- -- -- -- -- 
++50: -- -- -- -- -- -- 56 57 -- -- -- -- -- -- -- -- 
++60: -- -- -- -- -- -- -- -- 68 -- -- -- -- -- -- -- 
++70: -- -- -- -- -- -- -- --                         
++1a:
++40:
++56, 57:
++68: STV903 demodulator
++*/
  	stx7100_configure_ssc_i2c(0, NULL);
 -	stx7100_configure_ssc_spi(1, NULL);
++/* i2c-1
++     0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
++00:          -- -- -- -- -- -- -- -- -- -- -- -- -- 
++10: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++20: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++30: UU -- -- -- -- -- -- -- -- -- 3a -- -- -- -- -- 
++40: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++50: UU 51 52 53 54 55 56 57 -- -- -- -- -- -- -- -- 
++60: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++70: -- -- -- -- -- -- -- --                         
++3a:
++50-57: HDMI I2C
++*/
 +	stx7100_configure_ssc_i2c(1, NULL);
++
++/* i2c-2
++     0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
++00:          -- -- -- -- -- -- -- -- -- -- -- -- -- 
++10: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++20: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++30: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++40: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++50: 50 51 -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++60: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++70: -- -- -- -- -- -- -- --                         
++50-51: EEPROM
++*/
  	stx7100_configure_ssc_i2c(2, NULL);
  
  	stx7100_configure_usb();
- 
+-
 -	stx7100_configure_lirc(&(struct stx7100_lirc_config) {
 -			.rx_mode = stx7100_lirc_rx_mode_ir,
 -			.tx_enabled = 0,
@@ -347,20 +446,21 @@
 -			.emi_bank = 3,
 -			.pc_mode = 1,
 -			.irq = IRL1_IRQ, });
--
+ 
  	gpio_request(MB442_PIO_FLASH_VPP, "Flash VPP");
  	gpio_direction_output(MB442_PIO_FLASH_VPP, 0);
  
 -	gpio_request(MB442_PIO_STE100P_RESET, "STE100P reset");
 -	gpio_direction_output(MB442_PIO_STE100P_RESET, 1);
 -
- 	stx7100_configure_ethernet(&(struct stx7100_ethernet_config) {
- 			.mode = stx7100_ethernet_mode_mii,
- 			.ext_clk = 0,
-@@ -149,13 +312,7 @@
- 			.mdio_bus_data = &stmmac_mdio_bus,
- 		});
- 
+-	stx7100_configure_ethernet(&(struct stx7100_ethernet_config) {
+-			.mode = stx7100_ethernet_mode_mii,
+-			.ext_clk = 0,
+-			.phy_bus = 0,
+-			.phy_addr = STMMAC_PHY_ADDR,
+-			.mdio_bus_data = &stmmac_mdio_bus,
+-		});
+-
 -	/* Reset the SMSC 91C111 Ethernet chip */
 -	gpio_request(MB442_PIO_SMC91X_RESET, "SMC91x reset");
 -	gpio_direction_output(MB442_PIO_SMC91X_RESET, 0);
@@ -368,11 +468,25 @@
 -	gpio_set_value(MB442_PIO_SMC91X_RESET, 1);
 -	udelay(1);
 -	gpio_set_value(MB442_PIO_SMC91X_RESET, 0);
+-
+-	return platform_add_devices(mb442_devices,
+-			ARRAY_SIZE(mb442_devices));
++	stx7100_configure_ethernet(&(struct stx7100_ethernet_config)
++	{
++		.mode = stx7100_ethernet_mode_mii,
++		.ext_clk = 0,
++		.phy_bus = 0,
++		.phy_addr = STMMAC_PHY_ADDR,
++		.mdio_bus_data = &stmmac_mdio_bus,
++	});
++
 +	configure_pin(2, 2, STPIO_BIDIR_Z1);
- 
- 	return platform_add_devices(mb442_devices,
- 			ARRAY_SIZE(mb442_devices));
---- a/drivers/serial/stm-asc.c
++
++	return platform_add_devices(mb442_devices, ARRAY_SIZE(mb442_devices));
+ }
+ device_initcall(mb442_device_init);
++// vim:ts=4
+--- a/drivers/serial/stm-asc.c.org
 +++ b/drivers/serial/stm-asc.c
 @@ -576,7 +576,7 @@
  	struct platform_device *pdev = to_platform_device(port->dev);
@@ -383,7 +497,7 @@
  		/* Can't use dev_name() here as we can be called early */
  		ascport->pad_state = stm_pad_claim(ascport->pad_config,
  				"stasc");
---- a/arch/sh/boards/mach-mb442/mach.c
+--- a/arch/sh/boards/mach-mb442/mach.c.org
 +++ b/arch/sh/boards/mach-mb442/mach.c
 @@ -43,7 +43,7 @@
  	/* Set the ILC to route external interrupts to the the INTC */
@@ -394,7 +508,7 @@
  	ilc_route_external(ILC_EXT_IRQ1, 5, 0);		/* ATA */
  	ilc_route_external(ILC_EXT_IRQ2, 6, 0);		/* Unused */
  	ilc_route_external(ILC_EXT_MDINT, 7, 0);	/* STe100 PHY */
---- a/arch/sh/include/asm/setup.h
+--- a/arch/sh/include/asm/setup.h.org
 +++ b/arch/sh/include/asm/setup.h
 @@ -15,12 +15,48 @@
  #define LOADER_TYPE (*(unsigned long *) (PARAM+0x00c))
@@ -445,7 +559,7 @@
  #endif /* __KERNEL__ */
  
  #endif /* _SH_SETUP_H */
---- a/arch/sh/kernel/setup.c
+--- a/arch/sh/kernel/setup.c.org
 +++ b/arch/sh/kernel/setup.c
 @@ -97,6 +97,9 @@
  unsigned long memory_end = 0;
@@ -502,7 +616,7 @@
  	/*
  	 * Find the highest page frame number we have available
  	 */
---- a/drivers/net/stmmac/stmmac_main.c
+--- a/drivers/net/stmmac/stmmac_main.c.org
 +++ b/drivers/net/stmmac/stmmac_main.c
 @@ -44,6 +44,7 @@
  #include <linux/debugfs.h>
