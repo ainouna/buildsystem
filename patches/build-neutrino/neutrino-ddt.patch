@@ -213,12 +213,13 @@
  		bool tstarted = false;
 --- neutrino-ddt.org/src/neutrino.cpp
 +++ neutrino-ddt/src/neutrino.cpp
-@@ -3463,6 +3463,9 @@
+@@ -3463,6 +3463,10 @@
  #if defined (BOXMODEL_IPBOX9900) || defined (BOXMODEL_IPBOX99)
  		system("echo 0 > /proc/stb/misc/fan");
  #endif
 +#if defined (BOXMODEL_CUBEREVO) || defined (BOXMODEL_CUBEREVO_9500HD)
-+		system("echo 0 > /proc/stb/fan");
++		system("echo 1 > /proc/stb/fan");  // switch fan on
++		system("echo 128 > /proc/stb/fan_pwm");
 +#endif
  	}
  }
