@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 210523.1
+#Version 210707.1
 
 echo "[rcS] Start"
 echo "CubeRevo Neutrino"
@@ -13,7 +13,7 @@ insmod $MODDIR/cuberevo_micom.ko # paramDebug=50
 
 if [ -e /var/etc/.firstboot ]; then
    echo "WAIT 1 min." > /dev/vfd
-   echo "[rcS] WAIT 1 minutes"
+   echo "[rcS] Wait 1 minute"
    rm /var/etc/.firstboot
    sleep 1
    touch /dev/.devfsd
@@ -40,19 +40,19 @@ insmod $MODDIR/stmcore-display-stx7109c3.ko
 TVMODE=$?
 case "$TVMODE" in
    0) echo "[rcS] Video mode: SD-PAL (576i)"
-      insmod $MODDIR/stmfb.ko display0=720x576-32@50i:16m:0:pal:cvbs:rgb;;
+      insmod $MODDIR/stmfb.ko display0=720x576-32@50i:12m:0:pal:cvbs:rgb;;
    1) echo "[rcS] Video mode: SD-NTSC (480i)"
-      insmod $MODDIR/stmfb.ko display0=720x480-32@60i:16m:0:ntsc-m:cvbs:rgb;;
+      insmod $MODDIR/stmfb.ko display0=720x480-32@60i:12m:0:ntsc-m:cvbs:rgb;;
    2) echo "[rcS] Video mode: 720p-50"
-      insmod $MODDIR/stmfb.ko display0=1280x720-32@50:16m:0:pal:cvbs:rgb;;
+      insmod $MODDIR/stmfb.ko display0=1280x720-32@50:12m:0:pal:cvbs:rgb;;
    3) echo "[rcS] Video mode: 720p-60"
-      insmod $MODDIR/stmfb.ko display0=1280x720-32@60:16m:0:ntsc-m:cvbs:rgb;;
+      insmod $MODDIR/stmfb.ko display0=1280x720-32@60:12m:0:ntsc-m:cvbs:rgb;;
    4) echo "[rcS] Video mode: 1080i-50"
-      insmod $MODDIR/stmfb.ko display0=1920x1080-32@50i:16m:0:pal:cvbs:rgb;;
+      insmod $MODDIR/stmfb.ko display0=1920x1080-32@50i:12m:0:pal:cvbs:rgb;;
    5) echo "[rcS] Video mode: 1080i-60"
-      insmod $MODDIR/stmfb.ko display0=1920x1080-32@60i:16m:0:ntsc-m:cvbs:rgb;;
+      insmod $MODDIR/stmfb.ko display0=1920x1080-32@60i:12m:0:ntsc-m:cvbs:rgb;;
    *) echo "[rcS] Video mode: use default 720p-50"
-      insmod $MODDIR/stmfb.ko display0=1280x720-32@50:16m:0:pal:cvbs:rgb;;
+      insmod $MODDIR/stmfb.ko display0=1280x720-32@50:12m:0:pal:cvbs:rgb;;
 esac
 
 echo "[rcS] Loading modules"
@@ -146,33 +146,8 @@ insmod $MODDIR/stmalloc.ko
 insmod $MODDIR/platform.ko
 insmod $MODDIR/silencegen.ko
 
-#if [ -e /boot/neutrinologo.mvi ]; then
-#   showiframe -p /boot/neutrinologo.mvi &
-#fi
 insmod $MODDIR/bpamem.ko
 #mknod /dev/bpamem c 153 0
-
-if [ -e $MODDIR/exportfs.ko ]; then
-   insmod $MODDIR/exportfs.ko
-fi
-if [ -e $MODDIR/cifs.ko ]; then
-   insmod $MODDIR/cifs.ko
-fi
-if [ -e $MODDIR/ntfs.ko ]; then
-   insmod $MODDIR/ntfs.ko
-fi
-if [ -e $MODDIR/tun.ko ]; then
-   insmod $MODDIR/tun.ko
-fi
-if [ -e $MODDIR/usbserial.ko ]; then
-   insmod $MODDIR/usbserial.ko
-   if [ -e $MODDIR/ftdi.ko ]; then
-      insmod $MODDIR/ftdi.ko
-   fi
-   if [ -e $MODDIR/pl2303.ko ]; then
-      insmod $MODDIR/pl2303.ko
-   fi
-fi
 
 echo "[rcS] Init frontpanel keyboard"
 #insmod $MODDIR/boxtype.ko
@@ -250,6 +225,9 @@ echo "[rcS] Init portmap & ftp"
 /etc/init.d/vsftpd start
 /usr/sbin/inetd
 
+echo "[rcS] Set internet time"
+(ntpd -n -p 0.europe.pool.ntp.org -q; /bin/fp_control -sst)
+
 stfbcontrol a 255
 /bin/fp_control -l 0 1 #power LED on
 
@@ -258,14 +236,12 @@ echo "[rcS] LOADING neutrino"
 
 until false
 do
-#   if [ -e /boot/neutrinologo.mvi ]; then
-#      killall -9 showiframe
-#   fi
    /bin/fp_control -l 0 1 #power LED on
    echo "[rcS] Starting neutrino"
    /usr/bin/neutrino
    rtv=$?
    echo "[rcS] Neutrino ended <- return value: " $rtv
+   fp_control -i 36 0
    case "$rtv" in
       0) echo "SHUTDOWN"
          echo "Shutdown" > /dev/vfd
