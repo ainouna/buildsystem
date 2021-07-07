@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 191113.1
+#Version 210706.1
 
 echo "[rcS] Start"
 echo "CubeRevo 3000HD Neutrino"
@@ -9,7 +9,7 @@ MODDIR=/lib/modules
 insmod $MODDIR/e2_proc.ko
 
 echo "[rcS] Init frontpanel"
-insmod $MODDIR/cuberevo_micom.ko paramDebug=10
+insmod $MODDIR/cuberevo_micom.ko #paramDebug=10
 
 if [ -e /var/etc/.firstboot ]; then
    echo "WAIT 3 minutes" > /dev/vfd
@@ -32,15 +32,8 @@ echo "[rcS] Starting DEBUG Interface"
 #   rm -f /dev/ttyAS1
 #fi
 
-echo -n "[rcS] Starting telnetd "
-autologin=`cat /etc/enigma2/settings | grep systemoptions.autologin | cut -d "=" -f2`
-if [ ! $autologin ]; then
-   /usr/sbin/telnetd -l /bin/autologin
-   echo "with autologin"
-else
-   /usr/sbin/telnetd -l /bin/login
-   echo "with normal login"
-fi
+echo -n "[rcS] Starting telnetd with autologin"
+/usr/sbin/telnetd -l /bin/autologin
 
 echo "[rcS] Init stmfb (LOAD 9)"
 echo "Load 9" > /dev/vfd
@@ -50,19 +43,19 @@ insmod $MODDIR/stmcore-display-stx7109c3.ko
 TVMODE=$?
 case "$TVMODE" in
    0) echo "[rcS] Video mode: SD-PAL (576i)"
-      insmod $MODDIR/stmfb.ko display0=720x576-32@50i:12m:pal:rgb:yuv;;
+      insmod $MODDIR/stmfb.ko display0=720x576-32@50i:12m::pal:rgb:yuv;;
    1) echo "[rcS] Video mode: SD-NTSC (480i)"
-      insmod $MODDIR/stmfb.ko display0=720x480-32@60i:12m:ntsc-m:rgb:yuv;;
+      insmod $MODDIR/stmfb.ko display0=720x480-32@60i:12m::ntsc-m:rgb:yuv;;
    2) echo "[rcS] Video mode: 720p-50"
-      insmod $MODDIR/stmfb.ko display0=1280x720-32@50:12m:pal:rgb:yuv;;
+      insmod $MODDIR/stmfb.ko display0=1280x720-32@50:12m::pal:rgb:yuv;;
    3) echo "[rcS] Video mode: 720p-60"
-      insmod $MODDIR/stmfb.ko display0=1280x720-32@60:12m:ntsc-m:rgb:yuv;;
+      insmod $MODDIR/stmfb.ko display0=1280x720-32@60:12m::ntsc-m:rgb:yuv;;
    4) echo "[rcS] Video mode: 1080i-50"
-      insmod $MODDIR/stmfb.ko display0=1920x1080-32@50i:12m:pal:rgb:yuv;;
+      insmod $MODDIR/stmfb.ko display0=1920x1080-32@50i:12m::pal:rgb:yuv;;
    5) echo "[rcS] Video mode: 1080i-60"
-      insmod $MODDIR/stmfb.ko display0=1920x1080-32@60i:12m:ntsc-m:rgb:yuv;;
+      insmod $MODDIR/stmfb.ko display0=1920x1080-32@60i:12m::ntsc-m:rgb:yuv;;
    *) echo "[rcS] Video mode: use default 720p-50"
-      insmod $MODDIR/stmfb.ko display0=1280x720-32@50:12m:pal:rgb:yuv;;
+      insmod $MODDIR/stmfb.ko display0=1280x720-32@50:12m::pal:rgb:yuv;;
 esac
 
 echo "[rcS] Loading modules"
@@ -84,8 +77,8 @@ echo "Load 7" > /dev/vfd
 echo "[rcS] Init embx (LOAD 6)"
 echo "Load 6" > /dev/vfd
 insmod $MODDIR/embxshell.ko
-insmod $MODDIR/embxmailbox.ko mailbox0=0xb9211000:136:set2 mailbox1=0xb9212000:0 ;
-insmod $MODDIR/embxshm.ko mailbox0=shm:0:7:0x60000000:0:256:256:0:512:0xa4000000:0x10000000 ;
+insmod $MODDIR/embxmailbox.ko mailbox0=0xb9211000:136:set2 mailbox1=0xb9212000:0
+insmod $MODDIR/embxshm.ko mailbox0=shm:0:7:0x60000000:0:256:256:0:512:0xa4000000:0x10000000
 insmod $MODDIR/mme_host.ko transport0=shm
 
 echo "[rcS] Init AVS (LOAD 5)"
@@ -183,9 +176,9 @@ echo "Load 2" > /dev/vfd
 #insmod $MODDIR/boxtype.ko
 insmod $MODDIR/simu_button.ko
 
-if [ -e /boot/neutrinologo.mvi ]; then
-   showiframe -p /boot/neutrinologo.mvi &
-fi
+#if [ -e /boot/neutrinologo.mvi ]; then
+#   showiframe -p /boot/neutrinologo.mvi &
+#fi
 stfbcontrol a 0
 
 echo "[rcS] Init remote control"
@@ -209,7 +202,7 @@ echo "[rcS] Initialize network (LOAD 1)"
 echo "Load 1" >/dev/vfd
 NFS=`grep -c nfs /proc/cmdline`
 if [ "$NFS" -eq "1" ]; then
-   echo "[rcS] Booting from nfs, do not set network"
+   echo "[rcS] Booting from NFS, do not set network"
 else
    if [ -e /etc/network/interfaces ]; then
       ip addr flush eth0
@@ -239,13 +232,14 @@ echo "Loading Neutrino" > /dev/vfd
 
 until false
 do
-   if [ -e /boot/neutrinologo.mvi ]; then
-      killall -9 showiframe
-   fi
+#   if [ -e /boot/neutrinologo.mvi ]; then
+#      killall -9 showiframe
+#   fi
    echo "[rcS] Starting neutrino"
    /usr/bin/neutrino
    rtv=$?
    echo "[rcS] Neutrino ended <- return value: " $rtv
+   fp_control -i 8 0
    case "$rtv" in
       0) echo "SHUTDOWN"
          echo "Shutdown" > /dev/vfd
