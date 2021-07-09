@@ -213,19 +213,20 @@
  		bool tstarted = false;
 --- neutrino-ddt.org/src/neutrino.cpp
 +++ neutrino-ddt/src/neutrino.cpp
-@@ -3463,6 +3463,9 @@
+@@ -3463,6 +3463,10 @@
  #if defined (BOXMODEL_IPBOX9900) || defined (BOXMODEL_IPBOX99)
  		system("echo 0 > /proc/stb/misc/fan");
  #endif
 +#if defined (BOXMODEL_CUBEREVO) || defined (BOXMODEL_CUBEREVO_9500HD)
-+		system("echo 0 > /proc/stb/fan");
++		system("echo 1 > /proc/stb/fan");  // switch fan on
++		system("echo 128 > /proc/stb/fan_pwm");
 +#endif
  	}
  }
  
 --- neutrino-ddt.org/src/driver/vfd.cpp
 +++ neutrino-ddt/src/driver/vfd.cpp
-@@ -52,19 +52,40 @@
+@@ -52,19 +52,39 @@
  #include <stropts.h>
  #define VFD_DEVICE "/dev/vfd"
  
@@ -238,7 +239,8 @@
 -#elif defined (BOXMODEL_FORTIS_HDBOX) || defined (BOXMODEL_ATEVIO7500)
 +#elif defined (BOXMODEL_FS9000) \
 + ||   defined (BOXMODEL_HS8200) \
-+ ||   defined (BOXMODEL_CUBEREVO)
++ ||   defined (BOXMODEL_CUBEREVO) \
++ ||   defined (BOXMODEL_CUBEREVO_9500HD)
  #define VFDLENGTH 12
 -#elif  defined (BOXMODEL_CUBEREVO_250HD) || defined (BOXMODEL_IPBOX55)
 +#elif defined (BOXMODEL_HS7810A) \
@@ -258,8 +260,6 @@
 + ||   defined (BOXMODEL_CUBEREVO_2000HD) \
 + ||   defined (BOXMODEL_CUBEREVO_3000HD)
  #define VFDLENGTH 14
-+#elif defined (BOXMODEL_CUBEREVO_9500HD)
-+#define VFDLENGTH 13
 +#elif defined (BOXMODEL_ADB_BOX)
 +#define VFDLENGTH 15
  #else
@@ -271,7 +271,7 @@
  
  bool invert = false;
  char g_str[64];
-@@ -73,6 +94,7 @@
+@@ -73,6 +93,7 @@
  int blocked_counter = 0;
  int file_vfd = -1;
  bool active_icon[16] = { false };
@@ -279,7 +279,7 @@
  
  pthread_t vfd_scrollText;
  
-@@ -81,6 +103,33 @@
+@@ -81,6 +102,33 @@
  	unsigned char data[64];
  	unsigned char length;
  };
@@ -313,7 +313,7 @@
  
  static void write_to_vfd(unsigned int DevType, struct vfd_ioctl_data * data, bool force = false)
  {
-@@ -137,6 +186,17 @@
+@@ -137,6 +185,17 @@
  
  static void ShowNormalText(char * str, bool fromScrollThread = false)
  {
@@ -331,7 +331,7 @@
  	if (blocked)
  	{
  		printf("[CVFD] - blocked\n");
-@@ -156,32 +216,69 @@
+@@ -156,32 +215,69 @@
  			vfd_scrollText = 0;
  		}
  	}
@@ -353,12 +353,12 @@
 -		ws = (VFDLENGTH-strlen(str))/2;
 +#if defined (BOXMODEL_CUBEREVO_MINI) \
 + || defined (BOXMODEL_CUBEREVO_MINI2) \
-+ || defined (BOXMODEL_CUBEREVO_MINI2) \
 + || defined (BOXMODEL_CUBEREVO_MINI_FTA) \
 + || defined (BOXMODEL_CUBEREVO_250HD) \
++ || defined (BOXMODEL_CUBEREVO_2000HD) \
 + || defined (BOXMODEL_CUBEREVO_3000HD) \
 + || defined (BOXMODEL_CUBEREVO_9500HD) \
-+ || defined (BOXMODEL_CUBEREVO) // CubeRevo's center in the display driver
++ || defined (BOXMODEL_CUBEREVO)  // CubeRevo's center in the display driver
 +	ws = 0;
 +#else
 +	if (strlen(str) < disp_len + colon_at_2 && disp_len > 7) // do not center on small displays
@@ -377,12 +377,12 @@
 -		data.start = 0;
 +#if defined (BOXMODEL_CUBEREVO_MINI) \
 + || defined (BOXMODEL_CUBEREVO_MINI2) \
-+ || defined (BOXMODEL_CUBEREVO_2000HD) \
-+ || defined (BOXMODEL_CUBEREVO_3000HD) \
 + || defined (BOXMODEL_CUBEREVO_MINI_FTA) \
 + || defined (BOXMODEL_CUBEREVO_250HD) \
++ || defined (BOXMODEL_CUBEREVO_2000HD) \
++ || defined (BOXMODEL_CUBEREVO_3000HD) \
 + || defined (BOXMODEL_CUBEREVO_9500HD) \
-+ || defined (BOXMODEL_CUBEREVO) // CubeRevo's center in the display driver
++ || defined (BOXMODEL_CUBEREVO)  // CubeRevo's center in the display driver
 +		memcpy(data.data, str, strlen(str));
 +		data.length = strlen(str);
 +#else
@@ -413,7 +413,7 @@
  	write_to_vfd(VFDDISPLAYCHARS, &data);
  	return;
  }
-@@ -217,17 +314,18 @@
+@@ -217,17 +313,18 @@
  	int i;
  	char *str = (char *)arg;
  	int len = strlen(str);
@@ -438,7 +438,7 @@
  		memcpy(buf, str, len);
  
  		while(retries--)
-@@ -237,20 +335,20 @@
+@@ -237,20 +334,20 @@
  			for (i = 0; i <= (len-1); i++)
  			{
  				// scroll text until end
@@ -462,7 +462,7 @@
  
  CVFD::CVFD()
  {
-@@ -348,7 +446,7 @@
+@@ -348,7 +445,7 @@
  	if(g_settings.lcd_info_line){
  		switch_name_time_cnt = g_settings.timing[SNeutrinoSettings::TIMING_INFOBAR] + 10;
  	}
@@ -471,7 +471,7 @@
  	ShowIcon(ICON_COLON2, false);
  #endif
  
-@@ -370,6 +468,9 @@
+@@ -370,6 +467,9 @@
  
  void CVFD::init(const char * /*fontfile*/, const char * /*fontname*/)
  {
@@ -481,7 +481,7 @@
  	//InitNewClock(); /FIXME
  
  	brightness = -1;
-@@ -387,9 +488,28 @@
+@@ -387,9 +487,28 @@
  
  	if(dimm < 0)
  		dimm = 0;
@@ -511,7 +511,7 @@
  	if(!power)
  		dimm = 0;
  
-@@ -398,7 +518,7 @@
+@@ -398,7 +517,7 @@
  
  	brightness = dimm;
  
@@ -520,7 +520,7 @@
  #if !HAVE_DUCKBOX_HARDWARE
  	int ret = ioctl(fd, IOC_FP_SET_BRIGHT, dimm);
  	if(ret < 0)
-@@ -406,43 +526,87 @@
+@@ -406,43 +525,87 @@
  #else
  // Brightness
  	struct vfd_ioctl_data data;
@@ -627,7 +627,7 @@
  // Power on/off
  	if (power) {
  		data.start = 0x01;
-@@ -452,6 +616,7 @@
+@@ -452,6 +615,7 @@
  	data.length = 0;
  	write_to_vfd(VFDDISPLAYWRITEONOFF, &data, true);
  #endif
@@ -635,7 +635,7 @@
  }
  
  void CVFD::setlcdparameter(void)
-@@ -462,21 +627,34 @@
+@@ -462,21 +626,34 @@
  			last_toggle_state_power);
  }
  
@@ -678,7 +678,7 @@
  	wake_up();
  }
  
-@@ -484,59 +662,109 @@
+@@ -484,59 +661,109 @@
  {
  	//unsigned int system_rev = cs_get_revision();
  	static int recstatus = 0;
@@ -807,7 +807,7 @@
  	}
  
  	recstatus = tmp_recstatus;
-@@ -551,7 +779,9 @@
+@@ -551,7 +778,9 @@
  		ShowIcon(FP_ICON_HD,chan->isHD());
  		ShowIcon(FP_ICON_LOCK,!chan->camap.empty());
  		if (chan->getAudioChannel() != NULL)
@@ -817,7 +817,7 @@
  	}
  }
  #endif
-@@ -573,25 +803,32 @@
+@@ -573,25 +802,32 @@
  void CVFD::showVolume(const char vol, const bool force_update)
  {
  	static int oldpp = 0;
@@ -859,7 +859,7 @@
  			int i;
  			unsigned char speaker[5] = {0x1C, 0x1C, 0x1C, 0x3E, 0x7F}; // speaker symbol
  			writeCG(0, speaker);
-@@ -608,7 +845,7 @@
+@@ -608,7 +844,7 @@
  			memset (VolumeBar, 0, sizeof(VolumeBar));
  			char act[2] = {0x01, 0x20};
  			strncat(VolumeBar, act, 2);
@@ -868,7 +868,7 @@
  			{
  				strncat(VolumeBar, c5, 1);
  			}
-@@ -629,24 +866,57 @@
+@@ -629,24 +865,57 @@
  				break;
  			}
  			//dprintf(DEBUG_DEBUG,"CVFD::showVolume: vol %d - pp %d - fullblocks %d - mod %d - %s\n", vol, pp, j, i, VolumeBar);
@@ -932,7 +932,7 @@
  			char vol_chr[64] = "";
  			snprintf(vol_chr, sizeof(vol_chr)-1, "Volume: %d%%", (int)vol);
  			ShowText(vol_chr);
-@@ -656,17 +926,23 @@
+@@ -656,17 +925,23 @@
  #else
  		ShowIcon(FP_ICON_FRAME, true);
  		int pp = (int) round((double) vol * (double) 8 / (double) 100);
@@ -962,7 +962,7 @@
  				ShowIcon((fp_icon) j, false);
  				j /= 2;
  			}
-@@ -704,7 +980,7 @@
+@@ -704,7 +979,7 @@
  		if(pp > 8) pp = 8;
  
  		if(pp != ppold) {
@@ -971,7 +971,7 @@
  			int i;
  			int j = 0x00000200;
  			for(i = 0; i < pp; i++) {
-@@ -736,7 +1012,7 @@
+@@ -736,7 +1011,7 @@
  	if(fd < 0) return;
  	if (mode != MODE_AUDIO)
  		return;
@@ -980,7 +980,7 @@
  	ShowText(title.c_str());
  	wake_up();
  
-@@ -805,19 +1081,60 @@
+@@ -805,19 +1080,60 @@
  
  void CVFD::setMode(const MODES m, const char * const title)
  {
@@ -1045,7 +1045,7 @@
  	if(strlen(title))
  		ShowText(title);
  	mode = m;
-@@ -839,6 +1156,10 @@
+@@ -839,6 +1155,10 @@
  			showPercentOver(percentOver, false);
  			break;
  #endif
@@ -1056,7 +1056,7 @@
  		}
  		showServicename(servicename);
  		showclock = true;
-@@ -915,14 +1236,32 @@
+@@ -915,14 +1235,32 @@
  int CVFD::getBrightness()
  {
  	//FIXME for old neutrino.conf
@@ -1094,7 +1094,7 @@
  	return g_settings.lcd_setting[SNeutrinoSettings::LCD_BRIGHTNESS];
  }
  
-@@ -937,7 +1276,22 @@
+@@ -937,7 +1275,22 @@
  int CVFD::getBrightnessStandby()
  {
  	//FIXME for old neutrino.conf
@@ -1118,7 +1118,7 @@
  	if(g_settings.lcd_setting[SNeutrinoSettings::LCD_STANDBY_BRIGHTNESS] > 7)
  		g_settings.lcd_setting[SNeutrinoSettings::LCD_STANDBY_BRIGHTNESS] = 7;
  #else
-@@ -958,12 +1312,28 @@
+@@ -958,12 +1311,28 @@
  int CVFD::getBrightnessDeepStandby()
  {
  	//FIXME for old neutrino.conf
@@ -1150,7 +1150,7 @@
  #endif
  	return g_settings.lcd_setting[SNeutrinoSettings::LCD_DEEPSTANDBY_BRIGHTNESS];
  }
-@@ -1029,14 +1399,33 @@
+@@ -1029,14 +1398,33 @@
  	else
  		text.clear();
  #else
@@ -1188,7 +1188,7 @@
  #endif
  #endif
  }
-@@ -1044,25 +1433,69 @@
+@@ -1044,25 +1432,69 @@
  void CVFD::ShowIcon(fp_icon icon, bool show)
  {
  #if !HAVE_DUCKBOX_HARDWARE
@@ -1266,7 +1266,7 @@
  	memset(&data, 0, sizeof(struct vfd_ioctl_data));
  	data.start = 0x00;
  	data.data[0] = icon;
-@@ -1076,29 +1509,51 @@
+@@ -1076,29 +1508,51 @@
  #ifdef HAVE_DUCKBOX_HARDWARE
  void CVFD::ClearIcons()
  {
@@ -1323,7 +1323,7 @@
  		g_str[60] = '.';
  		g_str[61] = '.';
  		g_str[62] = '.';
-@@ -1107,20 +1562,23 @@
+@@ -1107,20 +1561,23 @@
  	}
  	ShowNormalText(g_str, false);
  }
@@ -1359,7 +1359,7 @@
  void CVFD::ShowText(const char * str)
  {
  	if (fd < 0 || !support_text)
-@@ -1154,11 +1612,29 @@
+@@ -1154,11 +1611,29 @@
  
  void CVFD::ShowNumber(int number)
  {
@@ -1392,7 +1392,7 @@
  }
  
  #ifdef VFD_UPDATE
-@@ -1245,10 +1721,10 @@
+@@ -1245,10 +1720,10 @@
  /*****************************************************************************************/
  //showFilelist
  /*****************************************************************************************/
@@ -1407,7 +1407,7 @@
  
  void CVFD::showFilelist(int flist_pos,CFileList* flist,const char * const mainDir)
  {
-@@ -1485,5 +1961,4 @@
+@@ -1485,5 +1960,4 @@
  }
  /*****************************************************************************************/
  #endif // VFD_UPDATE
