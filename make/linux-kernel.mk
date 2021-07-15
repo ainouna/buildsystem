@@ -37,7 +37,7 @@ DEPMOD = $(HOST_DIR)/bin/depmod
 #
 COMMON_PATCHES_24 = \
 		linux-sh4-makefile_stm24.patch \
-		linux-stm-gpio-fix-build-CONFIG_BUG.patch \
+		linux-stm-gpio-fix-build-CONFIG_BUG_$(KERNEL_LABEL).patch \
 		linux-kbuild-generate-modules-builtin_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-linuxdvb_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-sound_stm24_$(KERNEL_LABEL).patch \
