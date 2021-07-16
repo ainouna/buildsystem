@@ -334,24 +334,24 @@ $(D)/readline: $(D)/bootstrap $(ARCHIVE)/$(READLINE_SOURCE)
 	$(TOUCH)
 
 #
-# openssl
+# openssll
 #
-OPENSSL_MAJOR = 1.0.2
-OPENSSL_MINOR = u
-OPENSSL_VER = $(OPENSSL_MAJOR)$(OPENSSL_MINOR)
-OPENSSL_SOURCE = openssl-$(OPENSSL_VER).tar.gz
-OPENSSL_PATCH  = openssl-$(OPENSSL_VER)-optimize-for-size.patch
-OPENSSL_PATCH += openssl-$(OPENSSL_VER)-makefile-dirs.patch
-OPENSSL_PATCH += openssl-$(OPENSSL_VER)-disable_doc_tests.patch
-OPENSSL_PATCH += openssl-$(OPENSSL_VER)-fix-parallel-building.patch
-OPENSSL_PATCH += openssl-$(OPENSSL_VER)-compat_versioned_symbols-1.patch
-OPENSSL_PATCH += openssl-$(OPENSSL_VER)-remove_timestamp_check.patch
-OPENSSL_SED_PATCH = sed -i 's|MAKEDEPPROG=makedepend|MAKEDEPPROG=$(CROSS_DIR)/bin/$$(CC) -M|' Makefile
+OPENSSLL_MAJOR = 1.0.2
+OPENSSLL_MINOR = u
+OPENSSLL_VER = $(OPENSSL_MAJOR)$(OPENSSLL_MINOR)
+OPENSSLL_SOURCE = openssl-$(OPENSSLL_VER).tar.gz
+OPENSSLL_PATCH  = openssl-$(OPENSSLL_VER)-optimize-for-size.patch
+OPENSSLL_PATCH += openssl-$(OPENSSLL_VER)-makefile-dirs.patch
+OPENSSLL_PATCH += openssl-$(OPENSSLL_VER)-disable_doc_tests.patch
+OPENSSLL_PATCH += openssl-$(OPENSSLL_VER)-fix-parallel-building.patch
+OPENSSLL_PATCH += openssl-$(OPENSSLL_VER)-compat_versioned_symbols-1.patch
+OPENSSLL_PATCH += openssl-$(OPENSSLL_VER)-remove_timestamp_check.patch
+OPENSSLL_SED_PATCH = sed -i 's|MAKEDEPPROG=makedepend|MAKEDEPPROG=$(CROSS_DIR)/bin/$$(CC) -M|' Makefile
 
-$(ARCHIVE)/$(OPENSSL_SOURCE):
-	$(WGET) https://www.openssl.org/source/$(OPENSSL_SOURCE)
+$(ARCHIVE)/$(OPENSSLL_SOURCE):
+	$(WGET) https://www.openssl.org/source/$(OPENSSLL_SOURCE)
 
-$(D)/openssl: $(D)/bootstrap $(ARCHIVE)/$(OPENSSL_SOURCE)
+$(D)/openssll: $(D)/bootstrap $(ARCHIVE)/$(OPENSSLL_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/openssl-$(OPENSSL_VER)
 	$(UNTAR)/$(OPENSSL_SOURCE)
@@ -377,6 +377,48 @@ $(D)/openssl: $(D)/bootstrap $(ARCHIVE)/$(OPENSSL_SOURCE)
 	cd $(TARGET_DIR) && rm -rf etc/ssl/man usr/bin/openssl usr/lib/engines
 	ln -sf libcrypto.so.1.0.0 $(TARGET_DIR)/usr/lib/libcrypto.so.0.9.8
 	ln -sf libssl.so.1.0.0 $(TARGET_DIR)/usr/lib/libssl.so.0.9.8
+	$(REMOVE)/openssl-$(OPENSSL_VER)
+	$(TOUCH)
+
+#
+# openssl
+#
+OPENSSL_MAJOR = 1.1.1
+OPENSSL_MINOR = j
+OPENSSL_VER = $(OPENSSL_MAJOR)$(OPENSSL_MINOR)
+OPENSSL_SOURCE = openssl-$(OPENSSL_VER).tar.gz
+OPENSSL_PATCH += openssl-$(OPENSSL_VER)-compat_versioned_symbols-1.patch
+OPENSSL_SED_PATCH = sed -i 's|MAKEDEPPROG=makedepend|MAKEDEPPROG=$(CROSS_DIR)/bin/$$(CC) -M|' Makefile
+
+$(ARCHIVE)/$(OPENSSL_SOURCE):
+	$(WGET) https://www.openssl.org/source/$(OPENSSL_SOURCE)
+
+$(D)/openssl: $(D)/bootstrap $(ARCHIVE)/$(OPENSSL_SOURCE)
+	$(START_BUILD)
+	$(REMOVE)/openssl-$(OPENSSL_VER)
+	$(UNTAR)/$(OPENSSL_SOURCE)
+	$(CH_DIR)/openssl-$(OPENSSL_VER); \
+		$(call apply_patches, $(OPENSSL_PATCH)); \
+		$(BUILDENV) \
+		./Configure $(SILENT_OPT) \
+			-DL_ENDIAN \
+			shared \
+			no-hw \
+			linux-generic32 \
+			--prefix=$(TARGET_DIR)/usr \
+			--openssldir=$(TARGET_DIR)/etc/ssl \
+		; \
+		$(OPENSSL_SED_PATCH); \
+		$(MAKE) depend; \
+		$(MAKE) all; \
+		$(MAKE) install_sw INSTALL_PREFIX=$(TARGET_DIR)
+	chmod 0755 $(TARGET_DIR)/usr/lib/lib{crypto,ssl}.so.*
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/openssl.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libcrypto.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libssl.pc
+	cd $(TARGET_DIR) && rm -rf etc/ssl/man usr/bin/openssl usr/lib/engines-1.1
+	ln -sf libcrypto.so.1.1 $(TARGET_DIR)/usr/lib/libcrypto.so.0.9.8
+	ln -sf libssl.so.1.1 $(TARGET_DIR)/usr/lib/libssl.so.0.9.8
 	$(REMOVE)/openssl-$(OPENSSL_VER)
 	$(TOUCH)
 
@@ -2783,5 +2825,42 @@ $(D)/libevent: $(D)/bootstrap $(D)/openssl
 	$(REWRITE_LIBTOOL)/libevent_openssl.la
 	$(REWRITE_LIBTOOL)/libevent_pthreads.la
 	$(REMOVE)/libevent-$(LIBEVENT_VER)
+	$(TOUCH)
+
+#
+# libnl
+#
+LIBNL_VER = 3.2.25
+LIBNL_SOURCE = libnl-$(LIBNL_VER).tar.gz
+
+$(ARCHIVE)/$(LIBNL_SOURCE):
+	$(WGET) https://www.infradead.org/~tgr/libnl/files/$(LIBNL_SOURCE)
+
+$(D)/libnl: $(D)/bootstrap $(D)/openssl $(ARCHIVE)/$(LIBNL_SOURCE)
+	$(START_BUILD)
+	$(REMOVE)/libnl-$(LIBNL_VER)
+	$(UNTAR)/$(LIBNL_SOURCE)
+	$(CH_DIR)/libnl-$(LIBNL_VER); \
+		$(CONFIGURE) \
+			--build=$(BUILD) \
+			--host=$(TARGET) \
+			--prefix=/usr \
+			--bindir=/.remove \
+			--mandir=/.remove \
+			--infodir=/.remove \
+		make $(SILENT_OPT); \
+		make install $(SILENT_OPT) DESTDIR=$(TARGET_DIR)
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libnl-3.0.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libnl-cli-3.0.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libnl-genl-3.0.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libnl-nf-3.0.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libnl-route-3.0.pc
+	$(REWRITE_LIBTOOL)/libnl-3.la
+	$(REWRITE_LIBTOOL)/libnl-cli-3.la
+	$(REWRITE_LIBTOOL)/libnl-genl-3.la
+	$(REWRITE_LIBTOOL)/libnl-idiag-3.la
+	$(REWRITE_LIBTOOL)/libnl-nf-3.la
+	$(REWRITE_LIBTOOL)/libnl-route-3.la
+	$(REMOVE)/libnl-$(LIBNL_VER)
 	$(TOUCH)
 
