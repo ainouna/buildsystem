@@ -32,7 +32,7 @@ $(D)/busybox: $(D)/bootstrap $(ARCHIVE)/$(BUSYBOX_SOURCE) $(PATCHES)/$(BUSYBOX_C
 		$(BUILDENV) \
 		$(MAKE) busybox ARCH=sh4 CROSS_COMPILE=$(TARGET)- CFLAGS_EXTRA="$(TARGET_CFLAGS)"; \
 		$(MAKE) install ARCH=sh4 CROSS_COMPILE=$(TARGET)- CFLAGS_EXTRA="$(TARGET_CFLAGS)" CONFIG_PREFIX=$(TARGET_DIR)
-#	$(REMOVE)/busybox-$(BUSYBOX_VER)
+	$(REMOVE)/busybox-$(BUSYBOX_VER)
 	$(TOUCH)
 
 #
@@ -1568,57 +1568,21 @@ $(D)/wireless_tools: $(D)/bootstrap $(ARCHIVE)/$(WIRELESS_TOOLS_SOURCE)
 	$(TOUCH)
 
 #
-# libnl
-#
-LIBNL_VER = 3.2.25
-LIBNL_SOURCE = libnl-$(LIBNL_VER).tar.gz
-
-$(ARCHIVE)/$(LIBNL_SOURCE):
-	$(WGET) https://www.infradead.org/~tgr/libnl/files/$(LIBNL_SOURCE)
-
-$(D)/libnl: $(D)/bootstrap $(D)/openssl $(ARCHIVE)/$(LIBNL_SOURCE)
-	$(START_BUILD)
-	$(REMOVE)/libnl-$(LIBNL_VER)
-	$(UNTAR)/$(LIBNL_SOURCE)
-	$(CH_DIR)/libnl-$(LIBNL_VER); \
-		$(CONFIGURE) \
-			--target=$(TARGET) \
-			--prefix=/usr \
-			--bindir=/.remove \
-			--mandir=/.remove \
-			--infodir=/.remove \
-		make $(SILENT_OPT); \
-		make install $(SILENT_OPT) DESTDIR=$(TARGET_DIR)
-	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libnl-3.0.pc
-	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libnl-cli-3.0.pc
-	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libnl-genl-3.0.pc
-	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libnl-nf-3.0.pc
-	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libnl-route-3.0.pc
-	$(REWRITE_LIBTOOL)/libnl-3.la
-	$(REWRITE_LIBTOOL)/libnl-cli-3.la
-	$(REWRITE_LIBTOOL)/libnl-genl-3.la
-	$(REWRITE_LIBTOOL)/libnl-idiag-3.la
-	$(REWRITE_LIBTOOL)/libnl-nf-3.la
-	$(REWRITE_LIBTOOL)/libnl-route-3.la
-	$(REMOVE)/libnl-$(LIBNL_VER)
-	$(TOUCH)
-
-#
 # wpa_supplicant
 #
-WPA_SUPPLICANT_VER = 0.7.3
+WPA_SUPPLICANT_VER = 2.9
 WPA_SUPPLICANT_SOURCE = wpa_supplicant-$(WPA_SUPPLICANT_VER).tar.gz
 
 $(ARCHIVE)/$(WPA_SUPPLICANT_SOURCE):
 	$(WGET) https://w1.fi/releases/$(WPA_SUPPLICANT_SOURCE)
 
-$(D)/wpa_supplicant: $(D)/bootstrap $(D)/openssl $(D)/wireless_tools $(ARCHIVE)/$(WPA_SUPPLICANT_SOURCE)
+$(D)/wpa_supplicant: $(D)/bootstrap $(D)/openssl $(D)/wireless_tools $(D)/libnl $(D)/dbus $(ARCHIVE)/$(WPA_SUPPLICANT_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/wpa_supplicant-$(WPA_SUPPLICANT_VER)
 	$(UNTAR)/$(WPA_SUPPLICANT_SOURCE)
 	$(CH_DIR)/wpa_supplicant-$(WPA_SUPPLICANT_VER)/wpa_supplicant; \
 		cp -f defconfig .config; \
-		sed -i 's/#CONFIG_DRIVER_RALINK=y/CONFIG_DRIVER_RALINK=y/' .config; \
+		sed -i 's/#CONFIG_LIBNL32=y/CONFIG_LIBNL32=y/' .config; \
 		sed -i 's/#CONFIG_IEEE80211W=y/CONFIG_IEEE80211W=y/' .config; \
 		sed -i 's/#CONFIG_OS=unix/CONFIG_OS=unix/' .config; \
 		sed -i 's/#CONFIG_TLS=openssl/CONFIG_TLS=openssl/' .config; \

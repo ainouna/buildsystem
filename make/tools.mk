@@ -8,6 +8,7 @@ tools-clean:
 	-$(MAKE) -C $(TOOLS_DIR)/eeprom_dgs distclean
 	-$(MAKE) -C $(TOOLS_DIR)/eeprom_fortis distclean
 	-$(MAKE) -C $(TOOLS_DIR)/eeprom_ipbox distclean
+	-$(MAKE) -C $(TOOLS_DIR)/eeprom_ufs910 distclean
 	-$(MAKE) -C $(TOOLS_DIR)/eeprom_ufs913 distclean
 	-$(MAKE) -C $(TOOLS_DIR)/eeprom_ufs922 distclean
 	-$(MAKE) -C $(TOOLS_DIR)/eplayer3 distclean
@@ -128,6 +129,20 @@ $(D)/tools-eeprom-fortis: $(D)/bootstrap
 $(D)/tools-eeprom-ipbox: $(D)/bootstrap
 	$(START_BUILD)
 	$(SET) -e; cd $(TOOLS_DIR)/eeprom_ipbox; \
+		if [ ! -d m4 ]; then mkdir m4; fi; \
+		$(CONFIGURE_TOOLS) \
+			--prefix= \
+		; \
+		$(MAKE); \
+		$(MAKE) install DESTDIR=$(TARGET_DIR)
+	$(TOUCH)
+
+#
+# eeprom_ufs910
+#
+$(D)/tools-eeprom-ufs910: $(D)/bootstrap
+	$(START_BUILD)
+	$(SET) -e; cd $(TOOLS_DIR)/eeprom_ufs910; \
 		if [ ! -d m4 ]; then mkdir m4; fi; \
 		$(CONFIGURE_TOOLS) \
 			--prefix= \
@@ -524,6 +539,9 @@ TOOLS += $(D)/tools-eeprom-dgs
 endif
 ifeq ($(BOXTYPE), $(filter $(BOXTYPE), ipbox55 ipbox99 ipbox9900))
 TOOLS += $(D)/tools-eeprom-ipbox
+endif
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE), ufs910))
+TOOLS += $(D)/tools-eeprom-ufs910
 endif
 ifeq ($(BOXTYPE), $(filter $(BOXTYPE), ufs913))
 TOOLS += $(D)/tools-eeprom-ufs913
