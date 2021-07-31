@@ -154,15 +154,17 @@
  #define VFDGETWAKEUPMODE     0xc0425af9
  #define VFDGETTIME           0xc0425afa
  #define VFDSETTIME           0xc0425afb
-@@ -27,7 +32,7 @@
+@@ -27,8 +32,8 @@
  #define VFDDISPLAYCLR        0xc0425b00
  
  typedef enum {
 -#if defined(BOXMODEL_OCTAGON1008)
+-	ICON_DOLBY = 0x10,
 +#if defined(BOXMODEL_HS9510)
- 	ICON_DOLBY = 0x10,
++	ICON_DOLBY = 1,
  	ICON_DTS,
  	ICON_VIDEO,
+ 	ICON_AUDIO,
 @@ -49,6 +54,7 @@
  	ICON_PLAY,
  	ICON_REWIND,
@@ -446,6 +448,9 @@
  	FP_ICON_TV = 0,
 -	FP_ICON_RADIO = FP_ICON_MUSIC,
 -	FP_ICON_RECORD = FP_ICON_REC,
+-	FP_ICON_DOWNLOAD = 0,
+-	FP_ICON_TIMESHIFT = 0
+-#elif defined(BOXMODEL_IPBOX9900) || defined(BOXMODEL_IPBOX99)
 +	FP_ICON_CAM1 = 0,
 +	FP_ICON_DOWNLOAD = 0,
 +	FP_ICON_TIMESHIFT = ICON_TIMESHIFT,
@@ -592,7 +597,7 @@
 + ||   defined(BOXMODEL_UFS922) \
 + ||   defined(BOXMODEL_UFS912) \
 + ||   defined(BOXMODEL_UFS913)
-+	ICON_USB,        // 01
++	ICON_USB = 1,    // 01
 +	ICON_HD,         // 02
 +	ICON_HDD,        // 03
 +	ICON_SCRAMBLED,  // 04
@@ -609,7 +614,7 @@
 +	ICON_REC,        // 15
 +	ICON_TIMER,      // 16
 +	ICON_MAX,
-+	FP_ICON_MIN = 0,
++	FP_ICON_MIN = ICON_USB,
 +	FP_ICON_USB = ICON_USB,
 +	FP_ICON_REC = ICON_REC,
 +	FP_ICON_RECORD = ICON_REC,
@@ -630,11 +635,9 @@
 +	FP_ICON_RADIO = ICON_RADIO,
 +	FP_ICON_TV = 0,
 +	FP_ICON_CAM1 = 0,
- 	FP_ICON_DOWNLOAD = 0,
--	FP_ICON_TIMESHIFT = 0
++	FP_ICON_DOWNLOAD = 0,
 +	FP_ICON_TIMESHIFT = 0,
 +	FP_ICON_MAX = ICON_MAX
--#elif defined(BOXMODEL_IPBOX9900) || defined(BOXMODEL_IPBOX99)
 +#elif defined(BOXMODEL_IPBOX9900) \
 + || defined(BOXMODEL_IPBOX99)
  	ICON_STANDBY,
