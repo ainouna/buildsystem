@@ -1,4 +1,4 @@
-# revision c0e796060aaf5be2eebedcf874c4c7d6b2c73871 04/07/2021 14:38
+# revision ecf765a2c34e7156ac57fd14e9b9e7e151e8f306 29/07/2021 11:32
 --- enigma2.org/configure.ac
 +++ enigma2/configure.ac
 @@ -18,6 +18,7 @@
@@ -2855,6 +2855,47 @@
  }
  
  int eDVBVolumecontrol::openMixer()
+--- enigma2.org/lib/dvb_ci/descrambler.cpp
++++ enigma2/lib/dvb_ci/descrambler.cpp
+@@ -20,6 +20,7 @@
+ #define CA_SET_PID _IOW('o', 135, struct ca_pid)
+ #endif
+ 
++#if 0
+ enum ca_descr_data_type {
+ 	CA_DATA_IV,
+ 	CA_DATA_KEY,
+@@ -37,9 +38,11 @@
+ 	unsigned int length;
+ 	unsigned char *data;
+ };
++#endif
+ 
+-
++#ifndef CA_SET_PID
+ #define CA_SET_DESCR_DATA _IOW('o', 137, struct ca_descr_data)
++#endif
+ 
+ int descrambler_set_key(int desc_fd, int index, int parity, unsigned char *data)
+ {
+--- enigma2.org/lib/dvb_ci/dvbci.h
++++ enigma2/lib/dvb_ci/dvbci.h
+@@ -113,7 +113,6 @@
+ 	eDVBCICcSession *getCCManager() { return cc_manager; }
+ 
+ 	int getState() { return state; }
+-	int reset();
+ 	int startMMI();
+ 	int stopMMI();
+ 	int answerText(int answer);
+@@ -141,6 +140,7 @@
+ 
+ 	int getSlotID();
+ 	int getNumOfServices();
++	int reset();
+ 	int getVersion();
+ 	bool checkQueueSize();
+ 	void thread();
 --- enigma2.org/lib/dvb_ci/dvbci_appmgr.cpp
 +++ enigma2/lib/dvb_ci/dvbci_appmgr.cpp
 @@ -96,6 +96,7 @@
@@ -3142,7 +3183,7 @@
  
  		if(::access(path.str().c_str(), R_OK) < 0)
  			break;
-@@ -1050,7 +1304,7 @@
+@@ -1160,7 +1414,7 @@
  	{
  		unsigned char *d = new unsigned char[len];
  		memcpy(d, data, len);
@@ -3151,7 +3192,7 @@
  		notifier->setRequested(eSocketNotifier::Read | eSocketNotifier::Priority | eSocketNotifier::Write);
  	}
  
-@@ -1061,62 +1315,168 @@
+@@ -1171,62 +1425,168 @@
  {
  	singleLock s(eDVBCIInterfaces::m_slot_lock);
  	eTrace("[CI] Slot %d what %d\n", getSlotID(), what);
@@ -3376,7 +3417,7 @@
  }
  
  DEFINE_REF(eDVBCISlot);
-@@ -1137,7 +1497,7 @@
+@@ -1247,7 +1607,7 @@
  
  	slotid = nr;
  
@@ -3385,7 +3426,7 @@
  
  //	possible_caids.insert(0x1702);
  //	possible_providers.insert(providerPair("PREMIERE", 0xC00000));
-@@ -1148,10 +1508,18 @@
+@@ -1258,10 +1618,18 @@
  	eTrace("[CI] Slot %d has fd %d", getSlotID(), fd);
  	state = stateInvalid;
  
@@ -3404,7 +3445,7 @@
  	} else
  	{
  		perror(filename);
-@@ -1274,13 +1642,11 @@
+@@ -1384,13 +1752,11 @@
  {
  	eDebug("[CI] Slot %d: reset requested", getSlotID());
  
@@ -3423,7 +3464,7 @@
  
  	while(sendqueue.size())
  	{
-@@ -1288,7 +1654,8 @@
+@@ -1398,7 +1764,8 @@
  		sendqueue.pop();
  	}
  
@@ -3514,7 +3555,7 @@
  struct CIPmtHandler
 --- enigma2.org/lib/dvb_ci/dvbci_session.cpp
 +++ enigma2/lib/dvb_ci/dvbci_session.cpp
-@@ -284,6 +284,10 @@
+@@ -285,6 +285,10 @@
  		if ((!session_nb) || (session_nb >= SLMS))
  		{
  			eWarning("[CI SESS] PROTOCOL: illegal session number %x", session_nb);
@@ -5913,7 +5954,7 @@
  
 --- enigma2.org/lib/python/Components/NimManager.py
 +++ enigma2/lib/python/Components/NimManager.py
-@@ -20,6 +20,10 @@
+@@ -21,6 +21,10 @@
  
  
  def getConfigSatlist(orbpos, satlist):
@@ -6001,12 +6042,12 @@
  SystemInfo["hasXcoreVFD"] = model in ("osmega", "spycat4k", "spycat4kmini", "spycat4kcombo") and fileCheck("/sys/module/brcmstb_%s/parameters/pt6302_cgram" % model)
 -SystemInfo["HasOfflineDecoding"] = model not in ("osmini", "osminiplus", "et7000mini", "et11000", "mbmicro", "mbtwinplus", "mbmicrov2", "et7000", "et8500")
 +SystemInfo["HasOfflineDecoding"] = False
- SystemInfo["MultibootStartupDevice"] = getMultibootStartupDevice()
+-SystemInfo["MultibootStartupDevice"] = getMultibootStartupDevice()
++SystemInfo["MultibootStartupDevice"] = False
 -SystemInfo["canMode12"] = "%s_4.boxmode" % model in cmdline and cmdline["%s_4.boxmode" % model] in ("1", "12") and "192M"
--SystemInfo["canMultiBoot"] = getMultibootslots()
--SystemInfo["canFlashWithOfgwrite"] = not(model.startswith("dm"))
 +SystemInfo["canMode12"] = False
-+SystemInfo["canMultiBoot"] = False
+ SystemInfo["canMultiBoot"] = getMultibootslots()
+-SystemInfo["canFlashWithOfgwrite"] = not(model.startswith("dm"))
 +SystemInfo["canFlashWithOfgwrite"] = False
  SystemInfo["HDRSupport"] = fileExists("/proc/stb/hdmi/hlg_support_choices") and fileCheck("/proc/stb/hdmi/hlg_support")
  SystemInfo["CanDownmixAC3"] = fileHas("/proc/stb/audio/ac3_choices", "downmix")
@@ -6016,7 +6057,7 @@
  SystemInfo["BootDevice"] = getBootdevice()
 -SystemInfo["FbcTunerPowerAlwaysOn"] = model in ("vusolo4k", "vuduo4k", "vuduo4kse", "vuultimo4k", "vuuno4k", "vuuno4kse", "gbquad4k", "gbue4k")
 -SystemInfo["HasPhysicalLoopthrough"] = ["Vuplus DVB-S NIM(AVL2108)", "GIGA DVB-S2 NIM (Internal)"]
--SystemInfo["HasFBCtuner"] = ["Vuplus DVB-C NIM(BCM3158)", "Vuplus DVB-C NIM(BCM3148)", "Vuplus DVB-S NIM(7376 FBC)", "Vuplus DVB-S NIM(45308X FBC)", "Vuplus DVB-S NIM(45208 FBC)", "DVB-S NIM(45208 FBC)", "DVB-S2X NIM(45308X FBC)", "DVB-S2 NIM(45308 FBC)", "DVB-C NIM(3128 FBC)","BCM45208", "BCM45308X", "BCM3158"]
+-SystemInfo["HasFBCtuner"] = ["Vuplus DVB-C NIM(BCM3158)", "Vuplus DVB-C NIM(BCM3148)", "Vuplus DVB-S NIM(7376 FBC)", "Vuplus DVB-S NIM(45308X FBC)", "Vuplus DVB-S NIM(45208 FBC)", "DVB-S NIM(45208 FBC)", "DVB-S2X NIM(45308X FBC)", "DVB-S2 NIM(45308 FBC)", "DVB-C NIM(3128 FBC)", "BCM45208", "BCM45308X", "BCM3158"]
 +SystemInfo["FbcTunerPowerAlwaysOn"] = False
 +SystemInfo["HasPhysicalLoopthrough"] = [""]
 +SystemInfo["HasFBCtuner"] = [""]
@@ -9928,7 +9969,7 @@
  	return keyDescriptions[idx].get(key)
 --- enigma2.org/lib/python/Screens/InputDeviceSetup.py
 +++ enigma2/lib/python/Screens/InputDeviceSetup.py
-@@ -300,68 +300,61 @@
+@@ -300,72 +300,61 @@
  	rcList = [
  			("0", _("Default")),
  			("4", _("DMM normal")),
@@ -9947,7 +9988,8 @@
 -			("21", _("Zgemma H.S/H.2S/H.2H/H5/H7(old model)")),
 -			("25", _("Zgemma H9(old model)/I55Plus")),
 -			("27", _("HD60/Multibox/Multibox SE")),
--			("28", _("I55SE/H7(new model)/H9(new model)/H9COMBO/H9TWIN/H9SE/H9COMBOSE/H10"))
+-			("28", _("I55SE/H7(new model)/H9(new model)/H9COMBO/H9TWIN/H9SE/H9COMBOSE/H10/H11")),
+-			("30", _("PULSe 4K"))
 +			("7", _("Fortis universal")),
 +			("8", _("Fortis standard")),
 +			("9", _("Fortis mini")),
@@ -10009,8 +10051,11 @@
 -			("i55se", 28),
 -			("h7", 28), # new model /old 21
 -			("h9", 28), # new model /old 25
--			("h9combo", 28),
--			("h10", 28)
+-			("h9twin", 28),
+-			("h9twinse", 28),
+-			("h10", 28),
+-			("h11", 28),
+-			("pulse4k", 30)
 +			("fs9000", 7),
 +			("hs8200", 7),
 +			("hs9510", 8),
@@ -10050,7 +10095,7 @@
  	def __init__(self, session):
 --- enigma2.org/data/rc_models/rc_models.cfg
 +++ enigma2/data/rc_models/rc_models.cfg
-@@ -19,154 +19,36 @@
+@@ -19,157 +19,36 @@
  #
  # When no entry matches at all, 'default' will be used as remoteName
  #
@@ -10205,6 +10250,9 @@
 -#
 -# uClan
 -ustym4kpro     uclan
+-#
+-# AB-COM
+-pulse4k        pulse
 +fs9000            fs9000
 +hs9510            hs9510
 +hs8200            fs9000
@@ -10249,13 +10297,13 @@
 -	hd2400.png hd-gen.png vs1x00.png osmini.png zgemma.png miraclebox.png miraclebox2.png \
 -	spycat.png xpeedlx.png revo4k.png sab.png sh1.png i55.png qviart.png gb7252.png e4hd.png \
 -	edision2.png edision3.png edision4.png hd60.png lunix4k.png multibox.png viperslim.png octagon.png \
--	uclan.png \
+-	uclan.png pulse.png \
 -	dmmadv.xml edision1.xml et4x00.xml et8000.xml et9x00.xml vuultimo.xml xp1000.xml dmm.xml amiko.xml \
 -	amiko1.xml et6x00.xml et9500.xml et7x00.xml vuduo2.xml vu.xml vu2.xml formuler1.xml hd2400.xml hd-gen.xml \
 -	vs1x00.xml xsarius.xml xsarius.png osmini.xml zgemma.xml miraclebox.xml miraclebox2.xml \
 -	spycat.xml xpeedlx.xml et7000mini.png et7000mini.xml revo4k.xml sab.xml sh1.xml i55.xml qviart.xml \
 -	gb7252.xml e4hd.xml edision2.xml edision3.xml edision4.xml hd60.xml lunix4k.xml multibox.xml viperslim.xml \
--	octagon.xml uclan.xml
+-	octagon.xml uclan.xml pulse.xml
 +	dmmadv.png \
 +	adb_xmp.png cuberevo_uni.png fs9000.png hs7110.png hs9510.png spark.png tf7700.png ufs912.png vitamin.png \
 +	pace7241.png hl101_1.png vip_1.png ufs910.png ufs913.png opt9600.png cuberevo.png dmm.png \

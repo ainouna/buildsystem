@@ -461,9 +461,9 @@ $(D)/python_cryptography: $(D)/bootstrap $(D)/python_cffi $(D)/python_pyasn1 $(D
 #
 # python_pyopenssl
 #
-PYTHON_PYOPENSSL_VER = 0.13.1
+PYTHON_PYOPENSSL_VER = 20.0.1
 PYTHON_PYOPENSSL_SOURCE = pyOpenSSL-$(PYTHON_PYOPENSSL_VER).tar.gz
-PYTHON_PYOPENSSL_PATCH = python-pyopenssl-$(PYTHON_PYOPENSSL_VER).patch
+PYTHON_PYOPENSSL_PATCH =
 
 $(ARCHIVE)/$(PYTHON_PYOPENSSL_SOURCE):
 	$(WGET) https://pypi.python.org/packages/source/p/pyOpenSSL/$(PYTHON_PYOPENSSL_SOURCE)
