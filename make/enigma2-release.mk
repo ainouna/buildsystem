@@ -174,6 +174,8 @@ enigma2_release_ufs922:
 	$(SILENT)cp $(SKEL_ROOT)/firmware/dvb-fe-cx21143.fw $(RELEASE_DIR)/lib/firmware/
 	$(SILENT)cp $(SKEL_ROOT)/firmware/dvb-fe-stv6306.fw $(RELEASE_DIR)/lib/firmware/
 	$(SILENT)cp -f $(SKEL_ROOT)/root_enigma2/usr/local/share/enigma2/keymap_ufs910.xml $(RELEASE_DIR)/usr/local/share/enigma2/keymap.xml
+	$(SILENT)touch $(RELEASE_DIR)/etc/.rccode
+	$(SILENT)echo "1" > $(RELEASE_DIR)/etc/.rccode
 ifeq ($(DESTINATION), flash)
 	$(MAKE) $(D)/ufsinstaller
 endif
