@@ -543,12 +543,12 @@ enigma2_release_adb_box:
 	$(SILENT)cp -dp $(SKEL_ROOT)/release/lircd_adb_box.conf $(RELEASE_DIR)/etc/lircd.conf
 	$(SILENT)mkdir -p $(RELEASE_DIR)/var/run/lirc
 	$(SILENT)rm -f $(RELEASE_DIR)/bin/vdstandby
-ifeq ($(DESTINATION), flash)
-	$(SILENT)rm -f $(RELEASE_DIR)/lib/modules/mt7601Usta.ko
-	$(SILENT)rm -f $(RELEASE_DIR)/lib/modules/rt3070sta.ko
-	$(SILENT)rm -f $(RELEASE_DIR)/lib/modules/8188eu.ko
-	$(SILENT)rm -f $(RELEASE_DIR)/lib/modules/8192eu.ko
-endif
+#ifeq ($(DESTINATION), flash)
+#	$(SILENT)rm -f $(RELEASE_DIR)/lib/modules/mt7601Usta.ko
+#	$(SILENT)rm -f $(RELEASE_DIR)/lib/modules/rt3070sta.ko
+#	$(SILENT)rm -f $(RELEASE_DIR)/lib/modules/8188eu.ko
+#	$(SILENT)rm -f $(RELEASE_DIR)/lib/modules/8192eu.ko
+#endif
 	$(SILENT)if [ -e $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/adb_5800VFD/plugin.py ]; then \
 		rm -f $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/SystemPlugins/VFD-Icons/*; \
 		cp -f $(SKEL_ROOT)/release/vfddisplay.png $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/adb_5800VFD; \
