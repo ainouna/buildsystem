@@ -1,7 +1,7 @@
 # Commit 154632ace0e0a69619e7d7b2b72bb2de1adbcd8f 25/10/2020
 --- neutrino-ddt.org/acinclude.m4
 +++ neutrino-ddt/acinclude.m4
-@@ -304,45 +304,13 @@
+@@ -284,45 +284,13 @@
  AC_ARG_WITH(boxtype,
  	AS_HELP_STRING([--with-boxtype], [valid values: spark, generic, armbox, duckbox, spark7162, mipsbox]),
  	[case "${withval}" in
@@ -48,7 +48,7 @@
  		hd51|hd60|hd61|bre2ze4k|vusolo4k|vuduo4k|vuduo4kse|vuultimo4k|vuzero4k|vuuno4kse|vuuno4k|h7|osmio4k|osmio4kplus)
  			BOXTYPE="armbox"
  			BOXMODEL="$withval"
-@@ -358,13 +326,13 @@
+@@ -338,13 +306,13 @@
  	[BOXTYPE="generic"])
  
  AC_ARG_WITH(boxmodel,
@@ -56,7 +56,7 @@
 +	AS_HELP_STRING([--with-boxmodel], [valid for duckbox: ufs910, ufs912, ufs913, ufs922, fs9000, hs7110, hs7420, hs7810a, hs7119, hs7429, hs7819, hs8200, hs9510, cuberevo, cuberevo_mini, cuberevo_mini2, cuberevo_mini_fta, cuberevo_250hd, cuberevo_2000hd, cuberevo_3000hd, ipbox9900, ipbox99, ipbox55, tf7700, hl101, adb_box, vip1_v1, vip1_v2, vip2, vitamin_hd5000, pace7241, adb2850, opt9600])
  AS_HELP_STRING([], [valid for spark: spark, spark7162])
  AS_HELP_STRING([], [valid for armbox: bre2ze4k, hd51, vusolo4k, vuduo4k, vuduo4kse, vuultimo4k, vuzero4k, vuuno4kse, vuuno4k, h7])
- AS_HELP_STRING([], [valid for mipsbox: vuduo])
+ AS_HELP_STRING([], [valid for mipsbox: vuduo, dm8000])
  AS_HELP_STRING([], [valid for generic: raspi]),
  	[case "${withval}" in
 -		ufs910|ufs912|ufs913|ufs922|atevio7500|fortis_hdbox|octagon1008|cuberevo|cuberevo_mini|cuberevo_mini2|cuberevo_250hd|cuberevo_2000hd|cuberevo_3000hd|ipbox9900|ipbox99|ipbox55|tf7700)
@@ -64,7 +64,7 @@
  			if test "$BOXTYPE" = "duckbox"; then
  				BOXMODEL="$withval"
  			else
-@@ -419,13 +387,21 @@
+@@ -399,13 +367,21 @@
  AM_CONDITIONAL(BOXMODEL_UFS922, test "$BOXMODEL" = "ufs922")
  AM_CONDITIONAL(BOXMODEL_SPARK, test "$BOXMODEL" = "spark")
  AM_CONDITIONAL(BOXMODEL_SPARK7162, test "$BOXMODEL" = "spark7162")
@@ -85,11 +85,11 @@
  AM_CONDITIONAL(BOXMODEL_CUBEREVO, test "$BOXMODEL" = "cuberevo")
  AM_CONDITIONAL(BOXMODEL_CUBEREVO_MINI, test "$BOXMODEL" = "cuberevo_mini")
  AM_CONDITIONAL(BOXMODEL_CUBEREVO_MINI2, test "$BOXMODEL" = "cuberevo_mini2")
-+AM_CONDITIONAL(BOXMODEL_CUBEREVO_250HD, test "$BOXMODEL" = "cuberevo_mini_fta")
++AM_CONDITIONAL(BOXMODEL_CUBEREVO_200HD, test "$BOXMODEL" = "cuberevo_mini_fta")
  AM_CONDITIONAL(BOXMODEL_CUBEREVO_250HD, test "$BOXMODEL" = "cuberevo_250hd")
  AM_CONDITIONAL(BOXMODEL_CUBEREVO_2000HD, test "$BOXMODEL" = "cuberevo_2000hd")
  AM_CONDITIONAL(BOXMODEL_CUBEREVO_3000HD, test "$BOXMODEL" = "cuberevo_3000hd")
-@@ -433,6 +409,15 @@
+@@ -413,6 +389,15 @@
  AM_CONDITIONAL(BOXMODEL_IPBOX99, test "$BOXMODEL" = "ipbox99")
  AM_CONDITIONAL(BOXMODEL_IPBOX55, test "$BOXMODEL" = "ipbox55")
  AM_CONDITIONAL(BOXMODEL_TF7700, test "$BOXMODEL" = "tf7700")
@@ -105,7 +105,7 @@
  
  AM_CONDITIONAL(BOXMODEL_HD51, test "$BOXMODEL" = "hd51")
  AM_CONDITIONAL(BOXMODEL_HD60, test "$BOXMODEL" = "hd60")
-@@ -483,24 +468,26 @@
+@@ -464,24 +449,26 @@
  	AC_DEFINE(BOXMODEL_SPARK, 1, [spark])
  elif test "$BOXMODEL" = "spark7162"; then
  	AC_DEFINE(BOXMODEL_SPARK7162, 1, [spark7162])
@@ -143,7 +143,7 @@
  elif test "$BOXMODEL" = "ipbox9900"; then
  	AC_DEFINE(BOXMODEL_IPBOX9900, 1, [ipbox9900])
  elif test "$BOXMODEL" = "ipbox99"; then
-@@ -509,6 +496,25 @@
+@@ -490,6 +477,25 @@
  	AC_DEFINE(BOXMODEL_IPBOX55, 1, [ipbox55])
  elif test "$BOXMODEL" = "tf7700"; then
  	AC_DEFINE(BOXMODEL_TF7700, 1, [tf7700])
@@ -193,7 +193,7 @@
  	bpa_data.bpa_part = (char *)"LMI_VID";
 --- neutrino-ddt.org/src/driver/record.cpp
 +++ neutrino-ddt/src/driver/record.cpp
-@@ -1250,7 +1250,7 @@
+@@ -1264,7 +1264,7 @@
  		autoshift = false;
  #ifdef HAVE_SPARK_HARDWARE
  		CVFD::getInstance()->SetIcons(SPARK_TIMESHIFT, false);
@@ -202,7 +202,7 @@
  		CVFD::getInstance()->ShowIcon(FP_ICON_TIMESHIFT, false);
  #endif
  
-@@ -1400,7 +1400,7 @@
+@@ -1414,7 +1414,7 @@
  		t_channel_id live_channel_id = CZapit::getInstance()->GetCurrentChannelID();
  #ifdef HAVE_SPARK_HARDWARE
  		CVFD::getInstance()->SetIcons(SPARK_TIMESHIFT, true);
@@ -213,7 +213,7 @@
  		bool tstarted = false;
 --- neutrino-ddt.org/src/neutrino.cpp
 +++ neutrino-ddt/src/neutrino.cpp
-@@ -3463,6 +3463,10 @@
+@@ -3386,6 +3386,10 @@
  #if defined (BOXMODEL_IPBOX9900) || defined (BOXMODEL_IPBOX99)
  		system("echo 0 > /proc/stb/misc/fan");
  #endif
@@ -1188,7 +1188,7 @@
  #endif
  #endif
  }
-@@ -1044,25 +1432,69 @@
+@@ -1044,15 +1432,27 @@
  void CVFD::ShowIcon(fp_icon icon, bool show)
  {
  #if !HAVE_DUCKBOX_HARDWARE
@@ -1202,9 +1202,7 @@
 +
  	int ret = ioctl(fd, show ? IOC_FP_SET_ICON : IOC_FP_CLEAR_ICON, icon);
  	if(ret < 0)
-+	{
  		perror(show ? "IOC_FP_SET_ICON" : "IOC_FP_CLEAR_ICON");
-+	}
  #else
 -#if defined (BOXMODEL_ATEVIO7500)
 +  #if defined (BOXMODEL_HS7110) \
@@ -1220,53 +1218,9 @@
 -#endif
 +  #endif
  	if (icon == 0)
--		return;
--
-+	{
-+		return;
-+	}
-+  #if !defined (BOXMODEL_HS9510) \
-+   && !defined (BOXMODEL_FS9000) \
-+   && !defined (BOXMODEL_HS8200) \
-+   && !defined (BOXMODEL_HS7420) \
-+   && !defined (BOXMODEL_HS7810A) \
-+   && !defined (BOXMODEL_HS7420) \
-+   && !defined (BOXMODEL_HS7119) \
-+   && !defined (BOXMODEL_HS7429) \
-+   && !defined (BOXMODEL_HS7819) \
-+   && !defined (BOXMODEL_ADB_BOX)
- 	if (active_icon[icon & 0x0F] == show)
--		return;
-+	{
-+		return;
-+	}
- 	else
-+	{
- 		active_icon[icon & 0x0F] = show;
--
-+	}
-+  #endif
- 	//printf("CVFD::ShowIcon %s %x\n", show ? "show" : "hide", (int) icon);
-+
- 	struct vfd_ioctl_data data;
-+
-+  #if defined (BOXMODEL_ADB_BOX)
-+	if ((adb_led == 1 && icon == FP_ICON_CLOCK) || (adb_led == 0 && icon == FP_ICON_REC))
-+	{
-+		memset(&data, 0, sizeof(struct vfd_ioctl_data));
-+		data.start = 0x02;  // timer/REC LED
-+		data.data[0] = 0;
-+		data.data[1] = 0;
-+		data.data[3] = show;
-+		data.data[4] = 0;
-+		data.length = 5;
-+		write_to_vfd(VFDSETLED, &data);
-+	}  // and fall through to
-+  #endif
- 	memset(&data, 0, sizeof(struct vfd_ioctl_data));
- 	data.start = 0x00;
- 	data.data[0] = icon;
-@@ -1076,29 +1508,51 @@
+ 		return;
+ 
+@@ -1082,29 +1482,51 @@
  #ifdef HAVE_DUCKBOX_HARDWARE
  void CVFD::ClearIcons()
  {
@@ -1323,7 +1277,7 @@
  		g_str[60] = '.';
  		g_str[61] = '.';
  		g_str[62] = '.';
-@@ -1107,20 +1561,23 @@
+@@ -1113,20 +1535,23 @@
  	}
  	ShowNormalText(g_str, false);
  }
@@ -1359,7 +1313,7 @@
  void CVFD::ShowText(const char * str)
  {
  	if (fd < 0 || !support_text)
-@@ -1154,11 +1611,29 @@
+@@ -1160,11 +1585,29 @@
  
  void CVFD::ShowNumber(int number)
  {
@@ -1392,7 +1346,7 @@
  }
  
  #ifdef VFD_UPDATE
-@@ -1245,10 +1720,10 @@
+@@ -1251,10 +1694,10 @@
  /*****************************************************************************************/
  //showFilelist
  /*****************************************************************************************/
@@ -1407,7 +1361,7 @@
  
  void CVFD::showFilelist(int flist_pos,CFileList* flist,const char * const mainDir)
  {
-@@ -1485,5 +1960,4 @@
+@@ -1491,5 +1934,4 @@
  }
  /*****************************************************************************************/
  #endif // VFD_UPDATE
@@ -1416,11 +1370,11 @@
 +// vim:ts=4
 --- neutrino-ddt.org/src/gui/miscsettings_menu.cpp
 +++ neutrino-ddt/src/gui/miscsettings_menu.cpp
-@@ -400,7 +400,10 @@
- 	//fan speed
- 	if (g_info.hw_caps->has_fan)
+@@ -343,7 +343,10 @@
  	{
--#if defined (BOXMODEL_IPBOX9900) || defined (BOXMODEL_IPBOX99)
+ 		if (fanNotifier == NULL)
+ 			fanNotifier = new CFanControlNotifier();
+-#if defined (BOXMODEL_IPBOX9900) || defined (BOXMODEL_IPBOX99) || defined (BOXMODEL_DM8000)
 +#if defined (BOXMODEL_IPBOX9900) \
 + || defined (BOXMODEL_IPBOX99) \
 + || defined (BOXMODEL_CUBEREVO) \
@@ -1430,7 +1384,7 @@
  		CMenuOptionNumberChooser * mn = new CMenuOptionNumberChooser(LOCALE_FAN_SPEED, &g_settings.fan_speed, true, 1, 14, fanNotifier, CRCInput::RC_nokey, NULL, 0, 0, LOCALE_OPTIONS_OFF);
 --- neutrino-ddt.org/src/gui/movieplayer.cpp
 +++ neutrino-ddt/src/gui/movieplayer.cpp
-@@ -541,7 +541,7 @@
+@@ -533,7 +533,7 @@
   && !defined(BOXMODEL_UFS912) \
   && !defined(BOXMODEL_UFS913) \
   && !defined(BOXMODEL_UFS922) \
@@ -1439,7 +1393,7 @@
   && !defined(BOXMODEL_IPBOX9900) \
   && !defined(BOXMODEL_IPBOX99) \
   && !defined(BOXMODEL_IPBOX55)
-@@ -550,7 +550,7 @@
+@@ -542,7 +542,7 @@
  				lcd = "";
  #endif
  			break;
@@ -1448,7 +1402,7 @@
  		case CMoviePlayerGui::REW:
  			sprintf(tmp, "%dx<< ", abs(speed));
  			lcd = tmp;
-@@ -565,8 +565,8 @@
+@@ -557,8 +557,8 @@
   && !defined(BOXMODEL_UFS912) \
   && !defined(BOXMODEL_UFS913) \
   && !defined(BOXMODEL_UFS922) \
@@ -1480,7 +1434,7 @@
  	-I$(top_builddir) \
 --- neutrino-ddt.org/src/system/setting_helpers.cpp
 +++ neutrino-ddt/src/system/setting_helpers.cpp
-@@ -630,10 +630,20 @@
+@@ -629,10 +629,20 @@
  	int cfd;
  
  	printf("FAN Speed %d\n", speed);
@@ -1502,7 +1456,7 @@
  #else
  	cfd = open("/proc/stb/fan/fan_ctrl", O_WRONLY);
  	if(cfd < 0) {
-@@ -644,7 +654,10 @@
+@@ -643,7 +653,10 @@
  
  	switch (speed)
  
@@ -1514,7 +1468,7 @@
  	{
  	case 0:
  		write(cfd,"0",1);
-@@ -653,6 +666,18 @@
+@@ -652,6 +665,18 @@
  		write(cfd,"1",1);
  		break;
  	}
@@ -1533,13 +1487,4 @@
  #else
  	{
  	case 1:
-@@ -696,7 +721,7 @@
- extern cCpuFreqManager * cpuFreq;
- 	int freq = * (int *) data;
- 
--	printf("CCpuFreqNotifier: %d Mhz\n", freq);
-+	printf("CCpuFreqNotifier: %d MHz\n", freq);
- 	freq *= 1000*1000;
- 
- 	cpuFreq->SetCpuFreq(freq);
 
