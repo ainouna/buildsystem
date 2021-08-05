@@ -174,6 +174,8 @@ enigma2_release_ufs922:
 	$(SILENT)cp $(SKEL_ROOT)/firmware/dvb-fe-cx21143.fw $(RELEASE_DIR)/lib/firmware/
 	$(SILENT)cp $(SKEL_ROOT)/firmware/dvb-fe-stv6306.fw $(RELEASE_DIR)/lib/firmware/
 	$(SILENT)cp -f $(SKEL_ROOT)/root_enigma2/usr/local/share/enigma2/keymap_ufs910.xml $(RELEASE_DIR)/usr/local/share/enigma2/keymap.xml
+	$(SILENT)touch $(RELEASE_DIR)/etc/.rccode
+	$(SILENT)echo "1" > $(RELEASE_DIR)/etc/.rccode
 ifeq ($(DESTINATION), flash)
 	$(MAKE) $(D)/ufsinstaller
 endif
@@ -541,12 +543,12 @@ enigma2_release_adb_box:
 	$(SILENT)cp -dp $(SKEL_ROOT)/release/lircd_adb_box.conf $(RELEASE_DIR)/etc/lircd.conf
 	$(SILENT)mkdir -p $(RELEASE_DIR)/var/run/lirc
 	$(SILENT)rm -f $(RELEASE_DIR)/bin/vdstandby
-ifeq ($(DESTINATION), flash)
-	$(SILENT)rm -f $(RELEASE_DIR)/lib/modules/mt7601Usta.ko
-	$(SILENT)rm -f $(RELEASE_DIR)/lib/modules/rt3070sta.ko
-	$(SILENT)rm -f $(RELEASE_DIR)/lib/modules/8188eu.ko
-	$(SILENT)rm -f $(RELEASE_DIR)/lib/modules/8192eu.ko
-endif
+#ifeq ($(DESTINATION), flash)
+#	$(SILENT)rm -f $(RELEASE_DIR)/lib/modules/mt7601Usta.ko
+#	$(SILENT)rm -f $(RELEASE_DIR)/lib/modules/rt3070sta.ko
+#	$(SILENT)rm -f $(RELEASE_DIR)/lib/modules/8188eu.ko
+#	$(SILENT)rm -f $(RELEASE_DIR)/lib/modules/8192eu.ko
+#endif
 	$(SILENT)if [ -e $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/adb_5800VFD/plugin.py ]; then \
 		rm -f $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/SystemPlugins/VFD-Icons/*; \
 		cp -f $(SKEL_ROOT)/release/vfddisplay.png $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/adb_5800VFD; \

@@ -166,6 +166,8 @@ neutrino-release-ufs922:
 	$(SILENT)cp $(SKEL_ROOT)/firmware/dvb-fe-avl6222.fw $(RELEASE_DIR)/lib/firmware/
 	$(SILENT)cp $(SKEL_ROOT)/firmware/dvb-fe-cx21143.fw $(RELEASE_DIR)/lib/firmware/
 	$(SILENT)cp $(SKEL_ROOT)/firmware/dvb-fe-stv6306.fw $(RELEASE_DIR)/lib/firmware/
+	$(SILENT)touch $(RELEASE_DIR)/var/etc/.rccode
+	$(SILENT)echo "1" > $(RELEASE_DIR)/var/etc/.rccode
 ifeq ($(DESTINATION), flash)
 	$(MAKE) $(D)/ufsinstaller
 endif
