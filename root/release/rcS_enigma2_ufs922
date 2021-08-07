@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 210625.1
+#Version 210806.2
 
 echo "[rcS] Start"
 echo "Kathrein UFS922 Enigma2"
@@ -147,11 +147,9 @@ fi
 
 echo "[rcS] Init frontpanel (LOAD 2)"
 echo "LOAD 2" > /dev/vfd
-insmod $MODDIR/boxtype.ko
 
 echo "[rcS] Init remote control"
 /bin/evremote2 1 0 10 120 &
-
 
 NFS=`grep -c nfs /proc/cmdline`
 if [ "$NFS" -eq "1" ]; then
@@ -254,7 +252,7 @@ do
    echo "[rcS] Starting E2 ->"
    /usr/local/bin/enigma2
    rtv=$?
-   echo "[rcS] E2 ended <- eturn value: " $rtv
+   echo "[rcS] E2 ended <- return value: " $rtv
    fp_control -i 17 0  # all icons off
    case "$rtv" in
       0) echo "[rcS] E2 ERROR"
