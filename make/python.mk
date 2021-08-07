@@ -136,7 +136,7 @@ $(D)/python: $(D)/bootstrap $(D)/host_python $(D)/ncurses $(D)/zlib $(D)/openssl
 #
 # python_setuptools
 #
-PYTHON_SETUPTOOLS_VER = 5.2
+PYTHON_SETUPTOOLS_VER = 18.5
 PYTHON_SETUPTOOLS_SOURCE = setuptools-$(PYTHON_SETUPTOOLS_VER).tar.gz
 
 $(ARCHIVE)/$(PYTHON_SETUPTOOLS_SOURCE):
@@ -328,7 +328,7 @@ $(D)/python_six: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(ARCHIVE)/$(
 #
 # python_cffi
 #
-PYTHON_CFFI_VER = 1.2.1
+PYTHON_CFFI_VER = 1.14.6
 PYTHON_CFFI_SOURCE = cffi-$(PYTHON_CFFI_VER).tar.gz
 
 $(ARCHIVE)/$(PYTHON_CFFI_SOURCE):
@@ -339,8 +339,19 @@ $(D)/python_cffi: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(D)/libffi 
 	$(REMOVE)/cffi-$(PYTHON_CFFI_VER)
 	$(UNTAR)/$(PYTHON_CFFI_SOURCE)
 	$(CH_DIR)/cffi-$(PYTHON_CFFI_VER); \
-		$(PYTHON_BUILD); \
+		PYTHONPATH=$(TARGET_DIR)/$(PYTHON_DIR)/site-packages \
+		CPPFLAGS="$(TARGET_CPPFLAGS) -I$(TARGET_DIR)/$(PYTHON_INCLUDE_DIR)" \
+		$(HOST_DIR)/bin/python ./setup.py $(MINUS_Q) build_ext -f -i; \
 		$(PYTHON_INSTALL)
+		$(SILENT)cd $(BUILD_TMP)/cffi-$(PYTHON_CFFI_VER); \
+		CC="$(TARGET)-gcc" \
+		CFLAGS="$(TARGET_CFLAGS)" \
+		LDFLAGS="$(TARGET_LDFLAGS)" \
+		LDSHARED="$(TARGET)-gcc -shared" \
+		PYTHONPATH=$(TARGET_DIR)/$(PYTHON_DIR)/site-packages \
+		CPPFLAGS="$(TARGET_CPPFLAGS) -I$(TARGET_DIR)/$(PYTHON_INCLUDE_DIR)" \
+		$(HOST_DIR)/bin/python ./setup.py $(MINUS_Q) build_ext -f -i; \
+		cp ./_cffi_backend.so $(TARGET_DIR)/$(PYTHON_DIR)/site-packages/_cffi_backend.so.sh4
 	$(REMOVE)/cffi-$(PYTHON_CFFI_VER)
 	$(TOUCH)
 
@@ -355,12 +366,12 @@ $(ARCHIVE)/$(PYTHON_SQLITE3_SOURCE):
 
 $(D)/python_sqlite3: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(D)/libffi $(D)/python_pycparser $(ARCHIVE)/$(PYTHON_CFFI_SOURCE)
 	$(START_BUILD)
-	$(REMOVE)/cffi-$(PYTHON_SQLITE3_VER)
+	$(REMOVE)/sqlite3-$(PYTHON_SQLITE3_VER)
 	$(UNTAR)/$(PYTHON_SQLITE3_SOURCE)
-	$(CH_DIR)/cffi-$(PYTHON_SQLITE3_VER); \
+	$(CH_DIR)/sqlite3-$(PYTHON_SQLITE3_VER); \
 		$(PYTHON_BUILD); \
 		$(PYTHON_INSTALL)
-	$(REMOVE)/cffi-$(PYTHON_SQLITE3_VER)
+	$(REMOVE)/sqlite3-$(PYTHON_SQLITE3_VER)
 	$(TOUCH)
 
 #
@@ -442,13 +453,13 @@ $(D)/python_pycparser: $(D)/bootstrap $(D)/python $(ARCHIVE)/$(PYTHON_PYCPARSER_
 #
 # python_cryptography
 #
-PYTHON_CRYPTOGRAPHY_VER = 0.8.1
+PYTHON_CRYPTOGRAPHY_VER = 3.3.1
 PYTHON_CRYPTOGRAPHY_SOURCE = cryptography-$(PYTHON_CRYPTOGRAPHY_VER).tar.gz
 
 $(ARCHIVE)/$(PYTHON_CRYPTOGRAPHY_SOURCE):
 	$(WGET) https://pypi.python.org/packages/source/c/cryptography/$(PYTHON_CRYPTOGRAPHY_SOURCE)
 
-$(D)/python_cryptography: $(D)/bootstrap $(D)/python_cffi $(D)/python_pyasn1 $(D)/python_enum34 $(D)/python $(D)/python_setuptools $(D)/python_pyopenssl $(D)/python_six $(ARCHIVE)/$(PYTHON_CRYPTOGRAPHY_SOURCE)
+$(D)/python_cryptography: $(D)/bootstrap $(D)/python_cffi $(D)/python_pyasn1 $(D)/python_enum34 $(D)/python $(D)/python_setuptools $(D)/python_six $(ARCHIVE)/$(PYTHON_CRYPTOGRAPHY_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/cryptography-$(PYTHON_CRYPTOGRAPHY_VER)
 	$(UNTAR)/$(PYTHON_CRYPTOGRAPHY_SOURCE)
@@ -468,7 +479,7 @@ PYTHON_PYOPENSSL_PATCH =
 $(ARCHIVE)/$(PYTHON_PYOPENSSL_SOURCE):
 	$(WGET) https://pypi.python.org/packages/source/p/pyOpenSSL/$(PYTHON_PYOPENSSL_SOURCE)
 
-$(D)/python_pyopenssl: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(D)/openssl $(ARCHIVE)/$(PYTHON_PYOPENSSL_SOURCE)
+$(D)/python_pyopenssl: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(D)/openssl $(D)/python_cryptography $(ARCHIVE)/$(PYTHON_PYOPENSSL_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/pyOpenSSL-$(PYTHON_PYOPENSSL_VER)
 	$(UNTAR)/$(PYTHON_PYOPENSSL_SOURCE)
@@ -525,7 +536,7 @@ $(D)/python_attr: $(D)/bootstrap $(D)/python $(ARCHIVE)/$(PYTHON_ATTR_SOURCE)
 #
 PYTHON_ATTRS_VER = 19.1.0
 PYTHON_ATTRS_SOURCE = attrs-$(PYTHON_ATTRS_VER).tar.gz
-PYTHON_ATTRS_PARCH =
+PYTHON_ATTRS_PATCH =
 
 $(ARCHIVE)/$(PYTHON_ATTRS_SOURCE):
 	$(WGET) https://pypi.io/packages/source/a/attrs/$(PYTHON_ATTRS_SOURCE)
