@@ -1,4 +1,4 @@
-# revision ecf765a2c34e7156ac57fd14e9b9e7e151e8f306 29/07/2021 11:32
+# revision e72ab3a57870ef5cecc97f2ec0ed9ffb5577081c 07/08/2021 14:49
 --- enigma2.org/configure.ac
 +++ enigma2/configure.ac
 @@ -18,6 +18,7 @@
@@ -440,7 +440,7 @@
  lib/python/Plugins/SystemPlugins/DefaultServicesScanner/Makefile
  lib/python/Plugins/SystemPlugins/DefaultServicesScanner/meta/Makefile
  lib/python/Plugins/SystemPlugins/DiseqcTester/Makefile
-@@ -345,6 +628,65 @@
+@@ -345,6 +628,70 @@
  lib/python/Plugins/SystemPlugins/Videomode/meta/Makefile
  lib/python/Plugins/SystemPlugins/WirelessLan/Makefile
  lib/python/Plugins/SystemPlugins/WirelessLan/meta/Makefile
@@ -500,6 +500,11 @@
 +lib/python/Plugins/Extensions/spark7162VFD/locale/Makefile
 +lib/python/Plugins/Extensions/spark7162VFD/locale/nl/Makefile
 +lib/python/Plugins/Extensions/spark7162VFD/locale/nl/LC_MESSAGES/Makefile
++lib/python/Plugins/Extensions/ufs9xxVFD/Makefile
++lib/python/Plugins/Extensions/ufs9xxVFD/meta/Makefile
++lib/python/Plugins/Extensions/ufs9xxVFD/locale/Makefile
++lib/python/Plugins/Extensions/ufs9xxVFD/locale/nl/Makefile
++lib/python/Plugins/Extensions/ufs9xxVFD/locale/nl/LC_MESSAGES/Makefile
 +lib/python/Plugins/Extensions/TopfieldVFD/Makefile
 +lib/python/Plugins/SystemPlugins/VFD-Icons/Makefile
 +lib/python/Plugins/SystemPlugins/VFD-Icons/meta/Makefile
@@ -1996,7 +2001,7 @@
 + ||   defined (ENABLE_UFS912) \
 + ||   defined (ENABLE_UFS913) \
 + ||   defined (ENABLE_UFS922)
-+#define ICON_MAX 15
++#define ICON_MAX 16
 +#elif defined (ENABLE_CUBEREVO)
 +#define ICON_MAX 27
 +#elif defined (ENABLE_CUBEREVO_MINI) \
@@ -2026,7 +2031,7 @@
 +#define ICON_OFF 0
 +
 +#if 0 //!defined (ENABLE_FS9000)
-+typedef enum { USB = 0x10, HD, HDD, LOCK, BT, MP3, MUSIC, DD, MAIL, MUTE, PLAY, PAUSE, FF, FR, REC, CLOCK } tvfd_icon;
++typedef enum { USB = 1, HD, HDD, LOCK, BT, MP3, MUSIC, DD, MAIL, MUTE, PLAY, PAUSE, FF, FR, REC, CLOCK } tvfd_icon;
 +typedef enum { RED_LED = 0, GREEN_LED } tvfd_led;
 +//#else
 +//typedef enum { USB = 1, I_STANDBY, I_SAT, I_REC, I_TIMESHIFT, I_TIMER, I_HD, I_LOCK, I_DD, I_MUTE, I_TUNER1, I_TUNER2, I_MP3, I_REPEAT,
@@ -6166,7 +6171,7 @@
 +		self.text = text
 --- enigma2.org/lib/python/Components/UsageConfig.py
 +++ enigma2/lib/python/Components/UsageConfig.py
-@@ -297,7 +297,7 @@
+@@ -261,7 +261,7 @@
  
  	config.misc.disable_background_scan = ConfigYesNo(default=False)
  	config.misc.use_ci_assignment = ConfigYesNo(default=False)
@@ -9273,7 +9278,7 @@
 +				if (model in ("cuberevo", "cuberevo_mini-fta", "cuberevo-250hd", "cuberevo-mini", "cuberevo-mini2", "cuberevo-2000hd", "cuberevo-3000hd", "cuberevo-9500hd")):
 +					fp_version = _("Frontprocessor version: %s") % fp_version
 +				else:
-+					fp_version = _("Frontprocessor version: %s") % (fp_version / 100, fp_version % 100)
++					fp_version = _("Frontprocessor version: %d.%02d") % (fp_version / 100, fp_version % 100)
 +			AboutText += fp_version + "\n"
  
  		self["FPVersion"] = StaticText(fp_version)

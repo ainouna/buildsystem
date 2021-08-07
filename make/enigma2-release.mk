@@ -130,6 +130,12 @@ enigma2_release_ufs910:
 	$(SILENT)cp -dp $(SKEL_ROOT)/release/lircd_ufs910.conf $(RELEASE_DIR)/etc/lircd.conf
 	$(SILENT)mkdir -p $(RELEASE_DIR)/var/run/lirc
 	$(SILENT)rm -f $(RELEASE_DIR)/bin/vdstandby
+	$(SILENT)if [ -e $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/ufs9xxVFD/plugin.py ]; then \
+		rm -f $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/SystemPlugins/VFD-Icons/*; \
+		cp -f $(SKEL_ROOT)/release/vfddisplay.png $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/ufs9xxVFD; \
+		cp -rf $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/ufs9xxVFD/* $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/SystemPlugins/VFD-Icons; \
+		rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/ufs9xxVFD; \
+	fi
 	$(SILENT)cp -f $(SKEL_ROOT)/root_enigma2/usr/local/share/enigma2/keymap_ufs910.xml $(RELEASE_DIR)/usr/local/share/enigma2/keymap.xml
 
 #
@@ -143,6 +149,12 @@ enigma2_release_ufs912:
 	$(SILENT)cp $(SKEL_ROOT)/boot/video_7111.elf $(RELEASE_DIR)/boot/video.elf
 	$(SILENT)cp $(SKEL_ROOT)/boot/audio_7111.elf $(RELEASE_DIR)/boot/audio.elf
 	$(SILENT)cp $(SKEL_ROOT)/firmware/component_7111_mb618.fw $(RELEASE_DIR)/lib/firmware/component.fw
+	$(SILENT)if [ -e $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/ufs9xxVFD/plugin.py ]; then \
+		rm -f $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/SystemPlugins/VFD-Icons/*; \
+		cp -f $(SKEL_ROOT)/release/vfddisplay.png $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/ufs9xxVFD; \
+		cp -rf $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/ufs9xxVFD/* $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/SystemPlugins/VFD-Icons; \
+		rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/ufs9xxVFD; \
+	fi
 	$(SILENT)cp -f $(SKEL_ROOT)/root_enigma2/usr/local/share/enigma2/keymap_ufs912.xml $(RELEASE_DIR)/usr/local/share/enigma2/keymap.xml
 
 #
@@ -157,6 +169,12 @@ enigma2_release_ufs913:
 	$(SILENT)cp $(SKEL_ROOT)/boot/audio_7105.elf $(RELEASE_DIR)/boot/audio.elf
 	$(SILENT)cp $(SKEL_ROOT)/firmware/component_7105_pdk7105.fw $(RELEASE_DIR)/lib/firmware/component.fw
 	$(SILENT)cp $(SKEL_ROOT)/firmware/dvb-fe-avl6222.fw $(RELEASE_DIR)/lib/firmware/
+	$(SILENT)if [ -e $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/ufs9xxVFD/plugin.py ]; then \
+		rm -f $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/SystemPlugins/VFD-Icons/*; \
+		cp -f $(SKEL_ROOT)/release/vfddisplay.png $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/ufs9xxVFD; \
+		cp -rf $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/ufs9xxVFD/* $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/SystemPlugins/VFD-Icons; \
+		rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/ufs9xxVFD; \
+	fi
 	$(SILENT)cp -f $(SKEL_ROOT)/root_enigma2/usr/local/share/enigma2/keymap_ufs913.xml $(RELEASE_DIR)/usr/local/share/enigma2/keymap.xml
 
 #
@@ -173,6 +191,12 @@ enigma2_release_ufs922:
 	$(SILENT)cp $(SKEL_ROOT)/firmware/dvb-fe-avl6222.fw $(RELEASE_DIR)/lib/firmware/
 	$(SILENT)cp $(SKEL_ROOT)/firmware/dvb-fe-cx21143.fw $(RELEASE_DIR)/lib/firmware/
 	$(SILENT)cp $(SKEL_ROOT)/firmware/dvb-fe-stv6306.fw $(RELEASE_DIR)/lib/firmware/
+	$(SILENT)if [ -e $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/ufs9xxVFD/plugin.py ]; then \
+		rm -f $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/SystemPlugins/VFD-Icons/*; \
+		cp -f $(SKEL_ROOT)/release/vfddisplay.png $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/ufs9xxVFD; \
+		cp -rf $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/ufs9xxVFD/* $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/SystemPlugins/VFD-Icons; \
+		rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/ufs9xxVFD; \
+	fi
 	$(SILENT)cp -f $(SKEL_ROOT)/root_enigma2/usr/local/share/enigma2/keymap_ufs910.xml $(RELEASE_DIR)/usr/local/share/enigma2/keymap.xml
 	$(SILENT)touch $(RELEASE_DIR)/etc/.rccode
 	$(SILENT)echo "1" > $(RELEASE_DIR)/etc/.rccode
@@ -543,12 +567,6 @@ enigma2_release_adb_box:
 	$(SILENT)cp -dp $(SKEL_ROOT)/release/lircd_adb_box.conf $(RELEASE_DIR)/etc/lircd.conf
 	$(SILENT)mkdir -p $(RELEASE_DIR)/var/run/lirc
 	$(SILENT)rm -f $(RELEASE_DIR)/bin/vdstandby
-#ifeq ($(DESTINATION), flash)
-#	$(SILENT)rm -f $(RELEASE_DIR)/lib/modules/mt7601Usta.ko
-#	$(SILENT)rm -f $(RELEASE_DIR)/lib/modules/rt3070sta.ko
-#	$(SILENT)rm -f $(RELEASE_DIR)/lib/modules/8188eu.ko
-#	$(SILENT)rm -f $(RELEASE_DIR)/lib/modules/8192eu.ko
-#endif
 	$(SILENT)if [ -e $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/adb_5800VFD/plugin.py ]; then \
 		rm -f $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/SystemPlugins/VFD-Icons/*; \
 		cp -f $(SKEL_ROOT)/release/vfddisplay.png $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/adb_5800VFD; \
@@ -1053,6 +1071,7 @@ endif
 	$(SILENT)rm -rf $(RELEASE_DIR)/$(PYTHON_DIR)/site-packages/twisted/web/test
 	$(SILENT)rm -rf $(RELEASE_DIR)/$(PYTHON_DIR)/site-packages/twisted/words/test
 	$(SILENT)rm -rf $(RELEASE_DIR)/$(PYTHON_DIR)/site-packages/*-py$(PYTHON_VER_MAJOR).egg-info
+	$(SILENT)mv -fT $(RELEASE_DIR)/$(PYTHON_DIR)/site-packages/_cffi_backend.so.sh4 $(RELEASE_DIR)/$(PYTHON_DIR)/site-packages/_cffi_backend.so
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/DemoPlugins
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/SystemPlugins/FrontprocessorUpgrade
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/SystemPlugins/NFIFlash
@@ -1061,7 +1080,7 @@ endif
 ifeq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), small size))
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/DVDBurn
 endif
-#
+# 
 # Remove WirelessLAN plugin if no wlan built
 #
 ifneq ($(IMAGE), $(filter $(IMAGE), enigma2-wlandriver neutrino-wlandriver))
@@ -1161,6 +1180,7 @@ ifneq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), kerneldebug debug))
 	@echo -n "Stripping..." ;
 	$(SILENT)find $(RELEASE_DIR)/ -name '*' -exec $(TARGET)-strip --strip-unneeded {} &>/dev/null \;
 	@echo -e " done.\n" ;
+#	ls -l $(RELEASE_DIR)/$(PYTHON_DIR)/site-packages/*.so*
 endif
 #
 # release-clean
