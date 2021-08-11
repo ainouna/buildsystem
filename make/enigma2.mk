@@ -191,7 +191,7 @@ $(SOURCE_DIR)/enigma2/config.status:
 			--bindir=/usr/local/bin \
 			--prefix=/usr \
 			--sysconfdir=/etc \
-			--with-boxtype=none \
+			--with-boxtype=$(BOXTYPE) \
 			$(ENIGMA_OPT_OPTION) \
 			PKG_CONFIG=$(PKG_CONFIG) \
 			PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) \
