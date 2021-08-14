@@ -5500,6 +5500,189 @@
  };
  
  void eConsoleInit(void)
+--- enigma2.org/lib/python/Components/About.py
++++ enigma2/lib/python/Components/About.py
+@@ -58,12 +58,15 @@
+ 
+ 
+ def getGStreamerVersionString():
+-	try:
+-		from glob import glob
+-		gst = [x.split("Version: ") for x in open(glob("/var/lib/opkg/info/gstreamer[0-9].[0-9].control")[0], "r") if x.startswith("Version:")][0]
+-		return "%s" % gst[1].split("+")[0].replace("\n", "")
+-	except:
+-		return _("Not Installed")
++	from glob import glob
++	if os.path.isfile('/usr/lib/pkgconfig/gstreamer-1.0.pc'):
++		gstversion = [x.split("Version:") for x in open(glob("/usr/lib/pkgconfig/gstreamer-1.0.pc")[0], "r") if x.startswith("Version:")][0]
++		if os.path.isfile('/usr/lib/libeplayer3.so'):
++			return "Gstreamer " + ("%s" % gstversion[1].replace("\n","")) + " + eplayer3"
++		else:
++			return "Gstreamer " + ("%s" % gstversion[1].replace("\n",""))
++	else:
++		return _("eplayer3")
+ 
+ 
+ def getffmpegVersionString():
+@@ -83,7 +86,7 @@
+ 
+ 
+ def getHardwareTypeString():
+-	return HardwareInfo().get_device_string()
++	return HardwareInfo().get_device_string().upper()
+ 
+ 
+ def getImageTypeString():
+@@ -97,29 +100,19 @@
+ def getCPUInfoString():
+ 	try:
+ 		cpu_count = 0
+-		cpu_speed = 0
++		cpu_speed = "unknown"
+ 		processor = ""
+ 		for line in open("/proc/cpuinfo").readlines():
+ 			line = [x.strip() for x in line.strip().split(":")]
+-			if not processor and line[0] in ("system type", "model name", "Processor"):
++			if not processor and line[0] == "cpu type":
+ 				processor = line[1].split()[0]
+-			elif not cpu_speed and line[0] == "cpu MHz":
++			elif cpu_speed == "unknown" and line[0] == "cpu MHz":
+ 				cpu_speed = "%1.0f" % float(line[1])
+ 			elif line[0] == "processor":
+ 				cpu_count += 1
+ 
+ 		if processor.startswith("ARM") and os.path.isfile("/proc/stb/info/chipset"):
+ 			processor = "%s (%s)" % (open("/proc/stb/info/chipset").readline().strip().upper(), processor)
+-
+-		if not cpu_speed:
+-			try:
+-				cpu_speed = int(open("/sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq").read()) / 1000
+-			except:
+-				try:
+-					import binascii
+-					cpu_speed = int(int(binascii.hexlify(open('/sys/firmware/devicetree/base/cpus/cpu@0/clock-frequency', 'rb').read()), 16) / 100000000) * 100
+-				except:
+-					cpu_speed = "-"
+ 
+ 		temperature = None
+ 		if os.path.isfile('/proc/stb/fp/temp_sensor_avs'):
+#--- enigma2.org/lib/python/Components/FanControl.py
+#+++ enigma2/lib/python/Components/FanControl.py
+#@@ -6,6 +6,14 @@
+# import NavigationInstance
+# from enigma import iRecordableService
+# 
+#+
+#+def fanSpeedChanged(configElement=None):
+#+	from Screens.Standby import inStandby
+#+	print "[FanControl]: fanSpeedChanged"
+#+	if inStandby is False:
+#+		self.setVoltage_PWM()
+#+	else:
+#+		self.setVoltage_PWM_Standby()
+# 
+# class FanControl:
+# 	# ATM there's only support for one fan
+#@@ -54,22 +62,38 @@
+# 		if not recordings:
+# 			self.setVoltage_PWM_Standby()
+# 
+#+#	def fanSpeedChanged(configElement=None):
+#+#		from Screens.Standby import inStandby
+#+#		print "[FanControl]: fanSpeedChanged"
+#+#		if inStandby is False:
+#+#			self.setVoltage_PWM()
+#+#		else:
+#+#			self.setVoltage_PWM_Standby()
+#+
+# 	def createConfig(self):
+#-		def setVlt(fancontrol, fanid, configElement):
+#-			fancontrol.setVoltage(fanid, configElement.value)
+#+		if os.path.exists("/proc/stb/fp/fan_vlt"):
+#+			def setVlt(fancontrol, fanid, configElement):
+#+				fancontrol.setVoltage(fanid, configElement.value)
+# 
+#-		def setPWM(fancontrol, fanid, configElement):
+#-			fancontrol.setPWM(fanid, configElement.value)
+#+		if os.path.exists("/proc/stb/fp/fan_pwm"):
+#+			def setPWM(fancontrol, fanid, configElement):
+#+				fancontrol.setPWM(fanid, configElement.value)
+# 
+# 		config.fans = ConfigSubList()
+# 		for fanid in range(self.getFanCount()):
+# 			fan = ConfigSubsection()
+#-			fan.vlt = ConfigSlider(default=15, increment=5, limits=(0, 255))
+#-			fan.pwm = ConfigSlider(default=0, increment=5, limits=(0, 255))
+#-			fan.vlt_standby = ConfigSlider(default=5, increment=5, limits=(0, 255))
+#-			fan.pwm_standby = ConfigSlider(default=0, increment=5, limits=(0, 255))
+#-			fan.vlt.addNotifier(boundFunction(setVlt, self, fanid))
+#-			fan.pwm.addNotifier(boundFunction(setPWM, self, fanid))
+#+			if os.path.exists("/proc/stb/fp/fan_vlt"):
+#+				fan.vlt = ConfigSlider(default=127, increment=8, limits=(0, 255))
+#+			if os.path.exists("/proc/stb/fp/fan_pwm"):
+#+				fan.pwm = ConfigSlider(default=127, increment=8, limits=(0, 255))
+#+			if os.path.exists("/proc/stb/fp/fan_vlt"):
+#+				fan.vlt_standby = ConfigSlider(default=63, increment=8, limits=(0, 255))
+#+			if os.path.exists("/proc/stb/fp/fan_pwm"):
+#+				fan.pwm_standby = ConfigSlider(default=63, increment=8, limits=(0, 255))
+#+			if os.path.exists("/proc/stb/fp/fan_vlt"):
+#+				fan.vlt.addNotifier(boundFunction(setVlt, self, fanid))
+#+			if os.path.exists("/proc/stb/fp/fan_pwm"):
+#+				fan.pwm.addNotifier(boundFunction(setPWM, self, fanid))
+# 			config.fans.append(fan)
+# 
+# 	def getConfig(self, fanid):
+#@@ -79,29 +103,43 @@
+# 		return self.fancount
+# 
+# 	def hasRPMSensor(self, fanid):
+#-		return os.path.exists("/proc/stb/fp/fan_speed")
+#+		if os.path.exists("/proc/stb/fp/fan_speed"):
+#+			return 1
+#+		return 0
+# 
+# 	def hasFanControl(self, fanid):
+#-		return os.path.exists("/proc/stb/fp/fan_vlt") or os.path.exists("/proc/stb/fp/fan_pwm")
+#+		if os.path.exists("/proc/stb/fp/fan_vlt"):
+#+			return 1
+#+		if os.path.exists("/proc/stb/fp/fan_pwm"):
+#+			return 1
+#+		return 0
+# 
+# 	def getFanSpeed(self, fanid):
+#-		return int(open("/proc/stb/fp/fan_speed", "r").readline().strip()[:-4])
+#+		if os.path.exists("/proc/stb/fp/fan_speed"):
+#+			return int(open("/proc/stb/fp/fan_speed", "r").readline().strip()[:-4])
+#+		return 0
+# 
+# 	def getVoltage(self, fanid):
+#-		return int(open("/proc/stb/fp/fan_vlt", "r").readline().strip(), 16)
+#+		if os.path.exists("/proc/stb/fp/fan_vlt"):
+#+			return int(open("/proc/stb/fp/fan_vlt", "r").readline().strip(), 16)
+#+		return 0;
+# 
+# 	def setVoltage(self, fanid, value):
+# 		if value > 255:
+# 			return
+#-		open("/proc/stb/fp/fan_vlt", "w").write("%x" % value)
+#+		if os.path.exists("/proc/stb/fp/fan_vlt"):
+#+			open("/proc/stb/fp/fan_vlt", "w").write("%x" % value)
+# 
+# 	def getPWM(self, fanid):
+#-		return int(open("/proc/stb/fp/fan_pwm", "r").readline().strip(), 16)
+#+		if os.path.exists("/proc/stb/fp/fan_pwm"):
+#+			return int(open("/proc/stb/fp/fan_pwm", "r").readline().strip(), 16)
+#+		return 0
+# 
+# 	def setPWM(self, fanid, value):
+# 		if value > 255:
+# 			return
+#-		open("/proc/stb/fp/fan_pwm", "w").write("%x" % value)
+#+		if os.path.exists("/proc/stb/fp/fan_pwm"):
+#+			open("/proc/stb/fp/fan_pwm", "w").write("%x" % value)
+# 
+# 
+# fancontrol = FanControl()
 --- enigma2.org/lib/python/Components/Converter/RemainingToText.py
 +++ enigma2/lib/python/Components/Converter/RemainingToText.py
 @@ -10,6 +10,9 @@
@@ -6169,7 +6352,15 @@
 +		self.text = text
 --- enigma2.org/lib/python/Components/UsageConfig.py
 +++ enigma2/lib/python/Components/UsageConfig.py
-@@ -261,7 +261,7 @@
+@@ -6,6 +6,7 @@
+ from Components.About import GetIPsFromNetworkInterfaces
+ from Components.NimManager import nimmanager
+ from Components.ServiceList import refreshServiceList
++#from Components.FanControl import fanSpeedChanged
+ from SystemInfo import SystemInfo
+ import os
+ import time
+@@ -261,7 +262,7 @@
  
  	config.misc.disable_background_scan = ConfigYesNo(default=False)
  	config.misc.use_ci_assignment = ConfigYesNo(default=False)
@@ -7747,6 +7938,42 @@
  		elif self.step == 3:
  			self.save_new_position = True
  			self.step = 5
+--- enigma2.org/lib/python/Plugins/SystemPlugins/TempFanControl/plugin.py
++++ enigma2/lib/python/Plugins/SystemPlugins/TempFanControl/plugin.py
+@@ -127,9 +127,9 @@
+ 
+ 		self.list = []
+ 		for count in range(fancontrol.getFanCount()):
+-			self.list.append(getConfigListEntry(_("Fan %d voltage") % (count + 1), fancontrol.getConfig(count).vlt))
++#			self.list.append(getConfigListEntry(_("Fan %d voltage") % (count + 1), fancontrol.getConfig(count).vlt))
+ 			self.list.append(getConfigListEntry(_("Fan %d PWM") % (count + 1), fancontrol.getConfig(count).pwm))
+-			self.list.append(getConfigListEntry(_("Standby fan %d voltage") % (count + 1), fancontrol.getConfig(count).vlt_standby))
++#			self.list.append(getConfigListEntry(_("Standby fan %d voltage") % (count + 1), fancontrol.getConfig(count).vlt_standby))
+ 			self.list.append(getConfigListEntry(_("Standby fan %d PWM") % (count + 1), fancontrol.getConfig(count).pwm_standby))
+ 
+ 		ConfigListScreen.__init__(self, self.list, session=self.session)
+@@ -149,17 +149,17 @@
+ 
+ 	def save(self):
+ 		for count in range(fancontrol.getFanCount()):
+-			fancontrol.getConfig(count).vlt.save()
++#			fancontrol.getConfig(count).vlt.save()
+ 			fancontrol.getConfig(count).pwm.save()
+-			fancontrol.getConfig(count).vlt_standby.save()
++#			fancontrol.getConfig(count).vlt_standby.save()
+ 			fancontrol.getConfig(count).pwm_standby.save()
+ 		self.close()
+ 
+ 	def revert(self):
+ 		for count in range(fancontrol.getFanCount()):
+-			fancontrol.getConfig(count).vlt.load()
++#			fancontrol.getConfig(count).vlt.load()
+ 			fancontrol.getConfig(count).pwm.load()
+-			fancontrol.getConfig(count).vlt_standby.load()
++#			fancontrol.getConfig(count).vlt_standby.load()
+ 			fancontrol.getConfig(count).pwm_standby.load()
+ 		self.close()
+ 
 --- enigma2.org/lib/python/Screens/ChannelSelection.py
 +++ enigma2/lib/python/Screens/ChannelSelection.py
 @@ -6,6 +6,11 @@
@@ -9066,6 +9293,15 @@
  
  #include "bsod.h"
  #include "version_info.h"
+@@ -204,7 +205,7 @@
+ 	printf("DVB_API_VERSION %d DVB_API_VERSION_MINOR %d\n", DVB_API_VERSION, DVB_API_VERSION_MINOR);
+ 
+ 	// get enigma2 debug level settings
+-	debugLvl = getenv("ENIGMA_DEBUG_LVL") ? atoi(getenv("ENIGMA_DEBUG_LVL")) : 3;
++	debugLvl = getenv("ENIGMA_DEBUG_LVL") ? atoi(getenv("ENIGMA_DEBUG_LVL")) : 4;
+ 	if (debugLvl < 0)
+ 		debugLvl = 0;
+ 	printf("ENIGMA_DEBUG_LVL=%d\n", debugLvl);
 @@ -235,6 +236,12 @@
  	eWidgetDesktop dsk_lcd(my_lcd_dc->size());
  
@@ -9160,72 +9396,6 @@
  
  if [ -d /home/root ]; then
  	export HOME=/home/root
---- enigma2.org/lib/python/Components/About.py
-+++ enigma2/lib/python/Components/About.py
-@@ -58,12 +58,15 @@
- 
- 
- def getGStreamerVersionString():
--	try:
--		from glob import glob
--		gst = [x.split("Version: ") for x in open(glob("/var/lib/opkg/info/gstreamer[0-9].[0-9].control")[0], "r") if x.startswith("Version:")][0]
--		return "%s" % gst[1].split("+")[0].replace("\n", "")
--	except:
--		return _("Not Installed")
-+	from glob import glob
-+	if os.path.isfile('/usr/lib/pkgconfig/gstreamer-1.0.pc'):
-+		gstversion = [x.split("Version:") for x in open(glob("/usr/lib/pkgconfig/gstreamer-1.0.pc")[0], "r") if x.startswith("Version:")][0]
-+		if os.path.isfile('/usr/lib/libeplayer3.so'):
-+			return "Gstreamer " + ("%s" % gstversion[1].replace("\n","")) + " + eplayer3"
-+		else:
-+			return "Gstreamer " + ("%s" % gstversion[1].replace("\n",""))
-+	else:
-+		return _("eplayer3")
- 
- 
- def getffmpegVersionString():
-@@ -83,7 +86,7 @@
- 
- 
- def getHardwareTypeString():
--	return HardwareInfo().get_device_string()
-+	return HardwareInfo().get_device_string().upper()
- 
- 
- def getImageTypeString():
-@@ -97,29 +100,19 @@
- def getCPUInfoString():
- 	try:
- 		cpu_count = 0
--		cpu_speed = 0
-+		cpu_speed = "unknown"
- 		processor = ""
- 		for line in open("/proc/cpuinfo").readlines():
- 			line = [x.strip() for x in line.strip().split(":")]
--			if not processor and line[0] in ("system type", "model name", "Processor"):
-+			if not processor and line[0] == "cpu type":
- 				processor = line[1].split()[0]
--			elif not cpu_speed and line[0] == "cpu MHz":
-+			elif cpu_speed == "unknown" and line[0] == "cpu MHz":
- 				cpu_speed = "%1.0f" % float(line[1])
- 			elif line[0] == "processor":
- 				cpu_count += 1
- 
- 		if processor.startswith("ARM") and os.path.isfile("/proc/stb/info/chipset"):
- 			processor = "%s (%s)" % (open("/proc/stb/info/chipset").readline().strip().upper(), processor)
--
--		if not cpu_speed:
--			try:
--				cpu_speed = int(open("/sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq").read()) / 1000
--			except:
--				try:
--					import binascii
--					cpu_speed = int(int(binascii.hexlify(open('/sys/firmware/devicetree/base/cpus/cpu@0/clock-frequency', 'rb').read()), 16) / 100000000) * 100
--				except:
--					cpu_speed = "-"
- 
- 		temperature = None
- 		if os.path.isfile('/proc/stb/fp/temp_sensor_avs'):
 --- enigma2.org/lib/python/Screens/About.py
 +++ enigma2/lib/python/Screens/About.py
 @@ -13,6 +13,8 @@
