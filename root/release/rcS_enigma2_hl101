@@ -57,13 +57,13 @@ if [ ! -e /boot/audio.elf ] || [ ! -e /boot/video.elf ]; then
    echo "FW MISSING!" > /dev/vfd
 fi
 
-echo "[rcS] Load audio firmware (LOAD 8)"
+echo "[rcS] Load video firmware (LOAD 8)"
 echo "Load 8" > /dev/vfd
-/bin/ustslave  /dev/st231-1 /boot/audio.elf > /dev/null
-
-echo "[rcS] Load video firmware (LOAD 7)"
-echo "Load 7" > /dev/vfd
 /bin/ustslave /dev/st231-0 /boot/video.elf > /dev/null
+
+echo "[rcS] Load audio firmware (LOAD 7)"
+echo "Load 7" > /dev/vfd
+/bin/ustslave  /dev/st231-1 /boot/audio.elf > /dev/null
 
 echo "[rcS] Init embx (LOAD 6)"
 echo "Load 6" > /dev/vfd

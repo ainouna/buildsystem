@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 200727.1
+#Version 210813.1
 
 echo "[rcS] Start"
 echo "Fortis FS9000/9200 Enigma2"
@@ -72,13 +72,13 @@ if [ ! -e /boot/audio.elf ] || [ ! -e /boot/video.elf ]; then
    sleep 5
 fi
 
-echo "[rcS] Load audio firmware (LOAD 8)"
+echo "[rcS] Load video firmware (LOAD 8)"
 echo "Load 8" > /dev/vfd
-/bin/ustslave /dev/st231-1 /boot/audio.elf > /dev/null
-
-echo "[rcS] Load video firmware (LOAD 7)"
-echo "Load 7" > /dev/vfd
 /bin/ustslave /dev/st231-0 /boot/video.elf > /dev/null
+
+echo "[rcS] Load audio firmware (LOAD 7)"
+echo "Load 7" > /dev/vfd
+/bin/ustslave /dev/st231-1 /boot/audio.elf > /dev/null
 
 echo "[rcS] Init embx (LOAD 6)"
 echo "Load 6" > /dev/vfd
@@ -129,15 +129,19 @@ if [ -e /boot/bootlogo.mvi ]; then
 fi
 
 if [ -e $MODDIR/exportfs.ko ]; then
+   echo "[rcS] Init exportfs"
    insmod $MODDIR/exportfs.ko
 fi
 if [ -e $MODDIR/cifs.ko ]; then
+echo "[rcS] Init CIFS support"
    insmod $MODDIR/cifs.ko
 fi
 if [ -e $MODDIR/ntfs.ko ]; then
+   echo "[rcS] Init NTFS support"
    insmod $MODDIR/ntfs.ko
 fi
 if [ -e $MODDIR/tun.ko ]; then
+echo "[rcS] Init tun support"
    insmod $MODDIR/tun.ko
 fi
 if [ -e $MODDIR/usbserial.ko ]; then
@@ -150,9 +154,13 @@ if [ -e $MODDIR/usbserial.ko ]; then
    echo "[rcS] Init PL2303 USB serial support"
       insmod $MODDIR/pl2303.ko
    fi
+   if [ -e $MODDIR/ch341.ko ]; then
+   echo "[rcS] Init CH341 USB serial support"
+      insmod $MODDIR/ch341.ko
+   fi
 fi
 
-echo "[rcS] Init frontpanel (Load 2)"
+echo "[rcS] Init frontpanel (LOAD 2)"
 echo "Load 2" > /dev/vfd
 insmod $MODDIR/boxtype.ko
 insmod $MODDIR/simu_button.ko
@@ -194,7 +202,7 @@ if [ ! $wlan ] || [ ! -e $MODDIR/$wlan.ko ]; then
    echo "None."
 else
    insmod $MODDIR/$wlan.ko
-   echo "$wlan WLAN"
+   echo "[rcS] $wlan WLAN"
 #   echo "$wlan WLAN" > /dev/vfd
 #   sleep 3
 fi
@@ -234,7 +242,7 @@ fi
 # Try and synchronise time
 #inettime=`cat /etc/enigma2/settings | grep systemoptions.inettime | cut -d "=" -f2`
 # if [ ! $inettime ] && [ -e /sbin/ntpd ]; then
-#if [ -e /sbin/ntpd ]; then
+if [ -e /sbin/ntpd ]; then
    echo "[rcS] Set internet time"
    (ntpd -n -p 0.europe.pool.ntp.org -q; /bin/fp_control -sst)
 #else
@@ -242,7 +250,7 @@ fi
 #      echo "[rcS] Use transponder time"
 #      /usr/sbin/time.sh &
 #   fi
-#fi
+fi
 
 echo "[rcS] Init portmap & ftp"
 /etc/init.d/portmap start
@@ -273,8 +281,8 @@ do
       0) echo "[rcS] E2 ERROR"
          echo "E2 Error" > /dev/vfd
          init 6;;
-      1) echo "[rcS] SHUTDOWN"
-         echo "Shutdown" > /dev/vfd
+      1) echo "[rcS] Deep standby"
+         echo "Deep standby" > /dev/vfd
          if [ -e /usr/local/share/enigma2/shutdown.mvi ]; then
             showiframe -p /usr/local/share/enigma2/shutdown.mvi &
          fi

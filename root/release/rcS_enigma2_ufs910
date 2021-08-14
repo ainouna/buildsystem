@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 200915.1
+#Version 210813.1
 
 echo "[rcS] Start"
 echo "Kathrein UFS910 Enigma2"
@@ -139,6 +139,9 @@ if [ -e $MODDIR/usbserial.ko ]; then
    if [ -e $MODDIR/pl2303.ko ]; then
       insmod $MODDIR/pl2303.ko
    fi
+   if [ -e $MODDIR/ch341.ko ]; then
+      insmod $MODDIR/ch341.ko
+   fi
 fi
 
 echo "[rcS] Init frontpanel (LOAD 2)"
@@ -148,11 +151,11 @@ insmod $MODDIR/boxtype.ko
 
 var=`cat /proc/boxtype`
 case "$var" in
-   0)   echo "1W boxtype"
+   0)   echo "[rcS] Boxtype: 1W"
         echo "B" > /dev/ttyAS1
         echo "B" > /dev/ttyAS1 # Red LED off
         ;;
-   1|3) echo "14W boxtype"
+   1|3) echo "[rcS] Boxtype: 14W"
         echo "init lircd"
         if [ ! -d /var/run/lirc ]; then
            mkdir -p /var/run/lirc
@@ -254,23 +257,31 @@ if [ -e /etc/ownscript.sh ]; then
    /etc/ownscript.sh &
 fi
 
-echo "LOADING Enigma2" > /dev/vfd
+echo "LOAD Enigma2" > /dev/vfd
 echo "[rcS] Loading Enigma2"
 
 stfbcontrol a 255
+export ENIGMA_DEBUG_LVL=3
 
 until false
 do
-   echo "[rcS] Starting E2 ->"
+   echo "[rcS] Starting Enigma2 ->"
    /usr/local/bin/enigma2
    rtv=$?
-   echo "[rcS] E2 ended <- RTV: " $rtv
+   echo "[rcS] E2 ended <- return value: " $rtv
+   fp_control -i 17 0  # all icons off
    case "$rtv" in
-      0) echo "[rcS] E2 ERROR"
-         echo "E2 Error" > /dev/vfd
+      0) echo "[rcS] Enigma2 ERROR"
+         echo "Enigma2 ERROR" > /dev/vfd
          init 6;;
-      1) echo "[rcS] SHUTDOWN"
-         echo "Shutdown" > /dev/vfd
+      1) case "$var" in
+            0)   echo "[rcS] Deep Standby"
+                 echo "Deep Standby" > /dev/vfd
+                 ;;
+            1|3) echo "[rcS] SHUTDOWN"
+                 echo "Shutdown" > /dev/vfd
+                 ;;
+         esac
          if [ -e /usr/local/share/enigma2/shutdown.mvi ]; then
             showiframe -p /usr/local/share/enigma2/shutdown.mvi &
          fi
@@ -278,8 +289,9 @@ do
       2) echo "[rcS] REBOOT"
          echo "Reboot" > /dev/vfd
          init 6;;
-      3) echo "[rcS] E2 RESTART"
-         echo "E2 Restart" > /dev/vfd
+      3) echo "[rcS] Enigma2 RESTART"
+         echo "Enigma2 Restart" > /dev/vfd
+         export ENIGMA_DEBUG_LVL=3
          echo "0" > /proc/progress
          if [ -e /usr/local/share/enigma2/backdrop.mvi ]; then
             showiframe -p /usr/local/share/enigma2/backdrop.mvi &
@@ -288,6 +300,7 @@ do
          fi;;
       6) echo "[rcS] E2 DEBUG RESTART"
          echo "E2 Debug Restart" > /dev/vfd
+         export ENIGMA_DEBUG_LVL=4
          echo "0" > /proc/progress
          if [ -e /usr/local/share/enigma2/backdrop.mvi ]; then
             showiframe -p /usr/local/share/enigma2/backdrop.mvi &
@@ -295,7 +308,7 @@ do
             showiframe -p /boot/bootlogo.mvi &
          fi;;
       *) echo "[rcS] ERROR"
-         echo "Error" > /dev/vfd
+         echo "ERROR" > /dev/vfd
          init 6;;
    esac
 done
