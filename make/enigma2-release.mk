@@ -156,6 +156,8 @@ enigma2_release_ufs912:
 		rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/ufs9xxVFD; \
 	fi
 	$(SILENT)cp -f $(SKEL_ROOT)/root_enigma2/usr/local/share/enigma2/keymap_ufs912.xml $(RELEASE_DIR)/usr/local/share/enigma2/keymap.xml
+	$(SILENT)touch $(RELEASE_DIR)/etc/.rccode
+	$(SILENT)echo "1" > $(RELEASE_DIR)/etc/.rccode
 
 #
 # ufs913
@@ -176,6 +178,8 @@ enigma2_release_ufs913:
 		rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/ufs9xxVFD; \
 	fi
 	$(SILENT)cp -f $(SKEL_ROOT)/root_enigma2/usr/local/share/enigma2/keymap_ufs913.xml $(RELEASE_DIR)/usr/local/share/enigma2/keymap.xml
+	$(SILENT)touch $(RELEASE_DIR)/etc/.rccode
+	$(SILENT)echo "1" > $(RELEASE_DIR)/etc/.rccode
 
 #
 # ufs922
@@ -1071,7 +1075,12 @@ endif
 	$(SILENT)rm -rf $(RELEASE_DIR)/$(PYTHON_DIR)/site-packages/twisted/web/test
 	$(SILENT)rm -rf $(RELEASE_DIR)/$(PYTHON_DIR)/site-packages/twisted/words/test
 	$(SILENT)rm -rf $(RELEASE_DIR)/$(PYTHON_DIR)/site-packages/*-py$(PYTHON_VER_MAJOR).egg-info
-	$(SILENT)mv -fT $(RELEASE_DIR)/$(PYTHON_DIR)/site-packages/_cffi_backend.so.sh4 $(RELEASE_DIR)/$(PYTHON_DIR)/site-packages/_cffi_backend.so
+	$(SILENT)if [ -e $(RELEASE_DIR)/$(PYTHON_DIR)/site-packages/_cffi_backend.so.sh4 ]; then \
+		if [ -e $(RELEASE_DIR)/$(PYTHON_DIR)/site-packages/_cffi_backend.so ];then \
+			rm -f $(RELEASE_DIR)/$(PYTHON_DIR)/site-packages/_cffi_backend.so ]; \
+		fi; \
+		mv -fT $(RELEASE_DIR)/$(PYTHON_DIR)/site-packages/_cffi_backend.so.sh4 $(RELEASE_DIR)/$(PYTHON_DIR)/site-packages/_cffi_backend.so; \
+	fi
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/DemoPlugins
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/SystemPlugins/FrontprocessorUpgrade
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/SystemPlugins/NFIFlash

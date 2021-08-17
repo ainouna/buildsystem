@@ -1,560 +1,460 @@
---- e2openplugin-OpenWebif/locale/ar.po.org
-+++ e2openplugin-OpenWebif/locale/ar.po
-@@ -104,9 +104,6 @@
- msgstr ""
+--- e2openplugin-OpenWebif/plugin/controllers/models/owibranding.py.org
++++ e2openplugin-OpenWebif/plugin/controllers/models/owibranding.py
+@@ -145,67 +145,19 @@
+ 	if tpmloaded:
+ 		orgdream = tpm_check()
  
- #: ../plugin/controllers/i18n.py:77 ../plugin/controllers/i18n.py:391
--msgid "After event"
--msgstr "بعد الحدث"
+-	if fileExists("/proc/stb/info/hwmodel"):
+-		brand = "DAGS"
+-		f = open("/proc/stb/info/hwmodel", 'r')
+-		procmodel = f.readline().strip()
++	if fileExists("/proc/stb/info/brand"):
++		f = open("/proc/stb/info/brand", 'r')
++		brand = f.readline().strip()
+ 		f.close()
+-		if (procmodel.startswith("optimuss") or procmodel.startswith("pingulux")):
+-			brand = "Edision"
+-			model = procmodel.replace("optimmuss", "Optimuss ").replace("plus", " Plus").replace(" os", " OS")
+-		elif (procmodel.startswith("fusion") or procmodel.startswith("purehd") or procmodel.startswith("revo4k") or procmodel.startswith("galaxy4k")):
+-			brand = "Xsarius"
+-			if procmodel == "fusionhd":
+-				model = procmodel.replace("fusionhd", "Fusion HD")
+-			elif procmodel == "fusionhdse":
+-				model = procmodel.replace("fusionhdse", "Fusion HD SE")
+-			elif procmodel == "purehd":
+-				model = procmodel.replace("purehd", "Pure HD")
+-			elif procmodel == "purehdse":
+-					model = procmodel.replace("purehdse", "Pure HD SE")
+-			elif procmodel == "revo4k":
+-				model = procmodel.replace("revo4k", "Revo4K")
+-			elif procmodel == "galaxy4k":
+-				model = procmodel.replace("galaxy4k", "Galaxy4K")
+-		elif (procmodel.startswith("lunix")):
+-			brand = "Qviart"
+-			if procmodel == "lunix3-4k":
+-				model = procmodel.replace("lunix3-4k", "Lunix3-4K")
+-			elif procmodel == "lunix":
+-				model = procmodel.replace("lunix", "Lunix")
+-			if procmodel == "lunix4k":
+-				model = procmodel.replace("lunix4k", "Lunix4K")
+-	elif fileExists("/proc/stb/info/azmodel"):
+-		brand = "AZBox"
+-		f = open("/proc/stb/info/model", 'r')  # To-Do: Check if "model" is really correct ...
+-		procmodel = f.readline().strip()
+-		f.close()
+-		model = procmodel.lower()
+-	elif fileExists("/proc/stb/info/gbmodel"):
+-		brand = "GigaBlue"
+-		f = open("/proc/stb/info/gbmodel", 'r')
+-		procmodel = f.readline().strip()
+-		f.close()
+-		if procmodel == "GBQUAD PLUS":
+-			model = procmodel.replace("GBQUAD", "Quad").replace("PLUS", " Plus")
+-		elif procmodel == "gbquad4k":
+-			model = procmodel.replace("gbquad4k", "UHD Quad 4k")
+-		elif procmodel == "quad4k":
+-			model = procmodel.replace("quad4k", "UHD Quad 4k")
+-		elif procmodel == "gbue4k":
+-			model = procmodel.replace("gbue4k", "UHD UE 4k")
+-		elif procmodel == "ue4k":
+-			model = procmodel.replace("ue4k", "UHD UE 4k")
+-		elif procmodel == "gbtrio4k":
+-			model = procmodel.replace("gbtrio4k", "UHD Trio 4k")
+-	elif fileExists("/proc/stb/info/vumodel") and not fileExists("/proc/stb/info/boxtype"):
+-		brand = "Vu+"
+-		f = open("/proc/stb/info/vumodel", 'r')
+-		procmodel = f.readline().strip()
+-		f.close()
+-		model = procmodel.title().replace("olose", "olo SE").replace("olo2se", "olo2 SE").replace("2", "²").replace("4Kse", "4K SE")
+-		if not procmodel.startswith("vu"):
+-			procmodel = "vu%s" % procmodel
++		model = "unknown"
++		if fileExists("/proc/stb/info/model_name"):
++			f = open("/proc/stb/info/model_name", 'r')
++			model = f.readline().strip()
++			f.close()
++		if fileExists("/proc/stb/info/model"):
++			f = open("/proc/stb/info/model", 'r')
++			procmodel = f.readline().strip()
++			f.close()
+ 	elif fileExists("/proc/boxtype"):
+ 		f = open("/proc/boxtype", 'r')
+ 		procmodel = f.readline().strip().lower()
+@@ -230,120 +182,7 @@
+ 		f = open("/proc/stb/info/boxtype", 'r')
+ 		procmodel = f.readline().strip().lower()
+ 		f.close()
+-		if procmodel.startswith("et"):
+-			if procmodel == "et7000mini":
+-				brand = "Galaxy Innovations"
+-				model = "ET-7000 Mini"
+-			elif procmodel == "et11000":
+-				brand = "Galaxy Innovations"
+-				model = "ET-11000"
+-			else:
+-				brand = "Xtrend"
+-				model = procmodel.upper()
+-		elif procmodel.startswith("xpeed"):
+-			brand = "Golden Interstar"
+-			model = procmodel
+-		elif procmodel.startswith("xp"):
+-			brand = "MaxDigital"
+-			model = procmodel.upper()
+-		elif procmodel.startswith("ixuss"):
+-			brand = "Medialink"
+-			model = procmodel.replace(" ", "")
+-		elif procmodel == "formuler4turbo":
+-			brand = "Formuler"
+-			model = "F4 Turbo"
+-		elif procmodel.startswith("formuler"):
+-			brand = "Formuler"
+-			model = procmodel.replace("formuler", "")
+-			if model.isdigit():
+-				model = 'F' + model
+-		elif procmodel.startswith("mbtwinplus"):
+-			brand = "Miraclebox"
+-			model = "Premium Twin+"
+-		elif procmodel.startswith("alphatriplehd"):
+-			brand = "SAB"
+-			model = "Alpha Triple HD"
+-		elif procmodel in ("7000s", "mbmicro"):
+-			procmodel = "mbmicro"
+-			brand = "Miraclebox"
+-			model = "Premium Micro"
+-		elif procmodel in ("7005s", "mbmicrov2"):
+-			procmodel = "mbmicrov2"
+-			brand = "Miraclebox"
+-			model = "Premium Micro v2"
+-		elif procmodel.startswith("ini"):
+-			if procmodel.endswith("9000ru"):
+-				brand = "Sezam"
+-				model = "Marvel"
+-			elif procmodel.endswith("5000ru"):
+-				brand = "Sezam"
+-				model = "hdx"
+-			elif procmodel.endswith("1000ru"):
+-				brand = "Sezam"
+-				model = "hde"
+-			elif procmodel.endswith("5000sv"):
+-				brand = "Miraclebox"
+-				model = "mbtwin"
+-			elif procmodel.endswith("1000sv"):
+-				brand = "Miraclebox"
+-				model = "mbmini"
+-			elif procmodel.endswith("1000de"):
+-				brand = "Golden Interstar"
+-				model = "Xpeed LX"
+-			elif procmodel.endswith("9000de"):
+-				brand = "Golden Interstar"
+-				model = "Xpeed LX3"
+-			elif procmodel.endswith("1000lx"):
+-				brand = "Golden Interstar"
+-				model = "Xpeed LX"
+-			elif procmodel.endswith("de"):
+-				brand = "Golden Interstar"
+-			elif procmodel.endswith("1000am"):
+-				brand = "Atemio"
+-				model = "5x00"
+-			else:
+-				brand = "Venton"
+-				model = "HDx"
+-		elif procmodel.startswith("unibox-"):
+-			brand = "Venton"
+-			model = "HDe"
+-		elif procmodel == "hd1100":
+-			brand = "Mut@nt"
+-			model = "HD1100"
+-		elif procmodel == "hd1200":
+-			brand = "Mut@nt"
+-			model = "HD1200"
+-		elif procmodel == "hd1265":
+-			brand = "Mut@nt"
+-			model = "HD1265"
+-		elif procmodel == "hd2400":
+-			brand = "Mut@nt"
+-			model = "HD2400"
+-		elif procmodel == "hd51":
+-			brand = "Mut@nt"
+-			model = "HD51"
+-			grabpip = 1
+-		elif procmodel == "hd11":
+-			brand = "Mut@nt"
+-			model = "HD11"
+-		elif procmodel == "hd500c":
+-			brand = "Mut@nt"
+-			model = "HD500c"
+-		elif procmodel == "hd530c":
+-			brand = "Mut@nt"
+-			model = "HD530c"
+-		elif procmodel == "hd60":
+-			brand = "Mut@nt"
+-			model = "HD60"
+-		elif procmodel == "multibox":
+-			brand = "MaXytec"
+-			model = "Multibox"
+-			grabpip = 1
+-		elif procmodel == "multiboxse":
+-			brand = "MaXitec"
+-			model = "MultiboxSE"
+-			grabpip = 1
+-		elif procmodel == "arivalink200":
++		if procmodel == "arivalink200":
+ 			brand = "Ferguson"
+ 			model = "Ariva @Link 200"
+ 		elif procmodel.startswith("spark"):
+@@ -352,203 +191,8 @@
+ 				model = "Spark 7162"
+ 			else:
+ 				model = "Spark"
+-		elif procmodel == "spycat":
+-			brand = "Spycat"
+-			model = "Spycat"
+-		elif procmodel == "spycatmini":
+-			brand = "Spycat"
+-			model = "Spycat Mini"
+-		elif procmodel == "spycatminiplus":
+-			brand = "Spycat"
+-			model = "Spycat Mini+"
+-		elif procmodel == "spycat4kmini":
+-			brand = "Spycat"
+-			model = "spycat 4K Mini"
+-		elif procmodel == "vipercombo":
+-			brand = "Amiko"
+-			model = "ViperCombo"
+-		elif procmodel == "vipert2c":
+-			brand = "Amiko"
+-			model = "ViperT2C"
+-		elif procmodel == "vipercombohdd":
+-			brand = "Amiko"
+-			model = "ViperComboHDD"
+-		elif procmodel == "viperslim":
+-			brand = "Amiko"
+-			model = "Viper Slim"
+-		elif procmodel == "wetekplay":
+-			brand = "WeTeK"
+-			model = "Play"
+-		elif procmodel.startswith("os"):
+-			brand = "Edision"
+-			if procmodel == "osmini":
+-				model = "OS Mini"
+-			elif procmodel == "osminiplus":
+-				model = "OS Mini+"
+-			elif procmodel == "osmega":
+-				model = "OS Mega"
+-			elif procmodel == "osnino":
+-				model = "OS Nino"
+-			elif procmodel == "osninoplus":
+-				model = "OS Nino+"
+-			elif procmodel == "osninopro":
+-				model = "OS Nino Pro"
+-			elif procmodel == "osmio4k":
+-				model = "OS Mio 4K"
+-				grabpip = 1
+-			elif procmodel == "osmio4kplus":
+-				model = "OS Mio 4K+"
+-				grabpip = 1
+-			elif procmodel == "osmini4k":
+-				model = "OS Mini 4K"
+-				grabpip = 1
+-			else:
+-				model = procmodel
+-		elif procmodel == "h3":
+-			brand = "Zgemma"
+-			model = "H3 series"
+-		elif procmodel == "h4":
+-			brand = "Zgemma"
+-			model = "H4 series"
+-		elif procmodel == "h5":
+-			brand = "Zgemma"
+-			model = "H5 series"
+-		elif procmodel == "h6":
+-			brand = "Zgemma"
+-			model = "H6 series"
+-		elif procmodel == "h7":
+-			brand = "Zgemma"
+-			model = "H7 series"
+-			grabpip = 1
+-		elif procmodel == "h8":
+-			brand = "Zgemma"
+-			model = "H8 series"
+-		elif procmodel == "h9":
+-			brand = "Zgemma"
+-			model = "H9 series"
+-			grabpip = 1
+-		elif procmodel == "lc":
+-			brand = "Zgemma"
+-			model = "LC"
+-		elif procmodel == "sh1":
+-			brand = "Zgemma"
+-			model = "Star series"
+-		elif procmodel == "i55":
+-			brand = "Zgemma"
+-			model = "i55"
+-		elif procmodel == "i55plus":
+-			brand = "Zgemma"
+-			model = "i55Plus"
+-			grabpip = 1
+-		elif procmodel == "hzero":
+-			brand = "Zgemma"
+-			model = "Hzero"
+-		elif procmodel == "h8.2h":
+-			brand = "Zgemma"
+-			model = "H8.2H"
+-		elif procmodel == "h9.s":
+-			brand = "Zgemma"
+-			model = "H9.S"
+-			grabpip = 1
+-		elif procmodel == "h9.t":
+-			brand = "Zgemma"
+-			model = "H9.T"
+-			grabpip = 1
+-		elif procmodel == "h9.2h":
+-			brand = "Zgemma"
+-			model = "H9.2H"
+-			grabpip = 1
+-		elif procmodel == "h9.2s":
+-			brand = "Zgemma"
+-			model = "H9.2S"
+-			grabpip = 1
+-		elif procmodel == "h9 combo" or procmodel == "h9combo":
+-			procmodel = "h9combo"
+-			brand = "Zgemma"
+-			model = "H9 Combo"
+-			grabpip = 1
+-		elif procmodel == "h9combose":
+-			procmodel = "h9combose"
+-			brand = "Zgemma"
+-			model = "H9 Combo SE"
+-			grabpip = 1
+-		elif procmodel == "h9 twin" or procmodel == "h9twin":
+-			procmodel = "h9twin"
+-			brand = "Zgemma"
+-			model = "H9 Twin"
+-			grabpip = 1
+-		elif procmodel == "h9twinse":
+-			procmodel = "h9twinse"
+-			brand = "Zgemma"
+-			model = "H9 Twin SE"
+-			grabpip = 1
+-		elif procmodel == "h9se.s":
+-			brand = "Zgemma"
+-			model = "H9SE.S"
+-			grabpip = 1
+-		elif procmodel == "h9se.2s":
+-			brand = "Zgemma"
+-			model = "H9SE.2S"
+-			grabpip = 1
+-		elif procmodel == "h9se.2h":
+-			brand = "Zgemma"
+-			model = "H9.2H SE"
+-			grabpip = 1
+-		elif procmodel == "h10.t":
+-			brand = "Zgemma"
+-			model = "H10 Combo"
+-			grabpip = 1
+-		elif procmodel == "h10.2s":
+-			brand = "Zgemma"
+-			model = "H10.2S"
+-			grabpip = 1
+-		elif procmodel == "h10.2h":
+-			brand = "Zgemma"
+-			model = "H10.2H"
+-			grabpip = 1
+-		elif procmodel == "h11":
+-			brand = "Zgemma"
+-			model = "H11"
+-			grabpip = 1
+-		elif procmodel == "vs1500":
+-			brand = "Vimastec"
+-			model = "vs1500"
+-			grabpip = 1
+-		elif procmodel == "sf8008m":
+-			brand = "Octagon"
+-			model = "SF8008 4K Mini"
+-		elif procmodel.startswith("sf"):
+-			brand = "Octagon"
+-			if procmodel.startswith("sf8008"):
+-				sf8008type = open("/proc/stb/info/type").read()
+-				if sf8008type.startswith("11"):
+-					procmodel = "sf8008t"
+-					model = "SF8008 4K Twin"
+-				elif sf8008type.startswith("12"):
+-					procmodel = "sf8008c"
+-					model = "SF8008 4K Combo"
+-				else:  # sf8008type.startswith("10")
+-					procmodel = "sf8008s"
+-					model = "SF8008 4K Single"
+-			else:
+-				model = procmodel.upper()
+-		elif procmodel == "e4hd":
+-			brand = "Axas"
+-			model = "E4HD"
+-			lcd = 1
+-			grabpip = 1
+-		elif procmodel == "ustym4kpro":
+-			brand = "uClan"
+-			model = "Ustym 4K Pro"
+-		elif procmodel == "pulse4k":
+-			brand = "AB-COM"
+-			model = "PULSe 4K"
+-		elif procmodel == "pulse4kmini":
+-			brand = "AB-COM"
+-			model = "PULSe 4K MINI"
+ 		else:
+ 			model = procmodel
 -
- #: ../plugin/controllers/i18n.py:315
- msgid "After event"
- msgstr "بعد الحدث"
-@@ -2195,12 +2192,9 @@
- msgstr "تنسيق المعلمة الخاطئ ' ضبط = %s '. استخدام مجموعه = ضبط15 "
- 
- #: ../plugin/controllers/i18n.py:490
-+#: ../plugin/controllers/i18n.py:474
- msgid "Yes"
- msgstr "نعم"
--
--#: ../plugin/controllers/i18n.py:474
--msgid "Yes"
--msgstr "نعم، أحذفه"
- 
- #: ../plugin/controllers/i18n.py:275
- msgid "Yes/No"
---- e2openplugin-OpenWebif/locale/bg.po.org
-+++ e2openplugin-OpenWebif/locale/bg.po
-@@ -104,9 +104,6 @@
- msgstr ""
- 
- #: ../plugin/controllers/i18n.py:77 ../plugin/controllers/i18n.py:391
--msgid "After event"
--msgstr "След Предаването"
--
- #: ../plugin/controllers/i18n.py:315
- msgid "After event"
- msgstr "След предаването"
-@@ -2198,9 +2195,6 @@
- msgstr "Неправилен формат на параметъра 'set=%s'. Използвайте set=set15 "
- 
- #: ../plugin/controllers/i18n.py:490
--msgid "Yes"
--msgstr "Да"
--
- #: ../plugin/controllers/i18n.py:474
- msgid "Yes"
- msgstr "Да, изтрий го"
---- e2openplugin-OpenWebif/locale/ca.po.org
-+++ e2openplugin-OpenWebif/locale/ca.po
-@@ -106,9 +106,6 @@
- msgstr ""
- 
- #: ../plugin/controllers/i18n.py:77 ../plugin/controllers/i18n.py:391
--msgid "After event"
--msgstr "Després del Programa"
--
- #: ../plugin/controllers/i18n.py:315
- msgid "After event"
- msgstr "Després del programa"
-@@ -2209,13 +2206,10 @@
- msgstr "Format de paràmetres incorrecte 'set=%s'. Utilitza set=set15"
- 
- #: ../plugin/controllers/i18n.py:490
-+#: ../plugin/controllers/i18n.py:474
- #, fuzzy
- msgid "Yes"
- msgstr "Si/No"
--
--#: ../plugin/controllers/i18n.py:474
--msgid "Yes"
--msgstr ""
- 
- #: ../plugin/controllers/i18n.py:275
- msgid "Yes/No"
---- e2openplugin-OpenWebif/locale/cs.po.org
-+++ e2openplugin-OpenWebif/locale/cs.po
-@@ -104,9 +104,6 @@
- msgstr ""
- 
- #: ../plugin/controllers/i18n.py:77 ../plugin/controllers/i18n.py:391
--msgid "After event"
--msgstr "Po skončení"
--
- #: ../plugin/controllers/i18n.py:315
- msgid "After event"
- msgstr "Po skončení"
-@@ -2189,9 +2186,6 @@
- msgstr "Špatný formát parametru 'set=%s'. Použijte set=set15 "
- 
- #: ../plugin/controllers/i18n.py:490
--msgid "Yes"
--msgstr "Ano"
--
- #: ../plugin/controllers/i18n.py:474
- msgid "Yes"
- msgstr "Ano, smazat"
---- e2openplugin-OpenWebif/locale/da.po.org
-+++ e2openplugin-OpenWebif/locale/da.po
-@@ -108,8 +108,8 @@
- msgstr "Efter begivenhed"
- 
- #: ../plugin/controllers/i18n.py:315
--msgid "After event"
--msgstr "Efter begivenhed"
-+#msgid "After event"
-+#msgstr "Efter begivenhed"
- 
- #: ../plugin/controllers/i18n.py:79 ../plugin/controllers/i18n.py:379
- msgid "All"
-@@ -2242,8 +2242,8 @@
- msgstr "Ja/Nej"
- 
- #: ../plugin/controllers/i18n.py:474
--msgid "Yes"
--msgstr "Ja, slet det"
-+#msgid "Yes"
-+#msgstr "Ja, slet det"
- 
- #: ../plugin/controllers/i18n.py:275
- msgid "Yes/No"
---- e2openplugin-OpenWebif/locale/de.po.org
-+++ e2openplugin-OpenWebif/locale/de.po
-@@ -103,12 +103,9 @@
- msgstr ""
- 
- #: ../plugin/controllers/i18n.py:77 ../plugin/controllers/i18n.py:391
-+#: ../plugin/controllers/i18n.py:315
- msgid "After event"
- msgstr "Danach"
--
--#: ../plugin/controllers/i18n.py:315
--msgid "After event"
--msgstr "Nach der Aufnahme"
- 
- #: ../plugin/controllers/i18n.py:79 ../plugin/controllers/i18n.py:379
- msgid "All"
-@@ -2208,12 +2205,9 @@
- 
- #: ../plugin/controllers/i18n.py:490
- #, fuzzy
--msgid "Yes"
--msgstr "Ja/Nein"
--
- #: ../plugin/controllers/i18n.py:474
- msgid "Yes"
--msgstr "Ja, löschen"
-+msgstr "Ja"
- 
- #: ../plugin/controllers/i18n.py:275
- msgid "Yes/No"
---- e2openplugin-OpenWebif/locale/el.po.org
-+++ e2openplugin-OpenWebif/locale/el.po
-@@ -107,8 +107,8 @@
- msgstr "Μετά το πρόγραμμα"
- 
- #: ../plugin/controllers/i18n.py:315
--msgid "After event"
--msgstr "Μετά την εκπομπή"
-+#msgid "After event"
-+#msgstr "Μετά την εκπομπή"
- 
- #: ../plugin/controllers/i18n.py:79 ../plugin/controllers/i18n.py:379
- msgid "All"
-@@ -2201,8 +2201,8 @@
- msgstr "Ναι"
- 
- #: ../plugin/controllers/i18n.py:474
--msgid "Yes"
--msgstr "Ναι, να διαγραφεί"
-+#msgid "Yes"
-+#msgstr "Ναι, να διαγραφεί"
- 
- #: ../plugin/controllers/i18n.py:275
- msgid "Yes/No"
---- e2openplugin-OpenWebif/locale/es.po.org
-+++ e2openplugin-OpenWebif/locale/es.po
-@@ -110,8 +110,8 @@
- msgstr "Después del Evento"
- 
- #: ../plugin/controllers/i18n.py:315
--msgid "After event"
--msgstr "Después del evento"
-+#msgid "After event"
-+#msgstr "Después del evento"
- 
- #: ../plugin/controllers/i18n.py:79 ../plugin/controllers/i18n.py:379
- msgid "All"
-@@ -2214,8 +2214,8 @@
- msgstr "Si/No"
- 
- #: ../plugin/controllers/i18n.py:474
--msgid "Yes"
--msgstr ""
-+#msgid "Yes"
-+#msgstr ""
- 
- #: ../plugin/controllers/i18n.py:275
- msgid "Yes/No"
---- e2openplugin-OpenWebif/locale/et.po.org
-+++ e2openplugin-OpenWebif/locale/et.po
-@@ -106,8 +106,8 @@
- msgstr "Pärast sündmust"
- 
- #: ../plugin/controllers/i18n.py:315
--msgid "After event"
--msgstr "Pärast sündmust"
-+#msgid "After event"
-+#msgstr "Pärast sündmust"
- 
- #: ../plugin/controllers/i18n.py:79 ../plugin/controllers/i18n.py:379
- msgid "All"
-@@ -2192,8 +2192,8 @@
- msgstr "Jah"
- 
- #: ../plugin/controllers/i18n.py:474
--msgid "Yes"
--msgstr "Jah, kustuta see"
-+#msgid "Yes"
-+#msgstr "Jah, kustuta see"
- 
- #: ../plugin/controllers/i18n.py:275
- msgid "Yes/No"
---- e2openplugin-OpenWebif/locale/fi.po.org
-+++ e2openplugin-OpenWebif/locale/fi.po
-@@ -107,8 +107,8 @@
- msgstr "Ajastuksen jälkeen"
- 
- #: ../plugin/controllers/i18n.py:315
--msgid "After event"
--msgstr "Ajastuksen jälkeen"
-+#msgid "After event"
-+#msgstr "Ajastuksen jälkeen"
- 
- #: ../plugin/controllers/i18n.py:79 ../plugin/controllers/i18n.py:379
- msgid "All"
-@@ -2212,8 +2212,8 @@
- msgstr "Kyllä/Ei"
- 
- #: ../plugin/controllers/i18n.py:474
--msgid "Yes"
--msgstr ""
-+#msgid "Yes"
-+#msgstr ""
- 
- #: ../plugin/controllers/i18n.py:275
- msgid "Yes/No"
---- e2openplugin-OpenWebif/locale/fr.po.org
-+++ e2openplugin-OpenWebif/locale/fr.po
-@@ -107,8 +107,8 @@
- msgstr "Après évènement"
- 
- #: ../plugin/controllers/i18n.py:316
--msgid "After event"
--msgstr "Après évènement"
-+#msgid "After event"
-+#msgstr "Après évènement"
- 
- #: ../plugin/controllers/i18n.py:80 ../plugin/controllers/i18n.py:380
- msgid "All"
-@@ -2206,8 +2206,8 @@
- msgstr "Oui"
- 
- #: ../plugin/controllers/i18n.py:475
--msgid "Yes"
--msgstr "Oui, le supprimer"
-+#msgid "Yes"
-+#msgstr "Oui, le supprimer"
- 
- #: ../plugin/controllers/i18n.py:276
- msgid "Yes/No"
---- e2openplugin-OpenWebif/locale/hu.po.org
-+++ e2openplugin-OpenWebif/locale/hu.po
-@@ -107,8 +107,8 @@
- msgstr "Esemény után"
- 
- #: ../plugin/controllers/i18n.py:316
--msgid "After event"
--msgstr "Esemény után"
-+#msgid "After event"
-+#msgstr "Esemény után"
- 
- #: ../plugin/controllers/i18n.py:80 ../plugin/controllers/i18n.py:380
- msgid "All"
-@@ -2193,8 +2193,8 @@
- msgstr "Igen"
- 
- #: ../plugin/controllers/i18n.py:475
--msgid "Yes"
--msgstr "Igen, törölje"
-+#msgid "Yes"
-+#msgstr "Igen, törölje"
- 
- #: ../plugin/controllers/i18n.py:276
- msgid "Yes/No"
---- e2openplugin-OpenWebif/locale/it.po.org
-+++ e2openplugin-OpenWebif/locale/it.po
-@@ -114,8 +114,8 @@
- msgstr "Azione fine evento"
- 
- #: ../plugin/controllers/i18n.py:315
--msgid "After event"
--msgstr "Azione fine evento"
-+#msgid "After event"
-+#msgstr "Azione fine evento"
- 
- #: ../plugin/controllers/i18n.py:79 ../plugin/controllers/i18n.py:379
- msgid "All"
-@@ -2207,8 +2207,8 @@
- msgstr "Sì"
- 
- #: ../plugin/controllers/i18n.py:474
--msgid "Yes"
--msgstr "Sì: eliminarlo"
-+#msgid "Yes"
-+#msgstr "Sì: eliminarlo"
- 
- #: ../plugin/controllers/i18n.py:275
- msgid "Yes/No"
---- e2openplugin-OpenWebif/locale/lt.po.org
-+++ e2openplugin-OpenWebif/locale/lt.po
-@@ -109,8 +109,8 @@
- msgstr "Po įvykio"
- 
- #: ../plugin/controllers/i18n.py:316
--msgid "After event"
--msgstr "Po įvykio"
-+#msgid "After event"
-+#msgstr "Po įvykio"
- 
- #: ../plugin/controllers/i18n.py:80 ../plugin/controllers/i18n.py:380
- msgid "All"
-@@ -2217,8 +2217,8 @@
- msgstr "Taip"
- 
- #: ../plugin/controllers/i18n.py:475
--msgid "Yes"
--msgstr "Taip, ištrinti"
-+#msgid "Yes"
-+#msgstr "Taip, ištrinti"
- 
- #: ../plugin/controllers/i18n.py:276
- msgid "Yes/No"
---- e2openplugin-OpenWebif/locale/nb.po.org
-+++ e2openplugin-OpenWebif/locale/nb.po
-@@ -109,8 +109,8 @@
- msgstr "Etter hendelse"
- 
- #: ../plugin/controllers/i18n.py:315
--msgid "After event"
--msgstr "Etter hendelse"
-+#msgid "After event"
-+#msgstr "Etter hendelse"
- 
- #: ../plugin/controllers/i18n.py:79 ../plugin/controllers/i18n.py:379
- msgid "All"
-@@ -2197,8 +2197,8 @@
- msgstr "Ja"
- 
- #: ../plugin/controllers/i18n.py:474
--msgid "Yes"
--msgstr "Ja, slett det"
-+#msgid "Yes"
-+#msgstr "Ja, slett det"
- 
- #: ../plugin/controllers/i18n.py:275
- msgid "Yes/No"
---- e2openplugin-OpenWebif/locale/nl.po.org
-+++ e2openplugin-OpenWebif/locale/nl.po
-@@ -107,8 +107,8 @@
- msgstr "Na afloop"
- 
- #: ../plugin/controllers/i18n.py:315
--msgid "After event"
--msgstr "Na afloop"
-+#msgid "After event"
-+#msgstr "Na afloop"
- 
- #: ../plugin/controllers/i18n.py:79 ../plugin/controllers/i18n.py:379
- msgid "All"
-@@ -2204,8 +2204,8 @@
- msgstr "Ja"
- 
- #: ../plugin/controllers/i18n.py:474
--msgid "Yes"
--msgstr "Ja, verwijder deze"
-+#msgid "Yes"
-+#msgstr "Ja, verwijder deze"
- 
- #: ../plugin/controllers/i18n.py:275
- msgid "Yes/No"
---- e2openplugin-OpenWebif/locale/pl.po.org
-+++ e2openplugin-OpenWebif/locale/pl.po
-@@ -108,8 +108,8 @@
- msgstr "Po Wydarzeniu"
- 
- #: ../plugin/controllers/i18n.py:316
--msgid "After event"
--msgstr "Po wydarzeniu"
-+#msgid "After event"
-+#msgstr "Po wydarzeniu"
- 
- #: ../plugin/controllers/i18n.py:80 ../plugin/controllers/i18n.py:380
- msgid "All"
-@@ -2221,8 +2221,8 @@
- msgstr "Tak"
- 
- #: ../plugin/controllers/i18n.py:475
--msgid "Yes"
--msgstr "Tak, usuń "
-+#msgid "Yes"
-+#msgstr "Tak, usuń "
- 
- #: ../plugin/controllers/i18n.py:276
- msgid "Yes/No"
---- e2openplugin-OpenWebif/locale/pt.po.org
-+++ e2openplugin-OpenWebif/locale/pt.po
-@@ -109,8 +109,8 @@
- msgstr "Após evento"
- 
- #: ../plugin/controllers/i18n.py:315
--msgid "After event"
--msgstr "Após evento"
-+#msgid "After event"
-+#msgstr "Após evento"
- 
- #: ../plugin/controllers/i18n.py:79 ../plugin/controllers/i18n.py:379
- msgid "All"
-@@ -2213,8 +2213,8 @@
- msgstr "Sim/Não"
- 
- #: ../plugin/controllers/i18n.py:474
--msgid "Yes"
--msgstr ""
-+#msgid "Yes"
-+#msgstr ""
- 
- #: ../plugin/controllers/i18n.py:275
- msgid "Yes/No"
---- e2openplugin-OpenWebif/locale/ru.po.org
-+++ e2openplugin-OpenWebif/locale/ru.po
-@@ -108,8 +108,8 @@
- msgstr "После события"
- 
- #: ../plugin/controllers/i18n.py:315
--msgid "After event"
--msgstr "После события"
-+#msgid "After event"
-+#msgstr "После события"
- 
- #: ../plugin/controllers/i18n.py:79 ../plugin/controllers/i18n.py:379
- msgid "All"
-@@ -2194,8 +2194,8 @@
- msgstr "Да"
- 
- #: ../plugin/controllers/i18n.py:474
--msgid "Yes"
--msgstr "Да, удалить это"
-+#msgid "Yes"
-+#msgstr "Да, удалить это"
- 
- #: ../plugin/controllers/i18n.py:275
- msgid "Yes/No"
---- e2openplugin-OpenWebif/locale/sk.po.org
-+++ e2openplugin-OpenWebif/locale/sk.po
-@@ -106,8 +106,8 @@
- msgstr "Po udalosti"
- 
- #: ../plugin/controllers/i18n.py:315
--msgid "After event"
--msgstr "Po udalosti"
-+#msgid "After event"
-+#msgstr "Po udalosti"
- 
- #: ../plugin/controllers/i18n.py:79 ../plugin/controllers/i18n.py:379
- msgid "All"
-@@ -2211,8 +2211,8 @@
- msgstr "Áno/Nie"
- 
- #: ../plugin/controllers/i18n.py:474
--msgid "Yes"
--msgstr "Áno, vymazať"
-+#msgid "Yes"
-+#msgstr "Áno, vymazať"
- 
- #: ../plugin/controllers/i18n.py:275
- msgid "Yes/No"
---- e2openplugin-OpenWebif/locale/sv.po.org
-+++ e2openplugin-OpenWebif/locale/sv.po
-@@ -105,8 +105,8 @@
- msgstr ""
- 
- #: ../plugin/controllers/i18n.py:77 ../plugin/controllers/i18n.py:391
--msgid "After event"
--msgstr "Efter aktiviteten"
-+#msgid "After event"
-+#msgstr "Efter aktiviteten"
- 
- #: ../plugin/controllers/i18n.py:315
- msgid "After event"
-@@ -2228,8 +2228,8 @@
- msgstr "Ja/Nej"
- 
- #: ../plugin/controllers/i18n.py:474
--msgid "Yes"
--msgstr ""
-+#msgid "Yes"
-+#msgstr ""
- 
- #: ../plugin/controllers/i18n.py:275
- msgid "Yes/No"
---- e2openplugin-OpenWebif/locale/tr.po.org
-+++ e2openplugin-OpenWebif/locale/tr.po
-@@ -84,8 +84,8 @@
- msgid "After event"
- msgstr "Olaydan Sonra"
- 
--msgid "After event"
--msgstr "Olaydan sonra"
-+#msgid "After event"
-+#msgstr "Olaydan sonra"
- 
- msgid "All"
- msgstr "Tümü"
-@@ -1594,8 +1594,8 @@
- msgid "Yes"
- msgstr "Evet"
- 
--msgid "Yes"
--msgstr "Evet, sil"
-+#msgid "Yes"
-+#msgstr "Evet, sil"
- 
- msgid "Yes/No"
- msgstr "Evet/Hayır"
---- e2openplugin-OpenWebif/locale/uk.po.org
-+++ e2openplugin-OpenWebif/locale/uk.po
-@@ -108,8 +108,8 @@
- msgstr "Після події"
- 
- #: ../plugin/controllers/i18n.py:315
--msgid "After event"
--msgstr "Після події"
-+#msgid "After event"
-+#msgstr "Після події"
- 
- #: ../plugin/controllers/i18n.py:79 ../plugin/controllers/i18n.py:379
- msgid "All"
-@@ -2202,8 +2202,8 @@
- msgstr "Так"
- 
- #: ../plugin/controllers/i18n.py:474
--msgid "Yes"
--msgstr "Так, видалити його"
-+#msgid "Yes"
-+#msgstr "Так, видалити його"
- 
- #: ../plugin/controllers/i18n.py:275
- msgid "Yes/No"
+ 	elif fileExists("/proc/stb/info/model"):
+ 		f = open("/proc/stb/info/model", 'r')
+ 		procmodel = f.readline().strip().lower()
+@@ -641,20 +285,27 @@
+ 	info['type'] = type
+ 
+ 	remote = "dmm1"
+-	if procmodel in ("vusolo", "vuduo", "vuuno", "vusolo2", "vusolose", "vuzero", "vusolo4k", "vuuno4k", "vuultimo4k"):
+-		remote = "vu_normal"
+-	elif procmodel == "vuduo2":
+-		remote = "vu_duo2"
+-	elif procmodel == "vuultimo":
+-		remote = "vu_ultimo"
+-	elif procmodel in ("vuuno4kse", "vuzero4k", "vuduo4k", "vuduo4kse"):
+-		remote = "vu_normal_02"
+-	elif procmodel == "e3hd":
+-		remote = "e3hd"
+-	elif procmodel in ("et9x00", "et9000", "et9100", "et9200", "et9500"):
+-		remote = "et9x00"
+-	elif procmodel in ("et5x00", "et5000", "et6x00", "et6000"):
+-		remote = "et5x00"
++	
++	if procmodel in ("fs9000", "hs8200"):
++		remote = "fs9000"
++	if procmodel in ("hs9510", "hs7420", "hs7429", "hs7810a", "hs7819"):
++		remote = "hs9510"
++	if procmodel in ("hs7110", "hs7119"):
++		remote = "hs7110"
++	elif procmodel == "ufs910":
++		remote = "ufs910"
++	elif procmodel in ("ufs912", "ufs922"):
++		remote = "ufs912"
++	elif procmodel == "ufs913":
++		remote = "ufs913"
++	elif procmodel == "adb_box":
++		remote = "adb_xmp"
++	elif procmodel in ("vip1_v1", "vip1_v2", "vip2"):
++		remote = "vip_1"
++	elif procmodel in ("cuberevo", "cuberevo-mini", "cuberevo-mini2", "cuberevo-2000hd", "cuberevo-3000hd", "cuberevo-9500hd"):
++		remote = "cuberevo_uni"
++	elif procmodel in ("cuberevo-250hd", "cuberevo-mini-fta"):
++		remote = "cuberevo"
+ 	elif procmodel in ("et4x00", "et4000"):
+ 		remote = "et4x00"
+ 	elif procmodel == "et6500":
+@@ -820,7 +471,7 @@
+ 	else:
+ 		# OE 2.2 uses apt, not opkg
+ 		if not fileExists("/etc/opkg/all-feed.conf"):
+-			oever = "OE 2.2"
++			oever = "Audioniek's buildsystem"
+ 		else:
+ 			try:
+ 				f = open("/etc/opkg/all-feed.conf", 'r')
 
