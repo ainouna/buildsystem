@@ -1,6 +1,6 @@
 --- a/arch/sh/kernel/setup.c
 +++ b/arch/sh/kernel/setup.c
-@@ -587,6 +587,7 @@
+@@ -555,6 +555,7 @@
  	seq_printf(m, "cpu family\t: %s\n", init_utsname()->machine);
  	seq_printf(m, "cpu variant\t: %s\n", get_cpu_variant(c));
  	seq_printf(m, "cpu type\t: %s\n", get_cpu_subtype(c));
@@ -216,7 +216,7 @@
  	.num_resources	= 1,
  	.resource	= (struct resource[]) {
 -		STM_PLAT_RESOURCE_MEM(0, 32*1024*1024),
-+		STM_PLAT_RESOURCE_MEM(0, 4*1024*1024),
++		STM_PLAT_RESOURCE_MEM(0, 4*1024*1024),  // M29GA321EL device (4Mbyte)
  	},
  	.dev.platform_data = &(struct physmap_flash_data) {
  		.width		= 2,
