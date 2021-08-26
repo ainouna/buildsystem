@@ -1,5 +1,5 @@
---- vsftpd-3.0.2-org/builddefs.h
-+++ vsftpd-3.0.2/builddefs.h
+--- a/builddefs.h.org
++++ b/builddefs.h
 @@ -2,7 +2,7 @@
  #define VSF_BUILDDEFS_H
  
@@ -9,8 +9,8 @@
  #undef VSF_BUILD_SSL
  
  #endif /* VSF_BUILDDEFS_H */
---- vsftpd-3.0.2-org/Makefile
-+++ vsftpd-3.0.2/Makefile
+--- a/Makefile.org
++++ b/Makefile
 @@ -3,14 +3,12 @@
  INSTALL	=	install
  IFLAGS  = -idirafter dummyinc
@@ -52,9 +52,9 @@
  
  clean:
  	rm -f *.o *.swp vsftpd
---- vsftpd-3.0.0-org/parseconf.c
-+++ vsftpd-3.0.0/parseconf.c
-@@ -227,7 +227,6 @@
+--- a/parseconf.c.org
++++ b/parseconf.c
+@@ -231,7 +231,6 @@
       * race conditions.
       */
      if (vsf_sysutil_retval_is_error(retval) ||
@@ -62,8 +62,8 @@
          !vsf_sysutil_statbuf_is_regfile(p_statbuf))
      {
        die("config file not owned by correct user, or not a file");
---- vsftpd-3.0.2-org/secutil.c
-+++ vsftpd-3.0.2/secutil.c
+--- a/secutil.c.org
++++ b/secutil.c
 @@ -132,13 +132,13 @@
    /* Misconfiguration check: don't ever chroot() to a directory writable by
     * the current user.
@@ -80,8 +80,8 @@
 +  }   */
  }
  
---- vsftpd.orig/str.c
-+++ vsftpd/str.c
+--- a/str.c.org
++++ b/str.c
 @@ -104,6 +104,18 @@
    return vsf_sysutil_strdup(str_getbuf(p_str));
  }
@@ -101,8 +101,8 @@
  void
  str_alloc_alt_term(struct mystr* p_str, const char* p_src, char term)
  {
---- vsftpd.orig/str.h
-+++ vsftpd/str.h
+--- a/str.h.org
++++ b/str.h
 @@ -31,6 +31,7 @@
  void str_alloc_filesize_t(struct mystr* p_str, filesize_t the_filesize);
  void str_copy(struct mystr* p_dest, const struct mystr* p_src);
@@ -111,8 +111,8 @@
  void str_empty(struct mystr* p_str);
  void str_free(struct mystr* p_str);
  void str_trunc(struct mystr* p_str, unsigned int trunc_len);
---- vsftpd.orig/sysutil.c	2009-10-02 14:15:18.000000000 +0200
-+++ vsftpd/sysutil.c	2009-10-18 11:28:31.000000000 +0200
+--- a/sysutil.c.org
++++ b/sysutil.c
 @@ -1035,6 +1035,18 @@
    return strdup(p_str);
  }
@@ -132,9 +132,9 @@
  void
  vsf_sysutil_memclr(void* p_dest, unsigned int size)
  {
---- vsftpd.orig/sysutil.h
-+++ vsftpd/sysutil.h
-@@ -186,6 +186,7 @@
+--- a/sysutil.h.org
++++ b/sysutil.h
+@@ -187,6 +187,7 @@
  /* Various string functions */
  unsigned int vsf_sysutil_strlen(const char* p_text);
  char* vsf_sysutil_strdup(const char* p_str);
@@ -142,8 +142,8 @@
  void vsf_sysutil_memclr(void* p_dest, unsigned int size);
  void vsf_sysutil_memcpy(void* p_dest, const void* p_src,
                          const unsigned int size);
---- vsftpd.orig/ls.c	2009-10-02 14:15:18.000000000 +0200
-+++ vsftpd/ls.c	2009-10-18 11:48:29.000000000 +0200
+--- a/ls.c.org
++++ b/ls.c
 @@ -289,6 +289,25 @@
        {
          goto out;
@@ -170,8 +170,8 @@
        /* Chop matched string out of remainder */
        str_mid_to_end(&name_remain_str, &temp_str,
                       indexx + str_getlen(&s_match_needed_str));
---- vsftpd.orig/features.c
-+++ vsftpd/features.c
+--- a/features.c.org
++++ b/features.c
 @@ -27,6 +27,10 @@
        vsf_cmdio_write_raw(p_sess, " AUTH TLS\r\n");
      }
@@ -183,8 +183,8 @@
    if (tunable_port_enable)
    {
      vsf_cmdio_write_raw(p_sess, " EPRT\r\n");
---- vsftpd.orig/parseconf.c	2009-08-07 18:46:40.000000000 +0000
-+++ vsftpd/parseconf.c	2010-02-25 13:28:06.000000000 +0000
+--- a/parseconf.c.org
++++ b/parseconf.c
 @@ -28,6 +28,7 @@
  parseconf_bool_array[] =
  {
@@ -193,8 +193,8 @@
    { "local_enable", &tunable_local_enable },
    { "pasv_enable", &tunable_pasv_enable },
    { "port_enable", &tunable_port_enable },
---- vsftpd.orig/tunables.c
-+++ vsftpd/tunables.c
+--- a/tunables.c.org
++++ b/tunables.c
 @@ -10,6 +10,7 @@
  
  int tunable_anonymous_enable;
@@ -203,7 +203,7 @@
  int tunable_pasv_enable;
  int tunable_port_enable;
  int tunable_chroot_local_user;
-@@ -150,6 +151,7 @@
+@@ -154,6 +155,7 @@
  {
    tunable_anonymous_enable = 1;
    tunable_local_enable = 0;
@@ -211,8 +211,8 @@
    tunable_pasv_enable = 1;
    tunable_port_enable = 1;
    tunable_chroot_local_user = 0;
---- vsftpd.orig/tunables.h
-+++ vsftpd/tunables.h
+--- a/tunables.h.org
++++ b/tunables.h
 @@ -11,6 +11,7 @@
  /* Booleans */
  extern int tunable_anonymous_enable;          /* Allow anon logins */
@@ -221,8 +221,8 @@
  extern int tunable_pasv_enable;               /* Allow PASV */
  extern int tunable_port_enable;               /* Allow PORT */
  extern int tunable_chroot_local_user;         /* Restrict local to home dir */
---- vsftpd.orig/sysdeputil.c
-+++ vsftpd/sysdeputil.c
+--- a/sysdeputil.c.org
++++ b/sysdeputil.c
 @@ -25,6 +25,11 @@
    #define _LARGEFILE64_SOURCE 1
  #endif
