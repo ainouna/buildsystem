@@ -1743,7 +1743,7 @@ $(D)/flac: $(D)/bootstrap $(ARCHIVE)/$(FLAC_SOURCE)
 #
 # libxml2
 #
-LIBXML2_VER = 2.9.10
+LIBXML2_VER = 2.9.12
 LIBXML2_SOURCE = libxml2-$(LIBXML2_VER).tar.gz
 LIBXML2_PATCH = libxml2-$(LIBXML2_VER).patch
 
