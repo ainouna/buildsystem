@@ -90,7 +90,7 @@
  		except Exception, e:
  			print "[MountManager] Error reading /etc/enigma2/automounts.xml:", e
  			try:
-@@ -66,56 +63,67 @@
+@@ -66,56 +63,69 @@
  			Len = len(definitions)
  			return Len > 0 and definitions[Len - 1].text or default
  
@@ -121,7 +121,7 @@
 +
 +					if data["active"] == 'True':
  						self.activeMountsCounter += 1
--					data['hdd_replacement'] = getValue(mount.findall("hdd_replacement"), "False").encode("UTF-8")
+ 					data['hdd_replacement'] = getValue(mount.findall("hdd_replacement"), "False").encode("UTF-8")
 -					data['ip'] = getValue(mount.findall("ip"), "").encode("UTF-8")
 -					data['host'] = getValue(mount.findall("host"), "").encode("UTF-8")
 -					data['sharedir'] = getValue(mount.findall("sharedir"), "/media/").encode("UTF-8")
@@ -160,7 +160,7 @@
  				except Exception, e:
  					print "[MountManager] Error reading Mounts:", e
  
--		# Read out CIFS Mounts
+ 		# Read out CIFS Mounts
 -		for nfs in tree.findall("cifs"):
 -			for mount in nfs.findall("mount"):
 -				data = {'isMounted': False, 'active': False, 'ip': False, 'host': False, 'sharename': False, 'sharedir': False, 'username': False,
@@ -170,14 +170,14 @@
 -					data['active'] = getValue(mount.findall("active"), False).encode("UTF-8")
 -					if data["active"] == 'True' or data["active"] == True:
 -						self.activeMountsCounter += 1
--					data['hdd_replacement'] = getValue(mount.findall("hdd_replacement"), "False").encode("UTF-8")
--					data['ip'] = getValue(mount.findall("ip"), "").encode("UTF-8")
--					data['host'] = getValue(mount.findall("host"), "").encode("UTF-8")
--					data['sharedir'] = getValue(mount.findall("sharedir"), "/media/").encode("UTF-8")
--					data['sharename'] = getValue(mount.findall("sharename"), "MEDIA").encode("UTF-8")
+-					data['hdd_replacement'] = getValue(mount.findall("hdd_replacement"), 'False').encode("UTF-8")
+-					data['ip'] = getValue(mount.findall("ip"), '').encode("UTF-8")
+-					data['host'] = getValue(mount.findall("host"), '').encode("UTF-8")
+-					data['sharedir'] = getValue(mount.findall("sharedir"), '/media/').encode("UTF-8")
+-					data['sharename'] = getValue(mount.findall("sharename"), 'MEDIA').encode("UTF-8")
 -					data['options'] = getValue(mount.findall("options"), "").encode("UTF-8")
--					data['username'] = getValue(mount.findall("username"), "guest").encode("UTF-8")
--					data['password'] = getValue(mount.findall("password"), "").encode("UTF-8")
+-					data['username'] = getValue(mount.findall("username"), '').encode("UTF-8")
+-					data['password'] = getValue(mount.findall("password"), '').encode("UTF-8")
 -					self.automounts[data['sharename']] = data
 -				except Exception, e:
 -					print "[MountManager] Error reading Mounts:", e
@@ -195,7 +195,7 @@
  
  	def sanitizeOptions(self, origOptions, mounttype=None, username=None, password=None):
  		# split the options into their components
-@@ -181,118 +189,13 @@
+@@ -181,118 +191,13 @@
  		return ",".join(options)
  
  	def CheckMountPoint(self, item, callback):
@@ -319,7 +319,7 @@
  
  	def CheckMountPointFinished(self, result, retval, extra_args):
  		print "[AutoMount.py] CheckMountPointFinished", result, retval
-@@ -300,25 +203,12 @@
+@@ -300,25 +205,12 @@
  		path = os.path.join('/media/net', data['sharename'])
  		print "[AutoMount.py] CheckMountPointFinished, verifying: ", path
  
@@ -351,7 +351,7 @@
  
  		if self.checkList:
  			# Go to next item in list...
-@@ -376,40 +266,37 @@
+@@ -376,40 +268,37 @@
  
  	def writeMountsConfig(self):
  		# Generate List in RAM
@@ -414,7 +414,7 @@
  
  	def removeMount(self, mountpoint, callback=None):
  		print "[AutoMount.py] removing mount: ", mountpoint
-@@ -419,28 +306,5 @@
+@@ -419,28 +308,5 @@
  				self.newautomounts[sharename] = sharedata
  		self.automounts.clear()
  		self.automounts = self.newautomounts
