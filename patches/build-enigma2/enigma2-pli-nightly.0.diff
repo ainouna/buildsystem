@@ -598,42 +598,28 @@
  			int i, j = 0;	   // remove leading whitespace and control chars, and comments
 --- enigma2.org/lib/base/estring.cpp
 +++ enigma2/lib/base/estring.cpp
-@@ -783,12 +783,12 @@
- 		eTrace("[convertDVBUTF8] %d chars converted, and %d chars left..", convertedLen, len-convertedLen);
- 	eTrace("[convertDVBUTF8] table=0x%02X twochar=%d output:%s\n", table, useTwoCharMapping, output.c_str());
- 
--	eTrace("[convertDVBUTF8] table=0x%02X tsid:onid=0x%X:0x%X data[0..14]=%s   output:%s\n",
--		table, (unsigned int)tsidonid >> 16, tsidonid & 0xFFFFU,
--		string_to_hex(std::string((char*)data, len < 15 ? len : 15)).c_str(),
--		output.c_str());
-+//	eTrace("[convertDVBUTF8] table=0x%02X tsid:onid=0x%X:0x%X data[0..14]=%s   output:%s\n",
-+//		table, (unsigned int)tsidonid >> 16, tsidonid & 0xFFFFU,
-+//		string_to_hex(std::string((char*)data, len < 15 ? len : 15)).c_str(),
-+//		output.c_str());
+@@ -788,7 +788,7 @@
+ 	//	string_to_hex(std::string((char*)data, len < 15 ? len : 15)).c_str(),
+ 	//	output.c_str());
  	// replace EIT CR/LF with standard newline:
 -	output = replace_all(replace_all(output, "\xC2\x8A", "\n"), "\xEE\x82\x8A", "\n");
 +//	output = replace_all(replace_all(output, "\xC2\x8A", "\n"), "\xEE\x82\x8A", "\n");
  	return output;
  }
  
-@@ -1088,13 +1088,13 @@
+@@ -1088,6 +1088,7 @@
      return output;
  }
  
--std::string strip_non_graph(std::string s)
--{
--	s = std::regex_replace(s, std::regex("[[^:graph:]]"), " ");
--	s = std::regex_replace(s, std::regex("\\s{2,}"), " ");
--	s = std::regex_replace(s, std::regex("^\\s+|\\s+$"), "");
--	return s;
--}
-+//std::string strip_non_graph(std::string s)
-+//{
-+//	s = std::regex_replace(s, std::regex("[[^:graph:]]"), (std::basic_string<char>)" ");
-+//	s = std::regex_replace(s, std::regex("\\s{2,}"), (std::basic_string<char>)" ");
-+//	s = std::regex_replace(s, std::regex("^\\s+|\\s+$"), (std::basic_string<char>)"");
-+//	return s;
-+//}
++#if 0
+ std::string strip_non_graph(std::string s)
+ {
+ 	s = std::regex_replace(s, std::regex("[[^:graph:]]"), " ");
+@@ -1095,6 +1096,7 @@
+ 	s = std::regex_replace(s, std::regex("^\\s+|\\s+$"), "");
+ 	return s;
+ }
++#endif
  
  std::vector<std::string> split(std::string s, const std::string& separator)
  {
