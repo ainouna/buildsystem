@@ -507,7 +507,7 @@ enigma2_release_vip1_v1:
 	$(SILENT)cp $(SKEL_ROOT)/boot/audio_7109.elf $(RELEASE_DIR)/boot/audio.elf
 	$(SILENT)rm -f $(RELEASE_DIR)/lib/firmware/dvb-fe-{avl2108,avl6222,cx24116,cx21143,stv6306}.fw
 	$(SILENT)cp -f $(SKEL_ROOT)/release/fstab_vip2 $(RELEASE_DIR)/etc/fstab
-	$(SILENT)cp -dp $(SKEL_ROOT)/release/lircd_vip_rc1.conf $(RELEASE_DIR)/etc/lircd.conf
+	$(SILENT)cp -dp $(SKEL_ROOT)/release/lircd_vip_rc12.conf $(RELEASE_DIR)/etc/lircd.conf
 	$(SILENT)cp -f $(TARGET_DIR)/sbin/shutdown $(RELEASE_DIR)/sbin/
 	$(SILENT)mkdir -p $(RELEASE_DIR)/var/run/lirc
 	$(SILENT)rm -f $(RELEASE_DIR)/bin/vdstandby
@@ -518,6 +518,8 @@ enigma2_release_vip1_v1:
 		rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/spark7162VFD; \
 	fi
 	$(SILENT)cp -f $(SKEL_ROOT)/root_enigma2/usr/local/share/enigma2/keymap_vip.xml $(RELEASE_DIR)/usr/local/share/enigma2/keymap.xml
+	$(SILENT)touch $(RELEASE_DIR)/etc/.rccode
+	$(SILENT)echo "1" > $(RELEASE_DIR)/etc/.rccode
 
 #
 # vip1_v2
@@ -532,7 +534,7 @@ enigma2_release_vip1_v2:
 	$(SILENT)cp $(SKEL_ROOT)/boot/audio_7109.elf $(RELEASE_DIR)/boot/audio.elf
 	$(SILENT)rm -f $(RELEASE_DIR)/lib/firmware/dvb-fe-{avl2108,avl6222,cx24116,cx21143,stv6306}.fw
 	$(SILENT)cp -f $(SKEL_ROOT)/release/fstab_vip2 $(RELEASE_DIR)/etc/fstab
-	$(SILENT)cp -dp $(SKEL_ROOT)/release/lircd_vip_rc1.conf $(RELEASE_DIR)/etc/lircd.conf
+	$(SILENT)cp -dp $(SKEL_ROOT)/release/lircd_vip_rc12.conf $(RELEASE_DIR)/etc/lircd.conf
 	$(SILENT)cp -f $(TARGET_DIR)/sbin/shutdown $(RELEASE_DIR)/sbin/
 	$(SILENT)mkdir -p $(RELEASE_DIR)/var/run/lirc
 	$(SILENT)rm -f $(RELEASE_DIR)/bin/vdstandby
@@ -543,12 +545,14 @@ enigma2_release_vip1_v2:
 		rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/spark7162VFD; \
 	fi
 	$(SILENT)cp -f $(SKEL_ROOT)/root_enigma2/usr/local/share/enigma2/keymap_vip.xml $(RELEASE_DIR)/usr/local/share/enigma2/keymap.xml
+	$(SILENT)touch $(RELEASE_DIR)/etc/.rccode
+	$(SILENT)echo "1" > $(RELEASE_DIR)/etc/.rccode
 
 #
 # vip2
 #
 enigma2_release_vip2: enigma2_release_vip1_v2
-	$(SILENT)cp -dp $(SKEL_ROOT)/release/lircd_vip_rc1.conf $(RELEASE_DIR)/etc/lircd.conf
+	$(SILENT)cp -dp $(SKEL_ROOT)/release/lircd_vip_rc12.conf $(RELEASE_DIR)/etc/lircd.conf
 	$(SILENT)cp -f $(SKEL_ROOT)/root_enigma2/usr/local/share/enigma2/keymap_vip.xml $(RELEASE_DIR)/usr/local/share/enigma2/keymap.xml
 
 #
