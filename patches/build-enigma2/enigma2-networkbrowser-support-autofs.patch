@@ -176,8 +176,8 @@
 -					data['sharedir'] = getValue(mount.findall("sharedir"), '/media/').encode("UTF-8")
 -					data['sharename'] = getValue(mount.findall("sharename"), 'MEDIA').encode("UTF-8")
 -					data['options'] = getValue(mount.findall("options"), "").encode("UTF-8")
--					data['username'] = getValue(mount.findall("username"), '').encode("UTF-8")
--					data['password'] = getValue(mount.findall("password"), '').encode("UTF-8")
+-					data['username'] = getValue(mount.findall("username"), 'guest').encode("UTF-8")
+-					data['password'] = getValue(mount.findall("password"), 'guest').encode("UTF-8")
 -					self.automounts[data['sharename']] = data
 -				except Exception, e:
 -					print "[MountManager] Error reading Mounts:", e
@@ -319,7 +319,7 @@
  
  	def CheckMountPointFinished(self, result, retval, extra_args):
  		print "[AutoMount.py] CheckMountPointFinished", result, retval
-@@ -300,25 +205,12 @@
+@@ -300,25 +204,12 @@
  		path = os.path.join('/media/net', data['sharename'])
  		print "[AutoMount.py] CheckMountPointFinished, verifying: ", path
  
@@ -351,7 +351,7 @@
  
  		if self.checkList:
  			# Go to next item in list...
-@@ -376,40 +268,37 @@
+@@ -376,40 +267,37 @@
  
  	def writeMountsConfig(self):
  		# Generate List in RAM
@@ -414,7 +414,7 @@
  
  	def removeMount(self, mountpoint, callback=None):
  		print "[AutoMount.py] removing mount: ", mountpoint
-@@ -419,28 +308,5 @@
+@@ -419,28 +307,5 @@
  				self.newautomounts[sharename] = sharedata
  		self.automounts.clear()
  		self.automounts = self.newautomounts
