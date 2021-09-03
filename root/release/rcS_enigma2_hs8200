@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 210813.1
+#Version 210903.1
 
 echo "[rcS] Start"
 echo "Fortis HS8200 Enigma2"
@@ -264,7 +264,7 @@ fi
 # Try and synchronise time
 #inettime=`cat /etc/enigma2/settings | grep systemoptions.inettime | cut -d "=" -f2`
 # if [ ! $inettime ] && [ -e /sbin/ntpd ]; then
-if [ -e /sbin/ntpd ]; then
+if [ -h /usr/sbin/ntpd ]; then
    echo "[rcS] Set internet time"
    (ntpd -n -p 0.europe.pool.ntp.org -q; /bin/fp_control -sst)
 fi

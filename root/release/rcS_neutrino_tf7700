@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 20201027.1
+#Version 20210903.1
 
 echo "Topfield TF77X0HDPVR Neutrino"
 
@@ -202,10 +202,9 @@ if [ -e /etc/ownscript.sh ]; then
 fi
 
 # Try and synchronise time
-if [ -e /sbin/ntpdate ]; then
-   echo "Set internet time"
-   /sbin/ntpdate de.pool.ntp.org
-   /bin/tffpctl --syncfptime &
+if [ -h /usr/sbin/ntpd ]; then
+   echo "[rcS]Set internet time"
+   (ntpd -n -p 0.europe.pool.ntp.org -q; /bin/fp_control -sst) &
 else
   /bin/tffpctl --syncsystime &
 fi

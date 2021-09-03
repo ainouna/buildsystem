@@ -211,8 +211,8 @@ fi
 
 # Try and synchronise time
 echo "[rcS] Set internet time"
-if [ -e /usr/bin/ntpd ]; then
-   (/usr/bin/ntpd -n -p 0.europe.pool.ntp.org -q; /bin/fp_control -sst) &
+if [ -h /usr/sbin/ntpd ]; then
+   (/usr/sbin/ntpd -n -p 0.europe.pool.ntp.org -q; /bin/fp_control -sst) &
 fi
 
 # Do own extras

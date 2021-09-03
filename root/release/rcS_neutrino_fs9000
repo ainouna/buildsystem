@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 191113.1
+#Version 210903.1
 
 echo "[rcS] Start"
 echo "Fortis FS9000/9200 Neutrino"
@@ -175,12 +175,10 @@ else
 #   sleep 3
 fi
 
-#timefix
-#date -s "201605011200"
 # Try and synchronise time
-if [ -e /usr/bin/ntpdate ]; then
+if [ -h /usr/sbin/ntpd ]; then
    echo "Set internet time"
-   (/usr/bin/ntpdate de.pool.ntp.org; /bin/fp_control -sst)
+   (ntpd -n -p 0.europe.pool.ntp.org -q; /bin/fp_control -sst)
 fi
 
 echo "[rcS] Init portmap & ftp (LOAD 1)"

@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 210813.1
+#Version 210903.1
 
 echo "[rcS] Start"
 echo "Spark Enigma2"
@@ -69,6 +69,15 @@ else
    /usr/sbin/telnetd -l /bin/login
    echo "with normal login"
 fi
+
+FP_TYPE=0
+#until [ -r /proc/stb/fp/displaytype ]
+#do
+#  sleep 1
+#done
+cat /proc/stb/fp/displaytype
+FP_TYPE=`cat /proc/stb/fp/displaytype`
+echo "Frontpanel type = $FP_TYPE"
 
 echo "[rcS] Init stmfb (LOAD 9)"
 echo "Ld 9" > /dev/vfd
@@ -257,7 +266,7 @@ fi
 # Try and synchronise time
 #inettime=`cat /etc/enigma2/settings | grep systemoptions.inettime | cut -d "=" -f2`
 # if [ ! $inettime ] && [ -e /sbin/ntpd ]; then
-if [ -e /sbin/ntpd ]; then
+if [ -r /usr/sbin/ntpd ]; then
    echo "[rcS] Set internet time"
    (ntpd -n -p 0.europe.pool.ntp.org -q; /bin/fp_control -sst)
 #else

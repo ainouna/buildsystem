@@ -1,8 +1,8 @@
 #!/bin/sh
-#Version 210711.1
+#Version 210903.1
 
 echo "[rcS] Start"
-echo "Kathrein UFS922 Neutrino"
+echo "Kathrein UFS910 Neutrino"
 
 MODDIR=/lib/modules
 
@@ -190,7 +190,7 @@ fi
 
 echo "[rcS] Try and synchronise time (LOAD 1)"
 echo "LOAD 1" > /dev/vfd
-if [ -e /sbin/ntpd ]; then
+if [ -h /usr/sbin/ntpd ]; then
    echo "[rcS] Set internet time"
    (ntpd -n -p 0.europe.pool.ntp.org -q; /bin/fp_control -sst) &
 #else

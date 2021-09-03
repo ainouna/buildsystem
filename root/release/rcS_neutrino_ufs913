@@ -1,6 +1,7 @@
 #!/bin/sh
-#Version 210411.1
+#Version 210903.1
 
+echo "[rcS] Start"
 echo "Kathrein UFS913 Neutrino"
 
 MODDIR=/lib/modules
@@ -8,7 +9,8 @@ MODDIR=/lib/modules
 insmod $MODDIR/e2_proc.ko
 
 echo "[rcS] Init frontpanel"
-insmod $MODDIR/kathrein_micom.ko # paramDebug=30
+insmod $MODDIR/kathrein_micom.ko #paramDebug=50
+insmod $MODDIR/simu_button.ko
 
 if [ -e /var/etc/.firstboot ]; then
    echo "Wait 1 minute" > /dev/vfd
@@ -26,11 +28,6 @@ fi
 echo "[rcS] Starting DEBUG Interface"
 /etc/init.d/mountall start
 /etc/init.d/hostname start
-
-# green led on
-fp_control -l 2 1
-# led brightness
-fp_control -led 80
 
 /etc/init.d/autofs start
 
@@ -133,13 +130,13 @@ if [ -e $MODDIR/usbserial.ko ]; then
    if [ -e $MODDIR/pl2303.ko ]; then
       insmod $MODDIR/pl2303.ko
    fi
+   if [ -e $MODDIR/ch341.ko ]; then
+      insmod $MODDIR/ch341.ko
+   fi
 fi
 
-echo "[rcS] Init frontpanel (LOAD 2)"
+echo "[rcS] Init remote control (LOAD 2)"
 echo "LOAD 2" > /dev/vfd
-insmod $MODDIR/simu_button.ko
-
-echo "[rcS] Init remote control"
 /bin/evremote2 10 120 &
 
 # Load module(s) from modules.extra
@@ -154,7 +151,6 @@ else
       HWADDR=`grep -E -o '[[:xdigit:]]{2}(:[[:xdigit:]]{2}){5}' /dev/mtd2`
       ifconfig eth0 down
       ifconfig eth0 hw ether $HWADDR
-#     ifconfig eth0 up
       /etc/init.d/networking stop
       DHCP=`grep -c 'iface eth0 inet dhcp' /etc/network/interfaces`
       if [ "$DHCP" -eq "1" ]; then
@@ -178,7 +174,7 @@ fi
 
 echo "[rcS] Try and synchronise time (LOAD 1)"
 echo "LOAD 1" > /dev/vfd
-if [ -e /sbin/ntpd ]; then
+if [ -h /usr/sbin/ntpd ]; then
    echo "[rcS] Set internet time"
    (ntpd -n -p 0.europe.pool.ntp.org -q; /bin/fp_control -sst) &
 #else
@@ -209,6 +205,7 @@ do
    /usr/bin/neutrino
    rtv=$?
    echo "Neutrino ended <- RTV: " $rtv
+   fp_control -i 17 0  # all icons off
    case "$rtv" in
       0) echo "[rcS] SHUTDOWN"
          echo "Shutdown" > /dev/vfd
