@@ -243,6 +243,8 @@ enigma2_release_spark:
 		rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/sparkVFD; \
 	fi
 	$(SILENT)cp -f $(SKEL_ROOT)/root_enigma2/usr/local/share/enigma2/keymap_spark.xml $(RELEASE_DIR)/usr/local/share/enigma2/keymap.xml
+	$(SILENT)touch $(RELEASE_DIR)/etc/.rccode
+	$(SILENT)echo "1" > $(RELEASE_DIR)/etc/.rccode
 
 #
 # spark7162
