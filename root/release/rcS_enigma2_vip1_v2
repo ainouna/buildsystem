@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 210813.1
+#Version 210901.1
 
 echo "[rcS] Start"
 echo "Edision argus VIP V2 (1 pluggable tuner) Enigma2"
@@ -132,9 +132,6 @@ if [ -e $MODDIR/usbserial.ko ]; then
    if [ -e $MODDIR/pl2303.ko ]; then
       insmod $MODDIR/pl2303.ko
    fi
-   if [ -e $MODDIR/ch341.ko ]; then
-      insmod $MODDIR/ch341.ko
-   fi
    if [ -e $MODDIR/option.ko ]; then
       insmod $MODDIR/option.ko
    fi
@@ -160,8 +157,6 @@ mknod /dev/rc c 147 1 #VFD
 /bin/evremote2 10 120 &
 
 echo "[rcS] Init smartcard cardreader"
-mknod /dev/sci0 c 169 0
-mknod /dev/sci1 c 169 1
 
 stfbcontrol a 255
 
@@ -290,6 +285,6 @@ do
 done
 
 #never reached
-echo "[rcS] REBOOT VIP1"
+echo "[rcS] REBOOT VIP1_2"
 echo "REBOOT" > /dev/vfd
 reboot -f
