@@ -1,4 +1,4 @@
-# revision c0da93ed786e88f06b948d82051d74f1c4c5c643 07/11/2021 23:40
+# revision 4931119b61b09694506e6e9e6aac63e7954fe64d 08/09/2021 23:40
 --- enigma2.org/configure.ac
 +++ enigma2/configure.ac
 @@ -18,6 +18,7 @@
@@ -3544,7 +3544,7 @@
  struct CIPmtHandler
 --- enigma2.org/lib/dvb_ci/dvbci_session.cpp
 +++ enigma2/lib/dvb_ci/dvbci_session.cpp
-@@ -285,6 +285,10 @@
+@@ -296,6 +296,10 @@
  		if ((!session_nb) || (session_nb >= SLMS))
  		{
  			eWarning("[CI SESS] PROTOCOL: illegal session number %x", session_nb);
@@ -7805,7 +7805,7 @@
  			"4_3_letterbox": _("4:3 Letterbox"),
 -			"4_3_panscan": _("4:3 PanScan"),
 +			"4_3_panscan": _("4:3 Zoom"),
- 			"16_9": _("16:9"),
+ 			"16_9": "16:9",
  			"16_9_always": _("16:9 always"),
  			"16_10_letterbox": _("16:10 Letterbox"),
 -			"16_10_panscan": _("16:10 PanScan"),
@@ -7848,7 +7848,7 @@
  	except:
  		pass
  	config.av.policy_43 = ConfigSelection(choices=policy_choices, default="pillarbox")
--	config.av.tvsystem = ConfigSelection(choices={"pal": _("PAL"), "ntsc": _("NTSC"), "multinorm": _("multinorm")}, default="pal")
+-	config.av.tvsystem = ConfigSelection(choices={"pal": "PAL", "ntsc": "NTSC", "multinorm": "multinorm"}, default="pal")
 -	config.av.wss = ConfigEnableDisable(default=True)
 +	config.av.tvsystem = ConfigSelection(choices = {"pal": _("PAL"), "ntsc": _("NTSC"), "multinorm": _("Multinorm")}, default="multinorm")
 +	config.av.wss = ConfigEnableDisable(default = False)
@@ -7962,7 +7962,7 @@
  
 --- enigma2.org/lib/python/Screens/ChannelSelection.py
 +++ enigma2/lib/python/Screens/ChannelSelection.py
-@@ -6,6 +6,11 @@
+@@ -7,6 +7,11 @@
  import Components.ParentalControl
  from Components.Button import Button
  from Components.ServiceList import ServiceList, refreshServiceList
@@ -7974,7 +7974,7 @@
  from Components.ActionMap import NumberActionMap, ActionMap, HelpableActionMap
  from Components.MenuList import MenuList
  from Components.ServiceEventTracker import ServiceEventTracker, InfoBarBase
-@@ -130,7 +135,7 @@
+@@ -131,7 +136,7 @@
  		self.csel = csel
  		self.bsel = None
  		if self.isProtected():
@@ -7983,7 +7983,7 @@
  
  		self["actions"] = ActionMap(["OkCancelActions", "ColorActions", "NumberActions", "MenuActions"],
  			{
-@@ -344,7 +349,7 @@
+@@ -345,7 +350,7 @@
  		if answer:
  			self.csel.protectContextMenu = False
  		elif answer is not None:
@@ -7992,7 +7992,7 @@
  		else:
  			self.close()
  
-@@ -488,7 +493,7 @@
+@@ -491,7 +496,7 @@
  		self.close()
  
  	def removeParentalProtection(self, service):
@@ -8001,7 +8001,7 @@
  
  	def pinEntered(self, service, answer):
  		if answer:
-@@ -497,13 +502,13 @@
+@@ -500,13 +505,13 @@
  				self.csel.servicelist.resetRoot()
  			self.close()
  		elif answer is not None:
@@ -8017,7 +8017,7 @@
  		else:
  			self.unhideParentalServicesCallback(True)
  
-@@ -516,7 +521,7 @@
+@@ -519,7 +524,7 @@
  			self.csel.servicelist.setCurrent(service)
  			self.close()
  		elif answer is not None:
@@ -8026,7 +8026,7 @@
  		else:
  			self.close()
  
-@@ -895,6 +900,9 @@
+@@ -898,6 +903,9 @@
  		self.saved_title = None
  		self.saved_root = None
  		self.current_ref = None
@@ -8036,7 +8036,7 @@
  		self.editMode = False
  		self.confirmRemove = True
  
-@@ -995,7 +1003,7 @@
+@@ -998,7 +1006,7 @@
  				if mutableAlternatives:
  					mutableAlternatives.setListName(name)
  					if mutableAlternatives.addService(cur_service.ref):
@@ -8045,7 +8045,7 @@
  					mutableAlternatives.flushChanges()
  					self.servicelist.addService(new_ref.ref, True)
  					self.servicelist.removeCurrent()
-@@ -1006,7 +1014,7 @@
+@@ -1009,7 +1017,7 @@
  					if self.startServiceRef and cur_service.ref == self.startServiceRef:
  						self.startServiceRef = new_ref.ref
  				else:
@@ -8054,7 +8054,7 @@
  			else:
  				print "add", str, "to", cur_root.getServiceName(), "failed"
  		else:
-@@ -1030,10 +1038,10 @@
+@@ -1033,10 +1041,10 @@
  					if services is not None:
  						for service in services:
  							if mutableBouquet.addService(service):
@@ -8067,7 +8067,7 @@
  				# do some voodoo to check if current_root is equal to bouquet_root
  				cur_root = self.getRoot()
  				str1 = cur_root and cur_root.toString()
-@@ -1043,9 +1051,9 @@
+@@ -1046,9 +1054,9 @@
  					self.servicelist.addService(new_bouquet_ref)
  					self.servicelist.resetRoot()
  			else:
@@ -8080,7 +8080,7 @@
  
  	def copyCurrentToBouquetList(self):
  		provider = ServiceReference(self.getCurrentSelection())
-@@ -1071,11 +1079,11 @@
+@@ -1074,11 +1083,11 @@
  					if self.startServiceRef and cur_service.ref == self.startServiceRef:
  						self.startServiceRef = first_in_alternative
  				else:
@@ -8097,7 +8097,7 @@
  		self.removeBouquet()
  		if not end:
  			self.servicelist.moveUp()
-@@ -1157,6 +1165,9 @@
+@@ -1160,6 +1168,9 @@
  			else:
  				new_title += ' ' + _("[favourite edit]")
  		self.setTitle(new_title)
@@ -8107,7 +8107,7 @@
  		self.__marked = self.servicelist.getRootServices()
  		for x in self.__marked:
  			self.servicelist.addMarked(eServiceReference(x))
-@@ -1184,6 +1195,9 @@
+@@ -1187,6 +1198,9 @@
  		self.bouquet_mark_edit = OFF
  		self.mutableList = None
  		self.setTitle(self.saved_title)
@@ -8117,7 +8117,7 @@
  		self.saved_title = None
  		# self.servicePath is just a reference to servicePathTv or Radio...
  		# so we never ever do use the asignment operator in self.servicePath
-@@ -1262,6 +1276,9 @@
+@@ -1265,6 +1279,9 @@
  			self.mutableList.flushChanges() # FIXME add check if changes was made
  			self.mutableList = None
  			self.setTitle(self.saved_title)
@@ -8127,7 +8127,7 @@
  			self.saved_title = None
  			self.servicelist.resetRoot()
  			self.servicelist.l.setHideNumberMarker(config.usage.hide_number_markers.value)
-@@ -1273,6 +1290,9 @@
+@@ -1276,6 +1293,9 @@
  			self.saved_title = self.getTitle()
  			pos = self.saved_title.find(')')
  			self.setTitle(self.saved_title[:pos + 1] + ' ' + _("[move mode]") + self.saved_title[pos + 1:])
@@ -8137,7 +8137,7 @@
  			self.servicelist.l.setHideNumberMarker(False)
  			self.setCurrentSelection(self.servicelist.getCurrent())
  		self["Service"].editmode = True
-@@ -1330,6 +1350,11 @@
+@@ -1333,6 +1353,11 @@
  
  		self["list"] = ServiceList(self)
  		self.servicelist = self["list"]
@@ -8149,7 +8149,7 @@
  
  		self.numericalTextInput = NumericalTextInput(handleTimeout=False)
  		self.numericalTextInput.setUseableChars(u'1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ')
-@@ -1424,6 +1449,9 @@
+@@ -1427,6 +1452,9 @@
  			title = title[:pos]
  		title += _(" (TV)")
  		self.setTitle(title)
@@ -8159,7 +8159,7 @@
  
  	def setRadioMode(self):
  		self.mode = MODE_RADIO
-@@ -1435,6 +1463,9 @@
+@@ -1438,6 +1466,9 @@
  			title = title[:pos]
  		title += _(" (Radio)")
  		self.setTitle(title)
@@ -8169,7 +8169,7 @@
  
  	def setRoot(self, root, justSet=False):
  		if self.startRoot is None:
-@@ -1489,6 +1520,9 @@
+@@ -1492,6 +1523,9 @@
  					end_ref = None
  				nameStr = self.getServiceName(base_ref)
  				titleStr += ' - ' + nameStr
@@ -8179,7 +8179,7 @@
  				if end_ref is not None:
  					if Len > 2:
  						titleStr += '/../'
-@@ -1496,7 +1530,13 @@
+@@ -1499,7 +1533,13 @@
  						titleStr += '/'
  					nameStr = self.getServiceName(end_ref)
  					titleStr += nameStr
@@ -8387,7 +8387,7 @@
  
  	def extensionCallback(self, answer):
  		if answer is not None:
-@@ -2464,12 +2513,12 @@
+@@ -2464,7 +2513,7 @@
  
  class InfoBarInstantRecord:
  	"""Instant Record - handles the instantRecord action in order to
@@ -8396,12 +8396,6 @@
  
  	def __init__(self):
  		self["InstantRecordActions"] = HelpableActionMap(self, "InfobarInstantRecord",
- 			{
--				"instantRecord": (self.instantRecord, _("Instant recording...")),
-+				"instantRecord": (self.instantRecord, _("Instant recording")),
- 			})
- 		self.SelectedInstantServiceRef = None
- 		if isStandardInfoBar(self):
 @@ -2551,7 +2600,7 @@
  	def startInstantRecording(self, limitEvent=False):
  		begin = int(time())
@@ -10128,7 +10122,7 @@
  	return keyDescriptions[idx].get(key)
 --- enigma2.org/lib/python/Screens/InputDeviceSetup.py
 +++ enigma2/lib/python/Screens/InputDeviceSetup.py
-@@ -300,72 +300,61 @@
+@@ -300,73 +300,61 @@
  	rcList = [
  			("0", _("Default")),
  			("4", _("DMM normal")),
@@ -10148,7 +10142,7 @@
 -			("25", _("Zgemma H9(old model)/I55Plus")),
 -			("27", _("HD60/Multibox/Multibox SE")),
 -			("28", _("I55SE/H7(new model)/H9(new model)/H9COMBO/H9TWIN/H9SE/H9COMBOSE/H10/H11")),
--			("30", _("PULSe 4K"))
+-			("30", _("PULSe 4K(mini)"))
 +			("7", _("Fortis universal")),
 +			("8", _("Fortis standard")),
 +			("9", _("Fortis mini")),
@@ -10214,7 +10208,8 @@
 -			("h9twinse", 28),
 -			("h10", 28),
 -			("h11", 28),
--			("pulse4k", 30)
+-			("pulse4k", 30),
+-			("pulse4kmini", 30)
 +			("fs9000", 7),
 +			("hs8200", 7),
 +			("hs9510", 8),
@@ -10254,7 +10249,7 @@
  	def __init__(self, session):
 --- enigma2.org/data/rc_models/rc_models.cfg
 +++ enigma2/data/rc_models/rc_models.cfg
-@@ -19,157 +19,36 @@
+@@ -19,158 +19,36 @@
  #
  # When no entry matches at all, 'default' will be used as remoteName
  #
@@ -10412,6 +10407,7 @@
 -#
 -# AB-COM
 -pulse4k        pulse
+-pulse4kmini    pulse
 +fs9000            fs9000
 +hs9510            hs9510
 +hs8200            fs9000
