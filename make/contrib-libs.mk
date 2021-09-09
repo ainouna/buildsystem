@@ -335,53 +335,6 @@ $(D)/readline: $(D)/bootstrap $(ARCHIVE)/$(READLINE_SOURCE)
 	$(TOUCH)
 
 #
-# openssll
-#
-OPENSSLL_MAJOR = 1.0.2
-OPENSSLL_MINOR = u
-OPENSSLL_VER = $(OPENSSL_MAJOR)$(OPENSSLL_MINOR)
-OPENSSLL_SOURCE = openssl-$(OPENSSLL_VER).tar.gz
-OPENSSLL_PATCH  = openssl-$(OPENSSLL_VER)-optimize-for-size.patch
-OPENSSLL_PATCH += openssl-$(OPENSSLL_VER)-makefile-dirs.patch
-OPENSSLL_PATCH += openssl-$(OPENSSLL_VER)-disable_doc_tests.patch
-OPENSSLL_PATCH += openssl-$(OPENSSLL_VER)-fix-parallel-building.patch
-OPENSSLL_PATCH += openssl-$(OPENSSLL_VER)-compat_versioned_symbols-1.patch
-OPENSSLL_PATCH += openssl-$(OPENSSLL_VER)-remove_timestamp_check.patch
-OPENSSLL_SED_PATCH = sed -i 's|MAKEDEPPROG=makedepend|MAKEDEPPROG=$(CROSS_DIR)/bin/$$(CC) -M|' Makefile
-
-$(ARCHIVE)/$(OPENSSLL_SOURCE):
-	$(WGET) https://www.openssl.org/source/$(OPENSSLL_SOURCE)
-
-$(D)/openssll: $(D)/bootstrap $(ARCHIVE)/$(OPENSSLL_SOURCE)
-	$(START_BUILD)
-	$(REMOVE)/openssl-$(OPENSSL_VER)
-	$(UNTAR)/$(OPENSSL_SOURCE)
-	$(CH_DIR)/openssl-$(OPENSSL_VER); \
-		$(call apply_patches, $(OPENSSL_PATCH)); \
-		$(BUILDENV) \
-		./Configure $(SILENT_OPT) \
-			-DL_ENDIAN \
-			shared \
-			no-hw \
-			linux-generic32 \
-			--prefix=/usr \
-			--openssldir=/etc/ssl \
-		; \
-		$(OPENSSL_SED_PATCH); \
-		$(MAKE) depend; \
-		$(MAKE) all; \
-		$(MAKE) install_sw INSTALL_PREFIX=$(TARGET_DIR)
-	chmod 0755 $(TARGET_DIR)/usr/lib/lib{crypto,ssl}.so.*
-	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/openssl.pc
-	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libcrypto.pc
-	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libssl.pc
-	cd $(TARGET_DIR) && rm -rf etc/ssl/man usr/bin/openssl usr/lib/engines
-	ln -sf libcrypto.so.1.0.0 $(TARGET_DIR)/usr/lib/libcrypto.so.0.9.8
-	ln -sf libssl.so.1.0.0 $(TARGET_DIR)/usr/lib/libssl.so.0.9.8
-	$(REMOVE)/openssl-$(OPENSSL_VER)
-	$(TOUCH)
-
-#
 # openssl
 #
 OPENSSL_MAJOR = 1.1.1
@@ -2863,5 +2816,43 @@ $(D)/libnl: $(D)/bootstrap $(D)/openssl $(ARCHIVE)/$(LIBNL_SOURCE)
 	$(REWRITE_LIBTOOL)/libnl-nf-3.la
 	$(REWRITE_LIBTOOL)/libnl-route-3.la
 	$(REMOVE)/libnl-$(LIBNL_VER)
+	$(TOUCH)
+
+#
+# mpg123
+#
+MPG123_VER = 1.28.2
+MPG123_SOURCE = mpg123-$(MPG123_VER).tar.bz2
+
+$(ARCHIVE)/$(MPG123_SOURCE):
+	$(WGET) https://sourceforge.net/projects/mpg123/files/mpg123/$(MPG123_VER)/$(MPG123_SOURCE)
+
+$(D)/mpg123: $(D)/bootstrap $(ARCHIVE)/$(MPG123_SOURCE)
+	$(START_BUILD)
+	$(REMOVE)/mpg123-$(MPG123_VER)
+	$(UNTAR)/$(MPG123_SOURCE)
+	$(CH_DIR)/mpg123-$(MPG123_VER); \
+		$(CONFIGURE) \
+			--build=$(BUILD) \
+			--host=$(TARGET) \
+			--target=$(TARGET) \
+			--prefix=/usr \
+			--bindir=/.remove \
+			--mandir=/.remove \
+			--docdir=/.remove \
+			--infodir=/.remove \
+			--with-audio=alsa \
+			--with-audio=oss \
+			--with-default-audio=alsa \
+			--with-default-audio=oss \
+		make $(SILENT_OPT); \
+		make install $(SILENT_OPT) DESTDIR=$(TARGET_DIR)
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libmpg123.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libout123.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libsyn123.pc
+	$(REWRITE_LIBTOOL)/libmpg123.la
+	$(REWRITE_LIBTOOL)/libout123.la
+	$(REWRITE_LIBTOOL)/libsyn123.la
+#	$(REMOVE)/mpg123-$(MPG123_VER)
 	$(TOUCH)
 
