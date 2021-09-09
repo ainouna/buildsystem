@@ -68,7 +68,7 @@ $(D)/host_module_init_tools: $(ARCHIVE)/$(HOST_MODULE_INIT_TOOLS_SOURCE)
 	$(TOUCH)
 
 #
-# host_mtd_utils
+# host_mtd_utils_old
 #
 HOST_MTD_UTILS_OLD_VER    = $(MTD_UTILS_OLD_VER)
 HOST_MTD_UTILS_OLD_SOURCE = $(MTD_UTILS_OLD_SOURCE)

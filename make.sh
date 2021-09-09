@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20210729.1
+# Version 202100908.1
 
 ##############################################
 
@@ -19,7 +19,7 @@ if [ "$1" == -h ] || [ "$1" == --help ]; then
 	echo "-v or --verbose   : verbose build (very noisy!)"
 	echo "-q or --quiet     : quiet build, fastest, almost silent"
 	echo "-b or --batchmode : batch mode; do not become interactive"
-	echo "Parameter 1       : target system (1-38)"
+	echo "Parameter 1       : target system (1-37)"
 	echo "Parameter 2       : kernel (1-2)"
 	echo "Parameter 3       : optimization (1-5)"
 	echo "Parameter 4       : image (Enigma=1/2 Neutrino=3/4 (1-4)"
@@ -114,7 +114,7 @@ fi
 ##############################################
 
 case $1 in
-	[1-9] | 1[0-9] | 2[0-9] | 3[0-9] | 4[0-1]) REPLY=$1;;
+	[1-9] | 1[0-9] | 2[0-9] | 3[0-9] | 40]) REPLY=$1;;
 	*)
 		echo "Target receivers:"
 		echo
@@ -138,27 +138,27 @@ case $1 in
 		echo "   21)  IPBox 910HD     24)  2000HD"
 		echo "   22)  IPBox 91HD      25)  200HD / mini FTA"
 		echo "                        26)  3000HD / Xsarius Alpha HD10"
-		echo
-		echo "  Fulan                Atemio"
-		echo "   27)  Spark           29)  AM520"
-		echo "   28)  Spark7162       30)  AM530"
+		echo "  Fulan"
+		echo "   27)  Spark"
+		echo "   28)  Spark7162"       
 		echo
 		echo "  Edision"
-		echo "   31)  argus VIP V1 [ 1 fixed tuner + 2 CI + 1.5 USB ]"
-		echo "   32)  argus VIP V2 [ 1 plugin tuner + 2 CI + 1 USB ]"
-		echo "   33)  argus VIP2   [ 2 plugin tuners + 1 USB ]"
+		echo "   29)  argus VIP V1 [ 1 fixed tuner + 2 CI + 1.5 USB ]"
+		echo "   30)  argus VIP V2 [ 1 plugin tuner + 2 CI + 1 USB ]"
+		echo "   31)  argus VIP2   [ 2 plugin tuners + 1 USB ]"
 		echo
 		echo "  Various SH4-based receivers"
-		echo "   34)  SpiderBox HL-101"
-		echo "   35)  ADB ITI-5800S(X) (nBox BSKA, BSLA, BXZB or BZZB)"
-		echo "   36)  Showbox Vitamin HD5000 (256Mbyte flash version)"
-		echo "   37)  SagemCom 88 series"
-		echo "   38)  Ferguson Ariva @Link 200"
-#		echo "   39)  Pace HDS-7241 (in development, kernel P0217 only)"
-#		echo "   40)  ADB ITI-2849ST/2850ST/2851S (in development, kernel P0217 only)"
-#		echo "   41)  Opticum/Orton HD 9600 (both S and TS) (in development, kernel P0217 only)"
+		echo "   32)  Atemio AM520HD"
+		echo "   33)  SpiderBox HL-101"
+		echo "   34)  ADB ITI-5800S(X) (nBox BSKA, BSLA, BXZB or BZZB)"
+		echo "   35)  Showbox Vitamin HD5000 (256Mbyte flash version)"
+		echo "   36)  SagemCom 88 series"
+		echo "   37)  Ferguson Ariva @Link 200"
+#		echo "   38)  Pace HDS-7241 (in development, kernel P0217 only)"
+#		echo "   39)  ADB ITI-2849ST/2850ST/2851S (in development, kernel P0217 only)"
+#		echo "   40)  Opticum/Orton HD 9600 (both S and TS) (in development, kernel P0217 only)"
 		echo
-		read -p "Select target (1-38) ";;
+		read -p "Select target (1-37) ";;
 esac
 
 case "$REPLY" in
@@ -190,19 +190,18 @@ case "$REPLY" in
 	26) BOXTYPE="cuberevo_3000hd";;
 	27) BOXTYPE="spark";;
 	28) BOXTYPE="spark7162";;
-	29) BOXTYPE="atemio520";;
-	30) BOXTYPE="atemio530";;
-	31) BOXTYPE="vip1_v1";;
-	32) BOXTYPE="vip1_v2";;
-	33) BOXTYPE="vip2";;
-	34) BOXTYPE="hl101";;
-	35) BOXTYPE="adb_box";;
-	36) BOXTYPE="vitamin_hd5000";;
-	37) BOXTYPE="sagemcom88";;
-	38) BOXTYPE="arivalink200";;
-	39) BOXTYPE="pace7241";;
-	40) BOXTYPE="adb_2850";;
-	41) BOXTYPE="opt9600";;
+	29) BOXTYPE="vip1_v1";;
+	30) BOXTYPE="vip1_v2";;
+	31) BOXTYPE="vip2";;
+	32) BOXTYPE="atemio520";;
+	33) BOXTYPE="hl101";;
+	34) BOXTYPE="adb_box";;
+	35) BOXTYPE="vitamin_hd5000";;
+	36) BOXTYPE="sagemcom88";;
+	37) BOXTYPE="arivalink200";;
+	38) BOXTYPE="pace7241";;
+	39) BOXTYPE="adb_2850";;
+	40) BOXTYPE="opt9600";;
 	 *) BOXTYPE="hs8200";;
 esac
 echo "BOXTYPE=$BOXTYPE" >> config

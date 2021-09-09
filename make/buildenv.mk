@@ -225,7 +225,7 @@ START_BUILD           = @echo "=================================================
 
 TOUCH                 = @touch $@; \
                         echo "--------------------------------------------------------------"; \
-        		if [ $(PKG_VER_HELPER) == "AA" ]; then \
+                        if [ $(PKG_VER_HELPER) == "AA" ]; then \
                             echo -e "Build of $(TERM_GREEN_BOLD)$(PKG_NAME)$(TERM_NORMAL) completed."; \
                         else \
                             echo -e "Build of $(TERM_GREEN_BOLD)$(PKG_NAME) $(PKG_VER)$(TERM_NORMAL) completed."; \

@@ -1895,6 +1895,6 @@ $(D)/uboot-utils: $(D)/bootstrap
 		$(MAKE)
 	$(SILENT)install -m 755 $(BUILD_TMP)/uboot-utils-$(UBOOT_UTILS_VER)/fw_setenv $(TARGET_DIR)/usr/bin
 #	ln -s $(TARGET_DIR)/usr/bin/fw_setenv $(TARGET_DIR)/usr/bin/fw_printenv
-##	$(REMOVE)/uboot-utils-$(UBOOT_UTILS_VER)
+	$(REMOVE)/uboot-utils-$(UBOOT_UTILS_VER)
 	$(TOUCH)
 

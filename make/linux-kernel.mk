@@ -155,20 +155,10 @@ ATEMIO520_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-sh4-lmb_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-atemio520_setup_stm24_$(KERNEL_LABEL).patch \
 		$(if $(P0209),linux-sh4-i2c-stm-downgrade_stm24_$(KERNEL_LABEL).patch) \
-		linux-squashfs-downgrade-stm24_$(KERNEL_LABEL)-to-stm23.patch \
-		linux-squashfs3.0_lzma_stm23.patch \
-		linux-squashfs-downgrade-stm24-patch-2.6.25 \
-		linux-squashfs-downgrade-stm24-rm_d_alloc_anon.patch
-
-ATEMIO530_PATCHES_24 = $(COMMON_PATCHES_24) \
-		linux-sh4-stmmac_stm24_$(KERNEL_LABEL).patch \
-		linux-sh4-lmb_stm24_$(KERNEL_LABEL).patch \
-		linux-sh4-atemio530_setup_stm24_$(KERNEL_LABEL).patch \
-		$(if $(P0209),linux-sh4-i2c-stm-downgrade_stm24_$(KERNEL_LABEL).patch) \
-		linux-squashfs-downgrade-stm24_$(KERNEL_LABEL)-to-stm23.patch \
-		linux-squashfs3.0_lzma_stm23.patch \
-		linux-squashfs-downgrade-stm24-patch-2.6.25 \
-		linux-squashfs-downgrade-stm24-rm_d_alloc_anon.patch
+		$(if $(P0209),linux-squashfs-downgrade-stm24_$(KERNEL_LABEL)-to-stm23.patch) \
+		$(if $(P0209),linux-squashfs3.0_lzma_stm24.patch) \
+		$(if $(P0209),linux-squashfs-downgrade-stm24-2.6.25.patch) \
+		$(if $(P0209),linux-squashfs-downgrade-stm24-rm_d_alloc_anon.patch)
 
 UFS922_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-sh4-ufs922_setup_stm24_$(KERNEL_LABEL).patch \
@@ -611,7 +601,7 @@ $(D)/uboot: bootstrap $(ARCHIVE)/u-boot-$(UBOOT_VER).tar.bz2
 		$(call apply_patches,$(UBOOT_PATCH)); \
 		$(MAKE) $(BOXTYPE)_config; \
 		$(MAKE)
-#	$(REMOVE)/u-boot-$(UBOOT_VER)
+	$(REMOVE)/u-boot-$(UBOOT_VER)
 	$(TOUCH)
 
 #

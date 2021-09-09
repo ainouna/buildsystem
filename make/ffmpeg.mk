@@ -1,11 +1,14 @@
 #
 # ffmpeg
 #
-# Select desired version by uncommenting one line
+#ifeq ($(BOXTYPE), $(filter $(BOXTYPE), adb_box hs8200 pace7241 ufs912 ufs913))
 #FFMPEG_VER = 2.8.17
+#else
+# Select desired version by uncommenting one line
 #FFMPEG_VER = 3.4.3
 #FFMPEG_VER = 4.2.2
 FFMPEG_VER = 4.3.2
+#endif
 
 #
 # ffmpeg 2.x

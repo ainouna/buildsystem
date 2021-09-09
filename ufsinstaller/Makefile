@@ -74,7 +74,8 @@ endif
 	$(SILENT)mv $(UFSINSTALLER_DIR)/uImage.gz.org $(KERNEL_DIR)/arch/sh/boot/uImage.gz
 
 clean:
-#	$(SILENT)rm -f uImage
+	$(SILENT)rm -f uImage
+	$(SILENT)rm -f config.inst
 
 .c.o:
 	gcc -c $< -Wall
