@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 202100908.1
+# Version 202100910.1
 
 ##############################################
 
@@ -148,7 +148,7 @@ case $1 in
 		echo "   31)  argus VIP2   [ 2 plugin tuners + 1 USB ]"
 		echo
 		echo "  Various SH4-based receivers"
-		echo "   32)  Atemio AM520HD"
+		echo "   32)  Atemio AM 520 HD"
 		echo "   33)  SpiderBox HL-101"
 		echo "   34)  ADB ITI-5800S(X) (nBox BSKA, BSLA, BXZB or BZZB)"
 		echo "   35)  Showbox Vitamin HD5000 (256Mbyte flash version)"
