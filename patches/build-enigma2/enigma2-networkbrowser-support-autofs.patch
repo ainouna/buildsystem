@@ -195,13 +195,13 @@
  
  	def sanitizeOptions(self, origOptions, mounttype=None, username=None, password=None):
  		# split the options into their components
-@@ -181,118 +191,13 @@
+@@ -182,118 +192,13 @@
  		return ",".join(options)
  
  	def CheckMountPoint(self, item, callback):
 -		# possible CIFS version/security combinations
 -		secvers = (
--			'vers=3,sec=ntlmssp', 'vers=3,sec=ntlmv2', 'vers=2.1,sec=ntlmssp', 'vers=2.1,sec=ntlmv2',
+-			'vers=3.0,sec=ntlmssp', 'vers=3.0,sec=ntlmv2', 'vers=2.1,sec=ntlmssp', 'vers=2.1,sec=ntlmv2',
 -			'vers=2.1,sec=ntlm', 'vers=1.0,sec=ntlmssp', 'vers=1.0,sec=ntlmv2', 'vers=1.0,sec=ntlm',
 -			'vers=default', ''
 -		)
@@ -319,7 +319,7 @@
  
  	def CheckMountPointFinished(self, result, retval, extra_args):
  		print "[AutoMount.py] CheckMountPointFinished", result, retval
-@@ -300,25 +204,12 @@
+@@ -301,25 +206,12 @@
  		path = os.path.join('/media/net', data['sharename'])
  		print "[AutoMount.py] CheckMountPointFinished, verifying: ", path
  
@@ -351,7 +351,7 @@
  
  		if self.checkList:
  			# Go to next item in list...
-@@ -376,40 +267,37 @@
+@@ -377,40 +269,37 @@
  
  	def writeMountsConfig(self):
  		# Generate List in RAM
@@ -414,7 +414,7 @@
  
  	def removeMount(self, mountpoint, callback=None):
  		print "[AutoMount.py] removing mount: ", mountpoint
-@@ -419,28 +307,5 @@
+@@ -420,28 +309,5 @@
  				self.newautomounts[sharename] = sharedata
  		self.automounts.clear()
  		self.automounts = self.newautomounts
