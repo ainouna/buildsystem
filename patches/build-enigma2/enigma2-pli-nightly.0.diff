@@ -1,4 +1,4 @@
-# revision 4931119b61b09694506e6e9e6aac63e7954fe64d 08/09/2021 23:40
+# revision 4061f49c9860494c4082eb2c4f6e358789ff113a 17/09/2021 21:38
 --- enigma2.org/configure.ac
 +++ enigma2/configure.ac
 @@ -18,6 +18,7 @@
@@ -7560,7 +7560,7 @@
 +	return [ PluginDescriptor(name="VFDIcons", description="Icons in VFD", where = PluginDescriptor.WHERE_SESSIONSTART, fnc=main ) ]
 --- enigma2.org/lib/python/Plugins/SystemPlugins/Videomode/plugin.py
 +++ enigma2/lib/python/Plugins/SystemPlugins/Videomode/plugin.py
-@@ -69,6 +69,9 @@
+@@ -64,6 +64,9 @@
  				self.list.append(getConfigListEntry(_("Resolution"), config.av.videorate[config.av.videomode[config.av.videoport.value].value], _("Configure the screen resolution in PC output mode.")))
  			else:
  				self.list.append(getConfigListEntry(_("Refresh rate"), config.av.videorate[config.av.videomode[config.av.videoport.value].value], _("Configure the refresh rate of the screen.")))
@@ -7570,7 +7570,7 @@
  
  		port = config.av.videoport.value
  		if port not in config.av.videomode:
-@@ -110,6 +113,15 @@
+@@ -105,6 +108,15 @@
  					self.list.append(getConfigListEntry(_("HDR10 support"), config.av.hdr10_support, _("This option allows you to force the HDR10 modes for UHD")))
  					self.list.append(getConfigListEntry(_("Allow 12bit"), config.av.allow_12bit, _("This option allows you to enable or disable the 12 bit color mode")))
  					self.list.append(getConfigListEntry(_("Allow 10bit"), config.av.allow_10bit, _("This option allows you to enable or disable the 10 bit color mode")))
@@ -7915,7 +7915,7 @@
  		</condition>
 --- enigma2.org/lib/python/Plugins/SystemPlugins/OSDPositionSetup/overscanwizard.py
 +++ enigma2/lib/python/Plugins/SystemPlugins/OSDPositionSetup/overscanwizard.py
-@@ -172,7 +172,7 @@
+@@ -152,7 +152,7 @@
  		if self.step == 1:
  			self.step = self.yes_no.value and 5 or 2
  		elif self.step == 2:
@@ -7974,58 +7974,6 @@
  from Components.ActionMap import NumberActionMap, ActionMap, HelpableActionMap
  from Components.MenuList import MenuList
  from Components.ServiceEventTracker import ServiceEventTracker, InfoBarBase
-@@ -131,7 +136,7 @@
- 		self.csel = csel
- 		self.bsel = None
- 		if self.isProtected():
--			self.onFirstExecBegin.append(boundFunction(self.session.openWithCallback, self.protectResult, PinInput, pinList=[x.value for x in config.ParentalControl.servicepin], triesEntry=config.ParentalControl.retries.servicepin, title=_("Please enter the correct pin code"), windowTitle=_("Enter pin code")))
-+			self.onFirstExecBegin.append(boundFunction(self.session.openWithCallback, self.protectResult, PinInput, pinList=[x.value for x in config.ParentalControl.servicepin], triesEntry=config.ParentalControl.retries.servicepin, title=_("Please enter the correct PIN code"), windowTitle=_("Enter PIN code")))
- 
- 		self["actions"] = ActionMap(["OkCancelActions", "ColorActions", "NumberActions", "MenuActions"],
- 			{
-@@ -345,7 +350,7 @@
- 		if answer:
- 			self.csel.protectContextMenu = False
- 		elif answer is not None:
--			self.session.openWithCallback(self.close, MessageBox, _("The pin code you entered is wrong."), MessageBox.TYPE_ERROR)
-+			self.session.openWithCallback(self.close, MessageBox, _("The PIN code you entered is wrong."), MessageBox.TYPE_ERROR)
- 		else:
- 			self.close()
- 
-@@ -491,7 +496,7 @@
- 		self.close()
- 
- 	def removeParentalProtection(self, service):
--		self.session.openWithCallback(boundFunction(self.pinEntered, service.toCompareString()), PinInput, pinList=[config.ParentalControl.servicepin[0].value], triesEntry=config.ParentalControl.retries.servicepin, title=_("Enter the service pin"), windowTitle=_("Enter pin code"))
-+		self.session.openWithCallback(boundFunction(self.pinEntered, service.toCompareString()), PinInput, pinList=[config.ParentalControl.servicepin[0].value], triesEntry=config.ParentalControl.retries.servicepin, title=_("Enter the service PIN"), windowTitle=_("Enter PIN code"))
- 
- 	def pinEntered(self, service, answer):
- 		if answer:
-@@ -500,13 +505,13 @@
- 				self.csel.servicelist.resetRoot()
- 			self.close()
- 		elif answer is not None:
--			self.session.openWithCallback(self.close, MessageBox, _("The pin code you entered is wrong."), MessageBox.TYPE_ERROR)
-+			self.session.openWithCallback(self.close, MessageBox, _("The PIN code you entered is wrong."), MessageBox.TYPE_ERROR)
- 		else:
- 			self.close()
- 
- 	def unhideParentalServices(self):
- 		if self.csel.protectContextMenu:
--			self.session.openWithCallback(self.unhideParentalServicesCallback, PinInput, pinList=[config.ParentalControl.servicepin[0].value], triesEntry=config.ParentalControl.retries.servicepin, title=_("Enter the service pin"), windowTitle=_("Enter pin code"))
-+			self.session.openWithCallback(self.unhideParentalServicesCallback, PinInput, pinList=[config.ParentalControl.servicepin[0].value], triesEntry=config.ParentalControl.retries.servicepin, title=_("Enter the service PIN"), windowTitle=_("Enter PIN code"))
- 		else:
- 			self.unhideParentalServicesCallback(True)
- 
-@@ -519,7 +524,7 @@
- 			self.csel.servicelist.setCurrent(service)
- 			self.close()
- 		elif answer is not None:
--			self.session.openWithCallback(self.close, MessageBox, _("The pin code you entered is wrong."), MessageBox.TYPE_ERROR)
-+			self.session.openWithCallback(self.close, MessageBox, _("The PIN code you entered is wrong."), MessageBox.TYPE_ERROR)
- 		else:
- 			self.close()
- 
 @@ -898,6 +903,9 @@
  		self.saved_title = None
  		self.saved_root = None
@@ -8941,14 +8889,13 @@
  		return hw_info.device_name
 --- enigma2.org/lib/python/Tools/Makefile.am
 +++ enigma2/lib/python/Tools/Makefile.am
-@@ -5,7 +5,7 @@
+@@ -5,6 +5,6 @@
  	KeyBindings.py BoundFunction.py ISO639.py Notifications.py __init__.py \
  	RedirectOutput.py StbHardware.py Import.py Event.py CList.py CIHelper.py \
  	LoadPixmap.py Profile.py HardwareInfo.py Transponder.py ASCIItranslit.py \
 -	Downloader.py Trashcan.py GetEcmInfo.py Alternatives.py TextBoundary.py \
 +	Downloader.py Trashcan.py GetEcmInfo.py Alternatives.py TextBoundary.py Command.py \
- 	camcontrol.py CountryCodes.py Multiboot.py FallbackTimer.py Hex2strColor.py \
- 	Geolocation.py
+ 	camcontrol.py CountryCodes.py Multiboot.py FallbackTimer.py Geolocation.py
  
 --- enigma2.org/lib/python/Tools/Profile.py
 +++ enigma2/lib/python/Tools/Profile.py
@@ -10122,7 +10069,7 @@
  	return keyDescriptions[idx].get(key)
 --- enigma2.org/lib/python/Screens/InputDeviceSetup.py
 +++ enigma2/lib/python/Screens/InputDeviceSetup.py
-@@ -300,73 +300,61 @@
+@@ -294,73 +294,61 @@
  	rcList = [
  			("0", _("Default")),
  			("4", _("DMM normal")),
