@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 210813.1
+#Version 210922.1
 
 echo "[rcS] Start"
 echo "CubeRevo 250HD Enigma2"
@@ -13,13 +13,13 @@ insmod $MODDIR/cuberevo_micom.ko # paramDebug=10
 
 if [ -e /var/etc/.firstboot ]; then
    echo "config.plugins.remotecontroltype.rctype=22" >> /etc/enigma2/settings
-   echo "WAIT 3 minutes" > /dev/vfd
+   echo "3min" > /dev/vfd
    echo "[rcS] WAIT 3 minutes"
    rm /var/etc/.firstboot
    sleep 1
    touch /dev/.devfsd
 else
-   echo "Load 10" > /dev/vfd
+   echo "Ld 10" > /dev/vfd
    echo "[rcS] LOAD 10"
 fi
 
@@ -44,7 +44,7 @@ else
 fi
 
 echo "[rcS] Init stmfb (LOAD 9)"
-echo "Load 9" > /dev/vfd
+echo "Ld 9" > /dev/vfd
 insmod $MODDIR/stmcore-display-stx7109c3.ko
 
 /bin/eeprom tvmode
@@ -75,27 +75,27 @@ if [ ! -e /boot/audio.elf ] || [ ! -e /boot/video.elf ]; then
 fi
 
 echo "[rcS] Load video firmware (LOAD 8)"
-echo "Load 8" > /dev/vfd
+echo "Ld 8" > /dev/vfd
 /bin/ustslave /dev/st231-0 /boot/video.elf > /dev/null
 
 echo "[rcS] Load audio firmware (LOAD 7)"
-echo "Load 7" > /dev/vfd
+echo "Ld 7" > /dev/vfd
 /bin/ustslave /dev/st231-1 /boot/audio.elf > /dev/null
 
 echo "[rcS] Init embx (LOAD 6)"
-echo "Load 6" > /dev/vfd
+echo "Ld 6" > /dev/vfd
 insmod $MODDIR/embxshell.ko
 insmod $MODDIR/embxmailbox.ko mailbox0=0xb9211000:136:set2 mailbox1=0xb9212000:0
 insmod $MODDIR/embxshm.ko mailbox0=shm:0:7:0x60000000:0:256:256:0:512:0xa4000000:0x10000000
 insmod $MODDIR/mme_host.ko transport0=shm
 
 echo "[rcS] Init AVS (LOAD 5)"
-echo "Load 5" > /dev/vfd
+echo "Ld 5" > /dev/vfd
 insmod $MODDIR/avs.ko type=stv6412
 
 player=`cat /proc/stb/player/version | awk '{ print substr( $0, length($0) - 2, length($0) ) }'`
 echo "[rcS] Init player $player (LOAD 4)"
-echo "Load 4" > /dev/vfd
+echo "Ld 4" > /dev/vfd
 insmod $MODDIR/mmelog.ko
 insmod $MODDIR/mpeg2hw.ko mmeName=MPEG2_TRANSFORMER1
 insmod $MODDIR/ksound.ko
@@ -145,7 +145,7 @@ insmod $MODDIR/stmsysfs.ko
 insmod $MODDIR/stmdvb.ko
 
 echo "[rcS] Init player2 (LOAD 3)"
-echo "Load 3" > /dev/vfd
+echo "Ld 3" > /dev/vfd
 insmod $MODDIR/player2.ko
 insmod $MODDIR/sth264pp.ko
 insmod $MODDIR/stmalloc.ko
@@ -203,7 +203,7 @@ else
 fi
 
 echo "[rcS] Initialize network (LOAD 2)"
-echo "Load 2" >/dev/vfd
+echo "Ld 2" >/dev/vfd
 NFS=`grep -c nfs /proc/cmdline`
 if [ "$NFS" -eq "1" ]; then
    echo "[rcS] Booting from NFS, do not set network"
@@ -246,7 +246,7 @@ if [ -e /etc/init.d/automount ]; then
 fi
 
 echo "[rcS] Do extras (LOAD 1)"
-echo "Load 1" >/dev/vfd
+echo "Ld 1" >/dev/vfd
 # inadyn
 inadyn=`cat /etc/enigma2/settings | grep systemoptions.inadyn | cut -d "=" -f2`
 if [ ! $inadyn ] ||  [ ! -e /usr/bin/inadyn ]; then
