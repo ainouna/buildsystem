@@ -17,13 +17,13 @@ insmod $MODDIR/simu_button.ko
 
 if [ -e /var/etc/.firstboot ]; then
    echo "Wait 1 min." > /dev/vfd
-   echo "[rcS] WAIT 1 minute"
+   echo "[rcS] Wait 1 minute"
    rm /var/etc/.firstboot
    sleep 1
    touch /dev/.devfsd
 else
    echo "Load 10" > /dev/vfd
-   echo "Start (LOAD 10)"
+   echo "[rcS] LOAD 10"
 fi
 
 /etc/init.d/mountvirtfs start
@@ -130,6 +130,7 @@ insmod $MODDIR/sth264pp.ko
 insmod $MODDIR/stmalloc.ko
 insmod $MODDIR/platform.ko
 insmod $MODDIR/silencegen.ko
+
 insmod $MODDIR/bpamem.ko
 
 echo "Init HDMI-CEC"
@@ -156,12 +157,12 @@ if [ -e $MODDIR/tun.ko ]; then
 fi
 if [ -e $MODDIR/usbserial.ko ]; then
    insmod $MODDIR/usbserial.ko
-fi
-if [ -e $MODDIR/ftdi.ko ]; then
-   insmod $MODDIR/ftdi.ko
-fi
-if [ -e $MODDIR/pl2303.ko ]; then
-   insmod $MODDIR/pl2303.ko
+   if [ -e $MODDIR/ftdi.ko ]; then
+      insmod $MODDIR/ftdi.ko
+   fi
+   if [ -e $MODDIR/pl2303.ko ]; then
+      insmod $MODDIR/pl2303.ko
+   fi
 fi
 
 echo "[rcS] Init remote control (LOAD 2)"
@@ -211,32 +212,32 @@ echo "LOAD 1" >/dev/vfd
 /etc/init.d/vsftpd start
 /usr/sbin/inetd
 
-echo "[rcS] LOADING neutrino"
+echo "[rcS] Loading Neutrino"
 echo "Loading Neutrino" > /dev/vfd
 
 until false
 do
-   echo "[rcS] Starting neutrino ->"
+   echo "[rcS] Starting Neutrino ->"
    /usr/bin/neutrino
    rtv=$?
    echo "[rcS] Neutrino ended <- return value: " $rtv
    case "$rtv" in
-      0) echo "SHUTDOWN"
+      0) echo "[rcS] SHUTDOWN"
          echo "Shutdown" > /dev/vfd
          init 0;;
-      1) echo "REBOOT"
+      1) echo "[rcS] REBOOT"
          echo "Reboot" > /dev/vfd
          init 6;;
-      3) echo "RESTART"
+      3) echo "[rcS] RESTART"
          echo "Restart" > /dev/vfd
          ;;
-      *) echo "ERROR"
+      *) echo "[rcS] ERROR"
          echo "Error" > /dev/vfd
          init 6;;
    esac
 done
 
 #never reached
+echo "[rcS] REBOOT HS8200"
 echo "REBOOT HS8200" > /dev/vfd
-echo "REBOOT HS8200"
 init 6
