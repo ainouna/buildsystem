@@ -137,6 +137,9 @@ enigma2_release_ufs910:
 		rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/ufs9xxVFD; \
 	fi
 	$(SILENT)cp -f $(SKEL_ROOT)/root_enigma2/usr/local/share/enigma2/keymap_ufs910.xml $(RELEASE_DIR)/usr/local/share/enigma2/keymap.xml
+ifeq ($(DESTINATION), flash)
+	$(MAKE) $(D)/ufsinstaller
+endif
 
 #
 # ufs912
@@ -1095,7 +1098,7 @@ endif
 ifeq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), small size))
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/DVDBurn
 endif
-# 
+#
 # Remove WirelessLAN plugin if no wlan built
 #
 ifneq ($(IMAGE), $(filter $(IMAGE), enigma2-wlandriver neutrino-wlandriver))
@@ -1195,7 +1198,6 @@ ifneq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), kerneldebug debug))
 	@echo -n "Stripping..." ;
 	$(SILENT)find $(RELEASE_DIR)/ -name '*' -exec $(TARGET)-strip --strip-unneeded {} &>/dev/null \;
 	@echo -e " done.\n" ;
-#	ls -l $(RELEASE_DIR)/$(PYTHON_DIR)/site-packages/*.so*
 endif
 #
 # release-clean

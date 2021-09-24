@@ -10,9 +10,9 @@ all:
 	fi
 	$(SILENT)cp $(KERNEL_DIR)/.config $(UFSINSTALLER_DIR)/.config.org
 ifeq ($(BS_GCC_VER), $(filter $(BS_GCC_VER), 4.6.3 4.8.4))
-	$(SILENT)cp $(UFSINSTALLER_DIR)/initramfs_list $(KERNEL_DIR)/initramfs_list
+	$(SILENT)cp $(UFSINSTALLER_DIR)/$(BOXTYPE)_initramfs_list $(KERNEL_DIR)/initramfs_list
 else
-	$(SILENT)cp $(UFSINSTALLER_DIR)/initramfs_list_gcc-4.9.4 $(KERNEL_DIR)/initramfs_list
+	$(SILENT)cp $(UFSINSTALLER_DIR)/$(BOXTYPE)_initramfs_list_gcc-4.9.4 $(KERNEL_DIR)/initramfs_list
 endif
 	$(SILENT)sed -i 's/# CONFIG_INITRAMFS_SOURCE is not set/CONFIG_INITRAMFS_SOURCE="initramfs_list"/g' $(KERNEL_DIR)/.config
 	$(SILENT)sed -i 's/CONFIG_INITRAMFS_SOURCE=""/CONFIG_INITRAMFS_SOURCE="initramfs_list"/g' $(KERNEL_DIR)/.config

@@ -11,6 +11,8 @@ export CONFIG_SITE
 LD_LIBRARY_PATH =
 export LD_LIBRARY_PATH
 
+export BOXTYPE
+
 # -----------------------------------------------------------------------------
 
 # set up default parallelism
