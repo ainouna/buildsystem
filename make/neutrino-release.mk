@@ -524,7 +524,7 @@ neutrino-release-pace7241:
 # opt9600
 #
 neutrino-release-opt9600:
-	$(SILENT)install -m 0755 $(SKEL_ROOT)/release/halt_hl101 $(RELEASE_DIR)/etc/init.d/halt
+	$(SILENT)install -m 0755 $(SKEL_ROOT)/release/halt_opt9600 $(RELEASE_DIR)/etc/init.d/halt
 	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/frontcontroller/opt9600_fp/opt9600_fp.ko $(RELEASE_DIR)/lib/modules/
 	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/frontends/*.ko $(RELEASE_DIR)/lib/modules/
 	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/stgfb/stmfb/stmcore-display-stx7109c3.ko $(RELEASE_DIR)/lib/modules/
