@@ -422,7 +422,6 @@ case "$IMAGE" in
 				echo
 				read -p "Select Enigma2 revision : ";;
 		esac
-33ab65e339e8997e66bc4451d52b828a643dd216 03/10/2021 14:24
 
 		case "$REPLY" in
 			1)	DIFF="1"
