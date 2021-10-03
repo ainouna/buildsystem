@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 202100910.1
+# Version 20211003.1
 
 ##############################################
 
@@ -156,7 +156,7 @@ case $1 in
 		echo "   37)  Ferguson Ariva @Link 200"
 #		echo "   38)  Pace HDS-7241 (in development, kernel P0217 only)"
 #		echo "   39)  ADB ITI-2849ST/2850ST/2851S (in development, kernel P0217 only)"
-#		echo "   40)  Opticum/Orton HD 9600 (both S and TS) (in development, kernel P0217 only)"
+#		echo "   40)  Opticum/Orton HD (TS) 9600 (in development, kernel P0217 only)"
 		echo
 		read -p "Select target (1-37) ";;
 esac
@@ -413,29 +413,30 @@ case "$IMAGE" in
 				echo "=================================================================================================="
 				echo " 1)  Use your own Enigma2 git dir without patchfile"
 				echo "=================================================================================================="
-				echo " 2*) Thu, 29 Jul 2021 11:32 - E2 OpenPLi  any framework  ecf765a2c34e7156ac57fd14e9b9e7e151e8f306"
-				echo " 3)  Fri, 28 May 2021 20:04 - E2 OpenPLi  any framework  a84bd16d5bc55a74c4c318669a6446ddd78cb841"
-				echo " 4)  Fri, 26 Mar 2021 22:08 - E2 OpenPLi  any framework  2112414b289ab9ad0b0bb9a60a82b31d46f2d30b"
-				echo " 5)  Fri, 29 Jan 2021 08:59 - E2 OpenPLi  any framework  9563ac22e68821ad1370609802e9414295acf5b9"
+				echo " 2*) Sun, 03 Oct 2021 14:24 - E2 OpenPLi  any framework  33ab65e339e8997e66bc4451d52b828a643dd216"
+				echo " 3)  Thu, 29 Jul 2021 11:32 - E2 OpenPLi  any framework  ecf765a2c34e7156ac57fd14e9b9e7e151e8f306"
+				echo " 4)  Fri, 28 May 2021 20:04 - E2 OpenPLi  any framework  a84bd16d5bc55a74c4c318669a6446ddd78cb841"
+				echo " 5)  Fri, 26 Mar 2021 22:08 - E2 OpenPLi  any framework  2112414b289ab9ad0b0bb9a60a82b31d46f2d30b"
 				echo "=================================================================================================="
 				echo "Media Framework         : $MEDIAFW"
 				echo
 				read -p "Select Enigma2 revision : ";;
 		esac
+33ab65e339e8997e66bc4451d52b828a643dd216 03/10/2021 14:24
 
 		case "$REPLY" in
 			1)	DIFF="1"
 				REVISION="local";;
 			3)	DIFF="3"
-				REVISION="a84bd16d5bc55a74c4c318669a6446ddd78cb841";;
+				REVISION="ecf765a2c34e7156ac57fd14e9b9e7e151e8f306";;
 			4)	DIFF="4"
-				REVISION="2112414b289ab9ad0b0bb9a60a82b31d46f2d30b";;
+				REVISION="a84bd16d5bc55a74c4c318669a6446ddd78cb841";;
 			5)	DIFF="5"
-				REVISION="9563ac22e68821ad1370609802e9414295acf5b9";;
+				REVISION="2112414b289ab9ad0b0bb9a60a82b31d46f2d30b";;
 			0)	DIFF="0"
 				REVISION="newest";;
 			*)	DIFF="2"
-				REVISION="ecf765a2c34e7156ac57fd14e9b9e7e151e8f306";;
+				REVISION="33ab65e339e8997e66bc4451d52b828a643dd216";;
 		esac
 
 		echo "E2_DIFF=$DIFF" >> config
