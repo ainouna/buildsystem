@@ -1,6 +1,6 @@
 --- e2openplugin-OpenWebif/plugin/controllers/models/owibranding.py.org
 +++ e2openplugin-OpenWebif/plugin/controllers/models/owibranding.py
-@@ -145,67 +145,19 @@
+@@ -145,69 +145,19 @@
  	if tpmloaded:
  		orgdream = tpm_check()
  
@@ -29,14 +29,16 @@
 -				model = procmodel.replace("revo4k", "Revo4K")
 -			elif procmodel == "galaxy4k":
 -				model = procmodel.replace("galaxy4k", "Galaxy4K")
--		elif (procmodel.startswith("lunix")):
+-		elif (procmodel.startswith("lunix") or procmodel.startswith("dual")):
 -			brand = "Qviart"
 -			if procmodel == "lunix3-4k":
 -				model = procmodel.replace("lunix3-4k", "Lunix3-4K")
 -			elif procmodel == "lunix":
 -				model = procmodel.replace("lunix", "Lunix")
--			if procmodel == "lunix4k":
+-			elif procmodel == "lunix4k":
 -				model = procmodel.replace("lunix4k", "Lunix4K")
+-			elif procmodel == "dual":
+-				model = procmodel.replace("dual", "Dual")
 -	elif fileExists("/proc/stb/info/azmodel"):
 -		brand = "AZBox"
 -		f = open("/proc/stb/info/model", 'r')  # To-Do: Check if "model" is really correct ...
@@ -80,7 +82,7 @@
  	elif fileExists("/proc/boxtype"):
  		f = open("/proc/boxtype", 'r')
  		procmodel = f.readline().strip().lower()
-@@ -230,120 +182,7 @@
+@@ -232,120 +182,7 @@
  		f = open("/proc/stb/info/boxtype", 'r')
  		procmodel = f.readline().strip().lower()
  		f.close()
@@ -202,7 +204,7 @@
  			brand = "Ferguson"
  			model = "Ariva @Link 200"
  		elif procmodel.startswith("spark"):
-@@ -352,203 +191,8 @@
+@@ -354,203 +191,8 @@
  				model = "Spark 7162"
  			else:
  				model = "Spark"
@@ -406,7 +408,7 @@
  	elif fileExists("/proc/stb/info/model"):
  		f = open("/proc/stb/info/model", 'r')
  		procmodel = f.readline().strip().lower()
-@@ -641,20 +285,29 @@
+@@ -643,20 +285,29 @@
  	info['type'] = type
  
  	remote = "dmm1"
@@ -450,7 +452,7 @@
  	elif procmodel in ("et4x00", "et4000"):
  		remote = "et4x00"
  	elif procmodel == "et6500":
-@@ -820,7 +473,7 @@
+@@ -824,7 +475,7 @@
  	else:
  		# OE 2.2 uses apt, not opkg
  		if not fileExists("/etc/opkg/all-feed.conf"):
