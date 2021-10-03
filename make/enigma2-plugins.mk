@@ -493,3 +493,30 @@ $(D)/enigma2_blurayplayer: $(D)/bootstrap $(D)/enigma2 $(D)/libudfread $(D)/libb
 	$(REMOVE)/enigma2-blurayplayer-$(BLURAYPLAYER_VER)
 	$(TOUCH)
 
+#
+# enigma2-fullbackup
+#
+FULLBACKUP_VER   = 4.2
+FULLBACKUP_URL   = https://github.com/Dima73/automatic-full-backup
+#FULLBACKUP_PATCH = fullbackup_$(FULLBACKUP_VER)_add_sh4.patch
+
+$(D)/enigma2_fullbackup: $(D)/bootstrap $(D)/enigma2 $(D)/ofgwrite $(D)/python $(D)/python_setuptools
+	$(START_BUILD)
+	$(REMOVE)/enigma2-plugin-fullbackup-$(FULLBACKUP_VER)
+	$(SILENT)if [ -d $(ARCHIVE)/enigma2-plugin-fullbackup.git ]; \
+		then cd $(ARCHIVE)/enigma2-plugin-fullbackup.git; git pull $(MINUS_Q); \
+		else cd $(ARCHIVE); git clone $(MINUS_Q) $(FULLBACKUP_URL) enigma2-plugin-fullbackup.git; \
+		fi
+	$(SILENT)cp -ra $(ARCHIVE)/enigma2-plugin-fullbackup.git/ $(BUILD_TMP)/enigma2-plugin-fullbackup-$(FULLBACKUP_VER)
+	$(SILENT)if [ ! -d $(BUILD_TMP)/enigma2-plugin-fullbackup-$(FULLBACKUP_VER)/bin/sh4 ]; then \
+		mkdir -p $(BUILD_TMP)/enigma2-plugin-fullbackup-$(FULLBACKUP_VER)/bin/sh4; \
+	fi
+	$(SET) -e; cd $(BUILD_TMP)/enigma2-plugin-fullbackup-$(FULLBACKUP_VER); \
+		$(call apply_patches,$(FULLBACKUP_PATCH)); \
+		cp $(TARGET_DIR)/usr/bin/ofgwrite_bin $(BUILD_TMP)/enigma2-plugin-fullbackup-$(FULLBACKUP_VER)/bin/sh4/; \
+		$(PYTHON_BUILD); \
+		$(PYTHON_INSTALL)
+#	$(REMOVE)/enigma2-plugin-fullbackup-$(FULLBACKUP_VER)
+	$(TOUCH)
+
+
