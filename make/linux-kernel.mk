@@ -349,14 +349,19 @@ KERNEL_PATCHES = $(KERNEL_PATCHES_24)
 KERNEL_CONFIG = linux-sh4-$(subst _stm24_,_,$(KERNEL_VER))_$(BOXTYPE).config
 REPOS = "https://github.com/Duckbox-Developers/linux-sh4-2.6.32.71.git"
 
-ifneq ($(DESTINATION), USB)
-$(D)/kernel.do_prepare: $(PATCHES)/$(BUILD_CONFIG)/$(KERNEL_CONFIG) \
-	$(if $(KERNEL_PATCHES),$(KERNEL_PATCHES:%=$(PATCHES)/$(BUILD_CONFIG)/%))
-else
-$(D)/kernel.do_prepare: $(PATCHES)/$(BUILD_CONFIG)/$(KERNEL_CONFIG) \
-	busybox_usb e2fsprogs sysvinit \
-	$(if $(KERNEL_PATCHES),$(KERNEL_PATCHES:%=$(PATCHES)/$(BUILD_CONFIG)/%))
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs7110 hs7420 hs7810a hs7119 hs7429 hs7819 opt9600 vitamin_hd5000))
+ifeq ($(DESTINATION), USB)
+KERNEL_DEPS  = busybox_usb
+KERNEL_DEPS += e2fsprogs
+KERNEL_DEPS += sysvinit
 endif
+else
+KERNEL_DEPS =
+endif
+
+$(D)/kernel.do_prepare: $(PATCHES)/$(BUILD_CONFIG)/$(KERNEL_CONFIG) \
+	$(KERNEL_DEPS) \
+	$(if $(KERNEL_PATCHES),$(KERNEL_PATCHES:%=$(PATCHES)/$(BUILD_CONFIG)/%))
 	@rm -rf $(KERNEL_DIR)
 	@echo
 	@echo "Starting Kernel build"
