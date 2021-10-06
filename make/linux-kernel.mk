@@ -606,7 +606,6 @@ $(D)/uboot: bootstrap $(ARCHIVE)/u-boot-$(UBOOT_VER).tar.bz2
 		$(call apply_patches,$(UBOOT_PATCH)); \
 		$(MAKE) $(BOXTYPE)_config; \
 		$(MAKE)
-	$(REMOVE)/u-boot-$(UBOOT_VER)
 	$(TOUCH)
 
 #
