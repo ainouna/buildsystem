@@ -132,7 +132,7 @@
   */
  
  #include <linux/init.h>
-@@ -22,142 +26,277 @@
+@@ -22,142 +26,284 @@
  #include <linux/stm/platform.h>
  #include <linux/stm/stx7100.h>
  #include <asm/irl.h>
@@ -219,19 +219,25 @@
 +const char *LMI_VID_partalias[] = { "BPA2_Region1", "coredisplay-video", "gfx-memory", "v4l2-video-buffers", "v4l2-coded-video-buffers", NULL };
 +const char *LMI_SYS_partalias[] = { "BPA2_Region0", "bigphysarea", NULL };
 +
++/*
++ 0x10000000 - 0x103FFFFF - cocpu 1 ram ( 4mb)
++ 0x10400000 - 0x107FFFFF - cocpu 2 ram ( 4mb)
++ 0x10800000 - 0x13FFFFFF - lmi_vid     (56mb)
++ 0x14000000 - 0x163FFFFF - lmi_sys     (36mb)
++*/
 +static struct bpa2_partition_desc bpa2_parts_table[] =
 +{
 +	{
 +		.name  = "LMI_VID",
 +		.start = 0x10800000,
-+		.size  = 0x03000000,  // 48 Mbyte
++		.size  = 0x03800000,  // 56 Mbyte
 +		.flags = 0,
 +		.aka   = LMI_VID_partalias
 +	},
 +	{
 +		.name  = "LMI_SYS",
 +		.start = 0x00000000,  // -> 1st free low RAM address
-+		.size  = 0x02000000,  // 32 Mbyte
++		.size  = 0x02400000,  // 36 Mbyte
 +		.flags = 0,
 +		.aka   = LMI_SYS_partalias
 +	}
@@ -420,7 +426,7 @@
 +60: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
 +70: -- -- -- -- -- -- -- --                         
 +3d:
-+40:
++40: CIMAX CI-controller
 + */
 +	stx7100_configure_ssc_i2c(0);
 +/*
@@ -429,12 +435,13 @@
 +10: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
 +20: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
 +30: UU -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
-+40: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++40: 40 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
 +50: UU -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
 +60: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
 +70: -- -- -- -- -- -- -- --                         
-+0c:
++0c: AVL2108 DVB-S(2) demod
 +30:
++40: DVB-T tuner (TS models only)
 +50:
 + */
 +	stx7100_configure_ssc_i2c(1);

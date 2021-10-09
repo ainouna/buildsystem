@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 210929.1
+#Version 211009.1
 
 echo "[rcS] Start"
 echo "Opticum HD (TS) 9600 Neutrino"
@@ -7,6 +7,53 @@ echo "Opticum HD (TS) 9600 Neutrino"
 MODDIR=/lib/modules
 
 insmod $MODDIR/e2_proc.ko
+
+echo "[rcS] Init portmap & ftp"
+#echo "Load 1" >/dev/vfd
+/etc/init.d/portmap start
+/etc/init.d/vsftpd start
+/usr/sbin/inetd
+
+/etc/init.d/mountvirtfs start
+/etc/init.d/portmap start
+/etc/init.d/autofs start
+
+echo "[rcS] Starting DEBUG Interface"
+/etc/init.d/mountall start
+/etc/init.d/hostname start
+
+NFS=`grep -c nfs /proc/cmdline`
+if [ "$NFS" -eq "1" ]; then
+   echo "[rcS] Booting from NFS, do not set network"
+else
+   if [ -e /etc/network/interfaces ]; then
+      ip addr flush eth0
+      /etc/init.d/networking stop
+      DHCP=`grep -c dhcp /etc/network/interfaces`
+      if [ "$DHCP" -eq "1" ]; then
+         echo "[rcS] Starting DHCP"
+         /etc/init.d/udhcpc start
+      fi
+      /etc/init.d/networking start
+   fi
+fi
+sleep 3
+
+#wlan=rtl8188cu
+if [ ! $wlan ] || [ ! -e $MODDIR/$wlan.ko ]; then
+   echo "[rcS] No WLAN"
+else
+   insmod $MODDIR/$wlan.ko
+   echo "[rcS] $wlan WLAN"
+#   echo "$wlan WLAN" > /dev/vfd
+#   sleep 3
+fi
+
+# Try and synchronise time
+if [ -h /usr/sbin/ntpd ]; then
+   echo "[rcS] Set internet time"
+   ntpd -n -p 0.europe.pool.ntp.org -q
+fi
 
 echo "[rcS] Init frontpanel"
 insmod $MODDIR/opt9600_fp.ko paramDebug=50
@@ -20,16 +67,11 @@ if [ -e /var/etc/.firstboot ]; then
    touch /dev/.devfsd
 else
    echo "Load 10" > /dev/vfd
-   echo "[rcS] Start (LOAD 10)"
+   echo "[rcS] Set front panel clock (LOAD 10)"
 fi
 
-/etc/init.d/mountvirtfs start
-/etc/init.d/portmap start
-/etc/init.d/autofs start
-
-echo "[rcS] Starting DEBUG Interface"
-/etc/init.d/mountall start
-/etc/init.d/hostname start
+# Set frontpanel clock
+/bin/fp_control -sst
 
 echo "[rcS] Starting telnetd"
 /usr/sbin/telnetd -l /bin/autologin
@@ -63,7 +105,7 @@ echo "Load 6" > /dev/vfd
 insmod $MODDIR/embxshell.ko
 insmod $MODDIR/embxmailbox.ko mailbox0=0xb9211000:136:set2 mailbox1=0xb9212000:0
 insmod $MODDIR/embxshm.ko mailbox0=shm:0:7:0x60000000:0:256:256:0:1024:0xa4000000:0x10000000
-insmod $MODDIR/mme_host.ko # transport0=shm
+insmod $MODDIR/mme_host.ko transport0=shm
 
 echo "[rcS] Init AVS (LOAD 5)"
 echo "Load 5" > /dev/vfd
@@ -85,7 +127,7 @@ insmod $MODDIR/opt9600_platform.ko #paramDebug=150
 insmod $MODDIR/opt9600_frontend.ko #paramDebug=100
 
 echo "[rcS] Init CI"
-insmod $MODDIR/starci.ko
+insmod $MODDIR/starci.ko #paramDebug=150
 
 insmod $MODDIR/pti.ko waitMS=20 videoMem=4096
 if [ $? -ne 0 ]; then
@@ -110,6 +152,8 @@ insmod $MODDIR/bpamem.ko
 echo "[rcS] Init cardreader"
 insmod $MODDIR/smartcard.ko
 
+echo "[rcS] Load extra modules (LOAD 2)"
+echo "Load 2" > /dev/vfd
 #if [ -e /boot/neutrinologo.mvi ]; then
 #   showiframe -p /boot/neutrinologo.mvi &
 #fi
@@ -153,52 +197,14 @@ fi
 
 stfbcontrol a 0
 
-echo "[rcS] Init remote control (LOAD 2)"
-echo "Load 2" > /dev/vfd
-/bin/evremote2 10 120 &
+echo "[rcS] Init remote control (LOAD 1)"
+echo "Load 1" > /dev/vfd
+/bin/evremote2 10 150 &
 
 stfbcontrol a 255
 
 # Load modules from /var/etc/modules.extra
 [ -f /var/etc/modules.extra ] && eval `sed -e 's/#.*//' -e '/^\s*$/d' -e 's/^\(.*\)/insmod \0;/' < /var/etc/modules.extra`
-
-NFS=`grep -c nfs /proc/cmdline`
-if [ "$NFS" -eq "1" ]; then
-   echo "[rcS] Booting from NFS, do not set network"
-else
-   if [ -e /etc/network/interfaces ]; then
-      ip addr flush eth0
-      /etc/init.d/networking stop
-      DHCP=`grep -c dhcp /etc/network/interfaces`
-      if [ "$DHCP" -eq "1" ]; then
-         echo "[rcS] Starting DHCP"
-         /etc/init.d/udhcpc start
-      fi
-      /etc/init.d/networking start
-   fi
-fi
-
-#wlan=rtl8188cu
-if [ ! $wlan ] || [ ! -e $MODDIR/$wlan.ko ]; then
-   echo "[rcS] No WLAN"
-else
-   insmod $MODDIR/$wlan.ko
-   echo "[rcS] $wlan WLAN"
-#   echo "$wlan WLAN" > /dev/vfd
-#   sleep 3
-fi
-
-# Try and synchronise time
-if [ -h /usr/sbin/ntpd ]; then
-   echo "[rcS] Set internet time"
-   (ntpd -n -p 0.europe.pool.ntp.org -q; /bin/fp_control -sst)
-fi
-
-echo "[rcS] Init portmap & ftp (LOAD 1)"
-echo "Load 1" >/dev/vfd
-/etc/init.d/portmap start
-/etc/init.d/vsftpd start
-/usr/sbin/inetd
 
 echo "[rcS] Start neutrino"
 echo "Loading Neutrino" > /dev/vfd
@@ -206,7 +212,6 @@ echo "Loading Neutrino" > /dev/vfd
 until false
 do
 #   killall -9 showiframe
-   echo "[rcS] Starting neutrino ->"
    /usr/bin/neutrino
    rtv=$?
    echo "[rcS] Neutrino ended <- return value: " $rtv

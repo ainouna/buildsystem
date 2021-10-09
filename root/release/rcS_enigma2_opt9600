@@ -54,7 +54,7 @@ insmod $MODDIR/stmcore-display-stx7109c3.ko
 #if grep -q "config.av.videoport=Scart" /etc/enigma2/settings; then
 #  insmod $MODDIR/stmfb.ko display0=720x576-32@50:15M::pal:cvbs:rgb #SCART
 #else
-  insmod $MODDIR/stmfb.ko display0=1280x720-32@50:16M::pal:cvbs:rgb #HDMI
+  insmod $MODDIR/stmfb.ko display0=1280x720-32@50:16M:0:pal:cvbs:rgb #HDMI
 #fi
 
 echo "[rcS] Loading modules"
@@ -82,7 +82,7 @@ insmod $MODDIR/mme_host.ko transport0=shm
 
 echo "[rcS] Init AVS (LOAD 5)"
 echo "Load 5" > /dev/vfd
-insmod $MODDIR/avs.ko type=none
+insmod $MODDIR/avs.ko type=avs_none
 
 player=`cat /proc/stb/player/version | awk '{ print substr( $0, length($0) - 2, length($0) ) }'`
 echo "[rcS] Init player $player (LOAD 4)"
@@ -96,8 +96,8 @@ insmod $MODDIR/stm_v4l2.ko
 insmod $MODDIR/pseudocard.ko
 
 echo "[rcS] Init frontend(s)"
-insmod $MODDIR/opt9600_platform.ko  #paramDebug=20
-insmod $MODDIR/opt9600.ko
+insmod $MODDIR/opt9600_platform.ko #paramDebug=100
+insmod $MODDIR/opt9600_frontend.ko #paramDebug=100
 
 echo "[rcS] Init CI"
 insmod $MODDIR/starci.ko #paramDebug=20
