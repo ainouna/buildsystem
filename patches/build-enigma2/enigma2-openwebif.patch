@@ -1,3 +1,17 @@
+--- e2openplugin-OpenWebif/plugin/controllers/models/info.py.org
++++ e2openplugin-OpenWebif/plugin/controllers/models/info.py
+@@ -347,7 +347,10 @@
+ 		friendlychipsettext = "Broadcom " + friendlychipsettext
+ 	if not (info['fp_version'] is None or info['fp_version'] == 0):
+ 		friendlychipsetdescription = friendlychipsetdescription + " (" + _("Front processor version") + ")"
+-		friendlychipsettext = friendlychipsettext + " (" + str(info['fp_version']) + ")"
++		if info['fp_version'].find(".") == -1:
++			friendlychipsettext = friendlychipsettext + " (" + str(info['fp_version']) + ")"
++		else:
++			friendlychipsettext = friendlychipsettext + " (" + info['fp_version'] + ")"
+ 
+ 	info['friendlychipsetdescription'] = friendlychipsetdescription
+ 	info['friendlychipsettext'] = friendlychipsettext
 --- e2openplugin-OpenWebif/plugin/controllers/models/owibranding.py.org
 +++ e2openplugin-OpenWebif/plugin/controllers/models/owibranding.py
 @@ -145,69 +145,19 @@
