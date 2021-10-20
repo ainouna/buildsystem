@@ -2853,6 +2853,66 @@ $(D)/mpg123: $(D)/bootstrap $(ARCHIVE)/$(MPG123_SOURCE)
 	$(REWRITE_LIBTOOL)/libmpg123.la
 	$(REWRITE_LIBTOOL)/libout123.la
 	$(REWRITE_LIBTOOL)/libsyn123.la
-#	$(REMOVE)/mpg123-$(MPG123_VER)
+	$(REMOVE)/mpg123-$(MPG123_VER)
+	$(TOUCH)
+
+#
+# a52dec
+#
+A52DEC_VER = 0.7.4
+A52DEC_SOURCE = a52dec-$(A52DEC_VER).tar.gz
+
+$(ARCHIVE)/$(A52DEC_SOURCE):
+	$(WGET) https://a52dec.sourceforge.io/files/$(A52DEC_SOURCE)
+
+$(D)/a52dec: $(D)/bootstrap $(ARCHIVE)/$(A52DEC_SOURCE)
+	$(START_BUILD)
+	$(REMOVE)/a52dec-$(A52DEC_VER)
+	$(UNTAR)/$(A52DEC_SOURCE)
+	$(CH_DIR)/a52dec-$(A52DEC_VER); \
+		$(CONFIGURE) \
+			--build=$(BUILD) \
+			--host=$(TARGET) \
+			--target=$(TARGET) \
+			--disable-al-audio \
+			--disable-solaris-audio \
+			--disable-win \
+			--prefix=/usr \
+			--bindir=/.remove \
+			--mandir=/.remove \
+			--infodir=/.remove \
+		make $(SILENT_OPT); \
+		make install $(SILENT_OPT) DESTDIR=$(TARGET_DIR)
+	$(REWRITE_LIBTOOL)/liba52.la
+	$(REMOVE)/a52dec-$(A52DEC_VER)
+	$(TOUCH)
+
+#
+# amrnb
+#
+AMRNB_VER = 11.0.0.0
+AMRNB_SOURCE = amrnb-$(AMRNB_VER).tar.bz2
+
+$(ARCHIVE)/$(AMRNB_SOURCE):
+	$(WGET) http://www.penguin.cz/~utx/ftp/amr/$(AMRNB_SOURCE)
+
+$(D)/amrnb: $(D)/bootstrap $(ARCHIVE)/$(AMRNB_SOURCE)
+	$(START_BUILD)
+	$(REMOVE)/amrnb-$(AMRNB_VER)
+	$(UNTAR)/$(AMRNB_SOURCE)
+	$(CH_DIR)/amrnb-$(AMRNB_VER); \
+		autoreconf -fi $(SILENT_OPT); \
+		$(CONFIGURE) \
+			--build=$(BUILD) \
+			--host=$(TARGET) \
+			--target=$(TARGET) \
+			--prefix=/usr \
+			--bindir=/.remove \
+			--mandir=/.remove \
+			--docdir=/.remove \
+			--infodir=/.remove \
+		make $(SILENT_OPT); \
+		make install $(SILENT_OPT) DESTDIR=$(TARGET_DIR)
+	$(REMOVE)/amrnb-$(AMRNB_VER)
 	$(TOUCH)
 
