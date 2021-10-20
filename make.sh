@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20211003.1
+# Version 20211020.1
 
 ##############################################
 
@@ -114,7 +114,7 @@ fi
 ##############################################
 
 case $1 in
-	[1-9] | 1[0-9] | 2[0-9] | 3[0-9] | 40]) REPLY=$1;;
+	[1-9] | 1[0-9] | 2[0-9] | 3[0-9] | 40) REPLY=$1;;
 	*)
 		echo "Target receivers:"
 		echo
@@ -122,11 +122,11 @@ case $1 in
 		echo "    1)  UFS-910          7)  FS9000 / FS9200 (formerly Fortis HDbox)"
 		echo "    2)  UFS-912          8)  HS9510 (formerly Octagon SF1008P)"
 		echo "    3)  UFS-913          9*) HS8200 (bootloader 6.00, formerly Atevio AV7500)"
-		echo "    4)  UFS-922         10)  HS7110"
+		echo "    4)  UFS-922         10)  HS7110 (bootloader 6.4X)"
 		echo "    5)  UFC-960         11)  HS7119"
-		echo "                        12)  HS7420"
+		echo "                        12)  HS7420 (bootloader 6.3X)"
 		echo "  Topfield              13)  HS7429"
-		echo "    6)  TF77X0 HDPVR    14)  HS7810A"
+		echo "    6)  TF77X0 HDPVR    14)  HS7810A (bootloader 6.2X)"
 		echo "                        15)  HS7819"
 		echo
 		echo "  ABcom                Cuberevo"
