@@ -1,7 +1,7 @@
 #
 # busybox
 #
-BUSYBOX_VER = 1.34.0
+BUSYBOX_VER = 1.34.1
 BUSYBOX_SOURCE = busybox-$(BUSYBOX_VER).tar.bz2
 BUSYBOX_PATCH  = busybox-$(BUSYBOX_VER)-nandwrite.patch
 BUSYBOX_PATCH += busybox-$(BUSYBOX_VER)-unicode.patch
@@ -41,7 +41,7 @@ $(D)/busybox: $(D)/bootstrap $(ARCHIVE)/$(BUSYBOX_SOURCE) $(PATCHES)/$(BUSYBOX_C
 #
 BUSYBOX_USB_VER = $(BUSYBOX_VER)
 
-ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs7119 hs7429 hs7819 spark spark7162 ufs912 ufs913 vitamin_hd5000))
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE), adb_box hs7119 hs7429 hs7819 spark spark7162 ufs912 ufs913 vitamin_hd5000))
 BUSYBOX_USB_CONFIG = busybox_usb-$(BUSYBOX_USB_VER).config_nandwrite
 else
 BUSYBOX_USB_CONFIG = busybox_usb-$(BUSYBOX_USB_VER).config
