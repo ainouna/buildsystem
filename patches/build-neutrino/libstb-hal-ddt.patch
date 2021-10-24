@@ -152,7 +152,7 @@
 +elif test "$BOXMODEL" = "opt9600"; then
 +	AC_DEFINE(BOXMODEL_OPT9600, 1, [opt9600])
 +elif test "$BOXMODEL" = "atemio520"; then
-+	AC_DEFINE(BOXMODEL_ATERMIO520, 1, [atemio520])
++	AC_DEFINE(BOXMODEL_ATEMIO520, 1, [atemio520])
 +
  elif test "$BOXMODEL" = "bre2ze4k"; then
  	AC_DEFINE(BOXMODEL_BRE2ZE4K, 1, [bre2ze4k])
@@ -978,7 +978,7 @@
  	caps.can_shutdown = 1;
  	caps.has_HDMI = 1;
  	caps.has_SCART = 1;
-@@ -136,11 +249,11 @@
+@@ -136,75 +249,79 @@
  	caps.display_type = HW_DISPLAY_LINE_TEXT;
  	caps.display_xres = 12;
  #endif
@@ -987,18 +987,18 @@
 -	strcpy(caps.boxvendor, "DUCKBOX");
 -	strcpy(caps.boxname, "OCTAGON1008");
 -	strcpy(caps.boxarch, "STX7109");
-+#if defined(BOXMODEL_HS9510)
-+	initialized = 1;
-+	strcpy(caps.boxvendor, "Fortis");
-+	strcpy(caps.boxname, "HS9510");
-+	strcpy(caps.boxarch, "STi7109");
- 	caps.can_shutdown = 1;
- 	caps.has_HDMI = 1;
- 	caps.has_SCART = 1;
-@@ -153,41 +266,41 @@
- 	caps.display_type = HW_DISPLAY_LINE_TEXT;
- 	caps.display_xres = 8;
- #endif
+-	caps.can_shutdown = 1;
+-	caps.has_HDMI = 1;
+-	caps.has_SCART = 1;
+-	caps.can_cec = 0;
+-	caps.has_fan = 0;
+-	caps.has_CI = 2;
+-	caps.display_can_set_brightness = 1;
+-	caps.display_can_deepstandby = 0;
+-	caps.display_has_statusline = 0;
+-	caps.display_type = HW_DISPLAY_LINE_TEXT;
+-	caps.display_xres = 8;
+-#endif
 -#if BOXMODEL_CUBEREVO
 -	initialized = 1;
 -	strcpy(caps.boxvendor, "DUCKBOX");
@@ -1034,6 +1034,32 @@
 -	strcpy(caps.boxvendor, "DUCKBOX");
 -	strcpy(caps.boxname, "CUBEREVO-MINI2");
 -	strcpy(caps.boxarch, "STX7109");
+-	caps.can_shutdown = 1;
+-	caps.has_HDMI = 1;
+-	caps.has_SCART = 1;
+-	caps.can_cec = 0;
+-	caps.has_fan = 1;
+-	caps.has_CI = 2;
+-	caps.display_can_set_brightness = 1;
+-	caps.display_can_deepstandby = 0;
+-	caps.display_has_statusline = 0;
++#if defined(BOXMODEL_HS9510)
++	initialized = 1;
++	strcpy(caps.boxvendor, "Fortis");
++	strcpy(caps.boxname, "HS9510");
++	strcpy(caps.boxarch, "STi7109");
++	caps.can_shutdown = 1;
++	caps.has_HDMI = 1;
++	caps.has_SCART = 1;
++	caps.can_cec = 0;
++	caps.has_fan = 0;
++	caps.has_CI = 2;
++	caps.display_can_set_brightness = 1;
++	caps.display_can_deepstandby = 0;
++	caps.display_has_statusline = 0;
++	caps.display_type = HW_DISPLAY_LINE_TEXT;
++	caps.display_xres = 8;
++#endif
 +#if defined(BOXMODEL_CUBEREVO)
 +	initialized = 1;
 +	strcpy(caps.boxvendor, "DGStation");
@@ -1048,6 +1074,8 @@
 +	caps.can_cec = 0;
 +	caps.has_fan = 1;
 +	caps.has_CI = 2;
++	caps.display_type = HW_DISPLAY_LINE_TEXT;
++	caps.display_xres = 12;
 +#endif
 +#if defined(BOXMODEL_CUBEREVO_MINI)
 +	initialized = 1;
@@ -1063,16 +1091,6 @@
 +	caps.can_cec = 0;
 +	caps.has_fan = 0;
 +	caps.has_CI = 2;
-+#endif
-+#if defined(BOXMODEL_CUBEREVO_MINI2)
-+	initialized = 1;
-+	strcpy(caps.boxvendor, "DGStation");
-+	strcpy(caps.boxname, "CubeRevo Mini II");
-+	strcpy(caps.boxarch, "STi7109");
- 	caps.can_shutdown = 1;
- 	caps.has_HDMI = 1;
- 	caps.has_SCART = 1;
-@@ -200,11 +313,11 @@
  	caps.display_type = HW_DISPLAY_LINE_TEXT;
  	caps.display_xres = 14;
  #endif
@@ -1081,6 +1099,23 @@
 -	strcpy(caps.boxvendor, "DUCKBOX");
 -	strcpy(caps.boxname, "CUBEREVO-250HD");
 -	strcpy(caps.boxarch, "STX7109");
++#if defined(BOXMODEL_CUBEREVO_MINI2)
++	initialized = 1;
++	strcpy(caps.boxvendor, "DGStation");
++	strcpy(caps.boxname, "CubeRevo Mini II");
++	strcpy(caps.boxarch, "STi7109");
++	caps.can_shutdown = 1;
++	caps.has_HDMI = 1;
++	caps.has_SCART = 1;
++	caps.can_cec = 0;
++	caps.has_fan = 1;
++	caps.has_CI = 2;
++	caps.display_can_set_brightness = 1;
++	caps.display_can_deepstandby = 0;
++	caps.display_has_statusline = 0;
++	caps.display_type = HW_DISPLAY_LINE_TEXT;
++	caps.display_xres = 14;
++#endif
 +#if defined(BOXMODEL_CUBEREVO_250HD)
 +	initialized = 1;
 +	strcpy(caps.boxvendor, "DGStation");
@@ -1089,15 +1124,19 @@
  	caps.can_shutdown = 1;
  	caps.display_can_set_brightness = 0;
  	caps.display_can_deepstandby = 0;
-@@ -215,11 +328,11 @@
+@@ -214,12 +331,14 @@
+ 	caps.can_cec = 0;
  	caps.has_fan = 1;
  	caps.has_CI = 0;
- #endif
+-#endif
 -#if BOXMODEL_CUBEREVO_2000HD
 -	initialized = 1;
 -	strcpy(caps.boxvendor, "DUCKBOX");
 -	strcpy(caps.boxname, "CUBEREVO-2000HD");
 -	strcpy(caps.boxarch, "STX7109");
++	caps.display_type = HW_DISPLAY_LINE_TEXT;
++	caps.display_xres = 4;
++#endif
 +#if defined(BOXMODEL_CUBEREVO_2000HD)
 +	initialized = 1;
 +	strcpy(caps.boxvendor, "DGStation");
@@ -1106,10 +1145,11 @@
  	caps.can_shutdown = 1;
  	caps.display_can_set_brightness = 0;
  	caps.display_can_deepstandby = 0;
-@@ -230,26 +343,26 @@
+@@ -229,27 +348,31 @@
+ 	caps.can_cec = 0;
  	caps.has_fan = 0;
  	caps.has_CI = 0;
- #endif
+-#endif
 -#if BOXMODEL_CUBEREVO_3000HD
 -	initialized = 1;
 -	strcpy(caps.boxvendor, "DUCKBOX");
@@ -1130,6 +1170,9 @@
 -	strcpy(caps.boxvendor, "DUCKBOX");
 -	strcpy(caps.boxname, "IPBOX9900");
 -	strcpy(caps.boxarch, "STX7109");
++	caps.display_type = HW_DISPLAY_LINE_TEXT;
++	caps.display_xres = 14;
++#endif
 +#if defined(BOXMODEL_CUBEREVO_3000HD)
 +	initialized = 1;
 +	strcpy(caps.boxvendor, "DGStation");
@@ -1144,6 +1187,8 @@
 +	caps.can_cec = 0;
 +	caps.has_fan = 1;
 +	caps.has_CI = 2;
++	caps.display_type = HW_DISPLAY_LINE_TEXT;
++	caps.display_xres = 14;
 +#endif
 +#if defined(BOXMODEL_IPBOX9900)
 +	initialized = 1;
@@ -1153,7 +1198,7 @@
  	caps.can_shutdown = 1;
  	caps.display_can_set_brightness = 0;
  	caps.display_can_deepstandby = 0;
-@@ -260,11 +373,11 @@
+@@ -260,11 +383,11 @@
  	caps.has_fan = 1;
  	caps.has_CI = 2;
  #endif
@@ -1170,7 +1215,7 @@
  	caps.can_shutdown = 1;
  	caps.display_can_set_brightness = 0;
  	caps.display_can_deepstandby = 0;
-@@ -275,11 +388,11 @@
+@@ -275,11 +398,11 @@
  	caps.has_fan = 1;
  	caps.has_CI = 0;
  #endif
@@ -1187,10 +1232,11 @@
  	caps.can_shutdown = 1;
  	caps.display_can_set_brightness = 0;
  	caps.display_can_deepstandby = 0;
-@@ -290,20 +403,50 @@
+@@ -289,21 +412,76 @@
+ 	caps.can_cec = 0;
  	caps.has_fan = 0;
  	caps.has_CI = 0;
- #endif
+-#endif
 -#if BOXMODEL_TF7700
 -	initialized = 1;
 -	strcpy(caps.boxvendor, "DUCKBOX");
@@ -1205,20 +1251,25 @@
 -	caps.can_cec = 0;
 -	caps.has_fan = 0;
 -	caps.has_CI = 2;
++	caps.display_type = HW_DISPLAY_LINE_TEXT;
++	caps.display_xres = 4;
++#endif
 +#if defined(BOXMODEL_TF7700)
 +	initialized = 1;
 +	strcpy(caps.boxvendor, "Topfield");
 +	strcpy(caps.boxname, "TF77X0HDPVR");
 +	strcpy(caps.boxarch, "STi7109");
 +	caps.can_shutdown = 1;
-+	caps.display_can_set_brightness = 1;
-+	caps.display_can_deepstandby = 0;
-+	caps.display_has_statusline = 0;
 +	caps.has_HDMI = 1;
 +	caps.has_SCART = 1;
 +	caps.can_cec = 0;
 +	caps.has_fan = 0;
 +	caps.has_CI = 2;
++	caps.display_can_set_brightness = 1;
++	caps.display_can_deepstandby = 0;
++	caps.display_has_statusline = 0;
++	caps.display_type = HW_DISPLAY_LINE_TEXT;
++	caps.display_xres = 8;
 +#endif
 +#if defined(BOXMODEL_ADB_BOX)
 +	initialized = 1;
@@ -1232,8 +1283,27 @@
 +	caps.has_fan = 1;
 +	caps.has_CI = 0;
 +	caps.display_can_set_brightness = 1;
++	caps.display_can_deepstandby = 0;
++	caps.display_has_statusline = 0;
 +	caps.display_type = HW_DISPLAY_LINE_TEXT;
 +	caps.display_xres = 15;
++#endif
++#if defined(BOXMODEL_ATEMIO520)
++	initialized = 1;
++	strcpy(caps.boxvendor, "Crenova");
++	strcpy(caps.boxname, "Atemio AM520HD");
++	strcpy(caps.boxarch, "STi7111");
++	caps.can_shutdown = 1;
++	caps.has_HDMI = 1;
++	caps.has_SCART = 0;
++	caps.can_cec = 0;
++	caps.has_fan = 0;
++	caps.has_CI = 1;
++	caps.display_can_set_brightness = 0;
++	caps.display_can_deepstandby = 0;
++	caps.display_has_statusline = 0;
++	caps.display_type = HW_DISPLAY_LINE_TEXT;
++	caps.display_xres = 4;
 +#endif
 +#if defined(BOXMODEL_OPT9600)
 +	initialized = 1;
@@ -1247,6 +1317,8 @@
 +	caps.has_fan = 0;
 +	caps.has_CI = 2;
 +	caps.display_can_set_brightness = 0;
++	caps.display_can_deepstandby = 0;
++	caps.display_has_statusline = 0;
 +	caps.display_type = HW_DISPLAY_LINE_TEXT;
 +	caps.display_xres = 8;
  #endif
