@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20211020.1
+# Version 20211031.1
 
 ##############################################
 
@@ -148,12 +148,12 @@ case $1 in
 		echo "   31)  argus VIP2   [ 2 plugin tuners + 1 USB ]"
 		echo
 		echo "  Various SH4-based receivers"
-		echo "   32)  Atemio AM 520 HD"
+		echo "   32)  Atemio AM 520 HD / Sogno HD 800-V3 (untested)"
 		echo "   33)  SpiderBox HL-101"
 		echo "   34)  ADB ITI-5800S(X) (nBox BSKA, BSLA, BXZB or BZZB)"
 		echo "   35)  Showbox Vitamin HD5000 (256Mbyte flash version)"
-		echo "   36)  SagemCom 88 series"
-		echo "   37)  Ferguson Ariva @Link 200"
+		echo "   36)  SagemCom 88 series (untested)"
+		echo "   37)  Ferguson Ariva @Link 200 (untested)"
 #		echo "   38)  Pace HDS-7241 (in development, kernel P0217 only)"
 #		echo "   39)  ADB ITI-2849ST/2850ST/2851S (in development, kernel P0217 only)"
 #		echo "   40)  Opticum/Orton HD (TS) 9600 (in development, kernel P0217 only)"
