@@ -91,7 +91,7 @@ insmod $MODDIR/lnb.ko type=pio #paramDebug=99
 insmod $MODDIR/stv090x.ko #paramDebug=0
 
 echo "[rcS] Init CI & cardreader"
-insmod $MODDIR/cnbox_cic.ko #debug=150
+insmod $MODDIR/cnbox_cic.ko #debug=50
 insmod $MODDIR/smartcard.ko
 
 insmod $MODDIR/pti.ko waitMS=20 videoMem=4096
@@ -162,7 +162,6 @@ mknod /dev/rc c 147 1
 mknod /dev/lnb c 149 0
 mknod /dev/sci0 c 169 0
 
-
 echo "[rcS] Init remote control (LOAD 2)"
 echo "LD 2" > /dev/vfd
 /bin/evremote2 10 150 &
@@ -176,15 +175,15 @@ NFS=`grep -c nfs /proc/cmdline`
 if [ "$NFS" -eq "1" ]; then
    echo "[rcS] Booting from NFS, do not set network"
 else
-   if [ -e /etc/network/interfaces ]; then
+   if [ -e /var/etc/network/interfaces ]; then
       ip addr flush eth0
       /etc/init.d/networking stop
-      DHCP=`grep -c dhcp /etc/network/interfaces`
+      DHCP=`grep -c dhcp /var/etc/network/interfaces`
       if [ "$DHCP" -eq "1" ]; then
          echo "[rcS] Starting DHCP on eth0"
          /etc/init.d/udhcpc start
       else
-         ip=$(echo `grep address /etc/network/interfaces` | sed 's/address //g')
+         ip=$(echo `grep address /var/etc/network/interfaces` | sed 's/address //g')
          echo "[rcS] Using fixed IP $ip"
       fi
       /etc/init.d/networking start
