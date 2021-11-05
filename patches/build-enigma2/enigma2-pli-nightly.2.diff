@@ -9,7 +9,7 @@
  AX_PYTHON_DEVEL
  AX_PKG_SWIG
  AX_SWIG_ENABLE_CXX
-@@ -35,6 +36,297 @@
+@@ -35,6 +36,305 @@
  PKG_CHECK_MODULES(LIBDDVD, libdreamdvd, HAVE_LIBDDVD="yes", HAVE_LIBDDVD="no")
  AM_CONDITIONAL(HAVE_LIBDDVD, test "$HAVE_LIBDDVD" = "yes")
  PKG_CHECK_MODULES(AVAHI, avahi-client)
@@ -297,6 +297,14 @@
 +	AC_DEFINE(ENABLE_OPT9600, 1, [enable opt9600 stuff])
 +fi
 +
++AC_ARG_ENABLE(opt9600mini,
++	[  --enable-opt9600mini       enable opt9600mini stuff],
++	[AC_DEFINE(ENABLE_OPT9600MINI, 1, [enable opt9600mini stuff])])
++AM_CONDITIONAL(ENABLE_OPT9600MINI, test "$enable_opt9600mini" = "yes")
++if test "$enable_opt9600mini" = "yes"; then
++	AC_DEFINE(ENABLE_OPT9600MINI, 1, [enable opt9600mini stuff])
++fi
++
 +AC_ARG_ENABLE(atemio520,
 +	[  --enable-atemio520         enable atemio520 stuff],
 +	[AC_DEFINE(ENABLE_ATEMIO520, 1, [enable atemio520 stuff])])
@@ -307,7 +315,7 @@
  
  AC_CHECK_LIB([udfread], [udfread_init])
  AC_CHECK_LIB([dl], [dlopen], [LIBDL_LIBS="-ldl"], [AC_MSG_ERROR([Could not find libdl])])
-@@ -51,13 +343,13 @@
+@@ -51,13 +351,13 @@
  AC_DEFINE_UNQUOTED(CRASH_EMAILADDR,"$CRASHLOGEMAIL",[crash log email address])
  
  AC_ARG_WITH(boxtype,
@@ -324,7 +332,7 @@
  if test `echo "$BOXTYPE" | cut -b 1-2` == "dm"; then
  	AC_DEFINE(DREAMBOX, 1, [Dreambox hardware])
  	AC_DEFINE(KEY_PLAY_ACTUALLY_IS_KEY_PLAYPAUSE, 1,[define when rc sends a KEY_PLAY event for its KEY_PLAYPAUSE key])
-@@ -79,19 +371,6 @@
+@@ -79,19 +379,6 @@
  	[[TEXTSKIN="default"]]
  )
  AC_SUBST(TEXTSKIN)
@@ -344,7 +352,7 @@
  
  AC_ARG_WITH(libsdl,
  	AS_HELP_STRING([--with-libsdl],[use libsdl, yes or no]),
-@@ -141,8 +420,8 @@
+@@ -141,8 +428,8 @@
  
  AC_ARG_WITH(alsa,
  	AC_HELP_STRING([--with-alsa], [Enable ALSA support]),
@@ -355,7 +363,7 @@
  )
  if test x"$with_alsa" == xyes ; then
  	AC_DEFINE(HAVE_ALSA, 1,[Enables ALSA support])
-@@ -190,19 +461,37 @@
+@@ -190,19 +469,37 @@
  	[[with_alphablendingacceleration=$withval]],
  	[[with_alphablendingacceleration=auto]]
  )
@@ -395,7 +403,7 @@
  AC_DEFINE_UNQUOTED(GFX_SURFACE_ACCELERATION_THRESHOLD, $with_accelerationthreshold,[Configure threshold for accelerated surfaces (in bytes)])
  
  AC_ARG_WITH(fillaccelerationthreshold,
-@@ -210,7 +507,6 @@
+@@ -210,7 +515,6 @@
  	[[with_fillaccelerationthreshold=$withval]],
  	[[with_fillaccelerationthreshold=80000]]
  )
@@ -403,7 +411,7 @@
  AC_DEFINE_UNQUOTED(GFX_SURFACE_FILL_ACCELERATION_THRESHOLD, $with_fillaccelerationthreshold,[Configure threshold for accelerated fill operations (in bytes)])
  
  AC_ARG_WITH(blitaccelerationthreshold,
-@@ -218,7 +514,6 @@
+@@ -218,7 +522,6 @@
  	[[with_blitaccelerationthreshold=$withval]],
  	[[with_blitaccelerationthreshold=0]]
  )
@@ -411,7 +419,7 @@
  AC_DEFINE_UNQUOTED(GFX_SURFACE_BLIT_ACCELERATION_THRESHOLD, $with_blitaccelerationthreshold,[Configure threshold for accelerated blit operations (in bytes)])
  
  AC_ARG_WITH(accelerationaccumulation,
-@@ -226,7 +521,6 @@
+@@ -226,7 +529,6 @@
  	[[with_accelerationaccumulation=$withval]],
  	[[with_accelerationaccumulation=no]]
  )
@@ -419,7 +427,7 @@
  if test x"$with_accelerationaccumulation" = xyes ; then
  	AC_DEFINE(SUPPORT_ACCUMULATED_ACCELERATION_OPERATIONS, 1,[Accumulate blit/fill acceleration operations])
  fi
-@@ -248,17 +542,16 @@
+@@ -248,17 +550,16 @@
  
  CPPFLAGS="$CPPFLAGS $PYTHON_CPPFLAGS"
  CFLAGS="$CFLAGS -Wall"
@@ -445,7 +453,7 @@
  	-Wno-error=aggregate-return -Wno-error=missing-field-initializers \
  	-Wno-error=packed -Wno-error=vla -Wno-error=clobbered -Wno-error=unused-parameter \
  	$BASE_CFLAGS $ENIGMA2_CFLAGS $PTHREAD_CFLAGS $OPENMP_CFLAGS $ALSA_CFLAGS"
-@@ -316,8 +609,6 @@
+@@ -316,8 +617,6 @@
  lib/python/Plugins/Extensions/SocketMMI/meta/Makefile
  lib/python/Plugins/Extensions/SocketMMI/src/Makefile
  lib/python/Plugins/PLi/Makefile
@@ -454,7 +462,7 @@
  lib/python/Plugins/SystemPlugins/DefaultServicesScanner/Makefile
  lib/python/Plugins/SystemPlugins/DefaultServicesScanner/meta/Makefile
  lib/python/Plugins/SystemPlugins/DiseqcTester/Makefile
-@@ -345,6 +636,70 @@
+@@ -345,6 +644,70 @@
  lib/python/Plugins/SystemPlugins/Videomode/meta/Makefile
  lib/python/Plugins/SystemPlugins/WirelessLan/Makefile
  lib/python/Plugins/SystemPlugins/WirelessLan/meta/Makefile
@@ -870,7 +878,7 @@
  		{
 --- enigma2.org/lib/driver/vfd.cpp
 +++ enigma2/lib/driver/vfd.cpp
-@@ -0,0 +1,1074 @@
+@@ -0,0 +1,1082 @@
 +/***************************************************************************
 + *
 + * vfd.cpp
@@ -926,6 +934,7 @@
 + * 20210326 Audioniek       Set correct display width on spark with VFD.
 + * 20210625 Audioniek       Kathrein UFS922 added.
 + * 20210922 Audioniek       Atemio AM 520 HD added.
++ * 20211105 Audioniek       Opticum HD 9600 Mini added.
 + *
 + ***************************************************************************/
 +#include <stdarg.h>
@@ -1059,6 +1068,8 @@
 +	vfd_type = 19;
 +#elif defined (ENABLE_OPT9600)
 +	vfd_type = 20;
++#elif defined (ENABLE_OPT9600MINI)
++	vfd_type = 21;
 +#else
 +	vfd_type = -1;
 +#endif
@@ -1316,6 +1327,8 @@
 +		char str[] = "VIP2 E2";
 +	#elif defined (ENABLE_OPT9600)
 +		char str[] = "HD 9600 Enigma2";
++	#elif defined (ENABLE_OPT9600MINI)
++		char str[] = "Mini Enigma2";
 +	#elif defined (ENABLE_ATEMIO520)
 +		char str[] = "520 HD Enigma2";
 +	#else
@@ -1462,6 +1475,7 @@
 +	 && !defined (ENABLE_VIP1_V2) \
 +	 && !defined (ENABLE_VIP2) \
 +	 && !defined (ENABLE_OPT9600) \
++	 && !defined (ENABLE_OPT9600MINI) \
 +	 && !defined (ENABLE_ATEMIO520)
 +	// Set all blocked icons
 +	for (int id = 0x10; id < 0x20; id++)
@@ -1501,6 +1515,7 @@
 + || defined (ENABLE_VIP1_V2) \
 + || defined (ENABLE_VIP2) \
 + || defined (ENABLE_OPT9600) \
++ || defined (ENABLE_OPT9600MINI) \
 + || defined (ENABLE_ATEMIO520)
 +void evfd::vfd_write_string_scrollText(char *text)
 +{
@@ -1906,7 +1921,8 @@
 +	memset(&data, 0, sizeof(struct vfd_ioctl_data));
 +
 +#if defined (ENABLE_CUBEREVO) \
-+ || defined (ENABLE_CUBEREVO_9500HD)
++ || defined (ENABLE_CUBEREVO_9500HD) \
++ || defined (ENABLE_ADB_BOX)
 +	if (speed)
 +	{
 +		data.start = 0x01;
@@ -1947,7 +1963,7 @@
 +// vim:ts=4
 --- enigma2.org/lib/driver/vfd.h
 +++ enigma2/lib/driver/vfd.h
-@@ -0,0 +1,143 @@
+@@ -0,0 +1,144 @@
 +#ifndef VFD_H_
 +#define VFD_H_
 +
@@ -1961,6 +1977,7 @@
 +   || defined (ENABLE_SPARK) \
 +   || defined (ENABLE_CUBEREVO_MINI_FTA) \
 +   || defined (ENABLE_CUBEREVO_250HD) \
++   || defined (ENABLE_OPT9600MINI) \
 +   || defined (ENABLE_ATEMIO520)
 +	#define VFDLENGTH 4
 +#elif defined (ENABLE_HS9510) \
@@ -10084,7 +10101,7 @@
  	return keyDescriptions[idx].get(key)
 --- enigma2.org/lib/python/Screens/InputDeviceSetup.py
 +++ enigma2/lib/python/Screens/InputDeviceSetup.py
-@@ -294,73 +294,61 @@
+@@ -294,73 +294,62 @@
  	rcList = [
  			("0", _("Default")),
  			("4", _("DMM normal")),
@@ -10205,13 +10222,14 @@
 +			("vip1-v2", 17),
 +			("vip2", 17),
 +			("opt9600", 21),
++			("opt9600mini", 21),
 +#			("fortis_4g", 23),
  		]
  
  	def __init__(self, session):
 --- enigma2.org/data/rc_models/rc_models.cfg
 +++ enigma2/data/rc_models/rc_models.cfg
-@@ -19,159 +19,36 @@
+@@ -19,159 +19,37 @@
  #
  # When no entry matches at all, 'default' will be used as remoteName
  #
@@ -10404,6 +10422,7 @@
 +vip1-v2           vip_1
 +vip2              vip_1
 +opt9600           opt9600
++opt9600mini       opt9600
 --- enigma2.org/data/rc_models/Makefile.am
 +++ enigma2/data/rc_models/Makefile.am
 @@ -2,15 +2,10 @@

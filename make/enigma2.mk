@@ -37,7 +37,7 @@ ifeq ($(IMAGE), enigma2-wlandriver)
 ENIGMA2_DEPS += $(D)/wpa_supplicant $(D)/wireless_tools
 endif
 
-ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs7110 hs7119 hs7420 hs7429 hs7810a hs7819 vitamin_hd5000))
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs7110 hs7119 hs7420 hs7429 hs7810a hs7819 opt9600 opt9600mini vitamin_hd5000))
 ifeq ($(DESTINATION), USB)
 E_CONFIG_OPTS += --enable-run_from_usb
 endif

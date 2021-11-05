@@ -342,6 +342,16 @@ OPT9600_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-sh4-i2c-st40-pio_stm24_$(KERNEL_LABEL).patch \
 		$(if $(P0209),linux-sh4-i2c-stm-downgrade_stm24_$(KERNEL_LABEL).patch)
 
+OPT9600MINI_PATCHES_24 = $(COMMON_PATCHES_24) \
+		linux-sh4-stmmac_stm24_$(KERNEL_LABEL).patch \
+		linux-sh4-lmb_stm24_$(KERNEL_LABEL).patch \
+		linux-sh4-opt9600mini_setup_stm24_$(KERNEL_LABEL).patch \
+		$(if $(P0209),linux-sh4-i2c-stm-downgrade_stm24_$(KERNEL_LABEL).patch) \
+		$(if $(P0209),linux-squashfs-downgrade-stm24_$(KERNEL_LABEL)-to-stm23.patch) \
+		$(if $(P0209),linux-squashfs3.0_lzma_stm24.patch) \
+		$(if $(P0209),linux-squashfs-downgrade-stm24-2.6.25.patch) \
+		$(if $(P0209),linux-squashfs-downgrade-stm24-rm_d_alloc_anon.patch)
+
 #
 # KERNEL
 #
@@ -349,7 +359,7 @@ KERNEL_PATCHES = $(KERNEL_PATCHES_24)
 KERNEL_CONFIG = linux-sh4-$(subst _stm24_,_,$(KERNEL_VER))_$(BOXTYPE).config
 REPOS = "https://github.com/Duckbox-Developers/linux-sh4-2.6.32.71.git"
 
-ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs7110 hs7420 hs7810a hs7119 hs7429 hs7819 opt9600 vitamin_hd5000))
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs7110 hs7420 hs7810a hs7119 hs7429 hs7819 opt9600 opt9600mini vitamin_hd5000))
 ifeq ($(DESTINATION), USB)
 KERNEL_DEPS  = busybox_usb
 KERNEL_DEPS += e2fsprogs

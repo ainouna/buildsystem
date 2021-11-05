@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20211031.1
+# Version 20211051.1
 
 ##############################################
 
@@ -114,7 +114,7 @@ fi
 ##############################################
 
 case $1 in
-	[1-9] | 1[0-9] | 2[0-9] | 3[0-9] | 40) REPLY=$1;;
+	[1-9] | 1[0-9] | 2[0-9] | 3[0-9] | 4[0-1]) REPLY=$1;;
 	*)
 		echo "Target receivers:"
 		echo
@@ -157,6 +157,7 @@ case $1 in
 #		echo "   38)  Pace HDS-7241 (in development, kernel P0217 only)"
 #		echo "   39)  ADB ITI-2849ST/2850ST/2851S (in development, kernel P0217 only)"
 #		echo "   40)  Opticum/Orton HD (TS) 9600 (in development, kernel P0217 only)"
+#		echo "   41)  Opticum/Orton HD 9600 Mini (in development, kernel P0217 only)"
 		echo
 		read -p "Select target (1-37) ";;
 esac
@@ -202,6 +203,7 @@ case "$REPLY" in
 	38) BOXTYPE="pace7241";;
 	39) BOXTYPE="adb_2850";;
 	40) BOXTYPE="opt9600";;
+	41) BOXTYPE="opt9600mini";;
 	 *) BOXTYPE="hs8200";;
 esac
 echo "BOXTYPE=$BOXTYPE" >> config
@@ -515,6 +517,7 @@ if [ ! "$BATCHMODE" == "yes" ]; then
 			exit;;
 	  	*)	$CURDIR/build;;
 	esac
+
 else
 	$CURDIR/build
 fi
