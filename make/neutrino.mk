@@ -114,7 +114,7 @@ N_CONFIG_OPTS  += --with-boxtype=duckbox
 endif
 N_CONFIG_OPTS  += --with-boxmodel=$(BOXTYPE)
 N_CONFIG_OPTS  += --enable-freesatepg
-N_CONFIG_OPTS  += --enable-pip
+#N_CONFIG_OPTS  += --enable-pip
 
 ifeq ($(EXTERNAL_LCD), graphlcd)
 N_CONFIG_OPTS += --enable-graphlcd
@@ -149,11 +149,11 @@ GIT_URL       = https://github.com/Duckbox-Developers
 NEUTRINO      = neutrino-ddt
 LIBSTB_HAL    = libstb-hal-ddt
 N_BRANCH     ?= master
-#N_CHECKOUT   ?= 154632ace0e0a69619e7d7b2b72bb2de1adbcd8f
-N_CHECKOUT   ?=4a627ad954c71fbca4f049202a585928276bb56d
+#N_CHECKOUT   ?= 4a627ad954c71fbca4f049202a585928276bb56d
+N_CHECKOUT   ?= b60746ccc7ea9535ac0f7ba542fdf611770b9fa8
 HAL_BRANCH   ?= master
-#HAL_CHECKOUT ?= cf3a21f558494c790f47687be089db65c9090e0f
-HAL_CHECKOUT ?= 5ab119ed51ac15a520e86c54b228288667de960c
+#HAL_CHECKOUT ?= 5ab119ed51ac15a520e86c54b228288667de960c
+HAL_CHECKOUT ?= da719b18518fbf12559930cb63a26ebd1028f125
 N_PATCHES     = $(NEUTRINO_DDT_PATCHES)
 HAL_PATCHES   = $(NEUTRINO_LIBSTB_DDT_PATCHES)
 else ifeq ($(FLAVOUR), neutrino-hd2)
