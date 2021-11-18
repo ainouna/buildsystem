@@ -566,8 +566,17 @@ $(D)/tfkernel: $(D)/kernel
 		$(MAKE) $(if $(TF7700),TF7700=y) ARCH=sh CROSS_COMPILE=$(TARGET)- uImage
 	$(TOUCH)
 
+tfinstaller-clean:
+	$(SILENT)rm -f $(D)/tfinstaller
+	$(SILENT)rm -f $(D)/tfkernel
+	$(SILENT)rm -f $(D)/tfpacker
+	$(SILENT)rm -f $(TFINSTALLER_DIR)/*.o
+	$(SILENT)rm -f $(TFINSTALLER_DIR)/tfpacker
+	$(SILENT)rm -f $(TFINSTALLER_DIR)/uImage
+	$(SILENT)rm -f $(TFINSTALLER_DIR)/u-boot.ftfd
+
 #
-# UFS922 installer
+# UFSinstaller
 #
 
 UFSINSTALLER_DIR := $(BASE_DIR)/ufsinstaller
@@ -589,6 +598,12 @@ $(D)/ufskernel: $(D)/kernel
 		cd $(KERNEL_DIR); \
 		$(MAKE) $(if $(UFS922),UFS922=y) ARCH=sh CROSS_COMPILE=$(TARGET)- uImage
 	$(TOUCH)
+
+ufsinstaller-clean:
+	$(SILENT)rm -f $(D)/ufsinstaller
+	$(SILENT)rm -f $(D)/ufskernel
+	$(SILENT)rm -f $(UFSINSTALLER_DIR)/uImage
+	$(SILENT)rm -f $(UFSINSTALLER_DIR)/.config.inst
 
 #
 # u-boot
