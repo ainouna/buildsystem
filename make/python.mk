@@ -29,7 +29,8 @@ PYTHON_VER_MAJOR = 2.7
 PYTHON_VER_MINOR = 18
 PYTHON_VER = $(PYTHON_VER_MAJOR).$(PYTHON_VER_MINOR)
 PYTHON_SOURCE = Python-$(PYTHON_VER).tar.xz
-HOST_PYTHON_PATCH = python-$(PYTHON_VER).patch
+HOST_PYTHON_PATCH  = python-$(PYTHON_VER).patch
+HOST_PYTHON_PATCH += python-$(PYTHON_VER)-support_64bit.patch
 
 $(ARCHIVE)/$(PYTHON_SOURCE):
 	$(WGET) https://www.python.org/ftp/python/$(PYTHON_VER)/$(PYTHON_SOURCE)
@@ -182,10 +183,11 @@ $(D)/libxmlccwrap: $(D)/bootstrap $(D)/libxml2 $(D)/libxslt $(ARCHIVE)/$(LIBXMLC
 PYTHON_LXML_MAJOR = 2.2
 PYTHON_LXML_MINOR = 8
 PYTHON_LXML_VER = $(PYTHON_LXML_MAJOR).$(PYTHON_LXML_MINOR)
-PYTHON_LXML_SOURCE = lxml-$(PYTHON_LXML_VER).tgz
+PYTHON_LXML_SOURCE = lxml-$(PYTHON_LXML_VER).tar.gz
 
 $(ARCHIVE)/$(PYTHON_LXML_SOURCE):
-	$(WGET) http://launchpad.net/lxml/$(PYTHON_LXML_MAJOR)/$(PYTHON_LXML_VER)/+download/$(PYTHON_LXML_SOURCE)
+#	$(WGET) http://launchpad.net/lxml/$(PYTHON_LXML_MAJOR)/$(PYTHON_LXML_VER)/+download/$(PYTHON_LXML_SOURCE)
+	$(WGET) https://files.pythonhosted.org/packages/48/71/397947beaadda1b2ad589a685160b8848888364af387b6c6707bb2769a23/$(PYTHON_LXML_SOURCE)
 
 $(D)/python_lxml: $(D)/bootstrap $(D)/python $(D)/libxml2 $(D)/libxslt $(D)/python_setuptools $(ARCHIVE)/$(PYTHON_LXML_SOURCE)
 	$(START_BUILD)
@@ -202,12 +204,13 @@ $(D)/python_lxml: $(D)/bootstrap $(D)/python $(D)/libxml2 $(D)/libxslt $(D)/pyth
 #
 # python_twisted
 #
-PYTHON_TWISTED_VER = 16.4.0
+PYTHON_TWISTED_VER = 16.4.1
 PYTHON_TWISTED_SOURCE = Twisted-$(PYTHON_TWISTED_VER).tar.bz2
 
 $(ARCHIVE)/$(PYTHON_TWISTED_SOURCE):
 #	$(WGET) https://pypi.python.org/packages/source/T/Twisted/$(PYTHON_TWISTED_SOURCE)
-	$(WGET) https://twistedmatrix.com/Releases/Twisted/16.4/$(PYTHON_TWISTED_SOURCE)
+#	$(WGET) https://twistedmatrix.com/Releases/Twisted/16.4/$(PYTHON_TWISTED_SOURCE)
+	$(WGET) https://files.pythonhosted.org/packages/6b/23/8dbe86fc83215015e221fbd861a545c6ec5c9e9cd7514af114d1f64084ab/$(PYTHON_TWISTED_SOURCE)
 
 $(D)/python_twisted: $(D)/bootstrap $(D)/python $(D)/python_zope_interface $(D)/python_setuptools $(ARCHIVE)/$(PYTHON_TWISTED_SOURCE)
 	$(START_BUILD)
@@ -558,7 +561,8 @@ PYTHON_ELEMENTTREE_VER = 1.2.6-20050316
 PYTHON_ELEMENTTREE_SOURCE = elementtree-$(PYTHON_ELEMENTTREE_VER).tar.gz
 
 $(ARCHIVE)/$(PYTHON_ELEMENTTREE_SOURCE):
-	$(WGET) http://effbot.org/media/downloads/$(PYTHON_ELEMENTTREE_SOURCE)
+#	$(WGET) http://effbot.org/media/downloads/$(PYTHON_ELEMENTTREE_SOURCE)
+	$(WGET) https://sourceforge.net/projects/rlsuite/files/rlsuite/support-files/$(PYTHON_ELEMENTTREE_SOURCE)
 
 $(D)/python_elementtree: $(D)/bootstrap $(D)/python $(ARCHIVE)/$(PYTHON_ELEMENTTREE_SOURCE)
 	$(START_BUILD)
