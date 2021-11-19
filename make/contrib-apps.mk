@@ -815,6 +815,7 @@ $(D)/curlftpfs: $(D)/bootstrap $(D)/libcurl $(D)/fuse $(D)/libglib2 $(ARCHIVE)/$
 #
 SDPARM_VER = 1.12
 SDPARM_SOURCE = sdparm-$(SDPARM_VER).tgz
+SDPARM_PATCH = sdparm-$(SDPARM_VER).patch
 
 $(ARCHIVE)/$(SDPARM_SOURCE):
 	$(WGET) http://sg.danny.cz/sg/p/$(SDPARM_SOURCE)
@@ -824,6 +825,7 @@ $(D)/sdparm: $(D)/bootstrap $(ARCHIVE)/$(SDPARM_SOURCE)
 	$(REMOVE)/sdparm-$(SDPARM_VER)
 	$(UNTAR)/$(SDPARM_SOURCE)
 	$(CH_DIR)/sdparm-$(SDPARM_VER); \
+	$(call apply_patches, $(SDPARM_PATCH)); \
 		$(CONFIGURE) \
 			--prefix= \
 			--bindir=/sbin \
