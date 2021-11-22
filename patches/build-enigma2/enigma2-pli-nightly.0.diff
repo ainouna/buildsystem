@@ -1,4 +1,4 @@
-# revision 9ce9f6c5f929c60fef944eeefdc8fa7fd6e58dd5 05/11/2021 23:06
+# revision 994e7fa1c5b4471e00772ddf2ce9bbd7f58b87d6 22/11/2021 13:06
 --- enigma2.org/configure.ac
 +++ enigma2/configure.ac
 @@ -18,6 +18,7 @@
@@ -3202,7 +3202,7 @@
  		notifier->setRequested(eSocketNotifier::Read | eSocketNotifier::Priority | eSocketNotifier::Write);
  	}
  
-@@ -1171,62 +1425,168 @@
+@@ -1171,61 +1425,168 @@
  {
  	singleLock s(eDVBCIInterfaces::m_slot_lock);
  	eTrace("[CI] Slot %d what %d\n", getSlotID(), what);
@@ -3228,7 +3228,6 @@
 -	if(state != stateInserted) {
 -		eDebug("[CI] ci inserted in slot %d", getSlotID());
 -		state = stateInserted;
--		determineCIVersion();
 -		/* emit */ eDVBCI_UI::getInstance()->m_messagepump.send(eDVBCIInterfaces::Message(eDVBCIInterfaces::Message::slotStateChanged, getSlotID(), 1));
 -		notifier->setRequested(eSocketNotifier::Read|eSocketNotifier::Priority);
 -		/* enable PRI to detect removal or errors */
@@ -3427,7 +3426,7 @@
  }
  
  DEFINE_REF(eDVBCISlot);
-@@ -1247,7 +1607,7 @@
+@@ -1246,7 +1607,7 @@
  
  	slotid = nr;
  
@@ -3436,7 +3435,7 @@
  
  //	possible_caids.insert(0x1702);
  //	possible_providers.insert(providerPair("PREMIERE", 0xC00000));
-@@ -1258,10 +1618,18 @@
+@@ -1257,10 +1618,18 @@
  	eTrace("[CI] Slot %d has fd %d", getSlotID(), fd);
  	state = stateInvalid;
  
@@ -3455,7 +3454,7 @@
  	} else
  	{
  		perror(filename);
-@@ -1384,13 +1752,11 @@
+@@ -1383,13 +1744,11 @@
  {
  	eDebug("[CI] Slot %d: reset requested", getSlotID());
  
@@ -3474,7 +3473,7 @@
  
  	while(sendqueue.size())
  	{
-@@ -1398,7 +1764,8 @@
+@@ -1397,7 +1756,8 @@
  		sendqueue.pop();
  	}
  
@@ -5582,7 +5581,7 @@
 -					cpu_speed = "-"
  
  		temperature = None
- 		if os.path.isfile('/proc/stb/fp/temp_sensor_avs'):
+ 		freq = _("MHz")
 #--- enigma2.org/lib/python/Components/FanControl.py
 #+++ enigma2/lib/python/Components/FanControl.py
 #@@ -6,6 +6,14 @@
@@ -6369,7 +6368,7 @@
  from SystemInfo import SystemInfo
  import os
  import time
-@@ -261,7 +262,7 @@
+@@ -264,7 +265,7 @@
  
  	config.misc.disable_background_scan = ConfigYesNo(default=False)
  	config.misc.use_ci_assignment = ConfigYesNo(default=False)
@@ -7325,7 +7324,7 @@
 +		PluginDescriptor(where = [PluginDescriptor.WHERE_SESSIONSTART, PluginDescriptor.WHERE_AUTOSTART], fnc = autostart) ]
 --- enigma2.org/lib/python/Plugins/SystemPlugins/HdmiCEC/plugin.py
 +++ enigma2/lib/python/Plugins/SystemPlugins/HdmiCEC/plugin.py
-@@ -144,14 +144,14 @@
+@@ -140,14 +140,14 @@
  
  def startSetup(menuid):
  	# only show in the menu when set to intermediate or higher
