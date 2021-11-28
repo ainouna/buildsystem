@@ -764,11 +764,12 @@ $(D)/python_livestreamersrv: $(D)/bootstrap $(D)/python $(D)/python_setuptools $
 #
 # python_netifaces
 #
-PYTHON_NETIFACES_VER = 0.10.9
+PYTHON_NETIFACES_VER = w38-0.10.9
 PYTHON_NETIFACES_SOURCE = netifaces-$(PYTHON_NETIFACES_VER).tar.gz
 
 $(ARCHIVE)/$(PYTHON_NETIFACES_SOURCE):
-	$(WGET) http://qpypi.qpython.org/repository/15020/$(PYTHON_NETIFACES_SOURCE)
+#	$(WGET) http://qpypi.qpython.org/repository/15020/$(PYTHON_NETIFACES_SOURCE)
+	$(WGET) https://files.pythonhosted.org/packages/04/06/2b337652548387021f33c936dc5bd3008e7527affee2bed7b36bbc6d2211/$(PYTHON_NETIFACES_SOURCE)
 
 $(D)/python_netifaces: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(ARCHIVE)/$(PYTHON_NETIFACES_SOURCE)
 	$(START_BUILD)
