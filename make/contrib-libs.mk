@@ -1475,7 +1475,9 @@ $(D)/libdvdread: $(D)/bootstrap $(ARCHIVE)/$(LIBDVDREAD_SOURCE)
 # libdreamdvd
 #
 LIBDREAMDVD_PATCH  = libdreamdvd-1.0-sh4-support.patch
+ifeq ($(IMAGE), $(filter $(IMAGE), titan titan-wlandriver))
 LIBDREAMDVD_PATCH += libdreamdvd-1.0-titan-support.patch
+endif
 
 $(D)/libdreamdvd: $(D)/bootstrap $(D)/libdvdnav
 	$(START_BUILD)
