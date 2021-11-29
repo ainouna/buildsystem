@@ -1,4 +1,4 @@
-# revision a84bd16d5bc55a74c4c318669a6446ddd78cb841 28/05/2021 20:04
+# revision ecf765a2c34e7156ac57fd14e9b9e7e151e8f306 29/07/2021 11:32
 --- enigma2.org/configure.ac
 +++ enigma2/configure.ac
 @@ -18,6 +18,7 @@
@@ -234,7 +234,7 @@
 +fi
 +
 +AC_ARG_ENABLE(adb_box,
-+	[  --adb_box  enable adb_box stuff],
++	[  --adb_box                  enable adb_box stuff],
 +	[AC_DEFINE(ENABLE_ADB_BOX, 1, [enable adb_box stuff])])
 +AM_CONDITIONAL(ENABLE_ADB_BOX, test "$enable_adb_box" = "yes")
 +if test "$enable_adb_box" = "yes"; then
@@ -299,7 +299,7 @@
  
  AC_CHECK_LIB([udfread], [udfread_init])
  AC_CHECK_LIB([dl], [dlopen], [LIBDL_LIBS="-ldl"], [AC_MSG_ERROR([Could not find libdl])])
-@@ -51,8 +335,8 @@
+@@ -51,13 +335,13 @@
  AC_DEFINE_UNQUOTED(CRASH_EMAILADDR,"$CRASHLOGEMAIL",[crash log email address])
  
  AC_ARG_WITH(boxtype,
@@ -310,6 +310,12 @@
  AC_SUBST(BOXTYPE)
  AC_DEFINE_UNQUOTED(BOXTYPE,"$BOXTYPE",[box type])
  
+ AM_CONDITIONAL(DREAMBOX, test `echo "$BOXTYPE" | cut -b 1-2` == "dm")
+-AM_CONDITIONAL(HAVE_TEMPFANCONTROL, test "$BOXTYPE" == dm8000 -o "$BOXTYPE" == dm800se -o "$BOXTYPE" == dm500hd)
++AM_CONDITIONAL(HAVE_TEMPFANCONTROL, test "$BOXTYPE" == adb_box -o "$BOXTYPE" == cuberevo -o "$BOXTYPE" == cuberevo-9500hd -o "$BOXTYPE" == ipbox99 -o "$BOXTYPE" == ipbox9900 -o "$BOXTYPE" == sagemcom88 -o "$BOXTYPE" == pace7241 -o "$BOXTYPE" == ufs922)
+ if test `echo "$BOXTYPE" | cut -b 1-2` == "dm"; then
+ 	AC_DEFINE(DREAMBOX, 1, [Dreambox hardware])
+ 	AC_DEFINE(KEY_PLAY_ACTUALLY_IS_KEY_PLAYPAUSE, 1,[define when rc sends a KEY_PLAY event for its KEY_PLAYPAUSE key])
 @@ -79,19 +363,6 @@
  	[[TEXTSKIN="default"]]
  )
@@ -440,7 +446,7 @@
  lib/python/Plugins/SystemPlugins/DefaultServicesScanner/Makefile
  lib/python/Plugins/SystemPlugins/DefaultServicesScanner/meta/Makefile
  lib/python/Plugins/SystemPlugins/DiseqcTester/Makefile
-@@ -345,6 +628,65 @@
+@@ -345,6 +628,70 @@
  lib/python/Plugins/SystemPlugins/Videomode/meta/Makefile
  lib/python/Plugins/SystemPlugins/WirelessLan/Makefile
  lib/python/Plugins/SystemPlugins/WirelessLan/meta/Makefile
@@ -500,6 +506,11 @@
 +lib/python/Plugins/Extensions/spark7162VFD/locale/Makefile
 +lib/python/Plugins/Extensions/spark7162VFD/locale/nl/Makefile
 +lib/python/Plugins/Extensions/spark7162VFD/locale/nl/LC_MESSAGES/Makefile
++lib/python/Plugins/Extensions/ufs9xxVFD/Makefile
++lib/python/Plugins/Extensions/ufs9xxVFD/meta/Makefile
++lib/python/Plugins/Extensions/ufs9xxVFD/locale/Makefile
++lib/python/Plugins/Extensions/ufs9xxVFD/locale/nl/Makefile
++lib/python/Plugins/Extensions/ufs9xxVFD/locale/nl/LC_MESSAGES/Makefile
 +lib/python/Plugins/Extensions/TopfieldVFD/Makefile
 +lib/python/Plugins/SystemPlugins/VFD-Icons/Makefile
 +lib/python/Plugins/SystemPlugins/VFD-Icons/meta/Makefile
@@ -1996,7 +2007,7 @@
 + ||   defined (ENABLE_UFS912) \
 + ||   defined (ENABLE_UFS913) \
 + ||   defined (ENABLE_UFS922)
-+#define ICON_MAX 15
++#define ICON_MAX 16
 +#elif defined (ENABLE_CUBEREVO)
 +#define ICON_MAX 27
 +#elif defined (ENABLE_CUBEREVO_MINI) \
@@ -2026,7 +2037,7 @@
 +#define ICON_OFF 0
 +
 +#if 0 //!defined (ENABLE_FS9000)
-+typedef enum { USB = 0x10, HD, HDD, LOCK, BT, MP3, MUSIC, DD, MAIL, MUTE, PLAY, PAUSE, FF, FR, REC, CLOCK } tvfd_icon;
++typedef enum { USB = 1, HD, HDD, LOCK, BT, MP3, MUSIC, DD, MAIL, MUTE, PLAY, PAUSE, FF, FR, REC, CLOCK } tvfd_icon;
 +typedef enum { RED_LED = 0, GREEN_LED } tvfd_led;
 +//#else
 +//typedef enum { USB = 1, I_STANDBY, I_SAT, I_REC, I_TIMESHIFT, I_TIMER, I_HD, I_LOCK, I_DD, I_MUTE, I_TUNER1, I_TUNER2, I_MP3, I_REPEAT,
@@ -2728,7 +2739,7 @@
  
  	if (!m_multitype)
  		m_type = feSatellite;
-@@ -945,12 +953,16 @@
+@@ -946,12 +954,16 @@
  	int cab_max = 4200;
  	int atsc_max = 4200;
  
@@ -2855,9 +2866,32 @@
  }
  
  int eDVBVolumecontrol::openMixer()
+--- enigma2.org/lib/dvb_ci/descrambler.cpp
++++ enigma2/lib/dvb_ci/descrambler.cpp
+@@ -20,6 +20,7 @@
+ #define CA_SET_PID _IOW('o', 135, struct ca_pid)
+ #endif
+ 
++#if 0
+ enum ca_descr_data_type {
+ 	CA_DATA_IV,
+ 	CA_DATA_KEY,
+@@ -37,9 +38,11 @@
+ 	unsigned int length;
+ 	unsigned char *data;
+ };
++#endif
+ 
+-
++#ifndef CA_SET_PID
+ #define CA_SET_DESCR_DATA _IOW('o', 137, struct ca_descr_data)
++#endif
+ 
+ int descrambler_set_key(int desc_fd, int index, int parity, unsigned char *data)
+ {
 --- enigma2.org/lib/dvb_ci/dvbci_appmgr.cpp
 +++ enigma2/lib/dvb_ci/dvbci_appmgr.cpp
-@@ -94,6 +94,7 @@
+@@ -96,6 +96,7 @@
  	eDebug("[CI AM] in appmanager -> startmmi()");
  	const unsigned char tag[3]={0x9F, 0x80, 0x22};  // Tenter_menu
  	sendAPDU(tag);
@@ -2867,28 +2901,19 @@
  
 --- enigma2.org/lib/dvb_ci/dvbci.cpp
 +++ enigma2/lib/dvb_ci/dvbci.cpp
-@@ -25,6 +25,9 @@
+@@ -26,11 +26,265 @@
  
  #include <dvbsi++/ca_program_map_section.h>
  
 +#include <linux/dvb/ca.h>
 +//#define x_debug
 +
- //#define CIDEBUG 1
- 
- #ifdef CIDEBUG
-@@ -34,7 +37,6 @@
- #endif
  
  eDVBCIInterfaces *eDVBCIInterfaces::instance = 0;
--
  
- eCIClient::eCIClient(eDVBCIInterfaces *handler, int socket) : eUnixDomainSocket(socket, 1, eApp), parent(handler)
- {
-@@ -146,6 +148,257 @@
- 
- #define CIPLUS_SERVER_SOCKET "/tmp/.listen.ciplus.socket"
- 
+ pthread_mutex_t eDVBCIInterfaces::m_pmt_handler_lock = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
+ pthread_mutex_t eDVBCIInterfaces::m_slot_lock = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
++
 +bool eDVBCISlot::checkQueueSize()
 +{
 +	return (sendqueue.size() > 0);
@@ -3139,11 +3164,10 @@
 +			printf("unhandled tpdu_tag 0x%0x\n", tpdu_tag);
 +	}
 +}
-+
+ 
  eDVBCIInterfaces::eDVBCIInterfaces()
-  : eServerSocket(CIPLUS_SERVER_SOCKET, eApp)
- {
-@@ -163,7 +416,7 @@
+  : m_messagepump_thread(this,1), m_messagepump_main(eApp,1), m_runTimer(eTimer::create(this))
+@@ -54,7 +308,7 @@
  	{
  		path.str("");
  		path.clear();
@@ -3152,7 +3176,7 @@
  
  		if(::access(path.str().c_str(), R_OK) < 0)
  			break;
-@@ -1093,7 +1346,7 @@
+@@ -1160,7 +1414,7 @@
  	{
  		unsigned char *d = new unsigned char[len];
  		memcpy(d, data, len);
@@ -3161,10 +3185,10 @@
  		notifier->setRequested(eSocketNotifier::Read | eSocketNotifier::Priority | eSocketNotifier::Write);
  	}
  
-@@ -1103,61 +1356,168 @@
- void eDVBCISlot::data(int what)
+@@ -1171,62 +1425,168 @@
  {
- 	eDebugCI("[CI] Slot %d what %d\n", getSlotID(), what);
+ 	singleLock s(eDVBCIInterfaces::m_slot_lock);
+ 	eTrace("[CI] Slot %d what %d\n", getSlotID(), what);
 -	if(what == eSocketNotifier::Priority) {
 -		if(state != stateRemoved) {
 -			state = stateRemoved;
@@ -3176,7 +3200,7 @@
 -			eDVBCISession::deleteSessions(this);
 -			eDVBCIInterfaces::getInstance()->ciRemoved(this);
 -			notifier->setRequested(eSocketNotifier::Read);
--			eDVBCI_UI::getInstance()->setState(getSlotID(),0);
+-			/* emit */ eDVBCI_UI::getInstance()->m_messagepump.send(eDVBCIInterfaces::Message(eDVBCIInterfaces::Message::slotStateChanged, getSlotID(), 0));
 -		}
 -		return;
 -	}
@@ -3187,7 +3211,8 @@
 -	if(state != stateInserted) {
 -		eDebug("[CI] ci inserted in slot %d", getSlotID());
 -		state = stateInserted;
--		eDVBCI_UI::getInstance()->setState(getSlotID(),1);
+-		determineCIVersion();
+-		/* emit */ eDVBCI_UI::getInstance()->m_messagepump.send(eDVBCIInterfaces::Message(eDVBCIInterfaces::Message::slotStateChanged, getSlotID(), 1));
 -		notifier->setRequested(eSocketNotifier::Read|eSocketNotifier::Priority);
 -		/* enable PRI to detect removal or errors */
 -	}
@@ -3197,11 +3222,11 @@
 -		int r;
 -		r = ::read(fd, data, 4096);
 -		if(r > 0) {
--//			int i;
--//			eDebugNoNewLineStart("> ");
--//			for(i=0;i<r;i++)
--//				eDebugNoNewLine("%02x ",data[i]);
--//			eDebugNoNewLine("\n");
+-			int i;
+-			eTraceNoNewLineStart("> ");
+-			for(i=0;i<r;i++)
+-				eTraceNoNewLine("%02x ",data[i]);
+-			eTraceNoNewLine("\n");
 -			eDVBCISession::receiveData(this, data, r);
 -			eDVBCISession::pollAll();
 -			return;
@@ -3228,18 +3253,18 @@
 +
 +	if (what & eSocketNotifier::Read)
 +	{
-+		eDebugCI("eSocketNotifier::Read\n");
++		eTrace("eSocketNotifier::Read\n");
 +		status = eDataReady;
 +		len = ::read(fd, data, len);
 +	}
 +	else if (what & eSocketNotifier::Write)
 +	{
-+		eDebugCI("eSocketNotifier::Write\n");
++		eTrace("eSocketNotifier::Write\n");
 +		status = eDataWrite;
 +	}
 +	else if (what & eSocketNotifier::Priority)
 +	{
-+		eDebugCI("eSocketNotifier::Priority\n");
++		eTrace("eSocketNotifier::Priority\n");
 +		status = eDataStatusChanged;
 +	}
 +	else
@@ -3280,7 +3305,7 @@
 +		{
 +			if (status == eDataReady)
 +			{
-+				eDebugCI("received data - len %d\n", len);
++				eTrace("received data - len %d\n", len);
 +				//int s_id = data[0];
 +				//int c_id = data[1];
 +				//printf("%d: s_id = %d, c_id = %d\n", slot->slot, s_id, c_id);
@@ -3385,7 +3410,7 @@
  }
  
  DEFINE_REF(eDVBCISlot);
-@@ -1176,7 +1536,7 @@
+@@ -1247,7 +1607,7 @@
  
  	slotid = nr;
  
@@ -3394,8 +3419,8 @@
  
  //	possible_caids.insert(0x1702);
  //	possible_providers.insert(providerPair("PREMIERE", 0xC00000));
-@@ -1187,10 +1547,18 @@
- 	eDebugCI("[CI] Slot %d has fd %d", getSlotID(), fd);
+@@ -1258,10 +1618,18 @@
+ 	eTrace("[CI] Slot %d has fd %d", getSlotID(), fd);
  	state = stateInvalid;
  
 +	receivedLen = 0;
@@ -3413,7 +3438,7 @@
  	} else
  	{
  		perror(filename);
-@@ -1226,13 +1594,11 @@
+@@ -1384,13 +1752,11 @@
  {
  	eDebug("[CI] Slot %d: reset requested", getSlotID());
  
@@ -3432,7 +3457,7 @@
  
  	while(sendqueue.size())
  	{
-@@ -1240,7 +1606,8 @@
+@@ -1398,7 +1764,8 @@
  		sendqueue.pop();
  	}
  
@@ -3444,15 +3469,15 @@
  }
 --- enigma2.org/lib/dvb_ci/dvbci.h
 +++ enigma2/lib/dvb_ci/dvbci.h
-@@ -5,6 +5,7 @@
- 
- #include <lib/base/ebase.h>
+@@ -7,6 +7,7 @@
+ #include <lib/base/message.h>
+ #include <lib/base/thread.h>
  #include <lib/service/iservice.h>
 +#include <lib/base/thread.h>
  #include <lib/python/python.h>
  #include <set>
  #include <queue>
-@@ -39,6 +40,40 @@
+@@ -40,6 +41,40 @@
  typedef std::set<providerPair> providerSet;
  typedef std::set<uint16_t> caidSet;
  typedef std::set<eServiceReference> serviceSet;
@@ -3493,7 +3518,7 @@
  
  class eDVBCISlot: public iObject, public sigc::trackable
  {
-@@ -63,6 +98,11 @@
+@@ -66,6 +101,11 @@
  	bool user_mapped;
  	void data(int);
  	bool plugged;
@@ -3502,13 +3527,23 @@
 +	bool mmi_active;
 +	int receivedLen;
 +	unsigned char* receivedData;
- public:
- 	enum {stateRemoved, stateInserted, stateInvalid, stateResetted};
- 	eDVBCISlot(eMainloop *context, int nr);
-@@ -92,6 +132,15 @@
- 	int getNumOfServices() { return running_services.size(); }
- 	int setSource(const std::string &source);
- 	int setClockRate(int);
+ 
+ 	eDVBCIApplicationManagerSession *getAppManager() { return application_manager; }
+ 	eDVBCIMMISession *getMMIManager() { return mmi_session; }
+@@ -73,7 +113,6 @@
+ 	eDVBCICcSession *getCCManager() { return cc_manager; }
+ 
+ 	int getState() { return state; }
+-	int reset();
+ 	int startMMI();
+ 	int stopMMI();
+ 	int answerText(int answer);
+@@ -101,7 +140,17 @@
+ 
+ 	int getSlotID();
+ 	int getNumOfServices();
++	int reset();
+ 	int getVersion();
 +	bool checkQueueSize();
 +	void thread();
 +	void mmiOpened() { mmi_active = true; };
@@ -3518,15 +3553,15 @@
 +	eData sendData(unsigned char* data, int len);
 +	struct timeval tx_time;
 +	struct timespec last_poll_time;
- 	static std::string getTunerLetter(int tuner_no) { return std::string(1, char(65 + tuner_no)); }
  };
  
+ struct CIPmtHandler
 --- enigma2.org/lib/dvb_ci/dvbci_session.cpp
 +++ enigma2/lib/dvb_ci/dvbci_session.cpp
-@@ -298,6 +298,10 @@
+@@ -285,6 +285,10 @@
  		if ((!session_nb) || (session_nb >= SLMS))
  		{
- 			eDebug("[CI SESS] PROTOCOL: illegal session number %x", session_nb);
+ 			eWarning("[CI SESS] PROTOCOL: illegal session number %x", session_nb);
 +			//Dagobert during start-up we seem to have some problems
 +			//on some modules which "lose" the connection. So reset it
 +			deleteSessions(slot);
@@ -4380,7 +4415,7 @@
  	~gLCDDC();
 --- enigma2.org/lib/gdi/gpixmap.cpp
 +++ enigma2/lib/gdi/gpixmap.cpp
-@@ -191,14 +191,20 @@
+@@ -195,14 +195,20 @@
  static bool is_a_candidate_for_accel(const gUnmanagedSurface* surface)
  {
  	if (surface->stride < 48)
@@ -4401,7 +4436,7 @@
  	}
  }
  
-@@ -224,11 +230,13 @@
+@@ -228,11 +234,13 @@
  	if (data)
  	{
  		delete [] (unsigned char*)data;
@@ -4415,7 +4450,7 @@
  	}
  }
  
-@@ -244,8 +252,9 @@
+@@ -248,8 +256,9 @@
  		if (surface->bpp == 8)
  		{
  			for (int y=area.top(); y<area.bottom(); y++)
@@ -4427,7 +4462,7 @@
  		{
  			uint32_t icol;
  
-@@ -272,9 +281,14 @@
+@@ -276,9 +285,14 @@
  			if (surface->clut.data && color < surface->clut.colors)
  				col = surface->clut.data[color].argb();
  			else
@@ -4444,7 +4479,7 @@
  
  #ifdef GPIXMAP_DEBUG
  			Stopwatch s;
-@@ -329,7 +343,11 @@
+@@ -333,7 +347,11 @@
  			uint32_t col;
  
  			col = color.argb();
@@ -4457,7 +4492,7 @@
  
  #ifdef GPIXMAP_DEBUG
  			Stopwatch s;
-@@ -617,7 +635,8 @@
+@@ -621,7 +639,8 @@
  		Stopwatch s;
  #endif
  		if (accel) {
@@ -4467,7 +4502,7 @@
  #ifdef GPIXMAP_DEBUG
  				s.stop();
  				eDebug("[gPixmap] [BLITBENCH] accel blit (%d bytes) took %u us", srcarea.surface() * src.surface->bypp, s.elapsed_us());
-@@ -1006,6 +1025,7 @@
+@@ -1010,6 +1029,7 @@
  	}
  
  	delete [] lookup;
@@ -5465,6 +5500,189 @@
  };
  
  void eConsoleInit(void)
+--- enigma2.org/lib/python/Components/About.py
++++ enigma2/lib/python/Components/About.py
+@@ -58,12 +58,15 @@
+ 
+ 
+ def getGStreamerVersionString():
+-	try:
+-		from glob import glob
+-		gst = [x.split("Version: ") for x in open(glob("/var/lib/opkg/info/gstreamer[0-9].[0-9].control")[0], "r") if x.startswith("Version:")][0]
+-		return "%s" % gst[1].split("+")[0].replace("\n", "")
+-	except:
+-		return _("Not Installed")
++	from glob import glob
++	if os.path.isfile('/usr/lib/pkgconfig/gstreamer-1.0.pc'):
++		gstversion = [x.split("Version:") for x in open(glob("/usr/lib/pkgconfig/gstreamer-1.0.pc")[0], "r") if x.startswith("Version:")][0]
++		if os.path.isfile('/usr/lib/libeplayer3.so'):
++			return "Gstreamer " + ("%s" % gstversion[1].replace("\n","")) + " + eplayer3"
++		else:
++			return "Gstreamer " + ("%s" % gstversion[1].replace("\n",""))
++	else:
++		return _("eplayer3")
+ 
+ 
+ def getffmpegVersionString():
+@@ -83,7 +86,7 @@
+ 
+ 
+ def getHardwareTypeString():
+-	return HardwareInfo().get_device_string()
++	return HardwareInfo().get_device_string().upper()
+ 
+ 
+ def getImageTypeString():
+@@ -97,29 +100,19 @@
+ def getCPUInfoString():
+ 	try:
+ 		cpu_count = 0
+-		cpu_speed = 0
++		cpu_speed = "unknown"
+ 		processor = ""
+ 		for line in open("/proc/cpuinfo").readlines():
+ 			line = [x.strip() for x in line.strip().split(":")]
+-			if not processor and line[0] in ("system type", "model name", "Processor"):
++			if not processor and line[0] == "cpu type":
+ 				processor = line[1].split()[0]
+-			elif not cpu_speed and line[0] == "cpu MHz":
++			elif cpu_speed == "unknown" and line[0] == "cpu MHz":
+ 				cpu_speed = "%1.0f" % float(line[1])
+ 			elif line[0] == "processor":
+ 				cpu_count += 1
+ 
+ 		if processor.startswith("ARM") and os.path.isfile("/proc/stb/info/chipset"):
+ 			processor = "%s (%s)" % (open("/proc/stb/info/chipset").readline().strip().upper(), processor)
+-
+-		if not cpu_speed:
+-			try:
+-				cpu_speed = int(open("/sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq").read()) / 1000
+-			except:
+-				try:
+-					import binascii
+-					cpu_speed = int(int(binascii.hexlify(open('/sys/firmware/devicetree/base/cpus/cpu@0/clock-frequency', 'rb').read()), 16) / 100000000) * 100
+-				except:
+-					cpu_speed = "-"
+ 
+ 		temperature = None
+ 		if os.path.isfile('/proc/stb/fp/temp_sensor_avs'):
+#--- enigma2.org/lib/python/Components/FanControl.py
+#+++ enigma2/lib/python/Components/FanControl.py
+#@@ -6,6 +6,14 @@
+# import NavigationInstance
+# from enigma import iRecordableService
+# 
+#+
+#+def fanSpeedChanged(configElement=None):
+#+	from Screens.Standby import inStandby
+#+	print "[FanControl]: fanSpeedChanged"
+#+	if inStandby is False:
+#+		self.setVoltage_PWM()
+#+	else:
+#+		self.setVoltage_PWM_Standby()
+# 
+# class FanControl:
+# 	# ATM there's only support for one fan
+#@@ -54,22 +62,38 @@
+# 		if not recordings:
+# 			self.setVoltage_PWM_Standby()
+# 
+#+#	def fanSpeedChanged(configElement=None):
+#+#		from Screens.Standby import inStandby
+#+#		print "[FanControl]: fanSpeedChanged"
+#+#		if inStandby is False:
+#+#			self.setVoltage_PWM()
+#+#		else:
+#+#			self.setVoltage_PWM_Standby()
+#+
+# 	def createConfig(self):
+#-		def setVlt(fancontrol, fanid, configElement):
+#-			fancontrol.setVoltage(fanid, configElement.value)
+#+		if os.path.exists("/proc/stb/fp/fan_vlt"):
+#+			def setVlt(fancontrol, fanid, configElement):
+#+				fancontrol.setVoltage(fanid, configElement.value)
+# 
+#-		def setPWM(fancontrol, fanid, configElement):
+#-			fancontrol.setPWM(fanid, configElement.value)
+#+		if os.path.exists("/proc/stb/fp/fan_pwm"):
+#+			def setPWM(fancontrol, fanid, configElement):
+#+				fancontrol.setPWM(fanid, configElement.value)
+# 
+# 		config.fans = ConfigSubList()
+# 		for fanid in range(self.getFanCount()):
+# 			fan = ConfigSubsection()
+#-			fan.vlt = ConfigSlider(default=15, increment=5, limits=(0, 255))
+#-			fan.pwm = ConfigSlider(default=0, increment=5, limits=(0, 255))
+#-			fan.vlt_standby = ConfigSlider(default=5, increment=5, limits=(0, 255))
+#-			fan.pwm_standby = ConfigSlider(default=0, increment=5, limits=(0, 255))
+#-			fan.vlt.addNotifier(boundFunction(setVlt, self, fanid))
+#-			fan.pwm.addNotifier(boundFunction(setPWM, self, fanid))
+#+			if os.path.exists("/proc/stb/fp/fan_vlt"):
+#+				fan.vlt = ConfigSlider(default=127, increment=8, limits=(0, 255))
+#+			if os.path.exists("/proc/stb/fp/fan_pwm"):
+#+				fan.pwm = ConfigSlider(default=127, increment=8, limits=(0, 255))
+#+			if os.path.exists("/proc/stb/fp/fan_vlt"):
+#+				fan.vlt_standby = ConfigSlider(default=63, increment=8, limits=(0, 255))
+#+			if os.path.exists("/proc/stb/fp/fan_pwm"):
+#+				fan.pwm_standby = ConfigSlider(default=63, increment=8, limits=(0, 255))
+#+			if os.path.exists("/proc/stb/fp/fan_vlt"):
+#+				fan.vlt.addNotifier(boundFunction(setVlt, self, fanid))
+#+			if os.path.exists("/proc/stb/fp/fan_pwm"):
+#+				fan.pwm.addNotifier(boundFunction(setPWM, self, fanid))
+# 			config.fans.append(fan)
+# 
+# 	def getConfig(self, fanid):
+#@@ -79,29 +103,43 @@
+# 		return self.fancount
+# 
+# 	def hasRPMSensor(self, fanid):
+#-		return os.path.exists("/proc/stb/fp/fan_speed")
+#+		if os.path.exists("/proc/stb/fp/fan_speed"):
+#+			return 1
+#+		return 0
+# 
+# 	def hasFanControl(self, fanid):
+#-		return os.path.exists("/proc/stb/fp/fan_vlt") or os.path.exists("/proc/stb/fp/fan_pwm")
+#+		if os.path.exists("/proc/stb/fp/fan_vlt"):
+#+			return 1
+#+		if os.path.exists("/proc/stb/fp/fan_pwm"):
+#+			return 1
+#+		return 0
+# 
+# 	def getFanSpeed(self, fanid):
+#-		return int(open("/proc/stb/fp/fan_speed", "r").readline().strip()[:-4])
+#+		if os.path.exists("/proc/stb/fp/fan_speed"):
+#+			return int(open("/proc/stb/fp/fan_speed", "r").readline().strip()[:-4])
+#+		return 0
+# 
+# 	def getVoltage(self, fanid):
+#-		return int(open("/proc/stb/fp/fan_vlt", "r").readline().strip(), 16)
+#+		if os.path.exists("/proc/stb/fp/fan_vlt"):
+#+			return int(open("/proc/stb/fp/fan_vlt", "r").readline().strip(), 16)
+#+		return 0;
+# 
+# 	def setVoltage(self, fanid, value):
+# 		if value > 255:
+# 			return
+#-		open("/proc/stb/fp/fan_vlt", "w").write("%x" % value)
+#+		if os.path.exists("/proc/stb/fp/fan_vlt"):
+#+			open("/proc/stb/fp/fan_vlt", "w").write("%x" % value)
+# 
+# 	def getPWM(self, fanid):
+#-		return int(open("/proc/stb/fp/fan_pwm", "r").readline().strip(), 16)
+#+		if os.path.exists("/proc/stb/fp/fan_pwm"):
+#+			return int(open("/proc/stb/fp/fan_pwm", "r").readline().strip(), 16)
+#+		return 0
+# 
+# 	def setPWM(self, fanid, value):
+# 		if value > 255:
+# 			return
+#-		open("/proc/stb/fp/fan_pwm", "w").write("%x" % value)
+#+		if os.path.exists("/proc/stb/fp/fan_pwm"):
+#+			open("/proc/stb/fp/fan_pwm", "w").write("%x" % value)
+# 
+# 
+# fancontrol = FanControl()
 --- enigma2.org/lib/python/Components/Converter/RemainingToText.py
 +++ enigma2/lib/python/Components/Converter/RemainingToText.py
 @@ -10,6 +10,9 @@
@@ -5922,7 +6140,7 @@
  
 --- enigma2.org/lib/python/Components/NimManager.py
 +++ enigma2/lib/python/Components/NimManager.py
-@@ -20,6 +20,10 @@
+@@ -21,6 +21,10 @@
  
  
  def getConfigSatlist(orbpos, satlist):
@@ -5949,7 +6167,7 @@
 +SystemInfo["LCDsymbol_hdd"] = fileCheck("/proc/stb/lcd/symbol_hdd")
  SystemInfo["FrontpanelDisplayGrayscale"] = fileExists("/dev/dbox/oled0")
 -SystemInfo["DeepstandbySupport"] = HardwareInfo().get_device_name() != "dm800"
-+SystemInfo["DeepstandbySupport"] = HardwareInfo().get_device_name() != model in ("adb_box", "hl101", "vip1_v1")
++SystemInfo["DeepstandbySupport"] = HardwareInfo().get_device_model() not in ("adb_box", "hl101", "vip1_v1")
  SystemInfo["Fan"] = fileCheck("/proc/stb/fp/fan")
  SystemInfo["FanPWM"] = SystemInfo["Fan"] and fileCheck("/proc/stb/fp/fan_pwm")
  SystemInfo["PowerLED"] = fileCheck("/proc/stb/power/powerled")
@@ -5997,7 +6215,7 @@
 -SystemInfo["HasComposite"] = model not in ("i55", "gbquad4k", "gbue4k", "hd1500", "osnino", "osninoplus", "purehd", "purehdse", "revo4k", "vusolo4k", "vuzero4k", "vuduo4k", "vuduo4kse", "vuuno4k", "vuuno4kse", "vuultimo4k")
 +SystemInfo["HasHDMIin"] = False
 +SystemInfo["HasHDMI-CEC"] = fileExists("/lib/modules/cec.ko") and (fileExists("proc/stb/cec/send") or fileExists("stb/hdmi/cec"))
-+SystemInfo["HasYPbPr"] = HardwareInfo().get_device_model() in ("adb_box", "hs8200", "cuberevo", "cuberevo-mini-fta", "cuberevo-250hd", "cuberevo-mini", "cuberevo-mini2", "cuberevo-2000hd", "cuberevo-3000hd", "cuberevo-9500hd", "fs9000", "hs9510", "hs7420", "hs7429", "hl101", "tf7700hdpvr", "ufs910", "ufs910", "ufs912", "ufs913", "ufs922", "vip1_v1", "vip1_v2", "vip2", "vitamin_hd5000", "opt9600")
++SystemInfo["HasYPbPr"] = HardwareInfo().get_device_model() in ("adb_box", "hs8200", "cuberevo", "cuberevo-mini-fta", "cuberevo-250hd", "cuberevo-mini", "cuberevo-mini2", "cuberevo-2000hd", "cuberevo-3000hd", "cuberevo-9500hd", "fs9000", "hs9510", "hs7420", "hs7429", "hl101", "tf7700hdpvr", "ufs910", "ufs912", "ufs913", "ufs922", "vip1_v1", "vip1_v2", "vip2", "vitamin_hd5000", "opt9600")
 +SystemInfo["HasScart"] = HardwareInfo().get_device_model() not in ("hs7110", "hs7119")
 +SystemInfo["HasSVideo"] = HardwareInfo().get_device_model() in ("cuberevo")
 +SystemInfo["HasComposite"] = HardwareInfo().get_device_model() not in ("cuberevo_mini_fta", "cuberevo_250hd")
@@ -6009,13 +6227,13 @@
  SystemInfo["Has3DSurroundSoftLimiter"] = fileExists("/proc/stb/audio/3dsurround_softlimiter_choices") and fileCheck("/proc/stb/audio/3dsurround_softlimiter")
  SystemInfo["hasXcoreVFD"] = model in ("osmega", "spycat4k", "spycat4kmini", "spycat4kcombo") and fileCheck("/sys/module/brcmstb_%s/parameters/pt6302_cgram" % model)
 -SystemInfo["HasOfflineDecoding"] = model not in ("osmini", "osminiplus", "et7000mini", "et11000", "mbmicro", "mbtwinplus", "mbmicrov2", "et7000", "et8500")
-+SystemInfo["HasOfflineDecoding"] = False
- SystemInfo["MultibootStartupDevice"] = getMultibootStartupDevice()
+-SystemInfo["MultibootStartupDevice"] = getMultibootStartupDevice()
 -SystemInfo["canMode12"] = "%s_4.boxmode" % model in cmdline and cmdline["%s_4.boxmode" % model] in ("1", "12") and "192M"
--SystemInfo["canMultiBoot"] = getMultibootslots()
--SystemInfo["canFlashWithOfgwrite"] = not(model.startswith("dm"))
++SystemInfo["HasOfflineDecoding"] = False
++SystemInfo["MultibootStartupDevice"] = False
 +SystemInfo["canMode12"] = False
-+SystemInfo["canMultiBoot"] = False
+ SystemInfo["canMultiBoot"] = getMultibootslots()
+-SystemInfo["canFlashWithOfgwrite"] = not(model.startswith("dm"))
 +SystemInfo["canFlashWithOfgwrite"] = False
  SystemInfo["HDRSupport"] = fileExists("/proc/stb/hdmi/hlg_support_choices") and fileCheck("/proc/stb/hdmi/hlg_support")
  SystemInfo["CanDownmixAC3"] = fileHas("/proc/stb/audio/ac3_choices", "downmix")
@@ -6025,7 +6243,7 @@
  SystemInfo["BootDevice"] = getBootdevice()
 -SystemInfo["FbcTunerPowerAlwaysOn"] = model in ("vusolo4k", "vuduo4k", "vuduo4kse", "vuultimo4k", "vuuno4k", "vuuno4kse", "gbquad4k", "gbue4k")
 -SystemInfo["HasPhysicalLoopthrough"] = ["Vuplus DVB-S NIM(AVL2108)", "GIGA DVB-S2 NIM (Internal)"]
--SystemInfo["HasFBCtuner"] = ["Vuplus DVB-C NIM(BCM3158)", "Vuplus DVB-C NIM(BCM3148)", "Vuplus DVB-S NIM(7376 FBC)", "Vuplus DVB-S NIM(45308X FBC)", "Vuplus DVB-S NIM(45208 FBC)", "DVB-S NIM(45208 FBC)", "DVB-S2X NIM(45308X FBC)", "DVB-S2 NIM(45308 FBC)", "DVB-C NIM(3128 FBC)","BCM45208", "BCM45308X", "BCM3158"]
+-SystemInfo["HasFBCtuner"] = ["Vuplus DVB-C NIM(BCM3158)", "Vuplus DVB-C NIM(BCM3148)", "Vuplus DVB-S NIM(7376 FBC)", "Vuplus DVB-S NIM(45308X FBC)", "Vuplus DVB-S NIM(45208 FBC)", "DVB-S NIM(45208 FBC)", "DVB-S2X NIM(45308X FBC)", "DVB-S2 NIM(45308 FBC)", "DVB-C NIM(3128 FBC)", "BCM45208", "BCM45308X", "BCM3158"]
 +SystemInfo["FbcTunerPowerAlwaysOn"] = False
 +SystemInfo["HasPhysicalLoopthrough"] = [""]
 +SystemInfo["HasFBCtuner"] = [""]
@@ -6134,7 +6352,15 @@
 +		self.text = text
 --- enigma2.org/lib/python/Components/UsageConfig.py
 +++ enigma2/lib/python/Components/UsageConfig.py
-@@ -297,7 +297,7 @@
+@@ -6,6 +6,7 @@
+ from Components.About import GetIPsFromNetworkInterfaces
+ from Components.NimManager import nimmanager
+ from Components.ServiceList import refreshServiceList
++#from Components.FanControl import fanSpeedChanged
+ from SystemInfo import SystemInfo
+ import os
+ import time
+@@ -297,7 +298,7 @@
  
  	config.misc.disable_background_scan = ConfigYesNo(default=False)
  	config.misc.use_ci_assignment = ConfigYesNo(default=False)
@@ -7712,6 +7938,42 @@
  		elif self.step == 3:
  			self.save_new_position = True
  			self.step = 5
+--- enigma2.org/lib/python/Plugins/SystemPlugins/TempFanControl/plugin.py
++++ enigma2/lib/python/Plugins/SystemPlugins/TempFanControl/plugin.py
+@@ -127,9 +127,9 @@
+ 
+ 		self.list = []
+ 		for count in range(fancontrol.getFanCount()):
+-			self.list.append(getConfigListEntry(_("Fan %d voltage") % (count + 1), fancontrol.getConfig(count).vlt))
++#			self.list.append(getConfigListEntry(_("Fan %d voltage") % (count + 1), fancontrol.getConfig(count).vlt))
+ 			self.list.append(getConfigListEntry(_("Fan %d PWM") % (count + 1), fancontrol.getConfig(count).pwm))
+-			self.list.append(getConfigListEntry(_("Standby fan %d voltage") % (count + 1), fancontrol.getConfig(count).vlt_standby))
++#			self.list.append(getConfigListEntry(_("Standby fan %d voltage") % (count + 1), fancontrol.getConfig(count).vlt_standby))
+ 			self.list.append(getConfigListEntry(_("Standby fan %d PWM") % (count + 1), fancontrol.getConfig(count).pwm_standby))
+ 
+ 		ConfigListScreen.__init__(self, self.list, session=self.session)
+@@ -149,17 +149,17 @@
+ 
+ 	def save(self):
+ 		for count in range(fancontrol.getFanCount()):
+-			fancontrol.getConfig(count).vlt.save()
++#			fancontrol.getConfig(count).vlt.save()
+ 			fancontrol.getConfig(count).pwm.save()
+-			fancontrol.getConfig(count).vlt_standby.save()
++#			fancontrol.getConfig(count).vlt_standby.save()
+ 			fancontrol.getConfig(count).pwm_standby.save()
+ 		self.close()
+ 
+ 	def revert(self):
+ 		for count in range(fancontrol.getFanCount()):
+-			fancontrol.getConfig(count).vlt.load()
++#			fancontrol.getConfig(count).vlt.load()
+ 			fancontrol.getConfig(count).pwm.load()
+-			fancontrol.getConfig(count).vlt_standby.load()
++#			fancontrol.getConfig(count).vlt_standby.load()
+ 			fancontrol.getConfig(count).pwm_standby.load()
+ 		self.close()
+ 
 --- enigma2.org/lib/python/Screens/ChannelSelection.py
 +++ enigma2/lib/python/Screens/ChannelSelection.py
 @@ -6,6 +6,11 @@
@@ -7889,7 +8151,7 @@
  			self.servicelist.l.setHideNumberMarker(False)
  			self.setCurrentSelection(self.servicelist.getCurrent())
  		self["Service"].editmode = True
-@@ -1329,6 +1349,11 @@
+@@ -1330,6 +1350,11 @@
  
  		self["list"] = ServiceList(self)
  		self.servicelist = self["list"]
@@ -7901,7 +8163,7 @@
  
  		self.numericalTextInput = NumericalTextInput(handleTimeout=False)
  		self.numericalTextInput.setUseableChars(u'1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ')
-@@ -1423,6 +1448,9 @@
+@@ -1424,6 +1449,9 @@
  			title = title[:pos]
  		title += _(" (TV)")
  		self.setTitle(title)
@@ -7911,7 +8173,7 @@
  
  	def setRadioMode(self):
  		self.mode = MODE_RADIO
-@@ -1434,6 +1462,9 @@
+@@ -1435,6 +1463,9 @@
  			title = title[:pos]
  		title += _(" (Radio)")
  		self.setTitle(title)
@@ -7921,7 +8183,7 @@
  
  	def setRoot(self, root, justSet=False):
  		if self.startRoot is None:
-@@ -1488,6 +1519,9 @@
+@@ -1489,6 +1520,9 @@
  					end_ref = None
  				nameStr = self.getServiceName(base_ref)
  				titleStr += ' - ' + nameStr
@@ -7931,7 +8193,7 @@
  				if end_ref is not None:
  					if Len > 2:
  						titleStr += '/../'
-@@ -1495,7 +1529,13 @@
+@@ -1496,7 +1530,13 @@
  						titleStr += '/'
  					nameStr = self.getServiceName(end_ref)
  					titleStr += nameStr
@@ -8942,7 +9204,7 @@
  	AC_SUBST([PYTHON_SITE_PKG])
 --- enigma2.org/main/bsod.cpp
 +++ enigma2/main/bsod.cpp
-@@ -14,11 +14,13 @@
+@@ -16,11 +16,13 @@
  
  /************************************************/
  
@@ -8956,7 +9218,7 @@
  #endif
  
  /* Defined in bsod.cpp */
-@@ -98,7 +100,14 @@
+@@ -100,7 +102,14 @@
  {
  	/* show no more than one bsod while shutting down/crashing */
  	if (bsodhandled)
@@ -8971,7 +9233,7 @@
  	bsodhandled = true;
  
  	if (!component)
-@@ -165,7 +174,6 @@
+@@ -167,7 +176,6 @@
  			component);
  
  		stringFromFile(f, "stbmodel", "/proc/stb/info/boxtype");
@@ -8979,7 +9241,7 @@
  		stringFromFile(f, "stbmodel", "/proc/stb/info/model");
  		stringFromFile(f, "kernelcmdline", "/proc/cmdline");
  		stringFromFile(f, "nimsockets", "/proc/bus/nim_sockets");
-@@ -191,7 +199,7 @@
+@@ -193,7 +201,7 @@
  	gPainter p(my_dc);
  	p.resetOffset();
  	p.resetClip(eRect(ePoint(0, 0), my_dc->size()));
@@ -8988,7 +9250,7 @@
  	p.setForegroundColor(gRGB(0xFFFFFF));
  
  	int hd =  my_dc->size().width() == 1920;
-@@ -205,14 +213,14 @@
+@@ -207,14 +215,14 @@
  	os.clear();
  	os << "We are really sorry. Your STB encountered "
  		"a software problem, and needs to be restarted.\n"
@@ -9006,7 +9268,7 @@
  	
  	if (logp2)
  	{
-@@ -256,12 +264,12 @@
+@@ -258,12 +266,12 @@
  
  	if (!logtail.empty())
  	{
@@ -9031,6 +9293,15 @@
  
  #include "bsod.h"
  #include "version_info.h"
+@@ -204,7 +205,7 @@
+ 	printf("DVB_API_VERSION %d DVB_API_VERSION_MINOR %d\n", DVB_API_VERSION, DVB_API_VERSION_MINOR);
+ 
+ 	// get enigma2 debug level settings
+-	debugLvl = getenv("ENIGMA_DEBUG_LVL") ? atoi(getenv("ENIGMA_DEBUG_LVL")) : 3;
++	debugLvl = getenv("ENIGMA_DEBUG_LVL") ? atoi(getenv("ENIGMA_DEBUG_LVL")) : 4;
+ 	if (debugLvl < 0)
+ 		debugLvl = 0;
+ 	printf("ENIGMA_DEBUG_LVL=%d\n", debugLvl);
 @@ -235,6 +236,12 @@
  	eWidgetDesktop dsk_lcd(my_lcd_dc->size());
  
@@ -9125,72 +9396,6 @@
  
  if [ -d /home/root ]; then
  	export HOME=/home/root
---- enigma2.org/lib/python/Components/About.py
-+++ enigma2/lib/python/Components/About.py
-@@ -58,12 +58,15 @@
- 
- 
- def getGStreamerVersionString():
--	try:
--		from glob import glob
--		gst = [x.split("Version: ") for x in open(glob("/var/lib/opkg/info/gstreamer[0-9].[0-9].control")[0], "r") if x.startswith("Version:")][0]
--		return "%s" % gst[1].split("+")[0].replace("\n", "")
--	except:
--		return _("Not Installed")
-+	from glob import glob
-+	if os.path.isfile('/usr/lib/pkgconfig/gstreamer-1.0.pc'):
-+		gstversion = [x.split("Version:") for x in open(glob("/usr/lib/pkgconfig/gstreamer-1.0.pc")[0], "r") if x.startswith("Version:")][0]
-+		if os.path.isfile('/usr/lib/libeplayer3.so'):
-+			return "Gstreamer " + ("%s" % gstversion[1].replace("\n","")) + " + eplayer3"
-+		else:
-+			return "Gstreamer " + ("%s" % gstversion[1].replace("\n",""))
-+	else:
-+		return _("eplayer3")
- 
- 
- def getffmpegVersionString():
-@@ -83,7 +86,7 @@
- 
- 
- def getHardwareTypeString():
--	return HardwareInfo().get_device_string()
-+	return HardwareInfo().get_device_string().upper()
- 
- 
- def getImageTypeString():
-@@ -97,29 +100,19 @@
- def getCPUInfoString():
- 	try:
- 		cpu_count = 0
--		cpu_speed = 0
-+		cpu_speed = "unknown"
- 		processor = ""
- 		for line in open("/proc/cpuinfo").readlines():
- 			line = [x.strip() for x in line.strip().split(":")]
--			if not processor and line[0] in ("system type", "model name", "Processor"):
-+			if not processor and line[0] == "cpu type":
- 				processor = line[1].split()[0]
--			elif not cpu_speed and line[0] == "cpu MHz":
-+			elif cpu_speed == "unknown" and line[0] == "cpu MHz":
- 				cpu_speed = "%1.0f" % float(line[1])
- 			elif line[0] == "processor":
- 				cpu_count += 1
- 
- 		if processor.startswith("ARM") and os.path.isfile("/proc/stb/info/chipset"):
- 			processor = "%s (%s)" % (open("/proc/stb/info/chipset").readline().strip().upper(), processor)
--
--		if not cpu_speed:
--			try:
--				cpu_speed = int(open("/sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq").read()) / 1000
--			except:
--				try:
--					import binascii
--					cpu_speed = int(int(binascii.hexlify(open('/sys/firmware/devicetree/base/cpus/cpu@0/clock-frequency', 'rb').read()), 16) / 100000000) * 100
--				except:
--					cpu_speed = "-"
- 
- 		temperature = None
- 		if os.path.isfile('/proc/stb/fp/temp_sensor_avs'):
 --- enigma2.org/lib/python/Screens/About.py
 +++ enigma2/lib/python/Screens/About.py
 @@ -13,6 +13,8 @@
@@ -9241,7 +9446,7 @@
 +				if (model in ("cuberevo", "cuberevo_mini-fta", "cuberevo-250hd", "cuberevo-mini", "cuberevo-mini2", "cuberevo-2000hd", "cuberevo-3000hd", "cuberevo-9500hd")):
 +					fp_version = _("Frontprocessor version: %s") % fp_version
 +				else:
-+					fp_version = _("Frontprocessor version: %s") % (fp_version / 100, fp_version % 100)
++					fp_version = _("Frontprocessor version: %d.%02d") % (fp_version / 100, fp_version % 100)
 +			AboutText += fp_version + "\n"
  
  		self["FPVersion"] = StaticText(fp_version)
@@ -9937,7 +10142,7 @@
  	return keyDescriptions[idx].get(key)
 --- enigma2.org/lib/python/Screens/InputDeviceSetup.py
 +++ enigma2/lib/python/Screens/InputDeviceSetup.py
-@@ -300,68 +300,61 @@
+@@ -300,72 +300,61 @@
  	rcList = [
  			("0", _("Default")),
  			("4", _("DMM normal")),
@@ -9956,7 +10161,8 @@
 -			("21", _("Zgemma H.S/H.2S/H.2H/H5/H7(old model)")),
 -			("25", _("Zgemma H9(old model)/I55Plus")),
 -			("27", _("HD60/Multibox/Multibox SE")),
--			("28", _("I55SE/H7(new model)/H9(new model)/H9COMBO/H9TWIN/H9SE/H9COMBOSE/H10"))
+-			("28", _("I55SE/H7(new model)/H9(new model)/H9COMBO/H9TWIN/H9SE/H9COMBOSE/H10/H11")),
+-			("30", _("PULSe 4K"))
 +			("7", _("Fortis universal")),
 +			("8", _("Fortis standard")),
 +			("9", _("Fortis mini")),
@@ -10018,8 +10224,11 @@
 -			("i55se", 28),
 -			("h7", 28), # new model /old 21
 -			("h9", 28), # new model /old 25
--			("h9combo", 28),
--			("h10", 28)
+-			("h9twin", 28),
+-			("h9twinse", 28),
+-			("h10", 28),
+-			("h11", 28),
+-			("pulse4k", 30)
 +			("fs9000", 7),
 +			("hs8200", 7),
 +			("hs9510", 8),
@@ -10059,7 +10268,7 @@
  	def __init__(self, session):
 --- enigma2.org/data/rc_models/rc_models.cfg
 +++ enigma2/data/rc_models/rc_models.cfg
-@@ -19,153 +19,36 @@
+@@ -19,157 +19,36 @@
  #
  # When no entry matches at all, 'default' will be used as remoteName
  #
@@ -10204,6 +10413,7 @@
 -h9combo         zgemma
 -h9combose       zgemma
 -h10             zgemma
+-h11             zgemma
 -lc              sh1
 -sh1             sh1
 -#
@@ -10213,6 +10423,9 @@
 -#
 -# uClan
 -ustym4kpro     uclan
+-#
+-# AB-COM
+-pulse4k        pulse
 +fs9000            fs9000
 +hs9510            hs9510
 +hs8200            fs9000
@@ -10257,13 +10470,13 @@
 -	hd2400.png hd-gen.png vs1x00.png osmini.png zgemma.png miraclebox.png miraclebox2.png \
 -	spycat.png xpeedlx.png revo4k.png sab.png sh1.png i55.png qviart.png gb7252.png e4hd.png \
 -	edision2.png edision3.png edision4.png hd60.png lunix4k.png multibox.png viperslim.png octagon.png \
--	uclan.png \
+-	uclan.png pulse.png \
 -	dmmadv.xml edision1.xml et4x00.xml et8000.xml et9x00.xml vuultimo.xml xp1000.xml dmm.xml amiko.xml \
 -	amiko1.xml et6x00.xml et9500.xml et7x00.xml vuduo2.xml vu.xml vu2.xml formuler1.xml hd2400.xml hd-gen.xml \
 -	vs1x00.xml xsarius.xml xsarius.png osmini.xml zgemma.xml miraclebox.xml miraclebox2.xml \
 -	spycat.xml xpeedlx.xml et7000mini.png et7000mini.xml revo4k.xml sab.xml sh1.xml i55.xml qviart.xml \
 -	gb7252.xml e4hd.xml edision2.xml edision3.xml edision4.xml hd60.xml lunix4k.xml multibox.xml viperslim.xml \
--	octagon.xml uclan.xml
+-	octagon.xml uclan.xml pulse.xml
 +	dmmadv.png \
 +	adb_xmp.png cuberevo_uni.png fs9000.png hs7110.png hs9510.png spark.png tf7700.png ufs912.png vitamin.png \
 +	pace7241.png hl101_1.png vip_1.png ufs910.png ufs913.png opt9600.png cuberevo.png dmm.png \

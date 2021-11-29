@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20211051.1
+# Version 20211129.1
 
 ##############################################
 
@@ -415,10 +415,10 @@ case "$IMAGE" in
 				echo "=================================================================================================="
 				echo " 1)  Use your own Enigma2 git dir without patchfile"
 				echo "=================================================================================================="
-				echo " 2*) Sun, 03 Oct 2021 14:24 - E2 OpenPLi  any framework  33ab65e339e8997e66bc4451d52b828a643dd216"
-				echo " 3)  Thu, 29 Jul 2021 11:32 - E2 OpenPLi  any framework  ecf765a2c34e7156ac57fd14e9b9e7e151e8f306"
-				echo " 4)  Fri, 28 May 2021 20:04 - E2 OpenPLi  any framework  a84bd16d5bc55a74c4c318669a6446ddd78cb841"
-				echo " 5)  Fri, 26 Mar 2021 22:08 - E2 OpenPLi  any framework  2112414b289ab9ad0b0bb9a60a82b31d46f2d30b"
+				echo " 2*) Mon, 29 Nov 2021 17:52 - E2 OpenPLi  any framework  38cf4849d225377497af435a2ea65c8487ce4966"
+				echo " 3)  Sun, 03 Oct 2021 14:24 - E2 OpenPLi  any framework  33ab65e339e8997e66bc4451d52b828a643dd216"
+				echo " 4)  Thu, 29 Jul 2021 11:32 - E2 OpenPLi  any framework  ecf765a2c34e7156ac57fd14e9b9e7e151e8f306"
+				echo " 5)  Fri, 28 May 2021 20:04 - E2 OpenPLi  any framework  a84bd16d5bc55a74c4c318669a6446ddd78cb841"
 				echo "=================================================================================================="
 				echo "Media Framework         : $MEDIAFW"
 				echo
@@ -429,15 +429,15 @@ case "$IMAGE" in
 			1)	DIFF="1"
 				REVISION="local";;
 			3)	DIFF="3"
-				REVISION="ecf765a2c34e7156ac57fd14e9b9e7e151e8f306";;
+				REVISION="33ab65e339e8997e66bc4451d52b828a643dd216";;
 			4)	DIFF="4"
-				REVISION="a84bd16d5bc55a74c4c318669a6446ddd78cb841";;
+				REVISION="ecf765a2c34e7156ac57fd14e9b9e7e151e8f306";;
 			5)	DIFF="5"
-				REVISION="2112414b289ab9ad0b0bb9a60a82b31d46f2d30b";;
+				REVISION="a84bd16d5bc55a74c4c318669a6446ddd78cb841";;
 			0)	DIFF="0"
 				REVISION="newest";;
 			*)	DIFF="2"
-				REVISION="33ab65e339e8997e66bc4451d52b828a643dd216";;
+				REVISION="38cf4849d225377497af435a2ea65c8487ce4966";;
 		esac
 
 		echo "E2_DIFF=$DIFF" >> config
