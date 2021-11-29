@@ -1004,7 +1004,7 @@ $(D)/libconfig: $(D)/bootstrap $(ARCHIVE)/$(LIBCONFIG_SOURCE)
 
 #
 # libcurl
-#7
+#
 LIBCURL_VER = 7.80.0
 LIBCURL_SOURCE = curl-$(LIBCURL_VER).tar.bz2
 LIBCURL_PATCH = libcurl-$(LIBCURL_VER).patch
@@ -1474,14 +1474,15 @@ $(D)/libdvdread: $(D)/bootstrap $(ARCHIVE)/$(LIBDVDREAD_SOURCE)
 #
 # libdreamdvd
 #
-LIBDREAMDVD_PATCH = libdreamdvd-1.0-sh4-support.patch
+LIBDREAMDVD_PATCH  = libdreamdvd-1.0-sh4-support.patch
+LIBDREAMDVD_PATCH += libdreamdvd-1.0-titan-support.patch
 
 $(D)/libdreamdvd: $(D)/bootstrap $(D)/libdvdnav
 	$(START_BUILD)
 	$(REMOVE)/libdreamdvd
 	$(SET) -e; if [ -d $(ARCHIVE)/libdreamdvd.git ]; \
 		then cd $(ARCHIVE)/libdreamdvd.git; git pull $(MINUS_Q); \
-		else cd $(ARCHIVE); git clone $(MINUS_Q) git://github.com/mirakels/libdreamdvd.git libdreamdvd.git; \
+		else cd $(ARCHIVE); git clone $(MINUS_Q) https://github.com/mirakels/libdreamdvd.git libdreamdvd.git; \
 		fi
 	$(SILENT)cp -ra $(ARCHIVE)/libdreamdvd.git $(BUILD_TMP)/libdreamdvd
 	$(CH_DIR)/libdreamdvd; \
