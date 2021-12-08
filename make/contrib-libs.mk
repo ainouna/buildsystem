@@ -647,9 +647,9 @@ $(D)/bzip2: $(D)/bootstrap $(ARCHIVE)/$(BZIP2_SOURCE)
 #
 # timezone
 #
-TZDATA_VER = 2021a
+TZDATA_VER = 2021e
 TZDATA_SOURCE = tzdata$(TZDATA_VER).tar.gz
-TZDATA_ZONELIST = africa antarctica asia australasia europe northamerica southamerica pacificnew etcetera backzone
+TZDATA_ZONELIST = africa antarctica asia australasia europe northamerica southamerica etcetera
 DEFAULT_TIMEZONE ?= "CET"
 #ln -s /usr/share/zoneinfo/<country>/<city> /etc/localtime
 
@@ -670,11 +670,11 @@ $(D)/timezone: $(D)/bootstrap $(ARCHIVE)/$(TZDATA_SOURCE)
 		done; \
 		install -d -m 0755 $(TARGET_DIR)/usr/share $(TARGET_DIR)/etc; \
 		cp -a zoneinfo $(TARGET_DIR)/usr/share/; \
-		cp -v zone.tab iso3166.tab $(TARGET_DIR)/usr/share/zoneinfo/; \
-		# Install default timezone
-		if [ -e $(TARGET_DIR)/usr/share/zoneinfo/$(DEFAULT_TIMEZONE) ]; then \
-			echo ${DEFAULT_TIMEZONE} > $(TARGET_DIR)/etc/timezone; \
-		fi; \
+		cp -v zone.tab iso3166.tab $(TARGET_DIR)/usr/share/zoneinfo/
+	# Install default timezone
+	$(SILENT)if [ -e $(TARGET_DIR)/usr/share/zoneinfo/$(DEFAULT_TIMEZONE) ]; then \
+		echo ${DEFAULT_TIMEZONE} > $(TARGET_DIR)/etc/timezone; \
+	fi
 	$(SILENT)install -m 0644 $(SKEL_ROOT)/etc/timezone.xml $(TARGET_DIR)/etc/
 	$(REMOVE)/timezone
 	$(TOUCH)
