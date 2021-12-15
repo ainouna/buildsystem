@@ -1,26 +1,18 @@
 #
 # ffmpeg
 #
-#ifeq ($(BOXTYPE), $(filter $(BOXTYPE), adb_box hs8200 pace7241 ufs912 ufs913))
-#FFMPEG_VER = 2.8.17
-#else
-# Select desired version by uncommenting one line
-#FFMPEG_VER = 3.4.3
-#FFMPEG_VER = 4.2.2
-FFMPEG_VER = 4.3.2
-#endif
 
 #
 # ffmpeg 2.x
 #
-ifeq ($(FFMPEG_VER), 2.8.17)
+ifeq ($(FFMPEG_VER), 2.8.18)
 FFMPEG_SOURCE = ffmpeg-$(FFMPEG_VER).tar.xz
 FFMPEG_PATCH  = ffmpeg-$(FFMPEG_VER)-buffer-size.patch
 FFMPEG_PATCH += ffmpeg-$(FFMPEG_VER)-hds-libroxml.patch
 FFMPEG_PATCH += ffmpeg-$(FFMPEG_VER)-aac.patch
 FFMPEG_PATCH += ffmpeg-$(FFMPEG_VER)-kodi.patch
 FFMPEG_PATCH += ffmpeg-$(FFMPEG_VER)-tls.patch
-#FFMPEG_PATCH += ffmpeg-$(FFMPEG_VER)-remove_avpriv_request_sample.patch
+FFMPEG_PATCH += ffmpeg-$(FFMPEG_VER)-discon.patch
 
 FFMPEG_DEPS =
 FFMPEG_CONF_OPTS = 

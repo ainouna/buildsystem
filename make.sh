@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20211129.1
+# Version 20211215.1
 
 ##############################################
 
@@ -284,6 +284,13 @@ BS_GCC_VER="4.8.4" # Unpacks rpms, quick build
 echo "BS_GCC_VER=$BS_GCC_VER" >> config
 export BS_GCC_VER
 
+# Select ffmpeg version by uncommenting one line
+FFMPEG_VER="2.8.18"
+#FFMPEG_VER="3.4.3"
+#FFMPEG_VER="4.2.2"
+#FFMPEG_VER="4.3.2"
+echo "FFMPEG_VER=$FFMPEG_VER" >> config
+export FFMPEG_VER
 ##############################################
 
 case $4 in

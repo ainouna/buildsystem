@@ -41,7 +41,7 @@
 
 --- a/libavformat/utils.c
 +++ b/libavformat/utils.c
-@@ -1351,6 +1351,8 @@
+@@ -1355,6 +1355,8 @@
          if (ret < 0) {
              if (ret == AVERROR(EAGAIN))
                  return ret;
@@ -218,7 +218,7 @@
  };
 --- a/libavformat/utils.c
 +++ b/libavformat/utils.c
-@@ -2484,6 +2484,41 @@
+@@ -2488,6 +2488,41 @@
  #define DURATION_MAX_READ_SIZE 250000LL
  #define DURATION_MAX_RETRY 6
  
@@ -260,7 +260,7 @@
  /* only usable for MPEG-PS streams */
  static void estimate_timings_from_pts(AVFormatContext *ic, int64_t old_offset)
  {
-@@ -2634,6 +2669,10 @@
+@@ -2638,6 +2673,10 @@
           * the components */
          fill_all_stream_timings(ic);
          ic->duration_estimation_method = AVFMT_DURATION_FROM_STREAM;
@@ -273,7 +273,7 @@
          estimate_timings_from_bit_rate(ic);
 --- a/libavformat/mov.c
 +++ b/libavformat/mov.c
-@@ -4713,8 +4713,8 @@
+@@ -4718,8 +4718,8 @@
              if (!sample || (!s->pb->seekable && current_sample->pos < sample->pos) ||
                  (s->pb->seekable &&
                   ((msc->pb != s->pb && dts < best_dts) || (msc->pb == s->pb &&
