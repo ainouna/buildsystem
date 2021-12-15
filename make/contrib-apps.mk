@@ -1606,21 +1606,18 @@ $(D)/wpa_supplicant: $(D)/bootstrap $(D)/openssl $(D)/wireless_tools $(D)/libnl 
 #
 # dvbsnoop
 #
-DVBSNOOP_VER = d3f134b
-DVBSNOOP_SOURCE = dvbsnoop-git-$(DVBSNOOP_VER).tar.bz2
-#DVBSNOOP_URL = https://github.com/cotdp/dvbsnoop.git
-DVBSNOOP_URL = https://github.com/Duckbox-Developers/dvbsnoop.git
-
-$(ARCHIVE)/$(DVBSNOOP_SOURCE):
-	$(SCRIPTS_DIR)/get-git-archive.sh $(DVBSNOOP_URL) $(DVBSNOOP_VER) $(notdir $@) $(ARCHIVE)
-
+DVBSNOOP_URL = git://github.com/Duckbox-Developers/dvbsnoop.git
 DVBSNOOP_CONF_OPTS = --with-dvbincludes=$(KERNEL_DIR)/include
 
-$(D)/dvbsnoop: $(D)/bootstrap $(D)/kernel $(ARCHIVE)/$(DVBSNOOP_SOURCE)
+$(D)/dvbsnoop: $(D)/bootstrap $(D)/kernel
 	$(START_BUILD)
-	$(REMOVE)/dvbsnoop-git-$(DVBSNOOP_VER)
-	$(UNTAR)/$(DVBSNOOP_SOURCE)
-	$(CH_DIR)/dvbsnoop-git-$(DVBSNOOP_VER); \
+	$(REMOVE)/dvbsnoop
+	$(SET) -e; if [ -d $(ARCHIVE)/dvbsnoop.git ]; \
+		then cd $(ARCHIVE)/dvbsnoop.git; git pull $(MINUS_Q); \
+		else cd $(ARCHIVE); git clone $(MINUS_Q) $(DVBSNOOP_URL) dvbsnoop.git; \
+		fi
+	$(SILENT)cp -ra $(ARCHIVE)/dvbsnoop.git $(BUILD_TMP)/dvbsnoop
+	$(CH_DIR)/dvbsnoop; \
 		$(CONFIGURE) \
 			--enable-silent-rules \
 			--prefix=/usr \
@@ -1629,7 +1626,7 @@ $(D)/dvbsnoop: $(D)/bootstrap $(D)/kernel $(ARCHIVE)/$(DVBSNOOP_SOURCE)
 		; \
 		$(MAKE); \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
-	$(REMOVE)/dvbsnoop-git-$(DVBSNOOP_VER)
+	$(REMOVE)/dvbsnoop
 	$(TOUCH)
 
 #
