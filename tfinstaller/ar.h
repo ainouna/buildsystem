@@ -1,6 +1,9 @@
 /***********************************************************
 	ar.h
 ***********************************************************/
+#ifndef __AR_H__
+#define __AR_H__
+
 #include <stdio.h>
 #include <limits.h>
 typedef unsigned char  uchar;   /*  8 bits */
@@ -83,3 +86,5 @@ void make_table(int nchar, uchar bitlen[],
 
 int make_tree(int nparm, ushort freqparm[],
 				uchar lenparm[], ushort codeparm[]);
+#endif  // __AR_H__
+// vim:ts=4
