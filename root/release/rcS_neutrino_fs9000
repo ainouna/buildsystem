@@ -111,9 +111,9 @@ insmod $MODDIR/stmalloc.ko
 insmod $MODDIR/platform.ko
 insmod $MODDIR/bpamem.ko
 
-if [ -e /boot/neutrinologo.mvi ]; then
-   showiframe -p /boot/neutrinologo.mvi &
-fi
+#if [ -e /boot/neutrinologo.mvi ]; then
+#   showiframe -p /boot/neutrinologo.mvi &
+#fi
 stfbcontrol a 0
 
 if [ -e $MODDIR/exportfs.ko ]; then
@@ -130,14 +130,16 @@ if [ -e $MODDIR/tun.ko ]; then
 fi
 if [ -e $MODDIR/usbserial.ko ]; then
    insmod $MODDIR/usbserial.ko
+   if [ -e $MODDIR/ch341.ko ]; then
+      insmod $MODDIR/ch341.ko
+   fi
+   if [ -e $MODDIR/ftdi.ko ]; then
+      insmod $MODDIR/ftdi.ko
+   fi
+   if [ -e $MODDIR/pl2303.ko ]; then
+      insmod $MODDIR/pl2303.ko
+   fi
 fi
-if [ -e $MODDIR/ftdi.ko ]; then
-   insmod $MODDIR/ftdi.ko
-fi
-if [ -e $MODDIR/pl2303.ko ]; then
-   insmod $MODDIR/pl2303.ko
-fi
-
 echo "[rcS] Init frontpanel (LOAD 2)"
 echo "LOAD 2" > /dev/vfd
 insmod $MODDIR/boxtype.ko
@@ -192,22 +194,22 @@ echo "Loading Neutrino" > /dev/vfd
 
 until false
 do
-   killall -9 showiframe
+#   killall -9 showiframe
    echo "[rcS] Starting neutrino ->"
    /usr/bin/neutrino
    rtv=$?
    echo "[rcS] Neutrino ended <- return value: " $rtv
    case "$rtv" in
-      0) echo "SHUTDOWN"
+      0) echo "[rcS] SHUTDOWN"
          echo "Shutdown" > /dev/vfd
          init 0;;
-      1) echo "REBOOT"
+      1) echo "[rcS] REBOOT"
          echo "Reboot" > /dev/vfd
          init 6;;
-      3) echo "RESTART"
+      3) echo "[rcS] RESTART"
          echo "Restart" > /dev/vfd
          ;;
-      *) echo "ERROR"
+      *) echo "[rcS] ERROR"
          echo "Error" > /dev/vfd
          init 6;;
    esac
