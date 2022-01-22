@@ -2775,7 +2775,7 @@
  	{
  		ret = (int)(snr / 37.5);
  		sat_max = 1700;
-@@ -3055,7 +3067,11 @@
+@@ -3058,7 +3070,11 @@
  	}
  	else if (!strcmp(type, "DVB-C"))
  	{
@@ -2787,7 +2787,7 @@
  		fetype = feCable;
  	}
  	else if (!strcmp(type, "ATSC"))
-@@ -3187,11 +3203,16 @@
+@@ -3190,11 +3206,16 @@
  		case SYS_ISDBS:		ss << " ISDBS"; break;
  		case SYS_ISDBT:		ss << " ISDBT"; break;
  		case SYS_UNDEFINED:	ss << " UNDEFINED"; break;
@@ -5793,7 +5793,7 @@
 +		else:
 +			print "[Harddisk] self.type =", self.type
  
- 		print "[Harddisk] new device", self.device, '->', self.dev_path, '->', self.disk_path
+ 		print "[Harddisk] new device=%s dev_path=%s disk_path=%s removable=%s internal=%s rotational=%s card=%s" % (self.device, self.dev_path, self.disk_path, removable, self.internal, self.rotational, self.card)
  		if (self.internal or not removable) and not self.card:
  			self.startIdle()
 +		Console().ePopen(("mount", "mount", "-a"))
@@ -6116,7 +6116,7 @@
  		elif 'Creating journal' in data:
 --- enigma2.org/lib/python/Components/Network.py
 +++ enigma2/lib/python/Components/Network.py
-@@ -532,16 +532,18 @@
+@@ -533,16 +533,18 @@
  			return True
  
  		# r871x_usb_drv on kernel 2.6.12 is not identifiable over /sys/class/net/'ifacename'/wireless so look also inside /proc/net/wireless
@@ -6177,7 +6177,7 @@
 +SystemInfo["DeepstandbySupport"] = HardwareInfo().get_device_model() not in ("adb_box", "hl101", "vip1_v1")
  SystemInfo["Fan"] = fileCheck("/proc/stb/fp/fan")
  SystemInfo["FanPWM"] = SystemInfo["Fan"] and fileCheck("/proc/stb/fp/fan_pwm")
- SystemInfo["PowerLED"] = fileCheck("/proc/stb/power/powerled")
+ SystemInfo["PowerLED"] = fileCheck("/proc/stb/power/powerled") or model in ("gbue4k", "gbquad4k") and fileCheck("/proc/stb/fp/led1_pattern")
 @@ -74,16 +74,16 @@
  SystemInfo["Power4x7On"] = fileCheck("/proc/stb/fp/power4x7on")
  SystemInfo["Power4x7Standby"] = fileCheck("/proc/stb/fp/power4x7standby")
@@ -6360,15 +6360,15 @@
 +		self.text = text
 --- enigma2.org/lib/python/Components/UsageConfig.py
 +++ enigma2/lib/python/Components/UsageConfig.py
-@@ -6,6 +6,7 @@
- from Components.About import GetIPsFromNetworkInterfaces
+@@ -7,6 +7,7 @@
  from Components.NimManager import nimmanager
+ from Components.Renderer.FrontpanelLed import ledPatterns, PATTERN_ON, PATTERN_OFF, PATTERN_BLINK
  from Components.ServiceList import refreshServiceList
 +#from Components.FanControl import fanSpeedChanged
  from SystemInfo import SystemInfo
  import os
  import time
-@@ -264,7 +265,7 @@
+@@ -266,7 +267,7 @@
  
  	config.misc.disable_background_scan = ConfigYesNo(default=False)
  	config.misc.use_ci_assignment = ConfigYesNo(default=False)
@@ -8637,7 +8637,7 @@
  			self.createMenu()
 --- enigma2.org/lib/python/Screens/ScanSetup.py
 +++ enigma2/lib/python/Screens/ScanSetup.py
-@@ -1265,7 +1265,7 @@
+@@ -1271,7 +1271,7 @@
  		self.cable_toggle = {"single_transponder": "complete", "complete": "single_transponder"}
  		self.scan_typeterrestrial = ConfigSelection(default=defaultTerrSearchType, choices=[("single_transponder", _("User defined transponder")), ("predefined_transponder", _("Predefined transponder")), ("complete", _("Complete"))])
  		self.scan_type_atsc = ConfigSelection(default=defaultATSCSearchType, choices=[("single_transponder", _("User defined transponder")), ("predefined_transponder", _("Predefined transponder")), ("complete", _("Complete"))])
@@ -8838,7 +8838,7 @@
  
  	def __init__(self):
  		global hw_info
-@@ -43,45 +43,19 @@
+@@ -43,48 +43,19 @@
  			pass
  
  		# Model
@@ -8873,7 +8873,10 @@
 -		elif self.device_model == "et11000":
 -			self.machine_name = "et1x000"
 -		elif self.device_brandname == "Zgemma":
--			self.device_model = self.device_name
+-			if self.device_model and self.device_name and "H9Twin" in self.device_model and "combo" in self.device_name:
+-				self.device_model = self.device_model.lower().replace(" ", "")
+-			else:
+-				self.device_model = self.device_name
 -			self.machine_name = self.device_name
 -
 -		if self.device_revision:
