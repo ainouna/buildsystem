@@ -218,7 +218,7 @@
  			brand = "Ferguson"
  			model = "Ariva @Link 200"
  		elif procmodel.startswith("spark"):
-@@ -354,203 +191,8 @@
+@@ -354,204 +191,6 @@
  				model = "Spark 7162"
  			else:
  				model = "Spark"
@@ -380,6 +380,10 @@
 -			brand = "Zgemma"
 -			model = "H11"
 -			grabpip = 1
+-		elif procmodel == "h11.s":
+-			brand = "Zgemma"
+-			model = "H11.S"
+-			grabpip = 1
 -		elif procmodel == "vs1500":
 -			brand = "Vimastec"
 -			model = "vs1500"
@@ -418,11 +422,8 @@
 -			model = "PULSe 4K MINI"
  		else:
  			model = procmodel
--
- 	elif fileExists("/proc/stb/info/model"):
- 		f = open("/proc/stb/info/model", 'r')
- 		procmodel = f.readline().strip().lower()
-@@ -643,20 +285,29 @@
+ 
+@@ -647,20 +286,29 @@
  	info['type'] = type
  
  	remote = "dmm1"
@@ -466,7 +467,7 @@
  	elif procmodel in ("et4x00", "et4000"):
  		remote = "et4x00"
  	elif procmodel == "et6500":
-@@ -824,7 +475,7 @@
+@@ -828,7 +476,7 @@
  	else:
  		# OE 2.2 uses apt, not opkg
  		if not fileExists("/etc/opkg/all-feed.conf"):
