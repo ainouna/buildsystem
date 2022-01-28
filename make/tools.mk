@@ -5,6 +5,7 @@ tools-clean:
 	rm -f $(D)/tools-*
 	-$(MAKE) -C $(TOOLS_DIR)/aio-grab distclean
 	-$(MAKE) -C $(TOOLS_DIR)/devinit distclean
+	-$(MAKE) -C $(TOOLS_DIR)/eeprom_crenova distclean
 	-$(MAKE) -C $(TOOLS_DIR)/eeprom_dgs distclean
 	-$(MAKE) -C $(TOOLS_DIR)/eeprom_fortis distclean
 	-$(MAKE) -C $(TOOLS_DIR)/eeprom_ipbox distclean
@@ -87,6 +88,20 @@ $(D)/tools-evremote2: $(D)/bootstrap
 $(D)/tools-eeprom-cuberevo_led: $(D)/bootstrap
 	$(START_BUILD)
 	$(SET) -e; cd $(TOOLS_DIR)/eeprom_cuberevo_led; \
+		if [ ! -d m4 ]; then mkdir m4; fi; \
+		$(CONFIGURE_TOOLS) \
+			--prefix= \
+		; \
+		$(MAKE); \
+		$(MAKE) install DESTDIR=$(TARGET_DIR)
+	$(TOUCH)
+
+#
+# eeprom_crenova
+#
+$(D)/tools-eeprom-crenova: $(D)/bootstrap
+	$(START_BUILD)
+	$(SET) -e; cd $(TOOLS_DIR)/eeprom_crenova; \
 		if [ ! -d m4 ]; then mkdir m4; fi; \
 		$(CONFIGURE_TOOLS) \
 			--prefix= \
@@ -531,11 +546,14 @@ ifneq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), small size))
 TOOLS += $(D)/tools-aio-grab
 endif
 TOOLS += $(D)/tools-devinit
-ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs7110 hs7420 hs7810a hs7119 hs7249 hs7819))
-TOOLS += $(D)/tools-eeprom-fortis
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE), opt9600 opt9600mini opt9600prima))
+TOOLS += $(D)/tools-eeprom-crenova
 endif
 ifeq ($(BOXTYPE), $(filter $(BOXTYPE), cuberevo cuberevo_mini cuberevo_mini2 cuberevo_mini_fta cuberevo_250hd cuberevo_2000hd cuberevo_3000hd))
 TOOLS += $(D)/tools-eeprom-dgs
+endif
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs7110 hs7420 hs7810a hs7119 hs7249 hs7819))
+TOOLS += $(D)/tools-eeprom-fortis
 endif
 ifeq ($(BOXTYPE), $(filter $(BOXTYPE), ipbox55 ipbox99 ipbox9900))
 TOOLS += $(D)/tools-eeprom-ipbox
@@ -550,7 +568,7 @@ ifeq ($(BOXTYPE), $(filter $(BOXTYPE), ufs922))
 TOOLS += $(D)/tools-eeprom-ufs922
 endif
 TOOLS += $(D)/tools-evremote2
-ifeq ($(BOXTYPE), $(filter $(BOXTYPE), adb_box atemio520 atemio530 cuberevo cuberevo_mini cuberevo_mini2 cuberevo_mini_fta cuberevo_250hd cuberevo_2000hd cuberevo_3000hd cuberevo_9500hd fs9000 hl101 hs5101 hs7110 hs7420 hs7810a hs7119 hs7429 hs7819 hs8200 hs9510 opt9600 opt9600mini ufc960 ufs910 ufs912 ufs913 ufs922 spark spark7162 tf7700hdpvr vip1_v1 vip1_v2 vip2 vitamin_hd5000))
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE), adb_box atemio520 atemio530 cuberevo cuberevo_mini cuberevo_mini2 cuberevo_mini_fta cuberevo_250hd cuberevo_2000hd cuberevo_3000hd cuberevo_9500hd fs9000 hl101 hs5101 hs7110 hs7420 hs7810a hs7119 hs7429 hs7819 hs8200 hs9510 opt9600 opt9600mini opt9600prima ufc960 ufs910 ufs912 ufs913 ufs922 spark spark7162 tf7700hdpvr vip1_v1 vip1_v2 vip2 vitamin_hd5000))
 TOOLS += $(D)/tools-fp_control
 endif
 TOOLS += $(D)/tools-hotplug

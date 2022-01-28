@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20211216.1
+# Version 20220126.1
 
 ##############################################
 
@@ -114,7 +114,7 @@ fi
 ##############################################
 
 case $1 in
-	[1-9] | 1[0-9] | 2[0-9] | 3[0-9] | 4[0-1]) REPLY=$1;;
+	[1-9] | 1[0-9] | 2[0-9] | 3[0-9] | 4[0-2]) REPLY=$1;;
 	*)
 		echo "Target receivers:"
 		echo
@@ -158,6 +158,7 @@ case $1 in
 #		echo "   39)  ADB ITI-2849ST/2850ST/2851S (in development, kernel P0217 only)"
 #		echo "   40)  Opticum/Orton HD (TS) 9600 (in development, kernel P0217 only)"
 #		echo "   41)  Opticum/Orton HD 9600 Mini (in development, kernel P0217 only)"
+#		echo "   42)  Opticum/Orton HD 9600 Prima (in development, kernel P0217 only)"
 		echo
 		read -p "Select target (1-37) ";;
 esac
@@ -204,6 +205,7 @@ case "$REPLY" in
 	39) BOXTYPE="adb_2850";;
 	40) BOXTYPE="opt9600";;
 	41) BOXTYPE="opt9600mini";;
+	42) BOXTYPE="opt9600prima";;
 	 *) BOXTYPE="hs8200";;
 esac
 echo "BOXTYPE=$BOXTYPE" >> config

@@ -56,7 +56,8 @@ COMMON_PATCHES_24 = \
 		linux-defined_is_deprecated_timeconst.pl_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-fs-dev-no-warnings_stm24_$(KERNEL_LABEL).patch \
 		$(if $(P0217),linux-patch_swap_notify_core_support_stm24_$(KERNEL_LABEL).patch) \
-		$(if $(P0209),linux-sh4-dwmac_stm24_$(KERNEL_LABEL).patch)
+		$(if $(P0209),linux-sh4-dwmac_stm24_$(KERNEL_LABEL).patch) \
+		$(if $(P0217),linux-pti_power_vu_des_fix_stm24_$(KERNEL_LABEL).patch)
 ifneq ($(BS_GCC_VER), $(filter $(BS_GCC_VER), 4.6.3 4.8.4))
 COMMON_PATCHES_24 += linux-sh4-remove_m4-nofpu-arg_$(KERNEL_LABEL).patch
 endif
@@ -352,6 +353,12 @@ OPT9600MINI_PATCHES_24 = $(COMMON_PATCHES_24) \
 		$(if $(P0209),linux-squashfs-downgrade-stm24-2.6.25.patch) \
 		$(if $(P0209),linux-squashfs-downgrade-stm24-rm_d_alloc_anon.patch)
 
+OPT9600PRIMA_PATCHES_24 = $(COMMON_PATCHES_24) \
+		linux-sh4-lmb_stm24_$(KERNEL_LABEL).patch \
+		linux-sh4-7105_clocks_no_warnings_stm24_$(KERNEL_LABEL).patch \
+		linux-sh4-opt9600prima_setup_stm24_$(KERNEL_LABEL).patch \
+		linux-sh4-stmmac_stm24_$(KERNEL_LABEL).patch
+
 #
 # KERNEL
 #
@@ -359,7 +366,7 @@ KERNEL_PATCHES = $(KERNEL_PATCHES_24)
 KERNEL_CONFIG = linux-sh4-$(subst _stm24_,_,$(KERNEL_VER))_$(BOXTYPE).config
 REPOS = "https://github.com/Duckbox-Developers/linux-sh4-2.6.32.71.git"
 
-ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs7110 hs7420 hs7810a hs7119 hs7429 hs7819 opt9600 opt9600mini vitamin_hd5000))
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs7110 hs7420 hs7810a hs7119 hs7429 hs7819 opt9600 opt9600mini opt9600prima vitamin_hd5000))
 ifeq ($(DESTINATION), USB)
 KERNEL_DEPS  = busybox_usb
 KERNEL_DEPS += e2fsprogs
@@ -449,7 +456,7 @@ ifeq ($(IMAGE), $(filter $(IMAGE), enigma2-wlandriver neutrino-wlandriver))
 	$(SILENT)echo "# CONFIG_USB_ZD1201 is not set" >> $(KERNEL_DIR)/.config
 	$(SILENT)echo "# CONFIG_HOSTAP is not set" >> $(KERNEL_DIR)/.config
 endif
-ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs7110 hs7420 hs7810a hs7119 hs7429 hs7819 opt9600 vitamin_hd5000))
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs7110 hs7420 hs7810a hs7119 hs7429 hs7819 opt9600 opt9600mini opt9600prima vitamin_hd5000))
 ifeq ($(DESTINATION), USB)
 	@echo "Configuring kernel for running on USB."
 	$(SILENT)grep -v "CONFIG_BLK_DEV_INITRD" "$(KERNEL_DIR)/.config" > $(KERNEL_DIR)/.config.tmp

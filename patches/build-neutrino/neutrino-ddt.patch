@@ -231,7 +231,23 @@
  		bool tstarted = false;
 --- neutrino-ddt.org/src/neutrino.cpp
 +++ neutrino-ddt/src/neutrino.cpp
-@@ -3404,6 +3404,10 @@
+@@ -3097,6 +3097,7 @@
+ 					switchTvRadioMode(); //used with defined default tv/radio rc key
+ 			}
+ 			/* in case key_subchannel_up/down redefined */
++#if !defined(BOXMODEL_OPT9600)
+ 			else if( msg == CRCInput::RC_left || msg == CRCInput::RC_right) {
+ 				switch (g_settings.mode_left_right_key_tv)
+ 				{
+@@ -3113,6 +3114,7 @@
+ 						break;
+ 				}
+ 			}
++#endif
+ 			else if( msg == CRCInput::RC_epg ) {
+ 				InfoClock->enableInfoClock(false);
+ 				StopSubtitles();
+@@ -3404,6 +3406,10 @@
  #if defined (BOXMODEL_IPBOX9900) || defined (BOXMODEL_IPBOX99)
  		system("echo 0 > /proc/stb/misc/fan");
  #endif
@@ -242,6 +258,18 @@
  	}
  }
  
+@@ -3664,7 +3670,11 @@
+ 			}
+ #endif
+ 	}
++#if defined(BOXMODEL_OPT9600)
++	else if ((msg == CRCInput::RC_left) || (msg == CRCInput::RC_right))
++#else
+ 	else if ((msg == CRCInput::RC_plus) || (msg == CRCInput::RC_minus))
++#endif
+ 	{
+ 		g_volume->setVolume(msg);
+ #if HAVE_DUCKBOX_HARDWARE
 --- neutrino-ddt.org/src/driver/vfd.cpp
 +++ neutrino-ddt/src/driver/vfd.cpp
 @@ -52,19 +52,42 @@
@@ -502,7 +530,7 @@
  	//InitNewClock(); /FIXME
  
  	brightness = -1;
-@@ -412,68 +515,137 @@
+@@ -412,68 +515,139 @@
  
  void CVFD::setlcdparameter(int dimm, const int power)
  {
@@ -661,11 +689,13 @@
 +#elif !defined (BOXMODEL_UFS912) \
 + &&   !defined (BOXMODEL_UFS913) \
 + &&   !defined (BOXMODEL_UFS922) \
-+ &&   !defined (BOXMODEL_HS9510)
++ &&   !defined (BOXMODEL_HS9510) \
++ &&   !defined (BOXMODEL_OPT9600) \
++ &&   !defined (BOXMODEL_OPT9600MINI)
  // Power on/off
  	if (power)
  	{
-@@ -486,11 +658,15 @@
+@@ -486,11 +660,15 @@
  	data.length = 0;
  	write_to_vfd(VFDDISPLAYWRITEONOFF, &data, true);
  #endif
@@ -682,7 +712,7 @@
  	last_toggle_state_power = g_settings.lcd_setting[SNeutrinoSettings::LCD_POWER];
  	setlcdparameter((mode == MODE_STANDBY) ? g_settings.lcd_setting[SNeutrinoSettings::LCD_STANDBY_BRIGHTNESS] : (mode == MODE_SHUTDOWN) ? g_settings.lcd_setting[SNeutrinoSettings::LCD_DEEPSTANDBY_BRIGHTNESS] : g_settings.lcd_setting[SNeutrinoSettings::LCD_BRIGHTNESS],
  		last_toggle_state_power);
-@@ -498,19 +674,32 @@
+@@ -498,19 +676,32 @@
  
  void CVFD::showServicename(const std::string &name, int number)  // UTF-8
  {
@@ -721,7 +751,7 @@
  	wake_up();
  }
  
-@@ -518,9 +707,12 @@
+@@ -518,9 +709,12 @@
  {
  	//unsigned int system_rev = cs_get_revision();
  	static int recstatus = 0;
@@ -735,7 +765,7 @@
  #endif
  	if (fd >= 0 && mode == MODE_SHUTDOWN)
  	{
-@@ -534,18 +726,50 @@
+@@ -534,18 +728,53 @@
  			char timestr[21];
  			struct timeb tm;
  			struct tm *t;
@@ -782,6 +812,9 @@
 +					strftime(timestr, 6, (second % 2 == 0 ? "%H:%M" : "%H %M"), t);
 +				}
 +				ShowText(timestr);
++#elif defined (BOXMODEL_OPT9600)
++				strftime(timestr, 6, (second % 2 == 0 ? "%H-%M" : "%H %M"), t);
++				ShowText(timestr);
 +#elif defined (BOXMODEL_CUBEREVO_250HD) \
 + ||   defined (BOXMODEL_CUBEREVO_MINI_FTA) \
 + ||   defined (BOXMODEL_ATEMIO520) \
@@ -791,7 +824,7 @@
  #else
  				strftime(timestr, 6, "%H:%M", t);
  #endif
-@@ -570,20 +794,26 @@
+@@ -570,20 +799,26 @@
  		{
  			clearClock = 0;
  			if (has_lcd)
@@ -821,7 +854,7 @@
  	}
  
  	recstatus = tmp_recstatus;
-@@ -598,7 +828,9 @@
+@@ -598,7 +833,9 @@
  		ShowIcon(FP_ICON_HD, chan->isHD());
  		ShowIcon(FP_ICON_LOCK, !chan->camap.empty());
  		if (chan->getAudioChannel() != NULL)
@@ -831,7 +864,7 @@
  	}
  }
  #endif
-@@ -620,18 +852,23 @@
+@@ -620,18 +857,23 @@
  void CVFD::showVolume(const char vol, const bool force_update)
  {
  	static int oldpp = 0;
@@ -860,7 +893,7 @@
  	if (g_settings.lcd_setting[SNeutrinoSettings::LCD_SHOW_VOLUME] == 1)
  	{
  		wake_up();
-@@ -639,7 +876,8 @@
+@@ -639,7 +881,8 @@
  		int pp = (int) round((double) vol / (double) 2);
  		if (oldpp != pp)
  		{
@@ -870,7 +903,7 @@
  			int i;
  			unsigned char speaker[5] = {0x1C, 0x1C, 0x1C, 0x3E, 0x7F}; // speaker symbol
  			writeCG(0, speaker);
-@@ -680,22 +918,60 @@
+@@ -680,22 +923,60 @@
  			if (strlen(VolumeBar) < 12)
  			{
  				for (int a = strlen(VolumeBar); a < 12; a++)
@@ -894,7 +927,7 @@
 + ||   defined (BOXMODEL_HS7420) \
 + ||   defined (BOXMODEL_HS7429)
  			char vol_chr[64] = "";
-+			snprintf(vol_chr, sizeof(vol_chr)-1, "VOL=%3d%%", (int)vol);
++			snprintf(vol_chr, sizeof(vol_chr) - 1, "VOL=%3d%%", (int)vol);
 +			ShowText(vol_chr);
 +#elif defined (BOXMODEL_HS7119) \
 + ||   defined (BOXMODEL_HS7810A) \
@@ -935,7 +968,7 @@
  			char vol_chr[64] = "";
  			snprintf(vol_chr, sizeof(vol_chr) - 1, "Volume: %d%%", (int)vol);
  			ShowText(vol_chr);
-@@ -705,8 +981,10 @@
+@@ -705,8 +986,10 @@
  #else
  		ShowIcon(FP_ICON_FRAME, true);
  		int pp = (int) round((double) vol * (double) 8 / (double) 100);
@@ -948,7 +981,7 @@
  		if (force_update || oldpp != pp)
  		{
  			printf("CVFD::showVolume: %d, bar %d\n", (int) vol, pp);
-@@ -735,30 +1013,40 @@
+@@ -735,30 +1018,40 @@
  #else
  
  	static int ppold = 0;
@@ -998,7 +1031,7 @@
  			int i;
  			int j = 0x00000200;
  			for (i = 0; i < pp; i++)
-@@ -779,19 +1067,28 @@
+@@ -779,19 +1072,28 @@
  
  void CVFD::showMenuText(const int /*position*/, const char *ptext, const int /*highlight*/, const bool /*utf_encoded*/)
  {
@@ -1032,7 +1065,7 @@
  	printf("CVFD::showAudioTrack: %s\n", title.c_str());
  	ShowText(title.c_str());
  	wake_up();
-@@ -805,7 +1102,10 @@
+@@ -805,7 +1107,10 @@
  
  void CVFD::showAudioPlayMode(AUDIOMODES m)
  {
@@ -1044,7 +1077,7 @@
  	if (mode != MODE_AUDIO)
  		return;
  
-@@ -853,21 +1153,33 @@
+@@ -853,21 +1158,33 @@
  
  void CVFD::showAudioProgress(const unsigned char perc)
  {
@@ -1083,7 +1116,7 @@
  #if 0
  	else if (mode == MODE_STANDBY)
  	{
-@@ -876,8 +1188,43 @@
+@@ -876,8 +1193,43 @@
  	}
  #endif
  
@@ -1127,7 +1160,7 @@
  	mode = m;
  	setlcdparameter();
  
-@@ -902,7 +1249,9 @@
+@@ -902,7 +1254,9 @@
  			showServicename(servicename);
  			showclock = true;
  			if (g_settings.lcd_info_line)
@@ -1137,7 +1170,7 @@
  			break;
  		case MODE_AUDIO:
  		{
-@@ -965,8 +1314,10 @@
+@@ -965,8 +1319,10 @@
  
  void CVFD::setBrightness(int bright)
  {
@@ -1150,7 +1183,7 @@
  	g_settings.lcd_setting[SNeutrinoSettings::LCD_BRIGHTNESS] = bright;
  	setlcdparameter();
  }
-@@ -974,21 +1325,41 @@
+@@ -974,21 +1330,41 @@
  int CVFD::getBrightness()
  {
  	//FIXME for old neutrino.conf
@@ -1197,7 +1230,7 @@
  	g_settings.lcd_setting[SNeutrinoSettings::LCD_STANDBY_BRIGHTNESS] = bright;
  	setlcdparameter();
  }
-@@ -996,20 +1367,41 @@
+@@ -996,20 +1372,41 @@
  int CVFD::getBrightnessStandby()
  {
  	//FIXME for old neutrino.conf
@@ -1242,7 +1275,7 @@
  	g_settings.lcd_setting[SNeutrinoSettings::LCD_DEEPSTANDBY_BRIGHTNESS] = bright;
  	setlcdparameter();
  }
-@@ -1017,19 +1409,38 @@
+@@ -1017,19 +1414,38 @@
  int CVFD::getBrightnessDeepStandby()
  {
  	//FIXME for old neutrino.conf
@@ -1283,7 +1316,7 @@
  // old
  	//g_settings.lcd_setting[SNeutrinoSettings::LCD_POWER] = power;
  	//setlcdparameter();
-@@ -1042,8 +1453,10 @@
+@@ -1042,8 +1458,10 @@
  
  void CVFD::togglePower(void)
  {
@@ -1296,7 +1329,7 @@
  	last_toggle_state_power = 1 - last_toggle_state_power;
  	setlcdparameter((mode == MODE_STANDBY) ? g_settings.lcd_setting[SNeutrinoSettings::LCD_STANDBY_BRIGHTNESS] : (mode == MODE_SHUTDOWN) ? g_settings.lcd_setting[SNeutrinoSettings::LCD_DEEPSTANDBY_BRIGHTNESS] : g_settings.lcd_setting[SNeutrinoSettings::LCD_BRIGHTNESS],
  		last_toggle_state_power);
-@@ -1051,51 +1464,95 @@
+@@ -1051,51 +1469,95 @@
  
  void CVFD::setMuted(bool mu)
  {
@@ -1373,18 +1406,18 @@
 + || defined (BOXMODEL_CUBEREVO_250HD) \
 + || defined (BOXMODEL_IPBOX55) \
 + || defined (BOXMODEL_ATEMIO520) \
-+ ||   defined (BOXMODEL_OPT9600MINI)
++ || defined (BOXMODEL_OPT9600MINI)
  	ShowText("    ");
 -#elif defined (BOXMODEL_OCTAGON1008) || defined (BOXMODEL_TF7700)
 +#elif defined (BOXMODEL_HS9510) \
-+ || defined (BOXMODEL_TF7700) \
-+ || defined (BOXMODEL_HS7420) \
-+ || defined (BOXMODEL_HS7429) \
-+ || defined (BOXMODEL_OPT9600)
++ ||   defined (BOXMODEL_TF7700) \
++ ||   defined (BOXMODEL_HS7420) \
++ ||   defined (BOXMODEL_HS7429) \
++ ||   defined (BOXMODEL_OPT9600)
  	ShowText("        ");
 -#elif defined (BOXMODEL_FORTIS_HDBOX) || defined (BOXMODEL_ATEVIO7500)
 +#elif defined (BOXMODEL_FS9000) \
-+ || defined (BOXMODEL_HS8200)
++ ||   defined (BOXMODEL_HS8200)
  	ShowText("            ");
 -#elif defined (BOXMODEL_IPBOX9900) || defined (BOXMODEL_IPBOX99)
 +#elif defined (BOXMODEL_CUBEREVO) \
@@ -1402,7 +1435,7 @@
  #endif
  #endif
  }
-@@ -1103,18 +1560,35 @@
+@@ -1103,18 +1565,36 @@
  void CVFD::ShowIcon(fp_icon icon, bool show)
  {
  #if !HAVE_DUCKBOX_HARDWARE
@@ -1431,6 +1464,7 @@
 +   || defined (BOXMODEL_CUBEREVO_250HD) \
 +   || defined (BOXMODEL_IPBOX55) \
 +   || defined (BOXMODEL_ATEMIO520) \
++   || defined (BOXMODEL_OPT9600) \
 +   || defined (BOXMODEL_OPT9600MINI)
  	return;
 -#endif
@@ -1444,7 +1478,7 @@
  	if (blocked)
  	{
  		printf("[CVFD] - blocked\n");
-@@ -1122,10 +1596,13 @@
+@@ -1122,10 +1602,13 @@
  	}
  
  	if (active_icon[icon & 0x0F] == show)
@@ -1460,7 +1494,7 @@
  	//printf("CVFD::ShowIcon %s %x\n", show ? "show" : "hide", (int) icon);
  	struct vfd_ioctl_data data;
  	memset(&data, 0, sizeof(struct vfd_ioctl_data));
-@@ -1141,25 +1618,46 @@
+@@ -1141,25 +1624,47 @@
  #ifdef HAVE_DUCKBOX_HARDWARE
  void CVFD::ClearIcons()
  {
@@ -1475,6 +1509,7 @@
 + || defined (BOXMODEL_CUBEREVO_250HD) \
 + || defined (BOXMODEL_IPBOX55) \
 + || defined (BOXMODEL_ATEMIO520) \
++ || defined (BOXMODEL_OPT9600) \
 + || defined (BOXMODEL_OPT9600MINI)
  	return;
  #endif
@@ -1512,7 +1547,7 @@
  	memset(g_str, 0, sizeof(g_str));
  	memcpy(g_str, str, sizeof(g_str) - 1);
  
-@@ -1174,6 +1672,7 @@
+@@ -1174,6 +1679,7 @@
  	}
  	ShowNormalText(g_str, false);
  }
@@ -1520,7 +1555,7 @@
  void CVFD::repaintIcons()
  {
  #if BOXMODEL_UFS912 || BOXMODEL_UFS913
-@@ -1187,7 +1686,7 @@
+@@ -1187,7 +1693,7 @@
  	}
  #endif
  }
@@ -1529,7 +1564,7 @@
  void CVFD::ShowText(const char *str)
  {
  	if (fd < 0 || !support_text)
-@@ -1223,11 +1722,30 @@
+@@ -1223,11 +1729,30 @@
  
  void CVFD::ShowNumber(int number)
  {
@@ -1563,7 +1598,7 @@
  }
  
  #ifdef VFD_UPDATE
-@@ -1254,17 +1772,27 @@
+@@ -1254,17 +1779,27 @@
  void CVFD::showInfoBox(const char *const title, const char *const text, int autoNewline, int timer)
  {
  #ifdef HAVE_LCD
@@ -1593,7 +1628,7 @@
  	//printf("[lcdd] Info: %s,%s,%d,%d\n",m_infoBoxTitle.c_str(),m_infoBoxText.c_str(),m_infoBoxAutoNewline,m_infoBoxTimer);
  	if (mode == MODE_INFOBOX &&
  		!m_infoBoxText.empty())
-@@ -1279,7 +1807,9 @@
+@@ -1279,7 +1814,9 @@
  		{
  			int width = fonts.menu->getRenderWidth(m_infoBoxTitle);
  			if (width > 100)
@@ -1603,7 +1638,7 @@
  			int start_pos = (120 - width) / 2;
  			display.draw_fill_rect(start_pos, EPG_INFO_WINDOW_POS - 4,       start_pos + width + 5,        EPG_INFO_WINDOW_POS + 10,    CLCDDisplay::PIXEL_OFF);
  			fonts.menu->RenderString(start_pos + 4, EPG_INFO_WINDOW_POS + 5, width + 5, m_infoBoxTitle.c_str(), CLCDDisplay::PIXEL_ON);
-@@ -1314,39 +1844,49 @@
+@@ -1314,39 +1851,49 @@
  /*****************************************************************************************/
  //showFilelist
  /*****************************************************************************************/
@@ -1665,7 +1700,7 @@
  		fonts.menu->RenderString((120 - width) / 2, 11, width + 5, m_fileListHeader.c_str(), CLCDDisplay::PIXEL_ON);
  
  		//printf("list%d,%d\r\n",m_fileListPos,(*m_fileList)[m_fileListPos].Marked);
-@@ -1401,7 +1941,9 @@
+@@ -1401,7 +1948,9 @@
  		int pages = (((size - 1) / 3) + 1);
  		int marker_length = (BAR_POS_HEIGTH - 2) / pages;
  		if (marker_length < 4)
@@ -1675,7 +1710,7 @@
  		int marker_offset = ((BAR_POS_HEIGTH - 2 - marker_length) * m_fileListPos) / size  ;
  		//printf("%d,%d,%d\r\n",pages,marker_length,marker_offset);
  
-@@ -1424,24 +1966,34 @@
+@@ -1424,24 +1973,34 @@
  void CVFD::showProgressBar(int global, const char *const text, int show_escape, int timer)
  {
  #ifdef HAVE_LCD
@@ -1714,7 +1749,7 @@
  	if (mode == MODE_PROGRESSBAR)
  	{
  		//printf("[lcdd] prog:%s,%d,%d\n",m_progressHeaderGlobal.c_str(),m_progressGlobal,m_progressShowEscape);
-@@ -1451,7 +2003,9 @@
+@@ -1451,7 +2010,9 @@
  		// paint progress header
  		int width = fonts.menu->getRenderWidth(m_progressHeaderGlobal);
  		if (width > 100)
@@ -1724,7 +1759,7 @@
  		int start_pos = (120 - width) / 2;
  		fonts.menu->RenderString(start_pos, 12 + 12, width + 10, m_progressHeaderGlobal.c_str(), CLCDDisplay::PIXEL_ON);
  
-@@ -1487,34 +2041,48 @@
+@@ -1487,34 +2048,48 @@
  void CVFD::showProgressBar2(int local, const char *const text_local, int global, const char *const text_global, int show_escape)
  {
  #ifdef HAVE_LCD
@@ -1777,7 +1812,7 @@
  		//printf("[lcdd] prog2:%s,%d,%d\n",m_progressHeaderGlobal.c_str(),m_progressGlobal,m_progressShowEscape);
  		// Clear Display
  		display.draw_fill_rect(0, 12, 120, 64, CLCDDisplay::PIXEL_OFF);
-@@ -1522,7 +2090,9 @@
+@@ -1522,7 +2097,9 @@
  		// paint  global header
  		int width = fonts.menu->getRenderWidth(m_progressHeaderGlobal);
  		if (width > 100)
@@ -1787,7 +1822,7 @@
  		int start_pos = (120 - width) / 2;
  		fonts.menu->RenderString(start_pos, PROG2_GLOB_POS_Y - 3, width + 10, m_progressHeaderGlobal.c_str(), CLCDDisplay::PIXEL_ON);
  
-@@ -1535,7 +2105,9 @@
+@@ -1535,7 +2112,9 @@
  		// paint  local header
  		width = fonts.menu->getRenderWidth(m_progressHeaderLocal);
  		if (width > 100)
@@ -1797,7 +1832,7 @@
  		start_pos = (120 - width) / 2;
  		fonts.menu->RenderString(start_pos, PROG2_LOCAL_POS_Y + PROG2_LOCAL_POS_HEIGTH + 10, width + 10, m_progressHeaderLocal.c_str(), CLCDDisplay::PIXEL_ON);
  		// paint local bar
-@@ -1554,5 +2126,4 @@
+@@ -1554,5 +2133,4 @@
  }
  /*****************************************************************************************/
  #endif // VFD_UPDATE
