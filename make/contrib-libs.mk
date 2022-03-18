@@ -443,7 +443,7 @@ LUA_SOURCE = lua-$(LUA_VER).tar.gz
 
 LUAPOSIX_VER = 31
 LUAPOSIX_SOURCE = luaposix-git-$(LUAPOSIX_VER).tar.bz2
-LUAPOSIX_URL = git://github.com/luaposix/luaposix.git
+LUAPOSIX_URL = https://github.com/luaposix/luaposix.git
 LUAPOSIX_PATCH = lua-$(LUA_VER)-luaposix-$(LUAPOSIX_VER).patch
 
 $(ARCHIVE)/$(LUA_SOURCE):
@@ -476,7 +476,7 @@ $(D)/lua: $(D)/bootstrap $(D)/ncurses $(ARCHIVE)/$(LUAPOSIX_SOURCE) $(ARCHIVE)/$
 #
 LUACURL_VER = 9ac72c7
 LUACURL_SOURCE = luacurl-git-$(LUACURL_VER).tar.bz2
-LUACURL_URL = git://github.com/Lua-cURL/Lua-cURLv3.git
+LUACURL_URL = https://github.com/Lua-cURL/Lua-cURLv3.git
 
 $(ARCHIVE)/$(LUACURL_SOURCE):
 	$(SCRIPTS_DIR)/get-git-archive.sh $(LUACURL_URL) $(LUACURL_VER) $(notdir $@) $(ARCHIVE)
@@ -519,7 +519,7 @@ $(D)/luaexpat: $(D)/bootstrap $(D)/lua $(D)/expat $(ARCHIVE)/$(LUAEXPAT_SOURCE)
 #
 LUASOCKET_VER = 5a17f79
 LUASOCKET_SOURCE = luasocket-git-$(LUASOCKET_VER).tar.bz2
-LUASOCKET_URL = git://github.com/diegonehab/luasocket.git
+LUASOCKET_URL = https://github.com/diegonehab/luasocket.git
 
 $(ARCHIVE)/$(LUASOCKET_SOURCE):
 	$(SCRIPTS_DIR)/get-git-archive.sh $(LUASOCKET_URL) $(LUASOCKET_VER) $(notdir $@) $(ARCHIVE)
@@ -540,7 +540,7 @@ $(D)/luasocket: $(D)/bootstrap $(D)/lua $(ARCHIVE)/$(LUASOCKET_SOURCE)
 #
 LUAFEEDPARSER_VER = 9b284bc
 LUAFEEDPARSER_SOURCE = luafeedparser-git-$(LUAFEEDPARSER_VER).tar.bz2
-LUAFEEDPARSER_URL = git://github.com/slact/lua-feedparser.git
+LUAFEEDPARSER_URL = https://github.com/slact/lua-feedparser.git
 
 $(ARCHIVE)/$(LUAFEEDPARSER_SOURCE):
 	$(SCRIPTS_DIR)/get-git-archive.sh $(LUAFEEDPARSER_URL) $(LUAFEEDPARSER_VER) $(notdir $@) $(ARCHIVE)
@@ -1626,7 +1626,7 @@ $(D)/libpsl: $(D)/bootstrap $(D)/host_python
 	$(REMOVE)/libpsl
 	$(SET) -e; if [ -d $(ARCHIVE)/libpsl.git ]; \
 		then cd $(ARCHIVE)/libpsl.git; git pull $(MINUS_Q); \
-		else cd $(ARCHIVE); git clone $(MINUS_Q) git://github.com/rockdaboot/libpsl.git libpsl.git; \
+		else cd $(ARCHIVE); git clone $(MINUS_Q) https://github.com/rockdaboot/libpsl.git libpsl.git; \
 		fi
 	$(SILENT)cp -ra $(ARCHIVE)/libpsl.git $(BUILD_TMP)/libpsl
 	$(CH_DIR)/libpsl; \
@@ -1914,7 +1914,7 @@ $(D)/pugixml: $(D)/bootstrap $(ARCHIVE)/$(PUGIXML_SOURCE)
 #
 GRAPHLCD_VER = 55d4bd8
 GRAPHLCD_SOURCE = graphlcd-git-$(GRAPHLCD_VER).tar.bz2
-GRAPHLCD_URL = git://projects.vdr-developer.org/graphlcd-base.git
+GRAPHLCD_URL = https://projects.vdr-developer.org/graphlcd-base.git
 GRAPHLCD_PATCH = graphlcd-git-$(GRAPHLCD_VER).patch
 
 $(ARCHIVE)/$(GRAPHLCD_SOURCE):
@@ -2213,7 +2213,7 @@ $(D)/libopenthreads: $(D)/bootstrap $(ARCHIVE)/$(LIBOPENTHREADS_SOURCE)
 #
 LIBRTMP_VER = ad70c64
 LIBRTMP_SOURCE = rtmpdump-git-$(LIBRTMP_VER).tar.bz2
-LIBRTMP_URL = git://github.com/oe-alliance/rtmpdump.git
+LIBRTMP_URL = https://github.com/oe-alliance/rtmpdump.git
 LIBRTMP_PATCH = rtmpdump-git-$(LIBRTMP_VER).patch
 
 $(ARCHIVE)/$(LIBRTMP_SOURCE):
@@ -2239,7 +2239,7 @@ $(D)/librtmp: $(D)/bootstrap $(D)/zlib $(D)/openssl $(ARCHIVE)/$(LIBRTMP_SOURCE)
 #
 LIBDVBSI_VER = 64efce6
 LIBDVBSI_SOURCE = libdvbsi-git-$(LIBDVBSI_VER).tar.bz2
-LIBDVBSI_URL = git://git.opendreambox.org/git/obi/libdvbsi++.git
+LIBDVBSI_URL = https://git.opendreambox.org/git/obi/libdvbsi++.git
 LIBDVBSI_PATCH = libdvbsi-git-$(LIBDVBSI_VER).patch
 
 $(ARCHIVE)/$(LIBDVBSI_SOURCE):

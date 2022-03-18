@@ -993,7 +993,7 @@ $(D)/shairport: $(D)/bootstrap $(D)/openssl $(D)/howl $(D)/alsa_lib
 	$(REMOVE)/shairport
 	$(SET) -e; if [ -d $(ARCHIVE)/shairport.git ]; \
 		then cd $(ARCHIVE)/shairport.git; git pull $(MINUS_Q); \
-		else cd $(ARCHIVE); git clone $(MINUS_Q) -b 1.0-dev git://github.com/abrasive/shairport.git shairport.git; \
+		else cd $(ARCHIVE); git clone $(MINUS_Q) -b 1.0-dev https://github.com/abrasive/shairport.git shairport.git; \
 		fi
 	cp -ra $(ARCHIVE)/shairport.git $(BUILD_TMP)/shairport
 	$(CH_DIR)/shairport; \
@@ -1606,7 +1606,7 @@ $(D)/wpa_supplicant: $(D)/bootstrap $(D)/openssl $(D)/wireless_tools $(D)/libnl 
 #
 # dvbsnoop
 #
-DVBSNOOP_URL = git://github.com/Duckbox-Developers/dvbsnoop.git
+DVBSNOOP_URL = https://github.com/Duckbox-Developers/dvbsnoop.git
 DVBSNOOP_CONF_OPTS = --with-dvbincludes=$(KERNEL_DIR)/include
 
 $(D)/dvbsnoop: $(D)/bootstrap $(D)/kernel

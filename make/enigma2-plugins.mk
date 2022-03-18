@@ -452,7 +452,7 @@ $(D)/enigma2_serviceapp: $(D)/bootstrap $(D)/enigma2 $(D)/enigma2_servicemp3epl 
 	$(REMOVE)/enigma2-serviceapp-$(SERVICEAPP_VER)
 	$(SILENT)if [ -d $(ARCHIVE)/enigma2-serviceapp-$(SERVICEAPP_VER).git ]; \
 		then cd $(ARCHIVE)/enigma2-serviceapp-$(SERVICEAPP_VER).git; git pull $(MINUS_Q); \
-		else cd $(ARCHIVE); git clone $(MINUS_Q) -b develop git://github.com/mx3L/serviceapp.git enigma2-serviceapp-$(SERVICEAPP_VER).git; \
+		else cd $(ARCHIVE); git clone $(MINUS_Q) -b develop https://github.com/mx3L/serviceapp.git enigma2-serviceapp-$(SERVICEAPP_VER).git; \
 		fi
 	$(SILENT)cp -ra $(ARCHIVE)/enigma2-serviceapp-$(SERVICEAPP_VER).git/ $(BUILD_TMP)/enigma2-serviceapp-$(SERVICEAPP_VER)
 	$(SET) -e; cd $(BUILD_TMP)/enigma2-serviceapp-$(SERVICEAPP_VER); \
