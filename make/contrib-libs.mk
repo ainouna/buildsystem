@@ -1024,7 +1024,7 @@ $(D)/libconfig: $(D)/bootstrap $(ARCHIVE)/$(LIBCONFIG_SOURCE)
 #
 # libcurl
 #
-LIBCURL_VER = 7.81.0
+LIBCURL_VER = 7.82.0
 LIBCURL_SOURCE = curl-$(LIBCURL_VER).tar.bz2
 LIBCURL_PATCH = libcurl-$(LIBCURL_VER).patch
 
@@ -1062,7 +1062,6 @@ $(D)/libcurl: $(D)/bootstrap $(D)/zlib $(D)/openssl $(D)/ca-bundle $(ARCHIVE)/$(
 			--enable-optimize \
 			--disable-verbose \
 			--disable-ldap \
-			--without-libidn \
 			--without-libidn2 \
 			--without-winidn \
 			--without-libpsl \
@@ -1964,7 +1963,7 @@ $(D)/libdpf: $(D)/bootstrap $(D)/libusb_compat $(ARCHIVE)/$(LIBDPF_SOURCE)
 #
 # lcd4linux
 #
-LCD4LINUX_VER = 91cfbc2
+LCD4LINUX_VER = e2cfdc5
 LCD4LINUX_SOURCE = lcd4linux-git-$(LCD4LINUX_VER).tar.bz2
 LCD4LINUX_URL = https://github.com/TangoCash/lcd4linux.git
 #LCD4LINUX_PATCH = lcd4linux-widget.patch
