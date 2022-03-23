@@ -559,7 +559,7 @@ $(D)/parted: $(D)/bootstrap $(D)/e2fsprogs $(ARCHIVE)/$(PARTED_SOURCE)
 #
 # dosfstools
 #
-DOSFSTOOLS_VER = 4.1
+DOSFSTOOLS_VER = 4.2
 DOSFSTOOLS_SOURCE = dosfstools-$(DOSFSTOOLS_VER).tar.xz
 
 $(ARCHIVE)/$(DOSFSTOOLS_SOURCE):
