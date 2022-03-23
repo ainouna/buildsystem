@@ -1,0 +1,630 @@
+--- titan.org/acinclude.m4
++++ titan/acinclude.m4
+@@ -379,14 +379,10 @@
+ AC_DEFUN([TUXBOX_BOXTYPE],[
+ 
+ AC_ARG_WITH(boxtype,
+-	[  --with-boxtype          valid values: generic,dgs,gigablue,dreambox,xtrend,fulan,kathrein,ipbox,topfield,fortis_hdbox,octagon,atevio,adb_box,whitebox,vip,homecast,vuplus,azbox,technomate,coolstream,hypercube,venton,xp1000,odin,ixuss,iqonios,e3hd,ebox5000],
++	[  --with-boxtype          valid values: generic,duckbox,gigablue,dreambox,xtrend,vuplus,azbox,technomate,coolstream,hypercube,venton,xp1000,odin,ixuss,iqonios,e3hd,ebox5000],
+ 	[case "${withval}" in
+-		generic|dgs|gigablue|dreambox|xtrend|fulan|kathrein|ipbox|topfield|fortis_hdbox|octagon|atevio|adb_box|whitebox|vip|homecast|vuplus|azbox|technomate|coolstream|hypercube|venton|xp1000|odin|ixuss|iqonios|e3hd|ebox5000)
++		generic|duckbox|gigablue|dreambox|xtrend|vuplus|azbox|technomate|coolstream|hypercube|venton|xp1000|odin|ixuss|iqonios|e3hd|ebox5000)
+ 			BOXTYPE="$withval"
+-			;;
+-		cu*)
+-			BOXTYPE="dgs"
+-			BOXMODEL="$withval"
+ 			;;
+ 		gb*)
+ 			BOXTYPE="gigablue"
+@@ -398,26 +394,6 @@
+ 			;;
+ 		et*)
+ 			BOXTYPE="xtrend"
+-			BOXMODEL="$withval"
+-			;;
+-		spa*)
+-			BOXTYPE="fulan"
+-			BOXMODEL="$withval"
+-			;;
+-		uf*)
+-			BOXTYPE="kathrein"
+-			BOXMODEL="$withval"
+-			;;
+-		ip*)
+-			BOXTYPE="ipbox"
+-			BOXMODEL="$withval"
+-			;;
+-		at*)
+-			BOXTYPE="atevio"
+-			BOXMODEL="$withval"
+-			;;
+-		oct*)
+-			BOXTYPE="octagon"
+ 			BOXMODEL="$withval"
+ 			;;
+ 		vu*)
+@@ -463,11 +439,7 @@
+ 				valid for gigablue: gbsolo,gb800se,gb800ue,gb800seplus,gb800ueplus,gbquad
+ 				valid for dreambox: dm500, dm500plus, dm600pvr, dm56x0, dm7000, dm7020, dm7025, dm500hd, dm7020hd, dm8000, dm800, dm800se
+ 				valid for xtrend: et4x00,et5x00,et6x00,et9x00
+-				valid for fulan: spark, spark7162
+-				valid for kathrein: ufs910, ufs922, ufs912, ufs913, ufc960
+-				valid for ipbox: ipbox55, ipbox99, ipbox9900
+-				valid for atevio: atevio700,atevio7000,atevio7500,atevio7600
+-				valid for octagon: octagon1008
++				valid for duckbox: ufs910, ufs922, ufs912, ufs913, ufc960, spark, spark7162, ipbox55, ipbox99, ipbox9900, hs9510, fs9000, hs8200
+ 				valid for vuplus: vusolo,vuduo,vuuno,vuultimo
+ 				valid for azbox: azboxhd,azboxme,azboxminime
+ 				valid for technomate: tmtwin,tm2t,tmsingle,tmnano
+@@ -477,7 +449,49 @@
+ 				valid for odin: odinm6,odinm7,odinm9],
+ 	[case "${withval}" in
+ 		cuberevo|cuberevo_mini|cuberevo_mini2|cuberevo_mini_fta|cuberevo_250hd|cuberevo_2000hd|cuberevo_9500hd)
+-			if test "$BOXTYPE" = "dgs"; then
++			if test "$BOXTYPE" = "duckbox"; then
++				BOXMODEL="$withval"
++			else
++				AC_MSG_ERROR([unknown model $withval for boxtype $BOXTYPE])
++			fi
++			;;
++		spark|spark7162)
++			if test "$BOXTYPE" = "duckbox"; then
++				BOXMODEL="$withval"
++			else
++				AC_MSG_ERROR([unknown model $withval for boxtype $BOXTYPE])
++			fi
++			;;
++		ufs910|ufs912|ufs913|ufs922|ufc960)
++			if test "$BOXTYPE" = "duckbox"; then
++				BOXMODEL="$withval"
++			else
++				AC_MSG_ERROR([unknown model $withval for boxtype $BOXTYPE])
++			fi
++			;;
++		ipbox55|ipbox99|ipbox9900)
++			if test "$BOXTYPE" = "duckbox"; then
++				BOXMODEL="$withval"
++			else
++				AC_MSG_ERROR([unknown model $withval for boxtype $BOXTYPE])
++			fi
++			;;
++		hs9510|fs9000|hs8200)
++			if test "$BOXTYPE" = "duckbox"; then
++				BOXMODEL="$withval"
++			else
++				AC_MSG_ERROR([unknown model $withval for boxtype $BOXTYPE])
++			fi
++			;;
++		hs7110|hs7119|hs7420|hs7429|hs7810a|hs7819)
++			if test "$BOXTYPE" = "duckbox"; then
++				BOXMODEL="$withval"
++			else
++				AC_MSG_ERROR([unknown model $withval for boxtype $BOXTYPE])
++			fi
++			;;
++		vip1_v2|vip2|atemio520|hl101|adb_box|vitamin_hd5000|sagemcom88|arivalink200|pace7241|adb_2850|opt9600)
++			if test "$BOXTYPE" = "duckbox"; then
+ 				BOXMODEL="$withval"
+ 			else
+ 				AC_MSG_ERROR([unknown model $withval for boxtype $BOXTYPE])
+@@ -499,41 +513,6 @@
+ 			;;
+ 		et4x00|et5x00|et6x00|et9x00)
+ 			if test "$BOXTYPE" = "xtrend"; then
+-				BOXMODEL="$withval"
+-			else
+-				AC_MSG_ERROR([unknown model $withval for boxtype $BOXTYPE])
+-			fi
+-			;;
+-		spark|spark7162)
+-			if test "$BOXTYPE" = "fulan"; then
+-				BOXMODEL="$withval"
+-			else
+-				AC_MSG_ERROR([unknown model $withval for boxtype $BOXTYPE])
+-			fi
+-			;;
+-		ufs910|ufs912|ufs913|ufs922|ufc960)
+-			if test "$BOXTYPE" = "kathrein"; then
+-				BOXMODEL="$withval"
+-			else
+-				AC_MSG_ERROR([unknown model $withval for boxtype $BOXTYPE])
+-			fi
+-			;;
+-		ipbox55|ipbox99|ipbox9900)
+-			if test "$BOXTYPE" = "ipbox"; then
+-				BOXMODEL="$withval"
+-			else
+-				AC_MSG_ERROR([unknown model $withval for boxtype $BOXTYPE])
+-			fi
+-			;;
+-		atevio700|atevio7000|atevio7500|atevio7600)
+-			if test "$BOXTYPE" = "atevio"; then
+-				BOXMODEL="$withval"
+-			else
+-				AC_MSG_ERROR([unknown model $withval for boxtype $BOXTYPE])
+-			fi
+-			;;
+-		octagon1008)
+-			if test "$BOXTYPE" = "octagon"; then
+ 				BOXMODEL="$withval"
+ 			else
+ 				AC_MSG_ERROR([unknown model $withval for boxtype $BOXTYPE])
+@@ -642,26 +621,10 @@
+ AC_SUBST(BOXMODEL)
+ 
+ AM_CONDITIONAL(BOXTYPE_GENERIC, test "$BOXTYPE" = "generic")
+-AM_CONDITIONAL(BOXTYPE_DGS, test "$BOXTYPE" = "dgs")
++AM_CONDITIONAL(BOXTYPE_DUCKBOX, test "$BOXTYPE" = "duckbox")
+ AM_CONDITIONAL(BOXTYPE_GIGABLUE, test "$BOXTYPE" = "gigablue")
+ AM_CONDITIONAL(BOXTYPE_DREAMBOX, test "$BOXTYPE" = "dreambox")
+ AM_CONDITIONAL(BOXTYPE_XTREND, test "$BOXTYPE" = "xtrend")
+-AM_CONDITIONAL(BOXTYPE_FULAN, test "$BOXTYPE" = "fulan")
+-AM_CONDITIONAL(BOXTYPE_KATHREIN, test "$BOXTYPE" = "kathrein")
+-AM_CONDITIONAL(BOXTYPE_IPBOX, test "$BOXTYPE" = "ipbox")
+-AM_CONDITIONAL(BOXTYPE_TOPFIELD, test "$BOXTYPE" = "toptfield")
+-AM_CONDITIONAL(BOXTYPE_FORTIS_HDBOX, test "$BOXTYPE" = "fortis_hdbox")
+-AM_CONDITIONAL(BOXTYPE_OCTAGON, test "$BOXTYPE" = "octagon")
+-AM_CONDITIONAL(BOXTYPE_ATEVIO, test "$BOXTYPE" = "atevio")
+-AM_CONDITIONAL(BOXTYPE_ADB_BOX, test "$BOXTYPE" = "adb_box")
+-AM_CONDITIONAL(BOXTYPE_WHITEBOX, test "$BOXTYPE" = "whitebox")
+-AM_CONDITIONAL(BOXTYPE_VIP, test "$BOXTYPE" = "vip")
+-AM_CONDITIONAL(BOXTYPE_HOMECAST, test "$BOXTYPE" = "homecast")
+-AM_CONDITIONAL(BOXTYPE_VUPLUS, test "$BOXTYPE" = "vuplus")
+-AM_CONDITIONAL(BOXTYPE_AZBOX, test "$BOXTYPE" = "azbox")
+-AM_CONDITIONAL(BOXTYPE_TECHNOMATE, test "$BOXTYPE" = "technomate")
+-AM_CONDITIONAL(BOXTYPE_IPBOX, test "$BOXTYPE" = "ipbox")
+-AM_CONDITIONAL(BOXTYPE_KATHREIN, test "$BOXTYPE" = "kathrein")
+ AM_CONDITIONAL(BOXTYPE_COOLSTREAM, test "$BOXTYPE" = "coolstream")
+ AM_CONDITIONAL(BOXTYPE_HYPERCUBE, test "$BOXTYPE" = "hypercube")
+ AM_CONDITIONAL(BOXTYPE_VENTON, test "$BOXTYPE" = "venton")
+@@ -704,8 +667,8 @@
+ AM_CONDITIONAL(BOXMODEL_ET6X00,test "$BOXMODEL" = "et6x00")
+ AM_CONDITIONAL(BOXMODEL_ET9X00,test "$BOXMODEL" = "et9x00")
+ 
+-AM_CONDITIONAL(BOXMODEL_SPARK,test "$BOXMODEL" = "spark")
+-AM_CONDITIONAL(BOXMODEL_SPARK7162,test "$BOXMODEL" = "spark7162")
++AM_CONDITIONAL(BOXMODEL_SPARK, test "$BOXMODEL" = "spark")
++AM_CONDITIONAL(BOXMODEL_SPARK7162, test "$BOXMODEL" = "spark7162")
+ 
+ AM_CONDITIONAL(BOXMODEL_UFS910, test "$BOXMODEL" = "ufs910")
+ AM_CONDITIONAL(BOXMODEL_UFS912, test "$BOXMODEL" = "ufs912")
+@@ -717,12 +680,28 @@
+ AM_CONDITIONAL(BOXMODEL_IPBOX99, test "$BOXMODEL" = "ipbox99")
+ AM_CONDITIONAL(BOXMODEL_IPBOX9900, test "$BOXMODEL" = "ipbox9900")
+ 
+-AM_CONDITIONAL(BOXMODEL_ATEVIO700, test "$BOXMODEL" = "atevio700")
+-AM_CONDITIONAL(BOXMODEL_ATEVIO7000, test "$BOXMODEL" = "atevio7000")
+-AM_CONDITIONAL(BOXMODEL_ATEVIO7500, test "$BOXMODEL" = "atevio7500")
+-AM_CONDITIONAL(BOXMODEL_ATEVIO7600, test "$BOXMODEL" = "atevio7600")
+-
+-AM_CONDITIONAL(BOXMODEL_OCTAGON_1008, test "$BOXMODEL" = "octagon1008")
++AM_CONDITIONAL(BOXMODEL_HS9510, test "$BOXMODEL" = "hs9510")
++AM_CONDITIONAL(BOXMODEL_FS9000, test "$BOXMODEL" = "fs9000")
++AM_CONDITIONAL(BOXMODEL_HS8200, test "$BOXMODEL" = "hs8200")
++
++AM_CONDITIONAL(BOXMODEL_HS7110, test "$BOXMODEL" = "hs7110")
++AM_CONDITIONAL(BOXMODEL_HS7119, test "$BOXMODEL" = "hs7119")
++AM_CONDITIONAL(BOXMODEL_HS7420, test "$BOXMODEL" = "hs7420")
++AM_CONDITIONAL(BOXMODEL_HS7429, test "$BOXMODEL" = "hs7429")
++AM_CONDITIONAL(BOXMODEL_HS7810A, test "$BOXMODEL" = "hs7810a")
++AM_CONDITIONAL(BOXMODEL_HS7819, test "$BOXMODEL" = "hs7819")
++
++AM_CONDITIONAL(BOXMODEL_VIP1_V2, test "$BOXMODEL" = "vip1_v2")
++AM_CONDITIONAL(BOXMODEL_VIP2, test "$BOXMODEL" = "vip2")
++AM_CONDITIONAL(BOXMODEL_ATEMIO520, test "$BOXMODEL" = "atemio520")
++AM_CONDITIONAL(BOXMODEL_HL101, test "$BOXMODEL" = "hl101")
++AM_CONDITIONAL(BOXMODEL_ADB_BOX, test "$BOXMODEL" = "adb_box")
++AM_CONDITIONAL(BOXMODEL_VITAMIN_HD5000, test "$BOXMODEL" = "vitamin_hd5000")
++AM_CONDITIONAL(BOXMODEL_SAGEMCOM88, test "$BOXMODEL" = "sagemcom88")
++AM_CONDITIONAL(BOXMODEL_ARIVALINK200, test "$BOXMODEL" = "arivalink200")
++AM_CONDITIONAL(BOXMODEL_PACE7241, test "$BOXMODEL" = "pace7241")
++AM_CONDITIONAL(BOXMODEL_ADB_2850, test "$BOXMODEL" = "adb_2850")
++AM_CONDITIONAL(BOXMODEL_OPT9600, test "$BOXMODEL" = "opt9600")
+ 
+ AM_CONDITIONAL(BOXMODEL_VUSOLO2, test "$BOXMODEL" = "vusolo2")
+ AM_CONDITIONAL(BOXMODEL_VUDUO2, test "$BOXMODEL" = "vuduo2")
+@@ -762,36 +741,14 @@
+ 
+ if test "$BOXTYPE" = "generic"; then
+ 	AC_DEFINE(PLATFORM_GENERIC, 1, [building for generic])
+-elif test "$BOXTYPE" = "dgs"; then
+-	AC_DEFINE(PLATFORM_DGS, 1, [building for dgs])
++elif test "$BOXTYPE" = "duckbox"; then
++	AC_DEFINE(PLATFORM_DUCKBOX, 1, [building for dgs])
+ elif test "$BOXTYPE" = "gigablue"; then
+ 	AC_DEFINE(PLATFORM_GIGABLUE, 1, [building for gigablue])
+ elif test "$BOXTYPE" = "dreambox"; then
+ 	AC_DEFINE(PLATFORM_DREAMBOX, 1, [building for dreambox])
+ elif test "$BOXTYPE" = "xtrend"; then
+ 	AC_DEFINE(PLATFORM_XTREND, 1, [building for xtrend])
+-elif test "$BOXTYPE" = "fulan"; then
+-	AC_DEFINE(PLATFORM_FULAN, 1, [building for fulan])
+-elif test "$BOXTYPE" = "kathrein"; then
+-	AC_DEFINE(PLATFORM_KATHREIN, 1, [building for kathrein])
+-elif test "$BOXTYPE" = "ipbox"; then
+-	AC_DEFINE(PLATFORM_IPBOX, 1, [building for ipbox])
+-elif test "$BOXTYPE" = "topfield"; then
+-	AC_DEFINE(PLATFORM_TF7700, 1, [building for topfield])
+-elif test "$BOXTYPE" = "fortis_hdbox"; then
+-	AC_DEFINE(PLATFORM_FORTIS_HDBOX, 1, [building for fortis_hdbox])
+-elif test "$BOXTYPE" = "octagon"; then
+-	AC_DEFINE(PLATFORM_OCTAGON, 1, [building for octagon])
+-elif test "$BOXTYPE" = "atevio"; then
+-	AC_DEFINE(PLATFORM_ATEVIO, 1, [building for atevio])
+-elif test "$BOXTYPE" = "adb_box"; then
+-	AC_DEFINE(PLATFORM_ADB_BOX, 1, [building for adb_box])
+-elif test "$BOXTYPE" = "whitebox"; then
+-	AC_DEFINE(PLATFORM_WHITEBOX, 1, [building for whitebox])
+-elif test "$BOXTYPE" = "vip"; then
+-	AC_DEFINE(PLATFORM_VIP, 1, [building for vip])
+-elif test "$BOXTYPE" = "homecast"; then
+-	AC_DEFINE(PLATFORM_HOMECAST, 1, [building for homecast])
+ elif test "$BOXTYPE" = "vuplus"; then
+ 	AC_DEFINE(PLATFORM_VUPLUS, 1, [building for vuplus])
+ elif test "$BOXTYPE" = "azbox"; then
+@@ -819,19 +776,19 @@
+ fi
+ 
+ if test "$BOXMODEL" = "cuberevo"; then
+-	AC_DEFINE(PLATFORM_CUBEREVO, 1, [building for cuberevo])
++	AC_DEFINE(BOXMODEL_CUBEREVO, 1, [building for cuberevo])
+ elif test "$BOXMODEL" = "cuberevo_mini"; then
+-	AC_DEFINE(PLATFORM_CUBEREVO_MINI, 1, [building for cuberevo_mini])
++	AC_DEFINE(BOXMODEL_CUBEREVO_MINI, 1, [building for cuberevo_mini])
+ elif test "$BOXMODEL" = "cuberevo_mini2"; then
+-	AC_DEFINE(PLATFORM_CUBEREVO_MINI2, 1, [building for cuberevo_mini2])
++	AC_DEFINE(BOXMODEL_CUBEREVO_MINI2, 1, [building for cuberevo_mini2])
+ elif test "$BOXMODEL" = "cuberevo_mini_fta"; then
+-	AC_DEFINE(PLATFORM_CUBEREVO_MINI_FTA, 1, [building for cuberevo_mini_fta])
++	AC_DEFINE(BOXMODEL_CUBEREVO_MINI_FTA, 1, [building for cuberevo_mini_fta])
+ elif test "$BOXMODEL" = "cuberevo_250hd"; then
+-	AC_DEFINE(PLATFORM_CUBEREVO_250HD, 1, [building for cuberevo_250hd])
++	AC_DEFINE(BOXMODEL_CUBEREVO_250HD, 1, [building for cuberevo_250hd])
+ elif test "$BOXMODEL" = "cuberevo_2000hd"; then
+-	AC_DEFINE(PLATFORM_CUBEREVO_2000HD, 1, [building for cuberevo_2000hd])
++	AC_DEFINE(BOXMODEL_CUBEREVO_2000HD, 1, [building for cuberevo_2000hd])
+ elif test "$BOXMODEL" = "cuberevo_9500hd"; then
+-	AC_DEFINE(PLATFORM_CUBEREVO_9500HD, 1, [building for cuberevo_9500hd])
++	AC_DEFINE(BOXMODEL_CUBEREVO_9500HD, 1, [building for cuberevo_9500hd])
+ 
+ elif test "$BOXMODEL" = "gb800solo"; then
+ 	AC_DEFINE(BOXMODEL_GB800SOLO, 1, [building for gigablue 800solo])
+@@ -882,32 +839,86 @@
+ 	AC_DEFINE(PLATFORM_SPARK7162, 1, [building for spark 7162])
+ 
+ elif test "$BOXMODEL" = "ufs910"; then
+-	AC_DEFINE(PLATFORM_UFS910, 1, [building for ufs910])
++	AC_DEFINE(BOXMODEL_UFS910, 1, [building for ufs910])
+ elif test "$BOXMODEL" = "ufs912"; then
+-	AC_DEFINE(PLATFORM_UFS912, 1, [building for ufs912])
++	AC_DEFINE(BOXMODEL_UFS912, 1, [building for ufs912])
+ elif test "$BOXMODEL" = "ufs913"; then
+-	AC_DEFINE(PLATFORM_UFS913, 1, [building for ufs913])
++	AC_DEFINE(BOXMODEL_UFS913, 1, [building for ufs913])
+ elif test "$BOXMODEL" = "ufs922"; then
+-	AC_DEFINE(PLATFORM_UFS922, 1, [building for ufs922])
++	AC_DEFINE(BOXMODEL_UFS922, 1, [building for ufs922])
+ elif test "$BOXMODEL" = "ufc960"; then
+-	AC_DEFINE(PLATFORM_UFC960, 1, [building for ufc960])
++	AC_DEFINE(BOXMODEL_UFC960, 1, [building for ufc960])
+ 
+ elif test "$BOXMODEL" = "ipbox55"; then
+-	AC_DEFINE(PLATFORM_IPBOX55, 1, [building for ipbox55])
++	AC_DEFINE(BOXMODEL_IPBOX55, 1, [building for ipbox55])
+ elif test "$BOXMODEL" = "ipbox99"; then
+-	AC_DEFINE(PLATFORM_IPBOX99, 1, [building for ipbox99])
++	AC_DEFINE(BOXMODEL_IPBOX99, 1, [building for ipbox99])
+ elif test "$BOXMODEL" = "ipbox9900"; then
+-	AC_DEFINE(PLATFORM_IPBOX9900, 1, [building for ipbox9900])
+-
+-elif test "$BOXMODEL" = "atevio700"; then
+-	AC_DEFINE(BOXMODEL_ATEVIO700, 1, [building for atevio700])
+-elif test "$BOXMODEL" = "atevio7000"; then
+-	AC_DEFINE(BOXMODEL_ATEVIO7000, 1, [building for atevio7000])
+-elif test "$BOXMODEL" = "atevio7500"; then
+-	AC_DEFINE(BOXMODEL_ATEVIO7500, 1, [building for atevio7500])
+-elif test "$BOXMODEL" = "atevio7600"; then
+-	AC_DEFINE(BOXMODEL_ATEVIO7600, 1, [building for atevio7600])
+-
++	AC_DEFINE(BOXMODEL_IPBOX9900, 1, [building for ipbox9900])
++
++elif test "$BOXMODEL" = "hs9510"; then
++	AC_DEFINE(BOXMODEL_HS9510, 1, [building for hs9510])
++elif test "$BOXMODEL" = "fs9000"; then
++	AC_DEFINE(BOXMODEL_FS9000, 1, [building for fs9000])
++elif test "$BOXMODEL" = "hs8200"; then
++	AC_DEFINE(BOXMODEL_HS8200, 1, [building for hs8200])
++
++elif test "$BOXMODEL" = "hs7110"; then
++	AC_DEFINE(BOXMODEL_HS7110, 1, [building for hs7110])
++elif test "$BOXMODEL" = "hs7119"; then
++	AC_DEFINE(BOXMODEL_HS7119, 1, [building for hs7119])
++elif test "$BOXMODEL" = "hs7420"; then
++	AC_DEFINE(BOXMODEL_HS7420, 1, [building for hs7420])
++elif test "$BOXMODEL" = "hs7429"; then
++	AC_DEFINE(BOXMODEL_HS7429, 1, [building for hs7429])
++elif test "$BOXMODEL" = "hs7810a"; then
++	AC_DEFINE(BOXMODEL_HS7810A, 1, [building for hs7810a])
++elif test "$BOXMODEL" = "hs7819"; then
++	AC_DEFINE(BOXMODEL_HS7819, 1, [building for hs7819])
++
++elif test "$BOXMODEL" = "vip1_v2"; then
++	AC_DEFINE(BOXMODEL_VIP1_V2, 1, [building for vip1_v2])
++elif test "$BOXMODEL" = "vip2"; then
++	AC_DEFINE(BOXMODEL_VIP2, 1, [building for vip2])
++elif test "$BOXMODEL" = "atemio520"; then
++	AC_DEFINE(BOXMODEL_ATEMIO520, 1, [building for atemio520])
++elif test "$BOXMODEL" = "adb_box"; then
++	AC_DEFINE(BOXMODEL_ADB_BOX, 1, [building for adb_box])
++elif test "$BOXMODEL" = "vitamin_hd5000"; then
++	AC_DEFINE(BOXMODEL_VITAMIN_HD5000, 1, [building for vitamin_hd5000])
++elif test "$BOXMODEL" = "sagemcom88"; then
++	AC_DEFINE(BOXMODEL_SAGEMCOM88, 1, [building for sagemcom88])
++elif test "$BOXMODEL" = "arivalink200"; then
++	AC_DEFINE(BOXMODEL_ARIVALINK200, 1, [building for arivalink200])
++elif test "$BOXMODEL" = "pace7241"; then
++	AC_DEFINE(BOXMODEL_PACE7241, 1, [building for pace7241])
++elif test "$BOXMODEL" = "adb_2850"; then
++	AC_DEFINE(BOXMODEL_ADB_2850, 1, [building for adb_2850])
++elif test "$BOXMODEL" = "opt9600"; then
++	AC_DEFINE(BOXMODEL_OPT9600, 1, [building for opt9600])
++
++elif test "$BOXTYPE" = "fulan"; then
++	AC_DEFINE(PLATFORM_FULAN, 1, [building for fulan])
++elif test "$BOXTYPE" = "kathrein"; then
++	AC_DEFINE(PLATFORM_KATHREIN, 1, [building for kathrein])
++elif test "$BOXTYPE" = "ipbox"; then
++	AC_DEFINE(PLATFORM_IPBOX, 1, [building for ipbox])
++elif test "$BOXTYPE" = "tf7700"; then
++	AC_DEFINE(BOXMODEL_TF7700, 1, [building for tf7700])
++elif test "$BOXTYPE" = "fortis_hdbox"; then
++	AC_DEFINE(PLATFORM_FORTIS_HDBOX, 1, [building for fortis_hdbox])
++elif test "$BOXTYPE" = "octagon"; then
++	AC_DEFINE(PLATFORM_OCTAGON, 1, [building for octagon])
++elif test "$BOXTYPE" = "atevio"; then
++	AC_DEFINE(PLATFORM_ATEVIO, 1, [building for atevio])
++elif test "$BOXTYPE" = "adb_box"; then
++	AC_DEFINE(PLATFORM_ADB_BOX, 1, [building for adb_box])
++elif test "$BOXTYPE" = "whitebox"; then
++	AC_DEFINE(PLATFORM_WHITEBOX, 1, [building for whitebox])
++elif test "$BOXTYPE" = "vip"; then
++	AC_DEFINE(PLATFORM_VIP, 1, [building for vip])
++elif test "$BOXTYPE" = "homecast"; then
++	AC_DEFINE(PLATFORM_HOMECAST, 1, [building for homecast])
+ elif test "$BOXMODEL" = "octagon1008"; then
+ 	AC_DEFINE(BOXMODEL_OCTAGON_1008, 1, [building for octagon1008])
+ 
+--- titan.org/autogen.sh
++++ titan/autogen.sh
+@@ -1,6 +1,6 @@
+ #!/bin/sh
+ 
+-package="tuxbox-neutrino"
++package="tuxbox-titan"
+ 
+ srcdir=`dirname $0`
+ test -z "$srcdir" && srcdir=.
+@@ -35,14 +35,14 @@
+ 	DIE=1
+ }
+ 
+-#(gettext --version) < /dev/null > /dev/null 2>&1 || {
+-#	echo
+-#	echo "You must have gettext installed to compile $package."
+-#	echo "Download the appropriate package for your system,"
+-#	echo "or get the source from one of the GNU ftp sites"
+-#	echo "listed in http://www.gnu.org/order/ftp.html"
+-#	DIE=1
+-#}
++(gettext --version) < /dev/null > /dev/null 2>&1 || {
++	echo
++	echo "You must have gettext installed to compile $package."
++	echo "Download the appropriate package for your system,"
++	echo "or get the source from one of the GNU ftp sites"
++	echo "listed in http://www.gnu.org/order/ftp.html"
++	DIE=1
++}
+ 
+ if test "$DIE" -eq 1; then
+ 	exit 1
+--- titan.org/configure.ac
++++ titan/configure.ac
+@@ -5,7 +5,7 @@
+ 
+ AC_PROG_CC
+ AC_PROG_CXX
+-#AM_PROG_LIBTOOL
++AM_PROG_LIBTOOL
+ 
+ AC_ARG_ENABLE([multicom324],
+ 	[AS_HELP_STRING(--enable-multicom324,    enable multicom324 stuff)],
+#--- a/Makefile.am.org
+#+++ b/Makefile.am
+#@@ -1,3 +1,3 @@
+# AUTOMAKE_OPTIONS = gnu
+# 
+#-SUBDIRS = titan plugins
+#+SUBDIRS = titan plugins libipkg
+#--- titan.org/titan/Makefile.am
+#+++ titan/titan/Makefile.am
+#@@ -4,9 +4,14 @@
+# 	-I../../../tufsbox/cdkroot/usr/include \
+# 	-I../../../tufsbox/cdkroot/usr/include/freetype2 \
+# 	-I../../../tufsbox/cdkroot/usr/include/openssl \
+#-	-I../../driver/bpamem \
+#-	-I../../../apps/tools/libeplayer3/include \
+#-	-I../../../apps/tools/libmme_image \
+#+	-I../../../tufsbox/cdkroot/usr/include/dreamdvd \
+#+	-I../../../driver/bpamem \
+#+	-I../../../tools/exteplayer3/include \
+#+	-I../../../tools/exteplayer3/include/external \
+#+	-I../../../tools/libeplayer4_org/include \
+#+	-I../../../tools/libmme_image \
+#+	-L../../../tufsbox/cdkroot/usr/lib \
+#+	-L./titan/libipkg \
+# 	-Ilibdreamdvd \
+# 	-Ititan
+# 
+--- titan.org/titan/cacc.h
++++ titan/titan/cacc.h
+@@ -474,7 +474,7 @@
+ {
+ 	debug(620, "start");
+ //#if OPENSSL_VERSION_NUMBER < 0x10100000L
+-#ifdef SSLNEW
++#if 1  // def SSLNEW
+ // source from https://github.com/catalinii/minisatip/blob/master/src/ca.c
+     DH *dh;
+     BIGNUM *p, *g;
+@@ -1043,7 +1043,7 @@
+ 	debug(620, "start");
+ 
+ //#if OPENSSL_VERSION_NUMBER < 0x10100000L
+-#ifdef SSLNEW
++#if 1  // def SSLNEW
+ // source from https://github.com/catalinii/minisatip/blob/master/src/ca.c
+     X509_STORE_CTX *store_ctx;
+     int ret;
+--- titan.org/titan/Makefile.am.sh4
++++ titan/titan/Makefile.am.sh4
+@@ -13,6 +13,6 @@
+ #titan_LDADD = -lm -lglib-2.0 -lgobject-2.0 -lpthread -ldl -lz -lpng -lfreetype -lgstreamer-1.0 -ldreamdvd -ljpeg -lssl -lcrypto
+ #titan_LDADD = -lm -lpthread -ldl -lpng -lfreetype -leplayer3 -ldreamdvd -ljpeg -lz -lmmeimage -lmme_host -lssl -lcrypto
+ #titan_LDADD = -lm -lpthread -ldl -lpng -lfreetype -ldreamdvd -ljpeg -lz -lmmeimage -lssl -lcrypto
+-titan_LDADD = -lm -lpthread -ldl -lpng -lfreetype -leplayer3 -ldreamdvd -ljpeg -lz -lmmeimage -lssl -lcrypto 
++titan_LDADD = -lm -lpthread -ldl -lpng -lfreetype -leplayer3 -ldreamdvd -ljpeg -lz -lmmeimage -lssl -lcrypto -lipkg
+ 
+ titan_CFLAGS = $(ALL_CFLAGS)--- titan.org/titan/player.h
++++ titan/titan/player.h
+@@ -3944,17 +3944,19 @@
+ char* getsubtext()
+ {
+ 	char* tmpstr = NULL;
+-	if(player && player->container && player->container->selectedContainer)
++
++	if (player && player->container && player->container->selectedContainer)
++	{
+ 		player->container->selectedContainer->Command(player, CONTAINER_GET_SUBTEXT, (void*)&tmpstr);
+-
++	}
+ //	if(subtitlethread == NULL)
+-	if(status.play == 1 && status.pause == 0 && tmpstr != NULL)
+-{
++	if (status.play == 1 && status.pause == 0 && tmpstr != NULL)
++	{
+ 		printf("[player.h] getsubtext tmpstr: %s\n", tmpstr);
+ 		subtitlethread = addtimer(&playersubtitle_thread, START, 10000, 1, (void*)tmpstr, NULL, NULL);
+-}
+-	return subtext;
+-}
+-#endif
+-
+-#endif
++	}
++	return tmpstr;
++}
++#endif
++
++#endif
+--- a/titan/struct.h.org
++++ b/titan/struct.h
+@@ -82,6 +82,9 @@
+ #include <time.h>
+ #include <linux/dvb/ca.h>
+ #include <sys/types.h>
++#ifdef SH4
++#include <linux/types.h>
++#endif
+ 
+ #include <fcntl.h>
+ #include <stdint.h>
+@@ -214,7 +217,7 @@
+ #define CA_SET_DESCR_DATA_DREAM _IOW('o', 137, struct ca_descr_data)
+ #define CA_SET_DESCR_DATA _IOW('o', 10, struct ca_descr_data)
+ #endif
+-#ifdef SH4NEW
++#if 0 // def SH4NEW
+ #define CA_SET_DESCR_DATA _IOW('o', 137, struct ca_descr_data)
+ #endif
+ #ifdef SIMULATE
+@@ -2205,7 +2208,7 @@
+ 
+ #endif
+ 
+-#ifdef SH4NEW
++#if 0 // def SH4NEW
+ enum ca_descr_data_type {
+ 	CA_DATA_IV,
+ 	CA_DATA_KEY,
+--- a/libipkg/config.h.org
++++ b/libipkg/config.h
+@@ -140,21 +140,36 @@
+ #define HAVE_WORKING_VFORK 1
+ 
+ /* Name of package */
++#ifdef PACKAGE
++#undef PACKAGE
++#endif
+ #define PACKAGE "ipkg"
+ 
+ /* Define to the address where bug reports for this package should be sent. */
+ #define PACKAGE_BUGREPORT ""
+ 
+ /* Define to the full name of this package. */
++#ifdef PACKAGE_NAME
++#undef PACKAGE_NAME
++#endif
+ #define PACKAGE_NAME ""
+ 
+ /* Define to the full name and version of this package. */
++#ifdef PACKAGE_STRING
++#undef PACKAGE_STRING
++#endif
+ #define PACKAGE_STRING ""
+ 
+ /* Define to the one symbol short name of this package. */
++#ifdef PACKAGE_TARNAME
++#undef PACKAGE_TARNAME
++#endif
+ #define PACKAGE_TARNAME ""
+ 
+ /* Define to the version of this package. */
++#ifdef PACKAGE_VERSION
++#undef PACKAGE_VERSION
++#endif
+ #define PACKAGE_VERSION ""
+ 
+ /* Define as the return type of signal handlers (`int' or `void'). */
+@@ -164,6 +179,9 @@ 
+ #define STDC_HEADERS 1
+ 
+ /* Version number of package */
++#ifdef VERSION
++#undef VERSION
++#endif
+ #define VERSION "0.99.163"
+ 
+ /* Define to empty if `const' does not conform to ANSI C. */
+#--- a/plugins/Makefile.am.org
+#+++ b/plugins/Makefile.am
+#@@ -1,4 +1,18 @@
+# AUTOMAKE_OPTIONS = gnu
+#+
+#+INCLUDES_CPPFLAGS = \
+#+	-I../../../../tufsbox/cdkroot/usr/include \
+#+	-I../../../../tufsbox/cdkroot/usr/include/freetype2 \
+#+	-I../../../../tufsbox/cdkroot/usr/include/openssl \
+#+	-I../../../../tufsbox/cdkroot/usr/include/dreamdvd \
+#+	-I../../../../driver/bpamem \
+#+	-I../../../../tools/exteplayer3/include \
+#+	-I..//../../../tools/exteplayer3/include/external \
+#+	-I../../../../tools/libeplayer4_org/include \
+#+	-I../../../../tools/libmme_image \
+#+	-L../../../../tufsbox/cdkroot/usr/lib \
+#+	-I../libdreamdvd \
+#+	-I../titan
+# 
+# SUBDIRS = \
+# 	autotimer \
+#

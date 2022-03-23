@@ -1,0 +1,53 @@
+--- a/ddvdlib.h.org
++++ b/ddvdlib.h
+@@ -196,6 +196,11 @@
+ // to stop the player you can send the DDVD_KEY_EXIT command via ddvd_send_key
+ void ddvd_close(struct ddvd *pconfig);
+ 
++// returns the dvd aspect
++// needed for titan
++#if defined(__sh__)
++int ddvd_get_dvd_aspect();
++#endif
+ 
+ /* 
+  * messages recieved from ddvd_get_next_message
+--- a/main.c.org
++++ b/main.c
+@@ -517,6 +517,21 @@
+ {
+ 	*framerate = pconfig->last_framerate.framerate;
+ }
++
++//needed for titan
++#if defined(__sh__)
++int ddvd_get_dvd_aspect(struct ddvd *playerconfig)
++{
++	if (playerconfig != NULL)
++	{
++		return playerconfig->dvd_aspect;
++	}
++	else
++	{
++		return -1;
++	}
++}
++#endif
+ 
+ static int calc_x_scale_offset(int dvd_aspect, int tv_mode, int tv_mode2, int tv_aspect)
+ {
+--- a/main.h.org
++++ b/main.h
+@@ -268,6 +268,11 @@
+ 
+ 	int audio_format[MAX_AUDIO];
+ 	struct spu_map_t spu_map[MAX_SPU];
++
++// needed for titan
++#if defined(__sh__)
++	int dvd_aspect;
++#endif
+ };
+ 
+ /* internal functions */
+

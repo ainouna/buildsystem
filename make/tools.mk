@@ -568,7 +568,7 @@ ifeq ($(BOXTYPE), $(filter $(BOXTYPE), ufs922))
 TOOLS += $(D)/tools-eeprom-ufs922
 endif
 TOOLS += $(D)/tools-evremote2
-ifeq ($(BOXTYPE), $(filter $(BOXTYPE), adb_box atemio520 atemio530 cuberevo cuberevo_mini cuberevo_mini2 cuberevo_mini_fta cuberevo_250hd cuberevo_2000hd cuberevo_3000hd cuberevo_9500hd fs9000 hl101 hs5101 hs7110 hs7420 hs7810a hs7119 hs7429 hs7819 hs8200 hs9510 opt9600 opt9600mini opt9600prima ufc960 ufs910 ufs912 ufs913 ufs922 spark spark7162 tf7700hdpvr vip1_v1 vip1_v2 vip2 vitamin_hd5000))
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE), adb_box atemio520 cuberevo cuberevo_mini cuberevo_mini2 cuberevo_mini_fta cuberevo_250hd cuberevo_2000hd cuberevo_3000hd cuberevo_9500hd fs9000 hl101 hs5101 hs7110 hs7420 hs7810a hs7119 hs7429 hs7819 hs8200 hs9510 opt9600 opt9600mini opt9600prima ufc960 ufs910 ufs912 ufs913 ufs922 spark spark7162 tf7700hdpvr vip1_v1 vip1_v2 vip2 vitamin_hd5000))
 TOOLS += $(D)/tools-fp_control
 endif
 TOOLS += $(D)/tools-hotplug

@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20220130.1
+# Version 20220218.1
 
 ##############################################
 
@@ -22,9 +22,9 @@ if [ "$1" == -h ] || [ "$1" == --help ]; then
 	echo "Parameter 1       : target system (1-37)"
 	echo "Parameter 2       : kernel (1-2)"
 	echo "Parameter 3       : optimization (1-5)"
-	echo "Parameter 4       : image (Enigma=1/2 Neutrino=3/4 (1-4)"
+	echo "Parameter 4       : image (Enigma=1/2 Neutrino=3/4 Titan=5/6 (1-6)"
 	echo "Parameter 5       : Neutrino variant (1-6) or Enigma2 diff (0-5)"
-	echo "Parameter 6       : media Framework (Enigma2: 1-5; Neutrino: ignored)"
+	echo "Parameter 6       : media Framework (Enigma2: 1-5; Neutrino/Titan: ignored)"
 	echo "Parameter 7       : external LCD (1=none, 2=graphlcd, 3=lcd4linux, 4=both)"
 	echo "Parameter 8       : destination (1-2, 1=flash, 2=USB)"
 	exit
@@ -56,6 +56,7 @@ if [ -e ./config ]; then
 	LASTBOX=`grep -e "BOXTYPE=" ./config.old | awk '{print substr($0,9,length($0)-7)}'`
 	LASTIMAGE1=`grep -e "enigma2" ./config.old | awk '{print substr($0,7,length($0)-7)}'`
 	LASTIMAGE2=`grep -e "neutrino" ./config.old | awk '{print substr($0,7,length($0)-7)}'`
+	LASTIMAGE3=`grep -e "titan" ./config.old | awk '{print substr($0,7,length($0)-7)}'`
 	if [ $LASTIMAGE1 ]; then
 		LASTDIFF=`grep -e "E2_DIFF=" ./config.old | awk '{print substr($0,9,length($0)-7)}'`
 	fi
@@ -296,13 +297,15 @@ export FFMPEG_VER
 ##############################################
 
 case $4 in
-	[1-4])	REPLY=$4;;
+	[1-6])	REPLY=$4;;
 	*)	echo -e "\nWhich Image do you want to build:"
 		echo "   1)  Enigma2"
 		echo "   2*) Enigma2 (includes WLAN drivers)"
 		echo "   3)  Neutrino"
 		echo "   4)  Neutrino (includes WLAN drivers)"
-		read -p "Select Image to build (1-4)? ";;
+		echo "   5)  Titan (in development)"
+		echo "   6)  Titan (in development, includes WLAN drivers)"
+		read -p "Select Image to build (1-6)? ";;
 esac
 
 case "$REPLY" in
@@ -310,6 +313,8 @@ case "$REPLY" in
 #	2) IMAGE="enigma2-wlandriver";;
 	3) IMAGE="neutrino";;
 	4) IMAGE="neutrino-wlandriver";;
+	5) IMAGE="titan";;
+	6) IMAGE="titan-wlandriver";;
 	*) IMAGE="enigma2-wlandriver";;
 esac
 echo "IMAGE=$IMAGE" >> config
@@ -382,6 +387,38 @@ case "$IMAGE" in
 		fi
 
 		if [ "$LASTIMAGE1" ] || [ "$LASTIMAGE3" ] || [ ! "$LASTBOX" == "$BOXTYPE" ]; then
+			if [ -e ./.deps/ ]; then
+				echo -n -e "\nSettings changed, performing distclean..."
+				make distclean 2> /dev/null > /dev/null
+				echo "[Done]"
+			fi
+		fi;;
+	tita*)
+		case $6 in
+			[1-5]) REPLY=$6;;
+			*)	echo -e "\nMedia Framework:"
+				echo "   1)  None (Titan is built without a player)"
+				echo "   2*) eplayer3 (Titan uses eplayer3 only)"
+				echo "   3)  gstreamer (Titan uses gstreamer only)"
+				echo "   4)  gstreamer+eplayer3 (Titan uses gstreamer + libeplayer3)"
+				read -p "Select media framework (1-4)? ";;
+		esac
+
+		case "$REPLY" in
+			1) MEDIAFW="buildinplayer";;
+#			2) MEDIAFW="eplayer3";;
+			3) MEDIAFW="gstreamer";;
+			4) MEDIAFW="gst-eplayer3";;
+			*) MEDIAFW="eplayer3";;
+		esac
+
+		echo "make yaud-titan" >> $CURDIR/build
+
+		if [ "$OPTIMIZATIONS" == "small" ]; then
+			OPTIMIZATIONS="size"
+		fi
+
+		if [ "$LASTIMAGE1" ] || [ "$LASTIMAGE2" ] || [ ! "$LASTBOX" == "$BOXTYPE" ]; then
 			if [ -e ./.deps/ ]; then
 				echo -n -e "\nSettings changed, performing distclean..."
 				make distclean 2> /dev/null > /dev/null
@@ -526,7 +563,6 @@ if [ ! "$BATCHMODE" == "yes" ]; then
 			exit;;
 	  	*)	$CURDIR/build;;
 	esac
-
 else
 	$CURDIR/build
 fi
