@@ -666,11 +666,10 @@ $(D)/bzip2: $(D)/bootstrap $(ARCHIVE)/$(BZIP2_SOURCE)
 #
 # timezone
 #
-TZDATA_VER = 2021e
+TZDATA_VER = 2022a
 TZDATA_SOURCE = tzdata$(TZDATA_VER).tar.gz
 TZDATA_ZONELIST = africa antarctica asia australasia europe northamerica southamerica etcetera
 DEFAULT_TIMEZONE ?= "CET"
-#ln -s /usr/share/zoneinfo/<country>/<city> /etc/localtime
 
 $(ARCHIVE)/$(TZDATA_SOURCE):
 	$(WGET) ftp://ftp.iana.org/tz/releases/$(TZDATA_SOURCE)
