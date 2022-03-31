@@ -62,7 +62,7 @@ COMMON_PATCHES_24 += linux-sh4-remove_m4-nofpu-arg_$(KERNEL_LABEL).patch
 endif
 ifdef POWER_VU_DES
 ifeq ($(P0217), p0217)
-COMMON_PATCHES_24 += linux-pti_power_vu_des_fix_stm24_$(KERNEL_LABEL).patch)
+COMMON_PATCHES_24 += linux-pti_power_vu_des_fix_stm24_$(KERNEL_LABEL).patch
 endif
 endif
 
