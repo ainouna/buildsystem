@@ -1,4 +1,4 @@
-# revision f9d683101caf4a89fc6666b85ff407ef412f87bb 05/03/2022 16:14
+# revision 0dc1cdc75c815876ae5b0b28e598f52c0003b0b1 06/04/2022 22:11
 --- enigma2.org/configure.ac
 +++ enigma2/configure.ac
 @@ -18,6 +18,7 @@
@@ -470,7 +470,7 @@
  lib/python/Plugins/SystemPlugins/DefaultServicesScanner/Makefile
  lib/python/Plugins/SystemPlugins/DefaultServicesScanner/meta/Makefile
  lib/python/Plugins/SystemPlugins/DiseqcTester/Makefile
-@@ -345,6 +652,70 @@
+@@ -347,6 +654,70 @@
  lib/python/Plugins/SystemPlugins/Videomode/meta/Makefile
  lib/python/Plugins/SystemPlugins/WirelessLan/Makefile
  lib/python/Plugins/SystemPlugins/WirelessLan/meta/Makefile
@@ -2124,7 +2124,7 @@
 +// vim:ts=4
 --- enigma2.org/lib/dvb/decoder.cpp
 +++ enigma2/lib/dvb/decoder.cpp
-@@ -50,12 +50,10 @@
+@@ -52,12 +52,10 @@
  		m_fd_demux = -1;
  	}
  
@@ -2137,7 +2137,7 @@
  }
  
  int eDVBAudio::startPid(int pid, int type)
-@@ -82,21 +80,16 @@
+@@ -84,21 +82,16 @@
  			pes.pes_type = DMX_PES_AUDIO3;
  			break;
  		}
@@ -2163,7 +2163,7 @@
  	}
  
  	if (m_fd >= 0)
-@@ -131,11 +124,7 @@
+@@ -133,11 +126,7 @@
  			bypass = 0x40;
  			break;
  		case aDDP:
@@ -2175,7 +2175,7 @@
  		break;
  		}
  
-@@ -144,7 +133,6 @@
+@@ -146,7 +135,6 @@
  			eDebugNoNewLine("failed: %m\n");
  		else
  			eDebugNoNewLine("ok\n");
@@ -2183,7 +2183,7 @@
  		eDebugNoNewLineStart("[eDVBAudio%d] AUDIO_PLAY ", m_dev);
  		if (::ioctl(m_fd, AUDIO_PLAY) < 0)
  			eDebugNoNewLine("failed: %m\n");
-@@ -241,7 +229,7 @@
+@@ -243,7 +231,7 @@
  
  eDVBAudio::~eDVBAudio()
  {
@@ -2192,7 +2192,7 @@
  	if (m_fd >= 0)
  		::close(m_fd);
  	if (m_fd_demux >= 0)
-@@ -282,12 +270,10 @@
+@@ -284,12 +272,10 @@
  		m_fd_demux = -1;
  	}
  
@@ -2205,7 +2205,7 @@
  	if (m_close_invalidates_attributes < 0)
  	{
  		/*
-@@ -384,7 +370,8 @@
+@@ -389,7 +375,8 @@
  			pes.pes_type = DMX_PES_VIDEO3;
  			break;
  		}
@@ -2215,7 +2215,7 @@
  		eDebugNoNewLineStart("[eDVBVideo%d] DMX_SET_PES_FILTER pid=0x%04x ", m_dev, pid);
  		if (::ioctl(m_fd_demux, DMX_SET_PES_FILTER, &pes) < 0)
  		{
-@@ -392,18 +379,11 @@
+@@ -397,18 +384,11 @@
  			return -errno;
  		}
  		eDebugNoNewLine("ok\n");
@@ -2239,7 +2239,7 @@
  		eDebugNoNewLineStart("[eDVBVideo%d] VIDEO_PLAY ", m_dev);
  		if (::ioctl(m_fd, VIDEO_PLAY) < 0)
  			eDebugNoNewLine("failed: %m\n");
-@@ -721,7 +701,8 @@
+@@ -729,7 +709,8 @@
  		pes.pes_type = DMX_PES_PCR3;
  		break;
  	}
@@ -2249,7 +2249,7 @@
  	eDebugNoNewLineStart("[eDVBPCR%d] DMX_SET_PES_FILTER pid=0x%04x ", m_dev, pid);
  	if (::ioctl(m_fd_demux, DMX_SET_PES_FILTER, &pes) < 0)
  	{
-@@ -729,13 +710,7 @@
+@@ -737,13 +718,7 @@
  		return -errno;
  	}
  	eDebugNoNewLine("ok\n");
@@ -2264,7 +2264,7 @@
  	return 0;
  }
  
-@@ -791,7 +766,8 @@
+@@ -799,7 +776,8 @@
  		pes.pes_type = DMX_PES_TELETEXT3;
  		break;
  	}
@@ -2274,7 +2274,7 @@
  
  	eDebugNoNewLineStart("[eDVBText%d] DMX_SET_PES_FILTER pid=0x%04x ", m_dev, pid);
  	if (::ioctl(m_fd_demux, DMX_SET_PES_FILTER, &pes) < 0)
-@@ -800,13 +776,7 @@
+@@ -808,13 +784,7 @@
  		return -errno;
  	}
  	eDebugNoNewLine("ok\n");
@@ -2289,7 +2289,7 @@
  	return 0;
  }
  
-@@ -943,12 +913,23 @@
+@@ -951,12 +921,23 @@
  		int *s = state_table[m_state];
  		if (changed & (changeState|changeVideo) && m_video)
  		{
@@ -2315,7 +2315,7 @@
  		}
  		if (changed & (changeState|changeAudio) && m_audio)
  		{
-@@ -1249,6 +1230,9 @@
+@@ -1260,6 +1241,9 @@
  		{
  			struct stat s;
  			fstat(f, &s);
@@ -2325,7 +2325,7 @@
  			if (m_video_clip_fd == -1)
  				m_video_clip_fd = open("/dev/dvb/adapter0/video0", O_WRONLY);
  			if (m_video_clip_fd >= 0)
-@@ -1262,36 +1246,56 @@
+@@ -1273,36 +1257,56 @@
  				int streamtype;
  				memset(stuffing, 0, sizeof(stuffing));
  				ssize_t ret = read(f, iframe, s.st_size);
@@ -2417,7 +2417,7 @@
  	flt.pid     = i->first;
 --- enigma2.org/lib/dvb/dvb.cpp
 +++ enigma2/lib/dvb/dvb.cpp
-@@ -114,7 +114,38 @@
+@@ -118,7 +118,38 @@
  
  	m_fbcmng = new eFBCTunerManager(instance);
  
@@ -2456,7 +2456,7 @@
  }
  
  void eDVBResourceManager::feStateChanged()
-@@ -317,19 +348,6 @@
+@@ -321,19 +352,6 @@
  		frontend = -1;
  		goto error;
  	}
@@ -2476,7 +2476,7 @@
  	::close(frontend);
  	frontend = -1;
  
-@@ -418,8 +436,6 @@
+@@ -422,8 +440,6 @@
  	ioctl(vtunerFd, VTUNER_SET_NAME, name);
  	ioctl(vtunerFd, VTUNER_SET_TYPE, type);
  	ioctl(vtunerFd, VTUNER_SET_FE_INFO, &fe_info);
@@ -2485,7 +2485,7 @@
  	ioctl(vtunerFd, VTUNER_SET_HAS_OUTPUTS, "no");
  	ioctl(vtunerFd, VTUNER_SET_ADAPTER, nr);
  
-@@ -1003,6 +1019,7 @@
+@@ -1060,6 +1076,7 @@
  	ePtr<eDVBRegisteredDemux> unused;
  	uint8_t d, a;
  
@@ -2493,7 +2493,7 @@
  	/*
  	 * For pvr playback, start with the last demux.
  	 * On some hardware, there are less ca devices than demuxes, so try to leave
-@@ -1050,15 +1067,61 @@
+@@ -1107,15 +1124,61 @@
  			--i;
  		}
  	}
@@ -2558,7 +2558,7 @@
  		else
  			demux->get().setSourcePVR(0);
  		return 0;
-@@ -2180,21 +2243,11 @@
+@@ -2299,21 +2362,11 @@
  
  	if (m_pvr_fd_dst < 0)
  	{
@@ -2587,7 +2587,7 @@
  	m_pvr_thread = new eDVBChannelFilePush(m_source->getPacketSize());
 --- enigma2.org/lib/dvb/dvb.h
 +++ enigma2/lib/dvb/dvb.h
-@@ -243,6 +243,8 @@
+@@ -244,6 +244,8 @@
  	bool frontendIsMultistream(int index);
  	std::string getFrontendCapabilities(int index);
  	void setFrontendType(int index, const char *types);
@@ -2596,7 +2596,7 @@
  };
  SWIG_TEMPLATE_TYPEDEF(ePtr<eDVBResourceManager>, eDVBResourceManager);
  SWIG_EXTEND(ePtr<eDVBResourceManager>,
-@@ -270,6 +272,8 @@
+@@ -271,6 +273,8 @@
  		/* cannot be used for PVR channels. */
  	RESULT setChannel(const eDVBChannelID &id, ePtr<iDVBFrontendParameters> &feparam);
  	eDVBChannelID getChannelID() { return m_channel_id; }
@@ -2789,7 +2789,7 @@
  	{
  		ret = (int)(snr / 37.5);
  		sat_max = 1700;
-@@ -3082,7 +3094,11 @@
+@@ -3084,7 +3096,11 @@
  	}
  	else if (!strcmp(type, "DVB-C"))
  	{
@@ -2801,7 +2801,7 @@
  		fetype = feCable;
  	}
  	else if (!strcmp(type, "ATSC"))
-@@ -3214,11 +3230,16 @@
+@@ -3216,11 +3232,16 @@
  		case SYS_ISDBS:		ss << " ISDBS"; break;
  		case SYS_ISDBT:		ss << " ISDBT"; break;
  		case SYS_UNDEFINED:	ss << " UNDEFINED"; break;
@@ -2821,7 +2821,7 @@
  
 --- enigma2.org/lib/dvb/pmt.cpp
 +++ enigma2/lib/dvb/pmt.cpp
-@@ -909,6 +909,11 @@
+@@ -921,6 +921,11 @@
  			eDVBCIInterfaces::getInstance()->addPMTHandler(this);
  	} else if (!simulate) // no simulation of playback services
  	{
@@ -6215,61 +6215,40 @@
  SystemInfo["LcdLiveTV"] = fileCheck("/proc/stb/fb/sd_detach") or fileCheck("/proc/stb/lcd/live_enable")
  SystemInfo["LcdLiveTVMode"] = fileCheck("/proc/stb/lcd/mode")
  SystemInfo["LcdLiveDecoder"] = fileCheck("/proc/stb/lcd/live_decoder")
-@@ -92,7 +92,7 @@
- SystemInfo["3DZNorm"] = fileCheck("/proc/stb/fb/znorm") or fileCheck("/proc/stb/fb/primary/zoffset")
- SystemInfo["Blindscan_t2_available"] = fileCheck("/proc/stb/info/vumodel") and model.startswith("vu")
- SystemInfo["RcTypeChangable"] = not(model.startswith("et8500") or model.startswith("et7")) and pathExists("/proc/stb/ir/rc/type")
--SystemInfo["HasFullHDSkinSupport"] = model not in ("et4000", "et5000", "sh1", "hd500c", "hd1100", "xp1000", "lc")
-+SystemInfo["HasFullHDSkinSupport"] = HardwareInfo().get_device_model() in ("adb_box", "hs8200", "cuberevo", "cuberevo_mini-fta", "cuberevo-250hd", "cuberevo-mini", "cuberevo-mini2", "cuberevo-2000hd", "cuberevo-3000hd", "cuberevo-9500hd", "fs9000", "hs7110", "hs7420", "hs7810a", "hs7119", "hs7429", "hs7819", "hl101", "hs9510", "spark", "spark7162", "tf7700hdpvr", "ufs912", "ufs913", "vip1_v1", "vip1_v2", "vip2", "vitamin-hd5000", "opt9600")
- SystemInfo["HasBypassEdidChecking"] = fileCheck("/proc/stb/hdmi/bypass_edid_checking")
- SystemInfo["HasColorspace"] = fileCheck("/proc/stb/video/hdmi_colorspace")
- SystemInfo["HasColorspaceSimple"] = SystemInfo["HasColorspace"] and model in "vusolo4k"
-@@ -108,12 +108,12 @@
- SystemInfo["HasHDMIpreemphasis"] = fileCheck("/proc/stb/hdmi/preemphasis")
- SystemInfo["HasColorimetry"] = fileCheck("/proc/stb/video/hdmi_colorimetry")
- SystemInfo["HasHdrType"] = fileCheck("/proc/stb/video/hdmi_hdrtype")
--SystemInfo["HasHDMIin"] = model in ("vuduo4k", "vuduo4kse", "vuultimo4k", "vuuno4kse", "gbquad4k", "hd2400", "et10000")
--SystemInfo["HasHDMI-CEC"] = HardwareInfo().has_hdmi() and fileExists(resolveFilename(SCOPE_PLUGINS, "SystemPlugins/HdmiCEC/plugin.pyo")) and (fileExists("/dev/cec0") or fileExists("/dev/hdmi_cec") or fileExists("/dev/misc/hdmi_cec0"))
--SystemInfo["HasYPbPr"] = model in ("dm8000", "et5000", "et6000", "et6500", "et9000", "et9200", "et9500", "et10000", "formuler1", "mbtwinplus", "spycat", "vusolo", "vuduo", "vuduo2", "vuultimo")
--SystemInfo["HasScart"] = model in ("dm8000", "et4000", "et6500", "et8000", "et9000", "et9200", "et9500", "et10000", "formuler1", "hd1100", "hd1200", "hd1265", "hd2400", "vusolo", "vusolo2", "vuduo", "vuduo2", "vuultimo", "vuuno", "xp1000")
--SystemInfo["HasSVideo"] = model in ("dm8000")
--SystemInfo["HasComposite"] = model not in ("i55", "gbquad4k", "gbue4k", "hd1500", "osnino", "osninoplus", "purehd", "purehdse", "revo4k", "vusolo4k", "vuzero4k", "vuduo4k", "vuduo4kse", "vuuno4k", "vuuno4kse", "vuultimo4k")
-+SystemInfo["HasHDMIin"] = False
-+SystemInfo["HasHDMI-CEC"] = fileExists("/lib/modules/cec.ko") and (fileExists("proc/stb/cec/send") or fileExists("stb/hdmi/cec"))
-+SystemInfo["HasYPbPr"] = HardwareInfo().get_device_model() in ("adb_box", "hs8200", "cuberevo", "cuberevo-mini-fta", "cuberevo-250hd", "cuberevo-mini", "cuberevo-mini2", "cuberevo-2000hd", "cuberevo-3000hd", "cuberevo-9500hd", "fs9000", "hs9510", "hs7420", "hs7429", "hl101", "tf7700hdpvr", "ufs910", "ufs912", "ufs913", "ufs922", "vip1_v1", "vip1_v2", "vip2", "vitamin_hd5000", "opt9600")
-+SystemInfo["HasScart"] = HardwareInfo().get_device_model() not in ("hs7110", "hs7119")
-+SystemInfo["HasSVideo"] = HardwareInfo().get_device_model() in ("cuberevo")
-+SystemInfo["HasComposite"] = HardwareInfo().get_device_model() not in ("cuberevo_mini_fta", "cuberevo_250hd")
- SystemInfo["HasAutoVolume"] = fileExists("/proc/stb/audio/avl_choices") and fileCheck("/proc/stb/audio/avl")
- SystemInfo["HasAutoVolumeLevel"] = fileExists("/proc/stb/audio/autovolumelevel_choices") and fileCheck("/proc/stb/audio/autovolumelevel")
- SystemInfo["Has3DSurround"] = fileExists("/proc/stb/audio/3d_surround_choices") and fileCheck("/proc/stb/audio/3d_surround")
-@@ -121,19 +121,19 @@
- SystemInfo["Has3DSurroundSpeaker"] = fileExists("/proc/stb/audio/3dsurround_choices") and fileCheck("/proc/stb/audio/3dsurround")
- SystemInfo["Has3DSurroundSoftLimiter"] = fileExists("/proc/stb/audio/3dsurround_softlimiter_choices") and fileCheck("/proc/stb/audio/3dsurround_softlimiter")
+@@ -117,10 +117,10 @@
  SystemInfo["hasXcoreVFD"] = model in ("osmega", "spycat4k", "spycat4kmini", "spycat4kcombo") and fileCheck("/sys/module/brcmstb_%s/parameters/pt6302_cgram" % model)
--SystemInfo["HasOfflineDecoding"] = model not in ("osmini", "osminiplus", "et7000mini", "et11000", "mbmicro", "mbtwinplus", "mbmicrov2", "et7000", "et8500")
--SystemInfo["MultibootStartupDevice"] = getMultibootStartupDevice()
+ SystemInfo["HasOfflineDecoding"] = model not in ("osmini", "osminiplus", "et7000mini", "et11000", "mbmicro", "mbtwinplus", "mbmicrov2", "et7000", "et8500")
+ SystemInfo["MultibootStartupDevice"] = getMultibootStartupDevice()
 -SystemInfo["canMode12"] = "%s_4.boxmode" % model in cmdline and cmdline["%s_4.boxmode" % model] in ("1", "12") and "192M"
-+SystemInfo["HasOfflineDecoding"] = False
-+SystemInfo["MultibootStartupDevice"] = False
 +SystemInfo["canMode12"] = False
  SystemInfo["canMultiBoot"] = getMultibootslots()
  SystemInfo["canDualBoot"] = fileExists("/dev/block/by-name/flag")
 -SystemInfo["canFlashWithOfgwrite"] = not(model.startswith("dm"))
 +SystemInfo["canFlashWithOfgwrite"] = False
  SystemInfo["HDRSupport"] = fileExists("/proc/stb/hdmi/hlg_support_choices") and fileCheck("/proc/stb/hdmi/hlg_support")
- SystemInfo["CanDownmixAC3"] = fileHas("/proc/stb/audio/ac3_choices", "downmix")
+ SystemInfo["CanProc"] = SystemInfo["HasMMC"] and not SystemInfo["Blindscan_t2_available"]
+ SystemInfo["HasMultichannelPCM"] = fileCheck("/proc/stb/audio/multichannel_pcm")
+@@ -134,7 +134,7 @@
  SystemInfo["CanDownmixDTS"] = fileHas("/proc/stb/audio/dts_choices", "downmix")
  SystemInfo["CanDownmixAAC"] = fileHas("/proc/stb/audio/aac_choices", "downmix")
  SystemInfo["HDMIAudioSource"] = fileCheck("/proc/stb/hdmi/audio_source")
+-SystemInfo["CanAC3Transcode"] = fileHas("/proc/stb/audio/ac3plus_choices", "force_ac3")
++SystemInfo["CanAC3Transcode"] = False
+ SystemInfo["CanDTSHD"] = fileHas("/proc/stb/audio/dtshd_choices", "downmix")
+ SystemInfo["CanDownmixAACPlus"] = fileHas("/proc/stb/audio/aacplus_choices", "downmix")
+ SystemInfo["CanAACTranscode"] = fileHas("/proc/stb/audio/aac_transcode_choices", "off")
+@@ -142,8 +142,8 @@
+ SystemInfo["CanBTAudio"] = fileHas("/proc/stb/audio/btaudio_choices", "off")
+ SystemInfo["CanBTAudioDelay"] = fileCheck("/proc/stb/audio/btaudio_delay") or fileCheck("/proc/stb/audio/btaudio_delay_pcm")
  SystemInfo["BootDevice"] = getBootdevice()
 -SystemInfo["FbcTunerPowerAlwaysOn"] = model in ("vusolo4k", "vuduo4k", "vuduo4kse", "vuultimo4k", "vuuno4k", "vuuno4kse", "gbquad4k", "gbue4k")
 -SystemInfo["HasPhysicalLoopthrough"] = ["Vuplus DVB-S NIM(AVL2108)", "GIGA DVB-S2 NIM (Internal)"]
 -SystemInfo["HasFBCtuner"] = ["Vuplus DVB-C NIM(BCM3158)", "Vuplus DVB-C NIM(BCM3148)", "Vuplus DVB-S NIM(7376 FBC)", "Vuplus DVB-S NIM(45308X FBC)", "Vuplus DVB-S NIM(45208 FBC)", "DVB-S NIM(45208 FBC)", "DVB-S2X NIM(45308X FBC)", "DVB-S2 NIM(45308 FBC)", "DVB-C NIM(3128 FBC)", "BCM45208", "BCM45308X", "BCM3158"]
 +SystemInfo["FbcTunerPowerAlwaysOn"] = False
-+SystemInfo["HasPhysicalLoopthrough"] =  [""]
-+SystemInfo["HasFBCtuner"] =  [""]
++SystemInfo["HasPhysicalLoopthrough"] = [""]
++SystemInfo["HasFBCtuner"] = [""]
  SystemInfo["HasHiSi"] = pathExists("/proc/hisi")
+ SystemInfo["FCCactive"] = False
 --- enigma2.org/lib/python/Components/Renderer/Makefile.am
 +++ enigma2/lib/python/Components/Renderer/Makefile.am
 @@ -3,4 +3,4 @@
@@ -6424,17 +6403,17 @@
  		self.muteDialog.hide()
 --- enigma2.org/lib/python/enigma_python.i
 +++ enigma2/lib/python/enigma_python.i
-@@ -112,6 +112,7 @@
- #include <lib/python/python.h>
+@@ -113,6 +113,7 @@
  #include <lib/python/python_helpers.h>
  #include <lib/gdi/picload.h>
-+#include <lib/driver/vfd.h> 
+ #include <lib/dvb/fcc.h>
++#include <lib/driver/vfd.h>
  %}
  
  %feature("ref")   iObject "$this->AddRef(); /* eDebug(\"AddRef (%s:%d)!\", __FILE__, __LINE__); */ "
-@@ -259,6 +260,7 @@
- %include <lib/python/pythonconfig.h>
+@@ -262,6 +263,7 @@
  %include <lib/gdi/picload.h>
+ %include <lib/dvb/fcc.h>
  %include <lib/dvb/streamserver.h>
 +%include <lib/driver/vfd.h>
  /**************  eptr  **************/
@@ -7377,8 +7356,8 @@
 -	DefaultServicesScanner DiseqcTester CommonInterfaceAssignment \
 +	DefaultServicesScanner DiseqcTester \
  	CableScan FastScan OSDPositionSetup OSD3DSetup HdmiCEC VideoClippingSetup \
--	VideoEnhancement WirelessLan NetworkWizard
-+	VideoEnhancement WirelessLan NetworkWizard VFD-Icons
+-	VideoEnhancement WirelessLan NetworkWizard FastChannelChange
++	VideoEnhancement WirelessLan NetworkWizard FastChannelChange VFD-Icons
  
  if HAVE_TEMPFANCONTROL
  SUBDIRS += TempFanControl
@@ -8974,7 +8953,7 @@
  
 --- enigma2.org/lib/service/iservice.h
 +++ enigma2/lib/service/iservice.h
-@@ -698,6 +698,7 @@
+@@ -699,6 +699,7 @@
  struct eDVBTeletextSubtitlePage;
  struct eDVBSubtitlePage;
  struct ePangoSubtitlePage;
@@ -8982,7 +8961,7 @@
  class eRect;
  class gRegion;
  class gPixmap;
-@@ -709,6 +710,7 @@
+@@ -710,6 +711,7 @@
  	virtual void setPage(const eDVBTeletextSubtitlePage &p) = 0;
  	virtual void setPage(const eDVBSubtitlePage &p) = 0;
  	virtual void setPage(const ePangoSubtitlePage &p) = 0;
@@ -8992,7 +8971,7 @@
  };
 --- enigma2.org/lib/service/listboxservice.cpp
 +++ enigma2/lib/service/listboxservice.cpp
-@@ -193,14 +193,14 @@
+@@ -204,14 +204,14 @@
  	{
  		--i;
  		--index;
@@ -9009,7 +8988,7 @@
  			break;
  	}
  	return cursorResolve(index);
-@@ -216,7 +216,7 @@
+@@ -227,7 +227,7 @@
  	{
  		++i;
  		++index;
@@ -9020,7 +8999,7 @@
  	return cursorResolve(index);
 --- enigma2.org/lib/service/servicedvb.cpp
 +++ enigma2/lib/service/servicedvb.cpp
-@@ -646,6 +646,8 @@
+@@ -649,6 +649,8 @@
  	if (sc)
  	{
  		std::list<std::string> extensions;
@@ -9029,7 +9008,7 @@
  		extensions.push_back("ts");
  		extensions.push_back("trp");
  		sc->addServiceFactory(eServiceFactoryDVB::id, this, extensions);
-@@ -1214,7 +1216,8 @@
+@@ -1222,7 +1224,8 @@
  		break;
  	}
  	case eDVBServicePMTHandler::eventPreStart:
@@ -9039,7 +9018,7 @@
  		break;
  	case eDVBServicePMTHandler::eventEOF:
  		m_event((iPlayableService*)this, evEOF);
-@@ -1367,6 +1370,8 @@
+@@ -1375,6 +1378,8 @@
  			scrambled = true;
  
  		type = eDVBServicePMTHandler::streamclient;
@@ -9048,7 +9027,7 @@
  	}
  
  	m_first_program_info = 1;
-@@ -1738,9 +1743,9 @@
+@@ -1747,9 +1752,9 @@
  				return -2;
  			}
  
@@ -9073,7 +9052,7 @@
  
  DEFINE_REF(eDVBServiceRecord);
  
-@@ -286,9 +289,40 @@
+@@ -291,9 +294,40 @@
  
  	if (!m_record && m_tuned && !m_streaming && !m_simulate)
  	{
