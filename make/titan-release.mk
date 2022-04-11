@@ -571,10 +571,14 @@ titan-release-base:
 	$(SILENT)touch $(RELEASE_DIR)/etc/.player3
 	$(SILENT)touch $(RELEASE_DIR)/etc/.sh4
 	$(SILENT)touch $(RELEASE_DIR)/etc/.stable
+# /usr/bin
 	$(SILENT)cp -a $(TARGET_DIR)/usr/bin/* $(RELEASE_DIR)/usr/bin/
+# /sbin
 	$(SILENT)cp -a $(TARGET_DIR)/sbin/* $(RELEASE_DIR)/sbin/
+# /usr/sbin
 	$(SILENT)cp -a $(TARGET_DIR)/usr/sbin/* $(RELEASE_DIR)/usr/sbin/
-#	$(SILENT)cp $(TARGET_DIR)/boot/$(KERNELNAME) $(RELEASE_DIR)/boot/
+# uImage
+	$(SILENT)cp $(TARGET_DIR)/boot/$(KERNELNAME) $(RELEASE_DIR)/boot/
 #	$(SILENT)ln -sf /proc/mounts $(RELEASE_DIR)/etc/mtab
 	$(SILENT)cp -dp $(SKEL_ROOT)/sbin/MAKEDEV $(RELEASE_DIR)/sbin/
 	$(SILENT)ln -sf ../sbin/MAKEDEV $(RELEASE_DIR)/dev/MAKEDEV
