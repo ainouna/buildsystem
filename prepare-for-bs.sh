@@ -130,6 +130,11 @@ if ([ "$UBUNTU" == 1  ] &&  [ "$UBUNTU_VERSION" -ge "16" ]) || ([ "$UBUNTU" == 2
 	${UBUNTU:+libtool-bin} \
 	";
 fi
+if ([ "$UBUNTU" == 1  ] &&  [ "$UBUNTU_VERSION" -ge "22" ]) || ([ "$UBUNTU" == 2 ] && [ "$MINT_VERSION" -ge "21" ]); then
+	PACKAGES="$PACKAGES \
+	${UBUNTU:+gtk-doc-tools} \
+	";
+fi
 
 if [ `which arch > /dev/null 2>&1 && arch || uname -m` == x86_64 ]; then
 	# ST changed to the -m32 option for their gcc compiler build
