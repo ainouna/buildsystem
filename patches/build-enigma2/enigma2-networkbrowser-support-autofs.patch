@@ -90,7 +90,7 @@
  		except Exception, e:
  			print "[MountManager] Error reading /etc/enigma2/automounts.xml:", e
  			try:
-@@ -66,56 +63,69 @@
+@@ -66,23 +63,56 @@
  			Len = len(definitions)
  			return Len > 0 and definitions[Len - 1].text or default
  
@@ -159,42 +159,6 @@
  					self.automounts[data['sharename']] = data
  				except Exception, e:
  					print "[MountManager] Error reading Mounts:", e
- 
- 		# Read out CIFS Mounts
--		for nfs in tree.findall("cifs"):
--			for mount in nfs.findall("mount"):
--				data = {'isMounted': False, 'active': False, 'ip': False, 'host': False, 'sharename': False, 'sharedir': False, 'username': False,
--							'password': False, 'mounttype': False, 'options': False, 'hdd_replacement': False}
--				try:
--					data['mounttype'] = 'cifs'.encode("UTF-8")
--					data['active'] = getValue(mount.findall("active"), False).encode("UTF-8")
--					if data["active"] == 'True' or data["active"] == True:
--						self.activeMountsCounter += 1
--					data['hdd_replacement'] = getValue(mount.findall("hdd_replacement"), 'False').encode("UTF-8")
--					data['ip'] = getValue(mount.findall("ip"), '').encode("UTF-8")
--					data['host'] = getValue(mount.findall("host"), '').encode("UTF-8")
--					data['sharedir'] = getValue(mount.findall("sharedir"), '/media/').encode("UTF-8")
--					data['sharename'] = getValue(mount.findall("sharename"), 'MEDIA').encode("UTF-8")
--					data['options'] = getValue(mount.findall("options"), "").encode("UTF-8")
--					data['username'] = getValue(mount.findall("username"), 'guest').encode("UTF-8")
--					data['password'] = getValue(mount.findall("password"), 'guest').encode("UTF-8")
--					self.automounts[data['sharename']] = data
--				except Exception, e:
--					print "[MountManager] Error reading Mounts:", e
--
- 		self.checkList = self.automounts.keys()
- 		if not self.checkList:
- 			print "[AutoMount.py] self.automounts without mounts", self.automounts
--			if callback is not None:
--				callback(True)
- 		else:
- 			self.CheckMountPoint(self.checkList.pop(), callback)
-+
-+		if callback is not None:
-+			callback(True)
- 
- 	def sanitizeOptions(self, origOptions, mounttype=None, username=None, password=None):
- 		# split the options into their components
 @@ -182,118 +192,13 @@
  		return ",".join(options)
  
