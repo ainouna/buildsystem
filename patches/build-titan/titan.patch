@@ -495,7 +495,8 @@
 -titan_LDADD = -lm -lpthread -ldl -lpng -lfreetype -leplayer3 -ldreamdvd -ljpeg -lz -lmmeimage -lssl -lcrypto 
 +titan_LDADD = -lm -lpthread -ldl -lpng -lfreetype -leplayer3 -ldreamdvd -ljpeg -lz -lmmeimage -lssl -lcrypto -lipkg
  
- titan_CFLAGS = $(ALL_CFLAGS)--- titan.org/titan/player.h
+ titan_CFLAGS = $(ALL_CFLAGS)
+--- titan.org/titan/player.h
 +++ titan/titan/player.h
 @@ -3944,17 +3944,19 @@
  char* getsubtext()
@@ -628,3 +629,14 @@
 # SUBDIRS = \
 # 	autotimer \
 #
+--- a/plugins/autotimer/autotimer.c.org
++++ b/plugins/autotimer/autotimer.c
+@@ -1,6 +1,7 @@
+ #include "../../titan/struct.h"
+ #include "../../titan/debug.h"
+ #include "../../titan/header.h"
++#include <sys/types.h>
+ 
+ char pluginname[] = "Auto Timer";
+ char plugindesc[] = "Extensions";
+
