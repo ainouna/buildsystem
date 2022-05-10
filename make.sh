@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 202200406.1
+# Version 20220510.1
 
 ##############################################
 
@@ -288,7 +288,7 @@ echo "BS_GCC_VER=$BS_GCC_VER" >> config
 export BS_GCC_VER
 
 # Select ffmpeg version by uncommenting one line
-#FFMPEG_VER="2.8.18"
+#FFMPEG_VER="2.8.19"
 #FFMPEG_VER="3.4.3"
 #FFMPEG_VER="4.2.2"
 FFMPEG_VER="4.3.2"
@@ -397,18 +397,16 @@ case "$IMAGE" in
 		case $6 in
 			[1-5]) REPLY=$6;;
 			*)	echo -e "\nMedia Framework:"
-				echo "   1)  None (Titan is built without a player)"
-				echo "   2*) eplayer3 (Titan uses eplayer3 only)"
-				echo "   3)  gstreamer (Titan uses gstreamer only)"
-				echo "   4)  gstreamer+eplayer3 (Titan uses gstreamer + libeplayer3)"
+				echo "   1*) eplayer3 (Titan uses eplayer3 only)"
+				echo "   2)  gstreamer (Titan uses gstreamer only)"
+				echo "   3)  gstreamer+eplayer3 (Titan uses gstreamer + libeplayer3)"
 				read -p "Select media framework (1-4)? ";;
 		esac
 
 		case "$REPLY" in
-			1) MEDIAFW="buildinplayer";;
-#			2) MEDIAFW="eplayer3";;
-			3) MEDIAFW="gstreamer";;
-			4) MEDIAFW="gst-eplayer3";;
+#			1) MEDIAFW="eplayer3";;
+			2) MEDIAFW="gstreamer";;
+			3) MEDIAFW="gst-eplayer3";;
 			*) MEDIAFW="eplayer3";;
 		esac
 
