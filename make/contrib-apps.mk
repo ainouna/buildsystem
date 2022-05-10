@@ -954,6 +954,29 @@ $(D)/sysstat: $(D)/bootstrap $(ARCHIVE)/$(SYSSTAT_SOURCE)
 	$(TOUCH)
 
 #
+# libnsl
+#
+LIBNSL_VER    = 2.0.0
+LIBNSL_SOURCE = libnsl-$(LIBNSL_VER).tar.gz
+
+$(ARCHIVE)/$(LIBNSL_SOURCE):
+	$(DOWNLOAD) https://github.com/thkukuk/libnsl/archive/v$(LIBNSL_VER)/$(LIBNSL_SOURCE)
+
+$(D)/libnsl: $(D)/bootstrap $(ARCHIVE)/$(LIBNSL_SOURCE)
+	$(START_BUILD)
+	$(REMOVE)/libnsl-$(LIBNSL_VER)
+	$(UNTAR)/$(LIBNSL_SOURCE)
+	$(CHDIR)/libnsl-$(LIBNSL_VER); \
+		$(CONFIGURE) \
+			--prefix=/usr \
+			; \
+		$(MAKE) all; \
+		$(MAKE) install DESTDIR=$(CROSS_BASE)/$(TARGET)/sys-root
+		cp -a $(CROSS_BASE)/$(TARGET)/sys-root/usr/lib/libnsl.so* $(TARGET_LIB_DIR)
+	$(REMOVE)/libnsl-$(LIBNSL_VER)
+	$(TOUCH)
+
+#
 # autofs
 #
 AUTOFS_VER = 4.1.4
@@ -1757,7 +1780,7 @@ $(D)/dropbear: $(D)/bootstrap $(D)/zlib $(ARCHIVE)/$(DROPBEAR_SOURCE)
 #
 # dropbearmulti
 #
-DROPBEARMULTI_VER = c8d852c
+DROPBEARMULTI_VER = b8669b0
 DROPBEARMULTI_SOURCE = dropbearmulti-git-$(DROPBEARMULTI_VER).tar.bz2
 DROPBEARMULTI_URL = https://github.com/mkj/dropbear.git
 
