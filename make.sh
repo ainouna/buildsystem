@@ -287,13 +287,12 @@ BS_GCC_VER="4.8.4" # Unpacks rpms, quick build
 echo "BS_GCC_VER=$BS_GCC_VER" >> config
 export BS_GCC_VER
 
-# Select ffmpeg version by uncommenting one line
-#FFMPEG_VER="2.8.19"
-#FFMPEG_VER="3.4.3"
-#FFMPEG_VER="4.2.2"
-FFMPEG_VER="4.3.2"
-echo "FFMPEG_VER=$FFMPEG_VER" >> config
-export FFMPEG_VER
+# basic ffmpeg version numbers
+FFMPEG_VER2="2.8.19"
+FFMPEG_VER3="3.4.3"
+FFMPEG_VER42="4.2.2"
+FFMPEG_VER43="4.3.2"
+#FFMPEG_VER44="4.4.2"
 ##############################################
 
 case $4 in
@@ -348,6 +347,13 @@ case "$IMAGE" in
 		esac
 		echo "PLUGINS_NEUTRINO=$PLUGINS_NEUTRINO" >> config
 
+		# Select ffmpeg version by uncommenting one line (used for internal player)
+		#FFMPEG_VER=$FFMPEG_VER2
+		#FFMPEG_VER=$FFMPEG_VER3
+		#FFMPEG_VER=$FFMPEG_VER42
+		FFMPEG_VER=$FFMPEG_VER43
+		#FFMPEG_VER=$FFMPEG_VER44
+
 		case "$FLAVOUR" in
 			neutrino-hd2*)
 				case $6 in
@@ -394,23 +400,12 @@ case "$IMAGE" in
 			fi
 		fi;;
 	tita*)
-		case $6 in
-			[1-5]) REPLY=$6;;
-			*)	echo -e "\nMedia Framework:"
-				echo "   1*) eplayer3 (Titan uses eplayer3 only)"
-				echo "   2)  gstreamer (Titan uses gstreamer only)"
-				echo "   3)  gstreamer+eplayer3 (Titan uses gstreamer + libeplayer3)"
-				read -p "Select media framework (1-4)? ";;
-		esac
-
-		case "$REPLY" in
-#			1) MEDIAFW="eplayer3";;
-			2) MEDIAFW="gstreamer";;
-			3) MEDIAFW="gst-eplayer3";;
-			*) MEDIAFW="eplayer3";;
-		esac
-
 		echo "make yaud-titan" >> $CURDIR/build
+
+		# Titan is always built with eplayer3 and ffmpeg version 3.X.X
+		MEDIAFW="eplayer3"
+		FFMPEG_VER=$FFMPEG_VER3
+		export FFMPEG_VER
 
 		if [ "$OPTIMIZATIONS" == "small" ]; then
 			OPTIMIZATIONS="size"
@@ -448,6 +443,13 @@ case "$IMAGE" in
 				*) MEDIAFW="gst-eplayer3";;
 			esac
 		fi
+
+		# Select ffmpeg version by uncommenting one line (used with eplayer3, gst-eplayer3-dual and gst-eplayer3)
+		#FFMPEG_VER=$FFMPEG_VER2
+		#FFMPEG_VER=$FFMPEG_VER3
+		#FFMPEG_VER=$FFMPEG_VER42
+		FFMPEG_VER=$FFMPEG_VER43
+		#FFMPEG_VER=$FFMPEG_VER44
 
 		# Determine the OpenPLi diff-level
  		case $5 in
@@ -505,6 +507,8 @@ case "$IMAGE" in
 
 echo "OPTIMIZATIONS=$OPTIMIZATIONS" >> config
 echo "MEDIAFW=$MEDIAFW" >> config
+export FFMPEG_VER
+echo "FFMPEG_VER=$FFMPEG_VER" >> config
 
 ##############################################
 
