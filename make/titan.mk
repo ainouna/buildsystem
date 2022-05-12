@@ -14,26 +14,26 @@ TITAN_DEPS += $(D)/tools-libmme_image
 TITAN_DEPS += $(D)/tools-libmme_host
 TITAN_DEPS += $(D)/openssl
 TITAN_DEPS += $(D)/timezone
-TITAN_DEPS += python-all
+#TITAN_DEPS += python-all
 ifeq ($(MEDIAFW), eplayer3)
 #T_CONFIG_OPTS += --enable-eplayer3
 TITAN_DEPS += $(D)/libcurl
 TITAN_DEPS += $(D)/ffmpeg
 TITAN_DEPS += $(D)/tools-exteplayer3
 endif
-ifeq ($(MEDIAFW), gstreamer)
-#T_CONFIG_OPTS += --with-gstversion=1.0 --enable-mediafwgstreamer
-TITAN_DEPS += $(D)/gstreamer $(D)/gst_plugins_base $(D)/gst_plugins_multibox_dvbmediasink
-TITAN_DEPS += $(D)/gst_plugins_good $(D)/gst_plugins_bad $(D)/gst_plugins_ugly
-endif
-ifeq ($(MEDIAFW), gst-eplayer3)
-#T_CONFIG_OPTS += --with-gstversion=1.0 --enable-mediafwgstreamer --enable-eplayer3
-TITAN_DEPS += $(D)/libcurl
-TITAN_DEPS += $(D)/ffmpeg
-TITAN_DEPS += $(D)/tools-libeplayer3
-TITAN_DEPS += $(D)/gstreamer $(D)/gst_plugins_base $(D)/gst_plugins_multibox_dvbmediasink
-TITAN_DEPS += $(D)/gst_plugins_good $(D)/gst_plugins_bad $(D)/gst_plugins_ugly
-endif
+#ifeq ($(MEDIAFW), gstreamer)
+##T_CONFIG_OPTS += --with-gstversion=1.0 --enable-mediafwgstreamer
+#TITAN_DEPS += $(D)/gstreamer $(D)/gst_plugins_base $(D)/gst_plugins_multibox_dvbmediasink
+#TITAN_DEPS += $(D)/gst_plugins_good $(D)/gst_plugins_bad $(D)/gst_plugins_ugly
+#endif
+#ifeq ($(MEDIAFW), gst-eplayer3)
+##T_CONFIG_OPTS += --with-gstversion=1.0 --enable-mediafwgstreamer --enable-eplayer3
+#TITAN_DEPS += $(D)/libcurl
+#TITAN_DEPS += $(D)/ffmpeg
+#TITAN_DEPS += $(D)/tools-libeplayer3
+#TITAN_DEPS += $(D)/gstreamer $(D)/gst_plugins_base $(D)/gst_plugins_multibox_dvbmediasink
+#TITAN_DEPS += $(D)/gst_plugins_good $(D)/gst_plugins_bad $(D)/gst_plugins_ugly
+#endif
 TITAN_DEPS += $(LOCAL_TITAN_DEPS)
 
 ifeq ($(IMAGE), titan-wlandriver)
@@ -66,6 +66,7 @@ T_CPPFLAGS   += -I$(DRIVER_DIR)/include
 T_CPPFLAGS   += -I$(TARGET_DIR)/usr/include
 T_CPPFLAGS   += -I$(TARGET_DIR)/usr/include/freetype2
 T_CPPFLAGS   += -I$(TARGET_DIR)/usr/include/openssl
+T_CPPFLAGS   += -I$(TARGET_DIR)/usr/include/libpng16
 T_CPPFLAGS   += -I$(TARGET_DIR)/usr/include/dreamdvd
 T_CPPFLAGS   += -I$(KERNEL_DIR)/include
 T_CPPFLAGS   += -I$(DRIVER_DIR)/bpamem
@@ -144,12 +145,14 @@ $(D)/titan.do_prepare: | $(TITAN_DEPS)
 	cp -ra $(SOURCE_DIR)/titan $(SOURCE_DIR)/titan.org; \
 	set -e; cd $(SOURCE_DIR)/titan; \
 	pwd; \
+	echo >> Makefile.am; \
 	echo "Applying Titan patch..."; \
 	$(call apply_patches, $(TITAN_PATCH)); \
 	echo "Patching Titan completed."; \
 	cd $(SOURCE_DIR)/titan; \
 	cp ./libeplayer3/Makefile.am.sh4 ./libeplayer3/Makefile.am; \
 	cp ./titan/Makefile.am.sh4 ./titan/Makefile.am; \
+	cp ./plugins/networkbrowser/netlib/Makefile.sh4 ./plugins/networkbrowser/netlib/Makefile; \
 	echo; \
 	touch $@
 
@@ -173,21 +176,6 @@ $(SOURCE_DIR)/titan/config.status:
 			$(TITAN_OPT_OPTION) \
 			PKG_CONFIG=$(PKG_CONFIG) \
 			CPPFLAGS="$(T_CPPFLAGS)"
-	cd $(SOURCE_DIR)/titan/plugins; \
-		./autogen.sh $(SILENT_OPT); \
-		./configure $(SILENT_CONFIGURE) \
-			--build=$(BUILD) \
-			--host=$(TARGET) \
-			$(T_CONFIG_OPTS) \
-			--datadir=/usr/local/share \
-			--libdir=/usr/lib \
-			--bindir=/usr/local/bin \
-			--prefix=/usr \
-			--sysconfdir=/etc \
-			--enable-multicom324 \
-			$(TITAN_OPT_OPTION) \
-			PKG_CONFIG=$(PKG_CONFIG) \
-			CPPFLAGS="$(T_CPPFLAGS)"
 
 $(D)/titan.do_compile: $(SOURCE_DIR)/titan/config.status $(D)/titan_libipkg
 	$(SILENT)cd $(SOURCE_DIR)/titan; \
@@ -196,6 +184,9 @@ $(D)/titan.do_compile: $(SOURCE_DIR)/titan/config.status $(D)/titan_libipkg
 
 $(D)/titan: $(D)/titan.do_prepare $(D)/titan.do_compile
 	$(MAKE) -C $(SOURCE_DIR)/titan install DESTDIR=$(TARGET_DIR)
+	cd $(SOURCE_DIR)/titan/plugins; \
+		export TP_CPPFLAGS=$T_CPPFLAGS; \
+		./makesh4.sh stm24 1 nondev $(BOXTYPE) atemio sh4 $(SOURCE_DIR)/titan "$(T_CPPFLAGS)"
 	@echo -n "Stripping..."
 	$(SILENT)if [ -e $(TARGET_DIR)/usr/bin/titan ]; then \
 		$(TARGET)-strip $(TARGET_DIR)/usr/bin/titan; \
@@ -203,6 +194,14 @@ $(D)/titan: $(D)/titan.do_prepare $(D)/titan.do_compile
 	$(SILENT)if [ -e $(TARGET_DIR)/usr/local/bin/titan ]; then \
 		$(TARGET)-strip $(TARGET_DIR)/usr/local/bin/titan; \
 	fi
+	$(SILENT)echo " done."
+	$(SILENT)echo
+	$(TOUCH)
+
+$(D)/titan-plugin: $(D)/titan
+	cd $(SOURCE_DIR)/titan/plugins; \
+		./makesh4.sh stm24 1 nondev $(BOXTYPE) atemio sh4 $(SOURCE_DIR)/titan
+	$(MAKE) -C $(SOURCE_DIR)/titan install DESTDIR=$(TARGET_DIR)
 	$(SILENT)echo " done."
 	$(SILENT)echo
 	$(TOUCH)
@@ -307,4 +306,12 @@ titan-distclean:
 	rm -f $(D)/titan.do_prepare
 	rm -rf $(SOURCE_DIR)/titan
 	rm -rf $(SOURCE_DIR)/titan.org
+
+titan-plugin-clean:
+	$(SILENT)rm -f $(D)/titan-plugin
+	$(SILENT)cd $(NP_OBJDIR); \
+		$(MAKE) -C $(NP_OBJDIR) clean
+
+titan-plugin-distclean: $(D)/titan-distclean
+
 

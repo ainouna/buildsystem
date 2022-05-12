@@ -439,13 +439,70 @@
  
  AC_ARG_ENABLE([multicom324],
  	[AS_HELP_STRING(--enable-multicom324,    enable multicom324 stuff)],
-#--- a/Makefile.am.org
-#+++ b/Makefile.am
-#@@ -1,3 +1,3 @@
-# AUTOMAKE_OPTIONS = gnu
-# 
-#-SUBDIRS = titan plugins
-#+SUBDIRS = titan plugins libipkg
+@@ -37,4 +37,56 @@
+ Makefile
+ titan/Makefile
+ plugins/Makefile
++plugins/autotimer/Makefile
++plugins/browser/Makefile
++plugins/callmonitor1/Makefile
++plugins/catcatch/Makefile
++plugins/dlna/Makefile
++plugins/dvdplayer/Makefile
++plugins/e2starter/Makefile
++plugins/facebook/Makefile
++plugins/filemanager/Makefile
++plugins/gmediarender/Makefile
++plugins/hello/Makefile
++plugins/imdb/Makefile
++plugins/imdbapi/Makefile
++plugins/instar/Makefile
++plugins/ipsec/Makefile
++plugins/keylock/Makefile
++plugins/kodistarter/Makefile
++plugins/kravencfg/Makefile
++plugins/lcdpearl1/Makefile
++plugins/lcdsamsung/Makefile
++plugins/mboxinfo/Makefile
++plugins/mc/Makefile
++plugins/minisatip/Makefile
++plugins/multiimage/Makefile
++plugins/networkbrowser/Makefile
++plugins/networkbrowser/netlib/Makefile
++plugins/optimize/Makefile
++plugins/panel/Makefile
++plugins/permtime/Makefile
++plugins/readerconfig/Makefile
++plugins/rgui/Makefile
++plugins/satipclient/Makefile
++plugins/scriptexec/Makefile
++plugins/sispmctl/Makefile
++plugins/stock/Makefile
++plugins/stopifnotused/Makefile
++plugins/streaminfo/Makefile
++plugins/sudoku/Makefile
++plugins/tinews/Makefile
++plugins/tithek/Makefile
++plugins/tiwakeup/Makefile
++plugins/tmc/Makefile
++plugins/tmdb/Makefile
++plugins/TopfieldVFD/Makefile
++plugins/tsSchnitt/Makefile
++plugins/usbreset/Makefile
++plugins/weather/Makefile
++plugins/wins3/Makefile
++plugins/wlandisplay/Makefile
++plugins/wm2018/Makefile
++plugins/xupnpd/Makefile
++plugins/zapback/Makefile
+ ])
+--- a/Makefile.am.org
++++ b/Makefile.am
+@@ -1,3 +1,3 @@
+ AUTOMAKE_OPTIONS = gnu
+ 
+-SUBDIRS = titan plugins
++SUBDIRS = titan
 #--- titan.org/titan/Makefile.am
 #+++ titan/titan/Makefile.am
 #@@ -4,9 +4,14 @@
@@ -629,14 +686,286 @@
 # SUBDIRS = \
 # 	autotimer \
 #
---- a/plugins/autotimer/autotimer.c.org
-+++ b/plugins/autotimer/autotimer.c
-@@ -1,6 +1,7 @@
- #include "../../titan/struct.h"
- #include "../../titan/debug.h"
- #include "../../titan/header.h"
-+#include <sys/types.h>
+#--- a/plugins/autotimer/autotimer.c.org
+#+++ b/plugins/autotimer/autotimer.c
+#@@ -1,6 +1,7 @@
+# #include "../../titan/struct.h"
+# #include "../../titan/debug.h"
+# #include "../../titan/header.h"
+#+#include <sys/types.h>
+# 
+# char pluginname[] = "Auto Timer";
+# char plugindesc[] = "Extensions";
+--- titan.org/plugins/makesh4.sh
++++ titan/plugins/makesh4.sh
+@@ -12,6 +12,7 @@
+ DISTRO=$5
+ ARCH=$6
+ SRCDIR=$7
++TP_CPPFLAGS=$8
  
- char pluginname[] = "Auto Timer";
- char plugindesc[] = "Extensions";
+ echo $*
+ 
+@@ -22,6 +23,7 @@
+ echo DISTRO=$5
+ echo ARCH=$6
+ echo SRCDIR=$7
++echo TP_CPPFLAGS=$8
+ 
+ if [ -z "$STM" ]; then
+ 	echo "error: use makesh4.sh <stm23|stm23|stm24> <1|2>"
+@@ -38,33 +40,13 @@
+ 	devflag=""
+ fi
+ 
+-cd "$HOME"/flashimg/$SRCDIR/plugins
+-ln -s "$HOME"/flashimg/$SRCDIR/titan "$HOME"/flashimg/$SRCDIR/plugins/titan
++cd "$SRCDIR"/plugins
++ln -s "$SRCDIR"/titan "$SRCDIR"/plugins/titan
+ 
+ if [ $MEDIAFW = 1 ]; then
+     eplayer=EPLAYER3
+-    eplayerinclude="$HOME"/flashimg/BUILDGIT/checkout_"$STM"/apps/tools/libeplayer3/include
++    eplayerinclude="$SRCDIR"/../tools/libeplayer3/include
+ 	linking="-lm -lpthread -ldl -lpng -lfreetype -leplayer3 -ldreamdvd -ljpeg -lmmeimage -lmme_host -lz -lssl -lcrypto"
+-fi
+-if [ $MEDIAFW = 2 ]; then
+-    eplayer=EPLAYER4
+-    eplayerinclude="$HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cdkroot/usr/include/gstreamer-1.0
+-             -I$HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cdkroot/usr/include/glib-2.0
+-             -I$HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cdkroot/usr/include/libxml2
+-             -I$HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cdkroot/usr/lib/glib-2.0/include
+-             -I$HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cdkroot/usr/lib/gstreamer-1.0/include"
+-	linking="-lm -lglib-2.0 -lgobject-2.0 -lgio-2.0 -lpthread -ldl -lz -lpng -lfreetype -lgstreamer-1.0 -ldreamdvd -ljpeg -lmmeimage -lmme_host -lz -lssl -lcrypto"
+-fi
+-if [ $MEDIAFW = 4 ]; then
+-    eplayer="EPLAYER3 -DEPLAYER4"
+-    eplayerinclude="$HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cdkroot/usr/include/gstreamer-1.0
+-             -I$HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cdkroot/usr/include/glib-2.0
+-             -I$HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cdkroot/usr/include/libxml2
+-             -I$HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cdkroot/usr/lib/glib-2.0/include
+-             -I$HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cdkroot/usr/lib/gstreamer-1.0/include
+-             -I$HOME/flashimg/BUILDGIT/checkout_"$STM"/apps/tools/libeplayer3/include"
+-    eplayerlib=gstreamer-1.0
+-	linking="-lm -lglib-2.0 -lgobject-2.0 -lgio-2.0 -lpthread -ldl -lz -lpng -lfreetype -lgstreamer-1.0 -leplayer3 -ldreamdvd -ljpeg -lmmeimage -lmme_host -lz -lssl -lcrypto"
+ fi
+ 
+ if [ "$GROUP" = "dev" ] && [ "$TYPE" != "ufs910" ] && [ "$TYPE" != "ufs922" ]; then
+@@ -78,24 +60,24 @@
+ 
+ #if [ "$GROUP" = "dev" ];then
+ 	eplayerinclude="$eplayerinclude
+-    -I "$HOME"/flashimg/BUILDGIT/checkout_"$STM"/tufsbox/cdkroot/usr/include
+-    -I "$HOME"/flashimg/BUILDGIT/checkout_"$STM"/tufsbox/cdkroot/usr/include/freetype2
+-    -I "$HOME"/flashimg/BUILDGIT/checkout_"$STM"/tufsbox/cdkroot/usr/include/openssl
+-    -I "$HOME"/flashimg/BUILDGIT/checkout_"$STM"/apps/titan/libdreamdvd
+-    -I "$HOME"/flashimg/BUILDGIT/checkout_"$STM"/driver/bpamem
+-	-I "$HOME"/flashimg/BUILDGIT/checkout_"$STM"/apps/tools/libmme_image
+-	-I "$HOME"/flashimg/BUILDGIT/checkout_"$STM"/build_tmp/linux-sh4-2.6.32.71_stm24_0217/include
+-    -I "$HOME"/flashimg/$SRCDIR"
++    -I "$SRCDIR"/../tufsbox/cdkroot/usr/include
++    -I "$SRCDIR"/../tufsbox/cdkroot/usr/include/freetype2
++    -I "$SRCDIR"/../tufsbox/cdkroot/usr/include/openssl
++    -I "$SRCDIR"/libdreamdvd
++    -I "$SRCDIR"/../driver/bpamem
++	-I "$SRCDIR"/../tools/libmme_image
++	-I "$SRCDIR"/..//build_tmp/linux-sh4-2.6.32.71_stm24_0217/include
++    -I "$SRCDIR""
+ #else
+ #	eplayerinclude="$eplayerinclude
+-#    -I "$HOME"/flashimg/BUILDGIT/checkout_"$STM"/tufsbox/cdkroot/usr/include
+-#    -I "$HOME"/flashimg/BUILDGIT/checkout_"$STM"/tufsbox/cdkroot/usr/include/freetype2
+-#    -I "$HOME"/flashimg/BUILDGIT/checkout_"$STM"/tufsbox/cdkroot/usr/include/openssl
+-#    -I "$HOME"/flashimg/BUILDGIT/checkout_"$STM"/apps/titan/libdreamdvd
+-#    -I "$HOME"/flashimg/BUILDGIT/checkout_"$STM"/driver/bpamem
+-#	-I "$HOME"/flashimg/BUILDGIT/checkout_"$STM"/apps/tools/libmme_image
+-#	-I "$HOME"/flashimg/BUILDGIT/checkout_"$STM"/cdk/linux-sh4-2.6.32.61_stm24_0217/include
+-#    -I "$HOME"/flashimg/$SRCDIR"
++#    -I "$SRCDIR"/../tufsbox/cdkroot/usr/include
++#    -I "$SRCDIR"/../tufsbox/cdkroot/usr/include/freetype2
++#    -I "$SRCDIR"/../tufsbox/cdkroot/usr/include/openssl
++#    -I "$SRCDIR"/libdreamdvd
++#    -I "$SRCDIR"/../../driver/bpamem
++#    -I "$SRCDIR"/../../tools/libmme_image
++#    -I "$SRCDIR"/../../build_tmp/linux-sh4-2.6.32.61_stm24_0217/include
++#    -I "$SRCDIR"
+ #fi
+ 
+ compile()
+@@ -115,28 +97,26 @@
+ 		rm -rf .deps
+ 		rm -rf .libs
+ 		mkdir .deps
+-		STM=stm24
+-		cp $HOME/flashimg/BUILDGIT/checkout_$STM/apps/titan/plugins/libtool $HOME/flashimg/source.titan/plugins/libtool
+-		sed s#^AR=.*#AR=$HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cross/bin/sh4-linux-ar# -i $HOME/flashimg/source.titan/plugins/libtool
+-		sed s#^CC=.*#CC=$HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cross/bin/sh4-linux-gcc# -i $HOME/flashimg/source.titan/plugins/libtool
+-		sed s#^RANLIB=.*#RANLIB=$HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cross/bin/sh4-linux-ranlib# -i $HOME/flashimg/source.titan/plugins/libtool
+-		sed s#^NM=.*#NM=$HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cross/bin/sh4-linux-nm# -i $HOME/flashimg/source.titan/plugins/libtool
+-		sed s#^STRIP=.*#STRIP=$HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cross/bin/sh4-linux-strip# -i $HOME/flashimg/source.titan/plugins/libtool
+-		sed s#^OBJDUMP=.*#OBJDUMP=$HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cross/bin/sh4-linux-objdump# -i $HOME/flashimg/source.titan/plugins/libtool
++		sed s#^AR=.*#AR="$SRCDIR"/../../tufsbox/cross/bin/sh4-linux-ar# -i $SRCDIR/libtool
++		sed s#^CC=.*#CC="$SRCDIR"/../../tufsbox/cross/bin/sh4-linux-gcc# -i $SRCDIR/libtool
++		sed s#^RANLIB=.*#RANLIB="$SRCDIR"/../../tufsbox/cross/bin/sh4-linux-ranlib# -i $SRCDIR/libtool
++		sed s#^NM=.*#NM="$SRCDIR"/../../tufsbox/cross/bin/sh4-linux-nm# -i $SRCDIR/libtool
++		sed s#^STRIP=.*#STRIP="$SRCDIR"/../tufsbox/cross/bin/sh4-linux-strip# -i $SRCDIR/libtool
++		sed s#^OBJDUMP=.*#OBJDUMP="$SRCDIR"/....//tufsbox/cross/bin/sh4-linux-objdump# -i $SRCDIR/libtool
+ 	
+-		/bin/sh $HOME/flashimg/source.titan/plugins/libtool  --tag=CC   --mode=compile $HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cross/bin/sh4-linux-gcc -DPACKAGE_NAME=\"tuxbox-apps-titan-plugins\" -DPACKAGE_TARNAME=\"tuxbox-titan-plugins\" -DPACKAGE_VERSION=\"0.0.1\" -DPACKAGE_STRING=\"tuxbox-apps-titan-plugins\ 0.0.1\" -DPACKAGE_BUGREPORT=\"\" -DPACKAGE_URL=\"\" -DPACKAGE=\"tuxbox-titan-plugins\" -DVERSION=\"0.0.1\" -DSTDC_HEADERS=1 -DHAVE_SYS_TYPES_H=1 -DHAVE_SYS_STAT_H=1 -DHAVE_STDLIB_H=1 -DHAVE_STRING_H=1 -DHAVE_MEMORY_H=1 -DHAVE_STRINGS_H=1 -DHAVE_INTTYPES_H=1 -DHAVE_STDINT_H=1 -DHAVE_UNISTD_H=1 -DHAVE_DLFCN_H=1 -DLT_OBJDIR=\".libs/\" -I.  -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE -pipe -Os -I$eplayerinclude -MT $2.lo -MD -MP -MF .deps/$2.Tpo -c -o $2.lo $2.c
++		/bin/sh "$SRCDIR"/libtool  --tag=CC   --mode=compile $SRCDIR/../../tufsbox/cross/bin/sh4-linux-gcc -DPACKAGE_NAME=\"tuxbox-apps-titan-plugins\" -DPACKAGE_TARNAME=\"tuxbox-titan-plugins\" -DPACKAGE_VERSION=\"0.0.1\" -DPACKAGE_STRING=\"tuxbox-apps-titan-plugins\ 0.0.1\" -DPACKAGE_BUGREPORT=\"\" -DPACKAGE_URL=\"\" -DPACKAGE=\"tuxbox-titan-plugins\" -DVERSION=\"0.0.1\" -DSTDC_HEADERS=1 -DHAVE_SYS_TYPES_H=1 -DHAVE_SYS_STAT_H=1 -DHAVE_STDLIB_H=1 -DHAVE_STRING_H=1 -DHAVE_MEMORY_H=1 -DHAVE_STRINGS_H=1 -DHAVE_INTTYPES_H=1 -DHAVE_STDINT_H=1 -DHAVE_UNISTD_H=1 -DHAVE_DLFCN_H=1 -DLT_OBJDIR=\".libs/\" -I.  -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE -pipe -Os -I$eplayerinclude -MT $2.lo -MD -MP -MF .deps/$2.Tpo -c -o $2.lo $2.c
+ 		mv -f .deps/$2.Tpo .deps/$2.Plo
+ 	
+-		#/bin/sh $HOME/flashimg/source.titan/plugins/libtool  --tag=CC   --mode=link $HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cross/bin/sh4-linux-gcc  -I$HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cdkroot/usr/include -I$HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cdkroot/usr/include/freetype2 -I$HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cdkroot/usr/include/gstreamer-1.0 -I$HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cdkroot/usr/include/glib-2.0 -I$HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cdkroot/usr/include/libxml2 -I$HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cdkroot/usr/lib/glib-2.0/include -I$HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cdkroot/usr/lib/gstreamer-1.0/include -I$HOME/flashimg/BUILDGIT/checkout_$STM/driver/bpamem -I$HOME/flashimg/BUILDGIT/checkout_$STM/apps/titan/libdreamdvd -I$HOME/flashimg/BUILDGIT/checkout_$STM/apps/tools/libeplayer3/include -I$HOME/flashimg/BUILDGIT/checkout_$STM/apps/tools/libmmeimage -I$HOME/flashimg/BUILDGIT/checkout_$STM/apps/titan/titan  -Wl,-rpath -Wl,/usr/lib -Wl,-rpath-link -Wl,$HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cdkroot/usr/lib -L$HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cdkroot/usr/lib -L$HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cdkroot/lib -o lib$2.la -rpath /lib $2.lo
+-		$HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cross/bin/sh4-linux-gcc  -shared  -fPIC -DPIC  .libs/$2.o    $devflag -DSH4 -D$eplayer -Wl,-O1 -Wl,--as-needed   -Wl,-soname -Wl,lib$2.so.0 -L$HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cdkroot/usr/lib -L$HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cdkroot/lib $LIB -o .libs/lib$2.so $4
++		#/bin/sh $SRCDIR/libtool  --tag=CC   --mode=link "$SRCDIR"/../tufsbox//tufsbox/cross/bin/sh4-linux-gcc  -I"$SRCDIR"/../tufsbox//tufsbox/cdkroot/usr/include -I"$SRCDIR"/../tufsbox//tufsbox/cdkroot/usr/include/freetype2 -I"$SRCDIR"/../tufsbox//tufsbox/cdkroot/usr/include/gstreamer-1.0 -I"$SRCDIR"/../tufsbox//tufsbox/cdkroot/usr/include/glib-2.0 -I"$SRCDIR"/../tufsbox//tufsbox/cdkroot/usr/include/libxml2 -I"$SRCDIR"/../tufsbox//tufsbox/cdkroot/usr/lib/glib-2.0/include -I"$SRCDIR"/../tufsbox//tufsbox/cdkroot/usr/lib/gstreamer-1.0/include -I"$SRCDIR"/../tufsbox//driver/bpamem -I"$SRCDIR"/../tufsbox//apps/titan/libdreamdvd -I"$SRCDIR"/../tufsbox//apps/tools/libeplayer3/include -I"$SRCDIR"/../tufsbox//apps/tools/libmmeimage -I"$SRCDIR"/../tufsbox//apps/titan/titan  -Wl,-rpath -Wl,/usr/lib -Wl,-rpath-link -Wl,"$SRCDIR"/../tufsbox//tufsbox/cdkroot/usr/lib -L"$SRCDIR"/../tufsbox//tufsbox/cdkroot/usr/lib -L"$SRCDIR"/../tufsbox//tufsbox/cdkroot/lib -o lib$2.la -rpath /lib $2.lo
++		"$SRCDIR"/../../tufsbox/cross/bin/sh4-linux-gcc  -shared  -fPIC -DPIC  .libs/$2.o    $devflag -DSH4 -D$eplayer -Wl,-O1 -Wl,--as-needed   -Wl,-soname -Wl,lib$2.so.0 $8 -L"$SRCDIR"/../tufsbox/cdkroot/usr/lib -L"$SRCDIR"/../tufsbox/cdkroot/lib $LIB -o .libs/lib$2.so $4
+ 	
+ 		cp .libs/lib$2.so lib$2.so
+ 	else
+-		$HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cross/bin/sh4-linux-gcc -D$eplayer -Os $devflag -fPIC -Wall -Wno-unused-but-set-variable $4 -I$eplayerinclude -c $2.c -o $2.o
+-		$HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cross/bin/sh4-linux-gcc  -shared  -fPIC -DPIC  $2.o    $devflag -DSH4 -D$eplayer -Wl,-O1 -Wl,--as-needed   -Wl,-soname -Wl,lib$2.so.0 -L$HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cdkroot/usr/lib -L$HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cdkroot/lib $LIB -o lib$2.so $4
++		"$SRCDIR"/../../tufsbox/cross/bin/sh4-linux-gcc -D$eplayer -Os $devflag -fPIC -Wall -Wno-unused-but-set-variable $4 -I$eplayerinclude -c $2.c -o $2.o
++		"$SRCDIR"/../../tufsbox/cross/bin/sh4-linux-gcc  -shared  -fPIC -DPIC  $2.o    $devflag -DSH4 -D$eplayer -Wl,-O1 -Wl,--as-needed   -Wl,-soname -Wl,lib$2.so.0 -L$SRCDIR/../../tufsbox/cdkroot/usr/lib -L$SRCDIR/../../tufsbox/cdkroot/lib $LIB -o lib$2.so $4
+ 	fi
+ 
+-	$HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cross/bin/sh4-linux-strip lib$2.so
++	"$SRCDIR"/../../tufsbox/cross/bin/sh4-linux-strip lib$2.so
+ 
+ 	cd ..
+ 	echo "[titan]--------------------------------------------------------"
+@@ -146,63 +126,29 @@
+ 
+ uselibtool=n
+ 
+-rm -rf `find "$HOME"/flashimg/$SRCDIR/plugins -type f -name "*.o"`
+-rm -rf `find "$HOME"/flashimg/$SRCDIR/plugins -type f -name "*.so"`
++rm -rf `find "$SRCDIR"/plugins -type f -name "*.o"`
++rm -rf `find "$SRCDIR"/plugins -type f -name "*.so"`
+ 
+ echo "[titan]--------------------------------------------------------"
+ echo "[titan] Make networkbrowser"
+ echo "[titan]--------------------------------------------------------"
+ cd networkbrowser/netlib
+-cp Makefile."$STM".sh4 Makefile
++cp Makefile.sh4 Makefile
+ make clean
+ make
+-cd "$HOME"/flashimg/$SRCDIR/plugins
++cd $SRCDIR/plugins
+ echo "[titan]--------------------------------------------------------"
+ echo "[titan] networkbrowser done"
+ echo "[titan]--------------------------------------------------------"
+ 
+ #dir, file, extralib
++compile "filemanager" "filemanager" "" ""
++compile "imdb" "imdb" "" "-l curl"
++compile "imdbapi" "imdbapi" "" ""
+ compile "networkbrowser" "networkbrowser" "netlib/netlib" ""
+-compile "hello" "hello" "" ""
+-compile "panel" "panel" "" ""
+-compile "mc" "mc" "" "-l curl"
+-compile "TopfieldVFD" "TopfieldVFD" "" ""
+-compile "mboxinfo" "mboxinfo" "" ""
+-compile "browser" "browser" "" ""
+-compile "keylock" "keylock" "" ""
+-compile "permtime" "permtime" "" ""
+-compile "zapback" "zapback" "" ""
+-compile "imdbapi" "imdbapi" "" ""
+-compile "lcdpearl1" "lcdpearl1" "" ""
+-compile "lcdsamsung" "lcdsamsung" "" ""
+-compile "wlandisplay" "wlandisplay" "" ""
+-compile "callmonitor1" "callmonitor1" "" ""
+-compile "stopifnotused" "stopifnotused" "" ""
+-compile "wins3" "wins3" "" ""
+-compile "rgui" "rgui" "" ""
+-compile "dvdplayer" "dvdplay" "" ""
+-compile "scriptexec" "scriptexec" "" ""
+-compile "optimize" "optimize" "" ""
++compile "readerconfig" "readerconfig" "" ""
++compile "streaminfo" "streaminfo" "" ""
++compile "tithek" "tithek" "" "-l curl"
++compile "tmdb" "tmdb" "" ""
+ compile "weather" "weather" "" ""
+-compile "tinews" "tinews" "" ""
+-compile "stock" "stock" "" ""
+-compile "streaminfo" "streaminfo" "" ""
+-compile "tmc" "tmc" "" ""
+-compile "dlna" "dlna" "" ""
+-compile "hbbtv_sh4" "hbbtv" "" ""
+-compile "instar" "instar" "" ""
+-compile "tmdb" "tmdb" "" ""
+-compile "gmediarender" "gmediarender" "" ""
+-compile "imdb" "imdb" "" "-l curl"
+-compile "filemanager" "filemanager" "" ""
+-compile "catcatch" "catcatch" "" ""
+-compile "readerconfig" "readerconfig" "" ""
+-compile "tiwakeup" "tiwakeup" "" ""
+-compile "autotimer" "autotimer" "" ""
+-compile "usbreset" "usbreset" "" ""
+-compile "tsSchnitt" "tsSchnitt" "" ""
+-compile "xupnpd" "xupnpd" "" ""
+-compile "wm2018" "wm2018" "" ""
+-compile "kravencfg" "kravencfg" "" ""
+-compile "facebook" "facebook" "" "-l curl"
+-compile "tithek" "tithek" "" "-l curl"
++
+--- titan.org/plugins/Makefile.am
++++ titan/plugins/Makefile.am
+@@ -1,54 +1,13 @@
+ AUTOMAKE_OPTIONS = gnu
+ 
+ SUBDIRS = \
+-	autotimer \
+-	browser \
+-	callmonitor1 \
+-	catcatch \
+-	dlna \
+-	dvdplayer \
+-	e2starter \
+-	facebook \
+ 	filemanager \
+-	gmediarender \
+-	hello \
+ 	imdb \
+ 	imdbapi \
+-	instar \
+-	ipsec \
+-	keylock \
+-	kodistarter \
+-	kravencfg \
+-	lcdpearl1 \
+-	lcdsamsung \
+-	mboxinfo \
+-	mc \
+-	minisatip \
+-	multiimage \
+ 	networkbrowser \
+-	optimize \
+-	panel \
+-	permtime \
+ 	readerconfig \
+-	rgui \
+-	satipclient \
+-	scriptexec \
+-	sispmctl \
+-	stock \
+-	stopifnotused \
+ 	streaminfo \
+-	sudoku \
+-	tinews \
+ 	tithek \
+-	tiwakeup \
+-	tsSchnitt \
+-	tmc \
+ 	tmdb \
+-	TopfieldVFD \
+-	usbreset \
+-	weather \
+-	wins3 \
+-	wlandisplay \
+-	wm2018 \
+-	xupnpd \
+-	zapback
++	weather
++
 
