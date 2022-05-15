@@ -119,6 +119,18 @@ yaud-titan: yaud-none $(D)/titan $(D)/titan_release
 	@touch $(D)/build_complete
 
 #
+# yaud-titan-plugins
+#
+yaud-titan-plugins: yaud-none $(D)/titan $(D)/titan-plugins $(D)/titan_release
+	$(TUXBOX_YAUD_CUSTOMIZE)
+	@echo "***************************************************************"
+	@echo -e "\033[01;32m"
+	@echo " Build of Titan for $(BOXTYPE) successfully completed."
+	@echo -e "\033[00m"
+	@echo "***************************************************************"
+	@touch $(D)/build_complete
+
+#
 # titan
 #
 REPO_TITAN=$(GITHUB)"/OpenVisionE2/Titan.git"
@@ -148,7 +160,6 @@ $(D)/titan.do_prepare: | $(TITAN_DEPS)
 	echo >> Makefile.am; \
 	echo "Applying Titan patch..."; \
 	$(call apply_patches, $(TITAN_PATCH)); \
-	echo "Patching Titan completed."; \
 	cd $(SOURCE_DIR)/titan; \
 	cp ./libeplayer3/Makefile.am.sh4 ./libeplayer3/Makefile.am; \
 	cp ./titan/Makefile.am.sh4 ./titan/Makefile.am; \
@@ -184,9 +195,6 @@ $(D)/titan.do_compile: $(SOURCE_DIR)/titan/config.status $(D)/titan_libipkg
 
 $(D)/titan: $(D)/titan.do_prepare $(D)/titan.do_compile
 	$(MAKE) -C $(SOURCE_DIR)/titan install DESTDIR=$(TARGET_DIR)
-	cd $(SOURCE_DIR)/titan/plugins; \
-		export TP_CPPFLAGS=$T_CPPFLAGS; \
-		./makesh4.sh stm24 1 nondev $(BOXTYPE) atemio sh4 $(SOURCE_DIR)/titan "$(T_CPPFLAGS)"
 	@echo -n "Stripping..."
 	$(SILENT)if [ -e $(TARGET_DIR)/usr/bin/titan ]; then \
 		$(TARGET)-strip $(TARGET_DIR)/usr/bin/titan; \
@@ -198,24 +206,12 @@ $(D)/titan: $(D)/titan.do_prepare $(D)/titan.do_compile
 	$(SILENT)echo
 	$(TOUCH)
 
-$(D)/titan-plugin: $(D)/titan
-	cd $(SOURCE_DIR)/titan/plugins; \
-		./makesh4.sh stm24 1 nondev $(BOXTYPE) atemio sh4 $(SOURCE_DIR)/titan
-	$(MAKE) -C $(SOURCE_DIR)/titan install DESTDIR=$(TARGET_DIR)
-	$(SILENT)echo " done."
-	$(SILENT)echo
-	$(TOUCH)
-
-TITAN_LIBIPKG_PATCH =
-$(D)/titan_libipkg: $(D)/titan.do_prepare
-		$(START_BUILD)
-		$(SILENT)cd $(SOURCE_DIR)/titan/libipkg; \
-		aclocal $(ACLOCAL_FLAGS); \
-		libtoolize --automake -f -c; \
-		autoconf; \
-		autoheader; \
-		automake --add-missing; \
-		$(call apply_patches, $(TITAN_LIBIPKG_PATCH)); \
+$(SOURCE_DIR)/titan/plugins/config.status: $(D)/titan
+	$(SILENT)cd $(SOURCE_DIR)/titan/plugins; \
+		echo "Configuring titan-plugins..."; \
+		ln -s $(SOURCE_DIR)/titan $(SOURCE_DIR)/plugins/titan; \
+		./autogen.sh $(SILENT_OPT); \
+		$(BUILDENV) \
 		./configure $(SILENT_CONFIGURE) \
 			--build=$(BUILD) \
 			--host=$(TARGET) \
@@ -225,9 +221,47 @@ $(D)/titan_libipkg: $(D)/titan.do_prepare
 			--bindir=/usr/local/bin \
 			--prefix=/usr \
 			--sysconfdir=/etc \
+			--enable-multicom324 \
 			$(TITAN_OPT_OPTION) \
 			PKG_CONFIG=$(PKG_CONFIG) \
-			CPPFLAGS="$(T_CPPFLAGS)" \
+			CPPFLAGS="$(T_CPPFLAGS)"
+
+$(D)/titan-plugins.do_compile: $(D)/titan $(SOURCE_DIR)/titan/plugins/config.status
+	$(SILENT)cd $(SOURCE_DIR)/titan/plugins; \
+		$(MAKE) all
+#		./makesh4.sh stm24 1 nondev $(BOXTYPE) atemio sh4 $(SOURCE_DIR)/titan
+	@touch $@
+
+$(D)/titan-plugins: $(D)/titan $(SOURCE_DIR)/titan/plugins/config.status $(D)/titan-plugins.do_compile
+	$(START_BUILD)
+	$(SILENT)cd $(SOURCE_DIR)/titan/plugins
+	$(MAKE) -C $(SOURCE_DIR)/titan install DESTDIR=$(TARGET_DIR)
+	$(SILENT)echo " done."
+	$(SILENT)echo
+	$(TOUCH)
+
+TITAN_LIBIPKG_PATCH =
+$(D)/titan_libipkg: $(D)/titan.do_prepare
+	$(START_BUILD)
+	$(SILENT)cd $(SOURCE_DIR)/titan/libipkg; \
+	aclocal $(ACLOCAL_FLAGS); \
+	libtoolize --automake -f -c; \
+	autoconf; \
+	autoheader; \
+	automake --add-missing; \
+	$(call apply_patches, $(TITAN_LIBIPKG_PATCH)); \
+	./configure $(SILENT_CONFIGURE) \
+		--build=$(BUILD) \
+		--host=$(TARGET) \
+		$(T_CONFIG_OPTS) \
+		--datadir=/usr/local/share \
+		--libdir=/usr/lib \
+		--bindir=/usr/local/bin \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		$(TITAN_OPT_OPTION) \
+		PKG_CONFIG=$(PKG_CONFIG) \
+		CPPFLAGS="$(T_CPPFLAGS)" \
 		; \
 		$(MAKE) all; \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
@@ -307,11 +341,14 @@ titan-distclean:
 	rm -rf $(SOURCE_DIR)/titan
 	rm -rf $(SOURCE_DIR)/titan.org
 
-titan-plugin-clean:
-	$(SILENT)rm -f $(D)/titan-plugin
+titan-plugins-clean: titan-clean
+	$(SILENT)rm -f $(D)/titan-plugins
 	$(SILENT)cd $(NP_OBJDIR); \
 		$(MAKE) -C $(NP_OBJDIR) clean
 
-titan-plugin-distclean: $(D)/titan-distclean
+titan-plugins-distclean: $(D)/titan-distclean
+	$(SILENT)rm -f $(D)/titan-plugins
+	$(SILENT)cd $(NP_OBJDIR); \
+		$(MAKE) -C $(NP_OBJDIR) clean
 
 

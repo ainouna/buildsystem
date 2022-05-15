@@ -400,7 +400,7 @@ case "$IMAGE" in
 			fi
 		fi;;
 	tita*)
-		echo "make yaud-titan-plugins" >> $CURDIR/build
+		echo "make yaud-titan" >> $CURDIR/build
 
 		# Titan is always built with eplayer3 and ffmpeg version 3.X.X
 		MEDIAFW="eplayer3"
