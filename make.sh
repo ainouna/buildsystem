@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20220510.1
+# Version 20220515.1
 
 ##############################################
 
@@ -400,7 +400,7 @@ case "$IMAGE" in
 			fi
 		fi;;
 	tita*)
-		echo "make yaud-titan" >> $CURDIR/build
+		echo "make yaud-titan-plugins" >> $CURDIR/build
 
 		# Titan is always built with eplayer3 and ffmpeg version 3.X.X
 		MEDIAFW="eplayer3"

@@ -77,7 +77,7 @@ titan-release-common_ipbox:
 	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/frontends/*.ko $(RELEASE_DIR)/lib/modules/
 	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/stgfb/stmfb/stmcore-display-stx7109c3.ko $(RELEASE_DIR)/lib/modules/
 	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/siinfo/siinfo.ko $(RELEASE_DIR)/lib/modules/
-	$(SILENT)cp -f $(SKEL_ROOT)/release/fstab_ipbox $(RELEASE_DIR)/etc/fstab
+	$(SILENT)cp -f $(SKEL_ROOT)/release/fstab_ipbox $(RELEASE_DIR)/var/etc/fstab
 	$(SILENT)cp $(SKEL_ROOT)/boot/video_7109.elf $(RELEASE_DIR)/boot/video.elf
 	$(SILENT)cp $(SKEL_ROOT)/boot/audio_7109.elf $(RELEASE_DIR)/boot/audio.elf
 	$(SILENT)cp $(SKEL_ROOT)/firmware/as102_data1_st.hex $(RELEASE_DIR)/lib/firmware/
@@ -240,6 +240,7 @@ titan-release-hs8200:
 	$(SILENT)cp $(SKEL_ROOT)/firmware/dvb-fe-stv6306.fw $(RELEASE_DIR)/lib/firmware/
 	$(SILENT)rm -f $(RELEASE_DIR)/lib/modules/boxtype.ko
 	$(SILENT)rm  -f $(RELEASE_DIR)/lib/modules/mpeg2hw.ko
+	$(SILENT)echo "9" > $(RELEASE_DIR)/etc/.board
 
 #
 # hs9510
@@ -363,7 +364,7 @@ titan-release-adb_box:
 	$(SILENT)cp $(SKEL_ROOT)/firmware/as102_data2_st.hex $(RELEASE_DIR)/lib/firmware/
 	$(SILENT)cp $(SKEL_ROOT)/firmware/dvb-fe-avl2108.fw $(RELEASE_DIR)/lib/firmware/
 	$(SILENT)cp $(SKEL_ROOT)/firmware/dvb-fe-avl6222.fw $(RELEASE_DIR)/lib/firmware/
-	$(SILENT)cp -f $(SKEL_ROOT)/release/fstab_adb_box $(RELEASE_DIR)/etc/fstab
+	$(SILENT)cp -f $(SKEL_ROOT)/release/fstab_adb_box $(RELEASE_DIR)/var/etc/fstab
 	$(SILENT)cp -dp $(SKEL_ROOT)/release/lircd_adb_box.conf $(RELEASE_DIR)/etc/lircd.conf
 
 #
@@ -377,7 +378,7 @@ titan-release-tf7700:
 	$(SILENT)cp $(SKEL_ROOT)/boot/video_7109.elf $(RELEASE_DIR)/boot/video.elf
 	$(SILENT)cp $(SKEL_ROOT)/boot/audio_7109.elf $(RELEASE_DIR)/boot/audio.elf
 	$(SILENT)cp $(SKEL_ROOT)/firmware/dvb-fe-cx24116.fw $(RELEASE_DIR)/lib/firmware/
-	$(SILENT)cp -f $(SKEL_ROOT)/release/fstab_tf7700 $(RELEASE_DIR)/etc/fstab
+	$(SILENT)cp -f $(SKEL_ROOT)/release/fstab_tf7700 $(RELEASE_DIR)/var/etc/fstab
 ifeq ($(DESTINATION), flash)
 	$(MAKE) $(D)/tfinstaller
 endif
@@ -469,7 +470,7 @@ titan-release-vip1_v2:
 	$(SILENT)cp $(SKEL_ROOT)/boot/video_7109.elf $(RELEASE_DIR)/boot/video.elf
 	$(SILENT)cp $(SKEL_ROOT)/boot/audio_7109.elf $(RELEASE_DIR)/boot/audio.elf
 #	$(SILENT)rm -f $(RELEASE_DIR)/lib/firmware/dvb-fe-{avl2108,avl6222,cx24116,cx21143,stv6306}.fw
-#	$(SILENT)cp -f $(SKEL_ROOT)/release/fstab_vip2 $(RELEASE_DIR)/etc/fstab
+#	$(SILENT)cp -f $(SKEL_ROOT)/release/fstab_vip2 $(RELEASE_DIR)/var/etc/fstab
 	$(SILENT)cp -dp $(SKEL_ROOT)/release/lircd_vip_rc12.conf $(RELEASE_DIR)/etc/lircd.conf
 	$(SILENT)cp -f $(TARGET_DIR)/sbin/shutdown $(RELEASE_DIR)/sbin/
 	$(SILENT)mkdir -p $(RELEASE_DIR)/var/run/lirc
@@ -525,26 +526,23 @@ titan-release-base:
 	$(SILENT)install -d $(RELEASE_DIR)/{bin,boot,dev,dev.static,etc,home,lib,mnt,proc,ram,sbin,swap,sys,tmp,usr,var}
 	$(SILENT)install -d $(RELEASE_DIR)/etc/{init.d,mdev,ssl,titan.restore,tpk.restore,tuxtxt}
 	$(SILENT)install -d $(RELEASE_DIR)/lib/{autofs,firmware,gio,lsb,modules,titan,udev}
+	$(SILENT)install -d $(RELEASE_DIR)/mnt/{bin,config,logs,network,script,settings,swapextensions,tpk}
+	$(SILENT)install -d $(RELEASE_DIR)/mnt/swapextensions/{bin,boot,etc,keys,lib,usr}
+	$(SILENT)install -d $(RELEASE_DIR)/tmp/{bsubsys,tithek}
 	$(SILENT)install -d $(RELEASE_DIR)/usr/{bin,local,sbin,share,tuxtxt}
 	$(SILENT)install -d $(RELEASE_DIR)/usr/local/{bin,sbin}
 	$(SILENT)install -d $(RELEASE_DIR)/usr/share/{alsa,udhcpc,zoneinfo}
-#	$(SILENT)install -d $(RELEASE_DIR)/usr/share/tuxbox/titan/icons/logo
-#	$(SILENT)install -d $(RELEASE_DIR)/usr/share/lua/5.2
 	$(SILENT)install -d $(RELEASE_DIR)/var/{bin,boot,etc,lib,media,root,update,usr}
 	$(SILENT)install -d $(RELEASE_DIR)/var/etc/{autostart,boot,codepages,ipkg,network,titan,tuxbox,Wireless}
 	$(SILENT)install -d $(RELEASE_DIR)/var/lib/{init,modules,nfs}
-	$(SILENT)install -d $(RELEASE_DIR)/var/media/{net,usb}
-#	$(SILENT)install -d $(RELEASE_DIR)/var/net/epg
-#	$(SILENT)install -d $(RELEASE_DIR)/var/tuxbox/{config,fonts,locale,plugins,themes}
-#	$(SILENT)install -d $(RELEASE_DIR)/var/tuxbox/webtv
-#	$(SILENT)install -d $(RELEASE_DIR)/var/tuxbox/config/{webtv,zapit}
+	$(SILENT)install -d $(RELEASE_DIR)/var/media/{autofs,net}
 	$(SILENT)install -d $(RELEASE_DIR)/var/usr/{lib,local,share}
-	$(SILENT)install -d $(RELEASE_DIR)/var/usr/lib/{alsa-lib,directfb-1.4-5,ipkg,locale}
+	$(SILENT)install -d $(RELEASE_DIR)/var/usr/lib/{alsa-lib,directfb-1.4-5,ipkg}
 	$(SILENT)install -d $(RELEASE_DIR)/var/usr/local/share
 	$(SILENT)install -d $(RELEASE_DIR)/var/usr/local/share/titan
-	$(SILENT)install -d $(RELEASE_DIR)/var/usr/local/share/titan/{help,netsurf,plugins,po,skin}
+	$(SILENT)install -d $(RELEASE_DIR)/var/usr/local/share/titan/{help,netsurf,picons,plugins,po}
 	$(SILENT)install -d $(RELEASE_DIR)/var/usr/share/fonts
-	$(SILENT)ln -s /tmp/.swfinfo $(RELEASE_DIR)/.swfinfo
+# /
 	$(SILENT)ln -s /media/autofs $(RELEASE_DIR)/autofs
 	$(SILENT)ln -s /var/media $(RELEASE_DIR)/media
 	$(SILENT)ln -s /var/root $(RELEASE_DIR)/root
@@ -565,7 +563,7 @@ titan-release-base:
 # /bin
 	$(SILENT)cp -a $(TARGET_DIR)/bin/* $(RELEASE_DIR)/bin/
 # /etc
-	$(SILENT)echo "sh4" > $(RELEASE_DIR)/etc/.board
+	$(SILENT)echo "sh4" > $(RELEASE_DIR)/etc/.arch
 	$(SILENT)echo "ATEMIO" > $(RELEASE_DIR)/etc/.buildgroup
 	$(SILENT)touch $(RELEASE_DIR)/etc/.firstboot
 	$(SILENT)touch $(RELEASE_DIR)/etc/.player3
@@ -755,80 +753,63 @@ endif
 #
 # copy root_titan
 #
+# /bin
 	$(SILENT)cp -aR $(SKEL_ROOT)/root_titan/bin/* $(RELEASE_DIR)/bin
-#	echo "oops"
-#	$(SILENT)ln -sf /etc $(RELEASE_DIR)/usr/local/etc
-#	echo "oops"
-	$(SILENT)ln -sf /sbin/abfrage $(RELEASE_DIR)/bin/abfrage
-	$(SILENT)ln -sf /sbin/backup.sh $(RELEASE_DIR)/bin/backup.sh
-	$(SILENT)ln -sf /sbin/bitrate $(RELEASE_DIR)/bin/bitrate
-	$(SILENT)ln -sf /sbin/checknet $(RELEASE_DIR)/bin/checknet
-	$(SILENT)ln -sf /sbin/cmd.sh $(RELEASE_DIR)/bin/cmd.sh
-	$(SILENT)ln -sf /sbin/create_mvi.sh $(RELEASE_DIR)/bin/create_mvi.sh
-	$(SILENT)ln -sf /sbin/curlftpfs $(RELEASE_DIR)/bin/curlftpfs
-	$(SILENT)ln -sf /sbin/djmount $(RELEASE_DIR)/bin/djmount
-	$(SILENT)ln -sf /sbin/emu.sh $(RELEASE_DIR)/bin/emu.sh
-	$(SILENT)ln -sf /sbin/ether-wake.sh $(RELEASE_DIR)/bin/ether-wake.sh
-	$(SILENT)ln -sf /sbin/flashcp $(RELEASE_DIR)/bin/flashcp
-	$(SILENT)ln -sf /sbin/flash_eraseall $(RELEASE_DIR)/bin/flash_eraseall
-	$(SILENT)ln -sf /sbin/flashutil $(RELEASE_DIR)/bin/flashutil
-	$(SILENT)ln -sf /sbin/fsck.info $(RELEASE_DIR)/sbin/fsck.ext2.gui
-	$(SILENT)ln -sf /sbin/fsck.info $(RELEASE_DIR)/sbin/fsck.ext3.gui
-	$(SILENT)ln -sf /sbin/fsck.info $(RELEASE_DIR)/sbin/fsck.ext4,gui
-	$(SILENT)ln -sf /sbin/fsck.info $(RELEASE_DIR)/sbin/fsck.fat.gui
-	$(SILENT)ln -sf /sbin/fsck.info $(RELEASE_DIR)/sbin/fsck.jfs.gui
-	$(SILENT)rm -f $(RELEASE_DIR)/sbin/fsck.jfs
-	$(SILENT)ln -sf jfs_fsck $(RELEASE_DIR)/sbin/fsck.jfs
-	$(SILENT)ln -sf /sbin/fw_printenv $(RELEASE_DIR)/sbin/fw_setenv
-	$(SILENT)ln -sf /sbin/mkfs.info $(RELEASE_DIR)/sbin/mkfs.ext2.gui
-	$(SILENT)ln -sf /sbin/mkfs.info $(RELEASE_DIR)/sbin/mkfs.ext3.gui
-	$(SILENT)ln -sf /sbin/mkfs.info $(RELEASE_DIR)/sbin/mkfs.ext4.gui
-	$(SILENT)ln -sf /sbin/mkfs.info $(RELEASE_DIR)/sbin/mkfs.fat.gui
-	$(SILENT)ln -sf /sbin/mkfs.info $(RELEASE_DIR)/sbin/mkfs.jfs.gui
-	$(SILENT)ln -sf /sbin/getfreespace $(RELEASE_DIR)/bin/getfreespace
-	$(SILENT)ln -sf /sbin/getip $(RELEASE_DIR)/bin/getip
-	$(SILENT)ln -sf /sbin/gotnetlink $(RELEASE_DIR)/bin/gotnetlink
-	$(SILENT)ln -sf /sbin/grab $(RELEASE_DIR)/bin/grab
-	$(SILENT)ln -sf /sbin/grab.sh $(RELEASE_DIR)/bin/grab.sh
-	$(SILENT)ln -sf /sbin/hd-idle $(RELEASE_DIR)/bin/hd-idle
-	$(SILENT)ln -sf /sbin/hotplug $(RELEASE_DIR)/bin/hotplug
-	$(SILENT)ln -sf /sbin/hotplug.sh $(RELEASE_DIR)/bin/hotplug.sh
-	$(SILENT)ln -sf /sbin/ifmetric $(RELEASE_DIR)/bin/ifmetric
-	$(SILENT)ln -sf /sbin/inadyn $(RELEASE_DIR)/bin/inadyn
-	$(SILENT)ln -sf /sbin/jpegtran $(RELEASE_DIR)/bin/jpegtran
-	$(SILENT)ln -sf /sbin/mkfs.info $(RELEASE_DIR)/bin/mkfs.info
-	$(SILENT)ln -sf /sbin/mount.sh $(RELEASE_DIR)/bin/mount.sh
-	$(SILENT)ln -sf /sbin/nandwrite $(RELEASE_DIR)/bin/nandwrite
-	$(SILENT)ln -sf /sbin/netspeed $(RELEASE_DIR)/bin/netspeed
-	$(SILENT)ln -sf /sbin/netspeed2 $(RELEASE_DIR)/bin/netspeed2
-	$(SILENT)ln -sf /sbin/ntfsmount $(RELEASE_DIR)/bin/ntfsmount
-	$(SILENT)ln -sf /sbin/parter.sh $(RELEASE_DIR)/bin/parter.sh
-	$(SILENT)ln -sf /sbin/pin $(RELEASE_DIR)/bin/pin
-	$(SILENT)ln -sf /sbin/pmap_dump $(RELEASE_DIR)/bin/pmap_dump
-	$(SILENT)ln -sf /sbin/pmap_set $(RELEASE_DIR)/bin/pmap_set
-	$(SILENT)ln -sf /sbin/rarfs $(RELEASE_DIR)/bin/rarfs
-	$(SILENT)ln -sf /sbin/repairjffs2.sh $(RELEASE_DIR)/bin/repairjffs2.sh
-	$(SILENT)ln -sf /sbin/reset.sh $(RELEASE_DIR)/bin/reset.sh
-	$(SILENT)ln -sf /sbin/sdparm $(RELEASE_DIR)/bin/sdparm
-	$(SILENT)ln -sf /sbin/settings.sh $(RELEASE_DIR)/bin/settings.sh
-	$(SILENT)ln -sf /sbin/sleepms $(RELEASE_DIR)/bin/sleepms
-	$(SILENT)ln -sf /sbin/smbclient $(RELEASE_DIR)/bin/smbclient
-	$(SILENT)ln -sf /sbin/start-function $(RELEASE_DIR)/bin/start-function
-	$(SILENT)ln -sf /sbin/start_sec.sh $(RELEASE_DIR)/bin/start_sec.sh
-	$(SILENT)ln -sf /sbin/swap.sh $(RELEASE_DIR)/bin/swap.sh
-	$(SILENT)ln -sf /sbin/sync-rcconfig.sh $(RELEASE_DIR)/bin/sync-rcconfig.sh
-	$(SILENT)ln -sf /sbin/sync-start-config.sh $(RELEASE_DIR)/bin/sync-start-config.sh
-	$(SILENT)ln -sf /sbin/sync-titan-config.sh $(RELEASE_DIR)/bin/sync-titan-config.sh
-	$(SILENT)ln -sf /sbin/sysinfo.sh $(RELEASE_DIR)/bin/sysinfo.sh
-	$(SILENT)ln -sf /sbin/tar.info $(RELEASE_DIR)/bin/tar.info
-	$(SILENT)ln -sf /sbin/tuxtxt.sh $(RELEASE_DIR)/bin/tuxtxt.sh
-	$(SILENT)ln -sf /sbin/update.sh $(RELEASE_DIR)/bin/update.sh
-	$(SILENT)ln -sf /sbin/usbspeed.sh $(RELEASE_DIR)/bin/usbspeed.sh
-	$(SILENT)ln -sf /sbin/wget.info $(RELEASE_DIR)/bin/wget.info
-#	$(SILENT)cp -aR $(SKEL_ROOT)/root_titan/boot/* $(RELEASE_DIR)/boot
-	$(SILENT)cp -aR $(SKEL_ROOT)/root_titan/lib/* $(RELEASE_DIR)/lib
-	$(SILENT)ln -sf /tmp $(RELEASE_DIR)/lib/init
-	$(SILENT)ln -sf /usr/share/fonts $(RELEASE_DIR)/lib/fonts
+#	$(SILENT)ln -sf /sbin/abfrage $(RELEASE_DIR)/bin/abfrage
+#	$(SILENT)ln -sf /sbin/backup.sh $(RELEASE_DIR)/bin/backup.sh
+#	$(SILENT)ln -sf /sbin/bitrate $(RELEASE_DIR)/bin/bitrate
+#	$(SILENT)ln -sf /sbin/checknet $(RELEASE_DIR)/bin/checknet
+#	$(SILENT)ln -sf /sbin/cmd.sh $(RELEASE_DIR)/bin/cmd.sh
+#	$(SILENT)ln -sf /sbin/create_mvi.sh $(RELEASE_DIR)/bin/create_mvi.sh
+#	$(SILENT)ln -sf /sbin/curlftpfs $(RELEASE_DIR)/bin/curlftpfs
+#	$(SILENT)ln -sf /sbin/djmount $(RELEASE_DIR)/bin/djmount
+#	$(SILENT)ln -sf /sbin/emu.sh $(RELEASE_DIR)/bin/emu.sh
+#	$(SILENT)ln -sf /sbin/ether-wake.sh $(RELEASE_DIR)/bin/ether-wake.sh
+#	$(SILENT)ln -sf /sbin/flashcp $(RELEASE_DIR)/bin/flashcp
+#	$(SILENT)ln -sf /sbin/flash_eraseall $(RELEASE_DIR)/bin/flash_eraseall
+#	$(SILENT)ln -sf /sbin/flashutil $(RELEASE_DIR)/bin/flashutil
+#	$(SILENT)ln -sf /sbin/getfreespace $(RELEASE_DIR)/bin/getfreespace
+#	$(SILENT)ln -sf /sbin/getip $(RELEASE_DIR)/bin/getip
+#	$(SILENT)ln -sf /sbin/gotnetlink $(RELEASE_DIR)/bin/gotnetlink
+#	$(SILENT)ln -sf /sbin/grab $(RELEASE_DIR)/bin/grab
+#	$(SILENT)ln -sf /sbin/grab.sh $(RELEASE_DIR)/bin/grab.sh
+#	$(SILENT)ln -sf /sbin/hd-idle $(RELEASE_DIR)/bin/hd-idle
+#	$(SILENT)ln -sf /sbin/hotplug $(RELEASE_DIR)/bin/hotplug
+#	$(SILENT)ln -sf /sbin/hotplug.sh $(RELEASE_DIR)/bin/hotplug.sh
+#	$(SILENT)ln -sf /sbin/ifmetric $(RELEASE_DIR)/bin/ifmetric
+#	$(SILENT)ln -sf /sbin/inadyn $(RELEASE_DIR)/bin/inadyn
+#	$(SILENT)ln -sf /sbin/jpegtran $(RELEASE_DIR)/bin/jpegtran
+#	$(SILENT)ln -sf /sbin/mkfs.info $(RELEASE_DIR)/bin/mkfs.info
+#	$(SILENT)ln -sf /sbin/mount.sh $(RELEASE_DIR)/bin/mount.sh
+#	$(SILENT)ln -sf /sbin/nandwrite $(RELEASE_DIR)/bin/nandwrite
+#	$(SILENT)ln -sf /sbin/netspeed $(RELEASE_DIR)/bin/netspeed
+#	$(SILENT)ln -sf /sbin/netspeed2 $(RELEASE_DIR)/bin/netspeed2
+#	$(SILENT)ln -sf /sbin/ntfsmount $(RELEASE_DIR)/bin/ntfsmount
+#	$(SILENT)ln -sf /sbin/parter.sh $(RELEASE_DIR)/bin/parter.sh
+#	$(SILENT)ln -sf /sbin/pin $(RELEASE_DIR)/bin/pin
+#	$(SILENT)ln -sf /sbin/pmap_dump $(RELEASE_DIR)/bin/pmap_dump
+#	$(SILENT)ln -sf /sbin/pmap_set $(RELEASE_DIR)/bin/pmap_set
+#	$(SILENT)ln -sf /sbin/rarfs $(RELEASE_DIR)/bin/rarfs
+#	$(SILENT)ln -sf /sbin/repairjffs2.sh $(RELEASE_DIR)/bin/repairjffs2.sh
+#	$(SILENT)ln -sf /sbin/reset.sh $(RELEASE_DIR)/bin/reset.sh
+#	$(SILENT)ln -sf /sbin/sdparm $(RELEASE_DIR)/bin/sdparm
+#	$(SILENT)ln -sf /sbin/settings.sh $(RELEASE_DIR)/bin/settings.sh
+#	$(SILENT)ln -sf /sbin/sleepms $(RELEASE_DIR)/bin/sleepms
+#	$(SILENT)ln -sf /sbin/smbclient $(RELEASE_DIR)/bin/smbclient
+#	$(SILENT)ln -sf /sbin/start-function $(RELEASE_DIR)/bin/start-function
+#	$(SILENT)ln -sf /sbin/start_sec.sh $(RELEASE_DIR)/bin/start_sec.sh
+#	$(SILENT)ln -sf /sbin/swap.sh $(RELEASE_DIR)/bin/swap.sh
+#	$(SILENT)ln -sf /sbin/sync-rcconfig.sh $(RELEASE_DIR)/bin/sync-rcconfig.sh
+#	$(SILENT)ln -sf /sbin/sync-start-config.sh $(RELEASE_DIR)/bin/sync-start-config.sh
+#	$(SILENT)ln -sf /sbin/sync-titan-config.sh $(RELEASE_DIR)/bin/sync-titan-config.sh
+#	$(SILENT)ln -sf /sbin/sysinfo.sh $(RELEASE_DIR)/bin/sysinfo.sh
+#	$(SILENT)ln -sf /sbin/tar.info $(RELEASE_DIR)/bin/tar.info
+#	$(SILENT)ln -sf /sbin/tuxtxt.sh $(RELEASE_DIR)/bin/tuxtxt.sh
+#	$(SILENT)ln -sf /sbin/update.sh $(RELEASE_DIR)/bin/update.sh
+#	$(SILENT)ln -sf /sbin/usbspeed.sh $(RELEASE_DIR)/bin/usbspeed.sh
+#	$(SILENT)ln -sf /sbin/wget.info $(RELEASE_DIR)/bin/wget.info
+# /etc
+	$(SILENT)ln -sf /var/etc/Wireless $(RELEASE_DIR)/etc/Wireless
 	$(SILENT)ln -sf /var/etc/ddsubt $(RELEASE_DIR)/etc/ddsubt
 	$(SILENT)ln -sf /var/etc/default_gw $(RELEASE_DIR)/etc/default_gw
 	$(SILENT)ln -sf /var/etc/exports $(RELEASE_DIR)/etc/exports
@@ -842,7 +823,7 @@ endif
 	$(SILENT)ln -sf /var/etc/ipkg $(RELEASE_DIR)/etc/ipkg
 	$(SILENT)ln -sf /var/etc/localtime $(RELEASE_DIR)/etc/localtime
 	$(SILENT)ln -sf /var/etc/network $(RELEASE_DIR)/etc/network
-	$(SILENT)ln -sf /var/etc/passwd $(RELEASE_DIR)/etc/passwd
+	$(SILENT)ln -sf /mnt/network/passwd $(RELEASE_DIR)/etc/passwd
 	$(SILENT)ln -sf /var/etc/profile $(RELEASE_DIR)/etc/profile
 	$(SILENT)ln -sf /var/etc/protocols $(RELEASE_DIR)/etc/protocols
 	$(SILENT)ln -sf /var/etc/resolv.conf $(RELEASE_DIR)/etc/resolv.conf
@@ -852,19 +833,38 @@ endif
 	$(SILENT)ln -sf /var/etc/timezone.xml $(RELEASE_DIR)/etc/timezone.xml
 	$(SILENT)ln -sf /var/etc/vdstandby.cfg $(RELEASE_DIR)/etc/vdstandby.cfg
 	$(SILENT)ln -sf /var/etc/videomode $(RELEASE_DIR)/etc/videomode
-	$(SILENT)ln -sf /var/etc/Wireless $(RELEASE_DIR)/etc/Wireless
-	$(SILENT)ln -sf /var/etc/wpa_supplicant.conf $(RELEASE_DIR)/etc/wpa_supplicant.conf
+	$(SILENT)ln -sf /mnt/network/wpa_supplicant.conf $(RELEASE_DIR)/etc/wpa_supplicant.conf
+# /sbin
+#	$(SILENT)ln -sf /sbin/fsck.info $(RELEASE_DIR)/sbin/fsck.ext2.gui
+#	$(SILENT)ln -sf /sbin/fsck.info $(RELEASE_DIR)/sbin/fsck.ext3.gui
+#	$(SILENT)ln -sf /sbin/fsck.info $(RELEASE_DIR)/sbin/fsck.ext4,gui
+#	$(SILENT)ln -sf /sbin/fsck.info $(RELEASE_DIR)/sbin/fsck.fat.gui
+#	$(SILENT)ln -sf /sbin/fsck.info $(RELEASE_DIR)/sbin/fsck.jfs.gui
+#	$(SILENT)rm -f $(RELEASE_DIR)/sbin/fsck.jfs
+#	$(SILENT)ln -sf jfs_fsck $(RELEASE_DIR)/sbin/fsck.jfs
+#	$(SILENT)ln -sf /sbin/fw_printenv $(RELEASE_DIR)/sbin/fw_setenv
+#	$(SILENT)ln -sf /sbin/mkfs.info $(RELEASE_DIR)/sbin/mkfs.ext2.gui
+#	$(SILENT)ln -sf /sbin/mkfs.info $(RELEASE_DIR)/sbin/mkfs.ext3.gui
+#	$(SILENT)ln -sf /sbin/mkfs.info $(RELEASE_DIR)/sbin/mkfs.ext4.gui
+#	$(SILENT)ln -sf /sbin/mkfs.info $(RELEASE_DIR)/sbin/mkfs.fat.gui
+#	$(SILENT)ln -sf /sbin/mkfs.info $(RELEASE_DIR)/sbin/mkfs.jfs.gui
+#	$(SILENT)cp -aR $(SKEL_ROOT)/root_titan/boot/* $(RELEASE_DIR)/boot
+# /lib
+	$(SILENT)cp -aR $(SKEL_ROOT)/root_titan/lib/* $(RELEASE_DIR)/lib
+	$(SILENT)ln -sf /tmp $(RELEASE_DIR)/lib/init
+	$(SILENT)ln -sf /usr/share/fonts $(RELEASE_DIR)/lib/fonts
+# /etc
 	$(SILENT)cp -aR $(SKEL_ROOT)/root_titan/sbin/* $(RELEASE_DIR)/sbin
 #	echo "oops"
 #	$(SILENT)ln -sf /usr/share $(RELEASE_DIR)/usr/local/share
 #	echo "oops"
-	$(SILENT)ln -sf /var/etc/codepages $(RELEASE_DIR)/usr/codepages
+#	$(SILENT)ln -sf /var/etc/codepages $(RELEASE_DIR)/usr/codepages
 	$(SILENT)ln -sf /var/lib/splash $(RELEASE_DIR)/lib/splash
-	$(SILENT)ln -sf /var/usr/lib $(RELEASE_DIR)/usr/lib
+#	$(SILENT)ln -sf /var/usr/lib $(RELEASE_DIR)/usr/lib
 	$(SILENT)ln -sf /var/usr/lib/ipkg $(RELEASE_DIR)/lib/ipkg
-	$(SILENT)ln -sf /var/usr/share/fonts $(RELEASE_DIR)/usr/share/fonts
-	$(SILENT)ln -sf /var/usr/share/gmediarender $(RELEASE_DIR)/usr/share/gmediarender
-	$(SILENT)ln -sf /var/usr/share/netsurf $(RELEASE_DIR)/usr/share/netsurf
+#	$(SILENT)ln -sf /var/usr/share/fonts $(RELEASE_DIR)/usr/share/fonts
+#	$(SILENT)ln -sf /var/usr/share/gmediarender $(RELEASE_DIR)/usr/share/gmediarender
+#	$(SILENT)ln -sf /var/usr/share/netsurf $(RELEASE_DIR)/usr/share/netsurf
 	$(SILENT)cp -aR $(SKEL_ROOT)/root_titan/var/* $(RELEASE_DIR)/var/
 #ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs8200 spark7162 cuberevo cuberevo_mini cuberevo_mini2 cuberevo_3000hd))
 #	$(SILENT)rm -f $(RELEASE_DIR)/var/tuxbox/config/cables.xml
@@ -1010,7 +1010,7 @@ $(D)/titan_release: titan-release-base titan-release-$(BOXTYPE)
 #	receiver specific (only if directory exists)
 	@echo -n "Processing receiver specific own build for $(BOXTYPE)..."
 	$(SILENT)[ -d "$(OWN_BUILD)/titan.$(BOXTYPE)" ] && find $(OWN_BUILD)/titan.$(BOXTYPE)/ -mindepth 1 -maxdepth 1 -exec cp -at$(RELEASE_DIR)/ -- {} + || true
-	$(SILENT)echo $(BOXTYPE) > $(RELEASE_DIR)/var/etc/model
+#	$(SILENT)echo $(BOXTYPE) > $(RELEASE_DIR)/var/etc/model
 	@echo " done."
 	$(SILENT)rm  -f $(RELEASE_DIR)/for_your_own_changes
 #
