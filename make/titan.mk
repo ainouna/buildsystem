@@ -4,17 +4,16 @@
 TITAN_DEPS  = $(D)/bootstrap
 TITAN_DEPS += $(KERNEL)
 TITAN_DEPS += $(D)/libopenthreads
+TITAN_DEPS += $(D)/system-tools
+TITAN_DEPS += $(D)/module_init_tools
 TITAN_DEPS += $(LIRC)
 TITAN_DEPS += $(D)/libpng
 TITAN_DEPS += $(D)/freetype
 TITAN_DEPS += $(D)/libdreamdvd
 TITAN_DEPS += $(D)/libjpeg
 TITAN_DEPS += $(D)/zlib
-TITAN_DEPS += $(D)/tools-libmme_image
-TITAN_DEPS += $(D)/tools-libmme_host
 TITAN_DEPS += $(D)/openssl
 TITAN_DEPS += $(D)/timezone
-#TITAN_DEPS += python-all
 ifeq ($(MEDIAFW), eplayer3)
 #T_CONFIG_OPTS += --enable-eplayer3
 TITAN_DEPS += $(D)/libcurl
@@ -78,6 +77,7 @@ T_CPPFLAGS   += -L$(SOURCE_DIR)/titan/libipkg
 #T_LINKFLAGS   += -lm -lpthread -ldl -lpng -lfreetype -ldreamdvd -ljpeg -lmmeimage -lmme_host -lz
 ifeq ($(MEDIAFW), eplayer3)
 T_CPPFLAGS   += -DEPLAYER3
+T_CPPFLAGS   += -DEXTEPLAYER3
 T_CPPFLAGS   += -I$(TOOLS_DIR)/exteplayer3/include
 #T_CPPFLAGS   += -I$(SOURCE_DIR)/titan/libeplayer3/include
 #T_CPPFLAGS   += -I$(SOURCE_DIR)/titan/libeplayer3/include/external
@@ -133,7 +133,8 @@ yaud-titan-plugins: yaud-none $(D)/titan $(D)/titan-plugins $(D)/titan_release
 #
 # titan
 #
-REPO_TITAN=$(GITHUB)"/OpenVisionE2/Titan.git"
+#REPO_TITAN=$(GITHUB)"/OpenVisionE2/Titan.git"
+REPO_TITAN=http://sbnc.dyndns.tv/svn/titan/
 TITAN_PATCH  = build-titan/titan.patch
 #ifeq ($(MEDIAFW), $(filter $(MEDIAFW), eplayer3 gst-explayer3))
 #TITAN_PATCH += build-titan/titan_exteplayer3.patch
@@ -149,11 +150,11 @@ $(D)/titan.do_prepare: | $(TITAN_DEPS)
 	echo "===================="; \
 	echo; \
 	echo "Repository : "$$REPO; \
-	[ -d "$(ARCHIVE)/titan.git" ] && \
-	(cd $(ARCHIVE)/titan.git; echo -n "Updating archived Titan git..."; git pull -q; echo -e -n " done.\nChecking out HEAD..."; git checkout -q HEAD; echo " done."; cd "$(BUILD_TMP)";); \
-	[ -d "$(ARCHIVE)/titan.git" ] || \
-	(echo -n "Cloning remote Titan git..."; git clone -q -b $$HEAD $$REPO $(ARCHIVE)/titan.git; echo " done."); \
-	echo -n "Copying local git content to build environment..."; cp -ra $(ARCHIVE)/titan.git $(SOURCE_DIR)/titan; echo " done."; \
+	[ ! -d "$(ARCHIVE)/titan.svn" ] && \
+	(mkdir $(ARCHIVE)/titan.svn; \
+	cd $(ARCHIVE)/titan.svn; \
+	echo -n "Updating archived Titan svn..."; svn checkout --username=public --password=public $(REPO_TITAN) -q; echo -e -n " done."; cd "$(BUILD_TMP)";); \
+	echo -n "Copying local svn content to build environment..."; cp -ra $(ARCHIVE)/titan.svn/titan $(SOURCE_DIR)/titan; echo " done."; \
 	cp -ra $(SOURCE_DIR)/titan $(SOURCE_DIR)/titan.org; \
 	set -e; cd $(SOURCE_DIR)/titan; \
 	pwd; \
@@ -163,7 +164,7 @@ $(D)/titan.do_prepare: | $(TITAN_DEPS)
 	cd $(SOURCE_DIR)/titan; \
 	cp ./libeplayer3/Makefile.am.sh4 ./libeplayer3/Makefile.am; \
 	cp ./titan/Makefile.am.sh4 ./titan/Makefile.am; \
-	cp ./plugins/networkbrowser/netlib/Makefile.sh4 ./plugins/networkbrowser/netlib/Makefile; \
+	cp ./plugins/network/networkbrowser/netlib/Makefile.sh4 ./plugins/network/networkbrowser/netlib/Makefile; \
 	echo; \
 	touch $@
 
