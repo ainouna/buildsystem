@@ -1,4 +1,4 @@
-# revision 33ab65e339e8997e66bc4451d52b828a643dd216 03/10/2021 14:24
+# revision 38cf4849d225377497af435a2ea65c8487ce4966 29/11/2021 17:52
 --- enigma2.org/configure.ac
 +++ enigma2/configure.ac
 @@ -18,6 +18,7 @@
@@ -3202,7 +3202,7 @@
  		notifier->setRequested(eSocketNotifier::Read | eSocketNotifier::Priority | eSocketNotifier::Write);
  	}
  
-@@ -1171,62 +1425,168 @@
+@@ -1171,61 +1425,168 @@
  {
  	singleLock s(eDVBCIInterfaces::m_slot_lock);
  	eTrace("[CI] Slot %d what %d\n", getSlotID(), what);
@@ -3228,7 +3228,6 @@
 -	if(state != stateInserted) {
 -		eDebug("[CI] ci inserted in slot %d", getSlotID());
 -		state = stateInserted;
--		determineCIVersion();
 -		/* emit */ eDVBCI_UI::getInstance()->m_messagepump.send(eDVBCIInterfaces::Message(eDVBCIInterfaces::Message::slotStateChanged, getSlotID(), 1));
 -		notifier->setRequested(eSocketNotifier::Read|eSocketNotifier::Priority);
 -		/* enable PRI to detect removal or errors */
@@ -3427,7 +3426,7 @@
  }
  
  DEFINE_REF(eDVBCISlot);
-@@ -1247,7 +1607,7 @@
+@@ -1246,7 +1607,7 @@
  
  	slotid = nr;
  
@@ -3436,7 +3435,7 @@
  
  //	possible_caids.insert(0x1702);
  //	possible_providers.insert(providerPair("PREMIERE", 0xC00000));
-@@ -1258,10 +1618,18 @@
+@@ -1257,10 +1618,18 @@
  	eTrace("[CI] Slot %d has fd %d", getSlotID(), fd);
  	state = stateInvalid;
  
@@ -3455,7 +3454,7 @@
  	} else
  	{
  		perror(filename);
-@@ -1384,13 +1752,11 @@
+@@ -1383,13 +1744,11 @@
  {
  	eDebug("[CI] Slot %d: reset requested", getSlotID());
  
@@ -3474,7 +3473,7 @@
  
  	while(sendqueue.size())
  	{
-@@ -1398,7 +1764,8 @@
+@@ -1397,7 +1756,8 @@
  		sendqueue.pop();
  	}
  
@@ -5582,7 +5581,7 @@
 -					cpu_speed = "-"
  
  		temperature = None
- 		if os.path.isfile('/proc/stb/fp/temp_sensor_avs'):
+ 		freq = _("MHz")
 #--- enigma2.org/lib/python/Components/FanControl.py
 #+++ enigma2/lib/python/Components/FanControl.py
 #@@ -6,6 +6,14 @@
@@ -5819,8 +5818,8 @@
  		zero = 512 * '\0'
  		h = open(self.dev_path, 'wb')
  		# delete first 9 sectors, which will likely kill the first partition too
-@@ -311,25 +319,30 @@
- 		h.close()
+@@ -314,25 +322,30 @@
+ 		os.mkdir(os.path.join(self.mount_path, 'movie'))
  
  	def createInitializeJob(self):
 -		job = Task.Job(_("Initializing storage device..."))
@@ -5868,7 +5867,7 @@
  
  		if os.path.exists('/usr/sbin/parted'):
  			use_parted = True
-@@ -340,7 +353,9 @@
+@@ -343,7 +356,9 @@
  			else:
  				use_parted = False
  
@@ -5879,7 +5878,7 @@
  		task.weighting = 5
  		if use_parted:
  			task.setTool('parted')
-@@ -352,9 +367,17 @@
+@@ -355,9 +370,17 @@
  				alignment = 'opt'
  			if size > 2097151:
  				parttype = 'gpt'
@@ -5898,7 +5897,7 @@
  		else:
  			task.setTool('sfdisk')
  			task.args.append('-f')
-@@ -362,53 +385,100 @@
+@@ -365,52 +388,91 @@
  			task.args.append(self.disk_path)
  			if size > 128000:
  				# Start at sector 8 to better support 4k aligned disks
@@ -6012,21 +6011,12 @@
  		task = Task.ConditionTask(job, _("Waiting for mount"), timeoutCount=20)
  		task.check = self.mountDevice
  		task.weighting = 1
- 
++
 +		print "[Harddisk init] Waiting for mount to succeed"
-+
-+		task = Task.LoggingTask(job, _("Create /media/hdd/movie"))
-+		task.weighting = 1
-+		task.setTool('mkdir')
-+		task.args.append('-p')
-+		task.args.append('/media/hdd/movie')
-+		print "[Harddisk init] Create /media/hdd/movie directory"
-+
-+		print "[Harddisk init] End of job: ", job
- 		return job
  
- 	def initialize(self):
-@@ -674,16 +744,19 @@
+ 		task = Task.PythonTask(job, _("Create directory") + ": movie")
+ 		task.work = self.createMovieDir
+@@ -681,16 +743,19 @@
  				self.devices_scanned_on_init.append((blockdev, removable, is_cdrom, medium_found))
  
  	def getAutofsMountpoint(self, device):
@@ -6050,7 +6040,7 @@
  		return None
  
  	def addHotplugPartition(self, device, physdev=None):
-@@ -699,6 +772,10 @@
+@@ -706,6 +771,10 @@
  		error, blacklisted, removable, is_cdrom, partitions, medium_found = self.getBlockDevInfo(device)
  		if not blacklisted and medium_found:
  			description = self.getUserfriendlyDeviceName(device, physdev)
@@ -6061,7 +6051,7 @@
  			p = Partition(mountpoint=self.getMountpoint(device), description=description, force_mounted=True, device=device)
  			self.partitions.append(p)
  			if p.mountpoint: # Plugins won't expect unmounted devices
-@@ -720,7 +797,7 @@
+@@ -727,7 +796,7 @@
  				physdev = os.path.realpath('/sys/block/' + dev + '/device')[4:]
  			except OSError:
  				physdev = dev
@@ -6070,7 +6060,7 @@
  		error, blacklisted, removable, is_cdrom, partitions, medium_found = self.getBlockDevInfo(device)
  		if not blacklisted and medium_found:
  			description = self.getUserfriendlyDeviceName(device, physdev)
-@@ -791,7 +868,7 @@
+@@ -798,7 +867,7 @@
  		try:
  			description = readFile("/sys" + phys + "/model")
  		except IOError, s:
@@ -6079,7 +6069,7 @@
  		# not wholedisk and not partition 1
  		if part and part != 1:
  			description += _(" (Partition %d)") % part
-@@ -834,7 +911,7 @@
+@@ -841,7 +910,7 @@
  			dev = self.hdd.disk_path.split('/')[-1]
  			open('/dev/nomount.%s' % dev, "wb").close()
  		except Exception, e:
@@ -6088,7 +6078,7 @@
  		self.setTool('umount')
  		self.args.append('-f')
  		for dev in self.hdd.enumMountDevices():
-@@ -842,7 +919,7 @@
+@@ -849,7 +918,7 @@
  			self.postconditions.append(Task.ReturncodePostcondition())
  			self.mountpoints.append(dev)
  		if not self.mountpoints:
@@ -6097,7 +6087,7 @@
  			self.cmd = 'true'
  			self.args = [self.cmd]
  
-@@ -851,7 +928,7 @@
+@@ -858,7 +927,7 @@
  			try:
  				os.rmdir(path)
  			except Exception, ex:
@@ -6106,7 +6096,7 @@
  
  
  class MountTask(Task.LoggingTask):
-@@ -864,7 +941,7 @@
+@@ -871,7 +940,7 @@
  			dev = self.hdd.disk_path.split('/')[-1]
  			os.unlink('/dev/nomount.%s' % dev)
  		except Exception, e:
@@ -6115,7 +6105,7 @@
  		# try mounting through fstab first
  		if self.hdd.mount_device is None:
  			dev = self.hdd.partitionPath("1")
-@@ -894,7 +971,7 @@
+@@ -901,7 +970,7 @@
  		self.fsck_state = None
  
  	def processOutput(self, data):
@@ -6378,7 +6368,7 @@
  from SystemInfo import SystemInfo
  import os
  import time
-@@ -261,7 +262,7 @@
+@@ -264,7 +265,7 @@
  
  	config.misc.disable_background_scan = ConfigYesNo(default=False)
  	config.misc.use_ci_assignment = ConfigYesNo(default=False)
@@ -7334,7 +7324,7 @@
 +		PluginDescriptor(where = [PluginDescriptor.WHERE_SESSIONSTART, PluginDescriptor.WHERE_AUTOSTART], fnc = autostart) ]
 --- enigma2.org/lib/python/Plugins/SystemPlugins/HdmiCEC/plugin.py
 +++ enigma2/lib/python/Plugins/SystemPlugins/HdmiCEC/plugin.py
-@@ -144,14 +144,14 @@
+@@ -140,14 +140,14 @@
  
  def startSetup(menuid):
  	# only show in the menu when set to intermediate or higher
@@ -8665,7 +8655,7 @@
  			self.createMenu()
 --- enigma2.org/lib/python/Screens/ScanSetup.py
 +++ enigma2/lib/python/Screens/ScanSetup.py
-@@ -1257,7 +1257,7 @@
+@@ -1265,7 +1265,7 @@
  		self.cable_toggle = {"single_transponder": "complete", "complete": "single_transponder"}
  		self.scan_typeterrestrial = ConfigSelection(default=defaultTerrSearchType, choices=[("single_transponder", _("User defined transponder")), ("predefined_transponder", _("Predefined transponder")), ("complete", _("Complete"))])
  		self.scan_type_atsc = ConfigSelection(default=defaultATSCSearchType, choices=[("single_transponder", _("User defined transponder")), ("predefined_transponder", _("Predefined transponder")), ("complete", _("Complete"))])
@@ -9357,7 +9347,7 @@
  	export HOME=/home/root
 --- enigma2.org/lib/python/Screens/About.py
 +++ enigma2/lib/python/Screens/About.py
-@@ -13,6 +13,8 @@
+@@ -14,6 +14,8 @@
  from Components.ProgressBar import ProgressBar
  
  from Tools.StbHardware import getFPVersion
@@ -9366,7 +9356,7 @@
  from enigma import eTimer, eLabel, eConsoleAppContainer, getDesktop, eGetEnigmaDebugLvl
  
  from Components.GUIComponent import GUIComponent
-@@ -28,6 +30,16 @@
+@@ -29,6 +31,16 @@
  		hddsplit = parameters.get("AboutHddSplit", 1)
  
  		AboutText = _("Hardware: ") + about.getHardwareTypeString() + "\n"
@@ -9383,7 +9373,7 @@
  		cpu = about.getCPUInfoString()
  		AboutText += _("CPU: ") + cpu + "\n"
  		AboutText += _("Image: ") + about.getImageTypeString() + "\n"
-@@ -51,7 +63,7 @@
+@@ -52,7 +64,7 @@
  
  		AboutText += _("DVB driver version: ") + about.getDriverInstalledDate() + "\n"
  
@@ -9392,7 +9382,7 @@
  		self["GStreamerVersion"] = StaticText(GStreamerVersion)
  
  		ffmpegVersion = _("Media player: ffmpeg, version ") + about.getffmpegVersionString()
-@@ -72,8 +84,15 @@
+@@ -73,8 +85,15 @@
  		if fp_version is None:
  			fp_version = ""
  		else:
@@ -10128,7 +10118,7 @@
 +			("10", _("Spark")),
 +			("11", _("Topfield TF77X0HDPVR")),
 +			("12", _("Kathrein RC671 (UFS912")),
-+			("13", _("Cuberevo universal")),
++			("13", _("CubeRevo universal")),
 +			("14", _("Vitamin 5000HD")),
 +			("15", _("ADB XMP")),
 +			("16", _("Pace HDS7241")),
@@ -10137,7 +10127,7 @@
 +			("19", _("Kathrein RC660 (UFS910/922")),
 +			("20", _("Kathrein RC675 (UFS913)")),
 +			("21", _("Opticum HD 9600 series")),
-+			("22", _("Cuberevo standard")),
++			("22", _("CubeRevo standard")),
 +#			("23", _("fortis_4g")),
  		]
  
