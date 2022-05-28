@@ -572,7 +572,7 @@ ifeq ($(BOXTYPE), $(filter $(BOXTYPE), adb_box atemio520 cuberevo cuberevo_mini 
 TOOLS += $(D)/tools-fp_control
 endif
 TOOLS += $(D)/tools-hotplug
-ifeq ($(IMAGE), $(filter $(IMAGE), enigma2 enigma2-wlandriver))
+ifeq ($(IMAGE), $(filter $(IMAGE), enigma2 enigma2-wlandriver titan titan-wlandriver))
 TOOLS += $(D)/tools-libmme_host
 TOOLS += $(D)/tools-libmme_image
 endif

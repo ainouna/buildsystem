@@ -35,8 +35,8 @@
  	/* Save unparsed command line copy for /proc/cmdline */
  	memcpy(boot_command_line, command_line, COMMAND_LINE_SIZE);
  	*cmdline_p = command_line;
---- linux-sh4/arch/sh/boards/mach-mb680/setup.c.orig	2012-03-12 06:26:12.000000000 -0700
-+++ linux-sh4/arch/sh/boards/mach-mb680/setup.c	2012-03-24 01:32:14.571136001 -0700
+--- a/arch/sh/boards/mach-mb680/setup.c.orig
++++ b/arch/sh/boards/mach-mb680/setup.c
 @@ -26,11 +26,12 @@
  #include <linux/mtd/mtd.h>
  #include <linux/mtd/physmap.h>
@@ -61,24 +61,24 @@
 +/*
 +0x40000000 - 0x403FFFFF - cocpu 1 ram (4mb)
 +0x40400000 - 0x407FFFFF - cocpu 2 ram (4mb)
-+0x40800000 - 0x49FFFFFF - linux   (159mb)
-+0x4A000000 - 0x4B1FFFFF - bigphys ( 18mb)
-+0x4B200000 - 0x4FFFFFFF - lmi_io  ( 78mb)
++0x40800000 - 0x47FFFFFF - linux   (120mb)
++0x47600000 - 0x483FFFFF - bigphys ( 14mb (0x00E00000))
++0x48400000 - 0x4FFFFFFF - lmi_io  ( 124mb (0x07C00000))
 +*/
 +static struct bpa2_partition_desc bpa2_parts_table[] = {
 +	{
-+		.name  = "bigphysarea",
-+		.start = 0x4A000000,
-+		.size  = 0x01200000, /* 18 Mb */
-+		.flags = 0,
-+		.aka   = NULL
-+	},
-+	{
 +		.name  = "LMI_IO",
-+		.start = 0x4B200000,
-+		.size  = 0x04E00000, /* 78 Mb */
++		.start = 0x47600000,
++		.size  = 0x07C00000, /* 124 Mb */
 +		.flags = 0,
 +		.aka   = LMI_IO_partalias
++	},
++	{
++		.name  = "bigphysarea",
++		.start = 0x4F200000,
++		.size  = 0x00E00000, /* 14 Mb */
++		.flags = 0,
++		.aka   = NULL
 +	}
 +};
  
@@ -193,20 +193,20 @@
 +		.offset = 0x003C0000,  //3.75M
 +	},
 +	{
-+	 .name   = "Real_ROOT", //mtd5
-+	 .size   = 0x01D00000,  //29M, 128k hole at 0x20FE0000 is used for force flash
-+	 .offset = 0x003E0000,  //3.875M
-+	 },
++		.name   = "Real_ROOT", //mtd5
++		.size   = 0x01D00000,  //29M, 128k hole at 0x20FE0000 is used for force flash
++		.offset = 0x003E0000,  //3.875M
++	},
 +	{
-+	 .name   = "Config",    //mtd6
-+	 .size   = 0x00100000,  //1M
-+	 .offset = 0x02100000,
-+	 },
++		.name   = "Config",    //mtd6
++		.size   = 0x00100000,  //1M
++		.offset = 0x02100000,
++	},
 +	{
-+	 .name   = "User",      //mtd7
-+	 .size   = 0x01E00000,  //30M
-+	 .offset = 0x02200000,
-+	 }
++		.name   = "User",      //mtd7
++		.size   = 0x01E00000,  //30M
++		.offset = 0x02200000,
++	}
  };
  
 -/* PCI configuration */

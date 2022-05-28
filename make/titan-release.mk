@@ -569,12 +569,29 @@ titan-release-base:
 	$(SILENT)touch $(RELEASE_DIR)/etc/.player3
 	$(SILENT)touch $(RELEASE_DIR)/etc/.sh4
 	$(SILENT)touch $(RELEASE_DIR)/etc/.stable
+# /mnt
+	$(SILENT)cp -f $(SKEL_ROOT)/root_titan/mnt/default_gw $(RELEASE_DIR)/mnt/
+	$(SILENT)cp -f $(SKEL_ROOT)/etc/{auto.misc,hostname,hosts,passwd,resolv.conf} $(RELEASE_DIR)/mnt/
+	$(SILENT)touch $(RELEASE_DIR)/mnt/wpa_supplicant.conf
+	$(SILENT)cp -f $(SKEL_ROOT)/etc/network/interfaces $(RELEASE_DIR)/mnt/
 # /usr/bin
 	$(SILENT)cp -a $(TARGET_DIR)/usr/bin/* $(RELEASE_DIR)/usr/bin/
 # /sbin
 	$(SILENT)cp -a $(TARGET_DIR)/sbin/* $(RELEASE_DIR)/sbin/
 # /usr/sbin
 	$(SILENT)cp -a $(TARGET_DIR)/usr/sbin/* $(RELEASE_DIR)/usr/sbin/
+# /var/etc
+	$(SILENT)touch $(RELEASE_DIR)/var/etc/.first
+	$(SILENT)touch $(RELEASE_DIR)/var/etc/inadyn.conf
+	$(SILENT)touch $(RELEASE_DIR)/var/etc/inetd.conf
+	$(SILENT)echo "4" > $(RELEASE_DIR)/var/etc/sleep
+	$(SILENT)cp -f $(SKEL_ROOT)/etc/fstab $(RELEASE_DIR)/var/etc/fstab
+	$(SILENT)cp -f $(SKEL_ROOT)/etc/samba/smb.conf $(RELEASE_DIR)/var/etc/
+	$(SILENT)cp -f $(TARGET_DIR)/etc/{auto.hotplug,auto.master,exports,group,host.conf,localtime,passwd,profile,protocols,resolv.conf,services,shells,shells.conf,timezone.xml,vdstandby.cfg} $(RELEASE_DIR)/var/etc/
+	$(SILENT)echo "576i50" > $(RELEASE_DIR)/var/etc/videomode
+# /var/etc/network
+	$(SILENT)cp -f $(SKEL_ROOT)/etc/network/options $(RELEASE_DIR)/var/etc/network/
+	$(SILENT)mkdir $(RELEASE_DIR)/var/etc/network/{if-down.d,if-post-down.d,if-post-up.d,if-pre-down.d,if-pre-up.d,if-up.d}
 # uImage
 	$(SILENT)cp $(TARGET_DIR)/boot/$(KERNELNAME) $(RELEASE_DIR)/boot/
 #	$(SILENT)ln -sf /proc/mounts $(RELEASE_DIR)/etc/mtab
@@ -594,9 +611,9 @@ titan-release-base:
 	$(SILENT)ln -sf ../../bin/busybox $(RELEASE_DIR)/usr/bin/ether-wake
 #	$(SILENT)ln -sf ../../bin/showiframe $(RELEASE_DIR)/usr/bin/showiframe
 	$(SILENT)ln -sf ../../usr/sbin/fw_printenv $(RELEASE_DIR)/usr/sbin/fw_setenv
-#ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs8200 fs9000 hs9510 ufs910 ufs912 ufs913 ufs922 ufc960 spark ipbox55 ipbox99 ipbox9900 cuberevo cuberevo_mini cuberevo_mini2 cuberevo_250hd cuberevo_2000hd cuberevo_3000hd adb_box tf7700 vitamin_hd5000))
-#	$(SILENT)cp $(SKEL_ROOT)/release/fw_env.config_$(BOXTYPE) $(RELEASE_DIR)/etc/fw_env.config
-#endif
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs8200 fs9000 hs9510 ufs910 ufs912 ufs913 ufs922 ufc960 spark ipbox55 ipbox99 ipbox9900 cuberevo cuberevo_mini cuberevo_mini2 cuberevo_250hd cuberevo_2000hd cuberevo_3000hd adb_box tf7700 vitamin_hd5000))
+	$(SILENT)cp $(SKEL_ROOT)/release/fw_env.config_$(BOXTYPE) $(RELEASE_DIR)/var/etc/fw_env.config
+endif
 	$(SILENT)install -m 0755 $(SKEL_ROOT)/release/rcS_titan_$(BOXTYPE) $(RELEASE_DIR)/etc/init.d/rcS
 #
 # player
@@ -833,7 +850,7 @@ endif
 	$(SILENT)ln -sf /var/etc/timezone.xml $(RELEASE_DIR)/etc/timezone.xml
 	$(SILENT)ln -sf /var/etc/vdstandby.cfg $(RELEASE_DIR)/etc/vdstandby.cfg
 	$(SILENT)ln -sf /var/etc/videomode $(RELEASE_DIR)/etc/videomode
-	$(SILENT)ln -sf /mnt/network/wpa_supplicant.conf $(RELEASE_DIR)/etc/wpa_supplicant.conf
+#	$(SILENT)ln -sf /mnt/network/wpa_supplicant.conf $(RELEASE_DIR)/etc/wpa_supplicant.conf
 # /sbin
 #	$(SILENT)ln -sf /sbin/fsck.info $(RELEASE_DIR)/sbin/fsck.ext2.gui
 #	$(SILENT)ln -sf /sbin/fsck.info $(RELEASE_DIR)/sbin/fsck.ext3.gui
