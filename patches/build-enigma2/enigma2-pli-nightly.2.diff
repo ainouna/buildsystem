@@ -1,4 +1,4 @@
-# revision 0dc1cdc75c815876ae5b0b28e598f52c0003b0b1 06/04/2022 22:11
+# revision ab1618f3bfbb392bcbe2adc456966a45dd399796 28/05/2022 21:13
 --- enigma2.org/configure.ac
 +++ enigma2/configure.ac
 @@ -18,6 +18,7 @@
@@ -554,7 +554,7 @@
  		dlg.isTmp = True
  		dlg.callback = None
  		self.execBegin()
-@@ -520,10 +524,10 @@
+@@ -521,10 +525,10 @@
  	if wakeupList:
  		from time import strftime
  		startTime = wakeupList[0]
@@ -2789,7 +2789,7 @@
  	{
  		ret = (int)(snr / 37.5);
  		sat_max = 1700;
-@@ -3084,7 +3096,11 @@
+@@ -3091,7 +3103,11 @@
  	}
  	else if (!strcmp(type, "DVB-C"))
  	{
@@ -2801,7 +2801,7 @@
  		fetype = feCable;
  	}
  	else if (!strcmp(type, "ATSC"))
-@@ -3216,11 +3232,16 @@
+@@ -3223,11 +3239,16 @@
  		case SYS_ISDBS:		ss << " ISDBS"; break;
  		case SYS_ISDBT:		ss << " ISDBT"; break;
  		case SYS_UNDEFINED:	ss << " UNDEFINED"; break;
@@ -6241,9 +6241,9 @@
  SystemInfo["CanBTAudio"] = fileHas("/proc/stb/audio/btaudio_choices", "off")
  SystemInfo["CanBTAudioDelay"] = fileCheck("/proc/stb/audio/btaudio_delay") or fileCheck("/proc/stb/audio/btaudio_delay_pcm")
  SystemInfo["BootDevice"] = getBootdevice()
--SystemInfo["FbcTunerPowerAlwaysOn"] = model in ("vusolo4k", "vuduo4k", "vuduo4kse", "vuultimo4k", "vuuno4k", "vuuno4kse", "gbquad4k", "gbue4k")
+-SystemInfo["FbcTunerPowerAlwaysOn"] = model in ("vusolo4k", "vuduo4k", "vuduo4kse", "vuultimo4k", "vuuno4k", "vuuno4kse")
 -SystemInfo["HasPhysicalLoopthrough"] = ["Vuplus DVB-S NIM(AVL2108)", "GIGA DVB-S2 NIM (Internal)"]
--SystemInfo["HasFBCtuner"] = ["Vuplus DVB-C NIM(BCM3158)", "Vuplus DVB-C NIM(BCM3148)", "Vuplus DVB-S NIM(7376 FBC)", "Vuplus DVB-S NIM(45308X FBC)", "Vuplus DVB-S NIM(45208 FBC)", "DVB-S NIM(45208 FBC)", "DVB-S2X NIM(45308X FBC)", "DVB-S2 NIM(45308 FBC)", "DVB-C NIM(3128 FBC)", "BCM45208", "BCM45308X", "BCM3158"]
+-SystemInfo["HasFBCtuner"] = ["Vuplus DVB-C NIM(BCM3158)", "Vuplus DVB-C NIM(BCM3148)", "Vuplus DVB-S NIM(7376 FBC)", "Vuplus DVB-S NIM(45308X FBC)", "Vuplus DVB-S NIM(45208 FBC)", "DVB-S2 NIM(45208 FBC)", "DVB-S2X NIM(45308X FBC)", "DVB-S2 NIM(45308 FBC)", "DVB-C NIM(3128 FBC)", "BCM45208", "BCM45308X", "BCM3158"]
 +SystemInfo["FbcTunerPowerAlwaysOn"] = False
 +SystemInfo["HasPhysicalLoopthrough"] = [""]
 +SystemInfo["HasFBCtuner"] = [""]
@@ -6362,7 +6362,7 @@
  from SystemInfo import SystemInfo
  import os
  import time
-@@ -267,7 +268,7 @@
+@@ -282,7 +283,7 @@
  
  	config.misc.disable_background_scan = ConfigYesNo(default=False)
  	config.misc.use_ci_assignment = ConfigYesNo(default=False)
@@ -8333,7 +8333,7 @@
  
  	def extensionCallback(self, answer):
  		if answer is not None:
-@@ -2464,7 +2513,7 @@
+@@ -2465,7 +2514,7 @@
  
  class InfoBarInstantRecord:
  	"""Instant Record - handles the instantRecord action in order to
@@ -8342,7 +8342,7 @@
  
  	def __init__(self):
  		self["InstantRecordActions"] = HelpableActionMap(self, "InfobarInstantRecord",
-@@ -2551,7 +2600,7 @@
+@@ -2552,7 +2601,7 @@
  	def startInstantRecording(self, limitEvent=False):
  		begin = int(time())
  		end = begin + 3600      # dummy
@@ -8351,7 +8351,7 @@
  		info = {}
  
  		self.getProgramInfoAndEvent(info, name)
-@@ -2781,7 +2830,7 @@
+@@ -2782,7 +2831,7 @@
  	def __init__(self):
  		self["AudioSelectionAction"] = HelpableActionMap(self, "InfobarAudioSelectionActions",
  			{
@@ -8360,7 +8360,7 @@
  			})
  
  	def audioSelection(self):
-@@ -2796,7 +2846,7 @@
+@@ -2797,7 +2847,7 @@
  	def __init__(self):
  		self["SubserviceSelectionAction"] = HelpableActionMap(self, "InfobarSubserviceSelectionActions",
  			{
@@ -8369,7 +8369,7 @@
  			})
  
  		self["SubserviceQuickzapAction"] = HelpableActionMap(self, "InfobarSubserviceQuickzapActions",
-@@ -2873,7 +2922,7 @@
+@@ -2874,7 +2923,7 @@
  					keys = ["red", "", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
  					selection += 2
  				if tlist:
@@ -8378,7 +8378,7 @@
  				else:
  					self.session.open(MessageBox, _("No active subservices available."), MessageBox.TYPE_INFO, timeout=5, simple=True)
  
-@@ -2923,7 +2972,7 @@
+@@ -2924,7 +2973,7 @@
  	def __init__(self):
  		self["RedButtonActions"] = HelpableActionMap(self, "InfobarRedButtonActions",
  			{
@@ -8387,7 +8387,7 @@
  			})
  		self.onHBBTVActivation = []
  		self.onRedButtonActivation = []
-@@ -2943,7 +2992,7 @@
+@@ -2944,7 +2993,7 @@
  	def __init__(self):
  		self["TimerButtonActions"] = HelpableActionMap(self, "InfobarTimerButtonActions",
  			{
@@ -8396,7 +8396,7 @@
  			})
  
  	def timerSelection(self):
-@@ -3360,7 +3409,7 @@
+@@ -3361,7 +3410,7 @@
  		if self.teletext_plugin is not None:
  			self["TeletextActions"] = HelpableActionMap(self, "InfobarTeletextActions",
  				{
@@ -8405,7 +8405,7 @@
  				})
  		else:
  			print "no teletext plugin found!"
-@@ -3374,8 +3423,8 @@
+@@ -3375,8 +3424,8 @@
  		object.__init__(self)
  		self["SubtitleSelectionAction"] = HelpableActionMap(self, "InfobarSubtitleSelectionActions",
  			{
