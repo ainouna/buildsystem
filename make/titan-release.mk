@@ -584,6 +584,8 @@ titan-release-base:
 	$(SILENT)cp -f $(SKEL_ROOT)/etc/network/* $(RELEASE_DIR)/mnt/network
 # /mnt/config
 	$(SILENT)cp -f $(SKEL_ROOT)/root_titan/mnt/config/* $(RELEASE_DIR)/mnt/config/
+# /mnt/settings
+	$(SILENT)cp -f $(SKEL_ROOT)/root_titan/mnt/settings/* $(RELEASE_DIR)/mnt/settings/
 # /usr/bin
 	$(SILENT)cp -a $(TARGET_DIR)/usr/bin/* $(RELEASE_DIR)/usr/bin/
 # /sbin
