@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 220528.1
+#Version 220610.1
 
 echo "[rcS] Start"
 echo "Fortis HS8200 Titan"
@@ -15,7 +15,7 @@ fi
 insmod $MODDIR/nuvoton.ko
 insmod $MODDIR/simu_button.ko
 
-if [ -e /var/etc/.firstboot ]; then
+if [ -e /var/etc/.first ]; then
    echo "Wait 1 min." > /dev/vfd
    echo "[rcS] Wait 1 minute"
    rm /var/etc/.firstboot
@@ -117,7 +117,8 @@ insmod $MODDIR/starci.ko
 insmod $MODDIR/smartcard.ko
 
 insmod $MODDIR/pti.ko waitMS=20 videoMem=4096
-if [ $?=='2' ]; then
+#echo "pti return = $?"
+if [ $? -ne '0' ]; then
    insmod $MODDIR/pti.ko
    echo "[rcS] Simple pti"
 else
@@ -180,13 +181,13 @@ echo "Load 2" > /dev/vfd
 
 NFS=`grep -c nfs /proc/cmdline`
 if [ "$NFS" -eq "1" ]; then
-   echo "[rcS] Booting from nfs, don't set network"
+   echo "[rcS] Booting from NFS, do not set network"
 else
    echo "[rcS] Setting wired network"
    if [ -e /mnt/network/interfaces ]; then
       ip addr flush eth0
       /etc/init.d/networking stop
-      DHCP=`grep -c dhcp /etc/network/interfaces`
+      DHCP=`grep -c dhcp /mnt/network/interfaces`
       if [ "$DHCP" -eq "1" ]; then
          echo "[rcS] Starting DHCP"
          /etc/init.d/udhcpc start
@@ -223,18 +224,22 @@ echo "Loading Titan" > /dev/vfd
 until false
 do
    echo "[rcS] Starting Titan ->"
-   /usr/local/bin/titan
+   /usr/local/bin/titan /mnt/config/titan.cfg
    rtv=$?
    echo "[rcS] Titan ended <- return value: " $rtv
    case "$rtv" in
-      0) echo "[rcS] SHUTDOWN"
+      1) echo "[rcS] SHUTDOWN"
          echo "Shutdown" > /dev/vfd
          init 0;;
-      1) echo "[rcS] REBOOT"
+      2) echo "[rcS] REBOOT"
          echo "Reboot" > /dev/vfd
-         init 6;;
-      3) echo "[rcS] RESTART"
-         echo "Restart" > /dev/vfd
+         if [ -f /proc/stb/fp/force_restart ]; then
+            echo 1 > /proc/stb/fp/force_restart
+         fi
+         /var/etc/autostart/start.sh reboot 
+         /sbin/reboot;;
+      3) echo "[rcS] START Enigma2"
+         echo "Start E2" > /dev/vfd
          ;;
       *) echo "[rcS] ERROR"
          echo "Error" > /dev/vfd

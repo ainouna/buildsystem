@@ -569,11 +569,21 @@ titan-release-base:
 	$(SILENT)touch $(RELEASE_DIR)/etc/.player3
 	$(SILENT)touch $(RELEASE_DIR)/etc/.sh4
 	$(SILENT)touch $(RELEASE_DIR)/etc/.stable
+# /lib
+	$(SILENT)rm -f $(TARGET_DIR)/usr/lib/libdl.so
+	$(SILENT)rm -f $(TARGET_DIR)/usr/lib/libm.so
+	$(SILENT)rm -f $(TARGET_DIR)/usr/lib/libresolv.so
+	$(SILENT)rm -f $(TARGET_DIR)/usr/lib/librt.so
+	$(SILENT)rm -f $(TARGET_DIR)/usr/lib/libutil.so
+	$(SILENT)cp -a $(TARGET_DIR)/usr/lib/* $(RELEASE_DIR)/lib/
+	$(SILENT)cp -a $(TARGET_DIR)/usr/lib/autofs/* $(RELEASE_DIR)/lib/autofs/
 # /mnt
-	$(SILENT)cp -f $(SKEL_ROOT)/root_titan/mnt/default_gw $(RELEASE_DIR)/mnt/
-	$(SILENT)cp -f $(SKEL_ROOT)/etc/{auto.misc,hostname,hosts,passwd,resolv.conf} $(RELEASE_DIR)/mnt/
-	$(SILENT)touch $(RELEASE_DIR)/mnt/wpa_supplicant.conf
-	$(SILENT)cp -f $(SKEL_ROOT)/etc/network/interfaces $(RELEASE_DIR)/mnt/
+	$(SILENT)cp -f $(SKEL_ROOT)/etc/{auto.misc,hostname,hosts,passwd,resolv.conf} $(RELEASE_DIR)/mnt/network
+	$(SILENT)touch $(RELEASE_DIR)/mnt/network/wpa_supplicant.conf
+	$(SILENT)cp -f $(SKEL_ROOT)/root_titan/mnt/default_gw $(RELEASE_DIR)/mnt/network
+	$(SILENT)cp -f $(SKEL_ROOT)/etc/network/* $(RELEASE_DIR)/mnt/network
+# /mnt/config
+	$(SILENT)cp -f $(SKEL_ROOT)/root_titan/mnt/config/* $(RELEASE_DIR)/mnt/config/
 # /usr/bin
 	$(SILENT)cp -a $(TARGET_DIR)/usr/bin/* $(RELEASE_DIR)/usr/bin/
 # /sbin
@@ -591,6 +601,7 @@ titan-release-base:
 	$(SILENT)echo "576i50" > $(RELEASE_DIR)/var/etc/videomode
 # /var/etc/network
 	$(SILENT)cp -f $(SKEL_ROOT)/etc/network/options $(RELEASE_DIR)/var/etc/network/
+	$(SILENT)cp -f $(SKEL_ROOT)/etc/network/interfaces $(RELEASE_DIR)/var/etc/network
 	$(SILENT)mkdir $(RELEASE_DIR)/var/etc/network/{if-down.d,if-post-down.d,if-post-up.d,if-pre-down.d,if-pre-up.d,if-up.d}
 # uImage
 	$(SILENT)cp $(TARGET_DIR)/boot/$(KERNELNAME) $(RELEASE_DIR)/boot/
@@ -607,6 +618,7 @@ titan-release-base:
 	$(SILENT)cp $(SKEL_ROOT)/usr/sbin/fw_printenv $(RELEASE_DIR)/usr/sbin/
 	$(SILENT)cp -aR $(TARGET_DIR)/etc/init.d/* $(RELEASE_DIR)/etc/init.d/
 	$(SILENT)cp -aR $(TARGET_DIR)/etc/* $(RELEASE_DIR)/etc/
+	$(SILENT)rmdir --ignore-fail-on-non-empty $(RELEASE_DIR)/etc/network
 	$(SILENT)echo "$(BOXTYPE)" > $(RELEASE_DIR)/etc/model
 	$(SILENT)ln -sf ../../bin/busybox $(RELEASE_DIR)/usr/bin/ether-wake
 #	$(SILENT)ln -sf ../../bin/showiframe $(RELEASE_DIR)/usr/bin/showiframe
@@ -977,7 +989,7 @@ ifeq ($(BOXTYPE), $(filter $(BOXTYPE), ufs910 ufs922))
 	$(SILENT)rm -f $(RELEASE_DIR)/etc/ssl/certs/ca-certificates.crt
 endif
 	$(SILENT)rmdir --ignore-fail-on-non-empty $(RELEASE_DIR)/etc/cron.d
-	$(SILENT)rmdir --ignore-fail-on-non-empty $(RELEASE_DIR)/etc/inittab.d
+#	$(SILENT)rmdir --ignore-fail-on-non-empty $(RELEASE_DIR)/etc/inittab.d
 #	$(SILENT)rmdir --ignore-fail-on-non-empty $(RELEASE_DIR)/etc/network
 #	$(SILENT)rm -f $(RELEASE_DIR)/usr/lib/lua/5.2/*.la
 #	$(SILENT)rm -rf $(RELEASE_DIR)/lib/autofs
