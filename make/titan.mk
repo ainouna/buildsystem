@@ -136,6 +136,7 @@ yaud-titan-plugins: yaud-none $(D)/titan $(D)/titan-plugins $(D)/titan_release
 #REPO_TITAN=$(GITHUB)"/OpenVisionE2/Titan.git"
 REPO_TITAN=http://sbnc.dyndns.tv/svn/titan/
 TITAN_PATCH  = build-titan/titan.patch
+TITAN_PATCH += build-titan/titan_model.patch
 #ifeq ($(MEDIAFW), $(filter $(MEDIAFW), eplayer3 gst-explayer3))
 #TITAN_PATCH += build-titan/titan_exteplayer3.patch
 #endif
@@ -159,7 +160,7 @@ $(D)/titan.do_prepare: | $(TITAN_DEPS)
 	set -e; cd $(SOURCE_DIR)/titan; \
 	pwd; \
 	echo >> Makefile.am; \
-	echo "Applying Titan patch..."; \
+	echo "Applying Titan patches..."; \
 	$(call apply_patches, $(TITAN_PATCH)); \
 	cd $(SOURCE_DIR)/titan; \
 	cp ./libeplayer3/Makefile.am.sh4 ./libeplayer3/Makefile.am; \
