@@ -137,6 +137,7 @@ yaud-titan-plugins: yaud-none $(D)/titan $(D)/titan-plugins $(D)/titan_release
 REPO_TITAN=http://sbnc.dyndns.tv/svn/titan/
 TITAN_PATCH  = build-titan/titan.patch
 TITAN_PATCH += build-titan/titan_model.patch
+TITAN_PATCH += build-titan/titan_icon.patch
 #ifeq ($(MEDIAFW), $(filter $(MEDIAFW), eplayer3 gst-explayer3))
 #TITAN_PATCH += build-titan/titan_exteplayer3.patch
 #endif
