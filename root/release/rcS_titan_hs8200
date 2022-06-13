@@ -8,6 +8,14 @@ MODDIR=/lib/modules
 
 insmod $MODDIR/e2_proc.ko
 
+startconfig=/mnt/config/start-config
+if [ ! -e "$startconfig" ]; then startconfig="/etc/titan.restore/mnt/config/start-config"; fi
+
+. $startconfig
+. /sbin/start-functioninsmod $MODDIR/e2_proc.ko
+
+insmod $MODDIR/sata.ko
+
 echo "[rcS] Init frontpanel"
 if [ ! -e /dev/vfd ]; then
    mknod -m 0660 /dev/vfd c 147 0
@@ -31,12 +39,8 @@ fi
 insmod $MODDIR/sata.ko
 
 # Start automounter with umount timeout of 5 seconds
-if [ -e $MODDIR/autofs4.ko ]; then
-   insmod $MODDIR/autofs4.ko
-fi
-if [ -e /etc/init.d/automount ]; then
-   /usr/sbin/automount --timeout=5 /autofs file /etc/auto.usb
-fi
+echo "[rcS] Starting automounter"
+/etc/init.d/autofs start
 
 echo "[rcS] Starting DEBUG Interface"
 /etc/init.d/mountall start
@@ -54,7 +58,14 @@ echo "with autologin"
 echo "[rcS] Init stmfb (LOAD 9)"
 echo "Load 9" > /dev/vfd
 insmod $MODDIR/stmcore-display-sti7105.ko
-insmod $MODDIR/stmfb.ko display0=1280x720-32@50:12m:pal:rgb:rgb # display1=720x576-16@50:1m:pal:cvbs
+insmod $MODDIR/stmfb.ko display0=1280x720-32@50:12m::pal:rgb:rgb # display1=720x576-16@50:1m::pal:cvbs
+if [ -e /var/etc/.scart ]; then
+   echo "$CMD [$INPUT] enable SCART (576i)"
+   rmmod stmfb.ko
+   insmod /lib/modules/stmfb.ko display0=720x576-32@50:1m::pal:cvbs
+fi
+stfbset -p
+insmod $MODDIR/stm_v4l2.ko
 
 echo "[rcS] Loading modules"
 
@@ -82,9 +93,7 @@ insmod $MODDIR/embxshell.ko
 insmod $MODDIR/embxmailbox.ko mailbox0=0xfe211000:136:set2 mailbox1=0xfe212000:0
 insmod $MODDIR/embxshm.ko mailbox0=shm:0:7:0x60000000:0:256:256:0:512:0x40000000:0x10000000
 insmod $MODDIR/mme_host.ko transport0=shm
-if [ -e $MODDIR/mme_log.ko ]; then
-   insmod $MODDIR/mme_log.ko
-fi
+insmod $MODDIR/mme_log.ko
 
 echo "[rcS] Init AVS (LOAD 5)"
 echo "Load 5" > /dev/vfd
@@ -93,13 +102,22 @@ insmod $MODDIR/avs.ko type=stv6418
 player=`cat /proc/stb/player/version | awk '{ print substr( $0, length($0) - 2, length($0) ) }'`
 echo "[rcS] Init player $player (LOAD 4)"
 echo "Load 4" > /dev/vfd
-insmod $MODDIR/p2div64.ko
 insmod $MODDIR/ksound.ko
-insmod $MODDIR/stm_v4l2.ko
+insmod $MODDIR/p2div64.ko
 insmod $MODDIR/stmvout.ko
 insmod $MODDIR/stmvbi.ko
 
 insmod $MODDIR/pseudocard.ko
+
+if [ "$bootlogo" == 'y' ]; then
+   if [ -e /mnt/swapextensions/etc/boot/bootlogo.jpg ]; then
+     infobox 200 "nobox#/mnt/swapextensions/etc/boot/bootlogo.jpg" &
+   else
+      if [ -e /var/etc/boot/bootlogo.jpg ]; then
+         infobox 200 "nobox#/var/etc/boot/bootlogo.jpg" &
+      fi
+   fi
+fi
 
 echo "[rcS] Init frontends"
 insmod $MODDIR/frontend_platform.ko
@@ -113,7 +131,7 @@ insmod $MODDIR/avl2108.ko
 # DVB-T
 #insmod $MODDIR/cxd2820.ko
 
-insmod $MODDIR/starci.ko
+insmod $MODDIR/starci.ko #extmoduldetect=1
 insmod $MODDIR/smartcard.ko
 
 insmod $MODDIR/pti.ko waitMS=20 videoMem=4096
@@ -230,7 +248,9 @@ do
    case "$rtv" in
       1) echo "[rcS] SHUTDOWN"
          echo "Shutdown" > /dev/vfd
-         init 0;;
+         init 0
+         /bin/fp_control -sst
+         /bin/fp_control -e;;
       2) echo "[rcS] REBOOT"
          echo "Reboot" > /dev/vfd
          if [ -f /proc/stb/fp/force_restart ]; then
@@ -238,8 +258,8 @@ do
          fi
          /var/etc/autostart/start.sh reboot 
          /sbin/reboot;;
-      3) echo "[rcS] START Enigma2"
-         echo "Start E2" > /dev/vfd
+      3) echo "[rcS] RESTART Titan"
+         echo "ReStrt Titan" > /dev/vfd
          ;;
       *) echo "[rcS] ERROR"
          echo "Error" > /dev/vfd
