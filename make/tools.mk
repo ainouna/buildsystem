@@ -15,6 +15,7 @@ tools-clean:
 	-$(MAKE) -C $(TOOLS_DIR)/eplayer3 distclean
 	-$(MAKE) -C $(TOOLS_DIR)/exteplayer3 distclean
 	-$(MAKE) -C $(TOOLS_DIR)/evremote2 distclean
+	-$(MAKE) -C $(TOOLS_DIR)/infobox distclean
 	-$(MAKE) -C $(TOOLS_DIR)/fp_control distclean
 	-$(MAKE) -C $(TOOLS_DIR)/gitVCInfo distclean
 	-$(MAKE) -C $(TOOLS_DIR)/hotplug distclean
@@ -228,6 +229,20 @@ $(D)/tools-gitVCInfo: $(D)/bootstrap
 $(D)/tools-hotplug: $(D)/bootstrap
 	$(START_BUILD)
 	$(SET) -e; cd $(TOOLS_DIR)/hotplug; \
+		if [ ! -d m4 ]; then mkdir m4; fi; \
+		$(CONFIGURE_TOOLS) \
+			--prefix= \
+		; \
+		$(MAKE); \
+		$(MAKE) install DESTDIR=$(TARGET_DIR)
+	$(TOUCH)
+
+#
+# infobox
+#
+$(D)/tools-infobox: $(D)/bootstrap $(D)/freetype $(D)/libjpeg $(D)/libpng $(D)/zlib
+	$(START_BUILD)
+	$(SET) -e; cd $(TOOLS_DIR)/infobox; \
 		if [ ! -d m4 ]; then mkdir m4; fi; \
 		$(CONFIGURE_TOOLS) \
 			--prefix= \
@@ -572,6 +587,9 @@ ifeq ($(BOXTYPE), $(filter $(BOXTYPE), adb_box atemio520 cuberevo cuberevo_mini 
 TOOLS += $(D)/tools-fp_control
 endif
 TOOLS += $(D)/tools-hotplug
+ifeq ($(IMAGE), $(filter $(IMAGE), titan titan-wlandriver))
+TOOLS += $(D)/tools-infobox
+endif
 ifeq ($(IMAGE), $(filter $(IMAGE), enigma2 enigma2-wlandriver titan titan-wlandriver))
 TOOLS += $(D)/tools-libmme_host
 TOOLS += $(D)/tools-libmme_image
