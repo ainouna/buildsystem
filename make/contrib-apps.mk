@@ -1,7 +1,7 @@
 #
 # busybox
 #
-BUSYBOX_VER = 1.34.1
+BUSYBOX_VER = 1.35.0
 BUSYBOX_SOURCE = busybox-$(BUSYBOX_VER).tar.bz2
 BUSYBOX_PATCH  = busybox-$(BUSYBOX_VER)-nandwrite.patch
 BUSYBOX_PATCH += busybox-$(BUSYBOX_VER)-unicode.patch
@@ -11,7 +11,7 @@ BUSYBOX_PATCH += busybox-$(BUSYBOX_VER)-flashcp-small-output.patch
 BUSYBOX_PATCH += busybox-$(BUSYBOX_VER)-block-telnet-internet.patch
 BUSYBOX_PATCH += busybox-$(BUSYBOX_VER)-recursive_action-fix.patch
 #BUSYBOX_PATCH += busybox-$(BUSYBOX_VER)-tar-fix.patch
-#BUSYBOX_PATCH += busybox-$(BUSYBOX_VER)-sh4-revert_ifa_flags.patch
+BUSYBOX_PATCH += busybox-$(BUSYBOX_VER)-sh4-revert_ifa_flags.patch
 
 $(ARCHIVE)/$(BUSYBOX_SOURCE):
 	$(WGET) https://busybox.net/downloads/$(BUSYBOX_SOURCE)
