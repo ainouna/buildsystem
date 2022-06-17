@@ -11,10 +11,7 @@ crosstool-renew:
 
 ifeq ($(BS_GCC_VER), $(filter $(BS_GCC_VER), 4.6.3 4.8.4))
 # updates / downloads
-STL_URL          = http://archive.stlinux.com/stlinux/2.4
-STL_URL_UPD_SRC  = $(STL_URL)/updates/SRPMS
-STL_URL_UPD_SH4  = $(STL_URL)/updates/RPMS/sh4
-STL_URL_UPD_HOST = $(STL_URL)/updates/RPMS/host
+STL_URL          = $(GITHUB)/BPanther/stlinux/raw/master
 STL_GET          = $(WGET)/stlinux
 
 ## ordering is important here. The /host/ rule must stay before the less
@@ -22,15 +19,15 @@ STL_GET          = $(WGET)/stlinux
 ## even reliable :-(
 $(STL_ARCHIVE)/stlinux24-host-%.i386.rpm \
 $(STL_ARCHIVE)/stlinux24-host-%noarch.rpm:
-	$(STL_GET) $(STL_URL_UPD_HOST)/$(subst $(STL_ARCHIVE)/,"",$@)
+	$(STL_GET) $(STL_URL)/$(subst $(STL_ARCHIVE)/,"",$@)
 
 $(STL_ARCHIVE)/stlinux24-host-%.src.rpm:
-	$(STL_GET) $(STL_URL_UPD_SRC)/$(subst $(STL_ARCHIVE)/,"",$@)
+	$(STL_GET) $(STL_URL)/$(subst $(STL_ARCHIVE)/,"",$@)
 
 $(STL_ARCHIVE)/stlinux24-sh4-%.sh4.rpm \
 $(STL_ARCHIVE)/stlinux24-cross-%.i386.rpm \
 $(STL_ARCHIVE)/stlinux24-sh4-%.noarch.rpm:
-	$(STL_GET) $(STL_URL_UPD_SH4)/$(subst $(STL_ARCHIVE)/,"",$@)
+	$(STL_GET) $(STL_URL)/$(subst $(STL_ARCHIVE)/,"",$@)
 
 #
 # install the RPMs
@@ -43,9 +40,9 @@ GLIBC_VER    = 2.10.2-42
 endif
 
 ifeq ($(BS_GCC_VER), 4.8.4)
-BINUTILS_VER = 2.24.51.0.3-76
+BINUTILS_VER = 2.24.51.0.3-77
 GCC_VER      = 4.8.4-139
-LIBGCC_VER   = 4.8.4-148
+LIBGCC_VER   = 4.8.4-149
 GLIBC_VER    = 2.14.1-59
 endif
 
