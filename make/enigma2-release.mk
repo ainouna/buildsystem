@@ -460,7 +460,7 @@ enigma2_release_atemio520:
 	$(SILENT)cp $(SKEL_ROOT)/boot/video_7111.elf $(RELEASE_DIR)/boot/video.elf
 	$(SILENT)cp $(SKEL_ROOT)/boot/audio_7111.elf $(RELEASE_DIR)/boot/audio.elf
 	$(SILENT)cp $(SKEL_ROOT)/firmware/component_7111_mb618.fw $(RELEASE_DIR)/lib/firmware/component.fw
-	$(SILENT)cp -f $(SKEL_ROOT)/root_enigma2/usr/local/share/enigma2/keymap_ufs910.xml $(RELEASE_DIR)/usr/local/share/enigma2/keymap.xml
+	$(SILENT)cp -f $(SKEL_ROOT)/root_enigma2/usr/local/share/enigma2/keymap_opt9600.xml $(RELEASE_DIR)/usr/local/share/enigma2/keymap.xml
 
 #
 # hl101
@@ -1126,6 +1126,7 @@ ifneq ($(BOXTYPE), $(filter $(BOXTYPE), cuberevo cuberevo_mini_fta cuberevo_250h
 endif
 #
 	$(SILENT)cp -f $(SKEL_ROOT)/release/rc_adb_box.png $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/adb_xmp.png
+	$(SILENT)cp -f $(SKEL_ROOT)/release/rc_atemio520.png $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/atemio520.png
 	$(SILENT)cp -f $(SKEL_ROOT)/release/rc_cuberevo.png $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/cuberevo.png
 	$(SILENT)cp -f $(SKEL_ROOT)/release/rc_cuberevo_uni.png $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/cuberevo_uni.png
 	$(SILENT)cp -f $(SKEL_ROOT)/release/rc_fs9000.png $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/fs9000.png

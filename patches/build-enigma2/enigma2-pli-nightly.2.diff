@@ -9402,7 +9402,7 @@
  			fp = open("/dev/dbox/fp0")
 --- enigma2.org/lib/python/Tools/KeyBindings.py
 +++ enigma2/lib/python/Tools/KeyBindings.py
-@@ -220,122 +220,509 @@
+@@ -220,122 +220,518 @@
  	KEYIDS["KEY_POWER2"]: ("POWER2",),
  	KEYIDS["KEY_SUSPEND"]: ("SUSPEND",),
  	KEYIDS["KEY_WAKEUP"]: ("WAKEUP",)
@@ -9952,7 +9952,7 @@
 +	KEYIDS["KEY_GREEN"]: ("GREEN",),
 +	KEYIDS["KEY_YELLOW"]: ("YELLOW",),
 +	KEYIDS["KEY_BLUE"]: ("BLUE",),
-+}, {  # id=13 - Opticum HD 9600 series
++}, {  # id=13 - Opticum HD 9600 series, Atemio AM 520 HD
 +	KEYIDS["KEY_POWER"]: ("POWER",),
 +	KEYIDS["KEY_MUTE"]: ("MUTE",),
  	KEYIDS["KEY_HELP"]: ("HELP",),
@@ -10019,10 +10019,19 @@
 +	KEYIDS["KEY_PROGRAM"]: ("STATUS",),
 +	KEYIDS["KEY_OPTION"]: ("OPTION",),
 +	KEYIDS["KEY_SUBTITLE"]: ("FIND",),
++# Additions for AM 520 HD
++	KEYIDS["KEY_VOLUMEUP"]: ("VOLUMEUP",),
++	KEYIDS["KEY_VOLUMEDOWN"]: ("VOLUMEDOWN",),
++	KEYIDS["KEY_CHANNELUP"]: ("CHANNELUP",),
++	KEYIDS["KEY_CHANNELDOWN"]: ("CHANNELDOWN",),
++	KEYIDS["KEY_PAUSE"]: ("PAUSE",),
++	KEYIDS["KEY_PROGRAM"]: ("SLEEP",),
++	KEYIDS["KEY_WWW"]: ("WWW",),
++	KEYIDS["KEY_AUDIO"]: ("AUDIO",),
  }]
  
  
-@@ -374,10 +761,43 @@
+@@ -374,10 +767,45 @@
  	else:
  		rcType = config.plugins.remotecontroltype.rctype.value
  		# rcType = config.misc.inputdevices.rcType.value
@@ -10061,16 +10070,18 @@
 +			idx = 13
 +		elif rcType == 22:	# Cuberevo Standard
 +			idx = 7
-+#		elif rcType == 23:	# Fortis 4G
++		elif rcType == 23:	# Atemio AM 520 HD (version 2)
++			idx = 13
++#		elif rcType == 24:	# Fortis 4G
 +#			idx = 14
-+#		elif rcType == 24:	# ...
++#		elif rcType == 25:	# ...
 +#			idx = 15
  		else:
  			idx = 2
  	return keyDescriptions[idx].get(key)
 --- enigma2.org/lib/python/Screens/InputDeviceSetup.py
 +++ enigma2/lib/python/Screens/InputDeviceSetup.py
-@@ -282,77 +282,63 @@
+@@ -282,77 +282,65 @@
  	rcList = [
  			("0", _("Default")),
  			("4", _("DMM normal")),
@@ -10108,7 +10119,8 @@
 +			("20", _("Kathrein RC675 (UFS913)")),
 +			("21", _("Opticum HD 9600 series")),
 +			("22", _("CubeRevo standard")),
-+#			("23", _("fortis_4g")),
++			("23", _("Atemio AM 520 HD V2")),
++#			("24", _("fortis_4g")),
  		]
  
  	defaultRcList = [
@@ -10197,13 +10209,14 @@
 +			("opt9600", 21),
 +			("opt9600mini", 21),
 +			("opt9600prima", 21),
-+#			("fortis_4g", 23),
++			("atemio520", 23),
++#			("fortis_4g", 24),
  		]
  
  	def __init__(self, session):
 --- enigma2.org/data/rc_models/rc_models.cfg
 +++ enigma2/data/rc_models/rc_models.cfg
-@@ -19,161 +19,38 @@
+@@ -19,161 +19,39 @@
  #
  # When no entry matches at all, 'default' will be used as remoteName
  #
@@ -10400,6 +10413,7 @@
 +opt9600           opt9600
 +opt9600mini       opt9600
 +opt9600prima      opt9600
++atemio520         atemio520
 --- enigma2.org/data/rc_models/Makefile.am
 +++ enigma2/data/rc_models/Makefile.am
 @@ -2,15 +2,10 @@
@@ -10420,9 +10434,9 @@
 -	octagon.xml uclan.xml pulse.xml dual.xml hd66se.xml
 +	dmmadv.png \
 +	adb_xmp.png cuberevo_uni.png fs9000.png hs7110.png hs9510.png spark.png tf7700.png ufs912.png vitamin.png \
-+	pace7241.png hl101_1.png vip_1.png ufs910.png ufs913.png opt9600.png cuberevo.png dmm.png \
++	pace7241.png hl101_1.png vip_1.png ufs910.png ufs913.png opt9600.png cuberevo.png atemio520.png dmm.png \
 +	dmmadv.xml  \
 +	adb_xmp.xml cuberevo_uni.xml fs9000.xml hs7110.xml hs9510.xml spark.xml tf7700.xml ufs912.xml vitamin.xml \
-+	pace7241.xml hl101_1.xml vip_1.xml ufs910.xml ufs913.xml opt9600.xml cuberevo.xml dmm.xml
++	pace7241.xml hl101_1.xml vip_1.xml ufs910.xml ufs913.xml opt9600.xml cuberevo.xml atemio520.xml dmm.xml
 +
 
