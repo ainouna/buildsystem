@@ -2789,7 +2789,7 @@
  	{
  		ret = (int)(snr / 37.5);
  		sat_max = 1700;
-@@ -3091,7 +3103,11 @@
+@@ -3095,7 +3107,11 @@
  	}
  	else if (!strcmp(type, "DVB-C"))
  	{
@@ -2801,7 +2801,7 @@
  		fetype = feCable;
  	}
  	else if (!strcmp(type, "ATSC"))
-@@ -3223,11 +3239,16 @@
+@@ -3227,11 +3243,16 @@
  		case SYS_ISDBS:		ss << " ISDBS"; break;
  		case SYS_ISDBT:		ss << " ISDBT"; break;
  		case SYS_UNDEFINED:	ss << " UNDEFINED"; break;
@@ -3207,7 +3207,7 @@
  
  		if(::access(path.str().c_str(), R_OK) < 0)
  			break;
-@@ -1160,7 +1414,7 @@
+@@ -1168,7 +1422,7 @@
  	{
  		unsigned char *d = new unsigned char[len];
  		memcpy(d, data, len);
@@ -3216,7 +3216,7 @@
  		notifier->setRequested(eSocketNotifier::Read | eSocketNotifier::Priority | eSocketNotifier::Write);
  	}
  
-@@ -1171,61 +1425,168 @@
+@@ -1179,61 +1433,168 @@
  {
  	singleLock s(eDVBCIInterfaces::m_slot_lock);
  	eTrace("[CI] Slot %d what %d\n", getSlotID(), what);
@@ -3440,16 +3440,16 @@
  }
  
  DEFINE_REF(eDVBCISlot);
-@@ -1246,7 +1607,7 @@
+@@ -1266,7 +1627,7 @@
+ 	plugged = true;
+ 	m_ci_version = versionUnknown;
  
- 	slotid = nr;
- 
--	sprintf(filename, "/dev/ci%d", nr);
-+	sprintf(filename, "/dev/dvb/adapter0/ci%d", nr);
+-	sprintf(filename, "/dev/ci%d", slotid);
++	sprintf(filename, "/dev/dvb/adapter0/ci%d", slotid);
  
  //	possible_caids.insert(0x1702);
  //	possible_providers.insert(providerPair("PREMIERE", 0xC00000));
-@@ -1257,10 +1618,18 @@
+@@ -1277,10 +1638,18 @@
  	eTrace("[CI] Slot %d has fd %d", getSlotID(), fd);
  	state = stateInvalid;
  
@@ -3462,13 +3462,13 @@
 +		tx_time.tv_usec = 0;
 +		last_poll_time.tv_sec = 0;
 +		last_poll_time.tv_nsec = 0;
- 		notifier = eSocketNotifier::create(context, fd, eSocketNotifier::Read | eSocketNotifier::Priority | eSocketNotifier::Write);
+ 		notifier = eSocketNotifier::create(m_context, fd, eSocketNotifier::Read | eSocketNotifier::Priority | eSocketNotifier::Write);
  		CONNECT(notifier->activated, eDVBCISlot::data);
 +		reset();
  	} else
  	{
  		perror(filename);
-@@ -1383,13 +1744,11 @@
+@@ -1412,13 +1773,11 @@
  {
  	eDebug("[CI] Slot %d: reset requested", getSlotID());
  
@@ -3487,7 +3487,7 @@
  
  	while(sendqueue.size())
  	{
-@@ -1397,7 +1756,8 @@
+@@ -1426,7 +1785,8 @@
  		sendqueue.pop();
  	}
  
@@ -3548,10 +3548,10 @@
  
  class eDVBCISlot: public iObject, public sigc::trackable
  {
-@@ -66,6 +101,11 @@
- 	bool user_mapped;
+@@ -67,6 +101,11 @@
  	void data(int);
  	bool plugged;
+ 	eMainloop *m_context;
 +	//dagobert
 +	char connection_id;
 +	bool mmi_active;
@@ -3560,7 +3560,7 @@
  
  	eDVBCIApplicationManagerSession *getAppManager() { return application_manager; }
  	eDVBCIMMISession *getMMIManager() { return mmi_session; }
-@@ -73,7 +113,6 @@
+@@ -74,7 +113,6 @@
  	eDVBCICcSession *getCCManager() { return cc_manager; }
  
  	int getState() { return state; }
@@ -3568,7 +3568,7 @@
  	int startMMI();
  	int stopMMI();
  	int answerText(int answer);
-@@ -101,7 +140,17 @@
+@@ -105,7 +144,17 @@
  
  	int getSlotID();
  	int getNumOfServices();
@@ -6130,7 +6130,7 @@
  		elif 'Creating journal' in data:
 --- enigma2.org/lib/python/Components/Network.py
 +++ enigma2/lib/python/Components/Network.py
-@@ -536,16 +536,18 @@
+@@ -537,16 +537,18 @@
  			return True
  
  		# r871x_usb_drv on kernel 2.6.12 is not identifiable over /sys/class/net/'ifacename'/wireless so look also inside /proc/net/wireless
@@ -9364,7 +9364,7 @@
 @@ -73,8 +85,15 @@
  		if fp_version is None:
  			fp_version = ""
- 		else:
+ 		elif fp_version != 0:
 -			fp_version = _("Frontprocessor version: %s") % fp_version
 -			AboutText += fp_version + "\n"
 +			if fileExists("/proc/stb/fp/resellerID"):
@@ -9402,7 +9402,7 @@
  			fp = open("/dev/dbox/fp0")
 --- enigma2.org/lib/python/Tools/KeyBindings.py
 +++ enigma2/lib/python/Tools/KeyBindings.py
-@@ -220,122 +220,509 @@
+@@ -220,122 +220,518 @@
  	KEYIDS["KEY_POWER2"]: ("POWER2",),
  	KEYIDS["KEY_SUSPEND"]: ("SUSPEND",),
  	KEYIDS["KEY_WAKEUP"]: ("WAKEUP",)
@@ -9952,7 +9952,7 @@
 +	KEYIDS["KEY_GREEN"]: ("GREEN",),
 +	KEYIDS["KEY_YELLOW"]: ("YELLOW",),
 +	KEYIDS["KEY_BLUE"]: ("BLUE",),
-+}, {  # id=13 - Opticum HD 9600 series
++}, {  # id=13 - Opticum HD 9600 series, Atemio AM 520 HD
 +	KEYIDS["KEY_POWER"]: ("POWER",),
 +	KEYIDS["KEY_MUTE"]: ("MUTE",),
  	KEYIDS["KEY_HELP"]: ("HELP",),
@@ -10019,10 +10019,19 @@
 +	KEYIDS["KEY_PROGRAM"]: ("STATUS",),
 +	KEYIDS["KEY_OPTION"]: ("OPTION",),
 +	KEYIDS["KEY_SUBTITLE"]: ("FIND",),
++# Additions for AM 520 HD
++	KEYIDS["KEY_VOLUMEUP"]: ("VOLUMEUP",),
++	KEYIDS["KEY_VOLUMEDOWN"]: ("VOLUMEDOWN",),
++	KEYIDS["KEY_CHANNELUP"]: ("CHANNELUP",),
++	KEYIDS["KEY_CHANNELDOWN"]: ("CHANNELDOWN",),
++	KEYIDS["KEY_PAUSE"]: ("PAUSE",),
++	KEYIDS["KEY_PROGRAM"]: ("SLEEP",),
++	KEYIDS["KEY_WWW"]: ("WWW",),
++	KEYIDS["KEY_AUDIO"]: ("AUDIO",),
  }]
  
  
-@@ -374,10 +761,43 @@
+@@ -374,10 +767,45 @@
  	else:
  		rcType = config.plugins.remotecontroltype.rctype.value
  		# rcType = config.misc.inputdevices.rcType.value
@@ -10061,16 +10070,18 @@
 +			idx = 13
 +		elif rcType == 22:	# Cuberevo Standard
 +			idx = 7
-+#		elif rcType == 23:	# Fortis 4G
++		elif rcType == 23:	# Atemio AM 520 HD (version 2)
++			idx = 13
++#		elif rcType == 24:	# Fortis 4G
 +#			idx = 14
-+#		elif rcType == 24:	# ...
++#		elif rcType == 25:	# ...
 +#			idx = 15
  		else:
  			idx = 2
  	return keyDescriptions[idx].get(key)
 --- enigma2.org/lib/python/Screens/InputDeviceSetup.py
 +++ enigma2/lib/python/Screens/InputDeviceSetup.py
-@@ -282,77 +282,63 @@
+@@ -282,77 +282,65 @@
  	rcList = [
  			("0", _("Default")),
  			("4", _("DMM normal")),
@@ -10108,7 +10119,8 @@
 +			("20", _("Kathrein RC675 (UFS913)")),
 +			("21", _("Opticum HD 9600 series")),
 +			("22", _("CubeRevo standard")),
-+#			("23", _("fortis_4g")),
++			("23", _("Atemio AM 520 HD V2")),
++#			("24", _("fortis_4g")),
  		]
  
  	defaultRcList = [
@@ -10197,13 +10209,14 @@
 +			("opt9600", 21),
 +			("opt9600mini", 21),
 +			("opt9600prima", 21),
-+#			("fortis_4g", 23),
++			("atemio520", 23),
++#			("fortis_4g", 24),
  		]
  
  	def __init__(self, session):
 --- enigma2.org/data/rc_models/rc_models.cfg
 +++ enigma2/data/rc_models/rc_models.cfg
-@@ -19,161 +19,38 @@
+@@ -19,163 +19,39 @@
  #
  # When no entry matches at all, 'default' will be used as remoteName
  #
@@ -10349,7 +10362,9 @@
 -h9              zgemma
 -h9se            zgemma
 -h9combo         zgemma
+-h9twin          zgemma
 -h9combose       zgemma
+-h9twinse        zgemma
 -h10             zgemma
 -h11             zgemma
 -lc              sh1
@@ -10400,6 +10415,7 @@
 +opt9600           opt9600
 +opt9600mini       opt9600
 +opt9600prima      opt9600
++atemio520         atemio520
 --- enigma2.org/data/rc_models/Makefile.am
 +++ enigma2/data/rc_models/Makefile.am
 @@ -2,15 +2,10 @@
@@ -10420,9 +10436,9 @@
 -	octagon.xml uclan.xml pulse.xml dual.xml hd66se.xml
 +	dmmadv.png \
 +	adb_xmp.png cuberevo_uni.png fs9000.png hs7110.png hs9510.png spark.png tf7700.png ufs912.png vitamin.png \
-+	pace7241.png hl101_1.png vip_1.png ufs910.png ufs913.png opt9600.png cuberevo.png dmm.png \
++	pace7241.png hl101_1.png vip_1.png ufs910.png ufs913.png opt9600.png cuberevo.png atemio520.png dmm.png \
 +	dmmadv.xml  \
 +	adb_xmp.xml cuberevo_uni.xml fs9000.xml hs7110.xml hs9510.xml spark.xml tf7700.xml ufs912.xml vitamin.xml \
-+	pace7241.xml hl101_1.xml vip_1.xml ufs910.xml ufs913.xml opt9600.xml cuberevo.xml dmm.xml
++	pace7241.xml hl101_1.xml vip_1.xml ufs910.xml ufs913.xml opt9600.xml cuberevo.xml atemio520.xml dmm.xml
 +
 
