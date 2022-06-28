@@ -1,4 +1,4 @@
-# revision ab1618f3bfbb392bcbe2adc456966a45dd399796 28/05/2022 21:13
+# revision efcb1ebe7e53c27ab3e964e9bbfa8c78acaa8876 28/06/2022 23:52
 --- enigma2.org/configure.ac
 +++ enigma2/configure.ac
 @@ -18,6 +18,7 @@
@@ -9361,24 +9361,22 @@
  		self["GStreamerVersion"] = StaticText(GStreamerVersion)
  
  		ffmpegVersion = _("Media player: ffmpeg, version ") + about.getffmpegVersionString()
-@@ -73,8 +85,15 @@
+@@ -73,7 +85,14 @@
  		if fp_version is None:
  			fp_version = ""
  		elif fp_version != 0:
 -			fp_version = _("Frontprocessor version: %s") % fp_version
--			AboutText += fp_version + "\n"
-+			if fileExists("/proc/stb/fp/resellerID"):
++			model = HardwareInfo().get_device_model()
++			if fileExists("/proc/stb/fp/resellerID") and (model != "atemio520"):
 +				fp_version = _("Loader version: %d.%02d") % (fp_version / 100, fp_version % 100)
 +			else:
-+				model = HardwareInfo().get_device_model()
 +				if (model in ("cuberevo", "cuberevo_mini-fta", "cuberevo-250hd", "cuberevo-mini", "cuberevo-mini2", "cuberevo-2000hd", "cuberevo-3000hd", "cuberevo-9500hd")):
 +					fp_version = _("Frontprocessor version: %s") % fp_version
 +				else:
 +					fp_version = _("Frontprocessor version: %d.%02d") % (fp_version / 100, fp_version % 100)
-+			AboutText += fp_version + "\n"
+ 			AboutText += fp_version + "\n"
  
  		self["FPVersion"] = StaticText(fp_version)
- 
 --- enigma2.org/lib/python/Tools/StbHardware.py
 +++ enigma2/lib/python/Tools/StbHardware.py
 @@ -2,12 +2,16 @@
