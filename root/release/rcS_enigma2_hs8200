@@ -91,7 +91,7 @@ insmod $MODDIR/mme_host.ko transport0=shm
 
 echo "[rcS] Init AVS (LOAD 5)"
 echo "Load 5" > /dev/vfd
-insmod $MODDIR/avs.ko type=stv6412
+insmod $MODDIR/avs.ko type=stv6418
 
 player=`cat /proc/stb/player/version | awk '{ print substr( $0, length($0) - 2, length($0) ) }'`
 echo "[rcS] Init player $player (LOAD 4)"
@@ -264,7 +264,7 @@ fi
 # Try and synchronise time
 #inettime=`cat /etc/enigma2/settings | grep systemoptions.inettime | cut -d "=" -f2`
 # if [ ! $inettime ] && [ -e /sbin/ntpd ]; then
-if [ -h /usr/sbin/ntpd ]; then
+if [ -x /usr/sbin/ntpd ]; then
    echo "[rcS] Set internet time"
    (ntpd -n -p 0.europe.pool.ntp.org -q; /bin/fp_control -sst)
 fi
