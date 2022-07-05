@@ -115,7 +115,7 @@ HS7110_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-sh4-hs7110_setup_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-stmmac_stm24_$(KERNEL_LABEL).patch \
 		$(if $(P0209),linux-sh4-i2c-stm-downgrade_stm24_$(KERNEL_LABEL).patch)
-ifeq ($(IMAGE), $(filter $(IMAGE), neutrino neutrino-wlandriver))
+ifeq ($(IMAGE), $(filter $(IMAGE), neutrino neutrino-wlandriver titan titan-wlandriver))
 HS7110_PATCHES_24 += linux-sh4-hs7110_mtdconcat_stm24_$(KERNEL_LABEL).patch
 endif
 
@@ -130,7 +130,7 @@ HS7420_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-sh4-hs7420_setup_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-stmmac_stm24_$(KERNEL_LABEL).patch \
 		$(if $(P0209),linux-sh4-i2c-stm-downgrade_stm24_$(KERNEL_LABEL).patch)
-ifeq ($(IMAGE), $(filter $(IMAGE), neutrino neutrino-wlandriver))
+ifeq ($(IMAGE), $(filter $(IMAGE), neutrino neutrino-wlandriver titan titan-wlandriver))
 HS7420_PATCHES_24 += linux-sh4-hs7420_mtdconcat_stm24_$(KERNEL_LABEL).patch
 endif
 
@@ -145,7 +145,7 @@ HS7810A_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-sh4-hs7810a_setup_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-stmmac_stm24_$(KERNEL_LABEL).patch \
 		$(if $(P0209),linux-sh4-i2c-stm-downgrade_stm24_$(KERNEL_LABEL).patch)
-ifeq ($(IMAGE), $(filter $(IMAGE), neutrino neutrino-wlandriver))
+ifeq ($(IMAGE), $(filter $(IMAGE), neutrino neutrino-wlandriver titan titan-wlandriver))
 HS7810A_PATCHES_24 += linux-sh4-hs7810a_mtdconcat_stm24_$(KERNEL_LABEL).patch
 endif
 
