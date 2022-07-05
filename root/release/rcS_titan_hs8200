@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 220610.1
+#Version 220705.1
 
 echo "[rcS] Start"
 echo "Fortis HS8200 Titan"
@@ -9,10 +9,12 @@ MODDIR=/lib/modules
 insmod $MODDIR/e2_proc.ko
 
 startconfig=/mnt/config/start-config
-if [ ! -e "$startconfig" ]; then startconfig="/etc/titan.restore/mnt/config/start-config"; fi
+if [ ! -e "$startconfig" ]; then
+   startconfig="/etc/titan.restore/mnt/config/start-config"
+fi
 
 . $startconfig
-. /sbin/start-functioninsmod $MODDIR/e2_proc.ko
+. /sbin/start-function
 
 insmod $MODDIR/sata.ko
 
@@ -30,13 +32,11 @@ if [ -e /var/etc/.first ]; then
    sleep 1
    touch /dev/.devfsd
 else
-   echo "Load 10" > /dev/vfd
    echo "[rcS] LOAD 10"
+   echo "Load 10" > /dev/vfd
 fi
 
 /etc/init.d/mountvirtfs start
-
-insmod $MODDIR/sata.ko
 
 # Start automounter with umount timeout of 5 seconds
 echo "[rcS] Starting automounter"
@@ -45,11 +45,6 @@ echo "[rcS] Starting automounter"
 echo "[rcS] Starting DEBUG Interface"
 /etc/init.d/mountall start
 /etc/init.d/hostname start
-
-#if [ -d /dev/sda1/Recordings ]; then
-#   echo "[rcS] Recordings directory found on /dev/sda1, checking..."
-#   fsck.jfs -a /dev/sda1
-#fi
 
 echo -n "[rcS] Starting telnetd "
 /usr/sbin/telnetd -l /bin/autologin
@@ -65,7 +60,6 @@ if [ -e /var/etc/.scart ]; then
    insmod /lib/modules/stmfb.ko display0=720x576-32@50:1m::pal:cvbs
 fi
 stfbset -p
-insmod $MODDIR/stm_v4l2.ko
 
 echo "[rcS] Loading modules"
 
@@ -93,7 +87,7 @@ insmod $MODDIR/embxshell.ko
 insmod $MODDIR/embxmailbox.ko mailbox0=0xfe211000:136:set2 mailbox1=0xfe212000:0
 insmod $MODDIR/embxshm.ko mailbox0=shm:0:7:0x60000000:0:256:256:0:512:0x40000000:0x10000000
 insmod $MODDIR/mme_host.ko transport0=shm
-insmod $MODDIR/mme_log.ko
+insmod $MODDIR/mmelog.ko
 
 echo "[rcS] Init AVS (LOAD 5)"
 echo "Load 5" > /dev/vfd
@@ -104,6 +98,7 @@ echo "[rcS] Init player $player (LOAD 4)"
 echo "Load 4" > /dev/vfd
 insmod $MODDIR/ksound.ko
 insmod $MODDIR/p2div64.ko
+insmod $MODDIR/stm_v4l2.ko
 insmod $MODDIR/stmvout.ko
 insmod $MODDIR/stmvbi.ko
 
@@ -156,14 +151,11 @@ insmod $MODDIR/silencegen.ko
 
 insmod $MODDIR/bpamem.ko
 
-echo "Init HDMI-CEC"
 if [ -e $MODDIR/cec.ko ]; then
+   echo "[rcS] Init HDMI-CEC"
    insmod $MODDIR/cec.ko activemode=1
 fi
 
-#if [ -e /boot/neutrinologo.mvi ]; then
-#   showiframe -p /boot/neutrinologo.mvi &
-#fi
 #stfbcontrol a 0
 
 if [ -e $MODDIR/exportfs.ko ]; then
@@ -185,6 +177,9 @@ if [ -e $MODDIR/usbserial.ko ]; then
    fi
    if [ -e $MODDIR/pl2303.ko ]; then
       insmod $MODDIR/pl2303.ko
+   fi
+   if [ -e $MODDIR/ch341.ko ]; then
+      insmod $MODDIR/ch341.ko
    fi
 fi
 
@@ -216,22 +211,22 @@ fi
 
 #wlan=rtl8188cu
 if [ ! $wlan ] || [ ! -e $MODDIR/$wlan.ko ]; then
-   echo "No WLAN"
+   echo "[rcS] No WLAN"
 else
    insmod $MODDIR/$wlan.ko
    echo "$wlan WLAN"
-#   echo "$wlan WLAN" > /dev/vfd
+#   echo "[rcS] $wlan WLAN" > /dev/vfd
 #   sleep 3
 fi
 
 # Try and synchronise time
 if [ -h /usr/sbin/ntpd ]; then
-   echo "Set internet time"
+   echo "[rcS] Set internet time"
    (ntpd -n -p 0.europe.pool.ntp.org -q; /bin/fp_control -sst)
 fi
 
 echo "[rcS] Init portmap & ftp (LOAD 1)"
-echo "LOAD 1" >/dev/vfd
+echo "Load 1" >/dev/vfd
 /etc/init.d/portmap start
 /etc/init.d/vsftpd start
 /usr/sbin/inetd
