@@ -11,8 +11,8 @@ if [ ! -e "$startconfig" ]; then startconfig="/etc/titan.restore/mnt/config/star
 . $startconfig
 . /sbin/start-function
 
-insmod=xinsmod
-#insmod=insmod
+#insmod=xinsmod
+insmod=insmod
 
 INPUT="$1"
 REBOOT="$2"
@@ -21,7 +21,9 @@ model="$4"
 imagetype="$5"
 linuxver="$6"
 
-if [ -e "/etc/.debug" ]; then debug=full; fi
+if [ -e "/etc/.debug" ]; then
+	debug=full
+fi
 
 debug=full
 
@@ -40,10 +42,18 @@ esac
 SWTYPE="titan"
 player="191"
 
-case $model in "") read model < /etc/model;; esac
-case $model in ipbox910|ipbox900|ipbox91|ipbox9000)	ipbox="1";; esac
+case $model in "")
+	read model < /etc/model;;
+esac
 
-if [ -e "/var/etc/.firstnet" ]; then firstnet="1"; fi
+case $model in
+	cuberevo_mini2|cuberevo_mini|cuberevo_250hd|cuberevo)
+	ipbox="1";;
+esac
+
+if [ -e "/var/etc/.firstnet" ]; then
+	firstnet="1";
+fi
 
 case $INPUT in
 	"")
@@ -51,7 +61,8 @@ case $INPUT in
 		exit;;
 esac
 
-startup_progress() {
+startup_progress()
+{
 	# dummy funktion
 	progress_skip=1
 }
@@ -61,7 +72,7 @@ startConfig()
 	echo "$CMD [$INPUT] startConfig"
 
 	case $model in
-		atevio700|hs9510)
+		hs9510)
 			pal="pal"
 			hdmi="50:12m"
 			embxmailbox="mailbox0=0xb9211000:136:set2 mailbox1=0xb9212000:0"
@@ -72,9 +83,15 @@ startConfig()
 			ci="cimax.ko"
 			tuner="avl2108.ko"
 			front="nuvoton.ko"
-			case $noaudiosync in y) usenoaudiosync="noaudiosync=1";; esac
-			case $oldaudiofw in y) useoldaudiofw="useoldaudiofw=1";; esac;;
-		atevio7000|fs9000)
+			case $noaudiosync in
+				y)
+					usenoaudiosync="noaudiosync=1";;
+			esac
+			case $oldaudiofw in
+				y)
+					useoldaudiofw="useoldaudiofw=1";;
+			esac;;
+		fs9000)
 			pal="pal"
 			hdmi="50:12m"
 			embxmailbox="mailbox0=0xb9211000:136:set2 mailbox1=0xb9212000:0"
@@ -86,29 +103,38 @@ startConfig()
 			ci="starci.ko extmoduldetect=$extmoduldetect"
 			tuner="stv090x.ko"
 			front="nuvoton.ko"
-			case $noaudiosync in y) usenoaudiosync="noaudiosync=1";; esac;;
-		atemio7600|hs8200)
+			case $noaudiosync in
+				y)
+					usenoaudiosync="noaudiosync=1";;
+			esac;;
+		hs8200)
 			pal="pal"
 			hdmi="50:12m"
 			embxmailbox="mailbox0=0xfe211000:136:set2 mailbox1=0xfe212000:0"
 			embxshm="mailbox0=shm:0:7:0x60000000:0:256:256:0:512:0x40000000:0x10000000"
 			display="sti7105.ko"
 			avs="type=stv6418"
-      		if [ -z "$extmoduldetect" ]; then extmoduldetect=0; fi
+      		if [ -z "$extmoduldetect" ]; then
+				extmoduldetect=0;
+			fi
 			ci="starci.ko extmoduldetect=$extmoduldetect"
 			tuner="avl2108.ko"
 			front="nuvoton.ko";;
-		atemio510|hs7110)
+		hs7110)
 			pal="pal"
 			hdmi="50:12m"
 			embxmailbox="mailbox0=0xfe211000:136:set2 mailbox1=0xfe212000:0"
 			embxshm="mailbox0=shm:0:7:0x60000000:0:256:256:0:512:0x40000000:0x10000000"
 			display="sti7111.ko"
 			avs="type=avs_none"
-			if [ -z "$extmoduldetect" ]; then extmoduldetect=0; fi
+			if [ -z "$extmoduldetect" ]; then
+				extmoduldetect=0;
+			fi
 			# neutrino hs7110.ko
 			ci="hs711x.ko extmoduldetect=$extmoduldetect"
-			if [ -z "$bbgain" ]; then bbgain=10; fi
+			if [ -z "$bbgain" ];
+				then bbgain=10;
+			fi
 			tuner="stv090x.ko bbgain="$bbgain""
 			front="nuvoton.ko waitTime=0";;
 		atemio520|atemio530)
@@ -118,9 +144,13 @@ startConfig()
 			embxshm="mailbox0=shm:0:7:0x60000000:0:256:256:0:512:0x40000000:0x10000000"
 			display="sti7111.ko"
 			avs="type=avs_none"
-			if [ -z "$extmoduldetect" ]; then extmoduldetect=0; fi
+			if [ -z "$extmoduldetect" ]; then
+				extmoduldetect=0;
+			fi
 			ci="cnbox_cic.ko extmoduldetect=$extmoduldetect"
-			if [ -z "$bbgain" ]; then bbgain=10; fi
+			if [ -z "$bbgain" ]; then
+				bbgain=10;
+			fi
 			tuner="stv090x.ko bbgain="$bbgain""
 			front="cn_micom.ko paramDebug=200";;
 		ufs910)
@@ -130,15 +160,30 @@ startConfig()
 			embxshm="mailbox0=shm:0:7:0x60000000:0:16:16:0:1024:0xa4000000:0x10000000"
 			display="stx7100.ko"
 			avs=""
-			case $ufs910avs in n) avs="type=avs_none";; esac
+			case $ufs910avs in
+				n)
+					avs="type=avs_none";;
+			esac
 			mmeName="MPEG2_TRANSFORMER0"
 			ci="cimax.ko"
 			front="vfd.ko"
 			tuner="cx24116.ko useUnknown=0"
-			case $useUnknown910 in 1) tuner="cx24116.ko useUnknown=1";; esac
-			case $HighSR in y) useHighSR="highSR=1";; esac
-			case $swts in y) useswts="swts=1";; esac
-			case $noaudiosync in y) usenoaudiosync="noaudiosync=1";; esac;;
+			case $useUnknown910 in
+				1)
+					tuner="cx24116.ko useUnknown=1";;
+			esac
+			case $HighSR in
+				y)
+					useHighSR="highSR=1";;
+			esac
+			case $swts in
+				y)
+					useswts="swts=1";;
+				esac
+			case $noaudiosync in
+				y)
+					usenoaudiosync="noaudiosync=1";;
+			esac;;
 		ufs912)
 			pal="pal"
 			hdmi="50:12m"
@@ -148,12 +193,23 @@ startConfig()
 			avs="type=stv6417"
 			mmeName=""
 			ci="ufs912_cic.ko"
-			if [ -z "$bbgain" ]; then bbgain=10; fi
+			if [ -z "$bbgain" ]; then
+				bbgain=10;
+			fi
 			tuner="stv090x.ko bbgain="$bbgain""
 			front="micom.ko"
-			case $HighSR in y) useHighSR="highSR=1";; esac
-			case $swts in y) useswts="swts=1";; esac
-			case $oldvideofw in y) useoldvideofw="useoldvideofw=1";; esac;;
+			case $HighSR in
+				y)
+					useHighSR="highSR=1";;
+			esac
+			case $swts in
+				y)
+					useswts="swts=1";;
+			esac
+			case $oldvideofw in
+				y)
+					useoldvideofw="useoldvideofw=1";;
+			esac;;
 		ufs913)
 			pal="pal"
 			hdmi="50:12m"
@@ -163,12 +219,23 @@ startConfig()
 			avs="type=stv6417"
 			mmeName=""
 			ci="ufs913_cic.ko"
-			if [ -z "$bbgain" ]; then bbgain=10; fi
+			if [ -z "$bbgain" ]; then
+				bbgain=10;
+			fi
 			tuner="avl6222.ko"
 			front="micom.ko paramDebug=0"
-			case $HighSR in y) useHighSR="highSR=1";; esac
-			case $swts in y) useswts="swts=1";; esac
-			case $oldvideofw in y) useoldvideofw="useoldvideofw=1";; esac;;
+			case $HighSR in
+				y)
+					useHighSR="highSR=1";;
+				esac
+			case $swts in
+				y)
+					useswts="swts=1";;
+			esac
+			case $oldvideofw in
+				y)
+					useoldvideofw="useoldvideofw=1";;
+			esac;;
 		ufs922)
 			pal="pal"
 			hdmi="50:12m"
@@ -181,7 +248,10 @@ startConfig()
 			tuner="avl2108.ko"
 			tunersec="cx21143.ko"
 			front="micom.ko"
-			case $noaudiosync in y) usenoaudiosync="noaudiosync=1";; esac;;
+			case $noaudiosync in
+				y)
+					usenoaudiosync="noaudiosync=1";;
+			esac;;
 		ufc960)
 			pal="pal"
 			hdmi="50:12m"
@@ -191,10 +261,15 @@ startConfig()
 			display="stx7109c3.ko"
 			avs="type=stv6412"
 			ci="ufc960_cic.ko"
-			if [ -z "$bbgain" ]; then bbgain=10; fi
+			if [ -z "$bbgain" ]; then
+				bbgain=10;
+			fi
 			tuner="tda10023.ko"
 			front="micom.ko"
-			case $noaudiosync in y) usenoaudiosync="noaudiosync=1";; esac;;
+			case $noaudiosync in
+				y)
+					usenoaudiosync="noaudiosync=1";;
+			esac;;
 		spark)
 			pal="pal"
 			hdmi="50:12m"
@@ -204,12 +279,23 @@ startConfig()
 			avs="type=avs_pio"
 			mmeName=""
 			ci=""
-			if [ -z "$bbgain" ]; then bbgain=10; fi
+			if [ -z "$bbgain" ]; then
+				bbgain=10;
+			fi
 			tuner="stv090x.ko"
 			front="aotom.ko"
-			case $HighSR in y) useHighSR="highSR=1";; esac
-			case $swts in y) useswts="swts=1";; esac
-			case $oldvideofw in y) useoldvideofw="useoldvideofw=1";; esac;;
+			case $HighSR in
+				y)
+					useHighSR="highSR=1";;
+			esac
+			case $swts in
+				y)
+					useswts="swts=1";;
+			esac
+			case $oldvideofw in
+				y)
+					useoldvideofw="useoldvideofw=1";;
+			esac;;
 	spark7162)
 			pal="pal"
 			hdmi="50:12m"
@@ -219,19 +305,29 @@ startConfig()
 			avs="type=avs_none"
 			mmeName=""
 			ci=""
-			if [ -z "$bbgain" ]; then bbgain=10; fi
-			if [ `cat /mnt/config/titan.cfg | grep ^"hypridtuner=" | cut -d "=" -f2 | wc -l` -eq 1 ]; then
-				hypridtuner=`cat /mnt/config/titan.cfg | grep ^"hypridtuner=" | cut -d "=" -f2`
-			else
-				hypridtuner=c
+			if [ -z "$bbgain" ]; then
+				bbgain=10;
 			fi
-			tuner="spark7162.ko UnionTunerType=$hypridtuner"
+			if [ `cat /mnt/config/titan.cfg | grep ^"hypridtuner=" | cut -d "=" -f2 | wc -l` -eq 1 ]; then
+				hybridtuner=`cat /mnt/config/titan.cfg | grep ^"hypridtuner=" | cut -d "=" -f2`
+			else
+				hybridtuner=c
+			fi
+			tuner="spark7162.ko UnionTunerType=$hybridtuner"
 			front="aotom.ko"
-			case $HighSR in y) useHighSR="highSR=1";; esac
-			case $swts in y) useswts="swts=1";; esac
-			case $oldvideofw in y) useoldvideofw="useoldvideofw=1";; esac;;
-		*)		
-			#ipbox91/900/910/9000
+			case $HighSR in
+				y)
+					useHighSR="highSR=1";;
+			esac
+			case $swts in
+				y)
+					useswts="swts=1";;
+			esac
+			case $oldvideofw in
+				y)
+					useoldvideofw="useoldvideofw=1";;
+			esac;;
+		cuberevo_mini2|cuberevo_mini|cuberevo_250hd|cuberevo)
 			pal="pal"
 			hdmi="50:12m"
 			embxmailbox="mailbox0=0xb9211000:136:set2 mailbox1=0xb9212000:0"
@@ -239,15 +335,52 @@ startConfig()
 			mmeName="MPEG2_TRANSFORMER1"
 			display="stx7109c3.ko"
 			case $model in
-				ipbox91) avs="type=fake_avs";;
+				cuberevo_250hd)
+					avs="type=fake_avs";;
+				*)
+					avs="type=stv6412";;
+			esac
+			ci="starci.ko"
+			tuner="cx24116.ko"
+			front="micom.ko"
+			case $HighSR in
+				y)
+					useHighSR="highSR=1";;
+			esac
+			case $swts in
+				y)
+					useswts="swts=1";;
+			esac
+			case $noaudiosync in
+				y)
+					usenoaudiosync="noaudiosync=1";;
+			esac;;
+		*)		
+			pal="pal"
+			hdmi="50:12m"
+			embxmailbox="mailbox0=0xb9211000:136:set2 mailbox1=0xb9212000:0"
+			embxshm="mailbox0=shm:0:7:0x60000000:0:256:256:0:512:0xa4000000:0x10000000"
+			mmeName="MPEG2_TRANSFORMER1"
+			display="stx7109c3.ko"
+			case $model in
+				cuberevo_250hd) avs="type=fake_avs";;
 				*)  avs="type=stv6412";;
 			esac
 			ci="starci.ko"
 			tuner="cx24116.ko"
 			front="micom.ko"
-			case $HighSR in y) useHighSR="highSR=1";; esac
-			case $swts in y) useswts="swts=1";; esac
-			case $noaudiosync in y) usenoaudiosync="noaudiosync=1";; esac;;
+			case $HighSR in
+				y)
+					useHighSR="highSR=1";;
+			esac
+			case $swts in
+				y)
+					useswts="swts=1";;
+			esac
+			case $noaudiosync in
+				y)
+					usenoaudiosync="noaudiosync=1";;
+			esac;;
 	esac
 
 	if grep -q "^firststart=1" /mnt/config/titan.cfg; then
@@ -270,17 +403,20 @@ startVfd()
 	fi
 
 	case $model in 
-		atemio7600|atevio700|atevio7000|ufs922|ufs912|ufs913)
+		hs8200|hs9510|fs9000|ufs922|ufs912|ufs913)
 			echo "** Atemio **" > /dev/vfd;;
-		atemio530|atemio520aus|ipbox91|spark) 
+		atemio530|atemio520aus|cuberevo_250hd|spark) 
 			startDigit4Display &;;
-		atemio510) ;;
+		atemio510)
+			;;
 		*)
 			echo "** AAF **" > /dev/vfd;;
 	esac
-	case $model in ufs922) $insmod /lib/modules/fan_ctrl.ko;; esac
 	case $model in
-		atevio7000|atemio7600)
+		ufs922) $insmod /lib/modules/fan_ctrl.ko;;
+	esac
+	case $model in
+		fs9000|hs8200)
 			if grep -q "^at7000frontrun=" /mnt/config/titan.cfg; then
 				LEDB=`grep "^at7000frontrun=" /mnt/config/titan.cfg | cut -d= -f2`
 			else
@@ -305,7 +441,10 @@ startCpufreq()
 					0) ;;
 					*) echo $pll1_ndiv_mdiv > /proc/cpu_frequ/pll1_ndiv_mdiv;;
 				esac
-				case $pll1_fdma_bypass in 1) echo 1 > /proc/cpu_frequ/pll1_fdma_bypass;; esac
+				case $pll1_fdma_bypass in
+					1)
+						echo 1 > /proc/cpu_frequ/pll1_fdma_bypass;;
+				esac
 			fi;;
 	esac
 }
@@ -314,7 +453,7 @@ startAvs()
 {
 	echo "$CMD [$INPUT] startAvs"
 	$insmod /lib/modules/avs.ko $avs
-	if [ "$model" = "ipbox910" ] && [ `lsmod | grep -c "avs"` -eq 0 ]; then
+	if [ "$model" == "cuberevo_mini2" ] && [ `lsmod | grep -c "avs"` -eq 0 ]; then
 		$insmod /lib/modules/avs.ko type=avs_pio
 	fi
 }
@@ -407,8 +546,10 @@ startPlayer()
 	echo "$CMD [$INPUT] init player 191"
 
 	case $model in
-		at7500|ufs912|ufs913|spark|spark7162|atemio7600) echo "$CMD [$INPUT] skip mpeg2hw.ko";;
-		*) $insmod /lib/modules/mpeg2hw.ko mmeName=$mmeName;;
+		at7500|ufs912|ufs913|spark|spark7162|hs8200)
+			echo "$CMD [$INPUT] skip mpeg2hw.ko";;
+		*)
+			$insmod /lib/modules/mpeg2hw.ko mmeName=$mmeName;;
 	esac
 
 	$insmod /lib/modules/p2div64.ko
@@ -423,9 +564,13 @@ startPlayer()
 #		fi
 
 		case $model in
-			ufc960) echo "skip lnb";;
-			atemio510|spark|spark7162)	$insmod /lib/modules/lnb.ko type=a8293;;
-			*)	$insmod /lib/modules/lnb.ko type=pio;;esac
+			ufc960)
+				echo "skip lnb";;
+			atemio510|spark|spark7162)
+				$insmod /lib/modules/lnb.ko type=a8293;;
+			*)
+				$insmod /lib/modules/lnb.ko type=pio;;
+		esac
  	fi
 
 	if [ -e "/lib/modules/frontend_platform.ko" ]; then
@@ -434,22 +579,42 @@ startPlayer()
 		$insmod /lib/modules/lnbh221.ko
 		$insmod /lib/modules/lnb_pio.ko
 
-		if [ -e "/lib/modules/lnb_a8293.ko" ]; then $insmod /lib/modules/lnb_a8293.ko; fi
-		if [ -e "/lib/modules/dvb-pll.ko" ]; then $insmod /lib/modules/dvb-pll.ko; fi
-		if [ -e "/lib/modules/cx24116.ko" ]; then $insmod /lib/modules/cx24116.ko; fi
-		if [ -e "/lib/modules/tda10023.ko" ]; then $insmod /lib/modules/tda10023.ko; fi
-		if [ -e "/lib/modules/zl10353.ko" ]; then $insmod /lib/modules/zl10353.ko; fi
-		if [ -e "/lib/modules/stv0288.ko" ]; then $insmod /lib/modules/stv0288.ko; fi
-		if [ -e "/lib/modules/tda10024.ko" ]; then $insmod /lib/modules/tda10024.ko; fi
-		if [ -e "/lib/modules/cxd2820.ko" ]; then $insmod /lib/modules/cxd2820.ko; fi
-		if [ -e "/lib/modules/stv090x.ko" ]; then $insmod /lib/modules/stv090x.ko; fi
-		if [ -e "/lib/modules/stv0367.ko" ]; then $insmod /lib/modules/stv0367.ko; fi
+		if [ -e "/lib/modules/lnb_a8293.ko" ]; then
+			$insmod /lib/modules/lnb_a8293.ko
+		fi
+		if [ -e "/lib/modules/dvb-pll.ko" ]; then
+			$insmod /lib/modules/dvb-pll.ko
+		fi
+		if [ -e "/lib/modules/cx24116.ko" ]; then
+			$insmod /lib/modules/cx24116.ko
+		fi
+		if [ -e "/lib/modules/tda10023.ko" ]; then
+			$insmod /lib/modules/tda10023.ko
+		fi
+		if [ -e "/lib/modules/zl10353.ko" ]; then
+			$insmod /lib/modules/zl10353.ko
+		fi
+		if [ -e "/lib/modules/stv0288.ko" ]; then
+			$insmod /lib/modules/stv0288.ko
+		fi
+		if [ -e "/lib/modules/tda10024.ko" ]; then
+			$insmod /lib/modules/tda10024.ko
+		fi
+		if [ -e "/lib/modules/cxd2820.ko" ]; then
+			$insmod /lib/modules/cxd2820.ko
+		fi
+		if [ -e "/lib/modules/stv090x.ko" ]; then
+			$insmod /lib/modules/stv090x.ko
+		fi
+		if [ -e "/lib/modules/stv0367.ko" ]; then
+			$insmod /lib/modules/stv0367.ko
+		fi
 	elif [ -e "/lib/modules/avl2108_platform.ko" ]; then
 		$insmod /lib/modules/avl2108_platform.ko
 	fi
 
 	case $model in
-		ipbox91|ipbox910|ipbox900|ipbox9000)
+		cuberevo_250hd|cuberevo_mini2|cuberevo_mini|cuberevo)
 			echo "skip insmod tuner=$tuner";;
 		ufs922)
 			$insmod /lib/modules/$tuner
@@ -490,7 +655,10 @@ startBootlogo()
 	echo "$CMD [$INPUT] startBootlogo"
 
 	#fix green bootpicture
-	case $bootrgbfix in y) echo rgb > /proc/stb/avs/0/colorformat;; esac
+	case $bootrgbfix in
+		y)
+			echo rgb > /proc/stb/avs/0/colorformat;;
+	esac
 
 	if [ "$bootlogo" == 'y' ]; then
 	 	if [ -e /mnt/swapextensions/etc/boot/bootlogo.jpg ]; then
@@ -511,7 +679,7 @@ startFrontpanel()
 	fi
 
 	case $model in
-		ufs912|ufs913|at7500|skysat|atemio510|spark|spark7162|atemio7600|atemio530|atemio520)
+		ufs912|ufs913|at7500|skysat|atemio510|spark|spark7162|hs8200|atemio530|atemio520)
 			echo "$CMD [$INPUT] skip init frontpanel";;
 		*)
 			echo "$CMD [$INPUT] init frontpanel"
@@ -555,25 +723,28 @@ startEvremote()
 		ufs910)
 			read var < /proc/boxtype
 			case $var in
-				0)   echo "$CMD [$INPUT] 1W boxtype";;
-				1|3) echo "$CMD [$INPUT] 14W boxtype"
-					 echo "$CMD [$INPUT] init lircd"
-					 mkdir -p /var/run/lirc
-					 /usr/bin/lircd
-					 $insmod /lib/modules/button.ko
-					 $insmod /lib/modules/led.ko;;
-				*)   echo "$CMD [$INPUT] unknown boxtype use 14W"
-					 mkdir -p /var/run/lirc
-					 /usr/bin/lircd
-					 $insmod /lib/modules/button.ko
-					 $insmod /lib/modules/led.ko;;
+				0)
+					echo "$CMD [$INPUT] 1W boxtype";;
+				1|3)
+					echo "$CMD [$INPUT] 14W boxtype"
+					echo "$CMD [$INPUT] init lircd"
+					mkdir -p /var/run/lirc
+					/usr/bin/lircd
+					$insmod /lib/modules/button.ko
+					$insmod /lib/modules/led.ko;;
+				*)
+					echo "$CMD [$INPUT] unknown boxtype use 14W"
+					mkdir -p /var/run/lirc
+					/usr/bin/lircd
+					$insmod /lib/modules/button.ko
+					$insmod /lib/modules/led.ko;;
 			esac
 			/bin/evremote2 &;;
 		ufs922)
 			/bin/evremote2 0 0 10 120 &;;
 		atemio520|atemio530)
 			/bin/evremote2 150 10 &;;
-		ipbox910|ipbox900|ipbox91|ipbox9000)
+		cuberevo_mini2|cuberevo_mini|cuberevo_250hd|cuberevo)
 			/bin/evremote2 10 140 &;;
 		spark|spark7162)
 			mkdir -p /var/run/lirc
@@ -593,7 +764,7 @@ startEvremote()
 startDownmix()
 {
 	case $model in
-		at700|atevio700)
+		at700|hs9510)
 			echo "$CMD [$INPUT] startDownmix $SWTYPE $model"
 			if [ -e /var/etc/.downmix ]; then
 				echo downmix > /proc/stb/audio/ac3
@@ -605,14 +776,19 @@ startDownmix()
 startDisplaySystem()
 {
 	case $model in
-		atemio510|atemio530|atemio520|ipbox91) ;;
+		atemio510|atemio530|atemio520|cuberevo_250hd)
+			;;
 		*)
 			echo "$SWTYPE" > /dev/vfd;;
 	esac	
 }
 
-startLoadmodules() {
-	case $debug in on|full) echo "$CMD [$INPUT] load Module";; esac
+startLoadmodules()
+{
+	case $debug in
+		on|full)
+			echo "$CMD [$INPUT] load Module";;
+	esac
 	MEM=$IFS; IFS=$"\012"
 	[ -z "`grep -v ^# /var/etc/blacklist-modules`" ] && BLK_LIST="" || BLK_LIST=`grep -v ^# /var/etc/blacklist-modules`
 	IFS=$MEM
@@ -628,7 +804,8 @@ startLoadmodules() {
 	done
 }
 
-startSamba() {
+startSamba()
+{
 	case $sambaserver in
 		y)
 			export PATH=$PATH:/var/swap/bin:/mnt/swapextensions/bin:/var/bin
@@ -640,72 +817,113 @@ startSamba() {
 	esac
 }
 
-startNfs() {
-	if [ ! -e /mnt/config/exports ]; then cp /var/etc/exports /mnt/config/exports; fi
+startNfs()
+{
+	if [ ! -e /mnt/config/exports ]; then
+		cp /var/etc/exports /mnt/config/exports
+	fi
 	case $nfsserver in
 		y)
-			case $debug in on|full) echo "$CMD [$INPUT] start startNfs";; esac
+			case $debug in
+				on|full)
+					echo "$CMD [$INPUT] start startNfs";;
+			esac
 			/etc/init.d/portmap start &
 			/etc/init.d/nfs-kernel-server start &;;
 	esac
 }
 
-checkEmu() {
+checkEmu()
+{
 	emuret=`emu.sh check | grep "checkemu running emu="`
 	if [ -z "$emuret" ]; then
 		startEmu
 	fi
 }
 
-startNetmodule() {
-	case $debug in on|full) echo "$CMD [$INPUT] start Load Netmodule";; esac
+startNetmodule()
+{
+	case $debug in
+		on|full)
+			echo "$CMD [$INPUT] start Load Netmodule";;
+	esac
 	if [ -e /lib/modules/fuse.ko ]; then
-		case $debug in on|full) echo "$CMD [$INPUT] Load fuse.ko modul";; esac
+		case $debug in
+			on|full)
+				echo "$CMD [$INPUT] Load fuse.ko modul";;
+		esac
 		$insmod /lib/modules/fuse.ko
 	fi
 	if [ -e /lib/modules/ntfs.ko ]; then
-		case $debug in on|full)	echo "$CMD [$INPUT] Load ntfs.ko modul";; esac
+		case $debug in
+			on|full)
+				echo "$CMD [$INPUT] Load ntfs.ko modul";;
+		esac
 		$insmod /lib/modules/ntfs.ko
 	fi
 	if [ -e /lib/modules/jfs.ko ]; then
-		case $debug in on|full)	echo "$CMD [$INPUT] Load jfs.ko modul";; esac
+		case $debug in
+			on|full)
+				echo "$CMD [$INPUT] Load jfs.ko modul";;
+		esac
 		$insmod /lib/modules/jfs.ko
 	fi
 	if [ -e /lib/modules/cifs.ko ]; then
-		case $debug in on|full) echo "$CMD [$INPUT] Load cifs.ko modul";; esac
+		case $debug in
+			on|full)
+				echo "$CMD [$INPUT] Load cifs.ko modul";;
+		esac
 		$insmod /lib/modules/cifs.ko
 	fi
 	if [ -e /lib/modules/nfs_acl.ko ]; then
-		case $debug in on|full) echo "$CMD [$INPUT] Load nfs_acl.ko modul";; esac
+		case $debug in
+			on|full)
+				echo "$CMD [$INPUT] Load nfs_acl.ko modul";;
+		esac
 		$insmod /lib/modules/nfs_acl.ko
 	fi
 	if [ -e /lib/modules/exportfs.ko ]; then
-		case $debug in on|full) echo "$CMD [$INPUT] Load exportfs.ko modul";; esac
+		case $debug in
+			on|full)
+				echo "$CMD [$INPUT] Load exportfs.ko modul";;
+		esac
 		$insmod /lib/modules/exportfs.ko
 	fi
 	if [ -e /lib/modules/nfsd.ko ]; then
-		case $debug in on|full) echo "$CMD [$INPUT] Load nfsd.ko modul";; esac
+		case $debug in
+			on|full)
+				echo "$CMD [$INPUT] Load nfsd.ko modul";;
+		esac
 		$insmod /lib/modules/nfsd.ko
 	fi
 }
 
-startRcreboot() {
+startRcreboot()
+{
 	case $rcreboot in
 		y)
-			case $debug in on|full) echo "$CMD [$INPUT] start RC-Reboot";; esac
+			case $debug in
+				on|full)
+					echo "$CMD [$INPUT] start RC-Reboot";;
+			esac
 			RCDEV=`grep "rcdev=" /mnt/config/titan.cfg | cut -d "=" -f 2`
 			awk -f /etc/init.d/getfb_old.awk $RCDEV &
 	esac
 }
 
-startFonts() {
+startFonts()
+{
 	if [ ! -e /var/usr/share/fonts/default.ttf ]; then
-		case $debug in on|full) echo "$CMD [$INPUT] restore default fonts";; esac
+		case $debug in
+			on|full)
+				echo "$CMD [$INPUT] restore default fonts";;
+		esac
 		cp /var/usr/share/fonts/backup-default.ttf /var/usr/share/fonts/default.ttf
 	fi
 }
 
-startWlan() {
+startWlan()
+{
 	case $wlan in
 		y)
 			if [ -f /var/etc/autostart/wlan ]; then
@@ -719,7 +937,8 @@ startWlan() {
 	esac
 }
 
-startSystemdown() {
+startSystemdown()
+{
 	start_sec.sh 2 /sbin/fuser -k /dev/dvb/adapter0/frontend0
 	start_sec.sh 2 pkill tuxtxt
 	start_sec.sh 2 pkill -9 tuxtxt
@@ -730,17 +949,21 @@ startSystemdown() {
 	start_sec.sh 2 emu.sh stop
 }
 
-startReboot() {
-	case $model in tf7700) /bin/tffpctl --setgmtoffset;; esac
+startReboot()
+{
+	case $model in
+		tf7700) /bin/tffpctl --setgmtoffset;;
+	esac
 
 	echo [start.sh] startReboot $REBOOT >/tmp/log
 	case $REBOOT in
 		1)
 			echo "$CMD [$INPUT] $SWTYPE SHUTDOWN"
 			case $model in
-				atemio530|atemio520|ipbox91|spark) startDigit4Display &;;
-			*)
-				echo "SHUTDOWN" > /dev/vfd;;
+				atemio530|atemio520|cuberevo_250hd|spark)
+					startDigit4Display &;;
+				*)
+					echo "SHUTDOWN" > /dev/vfd;;
 			esac
 			startTimefix
 			#case $model in ufs922) fp_control -ww;; esac #write only wakeUp File
@@ -750,7 +973,7 @@ startReboot() {
 		2)
 			echo "$CMD [$INPUT] $SWTYPE REBOOT"
 			case $model in
-				atemio530|atemio520|ipbox91|spark) startDigit4Display &;;
+				atemio530|atemio520|cuberevo_250hd|spark) startDigit4Display &;;
 			*)
 				echo "REBOOT" > /dev/vfd;;
 			esac
@@ -762,7 +985,8 @@ startReboot() {
 			echo "$CMD [$INPUT] $SWTYPE RESTART"
 			start_sec.sh 2 /sbin/fuser -k /dev/dvb/adapter0/frontend0
 			case $model in
-				atemio530|atemio520|ipbox91|spark) startDigit4Display &;;
+				atemio530|atemio520|cuberevo_250hd|spark)
+				startDigit4Display &;;
 			*)
 				echo "RESTART" > /dev/vfd;;
 			esac
@@ -773,7 +997,8 @@ startReboot() {
 			startRemoveLeds
 			echo "$CMD [$INPUT] ERROR $SWTYPE REBOOT"
 			case $model in
-				atemio530|atemio520|ipbox91|spark) startDigit4Display &;;
+				atemio530|atemio520|cuberevo_250hd|spark)
+					startDigit4Display &;;
 			*)
 				echo "ERROR REBOOT" > /dev/vfd;;
 			esac
@@ -784,17 +1009,27 @@ startReboot() {
 	esac
 }
 
-startDelflagfiles() {
-	case $debug in on|full) echo "$CMD [$INPUT] Remove first and other";; esac
-	if [ "$firstnet" == "1" ]; then rm -f /var/etc/.firstnet; fi
+startDelflagfiles()
+{
+	case $debug in
+		on|full)
+			echo "$CMD [$INPUT] Remove first and other";;
+		esac
+	if [ "$firstnet" == "1" ]; then
+		rm -f /var/etc/.firstnet
+	fi
 }
 
-startCpufreqstop() {
+startCpufreqstop()
+{
 	case $model in
 		ufs910|ufs912|ufs913|ufs922)
 			case $only_boot_overclock in
 				y)
-					case $debug in on|full) echo "$CMD [$INPUT] startCpufreqstop";; esac
+					case $debug in
+						on|full)
+							echo "$CMD [$INPUT] startCpufreqstop";;
+					esac
 					echo 15110 > /proc/cpu_frequ/pll0_ndiv_mdiv # 531MHZ
 					echo 34057 > /proc/cpu_frequ/pll1_ndiv_mdiv # 399MHZ
 					echo 0 > /proc/cpu_frequ/pll1_fdma_bypass;;
@@ -802,17 +1037,26 @@ startCpufreqstop() {
 	esac
 }
 
-startSysctl() {
-	case $debug in on|full) echo "$CMD [$INPUT] startSysctl";; esac
+startSysctl()
+{
+	case $debug in
+		on|full)
+			echo "$CMD [$INPUT] startSysctl";;
+	esac
 	echo 0 > /proc/sys/net/ipv4/tcp_timestamps
 	echo 0 > /proc/sys/net/ipv4/tcp_sack
 	echo 207936 > /proc/sys/net/core/rmem_max
 	echo 207936 > /proc/sys/net/core/wmem_max
 }
 
-startTimefix() {
+startTimefix()
+{
 	case $model in
-		*)	case $debug in on|full) echo "$CMD [$INPUT] startTimefix last";; esac
+		*)
+			case $debug in
+				on|full)
+					echo "$CMD [$INPUT] startTimefix last";;
+			esac
 			#date=`date "+%H:%M:%S %m-%d-%Y"`
 			date=`date "+%H:%M:%S %d-%m-%Y"`
 			echo "$CMD [$INPUT] current Date : $date"
@@ -820,9 +1064,10 @@ startTimefix() {
 	esac
 }
 
-startPowerLed() {
+startPowerLed()
+{
 	case $model in
-		atevio7000)
+		fs9000)
 			echo "$CMD [$INPUT] startPowerLed"
 			if grep -q "^at7000frontrun=" /mnt/config/titan.cfg; then
 				level=`grep "^at7000frontrun=" /mnt/config/titan.cfg | cut -d= -f2`
@@ -834,9 +1079,13 @@ startPowerLed() {
 	esac
 }
 
-startFirmware() {
+startFirmware()
+{
 	# instead of loading FW in rcS to mount swapstick before loading optional audio.elf
-	case $debug in on|full) echo "$CMD [$INPUT] startFirmware";; esac
+	case $debug in
+		on|full)
+			echo "$CMD [$INPUT] startFirmware";;
+	esac
 
 	# mme bug workaround
 	case $model in
@@ -848,7 +1097,7 @@ startFirmware() {
 
 	# ext firmware workaround for smal swap mtd boxes
 	case $model in
-		ufs910|ufs922|atevio700|atevio7000)
+		ufs910|ufs922|hs9510|fs9000)
 			FIRMWAREDEV=`blkid -w /dev/null -c /dev/null -s LABEL | grep -m1 "SWAP" | cut -d ":" -f1`
 			if [ ! -z "$FIRMWAREDEV" ]; then
 				mkdir /var/firmware
@@ -917,39 +1166,63 @@ startSetled()
 			echo "B" > /dev/ttyAS1;;
 	esac
 	if [ "$model" != "atemio510" ] && [ -e /tmp/.moviedev ]; then
-		case $debug in on|full) echo "$CMD [$INPUT] startSetled";; esac
+		case $debug in
+			on|full)
+				echo "$CMD [$INPUT] startSetled";;
+		esac
 		case $model in
-			ipbox91|ipbox900|ipbox910|ipbox9000) vfdctl +music;;
-			*) vfdctl +hdd;;
+			cuberevo_250hd|cuberevo_mini|cuberevo_mini2|cuberevo)
+				vfdctl +music;;
+			*)
+				vfdctl +hdd;;
 		esac
 	fi
 }
 
-startSwap() {
-	case $debug in on|full) echo "$CMD [$INPUT] startSwap";; esac
+startSwap()
+{
+	case $debug in
+		on|full)
+			echo "$CMD [$INPUT] startSwap";;
+	esac
 	if [ ! -e /tmp/.swapdirdev ]; then
 		case $debug in
-			on|full) swap.sh "showInfoDirect" "$SWTYPE" "$model";;
-			*) swap.sh "" "$SWTYPE" "$model";; esac
+			on|full)
+				swap.sh "showInfoDirect" "$SWTYPE" "$model";;
+			*)
+				swap.sh "" "$SWTYPE" "$model";;
+		esac
 	fi
 }
 
-startUsercmd() {
-	case $debug in on|full) echo "$CMD [$INPUT] startUsercmd";; esac
+startUsercmd()
+{
+	case $debug in
+		on|full)
+			echo "$CMD [$INPUT] startUsercmd";;
+	esac
 	if [ -e /mnt/config/usercmd.sh ]; then
 		/mnt/config/usercmd.sh
 	fi
 }
 
-startVPN() {
-	case $debug in on|full) echo "$CMD [$INPUT] startVPN";; esac
+startVPN()
+{
+	case $debug in
+		on|full)
+			echo "$CMD [$INPUT] startVPN";;
+	esac
 	if [ -e /var/bin/vpn.sh ]; then
 		/var/bin/vpn.sh
 	fi
 }
 
-startInaDyn() {
-	case $debug in on|full) echo "$CMD [$INPUT] startInaDyn";; esac
+startInaDyn()
+{
+	case $debug in
+		on|full)
+			echo "$CMD [$INPUT] startInaDyn";;
+	esac
 	case $inadyn in
 		y)
 			inadyn --input_file /mnt/config/inadyn.conf &
@@ -957,14 +1230,18 @@ startInaDyn() {
 	esac
 }
 
-startDLNA() {
-	case $debug in on|full) echo "$CMD [$INPUT] startDLNA";; esac
+startDLNA()
+{
+	case $debug in
+		on|full)
+			echo "$CMD [$INPUT] startDLNA";;
+	esac
 	case $dlna in
 		y)
 			if [ -e /var/swap/usr/local/share/titan/plugins/dlna/dlna.sh ]; then
 				/var/swap/usr/local/share/titan/plugins/dlna/dlna.sh start /var/swap/etc/minidlna.conf &
 			elif [ -e /mnt/swapextensions/usr/local/share/titan/plugins/dlna/dlna.sh ]; then
-			  /mnt/swapextensions/usr/local/share/titan/plugins/dlna/dlna.sh start /mnt/swapextensions/etc/minidlna.conf &
+				/mnt/swapextensions/usr/local/share/titan/plugins/dlna/dlna.sh start /mnt/swapextensions/etc/minidlna.conf &
 			fi
 		;;
 	esac
@@ -996,15 +1273,18 @@ startSetLeds()
 		ufs913)
 			fp_control -l 2 1 > /dev/null
 			fp_control -led 80 > /dev/null;;
-		ipbox91|ipbox900|ipbox910|ipbox9000)
+		cuberevo_250hd|cuberevo_mini|cuberevo_mini2|cuberevo)
 			fp_control -l 0 1 > /dev/null;;
 	esac
 }
 
-startSATASwitch() {
+startSATASwitch()
+{
 	case $model in
-		at7500|atemio7600)
-			case $debug in on|full) echo "$CMD [$INPUT] startSATASwitch";; esac
+		at7500|hs8200)
+			case $debug in
+				on|full) echo "$CMD [$INPUT] startSATASwitch";;
+			esac
 			$insmod /lib/modules/sata.ko
 			case $sataswitch in
 				0)
@@ -1015,10 +1295,14 @@ startSATASwitch() {
 	esac
 }
 
-startCEC() {
+startCEC()
+{
 	case $model in
-		atemio510|ufs912|ufs913|at7500|atemio7600|atemio530|atemio520|spark|spark7162)
-			case $debug in on|full) echo "$CMD [$INPUT] startCEC";; esac
+		atemio510|ufs912|ufs913|at7500|hs8200|atemio530|atemio520|spark|spark7162)
+			case $debug in
+				on|full)
+					echo "$CMD [$INPUT] startCEC";;
+			esac
 			$insmod /lib/modules/cec.ko activemode=1;;
 	esac
 }
@@ -1035,10 +1319,18 @@ startAutofs()
 
 	rm -f /media/net/*
 	rm -f /media/usb/*
-	if [ -L /var/backup ] || [ -e /var/backup ]; then rm -rf /var/backup; fi
-	if [ -L /var/swapdir ] || [ -e /var/swapdir ]; then rm -rf /var/swapdir; fi
-	if [ -L /var/swap ] || [ -e /var/swap ]; then rm -rf /var/swap; fi
-	if [ -L /media/hdd ] || [ -e /media/hdd ]; then rm -rf /media/hdd; fi
+	if [ -L /var/backup ] || [ -e /var/backup ]; then
+		rm -rf /var/backup
+	fi
+	if [ -L /var/swapdir ] || [ -e /var/swapdir ]; then
+		rm -rf /var/swapdir
+	fi
+	if [ -L /var/swap ] || [ -e /var/swap ]; then
+		rm -rf /var/swap
+	fi
+	if [ -L /media/hdd ] || [ -e /media/hdd ]; then
+		rm -rf /media/hdd
+	fi
 
 	echo "$CMD [$INPUT] start load autofs"
 	echo "$CMD [$INPUT] start automount 1"
@@ -1082,7 +1374,7 @@ startNetwork()
 
 	if [ "$iface" == "eth0" ]; then
 		if grep -q "nfs" /proc/cmdline; then 
-			echo "$CMD [$INPUT] startNetwork: Booting from nfs, don't set network"
+			echo "$CMD [$INPUT] startNetwork: Booting from NFS, do not set network"
 		else
 			if [ "$model" = "ufs913" ]; then
 				HWADDR=`strings /dev/mtdblock2 | tail -n 1`
@@ -1115,16 +1407,24 @@ startInetd()
 
 startMakeDevs()
 {
-	case $debug in on|full) echo "$CMD [$INPUT] startMakeDevs";; esac
+	case $debug in
+		on|full)
+			echo "$CMD [$INPUT] startMakeDevs";;
+		esac
 	if [ "$ipbox" == "1" ]; then
-		if [ -e /dev/ttyAS1 ]; then	rm -f /dev/ttyAS1;	fi
+		if [ -e /dev/ttyAS1 ]; then
+			rm -f /dev/ttyAS1
+		fi
 	fi
 }
 
 startPl2303()
 {
 	if [ "$pl2303" = "y" ] && [ -e "/lib/modules/usbserial.ko" ] && [ -e /lib/modules/pl2303.ko ]; then
-		case $debug in on|full) echo "$CMD [$INPUT] Load pl2303 modul";; esac
+		case $debug in
+			on|full)
+				echo "$CMD [$INPUT] Load pl2303 modul";;
+		esac
 
 		echo "$CMD [$INPUT] insmod usbserial"
 		$insmod /lib/modules/usbserial.ko
@@ -1137,7 +1437,10 @@ startPl2303()
 startFtdi()
 {
 	if [ "$ftdi" = "y" ] && [ -e "/lib/modules/usbserial.ko" ] && [ -e /lib/modules/ftdi_sio.ko ]; then
-		case $debug in on|full) echo "$CMD [$INPUT] Load Ftdi modul";; esac
+		case $debug in
+			on|full)
+				echo "$CMD [$INPUT] Load Ftdi modul";;
+			esac
 
 		echo "$CMD [$INPUT] insmod usbserial"
 		$insmod /lib/modules/usbserial.ko
@@ -1162,7 +1465,7 @@ startMountSwap()
 					rm /var/swap/.erasemtd
 				fi		
 				mtd=4
-				if [ "$model" = "ufs912" ] || [ "$model" = "atemio520" ] || [ "$model" = "atemio530" ] || [ "$model" = "ipbox91" ] || [ "$model" = "ipbox910" ] || [ "$model" = "ipbox900" ] || [ "$model" = "ipbox9000" ]; then
+				if [ "$model" = "ufs912" ] || [ "$model" = "atemio520" ] || [ "$model" = "atemio530" ] || [ "$model" = "cuberevo_250hd" ] || [ "$model" = "cuberevo_mini2" ] || [ "$model" = "cuberevo_mini" ] || [ "$model" = "cuberevo" ]; then
 					mtd=5
 				fi
 				if [ "$model" = "ufs913" ];then
@@ -1231,7 +1534,10 @@ startNtpdate()
 {
 	case $ntpdate in
 		y)
-			case $debug in on|full) echo "[$0] [$INPUT] startDate: start";; esac
+			case $debug in
+				on|full)
+					echo "[$0] [$INPUT] startDate: start";;
+			esac
 			ntpdate -b ptbtime1.ptb.de &
 	esac
 }
@@ -1256,51 +1562,75 @@ startDigit4Display()
 		echo $a
 		a=`expr $a + 1`
 
-		if [ ! -e /tmp/.bootvfd ]; then	break;	fi		
+		if [ ! -e /tmp/.bootvfd ]; then
+			break
+		fi		
 		echo "o   " > /dev/vfd
 #		if [ ! -e /tmp/.bootvfd ]; then	break;	fi
 		sleep 1
-		if [ ! -e /tmp/.bootvfd ]; then	break;	fi
+		if [ ! -e /tmp/.bootvfd ]; then
+			break
+		fi
 		echo "oo" > /dev/vfd
 #		if [ ! -e /tmp/.bootvfd ]; then	break;	fi
 		sleep 1
-		if [ ! -e /tmp/.bootvfd ]; then	break;	fi
+		if [ ! -e /tmp/.bootvfd ]; then
+			break
+		fi
 		echo "ooo" > /dev/vfd
 #		if [ ! -e /tmp/.bootvfd ]; then	break;	fi
 		sleep 1
-		if [ ! -e /tmp/.bootvfd ]; then	break;	fi
+		if [ ! -e /tmp/.bootvfd ]; then
+			break
+		fi
 		echo "oooo" > /dev/vfd
 #		if [ ! -e /tmp/.bootvfd ]; then	break;	fi
 		sleep 1
-		if [ ! -e /tmp/.bootvfd ]; then	break;	fi
+		if [ ! -e /tmp/.bootvfd ]; then
+			break
+		fi
 		echo " ooo" > /dev/vfd
 #		if [ ! -e /tmp/.bootvfd ]; then	break;	fi
 		sleep 1
-		if [ ! -e /tmp/.bootvfd ]; then	break;	fi
+		if [ ! -e /tmp/.bootvfd ]; then
+			break
+		fi
 		echo "  oo" > /dev/vfd
 #		if [ ! -e /tmp/.bootvfd ]; then	break;	fi
 		sleep 1
-		if [ ! -e /tmp/.bootvfd ]; then	break;	fi
+		if [ ! -e /tmp/.bootvfd ]; then
+			break
+		fi
 		echo "   o" > /dev/vfd
 #		if [ ! -e /tmp/.bootvfd ]; then	break;	fi
 		sleep 1
-		if [ ! -e /tmp/.bootvfd ]; then	break;	fi
+		if [ ! -e /tmp/.bootvfd ]; then
+			break
+		fi
 		echo "  oo" > /dev/vfd
 #		if [ ! -e /tmp/.bootvfd ]; then	break;	fi
 		sleep 1
-		if [ ! -e /tmp/.bootvfd ]; then	break;	fi
+		if [ ! -e /tmp/.bootvfd ]; then
+			break
+		fi
 		echo " ooo" > /dev/vfd
 #		if [ ! -e /tmp/.bootvfd ]; then	break;	fi
 		sleep 1
-		if [ ! -e /tmp/.bootvfd ]; then	break;	fi
+		if [ ! -e /tmp/.bootvfd ]; then
+			break
+		fi
 		echo "oooo" > /dev/vfd
 #		if [ ! -e /tmp/.bootvfd ]; then	break;	fi
 		sleep 1
-		if [ ! -e /tmp/.bootvfd ]; then	break;	fi
+		if [ ! -e /tmp/.bootvfd ]; then
+			break
+		fi
 		echo "ooo " > /dev/vfd
 #		if [ ! -e /tmp/.bootvfd ]; then	break;	fi
 		sleep 1
-		if [ ! -e /tmp/.bootvfd ]; then	break;	fi
+		if [ ! -e /tmp/.bootvfd ]; then
+			break
+		fi
 		echo "oo  " > /dev/vfd
 #		if [ ! -e /tmp/.bootvfd ]; then	break;	fi
 		sleep 1
@@ -1335,7 +1665,8 @@ startAsound()
 	fi
 }
 
-startCheckPIN() {
+startCheckPIN()
+{
 	case $PinOn in
 		y)
 			echo "PIN - Eingabe" > /dev/vfd
@@ -1361,8 +1692,12 @@ startCheckPIN() {
 	esac
 }
 
-startXUPNPD() {
-	case $debug in on|full) echo "$CMD [$INPUT] startXUPNPD";; esac
+startXUPNPD()
+{
+	case $debug in
+		on|full)
+			echo "$CMD [$INPUT] startXUPNPD";;
+	esac
 	case $xupnpd in
 		y)
 			if [ -e /var/usr/local/share/titan/plugins/xupnpd/xupnpd.sh ]; then
@@ -1370,13 +1705,14 @@ startXUPNPD() {
 			elif [ -e /var/swap/usr/local/share/titan/plugins/xupnpd/xupnpd.sh ]; then
 				/var/swap/usr/local/share/titan/plugins/xupnpd/xupnpd.sh start /var/swap/etc/xupnpd &
 			elif [ -e /mnt/swapextensions/usr/local/share/titan/plugins/xupnpd/xupnpd.sh ]; then
-			  /mnt/swapextensions/usr/local/share/titan/plugins/xupnpd/xupnpd.sh start /mnt/swapextensions/etc/xupnpd &
+				/mnt/swapextensions/usr/local/share/titan/plugins/xupnpd/xupnpd.sh start /mnt/swapextensions/etc/xupnpd &
 			fi
 		;;
 	esac
 }
 
-startDebug() {
+startDebug()
+{
 	if [ -e "/mnt/swapextensions" ] && [ "$debug" = "high" ];then
 		cat /proc/kmsg > /mnt/bootlog.log
 	fi  
@@ -1447,7 +1783,7 @@ startUsbImage()
   		if [ $test == $TARGET ]; then
 				imagenum=$i
   			break
- 			fi
+		fi
 		done
 		if [ $imagenum -eq 1 ]; then
 			TARGET=Flash
@@ -1530,7 +1866,9 @@ case $1 in
 		startBootlogo			#startFrameBuffer
 		startVfd					#startConfig
 		startFrontpanel
-		if [ "$model" != "atemio520" ]; then startEvremote; fi
+		if [ "$model" != "atemio520" ]; then
+			startEvremote
+		fi
 		startSetLeds
 #		if [ "$model" != "ufc960"  ]; then startMountSwap; fi
 		startMountSwap
@@ -1555,7 +1893,9 @@ case $1 in
 		  echo "$CMD Thread 3 end" ) &
 		startAsound
 		startCheckPIN
-		if [ "$model" != "ufs922" ]; then startEmu; fi
+		if [ "$model" != "ufs922" ]; then
+			startEmu
+		fi
 		if [ "$model" == "atemio520" ]; then
 			startEvremote &
 		fi
