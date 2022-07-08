@@ -9,7 +9,7 @@
 -#endif
 +
 +static struct mtd_partition partition_info[]=
-+{
++{  // describes situation after flashing
 +	{
 +		.name   = "Boot_firmware", // mtd0
 +		.size   = 0x00060000,      // 384k
@@ -132,14 +132,14 @@
  	if (err)
  		goto err_out;
  
-+	partition_info[0].mtdp = &lowlvl_parts[0];
-+	partition_info[1].mtdp = &lowlvl_parts[1];
-+	partition_info[2].mtdp = &lowlvl_parts[2];
-+	partition_info[3].mtdp = &lowlvl_parts[3];
-+	partition_info[4].mtdp = &lowlvl_parts[4];
-+	partition_info[5].mtdp = &lowlvl_parts[5];
-+	partition_info[6].mtdp = &lowlvl_parts[6];
-+	partition_info[7].mtdp = &lowlvl_parts[7];
++	partition_info[0].mtdp = &lowlvl_parts[0];  // mtd0, boot loader
++	partition_info[1].mtdp = &lowlvl_parts[1];  // mtd1, kernel
++	partition_info[2].mtdp = &lowlvl_parts[2];  // mtd2, dummy root (squashfs)
++	partition_info[3].mtdp = &lowlvl_parts[3];  // mtd3, dummy device (squashfs)
++	partition_info[4].mtdp = &lowlvl_parts[4];  // mtd4, dummy app (squashfs)
++	partition_info[5].mtdp = &lowlvl_parts[5];  // mtd5, real root
++	partition_info[6].mtdp = &lowlvl_parts[6];  // mtd6, config
++	partition_info[7].mtdp = &lowlvl_parts[7];  // mtd7, user
 +
 +	add_mtd_partitions(info->cmtd, partition_info, NUM_PARTITIONS);
 +

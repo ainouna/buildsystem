@@ -75,22 +75,22 @@
 +/*
 +0x40000000 - 0x403FFFFF - cocpu 1 ram (  4 Mb)
 +0x40400000 - 0x407FFFFF - cocpu 2 ram (  4 Mb)
-+0x40800000 - 0x47FFFFFF - linux       (120 Mb)
-+0x48000000 - 0x49FFFFFF - bigphys     ( 32 Mb)
-+0x4A000000 - 0x4FFFFFFF - lmi_io      ( 96 Mb)
++0x40800000 - 0x495FFFFF - linux       (142 Mb)
++0x49600000 - 0x4ABFFFFF - bigphys     ( 24 Mb)
++0x4AE00000 - 0x4FFFFFFF - lmi_io      ( 82 Mb)
 +*/
 +static struct bpa2_partition_desc bpa2_parts_table[] = {
 +	{
 +		.name  = "bigphysarea",
-+		.start = 0x48000000,
-+		.size  = 0x02000000, /* 32 Mb */
++		.start = 0x49600000,
++		.size  = 0x01800000, /* 24 Mb */
 +		.flags = 0,
 +		.aka   = NULL
 +	},
 +	{
 +		.name  = "LMI_IO",
-+		.start = 0x4A000000,
-+		.size  = 0x06000000, /* 96 Mb */
++		.start = 0x4AE00000,
++		.size  = 0x05200000, /* 82 Mb */
 +		.flags = 0,
 +		.aka   = LMI_IO_partalias
 +	},
@@ -387,8 +387,8 @@
  	set_irq_type(irq, triggertype);
  }
  EXPORT_SYMBOL(stpio_set_irq_type);
-+#ifdef CONFIG_PROC_FS
 +
++#ifdef CONFIG_PROC_FS
 +static struct proc_dir_entry *proc_stpio;
 +
 +static inline const char *stpio_get_direction_name(unsigned int direction)

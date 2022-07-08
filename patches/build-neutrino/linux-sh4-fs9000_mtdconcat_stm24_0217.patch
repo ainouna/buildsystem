@@ -1,115 +1,128 @@
-*** linux-sh4-2.6.23.17_stm23_0123_orig/drivers/mtd/maps/physmap.c	2011-06-19 18:34:29.000000000 +0300
---- linux-sh4/drivers/mtd/maps/physmap.c	2011-07-29 06:50:51.114192548 +0300
-@@ -83,6 +83,121 @@
+*** a/drivers/mtd/maps/physmap.c.org
+--- b/drivers/mtd/maps/physmap.c
+@@ -83,6 +83,134 @@
  static const char *part_probe_types[] = { "cmdlinepart", "RedBoot", NULL };
  #endif
  
++/*
++  At least the boot loader 2.54 seems to flash one or more sectors too little when
++  an entire partition with maximum size is being flashed. For this reason the sizes
++  of the app, root and dev partitions have been set one block smaller.
++  in the mtd-concat patch are set accordingly.
++*/
 +static struct mtd_partition partition_info[]=
 +{
 +	{
-+		.name   = "Boot_firmware",      //mtd0
-+		.size   = 0x00300000,           // 3MB
-+		.offset = 0x00000000
++		.name   = "Boot_firmware",       // mtd0
++		.size   = 0x00300000,            // 3 MB
++		.offset = 0x00000000             // 0 MB, flash type 0
 +	},
 +	{
-+		.name   = "kernel",             //mtd1
-+		.size   = 0x00300000,           // 3MB
-+		.offset = 0x00300000            // 3MB
++		.name   = "kernel",              // mtd1
++		.size   = 0x00300000,            // 3 MB
++		.offset = 0x00300000             // 3 MB, flash type 6
 +	},
 +	{
-+		.name   = "app_low_unusable",   //mtd2
-+		.size   = 0x00500000,           // 5MB (squashfs)
-+		.offset = 0x00600000            // 6MB
++		.name   = "app_lo",              // mtd2
++		.size   = 0x00500000,            // 5 MB (squashfs, maintained by bootloader)
++		.offset = 0x00600000             // 6 MB, not flashable
 +	},
 +	{
-+		.name   = "app_high_sq",        //mtd3
-+		.size   = 0x00020000,           // 128kB (squashfs dummy)
-+		.offset = 0x00b00000            // 11MB
++		.name   = "app_high_sq",         // mtd3
++		.size   = 0x00020000,            // 128 kB (squashfs dummy)
++		.offset = 0x00b00000             // 11 MB
 +	},
 +	{
-+		.name   = "app_high_real",      //mtd4
-+		.size   = 0x004c0000,           // 5MB - 128kB squashfs dummy - 128kB checksum block
-+		.offset = 0x00b20000
++		.name   = "app_high_real",       // mtd4
++		.size   = 0x004c0000,            // 5 MB - 128kB squashfs dummy - one block
++		.offset = 0x00b20000             // 11,125 MB, flash type 1
 +	},
 +	{
-+		.name   = "ROOT_FS_real",       //mtd5
-+		.size   = 0x007c0000,           // 8MB - 128kB squashfs dummy - 128kB checksum block
-+		.offset = 0x01020000
++		.name   = "real root",           // mtd5
++		.size   = 0x007c0000,            // 8 MB - 128kB squashfs dummy - one block due to bug in loader
++		.offset = 0x01020000             // 16,125 MB, flash type 6
 +	},
 + 	{
-+		.name   = "Device_real",        //mtd6
-+		.size   = 0x002c0000,           // 3MB - 128kB squashfs dummy - 128kB checksum block
-+		.offset = 0x01820000
++		.name   = "dev_real",            // mtd6
++		.size   = 0x002c0000,            // 3 MB - 128kB squashfs dummy - one block
++		.offset = 0x01820000             // 24,125 MB, flash type 7
 +	},
 +	{
-+		.name   = "Config_real",        //mtd7
-+		.size   = 0x000c0000,           // 768kB
-+		.offset = 0x01b00000
++		.name   = "Config0",             // mtd7
++		.size   = 0x00040000,            // 256 kB
++		.offset = 0x01b00000             // 27 MB, flash type 2
 +	},
 +	{
-+		.name = "User",                 //mtd8
-+		.size =   0x00400000,           // 4MB
-+		.offset = 0x01c00000
++		.name   = "Config_real",         // mtd8
++		.size   = 0x00080000,            // 512 kB
++		.offset = 0x01b40000             // 27 MB, flash type 3, 4 & 5
 +	},
 +	{
-+		.name   = "ROOT_FS_sq",         //mtd9
-+		.size   = 0x00020000,           // 128kB (squashfs dummy)
-+		.offset = 0x01000000            // 16MB
++		.name   = "User",                // mtd9
++		.size   = 0x00400000,            // 4 MB
++		.offset = 0x01c00000             // 28 MB, flash type 9
++	},
++	{
++		.name   = "root_sq",             // mtd10
++		.size   = 0x00020000,            // 128 kB (squashfs dummy)
++		.offset = 0x01000000             // 16 MB
 +	},
 + 	{
-+		.name   = "Device_sq",          //mtd10
-+		.size   = 0x00020000,           // 128kB (squashfs dummy)
-+		.offset = 0x01800000            // 24MB
++		.name   = "dev_sq",              // mtd11
++		.size   = 0x00020000,            // 128 kB (squashfs dummy)
++		.offset = 0x01800000             // 24 MB
 +	},
 +	{
-+		.name   = "Config_unusable",    //mtd11
-+		.size   = 0x00040000,           // 256kB
-+		.offset = 0x01bc0000
++		.name   = "ConfigC_unusable",    // mtd12
++		.size   = 0x00040000,            // 256kB
++		.offset = 0x01bc0000             // 27,75 MB
 +	}
 +};
 +
 +static struct mtd_partition higlvl_partition_info[]=
 +{
 +	{
-+		.name   = "Boot_firmware",       //mtd0
-+		.size   = 0x00300000,            // 3MB
-+		.offset = 0x00000000
++		.name   = "Boot_firmware",       // mtd0
++		.size   = 0x00300000,            // 3 MB
++		.offset = 0x00000000             // 0 MB, flash type 0
 +	},
 +	{
 +		.name   = "kernel",              //mtd1
-+		.size   = 0x00300000,            //   3MB
-+		.offset = 0x00300000             //   3MB
++		.size   = 0x00300000,            // 3 MB
++		.offset = 0x00300000             // 3 MB
 +	},
 +	{
-+		.name   = "app_lo",              //mtd2
-+		.size   = 0x00500000,            // 5MB (squashfs)
-+		.offset = 0x00600000
++		.name   = "app_lo",              // mtd2
++		.size   = 0x00500000,            // 5 MB (squashfs, maintained by bootloader)
++		.offset = 0x00600000             // 6 MB, not flashable
 +	},
 +	{
-+		.name   = "app_hi_squash_dummy", //mtd3
++		.name   = "app_hi_squash_dummy", // mtd3
++		.size   = 0x00020000,            // 128 kB
++		.offset = 0x00b00000             // 11 MB, flashed using type 1
++	},
++	{
++		.name   = "real_root",           // mtd4
++		.size   = 0x01400000,            // 20.0 MB
++		.offset = 0x00b20000             // 11.125 MB, flash types 1, 7, 8, 2, 4, 3, 5 & 9
++	},
++#if 0
++	{
++		.name   = "root_squash_dummy",   // mtd5
 +		.size   = 0x0001fffe,            // 128kB, one word too small, forces read-only mount
-+		.offset = 0x00b00000
-+	},
-+	{
-+		.name   = "Real_ROOT",           //mtd4
-+		.size   = 0x01400000,            // 20.375MB, 3x 128k too small to preserve checksums
-+		.offset = 0x00b20000             // 11.125MB
-+	},
-+	{
-+		.name   = "root_squash_dummy",   //mtd5
-+		.size   = 0x0001fffe,            // 128kB, one word too small, forces read-only mount
-+		.offset = 0x01f20000
++		.offset = 0x01f20000             // 31.125 MB, flashed using type 8
 +	},
 + 	{
-+		.name   = "dev_squash_dummy",    //mtd6
++		.name   = "dev_squash_dummy",    // mtd6
 +		.size   = 0x0001fffe,            // 128kB, one word too small, forces read-only mount
-+		.offset = 0x01f40000
++		.offset = 0x01f40000             // 31.25 MB, flashed using type 7
 +	},
 +	{
-+		.name   = "ConfigC",             //mtd7
++		.name   = "ConfigC",             // mtd7
 +		.size   = 0x0003fffe,            // 256kB, one word too small, forces read-only mount
-+		.offset = 0x01f60000
++		.offset = 0x01f60000             // 6 MB, not flashable
 +	}
++#endif
 +};
 +
 +#define NUM_PARTITIONS ARRAY_SIZE(partition_info)
@@ -122,7 +135,7 @@
  static int physmap_flash_probe(struct platform_device *dev)
  {
  	struct physmap_flash_data *physmap_data;
-@@ -106,7 +187,7 @@
+@@ -106,7 +234,7 @@
  	platform_set_drvdata(dev, info);
  
  	for (i = 0; i < dev->num_resources; i++) {
@@ -131,7 +144,7 @@
  		       (unsigned long long)(dev->resource[i].end - dev->resource[i].start + 1),
  		       (unsigned long long)dev->resource[i].start);
  
-@@ -126,6 +207,8 @@
+@@ -126,6 +254,8 @@
  		info->map[i].set_vpp = physmap_data->set_vpp;
  		info->map[i].pfow_base = physmap_data->pfow_base;
  
@@ -140,16 +153,16 @@
  		info->map[i].virt = devm_ioremap(&dev->dev, info->map[i].phys,
  						 info->map[i].size);
  		if (info->map[i].virt == NULL) {
-@@ -141,6 +259,8 @@
+@@ -140,6 +270,8 @@
+ 		else
  #endif
  		simple_map_init(&info->map[i]);
- 
-+		printk("MAP[%d]: virtual address: 0x%p\n", i, info->map[i].virt);
 +
++		printk("MAP[%d]: virtual address: 0x%p\n", i, info->map[i].virt);
+ 
  		probe_type = rom_probe_types;
  		for (; info->mtd[i] == NULL && *probe_type != NULL; probe_type++)
- 			info->mtd[i] = do_map_probe(*probe_type, &info->map[i]);
-@@ -174,6 +293,29 @@
+@@ -174,6 +306,30 @@
  	if (err)
  		goto err_out;
  
@@ -165,6 +178,7 @@
 +	partition_info[9].mtdp = &lowlvl_parts[9];
 +	partition_info[10].mtdp = &lowlvl_parts[10];
 +	partition_info[11].mtdp = &lowlvl_parts[11];
++	partition_info[12].mtdp = &lowlvl_parts[12];
 +
 +	add_mtd_partitions(info->cmtd, partition_info, NUM_PARTITIONS);
 +
@@ -179,7 +193,7 @@
  #ifdef CONFIG_MTD_PARTITIONS
  	err = parse_mtd_partitions(info->cmtd, part_probe_types,
  				&info->parts, 0);
-@@ -192,6 +334,7 @@
+@@ -192,6 +342,7 @@
  #endif
  
  	add_mtd_device(info->cmtd);
@@ -187,8 +201,8 @@
  	return 0;
  
  err_out:
-*** linux-sh4-2.6.23.17_stm23_0123_orig/drivers/mtdpart.c	2011-06-19 18:34:29.000000000 +0300
---- linux-sh4/drivers/mtd/mtdpart.c	2011-07-29 06:50:51.114192548 +0300
+*** a/drivers/mtd/mtdpart.c.orig
+--- b/drivers/mtd/mtdpart.c
 @@ -27,7 +27,9 @@
  	struct mtd_info mtd;
  	struct mtd_info *master;
@@ -217,7 +231,7 @@
  
  	if (slave->offset == MTDPART_OFS_APPEND)
  		slave->offset = cur_offset;
-@@ -530,9 +534,17 @@
+@@ -530,9 +534,15 @@
  		slave->mtd.flags |= MTD_SPANS_MASTER;
  
  out_register:
@@ -225,9 +239,7 @@
 +		/* store the object pointer (caller may or may not register it*/
 +		*part->mtdp = &slave->mtd;
 +		slave->registered = 0;
-+	}
-+	else
-+	{
++	} else {
 +		/* register our partition */
 +		add_mtd_device(&slave->mtd);
 +		slave->registered = 1;
@@ -238,9 +250,9 @@
  	return slave;
  }
  
-*** linux-sh4-2.6.23.17_stm23_0123_orig/include/linux/mtd/partitions.h	2011-06-19 18:34:29.000000000 +0300
---- linux-sh4/include/linux/mtd/partitions.h	2011-07-29 06:50:51.114192548 +0300
-@@ -40,6 +40,7 @@ struct mtd_partition {
+*** a/include/linux/mtd/partitions.h.orig
+--- b/include/linux/mtd/partitions.h
+@@ -40,6 +40,7 @@
  	uint64_t offset;		/* offset within the master MTD space */
  	uint32_t mask_flags;		/* master MTD flags to mask out for this partition */
  	struct nand_ecclayout *ecclayout;	/* out of band layout for this partition (NAND only)*/

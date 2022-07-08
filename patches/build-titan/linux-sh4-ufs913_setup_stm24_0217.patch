@@ -60,7 +60,7 @@
  #include <linux/stm/platform.h>
  #include <linux/stm/stx7105.h>
  #include <linux/stm/pci-glue.h>
-@@ -29,391 +30,535 @@
+@@ -29,391 +30,424 @@
  #include <linux/mtd/physmap.h>
  #include <linux/mtd/nand.h>
  #include <linux/mtd/partitions.h>
@@ -111,59 +111,30 @@
 +	NULL
 +};
 +
-+/* Directfb application can be greatly optimized by using a different layout. */
-+
-+#ifdef CONFIG_BPA2_DIRECTFBOPTIMIZED
 +/*
-+0x40000000 - 0x403FFFFF - cocpu 1 ram (  4mb)
-+0x40400000 - 0x407FFFFF - cocpu 2 ram (  4mb)
-+0x40800000 - 0x475FFFFF - linux       (110mb) 
-+0x47600000 - 0x4F1FFFFF - lmi_io      (124mb (0x07C00000))
-+0x4F200000 - 0x4FFFFFFF - bigphys     ( 14mb (0x00E00000))
-+*/
-+static struct bpa2_partition_desc bpa2_parts_table[] =
-+{
-+	{
-+		.name  = "LMI_IO",
-+		.start = 0x47600000,
-+		.size  = 0x07C00000, /* 124 Mb */
-+		.flags = 0,
-+		.aka   = LMI_IO_partalias
-+	},
-+	{
-+		.name  = "bigphysarea",
-+		.start = 0x4F200000,
-+		.size  = 0x00E00000, /* 14 Mb */
-+		.flags = 0,
-+		.aka   = NULL
-+	}, 
-+};
-+#else
-+/*
-+0x40000000 - 0x403FFFFF - cocpu 1 ram (  4mb)
-+0x40400000 - 0x407FFFFF - cocpu 2 ram (  4mb)
-+0x40800000 - 0x47FFFFFF - linux       (120mb)
-+0x48000000 - 0x4B1FFFFF - bigphys     ( 18mb)
-+0x4B200000 - 0x4FFFFFFF - lmi_io      ( 78mb)
++0x40000000 - 0x403FFFFF - cocpu 1 ram ( 4mb)
++0x40400000 - 0x407FFFFF - cocpu 2 ram ( 4mb)
++0x40800000 - 0x47FFFFFF - linux       (78mb)
++0x49000000 - 0x4ABFFFFF - bigphys     (28mb)
++0x4AC00000 - 0x4FFFFFFF - lmi_io      (84mb)
 +*/
 +static struct bpa2_partition_desc bpa2_parts_table[] =
 +{
 +	{
 +		.name  = "bigphysarea",
-+		.start = 0x4A000000,
-+		.size  = 0x01200000,  /* 18 Mb */
++		.start = 0x49000000,
++		.size  = 0x01C00000,  /* 28 Mb */
 +		.flags = 0,
 +		.aka   = NULL
 +	},
 +	{
 +		.name  = "LMI_IO",
-+		.start = 0x4B200000,
-+		.size  = 0x04E00000,  /* 78 Mb */
++		.start = 0x4AC00000,
++		.size  = 0x05400000,  /* 84 Mb */
 +		.flags = 0,
 +		.aka   = LMI_IO_partalias
 +	},
 +};
-+#endif
 +
 +#define OR32(a, b)           (iowrite32((ioread32(a) | b), a));
 +#define UPDATE32(a, b, c)    (iowrite32(((ioread32(a) & b) | c), a));
@@ -423,10 +394,6 @@
 -	.id		= -1,
 -	.num_resources	= 1,
 -	.resource	= (struct resource[]) {
--		{
--			.start		= 0x00000000,
--			.end		= 128*1024*1024 - 1,
--			.flags		= IORESOURCE_MEM,
 +static struct platform_device ufs913_nor_flash =
 +{
 +	.name          = "physmap-flash",
@@ -434,7 +401,10 @@
 +	.num_resources = 1,
 +	.resource      = (struct resource[])
 +	{
-+		{
+ 		{
+-			.start		= 0x00000000,
+-			.end		= 128*1024*1024 - 1,
+-			.flags		= IORESOURCE_MEM,
 +			.start = 0x00000000,
 +			.end   = 8 * 1024 * 1024 - 1,
 +			.flags = IORESOURCE_MEM,
@@ -452,68 +422,15 @@
 -			}, {
 -				.name = "NOR Flash 2",
 -				.size = 0x00200000,
+-				.offset = MTDPART_OFS_NXTBLK,
+-			}, {
+-				.name = "NOR Flash 3",
+-				.size = MTDPART_SIZ_FULL,
+-				.offset = MTDPART_OFS_NXTBLK,
 +	.dev.platform_data = &(struct physmap_flash_data)
 +	{
 +		.width     = 2,
 +		.set_vpp   = NULL,
-+#ifdef ORIGINAL_MTD
-+		.nr_parts  = 8,
-+		.parts     = (struct mtd_partition [])
-+		{
-+			{
-+				.name   = "NOR Boot firmware",
-+				.size   = 0x00080000,
-+				.offset = 0,
-+			},
-+			{
-+				.name   = "NOR BoxData",
-+				.size   = 0x00020000,
- 				.offset = MTDPART_OFS_NXTBLK,
--			}, {
--				.name = "NOR Flash 3",
--				.size = MTDPART_SIZ_FULL,
-+			},
-+			{
-+				.name   = "NOR Emergency Kernel",
-+				.size   = 0x001c0000,
- 				.offset = MTDPART_OFS_NXTBLK,
-+			},
-+			{
-+				.name   = "NOR Emergency Root",
-+				.size   = 0x00180000,
-+				.offset = MTDPART_OFS_NXTBLK,
-+			},
-+			{
-+				.name   = "NOR Box Configuration",
-+				.size   = 0x00020000,
-+				.offset = MTDPART_OFS_NXTBLK,
-+			},
-+			{
-+				.name   = "NOR Kernel",
-+				.size   = 0x00260000,
-+				.offset = MTDPART_OFS_NXTBLK,
-+			},
-+			{
-+				.name   = "NOR Root",
-+				.size   = 0x001a0000,
-+				.offset = MTDPART_OFS_NXTBLK,
-+			},
-+			{
-+				.name   = "NOR 4M",
-+				.size   = 0x00400000,
-+				.offset = 0x00400000,
- 			}
- 		},
--	},
--};
--
--/* NAND Flash */
--struct stm_nand_bank_data hdk7105_nand_flash = {
--	.csn		= 1,
--	.options	= NAND_NO_AUTOINCR | NAND_USE_FLASH_BBT,
--	.nr_partitions	= 2,
--	.partitions	= (struct mtd_partition []) {
-+#else  // E2 configuration
 +		.nr_parts = 8,
 +		.parts    = (struct mtd_partition [])
 +		{
@@ -564,32 +481,44 @@
 +				.name       = "NOR Root (mtd7, rw)",
 +				.offset     = MTDPART_OFS_NXTBLK,  // 0x00660000
 +				.size       = 0x001a0000,  // end address: 0x00800000 - 1
-+			}
-+		},
-+#endif
-+	},
-+};
-+
+ 			}
+ 		},
+ 	},
+ };
+ 
+-/* NAND Flash */
+-struct stm_nand_bank_data hdk7105_nand_flash = {
+-	.csn		= 1,
+-	.options	= NAND_NO_AUTOINCR | NAND_USE_FLASH_BBT,
+-	.nr_partitions	= 2,
+-	.partitions	= (struct mtd_partition []) {
 +/* NAND Flash: 1 piece Samsung_K9F1G08U0D (128M x 8) */
 +struct stm_nand_bank_data ufs913_nand_flash =
 +{
 +	.csn           = 1,
 +	.options       = NAND_NO_AUTOINCR | NAND_USE_FLASH_BBT,
-+#ifdef ORIGINAL_MTD
-+	.nr_partitions = 2,
++	.nr_partitions = 3,
 +	.partitions    = (struct mtd_partition [])
 +	{
  		{
- 			.name	= "NAND Flash 1",
+-			.name	= "NAND Flash 1",
++			.name	= "NAND FW (mtd8, 8 MB)",
  			.offset	= 0,
  			.size 	= 0x00800000
 -		}, {
+-			.name	= "NAND Flash 2",
 +		},
 +		{
- 			.name	= "NAND Flash 2",
++			.name	= "NAND ROOT (mtd9, 64 MB)",
  			.offset = MTDPART_OFS_NXTBLK,
- 			.size	= MTDPART_SIZ_FULL
+-			.size	= MTDPART_SIZ_FULL
++			.size   = 0x04000000
  		},
++		{
++			.name	= "NAND DATA (mtd10, 56 MB)",
++			.offset = MTDPART_OFS_NXTBLK,
++			.size   = MTDPART_SIZ_FULL
++		}
  	},
 -	.timing_spec	= &NAND_TSPEC_HYNIX_HY27UH08AG5B,
 -};
@@ -623,45 +552,6 @@
 -	&hdk7105_leds,
 -	&hdk7105_front_panel,
 -	&hdk7105_nor_flash,
-+#else
-+	.nr_partitions = 4,
-+	.partitions    = (struct mtd_partition [])
-+	{
-+		{
-+			.name	= "NAND FW (mtd8, 8 MB)",
-+			.offset	= 0,
-+			.size 	= 0x00800000
-+		},
-+#if 0
-+		{
-+			.name	= "NAND Enigma2 ROOT (mtd9, 80 MB)",
-+			.offset = MTDPART_OFS_NXTBLK,
-+			.size   = 0x05000000
-+		},
-+		{
-+			.name	= "NAND Neutrino Kernel (mtd10, 4 MB)",
-+			.offset = MTDPART_OFS_NXTBLK,
-+			.size   = 0x00400000
-+		},
-+		{
-+			.name	= "NAND Neutrino ROOT (mtd11, 32 MB)",
-+			.offset = MTDPART_OFS_NXTBLK,
-+			.size   = MTDPART_SIZ_FULL
-+		}
-+#else
-+		{
-+			.name	= "NAND ROOT (mtd9, 64 MB)",
-+			.offset = MTDPART_OFS_NXTBLK,
-+			.size   = 0x04000000
-+		},
-+		{
-+			.name	= "NAND DATA (mtd10, 56 MB)",
-+			.offset = MTDPART_OFS_NXTBLK,
-+			.size   = MTDPART_SIZ_FULL
-+		}
-+#endif
-+	},
-+#endif
 +	.timing_spec	= &NAND_TSPEC_SAMSUNG_K9F2G08U0C,
 +	.emi_withinbankoffset = 0,
 +};
@@ -940,7 +830,7 @@
  {
  	/*
  	 * If we have PCI then this should never be called because we
-@@ -425,10 +570,12 @@
+@@ -425,10 +459,12 @@
  	return (void __iomem *)CCN_PVR;
  }
  
