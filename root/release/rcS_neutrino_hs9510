@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 210903.1
+#Version 220708.1
 
 echo "[rcS] Start"
 echo "Fortis HS9510 Neutrino"
@@ -50,7 +50,7 @@ echo "[rcS] Starting telnetd"
 echo "[rcS] Init stmfb (LOAD 9)"
 echo "LOAD 9" > /dev/vfd
 insmod $MODDIR/stmcore-display-stx7109c3.ko
-insmod $MODDIR/stmfb.ko display0=1280x720-32@50:12m:pal:cvbs:yuv;# display1=720x576-16@50:1m:pal:cvbs;
+insmod $MODDIR/stmfb.ko display0=1280x720-32@50:12m::pal:cvbs:yuv # display1=720x576-16@50:1m:pal:cvbs
 
 echo "[rcS] Loading modules"
 
@@ -76,6 +76,7 @@ insmod $MODDIR/embxshell.ko
 insmod $MODDIR/embxmailbox.ko mailbox0=0xb9211000:136:set2 mailbox1=0xb9212000:0
 insmod $MODDIR/embxshm.ko mailbox0=shm:0:7:0x60000000:0:256:256:0:1024:0xa4000000:0x10000000
 insmod $MODDIR/mme_host.ko transport0=shm
+insmod $MODDIR/mmelog.ko
 
 echo "[rcS] Init AVS (LOAD 5)"
 echo "LOAD 5" > /dev/vfd
@@ -83,7 +84,6 @@ insmod $MODDIR/avs.ko type=avs_none
 
 echo "[rcS] Init player (LOAD 4)"
 echo "LOAD 4" > /dev/vfd
-insmod $MODDIR/mmelog.ko
 insmod $MODDIR/mpeg2hw.ko mmeName=MPEG2_TRANSFORMER1
 insmod $MODDIR/ksound.ko
 insmod $MODDIR/p2div64.ko
@@ -112,9 +112,6 @@ insmod $MODDIR/stmalloc.ko
 insmod $MODDIR/platform.ko
 insmod $MODDIR/bpamem.ko
 
-if [ -e /boot/neutrinologo.mvi ]; then
-   showiframe -p /boot/neutrinologo.mvi &
-fi
 stfbcontrol a 0
 
 if [ -e $MODDIR/exportfs.ko ]; then
@@ -131,12 +128,12 @@ if [ -e $MODDIR/tun.ko ]; then
 fi
 if [ -e $MODDIR/usbserial.ko ]; then
    insmod $MODDIR/usbserial.ko
-fi
-if [ -e $MODDIR/ftdi.ko ]; then
-   insmod $MODDIR/ftdi.ko
-fi
-if [ -e $MODDIR/pl2303.ko ]; then
-   insmod $MODDIR/pl2303.ko
+   if [ -e $MODDIR/ftdi.ko ]; then
+      insmod $MODDIR/ftdi.ko
+   fi
+   if [ -e $MODDIR/pl2303.ko ]; then
+      insmod $MODDIR/pl2303.ko
+   fi
 fi
 
 echo "[rcS] Init frontpanel (LOAD 2)"
@@ -152,7 +149,7 @@ echo "[rcS] Init remote control"
 
 NFS=`grep -c nfs /proc/cmdline`
 if [ "$NFS" -eq "1" ]; then
-   echo "Booting from nfs, don't set network"
+   echo "Booting from NFS, do not set network"
 else
    if [ -e /etc/network/interfaces ]; then
       ip addr flush eth0
@@ -177,9 +174,9 @@ else
 fi
 
 # Try and synchronise time
-if [ -h /usr/sbin/ntpd ]; then
+if [ -x /usr/sbin/ntpd ]; then
    echo "Set internet time"
-   (ntpd -n -p 0.europe.pool.ntp.org -q; /bin/fp_control -sst))
+   (ntpd -n -p 0.europe.pool.ntp.org -q; /bin/fp_control -sst)
 fi
 
 echo "[rcS] Init portmap & ftp (LOAD 1)"
@@ -193,7 +190,6 @@ echo "Loading Neutrino" > /dev/vfd
 
 until false
 do
-   killall -9 showiframe
    echo "[rcS] Starting neutrino ->"
    /usr/bin/neutrino
    rtv=$?
