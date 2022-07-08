@@ -2884,7 +2884,7 @@ A52DEC_VER = 0.7.4
 A52DEC_SOURCE = a52dec-$(A52DEC_VER).tar.gz
 
 $(ARCHIVE)/$(A52DEC_SOURCE):
-	$(WGET) https://a52dec.sourceforge.io/files/$(A52DEC_SOURCE)
+	$(WGET) https://ftp.osuosl.org/pub/blfs/conglomeration/a52dec/$(A52DEC_SOURCE)
 
 $(D)/a52dec: $(D)/bootstrap $(ARCHIVE)/$(A52DEC_SOURCE)
 	$(START_BUILD)
@@ -2936,4 +2936,25 @@ $(D)/amrnb: $(D)/bootstrap $(ARCHIVE)/$(AMRNB_SOURCE)
 		make install $(SILENT_OPT) DESTDIR=$(TARGET_DIR)
 	$(REMOVE)/amrnb-$(AMRNB_VER)
 	$(TOUCH)
+
+#
+# libwrap
+#
+LIBWRAP_VER = 7.6
+LIBWRAP_SOURCE = tcp_wrappers_$(LIBWRAP_VER).tar.bz2
+
+$(ARCHIVE)/$(LIBWRAP_SOURCE):
+	$(WGET) https://ftp.osuosl.org/pub/blfs/conglomeration/tcp_wrappers/$(LIBWRAP_SOURCE)
+
+$(D)/libwrap: $(D)/bootstrap $(ARCHIVE)/$(LIBWRAP_SOURCE)
+	$(START_BUILD)
+	$(REMOVE)/libwrap-$(LIBWRAP_VER)
+	$(UNTAR)/$(LIBWRAP_SOURCE)
+	$(CH_DIR)/tcp_wrappers_$(LIBWRAP_VER); \
+		make all; \
+		make install $(SILENT_OPT) DESTDIR=$(TARGET_DIR)
+	$(REWRITE_LIBTOOL)/libwrap.la
+#	$(REMOVE)/libwrap-$(LIBWRAP_VER)
+	$(TOUCH)
+
 
