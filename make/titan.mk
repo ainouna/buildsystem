@@ -3,10 +3,13 @@
 #
 TITAN_DEPS  = $(D)/bootstrap
 TITAN_DEPS += $(KERNEL)
-TITAN_DEPS += $(D)/libopenthreads
+#TITAN_DEPS += $(D)/libopenthreads
 TITAN_DEPS += $(D)/system-tools
 TITAN_DEPS += $(D)/module_init_tools
 TITAN_DEPS += $(LIRC)
+TITAN_DEPS += $(D)/libglib2
+TITAN_DEPS += $(D)/enigma2_tuxtxtlib
+#TITAN_DEPS += $(D)/librtmp
 TITAN_DEPS += $(D)/libpng
 TITAN_DEPS += $(D)/freetype
 TITAN_DEPS += $(D)/libdreamdvd
@@ -14,10 +17,12 @@ TITAN_DEPS += $(D)/libjpeg
 TITAN_DEPS += $(D)/zlib
 TITAN_DEPS += $(D)/openssl
 TITAN_DEPS += $(D)/timezone
-ifeq ($(MEDIAFW), eplayer3)
-#T_CONFIG_OPTS += --enable-eplayer3
+#TITAN_DEPS += $(D)/ntp
 TITAN_DEPS += $(D)/libcurl
 TITAN_DEPS += $(D)/ffmpeg
+#TITAN_DEPS += $(D)/fuse
+#TITAN_DEPS += $(D)/samba
+ifeq ($(MEDIAFW), eplayer3)
 TITAN_DEPS += $(D)/tools-exteplayer3
 endif
 #ifeq ($(MEDIAFW), gstreamer)
