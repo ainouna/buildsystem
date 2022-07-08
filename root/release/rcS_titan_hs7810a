@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 220705.1
+#Version 220706.1
 
 echo "[rcS] Start"
 echo "Fortis HS7810A Titan"
@@ -48,7 +48,7 @@ echo "[rcS] Starting DEBUG Interface"
 /etc/init.d/mountall start
 /etc/init.d/hostname start
 
-echo -n "[rcS] Starting telnetd "
+echo "[rcS] Starting telnetd"
 /usr/sbin/telnetd -l /bin/autologin
 echo "with autologin"
 
@@ -97,7 +97,7 @@ insmod $MODDIR/avs.ko type=avs_pio
 
 player=`cat /proc/stb/player/version | awk '{ print substr( $0, length($0) - 2, length($0) ) }'`
 echo "[rcS] Init player $player (LOAD 4)"
-echo "Load 4" > /dev/vfd
+echo "LD 4" > /dev/vfd
 insmod $MODDIR/ksound.ko
 insmod $MODDIR/p2div64.ko
 insmod $MODDIR/stm_v4l2.ko
@@ -124,7 +124,6 @@ insmod $MODDIR/smartcard.ko
 mknod /dev/lnb c 149 0
 
 insmod $MODDIR/pti.ko waitMS=20 videoMem=4096
-#echo "pti return = $?"
 if [ $? -ne '0' ]; then
    insmod $MODDIR/pti.ko
    echo "[rcS] Simple pti"
@@ -182,9 +181,6 @@ echo "[rcS] Init remote control (LOAD 2)"
 echo "LD 2" > /dev/vfd
 /bin/evremote2 10 140 &
 
-# Load modules from /var/etc/modules.extra
-[ -f /var/etc/modules.extra ] && eval `sed -e 's/#.*//' -e '/^\s*$/d' -e 's/^\(.*\)/insmod \0;/' < /var/etc/modules.extra`
-
 #stfbcontrol a 255
 
 NFS=`grep -c nfs /proc/cmdline`
@@ -215,7 +211,7 @@ else
 fi
 
 # Try and synchronise time
-if [ -h /usr/sbin/ntpd ]; then
+if [ -x /usr/sbin/ntpd ]; then
    echo "[rcS] Set internet time"
    (ntpd -n -p 0.europe.pool.ntp.org -q; /bin/fp_control -sst)
 fi
@@ -238,9 +234,9 @@ do
    case "$rtv" in
       1) echo "[rcS] SHUTDOWN"
          echo "Shdn" > /dev/vfd
-         init 0
          /bin/fp_control -sst
-         /bin/fp_control -e;;
+         /bin/fp_control -e
+         init 0;;
       2) echo "[rcS] REBOOT"
          echo "rebt" > /dev/vfd
          if [ -f /proc/stb/fp/force_restart ]; then
@@ -258,6 +254,6 @@ do
 done
 
 #never reached
-echo "REBOOT [rcS] HS7810A"
+echo "[rcS] HS7810A"
 echo "REBOOT HS7810A" > /dev/vfd
 init 6

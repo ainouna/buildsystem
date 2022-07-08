@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 220705.1
+#Version 220706.1
 
 echo "[rcS] Start"
 echo "Fortis HS7420 Titan"
@@ -31,7 +31,7 @@ if [ -e /var/etc/.first ]; then
    touch /dev/.devfsd
 else
    echo "[rcS] LOAD 10"
-   echo "Load 10" > /dev/vfd
+   echo "LOAD 10" > /dev/vfd
 fi
 
 /etc/init.d/mountvirtfs start
@@ -53,7 +53,7 @@ echo -n "[rcS] Starting telnetd "
 echo "with autologin"
 
 echo "[rcS] Init stmfb (LOAD 9)"
-echo "Load 9" > /dev/vfd
+echo "LOAD 9" > /dev/vfd
 insmod $MODDIR/stmcore-display-sti7111.ko
 insmod $MODDIR/stmfb.ko display0=1280x720-32@50:12m::pal:rgb:rgb # display1=720x576-16@50:1m::pal:cvbs
 if [ -e /var/etc/.scart ]; then
@@ -72,11 +72,11 @@ if [ ! -e /boot/audio.elf ] || [ ! -e /boot/video.elf ]; then
 fi
 
 echo "[rcS] Load video firmware (LOAD 8)"
-echo "Load 8" > /dev/vfd
+echo "LOAD 8" > /dev/vfd
 /bin/ustslave /dev/st231-0 /boot/video.elf > /dev/null
 
 echo "[rcS] Load audio firmware (LOAD 7)"
-echo "Load 7" > /dev/vfd
+echo "LOAD 7" > /dev/vfd
 if [ -e /boot/audio_dts.elf ]; then
    /bin/ustslave /dev/st231-1 /boot/audio_dts.elf > /dev/null
 else
@@ -84,7 +84,7 @@ else
 fi
 
 echo "[rcS] Init embx (LOAD 6)"
-echo "Load 6" > /dev/vfd
+echo "LOAD 6" > /dev/vfd
 insmod $MODDIR/embxshell.ko
 insmod $MODDIR/embxmailbox.ko mailbox0=0xfe211000:136:set2 mailbox1=0xfe212000:0
 insmod $MODDIR/embxshm.ko mailbox0=shm:0:7:0x60000000:0:256:256:0:512:0x40000000:0x10000000
@@ -92,12 +92,12 @@ insmod $MODDIR/mme_host.ko transport0=shm
 insmod $MODDIR/mmelog.ko
 
 echo "[rcS] Init AVS (LOAD 5)"
-echo "Load 5" > /dev/vfd
+echo "LOAD 5" > /dev/vfd
 insmod $MODDIR/avs.ko type=avs_pio
 
 player=`cat /proc/stb/player/version | awk '{ print substr( $0, length($0) - 2, length($0) ) }'`
 echo "[rcS] Init player $player (LOAD 4)"
-echo "Load 4" > /dev/vfd
+echo "LOAD 4" > /dev/vfd
 insmod $MODDIR/ksound.ko
 insmod $MODDIR/p2div64.ko
 insmod $MODDIR/stm_v4l2.ko
@@ -124,7 +124,6 @@ insmod $MODDIR/smartcard.ko
 mknod /dev/lnb c 149 0
 
 insmod $MODDIR/pti.ko waitMS=20 videoMem=4096
-#echo "pti return = $?"
 if [ $? -ne '0' ]; then
    insmod $MODDIR/pti.ko
    echo "[rcS] Simple pti"
@@ -136,7 +135,7 @@ insmod $MODDIR/stmsysfs.ko
 insmod $MODDIR/stmdvb.ko
 
 echo "[rcS] Init player2 (LOAD 3)"
-echo "Load 3" > /dev/vfd
+echo "LOAD 3" > /dev/vfd
 insmod $MODDIR/player2.ko
 insmod $MODDIR/sth264pp.ko
 insmod $MODDIR/stmalloc.ko
@@ -179,7 +178,7 @@ if [ -e $MODDIR/usbserial.ko ]; then
 fi
 
 echo "[rcS] Init remote control (LOAD 2)"
-echo "Load 2" > /dev/vfd
+echo "LOAD 2" > /dev/vfd
 /bin/evremote2 10 140 &
 
 #stfbcontrol a 255
@@ -218,13 +217,13 @@ if [ -h /usr/sbin/ntpd ]; then
 fi
 
 echo "[rcS] Init portmap & ftp (LOAD 1)"
-echo "Load 1" >/dev/vfd
+echo "LOAD 1" >/dev/vfd
 /etc/init.d/portmap start
 /etc/init.d/vsftpd start
 /usr/sbin/inetd
 
 echo "[rcS] Loading Titan"
-echo "Load Titan" > /dev/vfd
+echo "LOAD TITAN" > /dev/vfd
 
 until false
 do
@@ -233,20 +232,20 @@ do
    rtv=$?
    echo "[rcS] Titan ended <- return value: " $rtv
    case "$rtv" in
-      1) echo "[rcS] SHUTDOWN"
-         echo "Shutdown" > /dev/vfd
-         init 0
+      1) echo "[rcS] Shutdown"
+         echo "SHUTDOWN" > /dev/vfd
          /bin/fp_control -sst
-         /bin/fp_control -e;;
-      2) echo "[rcS] REBOOT"
-         echo "Reboot" > /dev/vfd
+         /bin/fp_control -e
+         init 0;;
+      2) echo "[rcS] Reboot"
+         echo "REBOOT" > /dev/vfd
          if [ -f /proc/stb/fp/force_restart ]; then
             echo 1 > /proc/stb/fp/force_restart
          fi
          /var/etc/autostart/start.sh reboot 
          /sbin/reboot;;
-      3) echo "[rcS] RESTART Titan"
-         echo "Restart" > /dev/vfd
+      3) echo "[rcS] Restart Titan"
+         echo "RESTART" > /dev/vfd
          ;;
       *) echo "[rcS] ERROR"
          echo "Error" > /dev/vfd
