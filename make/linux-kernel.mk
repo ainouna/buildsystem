@@ -94,12 +94,34 @@ UFS913_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-sh4-7105_clocks_no_warnings_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-ufs913_setup_stm24_$(KERNEL_LABEL).patch
 
+UFS922_PATCHES_24 = $(COMMON_PATCHES_24) \
+		linux-sh4-ufs922_setup_stm24_$(KERNEL_LABEL).patch \
+		linux-sh4-stmmac_stm24_$(KERNEL_LABEL).patch \
+		linux-sh4-i2c-st40-pio_stm24_$(KERNEL_LABEL).patch \
+		linux-sh4-fs9000_i2c_st40_stm24_$(KERNEL_LABEL).patch
+
+UFC960_PATCHES_24 = $(COMMON_PATCHES_24) \
+		linux-sh4-ufs922_setup_stm24_$(KERNEL_LABEL).patch \
+		linux-sh4-stmmac_stm24_$(KERNEL_LABEL).patch \
+		linux-sh4-i2c-st40-pio_stm24_$(KERNEL_LABEL).patch \
+		linux-sh4-fs9000_i2c_st40_stm24_$(KERNEL_LABEL).patch
+
+FS9000_PATCHES_24 = $(COMMON_PATCHES_24) \
+		linux-sh4-fs9000_setup_stm24_$(KERNEL_LABEL).patch \
+		linux-usbwait123_stm24.patch \
+		linux-sh4-stmmac_stm24_$(KERNEL_LABEL).patch \
+		linux-sh4-i2c-st40-pio_stm24_$(KERNEL_LABEL).patch \
+		$(if $(P0209),linux-sh4-fs9000_i2c_st40_stm24_$(KERNEL_LABEL).patch)
+ifeq ($(IMAGE), $(filter $(IMAGE), neutrino neutrino-wlandriver titan titan-wlandriver))
+FS9000_PATCHES_24 += linux-sh4-fs9000_mtdconcat_stm24_$(KERNEL_LABEL).patch
+endif
+
 HS9510_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-sh4-hs9510_setup_stm24_$(KERNEL_LABEL).patch \
 		linux-usbwait123_stm24.patch \
 		linux-sh4-stmmac_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-i2c-st40-pio_stm24_$(KERNEL_LABEL).patch
-ifeq ($(IMAGE), $(filter $(IMAGE), neutrino neutrino-wlandriver))
+ifeq ($(IMAGE), $(filter $(IMAGE), neutrino neutrino-wlandriver titan titan-wlandriver))
 HS9510_PATCHES_24 += linux-sh4-hs9510_mtdconcat_stm24_$(KERNEL_LABEL).patch
 endif
 
@@ -165,18 +187,6 @@ ATEMIO520_PATCHES_24 = $(COMMON_PATCHES_24) \
 		$(if $(P0209),linux-squashfs-downgrade-stm24-2.6.25.patch) \
 		$(if $(P0209),linux-squashfs-downgrade-stm24-rm_d_alloc_anon.patch)
 
-UFS922_PATCHES_24 = $(COMMON_PATCHES_24) \
-		linux-sh4-ufs922_setup_stm24_$(KERNEL_LABEL).patch \
-		linux-sh4-stmmac_stm24_$(KERNEL_LABEL).patch \
-		linux-sh4-i2c-st40-pio_stm24_$(KERNEL_LABEL).patch \
-		linux-sh4-fs9000_i2c_st40_stm24_$(KERNEL_LABEL).patch
-
-UFC960_PATCHES_24 = $(COMMON_PATCHES_24) \
-		linux-sh4-ufs922_setup_stm24_$(KERNEL_LABEL).patch \
-		linux-sh4-stmmac_stm24_$(KERNEL_LABEL).patch \
-		linux-sh4-i2c-st40-pio_stm24_$(KERNEL_LABEL).patch \
-		linux-sh4-fs9000_i2c_st40_stm24_$(KERNEL_LABEL).patch
-
 SPARK_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-sh4-stmmac_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-lmb_stm24_$(KERNEL_LABEL).patch \
@@ -189,16 +199,6 @@ SPARK7162_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-sh4-lmb_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-7105_clocks_no_warnings_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-spark7162_setup_stm24_$(KERNEL_LABEL).patch
-
-FS9000_PATCHES_24 = $(COMMON_PATCHES_24) \
-		linux-sh4-fs9000_setup_stm24_$(KERNEL_LABEL).patch \
-		linux-usbwait123_stm24.patch \
-		linux-sh4-stmmac_stm24_$(KERNEL_LABEL).patch \
-		linux-sh4-i2c-st40-pio_stm24_$(KERNEL_LABEL).patch \
-		$(if $(P0209),linux-sh4-fs9000_i2c_st40_stm24_$(KERNEL_LABEL).patch)
-ifeq ($(IMAGE), $(filter $(IMAGE), neutrino neutrino-wlandriver))
-FS9000_PATCHES_24 += linux-sh4-fs9000_mtdconcat_stm24_$(KERNEL_LABEL).patch
-endif
 
 ADB_BOX_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-sh4-stx7100_fdma_fix_stm24_$(KERNEL_LABEL).patch \
