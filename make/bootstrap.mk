@@ -195,7 +195,9 @@ BOOTSTRAP  = directories
 BOOTSTRAP += $(D)/ccache
 BOOTSTRAP += $(CROSSTOOL)
 BOOTSTRAP += $(TARGET_DIR)/lib/libc.so.6
+ifneq ($(IMAGE), titan titan-wlandriver)
 BOOTSTRAP += $(D)/host_pkgconfig
+endif
 BOOTSTRAP += $(D)/host_module_init_tools
 BOOTSTRAP += $(D)/host_mtd_utils_old
 BOOTSTRAP += $(D)/host_mkcramfs
