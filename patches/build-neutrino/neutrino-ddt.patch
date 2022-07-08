@@ -1,4 +1,4 @@
-# Commit 154632ace0e0a69619e7d7b2b72bb2de1adbcd8f 25/10/2020
+# Commit ca1f5557e93011d34aa78d4749e2276c703d430c 28/06/2022
 --- neutrino-ddt.org/acinclude.m4
 +++ neutrino-ddt/acinclude.m4
 @@ -284,45 +284,13 @@
@@ -211,7 +211,7 @@
  	bpa_data.bpa_part = (char *)"LMI_VID";
 --- neutrino-ddt.org/src/driver/record.cpp
 +++ neutrino-ddt/src/driver/record.cpp
-@@ -1408,7 +1408,7 @@
+@@ -1404,7 +1404,7 @@
  		autoshift = false;
  #ifdef HAVE_SPARK_HARDWARE
  	CVFD::getInstance()->SetIcons(SPARK_TIMESHIFT, false);
@@ -220,7 +220,7 @@
  	CVFD::getInstance()->ShowIcon(FP_ICON_TIMESHIFT, false);
  #endif
  
-@@ -1573,7 +1573,7 @@
+@@ -1569,7 +1569,7 @@
  		t_channel_id live_channel_id = CZapit::getInstance()->GetCurrentChannelID();
  #ifdef HAVE_SPARK_HARDWARE
  		CVFD::getInstance()->SetIcons(SPARK_TIMESHIFT, true);
@@ -231,7 +231,7 @@
  		bool tstarted = false;
 --- neutrino-ddt.org/src/neutrino.cpp
 +++ neutrino-ddt/src/neutrino.cpp
-@@ -3097,6 +3097,7 @@
+@@ -3055,6 +3055,7 @@
  					switchTvRadioMode(); //used with defined default tv/radio rc key
  			}
  			/* in case key_subchannel_up/down redefined */
@@ -239,7 +239,7 @@
  			else if( msg == CRCInput::RC_left || msg == CRCInput::RC_right) {
  				switch (g_settings.mode_left_right_key_tv)
  				{
-@@ -3113,6 +3114,7 @@
+@@ -3071,6 +3172,7 @@
  						break;
  				}
  			}
@@ -247,7 +247,7 @@
  			else if( msg == CRCInput::RC_epg ) {
  				InfoClock->enableInfoClock(false);
  				StopSubtitles();
-@@ -3404,6 +3406,10 @@
+@@ -3362,6 +3364,10 @@
  #if defined (BOXMODEL_IPBOX9900) || defined (BOXMODEL_IPBOX99)
  		system("echo 0 > /proc/stb/misc/fan");
  #endif
@@ -258,7 +258,7 @@
  	}
  }
  
-@@ -3664,7 +3670,11 @@
+@@ -3622,7 +3628,11 @@
  			}
  #endif
  	}
@@ -1841,18 +1841,18 @@
 +// vim:ts=4
 --- neutrino-ddt.org/src/gui/miscsettings_menu.cpp
 +++ neutrino-ddt/src/gui/miscsettings_menu.cpp
-@@ -345,7 +345,10 @@
- 	{
- 		if (fanNotifier == NULL)
- 			fanNotifier = new CFanControlNotifier();
+@@ -314,7 +314,10 @@
+ 	//fan speed
+ 	if (fanNotifier == NULL)
+ 		fanNotifier = new CFanControlNotifier();
 -#if defined (BOXMODEL_IPBOX9900) || defined (BOXMODEL_IPBOX99) || defined (BOXMODEL_DM8000)
 +#if defined (BOXMODEL_IPBOX9900) \
 + || defined (BOXMODEL_IPBOX99) \
 + || defined (BOXMODEL_CUBEREVO) \
 + || defined (BOXMODEL_CUBEREVO_9500HD)
- 		CMenuOptionNumberChooser * mn = new CMenuOptionNumberChooser(LOCALE_FAN_SPEED, &g_settings.fan_speed, true, 0, 1, fanNotifier, CRCInput::RC_nokey, NULL, 0, 0, LOCALE_OPTIONS_OFF);
+ 	CMenuOptionNumberChooser * mn = new CMenuOptionNumberChooser(LOCALE_FAN_SPEED, &g_settings.fan_speed, true, 0, 1, fanNotifier, CRCInput::RC_nokey, NULL, 0, 0, LOCALE_OPTIONS_OFF);
  #else
- 		CMenuOptionNumberChooser * mn = new CMenuOptionNumberChooser(LOCALE_FAN_SPEED, &g_settings.fan_speed, true, 1, 14, fanNotifier, CRCInput::RC_nokey, NULL, 0, 0, LOCALE_OPTIONS_OFF);
+ 	CMenuOptionNumberChooser * mn = new CMenuOptionNumberChooser(LOCALE_FAN_SPEED, &g_settings.fan_speed, true, 1, 14, fanNotifier, CRCInput::RC_nokey, NULL, 0, 0, LOCALE_OPTIONS_OFF);
 --- neutrino-ddt.org/src/gui/movieplayer.cpp
 +++ neutrino-ddt/src/gui/movieplayer.cpp
 @@ -512,7 +512,7 @@
@@ -1886,12 +1886,14 @@
   && !defined(BOXMODEL_CUBEREVO_3000HD) \
 --- neutrino-ddt.org/src/gui/update.cpp
 +++ neutrino-ddt/src/gui/update.cpp
-@@ -96,7 +96,7 @@
+@@ -95,7 +95,9 @@
+ #if HAVE_DUCKBOX_HARDWARE
  #define UPDATE_LOCAL_FILENAME          "update.img"
- #define RELEASE_CYCLE                  "2.0"
  #define FILEBROWSER_UPDATE_FILTER      "img"
 -#if BOXMODEL_UFS910 || BOXMODEL_FORTIS_HDBOX || BOXMODEL_OCTAGON1008
-+#if BOXMODEL_UFS910 || BOXMODEL_FS9000 || BOXMODEL_HS9510
++#if BOXMODEL_UFS910 \
++ || BOXMODEL_FS9000 \
++ || BOXMODEL_HS9510
  #define MTD_OF_WHOLE_IMAGE              5
  #define MTD_DEVICE_OF_UPDATE_PART       "/dev/mtd5"
  #elif BOXMODEL_CUBEREVO || BOXMODEL_CUBEREVO_MINI || BOXMODEL_CUBEREVO_MINI2
@@ -1905,7 +1907,22 @@
  	-I$(top_builddir) \
 --- neutrino-ddt.org/src/system/setting_helpers.cpp
 +++ neutrino-ddt/src/system/setting_helpers.cpp
-@@ -625,10 +625,20 @@
+@@ -642,14 +642,22 @@
+ 	return ret;
+ }
+ 
+-#if BOXMODEL_DM8000 || BOXMODEL_UFS922 || BOXMODEL_CUBEREVO || BOXMODEL_CUBEREVO_MINI2 || BOXMODEL_CUBEREVO_250HD || BOXMODEL_CUBEREVO_3000HD || BOXMODEL_IPBOX9900 || BOXMODEL_IPBOX99
++#if BOXMODEL_DM8000 \
++ || BOXMODEL_UFS922 \
++ || BOXMODEL_CUBEREVO \
++ || BOXMODEL_CUBEREVO_MINI2 \
++ || BOXMODEL_CUBEREVO_250HD \
++ || BOXMODEL_CUBEREVO_3000HD \
++ || BOXMODEL_IPBOX9900 \
++ || BOXMODEL_IPBOX99
+ #if HAVE_DUCKBOX_HARDWARE
+ void CFanControlNotifier::setSpeed(unsigned int speed)
+ {
  	int cfd;
  
  	printf("FAN Speed %d\n", speed);
@@ -1913,21 +1930,9 @@
 +#if defined (BOXMODEL_IPBOX9900) \
 + || defined (BOXMODEL_IPBOX99)
  	cfd = open("/proc/stb/misc/fan", O_WRONLY);
- 	if(cfd < 0) {
- 		perror("Cannot open /proc/stb/misc/fan");
-+#elif defined (BOXMODEL_CUBEREVO) \
-+ ||   defined (BOXMODEL_CUBEREVO_9500HD)
-+	cfd = open("/proc/stb/fp/fan", O_WRONLY);
-+	if(cfd < 0) {
-+		perror("Cannot open /proc/stb/fp/fan");
-+#elif defined (BOXMODEL_UFS922)
-+	cfd = open("/proc/stb/fp/fan_pwm", O_WRONLY);
-+	if(cfd < 0) {
-+		perror("Cannot open /proc/stb/fp/fan_pwm");
- #else
- 	cfd = open("/proc/stb/fan/fan_ctrl", O_WRONLY);
- 	if(cfd < 0) {
-@@ -639,7 +649,10 @@
+ 	if (cfd < 0)
+ 	{
+@@ -665,7 +673,10 @@
  
  	switch (speed)
  
@@ -1937,12 +1942,13 @@
 + || defined (BOXMODEL_CUBEREVO) \
 + || defined (BOXMODEL_CUBEREVO_9500HD)
  	{
- 	case 0:
- 		write(cfd,"0",1);
-@@ -648,6 +661,18 @@
- 		write(cfd,"1",1);
- 		break;
- 	}
+ 		case 0:
+ 			write(cfd, "0", 1);
+@@ -673,6 +684,18 @@
+ 		case 1:
+ 			write(cfd, "1", 1);
+ 			break;
++	}
 +#elif defined (BOXMODEL_UFS922)
 +	{
 +	case 0:
@@ -1954,8 +1960,7 @@
 +	case 2:
 +		write(cfd,"255",1);
 +		break;
-+	}
+ 	}
  #else
  	{
- 	case 1:
 
