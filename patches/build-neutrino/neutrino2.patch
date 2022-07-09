@@ -1,14 +1,14 @@
-# Commit 95cda4e731818785788870fb6378ee28c76c1b14  22/05/2020
---- nhd2-exp.org/acinclude.m4
-+++ nhd2-exp/acinclude.m4
-@@ -201,10 +201,14 @@
+# Commit 0d83b45f970203e4b910eddee97ee907479578a8  09/07/2022
+--- neutrino2.org/acinclude.m4
++++ neutrino2/acinclude.m4
+@@ -171,10 +171,14 @@
  AC_DEFUN([TUXBOX_BOXTYPE],[
  
  AC_ARG_WITH(boxtype,
--	[  --with-boxtype          valid values: generic,dgs,gigablue,dreambox,xtrend,fulan,kathrein,ipbox,topfield,fortis_hdbox,octagon,atevio,adb_box,whitebox,vip,homecast,vuplus,azbox,technomate,coolstream,hypercube,venton,xp1000,odin,ixuss,iqonios,e3hd,ebox5000,wetek,edision,hd,gi,xpeedc,formuler,miraclebox,spycat,xsarius,zgemma],
+-	[  --with-boxtype          valid values: generic,dgs,gigablue,dreambox,xtrend,fulan,kathrein,ipbox,topfield,fortis_hdbox,octagon,atevio,adb_box,whitebox,vip,homecast,vuplus,azbox,technomate,coolstream,hypercube,venton,xp1000,odin,ixuss,iqonios,e3hd,ebox5000,wetek,edision,hd,gi,xpeedc,formuler,miraclebox,spycat,xsarius,zgemma,wwio],
 +	[  --with-boxtype          valid values: generic,duckbox,dgs,gigablue,dreambox,xtrend,fulan,kathrein,ipbox,topfield,fs9000,octagon,atevio,hs7,adb_box,adb_2850,vip_v1,vip_2,vip2,homecast,vitamin_hd5000,pace7241,opt9600,vuplus,azbox,technomate,coolstream,hypercube,venton,xp1000,odin,ixuss,iqonios,e3hd,ebox5000,wetek,edision,hd,gi,xpeedc,formuler,miraclebox,spycat,xsarius,zgemma],
  	[case "${withval}" in
--		generic|dgs|gigablue|dreambox|xtrend|fulan|kathrein|ipbox|hl101|topfield|fortis_hdbox|octagon|atevio|adb_box|whitebox|vip|homecast|vuplus|azbox|technomate|coolstream|hypercube|venton|xp1000|odin|ixuss|iqonios|e3hd|ebox5000|wetek|edision|hd|gi|xpeedc|formuler|miraclebox|spycat|xsarius|zgemma)
+-		generic|dgs|gigablue|dreambox|xtrend|fulan|kathrein|ipbox|hl101|topfield|fortis_hdbox|octagon|atevio|adb_box|whitebox|vip|homecast|vuplus|azbox|technomate|coolstream|hypercube|venton|xp1000|odin|ixuss|iqonios|e3hd|ebox5000|wetek|edision|hd|gi|xpeedc|formuler|miraclebox|spycat|xsarius|zgemma|wwio)
 +		generic|duckbox|dgs|gigablue|dreambox|xtrend|fulan|kathrein|ipbox|hl101|vuplus|azbox|technomate|coolstream|hypercube|venton|xp1000|odin|ixuss|iqonios|e3hd|ebox5000|wetek|edision|hd|gi|xpeedc|formuler|miraclebox|spycat|xsarius|zgemma)
  			BOXTYPE="$withval"
 +			;;
@@ -18,18 +18,15 @@
  			;;
  		cu*)
  			BOXTYPE="dgs"
-@@ -226,6 +230,10 @@
- 			BOXTYPE="fulan"
+@@ -184,7 +188,6 @@
+ 			BOXTYPE="gigablue"
  			BOXMODEL="$withval"
  			;;
-+		tf*)
-+			BOXTYPE="topfield"
-+			BOXMODEL="$withval"
-+			;;
- 		uf*)
- 			BOXTYPE="kathrein"
+-
+ 		tf*)
+ 			BOXTYPE="topfield"
  			BOXMODEL="$withval"
-@@ -238,12 +246,32 @@
+@@ -213,12 +216,32 @@
  			BOXTYPE="duckbox"
  			BOXMODEL="$withval"
  			;;	
@@ -68,26 +65,23 @@
  			BOXMODEL="$withval"
  			;;
  		vu*)
-@@ -341,10 +369,16 @@
- 				valid for xtrend: et4x00,et5x00,et6x00,et7x00, et8000,et8500,et9x00, et10000
- 				valid for fulan: spark, spark7162
+@@ -323,9 +346,13 @@
  				valid for kathrein: ufs910, ufs922, ufs912, ufs913, ufc960
-+				valid for topfield: tf7700
  				valid for ipbox: ipbox55, ipbox99, ipbox9900
  				valid for ipbox: hl101
 -				valid for atevio: atevio700,atevio7000,atevio7500,atevio7600
 -				valid for octagon: octagon1008
-+				valid for fortis: fs9000, hs7110, hs7420, hs7810a, hs7119, hs7429, hs7819, hs8200, hs9510
+ 				valid for topfield: tf7700
 +				valid for vip: vip1_v1, vip1_v2, vip2
 +				valid for adb: adb_box, adb_2850
 +				valid for atemio: atemio520
 +				valid for pace: pace7241
 +				valid for vitamin_hd5000: vitamin_hd5000
 +				valid for opticum: opt9600
- 				valid for vuplus: vusolo,vuduo,vuuno,vuultimo,vuduo2,vusolo2,vusolo4k,vusolose,vuzero
+ 				valid for vuplus: vusolo,vuduo,vuuno,vuultimo,vuduo2,vusolo2,vusolo4k,vusolose,vuzero,vuduo4k
  				valid for azbox: azboxhd,azboxme,azboxminime
  				valid for technomate: tmtwin,tm2t,tmsingle,tmnano
-@@ -398,6 +432,13 @@
+@@ -387,6 +414,13 @@
  				AC_MSG_ERROR([unknown model $withval for boxtype $BOXTYPE])
  			fi
  			;;
@@ -101,7 +95,7 @@
  		ufs910|ufs912|ufs913|ufs922|ufc960)
  			if test "$BOXTYPE" = "kathrein"; then
  				BOXMODEL="$withval"
-@@ -419,15 +460,50 @@
+@@ -408,15 +442,50 @@
  				AC_MSG_ERROR([unknown model $withval for boxtype $BOXTYPE])
  			fi
  			;;
@@ -161,23 +155,16 @@
  				BOXMODEL="$withval"
  			else
  				AC_MSG_ERROR([unknown model $withval for boxtype $BOXTYPE])
-@@ -598,13 +674,14 @@
+@@ -594,7 +663,7 @@
  			AC_MSG_ERROR([unsupported value $withval for --with-boxmodel])
  			;;
  	esac],
--	[if test "$BOXTYPE" = "dgs" -o "$BOXTYPE" = "gigablue" -o "$BOXTYPE" = "dreambox" -o "$BOXTYPE" = "xtrend" -o "$BOXTYPE" = "fulan" -o "$BOXTYPE" = "kathrein" -o "$BOXTYPE" = "ipbox" -o "$BOXTYPE" = "atevio" -o "$BOXTYPE" = "octagon" -o "$BOXTYPE" = "vuplus" -o "$BOXTYPE" = "technomate" -o "$BOXTYPE" = "venton" -o "$BOXTYPE" = "ixuss" -o "$BOXTYPE" = "iqonios" -o "$BOXTYPE" = "odin" -o "$BOXTYPE" = "edision" -o "$BOXTYPE" = "hd" -o "$BOXTYPE" = "gi" -o "$BOXTYPE" = "formuler" -o "$BOXTYPE" = "miraclebox" -o "$BOXTYPE" = "spycat" -o "$BOXTYPE" = "xsarius" -o "$BOXTYPE" = "zgemma" && test -z "$BOXMODEL"; then
+-	[if test "$BOXTYPE" = "dgs" -o "$BOXTYPE" = "gigablue" -o "$BOXTYPE" = "dreambox" -o "$BOXTYPE" = "xtrend" -o "$BOXTYPE" = "fulan" -o "$BOXTYPE" = "kathrein" -o "$BOXTYPE" = "ipbox" -o "$BOXTYPE" = "atevio" -o "$BOXTYPE" = "octagon" -o "$BOXTYPE" = "vuplus" -o "$BOXTYPE" = "technomate" -o "$BOXTYPE" = "venton" -o "$BOXTYPE" = "ixuss" -o "$BOXTYPE" = "iqonios" -o "$BOXTYPE" = "odin" -o "$BOXTYPE" = "edision" -o "$BOXTYPE" = "hd" -o "$BOXTYPE" = "gi" -o "$BOXTYPE" = "formuler" -o "$BOXTYPE" = "miraclebox" -o "$BOXTYPE" = "spycat" -o "$BOXTYPE" = "xsarius" -o "$BOXTYPE" = "zgemma" -o "$BOXTYPE" = "wwio" && test -z "$BOXMODEL"; then
 +	[if test "$BOXTYPE" = "dgs" -o "$BOXTYPE" = "duckbox"-o "$BOXTYPE" = "gigablue" -o "$BOXTYPE" = "dreambox" -o "$BOXTYPE" = "xtrend" -o "$BOXTYPE" = "fulan" -o "$BOXTYPE" = "kathrein" -o "$BOXTYPE" = "ipbox" -o "$BOXTYPE" = "atevio" -o "$BOXTYPE" = "octagon" -o "$BOXTYPE" = "hs7" -o "$BOXTYPE" = "pace" -o "$BOXTYPE" = "adb" -o "$BOXTYPE" = "vitamin" -o "$BOXTYPE" = "vuplus" -o "$BOXTYPE" = "technomate" -o "$BOXTYPE" = "venton" -o "$BOXTYPE" = "ixuss" -o "$BOXTYPE" = "iqonios" -o "$BOXTYPE" = "odin" -o "$BOXTYPE" = "edision" -o "$BOXTYPE" = "hd" -o "$BOXTYPE" = "gi" -o "$BOXTYPE" = "formuler" -o "$BOXTYPE" = "miraclebox" -o "$BOXTYPE" = "spycat" -o "$BOXTYPE" = "xsarius" -o "$BOXTYPE" = "zgemma" && test -z "$BOXMODEL"; then
  		AC_MSG_ERROR([this boxtype $BOXTYPE needs --with-boxmodel])
  	fi])
  
- AC_SUBST(BOXTYPE)
- AC_SUBST(BOXMODEL)
- 
-+# BOXTYPE is a brand
- AM_CONDITIONAL(BOXTYPE_GENERIC, test "$BOXTYPE" = "generic")
- AM_CONDITIONAL(BOXTYPE_DGS, test "$BOXTYPE" = "dgs")
- AM_CONDITIONAL(BOXTYPE_GIGABLUE, test "$BOXTYPE" = "gigablue")
-@@ -614,11 +691,10 @@
+@@ -610,11 +679,10 @@
  AM_CONDITIONAL(BOXTYPE_KATHREIN, test "$BOXTYPE" = "kathrein")
  AM_CONDITIONAL(BOXTYPE_IPBOX, test "$BOXTYPE" = "ipbox")
  AM_CONDITIONAL(BOXTYPE_HL101, test "$BOXTYPE" = "hl101")
@@ -192,15 +179,15 @@
  AM_CONDITIONAL(BOXTYPE_WHITEBOX, test "$BOXTYPE" = "whitebox")
  AM_CONDITIONAL(BOXTYPE_VIP, test "$BOXTYPE" = "vip")
  AM_CONDITIONAL(BOXTYPE_HOMECAST, test "$BOXTYPE" = "homecast")
-@@ -647,6 +723,7 @@
- AM_CONDITIONAL(BOXTYPE_XSARIUS, test "$BOXTYPE" = "xsarius")
+@@ -644,6 +712,7 @@
  AM_CONDITIONAL(BOXTYPE_ZGEMMA, test "$BOXTYPE" = "zgemma")
+ AM_CONDITIONAL(BOXTYPE_WWIO, test "$BOXTYPE" = "wwio")
  
 +# BOXMODEL is a model within a brand
  AM_CONDITIONAL(BOXMODEL_CUBEREVO, test "$BOXMODEL" = "cuberevo")
  AM_CONDITIONAL(BOXMODEL_CUBEREVO_MINI, test "$BOXMODEL" = "cuberevo_mini")
  AM_CONDITIONAL(BOXMODEL_CUBEREVO_MINI2, test "$BOXMODEL" = "cuberevo_mini2")
-@@ -687,6 +764,8 @@
+@@ -686,6 +755,8 @@
  AM_CONDITIONAL(BOXMODEL_SPARK,test "$BOXMODEL" = "spark")
  AM_CONDITIONAL(BOXMODEL_SPARK7162,test "$BOXMODEL" = "spark7162")
  
@@ -209,7 +196,7 @@
  AM_CONDITIONAL(BOXMODEL_UFS910, test "$BOXMODEL" = "ufs910")
  AM_CONDITIONAL(BOXMODEL_UFS912, test "$BOXMODEL" = "ufs912")
  AM_CONDITIONAL(BOXMODEL_UFS913, test "$BOXMODEL" = "ufs913")
-@@ -699,12 +778,25 @@
+@@ -698,12 +769,25 @@
  
  AM_CONDITIONAL(BOXMODEL_HL101, test "$BOXMODEL" = "hl101")
  
@@ -241,24 +228,15 @@
  
  AM_CONDITIONAL(BOXMODEL_VUSOLO2, test "$BOXMODEL" = "vusolo2")
  AM_CONDITIONAL(BOXMODEL_VUDUO2, test "$BOXMODEL" = "vuduo2")
-@@ -785,6 +877,7 @@
- AM_CONDITIONAL(BOXMODEL_LC, test "$BOXMODEL" = "lc")
- AM_CONDITIONAL(BOXMODEL_SH1, test "$BOXMODEL" = "sh1")
+@@ -793,6 +877,7 @@
+ 
+ AM_CONDITIONAL(BOXMODEL_BRE2ZE4K, test "$BOXMODEL" = "bre2ze4k")
  
 +# PLATFORM is derived from a BOXTYPE (a brand)
  if test "$BOXTYPE" = "generic"; then
  	AC_DEFINE(PLATFORM_GENERIC, 1, [building for generic])
  elif test "$BOXTYPE" = "dgs"; then
-@@ -797,6 +890,8 @@
- 	AC_DEFINE(PLATFORM_XTREND, 1, [building for xtrend])
- elif test "$BOXTYPE" = "fulan"; then
- 	AC_DEFINE(PLATFORM_FULAN, 1, [building for fulan])
-+elif test "$BOXTYPE" = "topfield"; then
-+	AC_DEFINE(PLATFORM_TOPFIELD, 1, [building for topfield])
- elif test "$BOXTYPE" = "kathrein"; then
- 	AC_DEFINE(PLATFORM_KATHREIN, 1, [building for kathrein])
- elif test "$BOXTYPE" = "ipbox"; then
-@@ -805,18 +900,20 @@
+@@ -813,18 +898,20 @@
  	AC_DEFINE(HAVE_DUCKBOX_HARDWARE, 1, [building for a duckbox])	
  elif test "$BOXTYPE" = "topfield"; then
  	AC_DEFINE(PLATFORM_TF7700, 1, [building for topfield])
@@ -284,20 +262,20 @@
 +	AC_DEFINE(PLATFORM_VITAMIN, 1, [building for vitamin])
  elif test "$BOXTYPE" = "vip"; then
  	AC_DEFINE(PLATFORM_VIP, 1, [building for vip])
-+elif test "$BOXTYPE" = "opticumv"; then
++elif test "$BOXTYPE" = "opticum"; then
 +	AC_DEFINE(PLATFORM_OPTICUM, 1, [building for opticum])
  elif test "$BOXTYPE" = "homecast"; then
  	AC_DEFINE(PLATFORM_HOMECAST, 1, [building for homecast])
  elif test "$BOXTYPE" = "vuplus"; then
-@@ -865,6 +962,7 @@
- 	AC_DEFINE(PLATFORM_ZGEMMA, 1, [building for zgemma])
+@@ -875,6 +962,7 @@
+ 	AC_DEFINE(PLATFORM_WWIO, 1, [building for wwio])
  fi
  
 +# Define the BOXMODELs
  if test "$BOXMODEL" = "cuberevo"; then
  	AC_DEFINE(PLATFORM_CUBEREVO, 1, [building for cuberevo])
  elif test "$BOXMODEL" = "cuberevo_mini"; then
-@@ -938,6 +1036,9 @@
+@@ -948,6 +1036,9 @@
  elif test "$BOXMODEL" = "spark7162"; then
  	AC_DEFINE(PLATFORM_SPARK7162, 1, [building for spark 7162])
  
@@ -307,7 +285,7 @@
  elif test "$BOXMODEL" = "ufs910"; then
  	AC_DEFINE(PLATFORM_UFS910, 1, [building for ufs910])
  elif test "$BOXMODEL" = "ufs912"; then
-@@ -959,17 +1060,16 @@
+@@ -969,17 +1060,16 @@
  elif test "$BOXMODEL" = "hl101"; then
  	AC_DEFINE(BOXMODEL_HL101, 1, [hl101])
  
@@ -335,13 +313,8 @@
  
  elif test "$BOXMODEL" = "vusolo2"; then
  	AC_DEFINE(BOXMODEL_VUSOLO2, 1, [vuplus solo2])
-@@ -2146,4 +2246,3 @@
- ])
- 
- 
--
---- nhd2-exp.org/lib/libdvbsub/dvbsubtitle.cpp
-+++ nhd2-exp/lib/libdvbsub/dvbsubtitle.cpp
+--- neutrino2.org/lib/libdvbsub/dvbsubtitle.cpp
++++ neutrino2/lib/libdvbsub/dvbsubtitle.cpp
 @@ -21,9 +21,16 @@
  #include <libavformat/avformat.h>
  #include <libavcodec/avcodec.h>
@@ -357,10 +330,10 @@
 +	#define CODEC_DVB_SUB AV_CODEC_ID_DVB_SUBTITLE
 +#endif
  
- // Set these to 'true' for debug output:
- static bool DebugConverter = false;
---- nhd2-exp.org/lib/libeplayer3/container/container_ffmpeg.c
-+++ nhd2-exp/lib/libeplayer3/container/container_ffmpeg.c
+ //#if LIBAVCODEC_VERSION_INT <= AV_VERSION_INT(57, 1, 99)
+ //	#define CODEC_DVB_SUB CODEC_ID_DVB_SUBTITLE
+--- neutrino2.org/lib/libeplayer3/container/container_ffmpeg.c
++++ neutrino2/lib/libeplayer3/container/container_ffmpeg.c
 @@ -38,14 +38,10 @@
  #include <pthread.h>
  
@@ -377,8 +350,8 @@
  #include "common.h"
  #include "misc.h"
  #include "debug.h"
-@@ -55,9 +51,7 @@
- #include "subtitle.h"
+@@ -64,9 +60,7 @@
+ #endif
  
  
 -#if LIBAVCODEC_VERSION_MAJOR > 54
@@ -387,105 +360,29 @@
  
  /* ***************************** */
  /* Makros/Constants              */
-@@ -146,124 +140,107 @@
- {
- 	switch (codec->codec_id)
- 	{
--		case CODEC_ID_MPEG1VIDEO:
-+		case AV_CODEC_ID_MPEG1VIDEO:
- 			return "V_MPEG1";
- 			
--		case CODEC_ID_MPEG2VIDEO:
-+		case AV_CODEC_ID_MPEG2VIDEO:
- 			return "V_MPEG2";
- 			
--		case CODEC_ID_H263:
--		case CODEC_ID_H263P:
--		case CODEC_ID_H263I:
-+		case AV_CODEC_ID_H263:
-+		case AV_CODEC_ID_H263P:
-+		case AV_CODEC_ID_H263I:
- 			return "V_H263";
- 			
--		case CODEC_ID_FLV1:
-+		case AV_CODEC_ID_FLV1:
- 			return "V_FLV";
- 			
--		case CODEC_ID_VP5:
--		case CODEC_ID_VP6:
--		case CODEC_ID_VP6F:
-+		case AV_CODEC_ID_VP5:
-+		case AV_CODEC_ID_VP6:
-+		case AV_CODEC_ID_VP6F:
- 			return "V_VP6";
- 			
--		case CODEC_ID_RV10:
--		case CODEC_ID_RV20:
-+		case AV_CODEC_ID_RV10:
-+		case AV_CODEC_ID_RV20:
+@@ -179,9 +173,6 @@
  			return "V_RMV";
  			
--		case CODEC_ID_MPEG4:
+ 		case AV_CODEC_ID_MPEG4:
 -#if LIBAVCODEC_VERSION_MAJOR < 53
 -		case CODEC_ID_XVID:
 -#endif
--		case CODEC_ID_MSMPEG4V1:
--		case CODEC_ID_MSMPEG4V2:
--		case CODEC_ID_MSMPEG4V3:
-+		case AV_CODEC_ID_MPEG4:
-+		case AV_CODEC_ID_MSMPEG4V1:
-+		case AV_CODEC_ID_MSMPEG4V2:
-+		case AV_CODEC_ID_MSMPEG4V3:
- 			return "V_MSCOMP";
- 			
--		case CODEC_ID_WMV1:
-+		case AV_CODEC_ID_WMV1:
- 			*version = 1;
- 			return "V_WMV";
- 			
--		case CODEC_ID_WMV2:
-+		case AV_CODEC_ID_WMV2:
- 			*version = 2;
- 			return "V_WMV";
- 			
--		case CODEC_ID_WMV3:
-+		case AV_CODEC_ID_WMV3:
- 			*version = 3;
- 			return "V_WMV";
- 			
--		case CODEC_ID_VC1:
-+		case AV_CODEC_ID_VC1:
+ 		case AV_CODEC_ID_MSMPEG4V1:
+ 		case AV_CODEC_ID_MSMPEG4V2:
+ 		case AV_CODEC_ID_MSMPEG4V3:
+@@ -203,9 +194,7 @@
  			return "V_VC1";
  			
--		case CODEC_ID_H264:
+ 		case AV_CODEC_ID_H264:
 -#if LIBAVCODEC_VERSION_MAJOR < 54
 -		case CODEC_ID_FFH264:
 -#endif
-+		case AV_CODEC_ID_H264:
++//		case AV_CODEC_ID_FFH264:
  			return "V_MPEG4/ISO/AVC";
  		
--		case CODEC_ID_AVS:
-+		case AV_CODEC_ID_AVS:
- 			return "V_AVS";
- 			
--		case CODEC_ID_MP2:
-+		case AV_CODEC_ID_MP2:
- 			return "A_MPEG/L3";
- 			
--		case CODEC_ID_MP3:
-+		case AV_CODEC_ID_MP3:
- 			return "A_MP3";
- 			
--		case CODEC_ID_AAC:
-+		case AV_CODEC_ID_AAC:
- 			return "A_AAC";
- 			
--		case CODEC_ID_AC3:
-+		case AV_CODEC_ID_AC3:
- 			return "A_AC3";
- 			
--		case CODEC_ID_DTS:
-+		case AV_CODEC_ID_DTS:
+ 		case AV_CODEC_ID_AVS:
+@@ -226,11 +215,6 @@
+ 		case AV_CODEC_ID_DTS:
  			return "A_DTS";
  		
 -//#if LIBAVCODEC_VERSION_INT > AV_VERSION_INT(52, 72, 2)			
@@ -493,70 +390,10 @@
 -//			return "A_EAC3";
 -//#endif			
 -			
--		case CODEC_ID_WMAV1:
--		case CODEC_ID_WMAV2:
--		case 86056: //CODEC_ID_WMAPRO
-+			
-+		case AV_CODEC_ID_WMAV1:
-+		case AV_CODEC_ID_WMAV2:
-+		case 86056: //AV_CODEC_ID_WMAPRO
- 			return "A_WMA";
- 			
--		case CODEC_ID_MLP:
-+		case AV_CODEC_ID_MLP:
- 			return "A_MLP";
- 			
--		case CODEC_ID_RA_144:
-+		case AV_CODEC_ID_RA_144:
- 			return "A_RMA";
- 			
--		case CODEC_ID_RA_288:
-+		case AV_CODEC_ID_RA_288:
- 			return "A_RMA";
- 			
--		case CODEC_ID_VORBIS:
-+		case AV_CODEC_ID_VORBIS:
- 			return "A_IPCM"; //return "A_VORBIS";
- 			
--		case CODEC_ID_FLAC: //86030
-+		case AV_CODEC_ID_FLAC: //86030
- 			return "A_IPCM"; //return "A_FLAC";
- 			
- 		/* subtitle */
--		case CODEC_ID_SSA:
-+		case AV_CODEC_ID_SSA:
- 			return "S_TEXT/ASS"; /* Hellmaster1024: seems to be ASS instead of SSA */
- 			
--		case CODEC_ID_TEXT: /* Hellmaster1024: i dont have most of this, but lets hope it is normal text :-) */
--		case CODEC_ID_DVD_SUBTITLE:
--		case CODEC_ID_DVB_SUBTITLE:
--		case CODEC_ID_XSUB:
--		case CODEC_ID_MOV_TEXT:
--#if LIBAVCODEC_VERSION_INT > AV_VERSION_INT(56, 72, 2)      
--		case CODEC_ID_HDMV_PGS_SUBTITLE:
--#endif
--
--#if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(52,38,1)
--		case CODEC_ID_DVB_TELETEXT:
--#endif      
-+		case AV_CODEC_ID_TEXT: /* Hellmaster1024: i dont have most of this, but lets hope it is normal text :-) */
-+		case AV_CODEC_ID_DVD_SUBTITLE:
-+		case AV_CODEC_ID_DVB_SUBTITLE:
-+		case AV_CODEC_ID_XSUB:
-+		case AV_CODEC_ID_MOV_TEXT:
-+		case AV_CODEC_ID_HDMV_PGS_SUBTITLE:
-+		case AV_CODEC_ID_DVB_TELETEXT:
- 			return "S_TEXT/SRT"; /* fixme */
- 		
--#if LIBAVCODEC_VERSION_INT > AV_VERSION_INT(52, 72, 2)
--		case CODEC_ID_SRT:
-+		case AV_CODEC_ID_SRT:
- 			return "S_TEXT/SRT"; /* fixme */
--#endif 
- 
- 		default:
- 			if (codec->codec_type == AVMEDIA_TYPE_AUDIO)
-@@ -271,7 +248,6 @@
+ 		case AV_CODEC_ID_WMAV1:
+ 		case AV_CODEC_ID_WMAV2:
+ 		case 86056: //CODEC_ID_WMAPRO
+@@ -280,7 +264,6 @@
  			else
  				ffmpeg_err("ERROR! CODEC NOT FOUND -> %d\n",codec->codec_id);
  	}
@@ -564,7 +401,7 @@
  	return NULL;
  }
  
-@@ -332,28 +308,16 @@
+@@ -341,28 +324,16 @@
  /* search for metatdata in context and stream
   * and map it to our metadata.
   */
@@ -593,7 +430,7 @@
  			{
  				if (strcmp(tag->key, metadata_map[ i + 1 ]) == 0)
  				{
-@@ -494,11 +458,7 @@
+@@ -503,11 +474,7 @@
  			}
  			else
  			{
@@ -605,7 +442,7 @@
  				gotlastPts = 1;
  
  #ifndef use_sec_to_seek
-@@ -538,11 +498,7 @@
+@@ -547,11 +514,7 @@
  
  			int index = packet.stream_index;
  
@@ -617,29 +454,21 @@
  
  			if (context->manager->video->Command(context, MANAGER_GET_TRACK, &videoTrack) < 0)
  				ffmpeg_err("error getting video track\n");
-@@ -626,11 +582,7 @@
+@@ -657,13 +620,7 @@
  						{
  							int decoded_data_size = samples_size;
  
--#if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(52, 64, 0)
+-#if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(57, 1, 99)
+ 							bytesDone = avcodec_decode_audio4(( (AVStream*) audioTrack->stream)->codec, (short *)(samples), &decoded_data_size, &avpkt);
+-#elif LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(52, 64, 0)
 -							bytesDone = avcodec_decode_audio3(( (AVStream*) audioTrack->stream)->codec, (short *)(samples), &decoded_data_size, &avpkt);
 -#else
 -							bytesDone = avcodec_decode_audio2(( (AVStream*) audioTrack->stream)->codec, (short *)(samples), &decoded_data_size, avpkt.data, avpkt.size);
 -#endif
-+							bytesDone = avcodec_decode_audio4(( (AVStream*) audioTrack->stream)->codec, (short *)(samples), &decoded_data_size, &avpkt);
  
  							if(bytesDone < 0) // Error Happend
  							    break;
-@@ -735,7 +687,7 @@
- 						duration=((float)packet.duration)/1000.0;
- 					else if(packet.convergence_duration != 0 && packet.convergence_duration != AV_NOPTS_VALUE )
- 						duration=((float)packet.convergence_duration)/1000.0;		    
--					else if(((AVStream*)subtitleTrack->stream)->codec->codec_id == CODEC_ID_SSA)
-+					else if(((AVStream*)subtitleTrack->stream)->codec->codec_id == AV_CODEC_ID_SSA)
- 					{
- 						/*Hellmaster1024 if the duration is not stored in packet.duration or
- 						  packet.convergence_duration we need to calculate it any other way, for SSA it is stored in
-@@ -759,11 +711,7 @@
+@@ -793,11 +750,7 @@
  							AVSubtitle sub;
  							int got_sub_ptr;
  
@@ -651,18 +480,9 @@
  							{
  							    ffmpeg_err("error decoding subtitle\n");
  							} 
-@@ -793,7 +741,7 @@
- 							}
- 						}
- 						else
--						if(((AVStream*)subtitleTrack->stream)->codec->codec_id == CODEC_ID_SSA)
-+						if(((AVStream*)subtitleTrack->stream)->codec->codec_id == AV_CODEC_ID_SSA)
- 						{
- 							SubtitleData_t data;
- 
-@@ -893,19 +841,11 @@
- 	avcodec_register_all();
- 	av_register_all();
+@@ -930,19 +883,11 @@
+ 	ao_initialize();
+ #endif
  
 -#if LIBAVCODEC_VERSION_MAJOR < 54
 -	if ((err = av_open_input_file(&avContext, filename, NULL, 0, NULL)) != 0) 
@@ -680,7 +500,7 @@
  		//av_strerror(err, error, 512);
  		ffmpeg_err("Cause: %s\n", error);
  
-@@ -923,26 +863,16 @@
+@@ -960,26 +905,16 @@
  
  	ffmpeg_printf(20, "find_streaminfo\n");
  
@@ -707,7 +527,7 @@
  		releaseMutex(FILENAME, __FUNCTION__,__LINE__);
  		return cERR_CONTAINER_FFMPEG_STREAM;
  #endif
-@@ -950,11 +880,7 @@
+@@ -987,11 +922,7 @@
  
  	ffmpeg_printf(20, "dump format\n");
  
@@ -719,10 +539,10 @@
  
  	ffmpeg_printf(1, "number streams %d\n", avContext->nb_streams);
  
-@@ -977,11 +903,7 @@
- 
+@@ -1015,11 +946,7 @@
  		switch (stream->codec->codec_type) 
  		{
+ 			// video
 -#if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(52, 64, 0)	  
  			case AVMEDIA_TYPE_VIDEO:
 -#else
@@ -731,7 +551,7 @@
  			ffmpeg_printf(10, "CODEC_TYPE_VIDEO %d\n",stream->codec->codec_type);
  
  			if (encoding != NULL) 
-@@ -1055,11 +977,7 @@
+@@ -1093,11 +1020,7 @@
  			break;
  	    
  			// audio codec
@@ -743,7 +563,7 @@
  			ffmpeg_printf(10, "CODEC_TYPE_AUDIO %d\n",stream->codec->codec_type);
  
  			if (encoding != NULL) 
-@@ -1067,17 +985,9 @@
+@@ -1105,17 +1028,9 @@
  				track.type = eTypeES;
  				
  				// language description
@@ -762,7 +582,19 @@
  
  				if (lang)
  					track.Name = strdup(lang->value);
-@@ -1113,17 +1023,13 @@
+@@ -1148,11 +1063,7 @@
+ 
+ 				AVCodec *codec = avcodec_find_decoder(stream->codec->codec_id);
+ 
+-#if LIBAVCODEC_VERSION_MAJOR < 54
+-				if(codec != NULL && !avcodec_open(stream->codec, codec))
+-#else
+ 				if(codec != NULL && !avcodec_open2(stream->codec, codec, NULL))
+-#endif					  
+ 					printf("AVCODEC__INIT__SUCCESS\n");
+ 				else
+ 					printf("AVCODEC__INIT__FAILED\n");
+@@ -1166,11 +1077,7 @@
  
  					AVCodec *codec = avcodec_find_decoder(stream->codec->codec_id);
  
@@ -774,23 +606,7 @@
  						printf("AVCODEC__INIT__SUCCESS\n");
  					else
  						printf("AVCODEC__INIT__FAILED\n");
- 				}
- 				// aac
--				else if(stream->codec->codec_id == CODEC_ID_AAC) 
-+				else if(stream->codec->codec_id == AV_CODEC_ID_AAC) 
- 				{
- 					ffmpeg_printf(10,"Create AAC ExtraData\n");
- 					ffmpeg_printf(10,"stream->codec->extradata_size %d\n", stream->codec->extradata_size);
-@@ -1175,7 +1081,7 @@
- 					track.have_aacheader = 1;
- 				} 
- 				// wma
--				else if(stream->codec->codec_id == CODEC_ID_WMAV1 || stream->codec->codec_id == CODEC_ID_WMAV2 || 86056 ) //CODEC_ID_WMAPRO) //if (stream->codec->extradata_size > 0)
-+				else if(stream->codec->codec_id == AV_CODEC_ID_WMAV1 || stream->codec->codec_id == AV_CODEC_ID_WMAV2 || 86056 ) //AV_CODEC_ID_WMAPRO) //if (stream->codec->extradata_size > 0)
- 				{
- 					ffmpeg_printf(10,"Create WMA ExtraData\n");
- 					track.aacbuflen = 104 + stream->codec->extradata_size;
-@@ -1218,13 +1124,13 @@
+@@ -1272,7 +1179,7 @@
  					switch(stream->codec->codec_id) 
  					{
  						//TODO: What code for lossless ?
@@ -798,16 +614,8 @@
 +						case 86056/*AV_CODEC_ID_WMAPRO*/:
  							codec_id = WMA_VERSION_9_PRO;
  							break;
--						case CODEC_ID_WMAV2:
-+						case AV_CODEC_ID_WMAV2:
- 							codec_id = WMA_VERSION_2_9 ;
- 							break;
--						case CODEC_ID_WMAV1:
-+						case AV_CODEC_ID_WMAV1:
- 						default:
- 							codec_id = WMA_VERSION_1;
- 							break;
-@@ -1279,21 +1185,12 @@
+ 						case AV_CODEC_ID_WMAV2:
+@@ -1333,21 +1240,12 @@
  			break;
  	    
  			// subtitle
@@ -829,7 +637,7 @@
  
  				if (lang)
  					track.Name        = strdup(lang->value);
-@@ -1354,7 +1251,6 @@
+@@ -1408,7 +1306,6 @@
  			default:
  				ffmpeg_err("not handled or unknown codec_type %d\n", stream->codec->codec_type);
  				break;	 
@@ -837,7 +645,7 @@
  		} /* switch (stream->codec->codec_type) */
  
  	} /* for */
-@@ -1449,12 +1345,7 @@
+@@ -1510,12 +1407,7 @@
  
  	if (avContext != NULL) 
  	{
@@ -850,7 +658,7 @@
  	}
  
  	isContainerRunning = 0;
-@@ -1468,11 +1359,7 @@
+@@ -1537,11 +1429,7 @@
  static int container_ffmpeg_seek_bytes(off_t pos) 
  {
  	int flag = AVSEEK_FLAG_BYTE;
@@ -862,7 +670,7 @@
  
  	ffmpeg_printf(20, "seeking to position %lld (bytes)\n", pos);
  
-@@ -1485,11 +1372,7 @@
+@@ -1554,11 +1442,7 @@
  		return cERR_CONTAINER_FFMPEG_ERR;
  	}    
  
@@ -874,7 +682,7 @@
  
  	return cERR_CONTAINER_FFMPEG_NO_ERROR;
  }
-@@ -1499,11 +1382,7 @@
+@@ -1568,11 +1452,7 @@
  {
  	int flag = AVSEEK_FLAG_BYTE;
  	off_t newpos;
@@ -886,7 +694,7 @@
  
  	if (start == -1)
  		start = current_pos;
-@@ -1532,11 +1411,7 @@
+@@ -1601,11 +1481,7 @@
  		return cERR_CONTAINER_FFMPEG_ERR;
  	}    
  
@@ -898,7 +706,7 @@
  
  	return cERR_CONTAINER_FFMPEG_NO_ERROR;
  }
-@@ -1567,11 +1442,7 @@
+@@ -1636,11 +1512,7 @@
  
  	if (pos == -1)
  	{
@@ -910,7 +718,7 @@
  	}
  
  	if (pts == -1)
-@@ -1700,11 +1571,7 @@
+@@ -1769,11 +1641,7 @@
   * about 10 seconds, backward does not work.
   */
  
@@ -924,358 +732,33 @@
  
 --- neutrino-hd2.org/src/driver/rcinput.h
 +++ neutrino-hd2/src/driver/rcinput.h
-@@ -1,6 +1,6 @@
- /*
- 	Neutrino-GUI  -   DBoxII-Project
--	
-+
- 	$Id: rcinput.h 2013/10/12 mohousch Exp $
- 
- 	Copyright (C) 2001 Steffen Hehn 'McClean'
-@@ -84,48 +84,48 @@
+@@ -84,7 +84,7 @@
  #define KEY_GAMES        0x1a1
  #endif
  
 -// this values are token from cuberevo3000hd
--#ifndef KEY_PIP	
 +// these values are taken from cuberevo3000hd
-+#ifndef KEY_PIP
- #define KEY_PIP		0x041
+ #ifndef KEY_PIP	
+ #define KEY_PIP	0x041
  #endif
+@@ -168,7 +168,8 @@
  
--#ifndef KEY_PIPPOS	
-+#ifndef KEY_PIPPOS
- #define KEY_PIPPOS	0x0BE
- #endif
- 
--#ifndef KEY_PIPSWAP 
-+#ifndef KEY_PIPSWAP
- #define KEY_PIPSWAP	0x0BF
- #endif
- 
--#ifndef __KEY_PIPSUBCH	
-+#ifndef __KEY_PIPSUBCH
- #define KEY_PIPSUBCH	0x0C0
- #endif
- 
--#ifndef KEY_BOOKMARK	
-+#ifndef KEY_BOOKMARK
- #define	KEY_BOOKMARK	0x03f
- #endif
- 
--#ifndef KEY_MUSIC	
-+#ifndef KEY_MUSIC
- #define KEY_MUSIC	0x0c1
- #endif
- 
--#ifndef KEY_PICTURE	
-+#ifndef KEY_PICTURE
- #define KEY_PICTURE	0x03e
- #endif
- 
--#ifndef KEY_REPEAT	
-+#ifndef KEY_REPEAT
- #define	KEY_REPEAT	0x040
- #endif
- 
--#ifndef KEY_SLOW	
-+#ifndef KEY_SLOW
- #define KEY_SLOW	0x199
- #endif
- 
--#ifndef KEY_MULTFEED	
-+#ifndef KEY_MULTFEED
- #define KEY_MULTIFEED	0x0bd
- #endif
- 
--#ifndef KEY_DVBSUB	
-+#ifndef KEY_DVBSUB
- #define KEY_DVBSUB	0x172
- #endif
- 
-@@ -146,59 +146,60 @@
- //
- enum
- {
--	RC_0		= KEY_0,	    
--	RC_1		= KEY_1,	    
--	RC_2		= KEY_2,	    
--	RC_3		= KEY_3,	    
--	RC_4		= KEY_4,	    
--	RC_5		= KEY_5,	    
--	RC_6		= KEY_6,	    
--	RC_7		= KEY_7,	    
--	RC_8		= KEY_8,	    
-+	RC_0		= KEY_0,
-+	RC_1		= KEY_1,
-+	RC_2		= KEY_2,
-+	RC_3		= KEY_3,
-+	RC_4		= KEY_4,
-+	RC_5		= KEY_5,
-+	RC_6		= KEY_6,
-+	RC_7		= KEY_7,
-+	RC_8		= KEY_8,
- 	RC_9		= KEY_9,
--	    		
--	RC_up		= KEY_UP,	    
--	RC_left		= KEY_LEFT,	    
--	RC_right	= KEY_RIGHT,	    
--	RC_down		= KEY_DOWN,	    		
--	RC_spkr		= KEY_MUTE,	   		
--	RC_minus        = KEY_VOLUMEDOWN,   
--	RC_plus         = KEY_VOLUMEUP,     
--
--	RC_standby	= KEY_POWER,	    
--			
+ 	RC_standby	= KEY_POWER,	    
+ 			
 -	RC_home         = KEY_HOME,         
--	RC_setup	= KEY_MENU,	    
--			
--	RC_page_up	= KEY_PAGEUP,	   
--	RC_page_down	= KEY_PAGEDOWN,	    
--			
--	RC_ok		= KEY_OK,	    
--			
--	RC_red		= KEY_RED,	    
--	RC_green	= KEY_GREEN,	    
--	RC_yellow	= KEY_YELLOW,	    
--	RC_blue		= KEY_BLUE,	    
-+	    
-+	RC_up		= KEY_UP,
-+	RC_left		= KEY_LEFT,
-+	RC_right	= KEY_RIGHT,
-+	RC_down		= KEY_DOWN,	    
-+	RC_spkr		= KEY_MUTE,	   
-+	RC_minus        = KEY_VOLUMEDOWN,
-+	RC_plus         = KEY_VOLUMEUP,
-+
-+	RC_standby	= KEY_POWER,
-+
 +	RC_home         = KEY_HOME,  // most receivers use this for EXIT
 +	RC_exit         = KEY_EXIT,  // but some use this
-+	RC_setup	= KEY_MENU,
-+
-+	RC_page_up	= KEY_PAGEUP,
-+	RC_page_down	= KEY_PAGEDOWN,
-+
-+	RC_ok		= KEY_OK,
-+
-+	RC_red		= KEY_RED,
-+	RC_green	= KEY_GREEN,
-+	RC_yellow	= KEY_YELLOW,
-+	RC_blue		= KEY_BLUE,
- 
- 	RC_audio	= KEY_AUDIO,		/* 0x188 */
- 	RC_video	= KEY_VIDEO,		/* 0x189 */
--			
-+
- 	RC_text		= KEY_TEXT,		/* 0x184 */
--	RC_info		= KEY_INFO,		/* 0x166 */			
-+	RC_info		= KEY_INFO,		/* 0x166 */
- 	RC_epg		= KEY_EPG,		/* 0x16d */
- 	RC_recall 	= KEY_BACK,		/* 0x9E */
- 	RC_favorites	= KEY_FAVORITES,	/* 0x16c */
- 	RC_sat		= KEY_SAT,		/* 0x17d */
--			
-+
- 	RC_record	= KEY_RECORD,		/* 0xA7 */
- 	RC_play		= KEY_PLAY,		/* 0xCF */
- 	RC_pause	= KEY_PAUSE,		/* 0x77 */
- 	RC_forward	= KEY_FASTFORWARD,	/* 0xD0 */
- 	RC_rewind	= KEY_REWIND,		/* 0xA8 */
- 	RC_stop		= KEY_STOP,		/* 0x80 */
--			
-+
- 	RC_timeshift	= KEY_TIME,		/* 0x167 */
--						
-+
- 	RC_mode		= KEY_MODE,		/* 0x175 */
- 
- 	RC_next		= 0xFFFFFFF0,
-@@ -206,11 +207,11 @@
- 
- 	/* added from cuberevo3000hd so fix it please */
- 	RC_music	= KEY_MUSIC,
--	RC_picture	= KEY_ARCHIVE,			
--			
-+	RC_picture	= KEY_ARCHIVE,
-+
- 	RC_loop		= KEY_REPEAT,
- 	RC_slow		= KEY_SLOW,
--			
-+
- 	RC_dvbsub	= KEY_DVBSUB,
- 
- 	RC_pip		= KEY_PIP,
-@@ -227,7 +228,7 @@
- 	RC_f2		= KEY_F2,
- 	RC_f3		= KEY_F3,
- 	RC_f4		= KEY_F4,
--			
-+
- 	//RC_aspect	= 0x40,
- 
- 	/* frontpanel */
-@@ -288,7 +289,7 @@
- 		int fd_keyb;
- 		int fd_event;
- 		int fd_max;
--		
-+
- 		__u16 rc_last_key;
- 
- 		void open();
-@@ -299,7 +300,7 @@
- 
- 		int checkTimers();
- 
--	public:		
-+	public:
- 		CConfigFile	configfile;
- 
- 		neutrino_msg_t key_0;
-@@ -312,26 +313,27 @@
- 		neutrino_msg_t key_7;
- 		neutrino_msg_t key_8;
- 		neutrino_msg_t key_9;
--			
-+
- 		neutrino_msg_t key_up;
- 		neutrino_msg_t key_left;
- 		neutrino_msg_t key_right;
- 		neutrino_msg_t key_down;
--			
-+
- 		neutrino_msg_t key_spkr;
--						
-+
- 		neutrino_msg_t key_minus;
--		neutrino_msg_t key_plus;			
-+		neutrino_msg_t key_plus;
+ 	RC_setup	= KEY_MENU,	    
+ 			
+ 	RC_page_up	= KEY_PAGEUP,	   
+@@ -324,6 +325,7 @@
  
  		neutrino_msg_t key_standby;
  		neutrino_msg_t key_home;
--		neutrino_msg_t key_setup;				
--			
 +		neutrino_msg_t key_exit;
-+		neutrino_msg_t key_setup;
-+
+ 		neutrino_msg_t key_setup;				
+ 			
  		neutrino_msg_t key_page_up;
--		neutrino_msg_t key_page_down;			
--			
-+		neutrino_msg_t key_page_down;
-+
- 		neutrino_msg_t key_ok;
--			
-+
- 		neutrino_msg_t key_red;
- 		neutrino_msg_t key_green;
- 		neutrino_msg_t key_yellow;
-@@ -339,39 +341,39 @@
- 
- 		neutrino_msg_t key_audio;
- 		neutrino_msg_t key_video;
--			
-+
- 		neutrino_msg_t key_text;
- 
--		neutrino_msg_t key_info;				
--			
-+		neutrino_msg_t key_info;
-+
- 		neutrino_msg_t key_epg;
--			
--		neutrino_msg_t key_recall;		
-+
-+		neutrino_msg_t key_recall;
- 
- 		neutrino_msg_t key_favorites;
- 
- 		neutrino_msg_t key_sat;
--			
-+
- 		neutrino_msg_t key_record;
- 		neutrino_msg_t key_play;
- 		neutrino_msg_t key_pause;
- 		neutrino_msg_t key_forward;
- 		neutrino_msg_t key_rewind;
- 		neutrino_msg_t key_stop;
--			
-+
- 		neutrino_msg_t key_timeshift;
--						
--		neutrino_msg_t key_mode;			
-+
-+		neutrino_msg_t key_mode;
- 
- 		neutrino_msg_t key_next;
--		neutrino_msg_t key_prev;			
-+		neutrino_msg_t key_prev;
- 
- 		//
- 		neutrino_msg_t key_music;
--		neutrino_msg_t key_picture;	
-+		neutrino_msg_t key_picture;
- 		neutrino_msg_t key_repeat;
- 		neutrino_msg_t key_slow;
--			
-+
- 		neutrino_msg_t key_dvbsub;
- 
- 		neutrino_msg_t key_pip;
-@@ -379,17 +381,17 @@
- 		neutrino_msg_t key_pipswap;
- 		neutrino_msg_t key_pipsubch;
- 
--		neutrino_msg_t key_net;	
-+		neutrino_msg_t key_net;
- 		neutrino_msg_t key_bookmark;
- 		neutrino_msg_t key_multifeed;
--					
-+
- 		neutrino_msg_t key_f1;
- 		neutrino_msg_t key_f2;
- 		neutrino_msg_t key_f3;
- 		neutrino_msg_t key_f4;
--		
-+
- 		//neutrino_msg_t key_aspect;
--			
-+
- 		neutrino_msg_t key_vfdup;
- 		neutrino_msg_t key_vfddown;
- 		neutrino_msg_t key_vfdright;
-@@ -398,18 +400,18 @@
- 		neutrino_msg_t key_vfdmenu;
- 		neutrino_msg_t key_vfdexit;
- 		neutrino_msg_t key_vfdok;
--		
-+
- 		bool loadKeyMap(const char * const fileName);
- 		bool saveKeyMap(const char * const fileName);
--		
-+
- 		void stopInput();
- 		void restartInput();
- 
- 		uint64_t repeat_block;
- 		uint64_t repeat_block_generic;
--		
-+
- 		void setRepeat(unsigned int delay, unsigned int period);
--		
-+
- 		CRCInput();      //constructor - opens rc-device and starts needed threads
- 		~CRCInput();     //destructor - closes rc-device
- 
-@@ -471,7 +473,7 @@
- 		* @return the last key calculated by #handleMsg(neutrino_msg_t)
- 		*/
- 		unsigned char getOldKey() const;
--		
-+
- 		/**
- 		* Returns time of last key push.
- 		* resolution: usecs
 --- neutrino-hd2.org/src/driver/rcinput.cpp
 +++ neutrino-hd2/src/driver/rcinput.cpp
 @@ -115,6 +115,7 @@
@@ -1296,14 +779,14 @@
  				
 @@ -557,7 +559,7 @@
  	{
- 		g_RCInput->getMsgAbsoluteTimeout( &msg, &data, &timeoutEnd );
+ 		g_RCInput->getMsgAbsoluteTimeout(&msg, &data, &timeoutEnd);
  
 -		if ( ( msg == RC_timeout ) || ( msg == RC_home ) || ( msg == RC_ok ) )
 +		if ( ( msg == RC_timeout ) || ( msg == RC_home ) || ( msg == RC_exit ) || ( msg == RC_ok ) )
  		{
  			doLoop = false;
  		}
-@@ -1653,6 +1655,9 @@
+@@ -1636,6 +1638,9 @@
  		case RC_home:
  			return "RC_home";
  
@@ -1313,7 +796,7 @@
  		case RC_setup:
  			return "RC_setup";
  
-@@ -1879,6 +1884,7 @@
+@@ -1862,6 +1867,7 @@
  	else if (code == key_down) return RC_down;
  	else if (code == key_right) return RC_right;
  	else if (code == key_home) return RC_home;
@@ -1321,14 +804,14 @@
  			
  	/* special */
  	else if (code == key_recall) return RC_recall;
---- nhd2-exp.org/src/neutrino.h
-+++ nhd2-exp/src/neutrino.h
-@@ -213,13 +213,13 @@
+--- neutrino2.org/src/neutrino.h
++++ neutrino2/src/neutrino.h
+@@ -262,13 +262,13 @@
  		void lockPlayBack(void);
  		void unlockPlayBack(void);
  		
 -		// 0 - restart 
--		// 1 - halt
+-		// 1 - shutdown
 -		// 2 - reboot
 +		// 0 - halt
 +		// 1 - reboot
@@ -1342,7 +825,7 @@
 +			RESTART
  		};
  		
- 		void ExitRun(int retcode = SHUTDOWN);
+ 		void ExitRun(int retcode = SHUTDOWN, bool save = true);
 #--- neutrino-hd2.org/src/neutrino.cpp
 #+++ neutrino-hd2.git/nhd2-exp/src/neutrino.cpp
 #@@ -464,11 +464,11 @@
@@ -1361,8 +844,8 @@
 # 	prev_video_Mode = g_settings.video_Mode;
 # 	
 # 	//analog mode
---- nhd2-exp.org/src/driver/vfd.h
-+++ nhd2-exp/src/driver/vfd.h
+--- neutrino2.org/src/driver/vfd.h
++++ neutrino2/src/driver/vfd.h
 @@ -37,11 +37,31 @@
  #include <cs_vfd.h>
  #endif
@@ -1956,8 +1439,8 @@
  	unsigned char start_address;
  	unsigned char data[64];
  	unsigned char length;
---- nhd2-exp.org/src/driver/vfd.cpp
-+++ nhd2-exp/src/driver/vfd.cpp
+--- neutrino2.org/src/driver/vfd.cpp
++++ neutrino2/src/driver/vfd.cpp
 @@ -47,15 +47,30 @@
  
  
@@ -2061,7 +1544,7 @@
  	closeDevice();
  #elif defined (PLATFORM_COOLSTREAM)
  	int ret = ioctl(fd, IOC_VFD_SET_BRIGHT, dimm);
-@@ -342,14 +367,23 @@
+@@ -356,14 +381,23 @@
  			{
  				hour = t->tm_hour;
  				minute = t->tm_min;
@@ -2088,7 +1571,7 @@
  	}
  
  	if (CNeutrinoApp::getInstance()->recordingstatus) 
-@@ -408,25 +442,106 @@
+@@ -446,25 +480,106 @@
  	switch(m) 
  	{
  		case AUDIO_MODE_PLAY:
@@ -2204,34 +1687,33 @@
  	}
  
  	wake_up();
-@@ -450,34 +565,41 @@
- 
+@@ -489,27 +604,35 @@
  	switch (m) 
  	{
--		case MODE_TVRADIO:	
-+		case MODE_TVRADIO:
-+		{	
- 			showServicename(servicename);
+ 		case MODE_TVRADIO:	
++		{
+ 			showServicename(servicename, true, serviceNum);
+ 			
  #if !defined(PLATFORM_SPARK7162)			
  			ShowIcon(VFD_ICON_MP3, false);	        // NOTE: @dbo  //ICON_MP3 and ICON_DOLBY switched in infoviewer 
  #endif			
  	
 -#if defined (PLATFORM_KATHREIN)
-+#if defined(PLATFORM_KATHREIN) || defined(BOXMODEL_HS9510)
++#if defined (PLATFORM_KATHREIN) || defined(BOXMODEL_HS9510)
  			ShowIcon(VFD_ICON_USB, usb_icon);	
  			ShowIcon(VFD_ICON_HDD, hdd_icon);	
  #elif defined(PLATFORM_SPARK7162)
  			ShowIcon(VFD_ICON_USB, usb_icon);	
  			ShowDiskLevel();
  			ShowIcon(VFD_ICON_STANDBY, false);	
--#endif
 +#elif defined(BOXMODEL_FS9000) || defined(BOXMODEL_HS8200)
 +			ShowIcon(VFD_ICON_USB, usb_icon);	
 +			ShowIcon(VFD_ICON_STANDBY, false);	
- 			showclock = true;
++ 			showclock = true;
 +#elif defined(BOX_MODEL_ADB_BOX)
 +			ShowIcon(VFD_ICON_USB, usb_icon);	
-+#endif
+ #endif
+ 			showclock = true;
  			//showTime();      /* "showclock = true;" implies that "showTime();" does a "displayUpdate();" */			
  			break;
 -
@@ -2244,15 +1726,7 @@
  			ShowIcon(VFD_ICON_AC3, false);			
  #endif		  
  			ShowIcon(VFD_ICON_MP3, true);			
- 			ShowIcon(VFD_ICON_TV, false);			
- 			showAudioPlayMode(AUDIO_MODE_STOP);			
- 			showclock = true;
--#if !defined (PLATFORM_COOLSTREAM)			
-+#if !defined(PLATFORM_COOLSTREAM)			
- 			ShowIcon(VFD_ICON_LOCK, false);
- #endif			
- 			ShowIcon(VFD_ICON_HD, false);
-@@ -485,21 +607,23 @@
+@@ -524,21 +647,23 @@
  			//showTime();      /* "showclock = true;" implies that "showTime();" does a "displayUpdate();" */
  			break;
  		}
@@ -2279,9 +1753,9 @@
  			//Clear();
  			/* clear all symbols */
  			ClearIcons();
-@@ -508,8 +632,9 @@
- #endif			
- 			showclock = false;
+@@ -551,8 +676,9 @@
+ 			ShowText((char *) "BYE");
+ 			
  			break;
 -
 +		}
@@ -2290,12 +1764,12 @@
  			ShowIcon(VFD_ICON_TV, false);
  			ClearIcons();
  #if defined(PLATFORM_SPARK7162)
-@@ -519,25 +644,29 @@
+@@ -563,21 +689,23 @@
  			showTime(true);      	/* "showclock = true;" implies that "showTime();" does a "displayUpdate();" */
  						/* "showTime()" clears the whole lcd in MODE_STANDBY */
  			break;
 -		
-+		}
++		}		
  		case MODE_PIC:	  
 +		{
  			ShowIcon(VFD_ICON_TV, false);			
@@ -2311,19 +1785,14 @@
  			ShowIcon(VFD_ICON_TV, false);			
  			showclock = false;
  			break;
--			
+-	}
+-
 +		}
- 		case MODE_WEBTV: 
-+		{
- 			showServicename(servicename);
- 			ShowIcon(VFD_ICON_TV, false);			
- 			showclock = false;
- 			break;
-+		}
- 	}
- 
++	}
  	wake_up();
-@@ -587,13 +716,32 @@
+ }
+ 
+@@ -625,13 +753,32 @@
  
  #if defined (__sh__)
  	struct vfd_ioctl_data data;
@@ -2361,7 +1830,7 @@
  	closeDevice();
  #endif
  }
-@@ -656,22 +804,25 @@
+@@ -694,22 +841,25 @@
  #if defined (ENABLE_4DIGITS)
  	ShowText("     "); // 5 empty digits
  #elif defined (__sh__)
@@ -2397,7 +1866,7 @@
  #elif (PLATFORM_COOLSTREAM)
  	int ret = ioctl(fd, IOC_VFD_CLEAR_ALL, 0);
  	if(ret < 0)
-@@ -683,20 +834,57 @@
+@@ -721,20 +871,57 @@
  #endif
  }
  
@@ -2458,7 +1927,7 @@
  	int i;
  	struct vfd_ioctl_data data;
  	
-@@ -707,19 +895,21 @@
+@@ -745,19 +932,21 @@
  		data.data[0] = i;
  		data.data[4] = 0;
  		
@@ -2483,7 +1952,7 @@
  	int percent, digits, i, j;
  	uint64_t t, u;
  	
-@@ -752,13 +942,18 @@
+@@ -790,13 +979,18 @@
  
  void CVFD::ShowIcon(vfd_icon icon, bool show)
  {
@@ -2504,7 +1973,7 @@
  	switch (icon)
  	{
  		case VFD_ICON_USB:
-@@ -767,31 +962,53 @@
+@@ -805,31 +999,53 @@
  		case VFD_ICON_CLOCK:
  			timer_icon = show;
  			break;
@@ -2565,7 +2034,7 @@
  	struct vfd_ioctl_data data;
  
  	data.data[0] = (icon - 1) & 0x1F;
-@@ -799,7 +1016,7 @@
+@@ -837,7 +1053,7 @@
  	
  	if( ioctl(fd, VFDICONDISPLAYONOFF, &data) < 0)
  		perror("VFDICONDISPLAYONOFF");
@@ -2574,7 +2043,7 @@
  	closeDevice();
  #elif defined (PLATFORM_COOLSTREAM)
  	int ret = ioctl(fd, show ? IOC_VFD_SET_ICON : IOC_VFD_CLEAR_ICON, icon);
-@@ -816,11 +1033,20 @@
+@@ -854,11 +1070,20 @@
  	dprintf(DEBUG_INFO, "CVFD::ShowText: [%s]\n", str);
  
  	int len = strlen(str);
@@ -2598,7 +2067,7 @@
  	// replace
  	std::string text = str;
  
-@@ -839,32 +1065,43 @@
+@@ -877,32 +1102,43 @@
  	 
  #if defined (__sh__)	 
  	openDevice();
@@ -2666,7 +2135,7 @@
  #endif	
  }
  
-@@ -919,7 +1156,11 @@
+@@ -957,7 +1193,11 @@
  	
  	dprintf(DEBUG_NORMAL, "CVFD::vfd_symbol_circle: %s\n", VFDCIRCLE[cir]);
  	
@@ -2679,7 +2148,7 @@
  	FILE *f;
  	if((f = fopen("/proc/stb/lcd/symbol_circle","w")) == NULL) 
  	{
-@@ -949,14 +1190,14 @@
+@@ -987,14 +1227,14 @@
  	timebuf[2]=now->tm_hour;
  	timebuf[3]=now->tm_mday;
  	timebuf[4]=now->tm_mon+1;
@@ -2695,14 +2164,9 @@
 +		perror("VFDSETTIME");
  	
  	closeDevice();
- #endif
-@@ -973,3 +1214,4 @@
- 		ShowText(tmp); // UTF-8
- 	}
- }
-+// vim:ts=4
---- nhd2-exp.org/src/nhttpd/tuxboxapi/neutrinoyparser.cpp
-+++ nhd2-exp/src/nhttpd/tuxboxapi/neutrinoyparser.cpp
+ #else	
+--- neutrino2.org/src/nhttpd/tuxboxapi/neutrinoyparser.cpp
++++ neutrino2/src/nhttpd/tuxboxapi/neutrinoyparser.cpp
 @@ -671,14 +671,40 @@
  std::string  CNeutrinoYParser::func_get_boxtype(CyhookHandler *, std::string)
  {
@@ -2752,383 +2216,15 @@
  #elif defined (BOXMODEL_AZBOXHD)
  	return "azboxhd";
  #elif defined (BOXMODEL_AZBOXME)
---- nhd2-exp.org/data/locale/english.locale
-+++ nhd2-exp/data/locale/english.locale
-@@ -20,17 +20,17 @@
- audiomenu.monoright mono right
- audiomenu.ost ost
- audiomenu.PCMOffset Volume Decrease PCM
--audiomenu.spdif_dd DD on SPDIF
-+audiomenu.spdif_dd DD on SP/DIF
- audiomenu.stereo stereo
- audiomenu.ac3_delay AC3 Delay
- audiomenu.pcm_delay PCM Delay
- audiomenu.volume_adjust Volume adjustment (in %)
- audiomenu.auto_lang Auto select audio
- audiomenu.auto_subs Auto select subtitles
--audiomenu.pref_lang Prefered language
-+audiomenu.pref_lang Preferred language
- audiomenu.pref_lang_head Audio language preferences
- audiomenu.pref_languages Language preferences
--audiomenu.pref_subs Prefered subtitle language
-+audiomenu.pref_subs Preferred subtitle language
- audiomenu.pref_subs_head Subtitle language preferences
- audioplayer.add Add
- audioplayer.add_ic Icecast
-@@ -85,14 +85,14 @@
- bookmarkmanager.rename rename
- bookmarkmanager.select select
- bouqueteditor.add Add
--bouqueteditor.bouquetname Name of bouquets
-+bouqueteditor.bouquetname Name of bouquet
- bouqueteditor.delete Delete
- bouqueteditor.discardingchanges Discarding changes. Please be patient.
- bouqueteditor.hide Hide
- bouqueteditor.lock Lock
- bouqueteditor.move Move
- bouqueteditor.name Bouquet Editor
--bouqueteditor.newbouquetname New name of bouquets
-+bouqueteditor.newbouquetname New name of bouquet
- bouqueteditor.rename Rename
- bouqueteditor.return ready
- bouqueteditor.savechanges? Do you want to save the changes?
-@@ -120,7 +120,7 @@
- channellist.history History
- channellist.make_hdlist Create list of HD channels
- channellist.ca Display Icons
--channellist.nonefound No channels were found!\nPlease execute a scan\n(MENU-key -> service)
-+channellist.nonefound No channels were found!\nPlease execute a scan\n(MENU-key -> Service)
- channellist.provs Providers
- channellist.sats Satellites
- channellist.since since %02d:%02d
-@@ -157,8 +157,8 @@
- colorthememenu.save Save current theme
- colorthememenu.select1 User Theme
- colorthememenu.select2 Standard Theme
--colormenu.head_title Head info
--colormenu.foot_title Foot info
-+colormenu.head_title Header info
-+colormenu.foot_title Footer info
- cpu.freq Cpu frequency
- cpu.freq_default default frequency
- cpu.freq_normal Normal frequency
-@@ -260,8 +260,8 @@
- extra.auto_timeshift Permanent timeshift
- extra.auto_to_record Move timeshift to records
- extra.cache_txt Cache teletext
--extra.chadded The current channel has been added to selected bouquet....\n
--extra.chalreadyinbq The current channel is already in selected bouquet....\n
-+extra.chadded The current channel has been added to selected bouquet...\n
-+extra.chalreadyinbq The current channel is already in selected bouquet...\n
- extra.clear_log Clear Log
- extra.dboxinfo Box Info
- extra.east East
-@@ -360,7 +360,7 @@
- extra.zapit_backup Backup channels to /tmp
- extra.zapit_fast_zap fast zap
- extra.zapit_fe_timeout Tune timeout
--extra.zapit_hvoltage High (13.5/18.5) voltage
-+extra.zapit_hvoltage High voltage (13.5/18.5V)
- extra.zapit_make_bouquet Make Remaining Channels list
- extra.zapit_menu Zapit options
- extra.zapit_motor_speed Motor moving speed (10 = 1deg/sec)
-@@ -379,7 +379,7 @@
- favorites.chadded The current channel has been added to your favorites...\n
- favorites.chalreadyinbq The current channel is already in your favorites...\n
- favorites.copy Copy bouquet to Favorites
--favorites.finalhint \nUse the bouqueteditor to modify your favorites.\n
-+favorites.finalhint \nUse the bouquet editor to modify your favorites.\n
- favorites.menueadd add channel to my favorites
- favorites.nobouquets Favorites are available with activated Bouquets only.
- filebrowser.delete Delete
-@@ -430,7 +430,7 @@
- flashupdate.packagemd5sumerror package has errors
- flashupdate.flashmsgbox Found the following new image:\nDate: %s, %s\nBaseImage: %s\nImageType: %s\n\nDo you want to install this version now?
- flashupdate.packagemsgbox Found the following new package:\nPackage: %s\nDate: %s, %s\nBaseImage: %s\nType: %s\n\nDo you want to download and install this version now?
--flashupdate.mtdselector Partition-Selector
-+flashupdate.mtdselector Partition Selector
- flashupdate.programmingflash programming flash
- flashupdate.proxypassword Password
- flashupdate.proxypassword_hint1 enter the proxyserver password
-@@ -453,7 +453,7 @@
- flashupdate.titlewriteflash Writing Flash
- flashupdate.updatemode Updatemode
- flashupdate.updatemode_internet Online Software Manager
--flashupdate.updatemode_manual Manuell(ftp) Software Manager
-+flashupdate.updatemode_manual Manual (FTP) Software Manager
- flashupdate.url_file Software update URL
- flashupdate.versioncheck checking version
- flashupdate.writeflash Write whole image
-@@ -472,8 +472,8 @@
- fontmenu.scaling Global Font Zoom Factor
- fontmenu.scaling_x Horizontal (in %)
- fontmenu.scaling_x_hint2 Horizontal (in %) min 50 / max 200
--fontmenu.scaling_y Vertikal (in %)
--fontmenu.scaling_y_hint2 Vertikal (in %) min 50 / max 200
-+fontmenu.scaling_y Vertical (in %)
-+fontmenu.scaling_y_hint2 Vertical (in %) min 50 / max 200
- fontmenu.font_contrast Contrast fonts
- fontsize.channel_num_zap direct selection
- fontsize.channellist Channellist
-@@ -589,17 +589,17 @@
- hdd_fast Fast
- hdd_format Format HDD
- hdd_format_failed HDD format failed !
--hdd_format_warn Are you sure to format ? You will lost all data !
--hdd_init_failed HDD init failed !
-+hdd_format_warn Are you sure to format ? You will lose all data !
-+hdd_init_failed HDD initialise failed !
- hdd_fs Filesystem
- hdd_manage Manage
- hdd_middle Middle
- hdd_noise Noise
- hdd_not_found No HDD found
- hdd_init HDD Init
--hdd_init_warn Are you sure to init ?
-+hdd_init_warn Are you sure to initialise ?
- hdd_browser HDD Explorer
--hdd_reiser Reiserfs
-+hdd_reiser Reiser fs
- hdd_settings HDD Settings
- hdd_sleep Sleep time
- hdd_slow Slow
-@@ -615,7 +615,7 @@
- imageinfo.version Version:
- imageinfo.type Type:
- inetradio.name Internetradio
--infoviewer.epgnotload EPG not loaded....
-+infoviewer.epgnotload EPG not loaded...
- infoviewer.epgwait waiting for EPG...
- infoviewer.eventlist Event-List
- infoviewer.languages Audio
-@@ -629,7 +629,7 @@
- infoviewer.features Features
- infoviewer.subchan_disp_pos Subchannel display
- infoviewer.subservice Subservices
--infoviewer.waittime Waiting for time...
-+infoviewer.waittime Waiting for timeinfo...
- ipsetup.hint_1 Use 0..9, or use Up/Down,
- ipsetup.hint_2 OK saves, HOME! aborts
- keybindingmenu.addrecord Add record timer
-@@ -756,7 +756,7 @@
- miscsettings.channellist_epgtext_align Programtext Align
- miscsettings.driver_boot driver and boot options
- miscsettings.epg_cache EPG-Cache (Days)
--miscsettings.epg_cache_hint1 How long will EPG-Data in the future cached?
-+miscsettings.epg_cache_hint1 How long will futue EPG-Data be cached?
- miscsettings.epg_cache_hint2 Set in days.
- miscsettings.epg_dir EPG save path
- miscsettings.epg_extendedcache EPG Long Description (hours)
-@@ -766,8 +766,8 @@
- miscsettings.epg_max_events Max. Events
- miscsettings.epg_max_events_hint1 How many events should be stored?
- miscsettings.epg_max_events_hint2 normaly 50000, 0 to disable limit
--miscsettings.epg_old_events EPG remove after (std.)
--miscsettings.epg_old_events_hint1 How long will EPG-Data be stored after they timed out?
-+miscsettings.epg_old_events EPG remove after (hrs.)
-+miscsettings.epg_old_events_hint1 How long will EPG-Data be stored after it times out?
- miscsettings.epg_old_events_hint2 Set in hours
- miscsettings.epg_read Restore EPG on boot
- miscsettings.epg_save Save/Restore epg on reboot
-@@ -873,7 +873,7 @@
- moviebrowser.info_filename Name
- moviebrowser.info_genre_major Genre
- moviebrowser.info_genre_minor Genre
--moviebrowser.info_head Film Informationen
-+moviebrowser.info_head Film Information
- moviebrowser.info_head_update Save changes in all movie info files
- moviebrowser.info_info1 Info 1
- moviebrowser.info_info2 Info 2
-@@ -915,7 +915,7 @@
- moviebrowser.reload_at_start Reload movie info at start
- moviebrowser.remount_at_start Remount at start
- moviebrowser.next_focus next focus
--moviebrowser.scan_for_movies Scan for Movies ...
-+moviebrowser.scan_for_movies Scan for Movies...
- moviebrowser.prefer_tmdb_info prefer TMDB infos
- moviebrowser.serie_auto_create Serie auto create
- moviebrowser.serie_head Serie
-@@ -956,8 +956,8 @@
- movieplayer.vlcplayback VLC Player
- movieplayer.vlcdvdplayback VLC (DVD) Player
- movieplayer.vlcsvcdplayback VLC (SVCD) Player
--movieplayer.records Records Player
--movieplayer.movies Movies Player
-+movieplayer.records Recordings Player
-+movieplayer.movies Movie Player
- movieplayer.fileplayback Media Player
- movieplayer.showtshelp Help
- movieplayer.goto Jump to ...
-@@ -998,7 +998,7 @@
- movieplayer.vlchelp7 skip approx. 1 minute
- movieplayer.vlchelp8 approx. 5 minutes back
- movieplayer.vlchelp9 skip approx. 5 minutes
--movieplayer.wrongvlcversion This feature is not support by your current version of VLC
-+movieplayer.wrongvlcversion This feature is not supported by your current version of VLC
- mpkey.audio Audio track
- mpkey.bookmark Save bookmark
- mpkey.forward Forward
-@@ -1056,7 +1056,7 @@
- nfs.umount Umount Network volume
- nfs.umounterror error umounting volume
- nfs.username username
--nfsmenu.head Network Mount Manager
-+nfsmenu.head Network mount manager
- nvod.percentage (%d%% over)
- nvod.starting (starting in %d min)
- nvodselector.directormode Direct-Mode
-@@ -1126,8 +1126,8 @@
- ping.protocol is unreachable (host or protocol error)
- ping.socket is unreachable (socket error)
- ping.unreachable is unreachable
--pinprotection.head Enter PIN code
--pinprotection.wrongcode PIN-Code was wrong! Try again.
-+pinprotection.head Enter PIN
-+pinprotection.wrongcode PIN was wrong! Try again.
- plugins.notinstalled is not installed please install again.
- plugins.result plugin output
- pluginlist.remove_plugin remove
-@@ -1135,7 +1135,7 @@
- rclock.lockmsg Your box remote control will be locked.\n To unlock it, press <RED> \n and <MENU> on your remote control.
- rclock.menueadd Lock RC
- rclock.title Lock Remote Control
--rclock.unlockmsg Remote control reactivated.
-+rclock.unlockmsg Remote control reactivated
- recordingmenu.apids default audio streams
- recordingmenu.apids_ac3 Record AC3 streams
- recordingmenu.apids_alt Record alternative streams
-@@ -1147,7 +1147,7 @@
- recordingmenu.filesettings direct Recording settings
- recordingmenu.head Recording Settings
- recordingmenu.help Recording devices:\n--------------------------\nserver:\nusing streaming software on a PC\n\n(analog) vcr:\nusing the vcr outlet\n\ndirect (file):\ndirectly into an NFS mounted directory\nor onto an internal hard drive\nTS: use spts mode(dbox2)\nPES: do not use spts mode(dbox2)\n\n\nMax. file size:\n---------------------\nNFS V2: 2 GB (2048 MB)\nNFS V3: almost unlimited (0 MB)\nFAT: 2 GB (2048 MB)\nFAT32: 4 GB (4096 MB)
--recordingmenu.no_scart do not switch to scart mode
-+recordingmenu.no_scart do not switch to SCART mode
- recordingmenu.off off
- recordingmenu.record_in_spts_mode switch to spts mode before recording
- recordingmenu.recording_type recording device
-@@ -1378,7 +1378,7 @@
- timerlist.repeat.weekdays on weekdays
- timerlist.repeat.weekly weekly
- timerlist.repeatcount repeats
--timerlist.repeatcount.help1 amount of timer repeats
-+timerlist.repeatcount.help1 number of timer repeats
- timerlist.repeatcount.help2 0 for unlimited repeats
- timerlist.save Save timer
- timerlist.standby SB mode
-@@ -1428,10 +1428,10 @@
- usermenu.button_green User menu green
- usermenu.button_red User menu red
- usermenu.button_yellow User menu yellow
--usermenu.button_f1 Benutzermenü F1
--usermenu.button_f2 Benutzermenü F2
--usermenu.button_f3 Benutzermenü F3
--usermenu.button_f4 Benutzermenü F4
-+usermenu.button_f1 User menu F1
-+usermenu.button_f2 User menu F2
-+usermenu.button_f3 User menu F3
-+usermenu.button_f4 User menu F4
- usermenu.head User menu
- usermenu.item_bar ---- Border ----
- usermenu.item_epg_misc EPG functions
-@@ -1441,14 +1441,14 @@
- usermenu.name Name
- video_mode_ok Is this video mode working ok ?
- videomenu.analog_hd_rgb_cinch RGB on cinch (HD)
--videomenu.analog_hd_rgb_scart RGB on scart (HD)
-+videomenu.analog_hd_rgb_scart RGB on SCART (HD)
- videomenu.analog_hd_yprpb_cinch YPbPr on cinch (HD)
--videomenu.analog_hd_yprpb_scart YPbPr on scart (HD)
-+videomenu.analog_hd_yprpb_scart YPbPr on SCART (HD)
- videomenu.analog_mode Analog Output
- videomenu.analog_sd_rgb_cinch RGB on cinch (SD)
--videomenu.analog_sd_rgb_scart RGB on scart (SD)
-+videomenu.analog_sd_rgb_scart RGB on SCART (SD)
- videomenu.analog_sd_yprpb_cinch YPbPr on cinch (SD)
--videomenu.analog_sd_yprpb_scart YPbPr on scart (SD)
-+videomenu.analog_sd_yprpb_scart YPbPr on SCART (SD)
- videomenu.auto Auto
- videomenu.cinch Cinch
- videomenu.csync sync correction
-@@ -1465,33 +1465,33 @@
- videomenu.scart Scart
- videomenu.screensetup Screen settings
- videomenu.tv-scart Video
--videomenu.vcr-scart VCR Scart
-+videomenu.vcr-scart VCR SCART
- videomenu.vcrsignal VCR Output Signal Type
- videomenu.vcrsignal_composite CVBS
- videomenu.vcrsignal_svideo S-Video
--videomenu.vcrswitch Switch Scart automatically
-+videomenu.vcrswitch Switch SCART automatically
- videomenu.videoratio TV-System
- videomenu.videoratio_149 14:9
- videomenu.videoratio_169 16:9
- videomenu.videoratio_43 4:3
- videomenu.videoratio_autodetect autodetect
- videomenu.videoformat Video Format
--videomenu.panscan Panscan
-+videomenu.panscan Pillarbox
- videomenu.panscan2 Bestfit
- videomenu.letterbox Letterbox
--videomenu.fullscreen Vollbild
-+videomenu.fullscreen Full screen
- videomenu.videomode Video Resolution
- zapit.scantype Scan for services
- zapit.scantype.all All services
- zapit.scantype.radio Only radio
- zapit.scantype.tv Only tv
- zapit.scantype.tvradio TV & Radio
--zaptotimer.announce Zapto timer in one minute
--hddmenu.hddmount HDD (Re)Mount
--hddmenu.hddmounted HDD Mounted
--hddmenu.hddmountfailed HDD Mount Failed
--hddmenu.hddumount HDD Umount
--hddmenu.hddumounted HDD Umounted
-+zaptotimer.announce Zap to timer in one minute
-+hddmenu.hddmount HDD (Re)mount
-+hddmenu.hddmounted HDD mounted
-+hddmenu.hddmountfailed HDD mount failed
-+hddmenu.hddumount HDD unmount
-+hddmenu.hddumounted HDD unmounted
- mainmenu.mediaplayer Media Player
- osd.timezone Time Zone
- osd.corners OSD Corners
-@@ -1593,7 +1593,7 @@
- psisetup.tint Tint
- 
- colormenu.helptxt Help text
--colormenu.helpbar Foot bar
-+colormenu.helpbar Footer bar
- 
- lcdmenu.menutitlevfd show Menu title on Display
- 
-@@ -1609,7 +1609,7 @@
- 
- opkgmanager.head Software update manager
- 
--keybinding.key_recordsbrowser Records browser
-+keybinding.key_recordsbrowser Recordings browser
- keybinding.key_audioplayer Audioplayer
- keybinding.key_pictureviewer PictureViewer
- keybinding.key_timerlist Timerlist
-@@ -1686,7 +1686,7 @@
- glcd.enable GraphLCD enabled
- glcd.font Font
- glcd.head GraphLCD
--glcd.mirror_osd Show OSD menue on GraphLCD
-+glcd.mirror_osd Show OSD menu on GraphLCD
- glcd.restart Rescan
- glcd.select.bar Progress bar color
- glcd.select.bg Background color
---- neutrino-hd2.org/src/gui/imageinfo.cpp
-+++ neutrino-hd2/src/gui/imageinfo.cpp
-@@ -40,7 +40,7 @@
- 
- #include <video_cs.h>
- 
--#include <gui/version.h>
-+#include "version.h"
- 
- 
- #define GIT_BUILD "GIT Build:"
+#--- neutrino-hd2.org/src/gui/imageinfo.cpp
+#+++ neutrino-hd2/src/gui/imageinfo.cpp
+#@@ -40,7 +40,7 @@
+# 
+# #include <video_cs.h>
+# 
+#-#include <gui/version.h>
+#+#include "version.h"
+# 
+# 
+# #define GIT_BUILD "GIT Build:"
 

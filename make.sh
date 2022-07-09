@@ -327,15 +327,15 @@ case "$IMAGE" in
 				echo "   2)  neutrino-ddt + plugins"
 				echo "   3)  neutrino-tangos"
 				echo "   4)  neutrino-tangos + plugins"
-				echo "   5)  neutrino-hd2"
-				echo "   6)  neutrino-hd2 + plugins"
+				echo "   5)  neutrino2"
+				echo "   6)  neutrino2 + plugins"
 				read -p "Select Neutrino variant to build (1-6)? ";;
 		esac
 
 		case "$REPLY" in
 			[1-2]) FLAVOUR="neutrino-ddt";;
 #			[3-4]) FLAVOUR="neutrino-tangos";;
-			[5-6]) FLAVOUR="neutrino-hd2";;
+			[5-6]) FLAVOUR="neutrino2";;
 			*) FLAVOUR="neutrino-tangos";;
 		esac
 
@@ -355,7 +355,7 @@ case "$IMAGE" in
 		#FFMPEG_VER=$FFMPEG_VER44
 
 		case "$FLAVOUR" in
-			neutrino-hd2*)
+			neutrino2*)
 				case $6 in
 					[1-2]) REPLY=$6;;
 					*)	echo -e "\nMedia Framework:"
@@ -380,11 +380,11 @@ case "$IMAGE" in
 				else
 					echo "make yaud-neutrino-plugins" >> $CURDIR/build
 				fi;;
-			neutrino-hd2*)
+			neutrino2*)
 				if [ $PLUGINS_NEUTRINO == "No" ]; then
-					echo "  make yaud-neutrino-hd2" >> $CURDIR/build
+					echo "  make yaud-neutrino2" >> $CURDIR/build
 				else
-					echo "  make yaud-neutrino-hd2-plugins" >> $CURDIR/build
+					echo "  make yaud-neutrino2-plugins" >> $CURDIR/build
 				fi;;
 		esac
 

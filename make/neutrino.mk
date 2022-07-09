@@ -19,7 +19,7 @@ NEUTRINO_DEPS += $(D)/ffmpeg
 NEUTRINO_DEPS += $(D)/libopenthreads
 NEUTRINO_DEPS += $(LIRC)
 NEUTRINO_DEPS += $(D)/libcurl
-ifneq ($(FLAVOUR), neutrino-hd2)
+ifneq ($(FLAVOUR), neutrino2)
 NEUTRINO_DEPS += $(D)/libsigc241
 else
 NEUTRINO_DEPS += $(D)/libsigc
@@ -154,12 +154,12 @@ HAL_BRANCH   ?= master
 HAL_CHECKOUT ?= ca1f5557e93011d34aa78d4749e2276c703d430c
 N_PATCHES     = $(NEUTRINO_DDT_PATCHES)
 HAL_PATCHES   = $(NEUTRINO_LIBSTB_DDT_PATCHES)
-else ifeq ($(FLAVOUR), neutrino-hd2)
-GIT_URL       = https://github.com/mohousch/neutrinohd2
-NEUTRINO      = neutrino-hd2
+else ifeq ($(FLAVOUR), neutrino2)
+GIT_URL       = https://github.com/mohousch/neutrino2
+NEUTRINO      = neutrino2
 N_BRANCH     ?= master
-N_CHECKOUT   ?= d2ec257482e841563ad8c29e1aa5253145e4bd21
-N_PATCHES     = $(NEUTRINO_HD2_PATCHES)
+N_CHECKOUT   ?= 0d83b45f970203e4b910eddee97ee907479578a8
+N_PATCHES     = $(NEUTRINO2_PATCHES)
 else
 NEUTRINO      = dummy
 LIBSTB_HAL    = dummy2
@@ -384,32 +384,32 @@ $(NEUTRINO)-plugins-distclean: neutrino-cdkroot-clean
 	make $(NEUTRINO)-plugin-distclean
 endif
 
-ifeq ($(FLAVOUR), neutrino-hd2)
+ifeq ($(FLAVOUR), neutrino2)
 ################################################################################
 #
-# neutrino-hd2
+# neutrino2
 #
 ifeq ($(BOXTYPE), spark)
-NHD2_OPTS        = --enable-4digits --enable-scart
+N2_OPTS        = --enable-4digits --enable-scart
 else ifeq ($(BOXTYPE), spark7162)
-NHD2_OPTS        = --enable-scart
+N2_OPTS        = --enable-scart
 else ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs7110, hs7119, hs7420, hs7429, hs7810a, hs7819))
-#NHD2_OPTS       = --enable-ci --enable-4digits
-NHD2_OPTS        = --enable-ci
+#N2_OPTS       = --enable-ci --enable-4digits
+N2_OPTS        = --enable-ci
 else ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs7420, hs7429, hs7810a, hs7819, adb_box, vitamin_hd5000))
-NHD2_OPTS       += --enable-scart
+N2_OPTS       += --enable-scart
 else ifeq ($(BOXTYPE), $(filter $(BOXTYPE), adb_box))
-NHD2_OPTS        = --enable-scart
+N2_OPTS        = --enable-scart
 else
-NHD2_OPTS        = --enable-ci --enable-scart
+N2_OPTS        = --enable-ci --enable-scart
 endif
 
-#NHD2_OPTS      += --enable-lua
+#N2_OPTS      += --enable-lua
 
 ifeq ($(MEDIAFW), gstreamer)
 #ifeq ($(MEDIAFW), $(filter $(MEDIAFW), gstreamer, gst-eplayer3))
-NHD2_OPTS      += --enable-gstreamer
-NHD2_OPTS      += --with-gstversion=1.0
+N2_OPTS      += --enable-gstreamer
+N2_OPTS      += --with-gstversion=1.0
 NEUTRINO_DEPS2 += $(D)/gstreamer
 NEUTRINO_DEPS2 += $(D)/gst_plugins_multibox_dvbmediasink
 NEUTRINO_DEPS2 += $(D)/gst_plugins_good
@@ -418,45 +418,45 @@ NEUTRINO_DEPS2 += $(D)/gst_plugins_ugly
 endif
 
 ifeq ($(EXTERNAL_LCD), $(filter $(EXTERNAL_LCD), graphlcd, lcd4linux, both))
-NHD2_OPTS     += --enable-lcd
+N2_OPTS     += --enable-lcd
 endif
 
-#NHD2_BRANCH   ?= master
-#NHD2_CHECKOUT  = d2ec257482e841563ad8c29e1aa5253145e4bd21
+#N2_BRANCH   ?= master
+#N2_CHECKOUT  = d2ec257482e841563ad8c29e1aa5253145e4bd21
 
 #
-# yaud-neutrino-hd2
+# yaud-neutrino2
 #
-yaud-neutrino-hd2: yaud-none $(D)/neutrino-hd2 $(D)/neutrino_release
+yaud-neutrino2: yaud-none $(D)/neutrino2 $(D)/neutrino_release
 	@echo "***************************************************************"
 	@echo -e "$(TERM_GREEN_BOLD)"
-	@echo " Build of neutrino-hd2 for $(BOXTYPE) successfully completed."
+	@echo " Build of neutrino2 for $(BOXTYPE) successfully completed."
 	@echo -e "$(TERM_NORMAL)"
 	@echo "***************************************************************"
 	@touch $(D)/build_complete
 
 #
-# yaud-neutrino-hd2-plugins
+# yaud-neutrino2-plugins
 #
-yaud-neutrino-hd2-plugins: yaud-none $(D)/neutrino-hd2 $(D)/neutrino-hd2-plugin $(D)/neutrino_release
+yaud-neutrino2-plugins: yaud-none $(D)/neutrino2 $(D)/neutrino2-plugin $(D)/neutrino_release
 	@echo "*****************************************************************************"
 	@echo -e "$(TERM_GREEN_BOLD)"
-	@echo " Build of neutrino-hd2-plugins for $(BOXTYPE) successfully completed."
+	@echo " Build of neutrino2-plugins for $(BOXTYPE) successfully completed."
 	@echo -e "$(TERM_NORMAL)"
 	@echo "*****************************************************************************"
 	@touch $(D)/build_complete
 
 #
-# neutrino-hd2
+# neutrino2
 #
-NEUTRINO_HD2_PATCHES =
+NEUTRINO2_PATCHES =
 
-$(D)/neutrino-hd2.do_prepare: | $(NEUTRINO_DEPS) $(NEUTRINO_DEPS2)
+$(D)/neutrino2.do_prepare: | $(NEUTRINO_DEPS) $(NEUTRINO_DEPS2)
 	$(START_BUILD)
 	$(SILENT)rm -rf $(SOURCE_DIR)/$(NEUTRINO)
 	$(SILENT)rm -rf $(SOURCE_DIR)/$(NEUTRINO).org
 	$(SILENT)rm -rf $(SOURCE_DIR)/$(NEUTRINO).git
-	$(SILENT)if [ -d "$(ARCHIVE)/neutrino-hd2.git" ]; then \
+	$(SILENT)if [ -d "$(ARCHIVE)/neutrino2.git" ]; then \
 			echo -n "Update local git..."; \
 			cd $(ARCHIVE)/$(NEUTRINO).git; \
 			git pull $(MINUS_Q); \
@@ -470,16 +470,16 @@ $(D)/neutrino-hd2.do_prepare: | $(NEUTRINO_DEPS) $(NEUTRINO_DEPS2)
 		mkdir -p $(SOURCE_DIR); \
 	fi
 	$(SILENT)cp -ra $(ARCHIVE)/$(NEUTRINO).git $(SOURCE_DIR)/$(NEUTRINO).git
-	$(SILENT)ln -sf $(SOURCE_DIR)/$(NEUTRINO).git/nhd2-exp $(SOURCE_DIR)/$(NEUTRINO)
+	$(SILENT)ln -sf $(SOURCE_DIR)/$(NEUTRINO).git/neutrino2 $(SOURCE_DIR)/$(NEUTRINO)
 	$(SILENT)echo -n "Checking out commit $(N_CHECKOUT)..."
 	$(SILENT)(cd $(SOURCE_DIR)/$(NEUTRINO); git checkout $(MINUS_Q) $(N_CHECKOUT))
 	$(SILENT)echo " done."
-	$(SILENT)cp -ra $(SOURCE_DIR)/$(NEUTRINO).git/nhd2-exp $(SOURCE_DIR)/$(NEUTRINO).org
+	$(SILENT)cp -ra $(SOURCE_DIR)/$(NEUTRINO).git/neutrino2 $(SOURCE_DIR)/$(NEUTRINO).org
 	$(SET) -e; cd $(SOURCE_DIR)/$(NEUTRINO); \
 		$(call apply_patches, $(N_PATCHES))
 	@touch $@
 
-$(SOURCE_DIR)/neutrino-hd2/config.status:
+$(SOURCE_DIR)/neutrino2/config.status:
 	cd $(SOURCE_DIR)/$(NEUTRINO); \
 		./autogen.sh; \
 		$(BUILDENV) \
@@ -492,17 +492,17 @@ $(SOURCE_DIR)/neutrino-hd2/config.status:
 			--with-datadir=/usr/share/tuxbox \
 			--with-configdir=/var/tuxbox/config \
 			--with-plugindir=/var/tuxbox/plugins \
-			$(NHD2_OPTS) \
+			$(N2_OPTS) \
 			PKG_CONFIG=$(PKG_CONFIG) \
 			PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) \
 			CPPFLAGS="$(N_CPPFLAGS)" LDFLAGS="$(TARGET_LDFLAGS)"
 
-$(D)/neutrino-hd2.do_compile: $(SOURCE_DIR)/neutrino-hd2/config.status
+$(D)/neutrino2.do_compile: $(SOURCE_DIR)/neutrino2/config.status
 	$(SILENT)cd $(SOURCE_DIR)/$(NEUTRINO); \
 		$(MAKE) all
 	@touch $@
 
-$(D)/neutrino-hd2: $(D)/neutrino-hd2.do_prepare $(D)/neutrino-hd2.do_compile
+$(D)/neutrino2: $(D)/neutrino2.do_prepare $(D)/neutrino2.do_compile
 	$(START_BUILD)
 	$(SILENT)make -C $(SOURCE_DIR)/$(NEUTRINO) install DESTDIR=$(TARGET_DIR)
 	$(SILENT)rm -f $(TARGET_DIR)/.version
@@ -511,17 +511,17 @@ $(D)/neutrino-hd2: $(D)/neutrino-hd2.do_prepare $(D)/neutrino-hd2.do_compile
 	$(TOUCH)
 	$(TUXBOX_CUSTOMIZE)
 
-nhd2-clean \
-neutrino-hd2-clean: neutrino-cdkroot-clean
+n2-clean \
+neutrino2-clean: neutrino-cdkroot-clean
 	$(SILENT)rm -f $(D)/$(NEUTRINO)
 	$(SILENT)rm -f $(D)/$(NEUTRINO).config.status
 	cd $(SOURCE_DIR)/$(NEUTRINO); \
 		$(MAKE) clean
 
-nhd2-distclean \
-neutrino-hd2-distclean: neutrino-cdkroot-clean
+n2-distclean \
+neutrino2-distclean: neutrino-cdkroot-clean
 	$(SILENT)rm -f $(D)/$(NEUTRINO)*
-#	$(SILENT)rm -f $(D)/neutrino-hd2-plugins*
+#	$(SILENT)rm -f $(D)/neutrino2-plugins*
 
 ################################################################################
 neutrino-cdkroot-clean:
@@ -532,16 +532,16 @@ neutrino-cdkroot-clean:
 	[ -e $(TARGET_DIR)/var/tuxbox ] && cd $(TARGET_DIR)/var/tuxbox && find -name '*' -delete || true
 
 dual:
-	$(SILENT)make nhd2
+	$(SILENT)make n2
 	$(SILENT)make neutrino-cdkroot-clean
 	$(SILENT)make mp
 
 dual-clean:
-	$(SILENT)make nhd2-clean
+	$(SILENT)make n2-clean
 	$(SILENT)make mp-clean
 
 dual-distclean:
-	$(SILENT)make nhd2-distclean
+	$(SILENT)make n2-distclean
 	$(SILENT)make mp-distclean
 endif
 

@@ -560,13 +560,14 @@ neutrino-release-base:
 	$(SILENT)install -d $(RELEASE_DIR)/mnt/mnt{0..7}
 	$(SILENT)install -d $(RELEASE_DIR)/usr/{bin,lib,sbin,share}
 	$(SILENT)install -d $(RELEASE_DIR)/usr/lib/tuxbox/{luaplugins,plugins}
-ifneq ($(FLAVOUR), $(filter $(FLAVOUR), neutrino-hd2, neutrino-hd2 + plugins))
+ifneq ($(FLAVOUR), $(filter $(FLAVOUR), neutrino2, neutrino2 + plugins))
 	$(SILENT)install -d $(RELEASE_DIR)/usr/share/{fonts,tuxbox,udhcpc,zoneinfo,lua}
 else
+	$(SILENT)install -d $(RELEASE_DIR)/usr/local/share/tuxbox
 	$(SILENT)install -d $(RELEASE_DIR)/usr/share/{tuxbox,udhcpc,zoneinfo,lua}
 endif
 	$(SILENT)install -d $(RELEASE_DIR)/usr/share/tuxbox/neutrino
-ifeq ($(FLAVOUR), $(filter $(FLAVOUR), neutrino-hd2, neutrino-hd2 + plugins))
+ifeq ($(FLAVOUR), $(filter $(FLAVOUR), neutrino2, neutrino2 + plugins))
 	$(SILENT)install -d $(RELEASE_DIR)/usr/share/tuxbox/neutrino/fonts
 endif
 	$(SILENT)install -d $(RELEASE_DIR)/usr/share/tuxbox/neutrino/icons/logo
@@ -731,7 +732,7 @@ endif
 #
 # fonts
 #
-ifneq ($(FLAVOUR), $(filter $(FLAVOUR), neutrino-hd2, neutrino-hd2 + plugins))
+ifneq ($(FLAVOUR), $(filter $(FLAVOUR), neutrino2, neutrino2 + plugins))
 	$(SILENT)if [ -e $(TARGET_DIR)/usr/share/fonts/ubuntu-l-webfont.ttf ]; then \
 		cp -aR $(TARGET_DIR)/usr/share/fonts $(RELEASE_DIR)/usr/share/; \
 	else \
@@ -756,7 +757,7 @@ endif
 #
 # neutrino
 #
-ifeq ($(FLAVOUR), $(filter $(FLAVOUR), neutrino-hd2, neutrino-hd2 + plugins))
+ifeq ($(FLAVOUR), $(filter $(FLAVOUR), neutrino2, neutrino2 + plugins))
 #	$(SILENT)ln -sf /usr/share $(RELEASE_DIR)/usr/local/share
 	$(SILENT)if [ -e $(TARGET_DIR)/usr/local/bin/neutrino ]; then \
 		cp $(TARGET_DIR)/usr/local/bin/neutrino $(RELEASE_DIR)/usr/bin/; \
@@ -774,7 +775,9 @@ endif
 #
 # channellist / tuxtxt
 #
+ifneq ($(FLAVOUR), $(filter $(FLAVOUR), neutrino2, neutrino2 + plugins))
 	$(SILENT)cp -aR $(TARGET_DIR)/var/tuxbox/config/* $(RELEASE_DIR)/var/tuxbox/config
+endif
 #
 # copy root_neutrino
 #
@@ -783,8 +786,8 @@ endif
 ifeq ($(FLAVOUR), $(filter $(FLAVOUR), neutrino-ddt, neutrino-ddt + plugins))
 	$(SILENT)cp -aR $(SKEL_ROOT)/root_neutrino/var_ddt/* $(RELEASE_DIR)/var/
 endif
-ifeq ($(FLAVOUR), $(filter $(FLAVOUR), neutrino-hd2, neutrino-hd2 + plugins))
-	$(SILENT)cp -aR $(SKEL_ROOT)/root_neutrino/var_hd2/* $(RELEASE_DIR)/var/
+ifeq ($(FLAVOUR), $(filter $(FLAVOUR), neutrino2, neutrino2 + plugins))
+	$(SILENT)cp -aR $(SKEL_ROOT)/root_neutrino/var_2/* $(RELEASE_DIR)/var/
 endif
 ifeq ($(FLAVOUR), $(filter $(FLAVOUR), neutrino-tangos, neutrino-tangos + plugins))
 	$(SILENT)cp -aR $(SKEL_ROOT)/root_neutrino/var_tangos/* $(RELEASE_DIR)/var/
@@ -801,7 +804,11 @@ endif
 #
 # httpd/icons/locale/themes
 #
+ifneq ($(FLAVOUR), $(filter $(FLAVOUR), neutrino2, neutrino2 + plugins))
 	$(SILENT)cp -aR $(TARGET_DIR)/usr/share/tuxbox/neutrino/* $(RELEASE_DIR)/usr/share/tuxbox/neutrino
+else
+	$(SILENT)cp -aR $(TARGET_DIR)/usr/local/usr/share/tuxbox/* $(RELEASE_DIR)/usr/local/share/tuxbox
+endif
 #
 # alsa
 #
@@ -863,7 +870,7 @@ endif
 		cp -f $(TARGET_DIR)/usr/lib/libmDNSResponder.so* $(RELEASE_DIR)/usr/lib; \
 	fi
 #
-# Neutrino HD2 Workaround Built-in Player
+# Neutrino2 Workaround Built-in Player
 #
 	$(SILENT)if [ -e $(TARGET_DIR)/usr/local/bin/eplayer3 ]; then \
 		cp -f $(TARGET_DIR)/usr/local/bin/eplayer3 $(RELEASE_DIR)/bin/; \
@@ -947,6 +954,7 @@ $(D)/neutrino_release: neutrino-release-base neutrino-release-$(BOXTYPE)
 	$(SILENT)ln -s /tmp $(RELEASE_DIR)/var/run
 	$(SILENT)ln -s /tmp $(RELEASE_DIR)/var/tmp
 #
+ifneq ($(FLAVOUR), $(filter $(FLAVOUR), neutrino2, neutrino2 + plugins))
 	$(SILENT)mv -f $(RELEASE_DIR)/usr/share/tuxbox/neutrino/icons/scan.jpg $(RELEASE_DIR)/var/boot/
 	$(SILENT)ln -s /var/boot/scan.jpg $(RELEASE_DIR)/usr/share/tuxbox/neutrino/icons/
 	$(SILENT)mv -f $(RELEASE_DIR)/usr/share/tuxbox/neutrino/icons/mp3.jpg $(RELEASE_DIR)/var/boot/
@@ -957,7 +965,18 @@ $(D)/neutrino_release: neutrino-release-base neutrino-release-$(BOXTYPE)
 	$(SILENT)mv -f $(RELEASE_DIR)/usr/share/tuxbox/neutrino/icons/radiomode.jpg $(RELEASE_DIR)/var/boot/
 	$(SILENT)ln -s /var/boot/radiomode.jpg $(RELEASE_DIR)/usr/share/tuxbox/neutrino/icons/
 	$(SILENT)mv -f $(RELEASE_DIR)/usr/share/tuxbox/neutrino/icons/start.jpg $(RELEASE_DIR)/var/boot/
-	$(SILENT)ln -s /var/boot/start.jpg $(RELEASE_DIR)/usr/share/tuxbox/neutrino/icons/
+else
+	$(SILENT)mv -f $(RELEASE_DIR)/usr/local/share/tuxbox/icons/scan.jpg $(RELEASE_DIR)/var/boot/
+	$(SILENT)ln -s /var/boot/scan.jpg $(RELEASE_DIR)/usr/local/share/tuxbox/icons/
+	$(SILENT)mv -f $(RELEASE_DIR)/usr/local/share/tuxbox/icons/mp3.jpg $(RELEASE_DIR)/var/boot/
+	$(SILENT)ln -s /var/boot/mp3.jpg $(RELEASE_DIR)/usr/local/share/tuxbox/icons/
+	$(SILENT)rm -f $(RELEASE_DIR)/usr/local/share/tuxbox/icons/mp3-?.jpg
+	$(SILENT)mv -f $(RELEASE_DIR)/usr/local/share/tuxbox/icons/shutdown.jpg $(RELEASE_DIR)/var/boot/
+	$(SILENT)ln -s /var/boot/shutdown.jpg $(RELEASE_DIR)/usr/local/share/tuxbox/icons/
+	$(SILENT)mv -f $(RELEASE_DIR)/usr/local/share/tuxbox/icons/radiomode.jpg $(RELEASE_DIR)/var/boot/
+	$(SILENT)ln -s /var/boot/radiomode.jpg $(RELEASE_DIR)/usr/local/share/tuxbox/icons/
+	$(SILENT)mv -f $(RELEASE_DIR)/usr/local/share/tuxbox/icons/start.jpg $(RELEASE_DIR)/var/boot/
+endif
 #
 # linux-strip all
 #
