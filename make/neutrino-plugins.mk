@@ -222,23 +222,22 @@ $(D)/neutrino-plugin-iptvplayer: $(D)/librtmp $(D)/python_twisted_small
 #
 NEUTRINO_HD2_PLUGINS_PATCHES =
 
-$(D)/neutrino-hd2-plugin.do_prepare:
+$(D)/neutrino2-plugins.do_prepare:
 	$(START_BUILD)
-	$(SILENT)rm -rf $(SOURCE_DIR)/neutrino-hd2-plugins
-	$(SILENT)ln -s $(SOURCE_DIR)/neutrino-hd2.git/plugins $(SOURCE_DIR)/neutrino-hd2-plugins
-	$(SET) -e; cd $(SOURCE_DIR)/neutrino-hd2-plugins; \
-		$(call apply_patches, $(NEUTRINO_HD2_PLUGINS_PATCHES))
+	$(SILENT)rm -rf $(SOURCE_DIR)/neutrino2-plugins
+	$(SILENT)ln -s $(SOURCE_DIR)/neutrino2.git/plugins $(SOURCE_DIR)/neutrino2-plugins
+	$(SET) -e; cd $(SOURCE_DIR)/neutrino2-plugins; \
+		$(call apply_patches, $(NEUTRINO2_PLUGINS_PATCHES))
 	@touch $@
 
-$(D)/neutrino-hd2-plugin.config.status: $(D)/bootstrap neutrino-hd2
-	$(SILENT)cd $(SOURCE_DIR)/neutrino-hd2-plugins; \
+$(D)/neutrino2-plugins.config.status: $(D)/bootstrap neutrino2
+	$(SILENT)cd $(SOURCE_DIR)/neutrino2-plugins; \
 		./autogen.sh; \
 		$(BUILDENV) \
 		./configure $(SILENT_CONFIGURE) \
 			--host=$(TARGET) \
 			--build=$(BUILD) \
 			--prefix= \
-			--with-target=cdk \
 			--with-boxtype=$(BOXTYPE) \
 			--with-plugindir=/var/tuxbox/plugins \
 			--with-datadir=/usr/share/tuxbox \
@@ -247,25 +246,24 @@ $(D)/neutrino-hd2-plugin.config.status: $(D)/bootstrap neutrino-hd2
 			PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) \
 			CPPFLAGS="$(CPPFLAGS) -I$(driverdir) -I$(KERNEL_DIR)/include -I$(TARGET_DIR)/include" \
 			LDFLAGS="$(TARGET_LDFLAGS)"
+
+$(D)/neutrino2-plugins.do_compile: $(D)/neutrino2-plugins.config.status
+	$(SILENT)cd $(SOURCE_DIR)/neutrino2-plugins
+	$(MAKE) -C $(SOURCE_DIR)/neutrino2-plugins top_srcdir=$(SOURCE_DIR)/neutrino2
 	@touch $@
 
-$(D)/neutrino-hd2-plugin.do_compile: $(D)/neutrino-hd2-plugin.config.status
-	$(SILENT)cd $(SOURCE_DIR)/neutrino-hd2-plugins
-	$(MAKE) -C $(SOURCE_DIR)/neutrino-hd2-plugins top_srcdir=$(SOURCE_DIR)/neutrino-hd2
-	@touch $@
-
-$(D)/neutrino-hd2-plugins: $(D)/neutrino-hd2 neutrino-hd2-plugin.do_prepare neutrino-hd2-plugin.do_compile
-	$(MAKE) -C $(SOURCE_DIR)/neutrino-hd2-plugins install DESTDIR=$(TARGET_DIR) top_srcdir=$(SOURCE_DIR)/neutrino-hd2
+$(D)/neutrino2-plugins: $(D)/neutrino2 neutrino2-plugins.do_prepare neutrino2-plugins.do_compile
+	$(MAKE) -C $(SOURCE_DIR)/neutrino2-plugins install DESTDIR=$(TARGET_DIR) top_srcdir=$(SOURCE_DIR)/neutrino2
 	$(TOUCH)
 
-neutrino-hd2-plugin-clean:
-	$(SILENT)cd $(SOURCE_DIR)/neutrino-hd2-plugins
+neutrino2-plugins-clean:
+	$(SILENT)cd $(SOURCE_DIR)/neutrino2-plugins
 	$(MAKE) clean
-	$(SILENT)rm -f $(D)/neutrino-hd2-plugin
-	$(SILENT)rm -f $(D)/neutrino-hd2-plugin.config.status
+	$(SILENT)rm -f $(D)/neutrino2-plugins
+#	$(SILENT)rm -f $(D)/neutrino2-plugins.config.status
 
-neutrino-hd2-plugin-distclean:
-	rm -f $(D)/neutrino-hd2-plugin
-	rm -f $(D)/neutrino-hd2-plugin.config.status
-	rm -f $(D)/neutrino-hd2-plugin.do_prepare
-	rm -f $(D)/neutrino-hd2-plugin.do_compile
+neutrino2-plugin-distclean:
+	rm -f $(D)/neutrino2-plugins
+#	rm -f $(D)/neutrino2-plugins.config.status
+	rm -f $(D)/neutrino2-plugins.do_prepare
+	rm -f $(D)/neutrino2-plugins.do_compile
