@@ -787,7 +787,7 @@ ifeq ($(FLAVOUR), $(filter $(FLAVOUR), neutrino-ddt, neutrino-ddt + plugins))
 	$(SILENT)cp -aR $(SKEL_ROOT)/root_neutrino/var_ddt/* $(RELEASE_DIR)/var/
 endif
 ifeq ($(FLAVOUR), $(filter $(FLAVOUR), neutrino2, neutrino2 + plugins))
-	$(SILENT)cp -aR $(SKEL_ROOT)/root_neutrino/var_2/* $(RELEASE_DIR)/var/
+	$(SILENT)cp -aR $(SKEL_ROOT)/root_neutrino/var_neutrino2/* $(RELEASE_DIR)/var/
 endif
 ifeq ($(FLAVOUR), $(filter $(FLAVOUR), neutrino-tangos, neutrino-tangos + plugins))
 	$(SILENT)cp -aR $(SKEL_ROOT)/root_neutrino/var_tangos/* $(RELEASE_DIR)/var/
