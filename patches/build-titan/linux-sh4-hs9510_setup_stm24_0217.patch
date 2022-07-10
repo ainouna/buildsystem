@@ -53,25 +53,25 @@
 +const char *bigphysarea_partalias[] = { "BPA2_Region0", "LMI_SYS", "v4l2-coded-video-buffers", NULL };
  
 +/*
-+0x10000000 - 0x103FFFFF - cocpu 1 ram (  4 Mb)
-+0x10400000 - 0x107FFFFF - cocpu 2 ram (  4 Mb)
-+0x10800000 - 0x13FFFFFF - LMI_VID     ( 56 Mb)
-+0x14000000 - 0x152FFFFF - bigphys     ( 19 Mb)
-+0x15300000 - 0x1BFFFFFF - linux       (109 Mb)
++0x10000000 - 0x103FFFFF - cocpu 1 ram ( 4 Mb)
++0x10400000 - 0x107FFFFF - cocpu 2 ram ( 4 Mb)
++0x10800000 - 0x147FFFFF - LMI_VID     (64 Mb)
++0x14800000 - 0x163FFFFF - bigphys     (28 Mb)
++0x16400000 - 0x1BFFFFFF - linux       (92 Mb)
 +*/
 +static struct bpa2_partition_desc bpa2_parts_table[] =
 +{
 +	{
 +		.name  = "LMI_VID",
 +		.start = 0x10800000,
-+		.size  = 0x03800000,  // 56 MB
++		.size  = 0x04000000,  // 64 MB
 +		.flags = 0,
 +		.aka   = LMI_VID_partalias
 +	},
 +	{
 +		.name  = "bigphysarea",
 +		.start = 0,
-+		.size  = 0x01300000,  // 19 MB
++		.size  = 0x01C00000,  // 28 MB
 +		.flags = 0,
 +		.aka   = bigphysarea_partalias
 +	}

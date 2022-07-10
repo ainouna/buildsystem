@@ -843,7 +843,7 @@ checkEmu()
 
 startNetmodule()
 {
-  # Done in rcS
+  echo "startNetmodule: Done in rcS"
 }
 
 startRcreboot()
