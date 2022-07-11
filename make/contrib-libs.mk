@@ -1913,7 +1913,7 @@ $(D)/pugixml: $(D)/bootstrap $(ARCHIVE)/$(PUGIXML_SOURCE)
 #
 GRAPHLCD_VER = 55d4bd8
 GRAPHLCD_SOURCE = graphlcd-git-$(GRAPHLCD_VER).tar.bz2
-GRAPHLCD_URL = https://projects.vdr-developer.org/graphlcd-base.git
+GRAPHLCD_URL = https://github.com/Duckbox-Developers/graphlcd.git
 GRAPHLCD_PATCH = graphlcd-git-$(GRAPHLCD_VER).patch
 
 $(ARCHIVE)/$(GRAPHLCD_SOURCE):
