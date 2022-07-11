@@ -33,6 +33,7 @@ tools-clean:
 	-$(MAKE) -C $(TOOLS_DIR)/streamproxy distclean
 	-$(MAKE) -C $(TOOLS_DIR)/tfd2mtd distclean
 	-$(MAKE) -C $(TOOLS_DIR)/tffpctl distclean
+	-$(MAKE) -C $(TOOLS_DIR)/titan-tools distclean
 	-$(MAKE) -C $(TOOLS_DIR)/tuxcom distclean
 	-$(MAKE) -C $(TOOLS_DIR)/ustslave distclean
 	-$(MAKE) -C $(TOOLS_DIR)/vfdctl distclean
@@ -452,6 +453,21 @@ $(D)/tools-tffpctl: $(D)/bootstrap
 	$(TOUCH)
 
 #
+# titan-tools
+#
+$(D)/tools-titan-tools: $(D)/bootstrap $(D)/enigma2_tuxtxt32bpp $(D)/freetype
+	$(START_BUILD)
+	$(SET) -e; cd $(TOOLS_DIR)/titan-tools; \
+		if [ ! -d m4 ]; then mkdir m4; fi; \
+		$(CONFIGURE_TOOLS) \
+			--prefix= \
+			--with-fontdir=/usr/share/fonts \
+		; \
+		$(MAKE); \
+		$(MAKE) install DESTDIR=$(TARGET_DIR)
+	$(TOUCH)
+
+#
 # tuxcom
 #
 $(D)/tools-tuxcom: $(D)/bootstrap $(D)/freetype
@@ -610,6 +626,9 @@ TOOLS += $(D)/tools-showiframe
 TOOLS += $(D)/tools-stfbcontrol
 ifneq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), small))
 TOOLS += $(D)/tools-streamproxy
+endif
+ifeq ($(IMAGE), $(filter $(IMAGE), titan titan-wlandriver))
+TOOLS += $(D)/tools-titan-tools
 endif
 TOOLS += $(D)/tools-ustslave
 ifeq ($(BOXTYPE), $(filter $(BOXTYPE), tf7700))

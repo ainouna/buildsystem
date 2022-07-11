@@ -13,12 +13,7 @@ TITAN_DEPS += $(D)/libjpeg
 TITAN_DEPS += $(D)/zlib
 TITAN_DEPS += $(D)/openssl
 TITAN_DEPS += $(D)/timezone
-#TITAN_DEPS += $(D)/libglib2
-#TITAN_DEPS += $(D)/enigma2_tuxtxtlib
-#TITAN_DEPS += $(D)/librtmp
-#TITAN_DEPS += $(D)/ntp
-#TITAN_DEPS += $(D)/fuse
-#TITAN_DEPS += $(D)/samba
+TITAN_DEPS += $(D)/tools-titan-tools
 
 ifeq ($(MEDIAFW), eplayer3)
 T_CONFIG_OPTS += --enable-eplayer3
