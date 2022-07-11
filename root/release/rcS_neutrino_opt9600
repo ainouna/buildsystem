@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 220105.1
+#Version 220711.1
 
 echo "[rcS] Start"
 echo "Opticum HD (TS) 9600 Neutrino"
@@ -93,9 +93,8 @@ echo "[rcS] Init frontend(s)"
 insmod $MODDIR/opt9600_platform.ko #paramDebug=150
 insmod $MODDIR/opt9600_frontend.ko #paramDebug=100
 
-echo "[rcS] Init CI"
+echo "[rcS] Init CI & cardreader"
 insmod $MODDIR/starci.ko #paramDebug=150
-
 insmod $MODDIR/pti.ko waitMS=20 videoMem=4096
 if [ $? -ne 0 ]; then
    insmod $MODDIR/pti.ko
@@ -200,7 +199,7 @@ else
 fi
 
 # Try and synchronise time
-if [ -h /usr/sbin/ntpd ]; then
+if [ -x /usr/sbin/ntpd ]; then
    echo "Set internet time"
    (ntpd -n -p 0.europe.pool.ntp.org -q; /bin/fp_control -sst)
 fi

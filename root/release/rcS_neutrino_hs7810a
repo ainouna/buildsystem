@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 210903.1
+#Version 220711.1
 
 echo "[rcS] Start"
 echo "Fortis HS7810A Neutrino"
@@ -184,7 +184,7 @@ else
 fi
 
 # Try and synchronise time
-if [ -h /usr/sbin/ntpd ]; then
+if [ -x /usr/sbin/ntpd ]; then
    echo "Set internet time"
       (ntpd -n -p 0.europe.pool.ntp.org -q; /bin/fp_control -sst)
 fi

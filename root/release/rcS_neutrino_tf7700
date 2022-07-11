@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 20210903.1
+#Version 220711.1
 
 echo "Topfield TF77X0HDPVR Neutrino"
 
@@ -103,8 +103,15 @@ insmod $MODDIR/pseudocard.ko
 
 insmod $MODDIR/cx24116.ko
 
+echo "[rcS] Init CI & cardreader"
 insmod $MODDIR/starci.ko
-insmod $MODDIR/pti.ko
+insmod $MODDIR/pti.ko waitMS=20 videoMem=4096
+if [ $? -ne 0 ]; then
+   insmod $MODDIR/pti.ko
+   echo "[rcS] Simple pti"
+else
+   echo "[rcS] Full feature pti"
+fi
 if [ $player=='player191' ]; then
    insmod $MODDIR/stm_monitor.ko
    insmod $MODDIR/stmsysfs.ko
@@ -202,7 +209,7 @@ if [ -e /etc/ownscript.sh ]; then
 fi
 
 # Try and synchronise time
-if [ -h /usr/sbin/ntpd ]; then
+if [ -x /usr/sbin/ntpd ]; then
    echo "[rcS]Set internet time"
    (ntpd -n -p 0.europe.pool.ntp.org -q; /bin/fp_control -sst) &
 else

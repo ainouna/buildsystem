@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 210903.1
+#Version 220711.1
 
 echo "[rcS] Start"
 echo "Fortis HS8200 Neutrino"
@@ -41,11 +41,6 @@ fi
 echo "[rcS] Starting DEBUG Interface"
 /etc/init.d/mountall start
 /etc/init.d/hostname start
-
-#if [ -d /dev/sda1/Recordings ]; then
-#   echo "[rcS] Recordings directory found on /dev/sda1, checking..."
-#   fsck.jfs -a /dev/sda1
-#fi
 
 echo -n "[rcS] Starting telnetd "
 /usr/sbin/telnetd -l /bin/autologin
@@ -163,6 +158,9 @@ if [ -e $MODDIR/usbserial.ko ]; then
    if [ -e $MODDIR/pl2303.ko ]; then
       insmod $MODDIR/pl2303.ko
    fi
+   if [ -e $MODDIR/ch341.ko ]; then
+      insmod $MODDIR/pl2303.ko
+   fi
 fi
 
 echo "[rcS] Init remote control (LOAD 2)"
@@ -201,9 +199,9 @@ else
 fi
 
 # Try and synchronise time
-if [ -h /usr/sbin/ntpd ]; then
+if [ -x /usr/sbin/ntpd ]; then
    echo "Set internet time"
-   (ntpd -n -p 0.europe.pool.ntp.org -q; /bin/fp_control -sst))
+   (ntpd -n -p 0.europe.pool.ntp.org -q; /bin/fp_control -sst)
 fi
 
 echo "[rcS] Init portmap & ftp (LOAD 1)"

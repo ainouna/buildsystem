@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 210903.1
+#Version 220711.1
 
 echo "[rcS] Start"
 echo "Kathrein UFS913 Enigma2"
@@ -222,8 +222,8 @@ fi
 
 echo "[rcS] Try and synchronise time"
 #inettime=`cat /etc/enigma2/settings | grep systemoptions.inettime | cut -d "=" -f2`
-# if [ ! $inettime ] && [ -e /sbin/ntpd ]; then
-if [ -h /usr/sbin/ntpd ]; then
+# if [ ! $inettime ] && [ -e /usr/sbin/ntpd ]; then
+if [ -x /usr/sbin/ntpd ]; then
    echo "[rcS] Set internet time"
    (ntpd -n -p 0.europe.pool.ntp.org -q; /bin/fp_control -sst) &
 #else

@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 210903.1
+#Version 220711.1
 
 echo "[rcS] Start"
 echo "Fortis HS7119 Neutrino"
@@ -95,7 +95,13 @@ insmod $MODDIR/hs711x.ko
 insmod $MODDIR/smartcard.ko
 mknod /dev/lnb c 149 0
 
-insmod $MODDIR/pti.ko
+insmod $MODDIR/pti.ko waitMS=20 videoMem=4096
+if [ $?=='2' ]; then
+   insmod $MODDIR/pti.ko
+   echo "[rcS] Simple pti"
+else
+   echo "[rcS] Full feature pti"
+fi
 insmod $MODDIR/stm_monitor.ko
 insmod $MODDIR/stmsysfs.ko
 insmod $MODDIR/stmdvb.ko
@@ -186,7 +192,7 @@ else
 fi
 
 # Try and synchronise time
-if [ -h /usr/sbin/ntpd ]; then
+if [ -x /usr/sbin/ntpd ]; then
    echo "Set internet time"
    (ntpd -n -p 0.europe.pool.ntp.org -q; /bin/fp_control -sst)
 fi
