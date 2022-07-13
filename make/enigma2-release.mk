@@ -1034,7 +1034,7 @@ endif
 # delete unnecessary files
 #
 	@echo -n "Cleaning up..."
-ifeq ($(BOXTYPE), $(filter $(BOXTYPE), ufs910 ufs922))
+ifneq ($(BOXTYPE), $(filter $(BOXTYPE), ufs910 ufs922))
 	$(SILENT)rm -f $(RELEASE_DIR)/sbin/jfs_fsck
 	$(SILENT)rm -f $(RELEASE_DIR)/sbin/fsck.jfs
 	$(SILENT)rm -f $(RELEASE_DIR)/sbin/jfs_mkfs

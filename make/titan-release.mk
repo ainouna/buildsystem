@@ -613,7 +613,9 @@ titan-release-base:
 	$(SILENT)cp -a $(TARGET_DIR)/usr/sbin/* $(RELEASE_DIR)/usr/sbin/
 # /var/bin
 	$(SILENT)cp -f $(TARGET_DIR)/usr/bin/curl $(RELEASE_DIR)/var/bin
+ifneq ($(BOXTYPE), $(filter $(BOXTYPE), ufs910 ufs922))
 	$(SILENT)cp -f $(TARGET_DIR)/sbin/jfs_fsck $(RELEASE_DIR)/var/bin
+endif
 # /var/etc
 	$(SILENT)touch $(RELEASE_DIR)/var/etc/.first
 	$(SILENT)touch $(RELEASE_DIR)/var/etc/inadyn.conf
@@ -621,7 +623,7 @@ titan-release-base:
 	$(SILENT)echo "4" > $(RELEASE_DIR)/var/etc/sleep
 	$(SILENT)cp -f $(SKEL_ROOT)/etc/fstab $(RELEASE_DIR)/var/etc/fstab
 	$(SILENT)cp -f $(SKEL_ROOT)/etc/samba/smb.conf $(RELEASE_DIR)/var/etc/
-	$(SILENT)cp -f $(TARGET_DIR)/etc/{auto.hotplug,auto.master,exports,group,host.conf,localtime,passwd,profile,protocols,resolv.conf,services,shells,shells.conf,timezone.xml,vdstandby.cfg,vsftpd.conf} $(RELEASE_DIR)/var/etc/
+	$(SILENT)cp -f $(TARGET_DIR)/etc/{auto.hotplug,auto.master,group,host.conf,localtime,passwd,profile,protocols,resolv.conf,services,shells,shells.conf,timezone.xml,vdstandby.cfg,vsftpd.conf} $(RELEASE_DIR)/var/etc/
 	$(SILENT)echo "576i50" > $(RELEASE_DIR)/var/etc/videomode
 # /var/etc/network
 	$(SILENT)cp -f $(SKEL_ROOT)/etc/network/options $(RELEASE_DIR)/var/etc/network/
@@ -919,8 +921,6 @@ endif
 #	$(SILENT)ln -sf /sbin/fsck.info $(RELEASE_DIR)/sbin/fsck.ext4,gui
 #	$(SILENT)ln -sf /sbin/fsck.info $(RELEASE_DIR)/sbin/fsck.fat.gui
 #	$(SILENT)ln -sf /sbin/fsck.info $(RELEASE_DIR)/sbin/fsck.jfs.gui
-#	$(SILENT)rm -f $(RELEASE_DIR)/sbin/fsck.jfs
-#	$(SILENT)ln -sf jfs_fsck $(RELEASE_DIR)/sbin/fsck.jfs
 #	$(SILENT)ln -sf /sbin/fw_printenv $(RELEASE_DIR)/sbin/fw_setenv
 #	$(SILENT)ln -sf /sbin/mkfs.info $(RELEASE_DIR)/sbin/mkfs.ext2.gui
 #	$(SILENT)ln -sf /sbin/mkfs.info $(RELEASE_DIR)/sbin/mkfs.ext3.gui
@@ -1034,7 +1034,7 @@ endif
 # delete unnecessary files
 #
 	$(SILENT)echo -n "Cleaning up..."
-ifeq ($(BOXTYPE), $(filter $(BOXTYPE), ufs910 ufs922))
+ifneq ($(BOXTYPE), $(filter $(BOXTYPE), ufs910 ufs922))
 	$(SILENT)rm -f $(RELEASE_DIR)/sbin/jfs_fsck
 	$(SILENT)rm -f $(RELEASE_DIR)/sbin/fsck.jfs
 	$(SILENT)rm -f $(RELEASE_DIR)/sbin/jfs_mkfs
