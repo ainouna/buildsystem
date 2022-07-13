@@ -1574,7 +1574,7 @@
 +#elif defined(BOXMODEL_HS7420) || defined(BOXMODEL_HS7429)  /* no colon on HS742X: it is an icon */
 +				ShowIcon((vfd_icon)HS742X_ICON_COLON1, true);
 + 				strftime(timestr, 20, "%H%M", t);
-+#elif defined(BOXMODEL_HS7810A) || defined(BOXMODEL_HS7119) || defined (BOXMODEL)  /* do not scroll on these models */
++#elif defined(BOXMODEL_HS7810A) || defined(BOXMODEL_HS7119) || defined (BOXMODEL_HS7810)  /* do not scroll on these models */
 + 				strftime(timestr, 20, "%H:%M", t);
 +
 +#elif !defined(PLATFORM_SPARK7162)  /* no time at spark7162 because clock integrated */
@@ -1903,12 +1903,12 @@
  		perror("VFDICONDISPLAYONOFF");
 +	}	closeDevice();
 +  #elif defined(BOXMODEL_FS9000) \
-+     || defined(BOXMODEL_HS9510)  \
-+     || defined(BOXMODEL_HS8200)   \
-+     || defined(BOXMODEL_HS7420)       \
-+     || defined(BOXMODEL_HS7810A)      \
-+     || defined(BOXMODEL_HS7119)       \
-+     || defined(BOXMODEL_HS7429)       \
++     || defined(BOXMODEL_HS9510) \
++     || defined(BOXMODEL_HS8200) \
++     || defined(BOXMODEL_HS7420) \
++     || defined(BOXMODEL_HS7810A) \
++     || defined(BOXMODEL_HS7119) \
++     || defined(BOXMODEL_HS7429) \
 +     || defined(BOXMODEL_HS7819)  /* using one command for switching off all Icons */
 +  //#elif defined(PLATFORM_FORTIS)  /* using one command for switching off all Icons*/
 +
@@ -2205,7 +2205,7 @@
 +	return "hs7110";
 +#elif defined (BOXMODEL_HS7420)
 +	return "hs7420";
-+#elif defined (BOXMODEL_HS7810a)
++#elif defined (BOXMODEL_HS7810A)
 +	return "hs7810a";
 +#elif defined (BOXMODEL_HS7119)
 +	return "hs7119";
