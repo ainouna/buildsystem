@@ -120,7 +120,7 @@ PACKAGES="\
 	${UBUNTU:+autoconf-archive}                                                                                   \
 	${UBUNTU:+cpio}                                                                                               \
 	${UBUNTU:+bc}                                                                                                 \
-";";
+";
 
 if [ "$UBUNTU" == 1 ]; then
 	if `which lsb_release > /dev/null 2>&1`; then 
