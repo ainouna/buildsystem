@@ -535,14 +535,13 @@ titan-release-base:
 	$(SILENT)install -d $(RELEASE_DIR)/tmp/{bsubsys,tithek}
 	$(SILENT)install -d $(RELEASE_DIR)/usr/{bin,local,sbin,share,tuxtxt}
 	$(SILENT)install -d $(RELEASE_DIR)/usr/local/{bin,sbin}
-	$(SILENT)install -d $(RELEASE_DIR)/usr/share/alsa/{cards,pcm}
-	$(SILENT)install -d $(RELEASE_DIR)/usr/share/{alsa,udhcpc,zoneinfo}
+	$(SILENT)install -d $(RELEASE_DIR)/usr/share/{udhcpc,zoneinfo}
 	$(SILENT)install -d $(RELEASE_DIR)/var/{bin,boot,etc,lib,media,root,update,usr}
 	$(SILENT)install -d $(RELEASE_DIR)/var/etc/{autostart,boot,codepages,ipkg,network,titan,tuxbox,Wireless}
 	$(SILENT)install -d $(RELEASE_DIR)/var/lib/{init,modules,nfs}
 	$(SILENT)install -d $(RELEASE_DIR)/var/media/{autofs,hdd,net}
 	$(SILENT)install -d $(RELEASE_DIR)/var/usr/{lib,local,share}
-	$(SILENT)install -d $(RELEASE_DIR)/var/usr/lib/{alsa-lib,directfb-1.4-5,ipkg,locale}
+	$(SILENT)install -d $(RELEASE_DIR)/var/usr/lib/{directfb-1.4-5,ipkg,locale}
 	$(SILENT)install -d $(RELEASE_DIR)/var/usr/local/share
 	$(SILENT)install -d $(RELEASE_DIR)/var/usr/local/share/titan
 	$(SILENT)install -d $(RELEASE_DIR)/var/usr/local/share/titan/{help,netsurf,picons,plugins,po}
@@ -967,10 +966,13 @@ endif
 #
 	$(SILENT)if [ -e $(TARGET_DIR)/usr/share/alsa ]; then \
 		mkdir -p $(RELEASE_DIR)/usr/share/alsa/; \
+		mkdir $(RELEASE_DIR)/usr/share/alsa/cards/; \
+		mkdir $(RELEASE_DIR)/usr/share/alsa/pcm/; \
 		cp -dp $(TARGET_DIR)/usr/share/alsa/alsa.conf $(RELEASE_DIR)/usr/share/alsa/alsa.conf; \
 		cp $(TARGET_DIR)/usr/share/alsa/cards/aliases.conf $(RELEASE_DIR)/usr/share/alsa/cards/; \
 		cp $(TARGET_DIR)/usr/share/alsa/pcm/default.conf $(RELEASE_DIR)/usr/share/alsa/pcm/; \
 		cp $(TARGET_DIR)/usr/share/alsa/pcm/dmix.conf $(RELEASE_DIR)/usr/share/alsa/pcm/; \
+		mkdir -p $(RELEASE_DIR)/var/usr/lib/alsa-lib; \
 	fi
 #
 # xupnpd
