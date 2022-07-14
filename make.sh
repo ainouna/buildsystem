@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20280617.1
+# Version 20220714.1
 
 ##############################################
 
@@ -23,8 +23,8 @@ if [ "$1" == -h ] || [ "$1" == --help ]; then
 	echo "Parameter 2       : kernel (1-2)"
 	echo "Parameter 3       : optimization (1-5)"
 	echo "Parameter 4       : image (Enigma=1/2 Neutrino=3/4 Titan=5/6 (1-6)"
-	echo "Parameter 5       : Neutrino variant (1-6) or Enigma2 diff (0-5)"
-	echo "Parameter 6       : media Framework (Enigma2: 1-5; Neutrino/Titan: ignored)"
+	echo "Parameter 5       : Enigma2 diff (0-5), Neutrino variant (1-6), Titan plugins (1-2)"
+	echo "Parameter 6       : media Framework (Enigma2: 1-5; Neutrino/Titan: 2=plugins built)"
 	echo "Parameter 7       : external LCD (1=none, 2=graphlcd, 3=lcd4linux, 4=both)"
 	echo "Parameter 8       : destination (1-2, 1=flash, 2=USB)"
 	exit
@@ -400,11 +400,29 @@ case "$IMAGE" in
 			fi
 		fi;;
 	tita*)
-		echo "make yaud-titan" >> $CURDIR/build
+		case $5 in
+			[1-2] ) REPLY=$5;;
+			*)	echo -e "\nWhich Titan variant do you want to build?"
+				echo "   1)  Titan without plugins"
+				echo "   2)  Titan with plugins (not tested/finished yet)"
+				read -p "Select Titan variant to build (1-2)? ";;
+		esac
+
+		case "$REPLY" in
+			[2]) PLUGINS_TITAN="Yes";;
+			*) PLUGINS_TITAN="No";;
+		esac
+		echo "PLUGINS_TITAN=$PLUGINS_TITAN" >> config
+
+		if [ $PLUGINS_TITAN == "No" ]; then
+			echo "  make yaud-titan" >> $CURDIR/build
+		else
+			echo "  make yaud-titan-plugins" >> $CURDIR/build
+		fi
 
 		# Titan is always built with eplayer3 and ffmpeg version 3.X.X
 		MEDIAFW="eplayer3"
-		FFMPEG_VER=$FFMPEG_VER3
+		FFMPEG_VER=$FFMPEG_VER42
 		export FFMPEG_VER
 
 		if [ "$OPTIMIZATIONS" == "small" ]; then

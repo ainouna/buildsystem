@@ -130,11 +130,11 @@ yaud-titan: yaud-none $(D)/titan $(D)/titan_release
 #
 yaud-titan-plugins: yaud-none $(D)/titan $(D)/titan-plugins $(D)/titan_release
 	$(TUXBOX_YAUD_CUSTOMIZE)
-	@echo "***************************************************************"
+	@echo "***************************************************************************"
 	@echo -e "\033[01;32m"
-	@echo " Build of Titan for $(BOXTYPE) successfully completed."
+	@echo " Build of Titan with plugins for $(BOXTYPE) successfully completed."
 	@echo -e "\033[00m"
-	@echo "***************************************************************"
+	@echo "***************************************************************************"
 	@touch $(D)/build_complete
 
 #
@@ -168,7 +168,6 @@ $(D)/titan.do_prepare: $(TITAN_DEPS)
 	echo -n "Copying local svn content to build environment..."; cp -ra $(ARCHIVE)/titan.svn/titan $(SOURCE_DIR)/titan; echo " done."; \
 	cp -ra $(SOURCE_DIR)/titan $(SOURCE_DIR)/titan.org; \
 	set -e; cd $(SOURCE_DIR)/titan; \
-	pwd; \
 	echo >> Makefile.am; \
 	echo "Applying Titan patches..."; \
 	$(call apply_patches, $(TITAN_PATCH)); \
@@ -200,12 +199,12 @@ $(SOURCE_DIR)/titan/config.status: $(D)/titan.do_prepare
 			PKG_CONFIG=$(PKG_CONFIG) \
 			CPPFLAGS="$(T_CPPFLAGS)"
 
-$(D)/titan.do_compile: $(SOURCE_DIR)/titan/config.status $(D)/titan_libipkg $(D)/titan-libdreamdvd
+$(D)/titan.do_compile: $(SOURCE_DIR)/titan/config.status
 	$(SILENT)cd $(SOURCE_DIR)/titan; \
 		$(MAKE) all
 	@touch $@
 
-$(D)/titan: $(D)/titan.do_compile
+$(D)/titan:  $(D)/titan-libipkg $(D)/titan-libdreamdvd $(D)/titan.do_compile
 	$(MAKE) -C $(SOURCE_DIR)/titan install DESTDIR=$(TARGET_DIR)
 	@echo -n "Stripping..."
 	$(SILENT)if [ -e $(TARGET_DIR)/usr/bin/titan ]; then \
@@ -221,16 +220,18 @@ $(D)/titan: $(D)/titan.do_compile
 #
 # titan-plugins
 #
-$(SOURCE_DIR)/titan/plugins/config.status: $(D)/titan.do_prepare $(D)/python
+TITAN_PLUGINS_PATCH = build-titan/titan_plugins.patch
+$(SOURCE_DIR)/titan/plugins/config.status: $(D)/titan.do_prepare
 	$(SILENT)cd $(SOURCE_DIR)/titan/plugins; \
 		echo "Configuring titan-plugins..."; \
-		ln -s $(SOURCE_DIR)/titan $(SOURCE_DIR)/plugins/titan; \
+		ln -s $(SOURCE_DIR)/plugins $(SOURCE_DIR)/titan/plugins; \
 		./autogen.sh $(SILENT_OPT); \
+		pwd; \
+		$(call apply_patches, $(TITAN_PLUGINS_PATCH)); \
 		$(BUILDENV) \
 		./configure $(SILENT_CONFIGURE) \
 			--build=$(BUILD) \
 			--host=$(TARGET) \
-			$(T_CONFIG_OPTS) \
 			--datadir=/usr/local/share \
 			--libdir=/usr/lib \
 			--bindir=/usr/local/bin \
@@ -243,23 +244,42 @@ $(SOURCE_DIR)/titan/plugins/config.status: $(D)/titan.do_prepare $(D)/python
 
 $(D)/titan-plugins.do_compile: $(SOURCE_DIR)/titan/plugins/config.status
 	$(SILENT)cd $(SOURCE_DIR)/titan/plugins; \
+		./makesh4.sh $(KERNEL_STM) $(MEDIAFW) dev $(BOXTYPE) $(SOURCE_DIR) "$(T_CPPFLAGS)"
 		$(MAKE) all
 #		./makesh4.sh stm24 1 nondev $(BOXTYPE) atemio sh4 $(SOURCE_DIR)/titan
 	@touch $@
+		ln -s $(SOURCE_DIR)/titan/plugins $(SOURCE_DIR)/titan/titan/plugins; 
 
-$(D)/titan-plugins: $(D)/titan-plugins.do_compile
+$(D)/titan-plugins: $(D)/titan.do_prepare $(D)/python
 	$(START_BUILD)
-	$(SILENT)cd $(SOURCE_DIR)/titan/plugins
-	$(MAKE) -C $(SOURCE_DIR)/titan install DESTDIR=$(TARGET_DIR)
-	$(SILENT)echo " done."
+	$(SILENT)cd $(SOURCE_DIR)/titan/plugins; \
+		echo "Configuring titan-plugins..."; \
+		./autogen.sh $(SILENT_OPT); \
+		$(call apply_patches, $(TITAN_PLUGINS_PATCH)); \
+		$(BUILDENV) \
+		./configure $(SILENT_CONFIGURE) \
+			--build=$(BUILD) \
+			--host=$(TARGET) \
+			--datadir=/usr/local/share \
+			--libdir=/usr/lib \
+			--bindir=/usr/local/bin \
+			--prefix=/usr \
+			--sysconfdir=/etc \
+			--enable-multicom324 \
+			$(TITAN_OPT_OPTION) \
+			PKG_CONFIG=$(PKG_CONFIG) \
+			CPPFLAGS="$(T_CPPFLAGS)" \
+			; \
+		./makesh4.sh $(KERNEL_STM) $(MEDIAFW) dev $(BOXTYPE) $(SOURCE_DIR) "$(T_CPPFLAGS)"
+#		$(MAKE) -C $(SOURCE_DIR)/titan install DESTDIR=$(TARGET_DIR)
 	$(SILENT)echo
 	$(TOUCH)
 
 #
-# titan_libipkg
+# titan-libipkg
 #
 TITAN_LIBIPKG_PATCH =
-$(D)/titan_libipkg: $(D)/titan.do_prepare
+$(D)/titan-libipkg: $(D)/titan.do_prepare
 	$(START_BUILD)
 	$(SILENT)cd $(SOURCE_DIR)/titan/libipkg; \
 	aclocal $(ACLOCAL_FLAGS); \
@@ -292,13 +312,14 @@ $(D)/titan_libipkg: $(D)/titan.do_prepare
 TITAN_LIBDREAMDVD_PATCH =
 $(D)/titan-libdreamdvd: $(D)/titan.do_prepare $(D)/libdvdnav
 	$(START_BUILD)
-	export PATH=$(hostprefix)/bin:$(PATH) && \
-	cd $(SOURCE_DIR)/titan/libdreamdvd && \
+	$(SILENT)export PATH=$(hostprefix)/bin:$(PATH); \
+	cd $(SOURCE_DIR)/titan/libdreamdvd; \
+		if [ ! -d m4 ]; then mkdir m4; fi; \
 		./autogen.sh; \
-		libtoolize --force && \
-		aclocal -I $(TARGET_DIR)/usr/share/aclocal && \
-		autoconf && \
-		automake --foreign --add-missing && \
+		libtoolize --force; \
+		aclocal -I $(TARGET_DIR)/usr/share/aclocal; \
+		autoconf; \
+		automake --foreign --add-missing; \
 		$(call apply_patches, $(TITAN_LIBDREAMDVD_PATCH)); \
 		$(BUILDENV) \
 		./configure $(SILENT_CONFIGURE) \
