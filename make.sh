@@ -23,7 +23,7 @@ if [ "$1" == -h ] || [ "$1" == --help ]; then
 	echo "Parameter 2       : kernel (1-2)"
 	echo "Parameter 3       : optimization (1-5)"
 	echo "Parameter 4       : image (Enigma=1/2 Neutrino=3/4 Titan=5/6 (1-6)"
-	echo "Parameter 5       : Enigma2 diff (0-5), Neutrino variant (1-6), Titan plugins (1-2)"
+	echo "Parameter 5       : Enigma2 diff (0-5), Neutrino variant (1-6), Titan plugins (1=no, 2=yes)"
 	echo "Parameter 6       : media Framework (Enigma2: 1-5; Neutrino/Titan: 2=plugins built)"
 	echo "Parameter 7       : external LCD (1=none, 2=graphlcd, 3=lcd4linux, 4=both)"
 	echo "Parameter 8       : destination (1-2, 1=flash, 2=USB)"
@@ -422,7 +422,7 @@ case "$IMAGE" in
 
 		# Titan is always built with eplayer3 and ffmpeg version 3.X.X
 		MEDIAFW="eplayer3"
-		FFMPEG_VER=$FFMPEG_VER42
+		FFMPEG_VER=$FFMPEG_VER3
 		export FFMPEG_VER
 
 		if [ "$OPTIMIZATIONS" == "small" ]; then
