@@ -1,117 +1,121 @@
 #
 # titan
 #
-TITAN_DEPS  = $(D)/bootstrap
-TITAN_DEPS += $(KERNEL)
-TITAN_DEPS += $(D)/libopenthreads
-TITAN_DEPS += $(D)/system-tools
-TITAN_DEPS += $(D)/module_init_tools
-TITAN_DEPS += $(LIRC)
-TITAN_DEPS += $(D)/libpng
-TITAN_DEPS += $(D)/freetype
-TITAN_DEPS += $(D)/libjpeg
-TITAN_DEPS += $(D)/zlib
-TITAN_DEPS += $(D)/openssl
-TITAN_DEPS += $(D)/timezone
-TITAN_DEPS += $(D)/tools-titan-tools
+TITAN_DEPS     = $(D)/bootstrap
+TITAN_DEPS    += $(KERNEL)
+TITAN_DEPS    += $(D)/libopenthreads
+TITAN_DEPS    += $(D)/system-tools
+TITAN_DEPS    += $(D)/module_init_tools
+TITAN_DEPS    += $(LIRC)
+TITAN_DEPS    += $(D)/libpng
+TITAN_DEPS    += $(D)/freetype
+TITAN_DEPS    += $(D)/libjpeg
+TITAN_DEPS    += $(D)/zlib
+TITAN_DEPS    += $(D)/openssl
+TITAN_DEPS    += $(D)/timezone
+TITAN_DEPS    += $(D)/tools-titan-tools
 
 ifeq ($(MEDIAFW), eplayer3)
 T_CONFIG_OPTS += --enable-eplayer3
-TITAN_DEPS += $(D)/tools-exteplayer3
-TITAN_DEPS += $(D)/libcurl
-TITAN_DEPS += $(D)/ffmpeg
+TITAN_DEPS    += $(D)/tools-exteplayer3
+TITAN_DEPS    += $(D)/libcurl
 endif
 
-#ifeq ($(MEDIAFW), gstreamer)
-##T_CONFIG_OPTS += --with-gstversion=1.0 --enable-mediafwgstreamer
-#TITAN_DEPS += $(D)/gstreamer $(D)/gst_plugins_base $(D)/gst_plugins_multibox_dvbmediasink
-#TITAN_DEPS += $(D)/gst_plugins_good $(D)/gst_plugins_bad $(D)/gst_plugins_ugly
-#endif
+ifeq ($(MEDIAFW), gstreamer)
+TITAN_DEPS    += $(D)/gstreamer $(D)/gst_plugins_base $(D)/gst_plugins_multibox_dvbmediasink
+TITAN_DEPS    += $(D)/gst_plugins_good $(D)/gst_plugins_bad $(D)/gst_plugins_ugly
+endif
 
-#ifeq ($(MEDIAFW), gst-eplayer3)
-##T_CONFIG_OPTS += --with-gstversion=1.0 --enable-mediafwgstreamer --enable-eplayer3
-#TITAN_DEPS += $(D)/libcurl
-#TITAN_DEPS += $(D)/ffmpeg
-#TITAN_DEPS += $(D)/tools-libeplayer3
-#TITAN_DEPS += $(D)/gstreamer $(D)/gst_plugins_base $(D)/gst_plugins_multibox_dvbmediasink
-#TITAN_DEPS += $(D)/gst_plugins_good $(D)/gst_plugins_bad $(D)/gst_plugins_ugly
-#endif
+ifeq ($(MEDIAFW), gst-eplayer3)
+TITAN_DEPS    += $(D)/tools-exteplayer3
+TITAN_DEPS    += $(D)/libcurl
+TITAN_DEPS    += $(D)/gstreamer $(D)/gst_plugins_base $(D)/gst_plugins_multibox_dvbmediasink
+TITAN_DEPS    += $(D)/gst_plugins_good $(D)/gst_plugins_bad $(D)/gst_plugins_ugly
+endif
 
-TITAN_DEPS += $(LOCAL_TITAN_DEPS)
+TITAN_DEPS    += $(LOCAL_TITAN_DEPS)
 
 ifeq ($(IMAGE), titan-wlandriver)
-TITAN_DEPS += $(D)/wpa_supplicant $(D)/wireless_tools
+TITAN_DEPS    += $(D)/wpa_supplicant $(D)/wireless_tools
 endif
 
 ifeq ($(EXTERNAL_LCD), graphlcd)
 T_CONFIG_OPTS += --with-graphlcd
-TITAN_DEPS_ += $(D)/graphlcd
+TITAN_DEPS    += $(D)/graphlcd
 endif
 
 ifeq ($(EXTERNAL_LCD), lcd4linux)
 T_CONFIG_OPTS += --with-lcd4linux
-TITAN_DEPS += $(D)/lcd4linux
+TITAN_DEPS    += $(D)/lcd4linux
 endif
 
 ifeq ($(EXTERNAL_LCD), both)
 T_CONFIG_OPTS += --with-graphlcd
-TITAN_DEPS += $(D)/graphlcd
+TITAN_DEPS    += $(D)/graphlcd
 T_CONFIG_OPTS += --with-lcd4linux
-TITAN_DEPS += $(D)/lcd4linux
+TITAN_DEPS    += $(D)/lcd4linux
 endif
 
 T_CONFIG_OPTS +=$(LOCAL_TITAN_BUILD_OPTIONS)
 
-T_CPPFLAGS   += -DSH4
-T_CPPFLAGS   += -DDVDPLAYER 
-T_CPPFLAGS   += -Wno-unused-but-set-variable
-T_CPPFLAGS   += -I$(DRIVER_DIR)/include
-T_CPPFLAGS   += -I$(TARGET_DIR)/usr/include
-T_CPPFLAGS   += -I$(TARGET_DIR)/usr/include/freetype2
-T_CPPFLAGS   += -I$(TARGET_DIR)/usr/include/openssl
-T_CPPFLAGS   += -I$(TARGET_DIR)/usr/include/libpng16
-T_CPPFLAGS   += -I$(TARGET_DIR)/usr/include/dreamdvd
-T_CPPFLAGS   += -I$(KERNEL_DIR)/include
-T_CPPFLAGS   += -I$(DRIVER_DIR)/bpamem
-T_CPPFLAGS   += -I$(TOOLS_DIR)
-T_CPPFLAGS   += -I$(TOOLS_DIR)/libmme_image
-T_CPPFLAGS   += -L$(TARGET_DIR)/usr/lib
-T_CPPFLAGS   += -I$(TARGET_DIR)/usr/include/python
-T_CPPFLAGS   += -L$(SOURCE_DIR)/titan/libipkg
-#T_LINKFLAGS   += -lm -lpthread -ldl -lpng -lfreetype -ldreamdvd -ljpeg -lmmeimage -lmme_host -lz
+T_CPPFLAGS    += -DSH4
+T_CPPFLAGS    += -DSH4NEW
+T_CPPFLAGS    += -DDVDPLAYER 
+T_CPPFLAGS    += -Wno-unused-but-set-variable
+T_CPPFLAGS    += -I$(DRIVER_DIR)/include
+T_CPPFLAGS    += -I$(TARGET_DIR)/usr/include
+T_CPPFLAGS    += -I$(TARGET_DIR)/usr/include/freetype2
+T_CPPFLAGS    += -I$(TARGET_DIR)/usr/include/openssl
+T_CPPFLAGS    += -I$(TARGET_DIR)/usr/include/libpng16
+T_CPPFLAGS    += -I$(TARGET_DIR)/usr/include/dreamdvd
+T_CPPFLAGS    += -I$(KERNEL_DIR)/include
+T_CPPFLAGS    += -I$(DRIVER_DIR)/bpamem
+T_CPPFLAGS    += -I$(TOOLS_DIR)
+T_CPPFLAGS    += -I$(TOOLS_DIR)/libmme_image
+T_CPPFLAGS    += -L$(TARGET_DIR)/usr/lib
+T_CPPFLAGS    += -I$(TARGET_DIR)/usr/include/python
+T_CPPFLAGS    += -L$(SOURCE_DIR)/titan/libipkg
+T_LINKFLAGS    = -lm -lpthread -ldl -lpng -lfreetype -ldreamdvd -ljpeg -lz -lmmeimage -lipkg
 
 ifeq ($(MEDIAFW), eplayer3)
-T_CPPFLAGS   += -DEPLAYER3
-T_CPPFLAGS   += -DEXTEPLAYER3
-T_CPPFLAGS   += -I$(TOOLS_DIR)/exteplayer3/include
-#T_CPPFLAGS   += -I$(SOURCE_DIR)/titan/libeplayer3/include
-#T_CPPFLAGS   += -I$(SOURCE_DIR)/titan/libeplayer3/include/external
-#T_LINKFLAGS   += -lssl -leplayer -lcrypto -lcurl
+TITAN_DEPS    += $(D)/tools-exteplayer3
+TITAN_DEPS    += $(D)/libcurl
+TITAN_DEPS    += $(D)/ffmpeg
+T_CPPFLAGS    += -DEPLAYER3
+T_CPPFLAGS    += -DEXTEPLAYER3
+T_CPPFLAGS    += -I$(TOOLS_DIR)/exteplayer3/include
+T_LINKFLAGS   += -lssl -leplayer3 -lcrypto -lcurl
 endif
 
-#ifeq ($(MEDIAFW), gstreamer)
-#T_CPPFLAGS   += -DEPLAYER4
-#T_CPPFLAGS   += -I$(TARGET_DIR)/usr/include/gstreamer-1.0
-#T_CPPFLAGS   += -I$(TARGET_DIR)/usr/include/glib-2.0
-#T_CPPFLAGS   += -I$(TARGET_DIR)/usr/include/libxml2
-#T_CPPFLAGS   += -I$(TARGET_DIR)/usr/lib/gstreamer-1.0/include
-#T_CPPFLAGS   += -I$(TARGET_DIR)/usr/lib/gstreamer-1.0/include
-#T_LINKFLAGS   += -lglib-2.0 -lgobject-2.0 -lgio-2.0 -lgstreamer-1.0
-#endif
+ifeq ($(MEDIAFW), gstreamer)
+TITAN_DEPS_   += $(D)/gstreamer $(D)/gst_plugins_base $(D)/gst_plugins_multibox_dvbmediasink
+TITAN_DEPS    += $(D)/gst_plugins_good $(D)/gst_plugins_bad $(D)/gst_plugins_ugly
+T_CPPFLAGS    += -DEPLAYER4
+T_CPPFLAGS    += -I$(TARGET_DIR)/usr/include/gstreamer-1.0
+T_CPPFLAGS    += -I$(TARGET_DIR)/usr/include/glib-2.0
+T_CPPFLAGS    += -I$(TARGET_DIR)/usr/include/libxml2
+T_CPPFLAGS    += -I$(TARGET_DIR)/usr/lib/glib-2.0/include
+T_LINKFLAGS   += -lglib-2.0 -lgobject-2.0 -lgio-2.0 -lgstreamer-1.0
+endif
 
-#ifeq ($(MEDIAFW), gst-explayer3)
-#T_CPPFLAGS   += -DEPLAYER3 -DEPLAYER4
-#T_CPPFLAGS   += -I$(TARGET_DIR)/usr/include/gstreamer-1.0
-#T_CPPFLAGS   += -I$(TARGET_DIR)/usr/include/glib-2.0
-#T_CPPFLAGS   += -I$(TARGET_DIR)/usr/include/libxml2
-#T_CPPFLAGS   += -I$(TARGET_DIR)/usr/lib/gstreamer-1.0/include
-#T_CPPFLAGS   += -I$(TARGET_DIR)/usr/lib/gstreamer-1.0/include
-#T_CPPFLAGS   += -I$(TOOLS_DIR)/exteplayer3/include
-#T_CPPFLAGS   += -lssl -leplayer -lcrypto -lcurl -lglib-2.0 -lgobject-2.0 -lgio-2.0 -lgstreamer-1.0
-#endif
+ifeq ($(MEDIAFW), gst-explayer3)
+TITAN_DEPS    += $(D)/tools-exteplayer3
+TITAN_DEPS    += $(D)/libcurl
+TITAN_DEPS    += $(D)/ffmpeg
+TITAN_DEPS_   += $(D)/gstreamer $(D)/gst_plugins_base $(D)/gst_plugins_multibox_dvbmediasink
+TITAN_DEPS    += $(D)/gst_plugins_good $(D)/gst_plugins_bad $(D)/gst_plugins_ugly
+T_CPPFLAGS    += -DEPLAYER3
+T_CPPFLAGS    += -DEPLAYER4
+T_CPPFLAGS    += -I$(TARGET_DIR)/usr/include/gstreamer-1.0
+T_CPPFLAGS    += -I$(TARGET_DIR)/usr/include/glib-2.0
+T_CPPFLAGS    += -I$(TARGET_DIR)/usr/include/libxml2
+T_CPPFLAGS    += -I$(TARGET_DIR)/usr/lib/glib-2.0/include
+T_CPPFLAGS    += -I$(TOOLS_DIR)/exteplayer3/include
+T_LINKFLAGS   += -lssl -leplayer3 -lcrypto -lcurl -lglib-2.0 -lgobject-2.0 -lgio-2.0 -lgstreamer-1.0
+endif
 
-T_CPPFLAGS   += $(LOCAL_TITAN_CPPFLAGS)
-T_CPPFLAGS   += $(PLATFORM_CPPFLAGS)
+T_CPPFLAGS    += $(LOCAL_TITAN_CPPFLAGS)
+T_CPPFLAGS    += $(PLATFORM_CPPFLAGS)
 
 #
 # yaud-titan
@@ -173,8 +177,8 @@ $(D)/titan.do_prepare: $(TITAN_DEPS)
 	$(call apply_patches, $(TITAN_PATCH)); \
 	cd $(SOURCE_DIR)/titan; \
 	cp ./libeplayer3/Makefile.am.sh4 ./libeplayer3/Makefile.am; \
+	echo "titan_LDADD = $(T_LINKFLAGS)" >> ./titan/Makefile.am.sh4; \
 	cp ./titan/Makefile.am.sh4 ./titan/Makefile.am; \
-	cp ./plugins/network/networkbrowser/netlib/Makefile.sh4 ./plugins/network/networkbrowser/netlib/Makefile; \
 	echo; \
 	touch $@
 
@@ -253,6 +257,7 @@ $(D)/titan-plugins.do_compile: $(SOURCE_DIR)/titan/plugins/config.status
 $(D)/titan-plugins: $(D)/titan.do_prepare $(D)/python
 	$(START_BUILD)
 	$(SILENT)cd $(SOURCE_DIR)/titan/plugins; \
+		cp ./plugins/network/networkbrowser/netlib/Makefile.sh4 ./plugins/network/networkbrowser/netlib/Makefile; \
 		echo "Configuring titan-plugins..."; \
 		./autogen.sh $(SILENT_OPT); \
 		$(call apply_patches, $(TITAN_PLUGINS_PATCH)); \
@@ -395,5 +400,4 @@ titan-plugins-distclean: $(D)/titan-distclean
 	$(SILENT)rm -f $(D)/titan-plugins
 	$(SILENT)cd $(NP_OBJDIR); \
 		$(MAKE) -C $(NP_OBJDIR) clean
-
 

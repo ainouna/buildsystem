@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20220714.1
+# Version 20220719.1
 
 ##############################################
 
@@ -24,7 +24,7 @@ if [ "$1" == -h ] || [ "$1" == --help ]; then
 	echo "Parameter 3       : optimization (1-5)"
 	echo "Parameter 4       : image (Enigma=1/2 Neutrino=3/4 Titan=5/6 (1-6)"
 	echo "Parameter 5       : Enigma2 diff (0-5), Neutrino variant (1-6), Titan plugins (1=no, 2=yes)"
-	echo "Parameter 6       : media Framework (Enigma2: 1-5; Neutrino/Titan: 2=plugins built)"
+	echo "Parameter 6       : media Framework (Enigma2: 1-5; Neutrino: ignored, Titan: 1-2)"
 	echo "Parameter 7       : external LCD (1=none, 2=graphlcd, 3=lcd4linux, 4=both)"
 	echo "Parameter 8       : destination (1-2, 1=flash, 2=USB)"
 	exit
@@ -420,8 +420,21 @@ case "$IMAGE" in
 			echo "  make yaud-titan-plugins" >> $CURDIR/build
 		fi
 
-		# Titan is always built with eplayer3 and ffmpeg version 3.X.X
-		MEDIAFW="eplayer3"
+		case $6 in
+			[1-2]) REPLY=$6;;
+				*)	echo -e "\nMedia Framework:"
+					echo "   1*) eplayer3"
+					echo "   2)  eplayer3+Gstreamer (not recommended and not tested)"
+					read -p "Select media framework (1-2)? ";;
+		esac
+
+		case "$REPLY" in
+#			1) MEDIAFW="buildinplayer";;
+			2) MEDIAFW="gst-explayer3";;
+			*) MEDIAFW="eplayer3";;
+		esac
+		# Titan is always built with ffmpeg version 3.X.X
+#		MEDIAFW="eplayer3"
 		FFMPEG_VER=$FFMPEG_VER3
 		export FFMPEG_VER
 

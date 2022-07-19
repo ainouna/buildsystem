@@ -514,42 +514,10 @@
 +bin_PROGRAMS = titan
 +
 +titan_SOURCES = titan.c
-+
-+titan_LDADD = -lm -lpthread -ldl -lpng -lfreetype -leplayer3 -ldreamdvd -ljpeg -lz -lmmeimage -lssl -lcrypto -lipkg
 + 
 +titan_CFLAGS = $(ALL_CFLAGS)
---- titan.org/titan/player.h
-+++ titan/titan/player.h
-@@ -3944,17 +3944,19 @@
- char* getsubtext()
- {
- 	char* tmpstr = NULL;
--	if(player && player->container && player->container->selectedContainer)
 +
-+	if (player && player->container && player->container->selectedContainer)
-+	{
- 		player->container->selectedContainer->Command(player, CONTAINER_GET_SUBTEXT, (void*)&tmpstr);
--
-+	}
- //	if(subtitlethread == NULL)
--	if(status.play == 1 && status.pause == 0 && tmpstr != NULL)
--{
-+	if (status.play == 1 && status.pause == 0 && tmpstr != NULL)
-+	{
- 		printf("[player.h] getsubtext tmpstr: %s\n", tmpstr);
- 		subtitlethread = addtimer(&playersubtitle_thread, START, 10000, 1, (void*)tmpstr, NULL, NULL);
--}
--	return subtext;
--}
--#endif
--
--#endif
-+	}
-+	return tmpstr;
-+}
-+#endif
-+
-+#endif
++titan_LDADD = -lm -lpthread -ldl -lpng -lfreetype -ldreamdvd -ljpeg -lz -lmmeimage -lipkg
 --- a/titan/struct.h.org
 +++ b/titan/struct.h
 @@ -82,6 +82,9 @@
@@ -913,6 +881,157 @@
 #+#compile "tools/wlandisplay" "wlandisplay" "" ""
 #+#compile "tools/zapback" "zapback" "" ""
 # 
+#--- titan.org/titan/bcm.h
+#+++ /titan/titan/bcm.h
+#@@ -15,12 +15,8 @@
+# 
+# #define FBIO_ACCEL  0x23
+# 
+#-/* disable bool work include come from libeplayer3 titan/libeplayer3/include/playback.h #include <stdbool.h>
+#-// bool work start
+# typedef int bool;
+# enum { false, true };
+#-// bool work end
+#-*/
+ 
+ static unsigned int displaylist[1024];
+ static int ptr;
+--- titan.org/titan/header.h
++++ titan/titan/header.h
+@@ -8,7 +8,9 @@
+ #ifndef HEADER_H
+ #define HEADER_H
+ 
+-// libeplayer3/playback/playback.h
++// exteplayer3/playback/playback.h
++//typedef int bool;
++//enum { false, true };
+ int8_t PlaybackDieNow(int8_t val);
+ bool PlaybackDieNowRegisterCallback(PlaybackDieNowCallback callback);
+ 
+--- titan.org/titan/player.h
++++ titan/titan/player.h
+#@@ -2900,14 +2900,14 @@
+# 
+# 							printf("Tracklist tmpstr: %s\n", tmpstr);
+# 
+#-							TrackList[i * 2] = ostrcat(tmpstr, NULL, 0, 0);
+#+							TrackList->Encoding[i * 2] = ostrcat(tmpstr, NULL, 0, 0);
+# 							g_free(tmpstr); tmpstr = NULL;
+# 							g_free(g_codec); g_codec = NULL;
+# 						}
+# 						if(gst_tag_list_get_string(tags, GST_TAG_LANGUAGE_CODE, &g_lang))
+# 						{
+# 							printf("Audio Lang: %s\n", g_lang);
+#-							TrackList[(i * 2) + 1] = ostrcat(g_lang, NULL, 0, 0);
+#+							TrackList->Encoding[(i * 2) + 1] = ostrcat(g_lang, NULL, 0, 0);
+# 							g_free(g_lang); g_lang = NULL;
+# 						}
+# 						gst_tag_list_free(tags);
+#@@ -2925,7 +2925,7 @@
+# 							tmpstr = ostrcat(tmpstr, ")", 1, 0);
+# 
+# 						printf("Tracklist tmpstr: %s\n", tmpstr);				
+#-						TrackList[i * 2] = ostrcat(tmpstr, NULL, 0, 0);
+#+						TrackList->Encoding[i * 2] = ostrcat(tmpstr, NULL, 0, 0);
+# 
+# 						g_free(tmpstr); tmpstr = NULL;
+# 						g_free(g_codec); g_codec = NULL;
+#@@ -2976,13 +2976,13 @@
+# 								tmpstr = ostrcat(tmpstr, ")", 1, 0);
+# 
+# 							printf("Tracklist tmpstr: %s\n", tmpstr);
+#-							TrackList[i * 2] = ostrcat(tmpstr, NULL, 0, 0);
+#+							TrackList->Encoding[i * 2] = ostrcat(tmpstr, NULL, 0, 0);
+# 							g_free(g_codec); g_codec = NULL;
+# 						}
+# 						if(gst_tag_list_get_string(tags, GST_TAG_LANGUAGE_CODE, &g_lang))
+# 						{
+# 							printf("SubTitle Lang: %s\n", g_lang);
+#-							TrackList[(i * 2) + 1] = ostrcat(g_lang, NULL, 0, 0);
+#+							TrackList->Encoding[(i * 2) + 1] = ostrcat(g_lang, NULL, 0, 0);
+# 							g_free(g_lang); g_lang = NULL;
+# 						}
+# 						gst_tag_list_free(tags);
+#@@ -3000,7 +3000,7 @@
+# 							tmpstr = ostrcat(tmpstr, ")", 1, 0);
+# 
+# 						printf("Tracklist tmpstr: %s\n", tmpstr);		
+#-						TrackList[i * 2] = ostrcat(tmpstr, NULL, 0, 0);
+#+						TrackList->Encoding[i * 2] = ostrcat(tmpstr, NULL, 0, 0);
+# 
+# 						g_free(tmpstr); tmpstr = NULL;
+# 						g_free(g_codec); g_codec = NULL;				
+#@@ -3024,13 +3024,13 @@
+# 						if(gst_tag_list_get_string(tags, GST_TAG_VIDEO_CODEC, &g_codec))
+# 						{
+# 							printf("Video Codec: %s\n", g_codec);
+#-							TrackList[i * 2] = ostrcat(g_codec, NULL, 0, 0);
+#+							TrackList->Encoding[i * 2] = ostrcat(g_codec, NULL, 0, 0);
+# 							g_free(g_codec); g_codec = NULL;
+# 						}
+# 						if(gst_tag_list_get_string(tags, GST_TAG_LANGUAGE_CODE, &g_lang))
+# 						{
+# 							printf("Video Lang: %s\n", g_lang);
+#-							TrackList[(i * 2) + 1] = ostrcat(g_lang, NULL, 0, 0);
+#+							TrackList->Encoding[(i * 2) + 1] = ostrcat(g_lang, NULL, 0, 0);
+# 							g_free(g_lang); g_lang = NULL;
+# 						}
+# 						gst_tag_list_free(tags);
+@@ -3348,11 +3348,13 @@
+ 	if(player && player->output && player->output->subtitle)
+ 		player->output->subtitle->Command(player, (OutputCmd_t)OUTPUT_STOP, NULL);
+ #ifndef EXTEPLAYER3
++/*
+ 	if(player && player->container && player->container->assContainer)
+ 	{
+ 		player->container->assContainer->Command(player, CONTAINER_STOP, NULL);
+ 		player->container->assContainer->Command(player, CONTAINER_INIT, NULL);
+ 	}
++*/
+ 	if(player && player->manager && player->manager->subtitle)
+ 	{
+ 		int onlycurrent = 1;
+@@ -3944,17 +3946,19 @@
+ char* getsubtext()
+ {
+ 	char* tmpstr = NULL;
+-	if(player && player->container && player->container->selectedContainer)
++
++	if (player && player->container && player->container->selectedContainer)
++	{
+ 		player->container->selectedContainer->Command(player, CONTAINER_GET_SUBTEXT, (void*)&tmpstr);
+-
++	}
+ //	if(subtitlethread == NULL)
+-	if(status.play == 1 && status.pause == 0 && tmpstr != NULL)
+-{
++	if (status.play == 1 && status.pause == 0 && tmpstr != NULL)
++	{
+ 		printf("[player.h] getsubtext tmpstr: %s\n", tmpstr);
+ 		subtitlethread = addtimer(&playersubtitle_thread, START, 10000, 1, (void*)tmpstr, NULL, NULL);
+-}
+-	return subtext;
+-}
+-#endif
+-
+-#endif
++	}
++	return tmpstr;
++}
++#endif
++
++#endif
+--- titan.org/titan/sh4port.h
++++ titan/titan/sh4port.h
+@@ -4,6 +4,7 @@
+ #include <bpamem.h>
+ #include <libmmeimage.h>
+ #include <linux/stmfb.h>
++#include <stdbool.h>
+ 
+ struct stmfbio_output_configuration outcfg;
+ struct stmfbio_outputinfo outinfo;
 --- titan.org/titan/vfd.h
 +++ titan/titan/vfd.h
 @@ -246,7 +246,7 @@
