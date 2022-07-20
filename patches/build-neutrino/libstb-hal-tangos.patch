@@ -532,7 +532,15 @@
  	ICON_STANDBY,
  	ICON_SAT,
  	ICON_REC,
-@@ -205,22 +428,151 @@
+@@ -190,6 +413,7 @@
+ 	ICON_RADIO,
+ 	ICON_MAX,
+ 	FP_ICON_480P       = ICON_480P,
++	FP_ICON_MIN        = FP_ICON_480P,
+ 	FP_ICON_480I       = ICON_480I,
+ 	FP_ICON_576P       = ICON_576P,
+ 	FP_ICON_576I       = ICON_576I,
+@@ -205,22 +429,152 @@
  	FP_ICON_MUSIC      = FP_ICON_RADIO,
  	FP_ICON_DD         = 0x04,
  	FP_ICON_REC        = 0x03,
@@ -552,6 +560,7 @@
 +	FP_ICON_TV         = 0,
 +	FP_ICON_MAIL       = 0,
 +	FP_ICON_BT         = 0,
++	FP_ICON_MAX        = FP_ICON_TIMESHIFT,
 +#elif defined(BOXMODEL_ADB_BOX)
 +	ICON_REC = 1,   // 01
 +	ICON_TIMESHIFT, // 02
@@ -695,30 +704,18 @@
  	FP_ICON_HD,
  	FP_ICON_HDD,
  	FP_ICON_LOCK,
-@@ -242,8 +594,21 @@
+@@ -242,16 +596,15 @@
  	FP_ICON_RECORD = FP_ICON_REC,
  	FP_ICON_DOWNLOAD,
  	FP_ICON_TIMESHIFT,
-+#if 0
-+ if !defined(BOXMODEL_UFS910)
-+ && !defined(BOXMODEL_UFS922)
-+ && !defined(BOXMODEL_UFS912)
-+ && !defined(BOXMODEL_UFS913)
-+ && !defined(BOXMODEL_FS9000)
-+ && !defined(BOXMODEL_TF7700)
-+ && !defined(BOXMODEL_UFS910)
-+ && !defined(BOXMODEL_UFS922)
-+ && !defined(BOXMODEL_UFS912)
-+ && !defined(BOXMODEL_UFS913)
-+ && !defined(BOXMODEL_IPBOX9900)
-+ && !defined(BOXMODEL_IPBOX99)
-+ && !defined(BOXMODEL_ADB_BOX)
- #endif
+-#endif
 -#if !defined(BOXMODEL_UFS910) && !defined(BOXMODEL_UFS922) && !defined(BOXMODEL_UFS912) && !defined(BOXMODEL_UFS913) && !defined(BOXMODEL_FORTIS_HDBOX)
- 	FP_ICON_MAX
+-	FP_ICON_MAX
++	FP_ICON_TIMESHIFT,
++	FP_ICON_MAX,
  #endif
  } fp_icon;
-@@ -251,7 +616,7 @@
+ 
  typedef enum {
  	FP_FLAG_NONE			= 0x00,
  	FP_FLAG_SCROLL_ON		= 0x01,	/* switch scrolling on */
@@ -727,7 +724,7 @@
  	FP_FLAG_SCROLL_SIO		= 0x04,	/* start/stop scrolling with empty screen (scroll in/out) */
  	FP_FLAG_SCROLL_DELAY		= 0x08,	/* delayed scroll start */
  	FP_FLAG_ALIGN_LEFT		= 0x10,	/* align the text in display from the left (default) */
-@@ -259,7 +624,8 @@
+@@ -259,7 +612,8 @@
  	FP_FLAG_UPDATE_SCROLL_POS	= 0x40,	/* update the current position for scrolling */
  } fp_flag;
  
@@ -737,7 +734,7 @@
  	unsigned char		brightness;
  	unsigned char		flags;
  	unsigned char		current_hour;
-@@ -268,22 +634,27 @@
+@@ -268,22 +622,27 @@
  	unsigned char		timer_minutes_lo;
  } fp_standby_data_t;
  
@@ -768,7 +765,7 @@
  	FP_WAKEUP_SOURCE_TIMER  = 0x01,
  	FP_WAKEUP_SOURCE_BUTTON = 0x02,
  	FP_WAKEUP_SOURCE_REMOTE = 0x04,
-@@ -291,25 +662,29 @@
+@@ -291,25 +650,29 @@
  	FP_WAKEUP_SOURCE_POWER  = 0xFF
  } fp_wakeup_source;
  
