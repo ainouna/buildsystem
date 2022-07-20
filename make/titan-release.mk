@@ -93,7 +93,7 @@ titan-release-common_ipbox:
 titan-release-ipbox9900: titan-release-common_ipbox
 	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/frontcontroller/ipbox99xx/micom.ko $(RELEASE_DIR)/lib/modules/
 	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/rmu/rmu.ko $(RELEASE_DIR)/lib/modules/
-	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/ipbox99xx_fan/ipbox_fan.ko $(RELEASE_DIR)/lib/modules/
+	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/fan_ipbox99xx/ipbox_fan.ko $(RELEASE_DIR)/lib/modules/
 	$(SILENT)cp -p $(SKEL_ROOT)/release/tvmode_ipbox $(RELEASE_DIR)/usr/bin/tvmode
 
 #
@@ -101,7 +101,7 @@ titan-release-ipbox9900: titan-release-common_ipbox
 #
 titan-release-ipbox99: titan-release-common_ipbox
 	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/frontcontroller/ipbox99xx/micom.ko $(RELEASE_DIR)/lib/modules/
-	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/ipbox99xx_fan/ipbox_fan.ko $(RELEASE_DIR)/lib/modules/
+	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/fan_ipbox99xx/ipbox_fan.ko $(RELEASE_DIR)/lib/modules/
 	$(SILENT)cp -p $(SKEL_ROOT)/release/tvmode_ipbox $(RELEASE_DIR)/usr/bin/tvmode
 
 #
