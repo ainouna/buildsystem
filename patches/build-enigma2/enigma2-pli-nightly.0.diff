@@ -1,4 +1,4 @@
-# revision efcb1ebe7e53c27ab3e964e9bbfa8c78acaa8876 28/06/2022 23:52
+# revision 1ea7cb997cea20a66cb3587aec4abcadfb23641e 20/07/2022 14:07
 --- enigma2.org/configure.ac
 +++ enigma2/configure.ac
 @@ -18,6 +18,7 @@
@@ -5532,7 +5532,7 @@
  void eConsoleInit(void)
 --- enigma2.org/lib/python/Components/About.py
 +++ enigma2/lib/python/Components/About.py
-@@ -58,12 +58,15 @@
+@@ -58,13 +58,15 @@
  
  
  def getGStreamerVersionString():
@@ -5541,7 +5541,8 @@
 -		gst = [x.split("Version: ") for x in open(glob("/var/lib/opkg/info/gstreamer[0-9].[0-9].control")[0], "r") if x.startswith("Version:")][0]
 -		return "%s" % gst[1].split("+")[0].replace("\n", "")
 -	except:
--		return _("Not Installed")
+-		return ""
+-
 +	from glob import glob
 +	if os.path.isfile('/usr/lib/pkgconfig/gstreamer-1.0.pc'):
 +		gstversion = [x.split("Version:") for x in open(glob("/usr/lib/pkgconfig/gstreamer-1.0.pc")[0], "r") if x.startswith("Version:")][0]
@@ -5552,9 +5553,9 @@
 +	else:
 +		return _("eplayer3")
  
- 
  def getffmpegVersionString():
-@@ -83,7 +86,7 @@
+ 	try:
+@@ -83,7 +85,7 @@
  
  
  def getHardwareTypeString():
@@ -5563,7 +5564,7 @@
  
  
  def getImageTypeString():
-@@ -97,29 +100,19 @@
+@@ -97,29 +99,19 @@
  def getCPUInfoString():
  	try:
  		cpu_count = 0
@@ -8695,7 +8696,7 @@
  
  		self.paused_service = self.paused_action = False
  
-@@ -108,6 +147,9 @@
+@@ -111,6 +150,9 @@
  			self.avswitch.setInput("SCART")
  		else:
  			self.avswitch.setInput("AUX")
@@ -8705,7 +8706,7 @@
  
  		gotoShutdownTime = int(config.usage.standby_to_shutdown_timer.value)
  		if gotoShutdownTime:
-@@ -161,6 +203,42 @@
+@@ -164,6 +206,42 @@
  
  	def Power(self):
  		print "[Standby] leave standby"
@@ -8748,7 +8749,7 @@
  		self.close(True)
  
  	def setMute(self):
-@@ -254,6 +332,7 @@
+@@ -257,6 +333,7 @@
  			QUIT_RESTART: _("The user interface of your receiver is restarting"),
  			QUIT_UPGRADE_FP: _("Your frontprocessor will be updated\nPlease wait until your receiver reboots\nThis may take a few minutes"),
  			QUIT_DEBUG_RESTART: _("The user interface of your receiver is restarting in debug mode"),
@@ -8756,7 +8757,7 @@
  			QUIT_UPGRADE_PROGRAM: _("Unattended update in progress\nPlease wait until your receiver reboots\nThis may take a few minutes"),
  			QUIT_MANUFACTURER_RESET: _("Manufacturer reset in progress\nPlease wait until enigma2 restarts")
  		}.get(retvalue)
-@@ -299,6 +378,7 @@
+@@ -302,6 +381,7 @@
  				QUIT_RESTART: _("Really restart now?"),
  				QUIT_UPGRADE_FP: _("Really update the frontprocessor and reboot now?"),
  				QUIT_DEBUG_RESTART: _("Really restart in debug mode now?"),
@@ -9335,7 +9336,7 @@
  from enigma import eTimer, eLabel, eConsoleAppContainer, getDesktop, eGetEnigmaDebugLvl
  
  from Components.GUIComponent import GUIComponent
-@@ -29,6 +31,16 @@
+@@ -30,6 +32,16 @@
  		hddsplit = parameters.get("AboutHddSplit", 1)
  
  		AboutText = _("Hardware: ") + about.getHardwareTypeString() + "\n"
@@ -9352,16 +9353,16 @@
  		cpu = about.getCPUInfoString()
  		AboutText += _("CPU: ") + cpu + "\n"
  		AboutText += _("Image: ") + about.getImageTypeString() + "\n"
-@@ -52,7 +64,7 @@
+@@ -53,7 +65,7 @@
  
  		AboutText += _("DVB driver version: ") + about.getDriverInstalledDate() + "\n"
  
--		GStreamerVersion = _("Media player: GStreamer, version ") + about.getGStreamerVersionString().replace("GStreamer", "")
+-		GStreamerVersion = about.getGStreamerVersionString().replace("GStreamer", "")
 +		GStreamerVersion = "Media framework: " + about.getGStreamerVersionString()
  		self["GStreamerVersion"] = StaticText(GStreamerVersion)
  
- 		ffmpegVersion = _("Media player: ffmpeg, version ") + about.getffmpegVersionString()
-@@ -73,7 +85,14 @@
+ 		ffmpegVersion = about.getffmpegVersionString()
+@@ -84,7 +96,14 @@
  		if fp_version is None:
  			fp_version = ""
  		elif fp_version != 0:
