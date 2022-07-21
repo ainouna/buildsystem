@@ -972,8 +972,8 @@ $(D)/libnsl: $(D)/bootstrap $(ARCHIVE)/$(LIBNSL_SOURCE)
 			--prefix=/usr \
 			; \
 		$(MAKE) all; \
-		$(MAKE) install DESTDIR=$(CROSS_BASE)/$(TARGET)/sys-root
-		cp -a $(CROSS_BASE)/$(TARGET)/sys-root/usr/lib/libnsl.so* $(TARGET_LIB_DIR)
+		$(MAKE) install DESTDIR=$(CROSS_DIR)/$(TARGET)/sys-root
+		cp -a $(CROSS_DIR)/$(TARGET)/sys-root/usr/lib/libnsl.so* $(TARGET_LIB_DIR)
 	$(REMOVE)/libnsl-$(LIBNSL_VER)
 	$(TOUCH)
 

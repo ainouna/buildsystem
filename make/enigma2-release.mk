@@ -892,7 +892,7 @@ endif
 	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/wireless/rtl8192cu/8192cu.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/wireless/rtl8192cu/8192cu.ko $(RELEASE_DIR)/lib/modules/ || true
 	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/wireless/rtl8192du/8192du.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/wireless/rtl8192du/8192du.ko $(RELEASE_DIR)/lib/modules/ || true
 	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/wireless/rtl8192eu/8192eu.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/wireless/rtl8192eu/8192eu.ko $(RELEASE_DIR)/lib/modules/ || true
-ifeq ($(IMAGE), $(filter $(IMAGE), enigma2-wlandriver neutrino-wlandriver))
+ifeq ($(IMAGE), $(filter $(IMAGE), enigma2-wlandriver))
 	$(SILENT)install -d $(RELEASE_DIR)/etc/Wireless
 	$(SILENT)cp -aR $(SKEL_ROOT)/firmware/Wireless/* $(RELEASE_DIR)/etc/Wireless/
 	$(SILENT)cp -aR $(SKEL_ROOT)/firmware/rtlwifi $(RELEASE_DIR)/lib/firmware/
@@ -1115,7 +1115,7 @@ endif
 #
 # Remove WirelessLAN plugin if no wlan built
 #
-ifneq ($(IMAGE), $(filter $(IMAGE), enigma2-wlandriver neutrino-wlandriver))
+ifneq ($(IMAGE), $(filter $(IMAGE), enigma2-wlandriver))
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/SystemPlugins/WirelessLAN
 endif
 #

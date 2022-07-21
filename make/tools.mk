@@ -2,42 +2,42 @@
 # tools
 #
 tools-clean:
-	rm -f $(D)/tools-*
-	-$(MAKE) -C $(TOOLS_DIR)/aio-grab distclean
-	-$(MAKE) -C $(TOOLS_DIR)/devinit distclean
-	-$(MAKE) -C $(TOOLS_DIR)/eeprom_crenova distclean
-	-$(MAKE) -C $(TOOLS_DIR)/eeprom_dgs distclean
-	-$(MAKE) -C $(TOOLS_DIR)/eeprom_fortis distclean
-	-$(MAKE) -C $(TOOLS_DIR)/eeprom_ipbox distclean
-	-$(MAKE) -C $(TOOLS_DIR)/eeprom_ufs910 distclean
-	-$(MAKE) -C $(TOOLS_DIR)/eeprom_ufs913 distclean
-	-$(MAKE) -C $(TOOLS_DIR)/eeprom_ufs922 distclean
-	-$(MAKE) -C $(TOOLS_DIR)/eplayer3 distclean
-	-$(MAKE) -C $(TOOLS_DIR)/exteplayer3 distclean
-	-$(MAKE) -C $(TOOLS_DIR)/evremote2 distclean
-	-$(MAKE) -C $(TOOLS_DIR)/infobox distclean
-	-$(MAKE) -C $(TOOLS_DIR)/fp_control distclean
-	-$(MAKE) -C $(TOOLS_DIR)/gitVCInfo distclean
-	-$(MAKE) -C $(TOOLS_DIR)/hotplug distclean
-	-$(MAKE) -C $(TOOLS_DIR)/libeplayer3_org distclean
-	-$(MAKE) -C $(TOOLS_DIR)/libeplayer3 distclean
-	-$(MAKE) -C $(TOOLS_DIR)/libmme_host distclean
-	-$(MAKE) -C $(TOOLS_DIR)/libmme_image distclean
-	-$(MAKE) -C $(TOOLS_DIR)/minimon distclean
-	-$(MAKE) -C $(TOOLS_DIR)/msgbox distclean
-	-$(MAKE) -C $(TOOLS_DIR)/read-edid distclean
-	-$(MAKE) -C $(TOOLS_DIR)/satfind distclean
-	-$(MAKE) -C $(TOOLS_DIR)/showiframe distclean
-	-$(MAKE) -C $(TOOLS_DIR)/spf_tool distclean
-	-$(MAKE) -C $(TOOLS_DIR)/stfbcontrol distclean
-	-$(MAKE) -C $(TOOLS_DIR)/streamproxy distclean
-	-$(MAKE) -C $(TOOLS_DIR)/tfd2mtd distclean
-	-$(MAKE) -C $(TOOLS_DIR)/tffpctl distclean
-	-$(MAKE) -C $(TOOLS_DIR)/titan-tools distclean
-	-$(MAKE) -C $(TOOLS_DIR)/tuxcom distclean
-	-$(MAKE) -C $(TOOLS_DIR)/ustslave distclean
-	-$(MAKE) -C $(TOOLS_DIR)/vfdctl distclean
-	-$(MAKE) -C $(TOOLS_DIR)/wait4button distclean
+	@rm -f $(D)/tools-*
+	@-$(MAKE) -C $(TOOLS_DIR)/aio-grab distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/devinit distclean
+#	@-$(MAKE) -C $(TOOLS_DIR)/eeprom_crenova distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/eeprom_dgs distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/eeprom_fortis distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/eeprom_ipbox distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/eeprom_ufs910 distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/eeprom_ufs913 distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/eeprom_ufs922 distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/eplayer3 distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/exteplayer3 distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/evremote2 distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/infobox distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/fp_control distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/gitVCInfo distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/hotplug distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/libeplayer3_org distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/libeplayer3 distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/libmme_host distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/libmme_image distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/minimon distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/msgbox distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/read-edid distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/satfind distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/showiframe distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/spf_tool distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/stfbcontrol distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/streamproxy distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/tfd2mtd distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/tffpctl distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/titan-tools distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/tuxcom distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/ustslave distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/vfdctl distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/wait4button distclean
 ifneq ($(wildcard $(TOOLS_DIR)/own-tools),)
 	-$(MAKE) -C $(TOOLS_DIR)/own-tools distclean
 endif

@@ -119,7 +119,7 @@ $(TARGET_DIR)/lib/libc.so.6:
 		cp -ar $(SKEL_ROOT)/usr/include/linux/* $(TARGET_DIR)/usr/include/linux; \
 	fi
 
-ifeq ($(wildcard $(CROSS_BASE)/build.log.bz2),)
+ifeq ($(wildcard $(CROSS_DIR)/build.log.bz2),)
 CROSSTOOL = crosstool
 $(D)/crosstool:
 	$(START_BUILD)
@@ -152,8 +152,8 @@ $(D)/crosstool-ng: directories $(ARCHIVE)/$(CROSSTOOL_NG_SOURCE)
 	$(SILENT)if [ ! -d $(BUILD_TMP) ]; then \
 		make $(BUILD_TMP); \
 	fi
-	$(SILENT)if [ ! -d $(CROSS_BASE) ]; then \
-		mkdir -p $(CROSS_BASE); \
+	$(SILENT)if [ ! -d $(CROSS_DIR) ]; then \
+		mkdir -p $(CROSS_DIR); \
 	fi
 	$(REMOVE)/crosstool-ng
 	$(UNTAR)/$(CROSSTOOL_NG_SOURCE)
@@ -162,15 +162,15 @@ $(D)/crosstool-ng: directories $(ARCHIVE)/$(CROSSTOOL_NG_SOURCE)
 		cp -a $(PATCHES)/ct-ng/crosstool-ng-$(CROSSTOOL_NG_VER)-$(BS_GCC_VER)-sh4.config .config; \
 		sed -i "s@^CT_PARALLEL_JOBS=.*@CT_PARALLEL_JOBS=$$PARALLEL_JOBS@" .config; \
 		export CT_ARCHIVE=$(ARCHIVE); \
-		export CT_BASE_DIR=$(CROSS_BASE); \
+		export CT_BASE_DIR=$(CROSS_DIR); \
 		./configure $(MINUS_Q) --enable-local; \
 		MAKELEVEL=0 make; \
 		chmod 0755 ct-ng; \
 		./ct-ng oldconfig; \
 		./ct-ng build
-	$(SILENT)chmod -R +w $(CROSS_BASE)
-	$(SILENT)test -e $(CROSS_BASE)/sh4-unknown-linux-gnu/lib || ln -sf sys-root/lib $(CROSS_BASE)/sh4-unknown-linux-gnu/
-	$(SILENT)rm -f $(CROSS_BASE)/sh4-unknown-linux-gnu/sys-root/lib/libstdc++.so.6.0.20-gdb.py
+	$(SILENT)chmod -R +w $(CROSS_DIR)
+	$(SILENT)test -e $(CROSS_DIR)/sh4-unknown-linux-gnu/lib || ln -sf sys-root/lib $(CROSS_DIR)/sh4-unknown-linux-gnu/
+	$(SILENT)rm -f $(CROSS_DIR)/sh4-unknown-linux-gnu/sys-root/lib/libstdc++.so.6.0.20-gdb.py
 	$(REMOVE)/crosstool-ng-$(CROSSTOOL_NG_VER)
 	$(TOUCH)
 
@@ -179,8 +179,8 @@ crosstool-backup:
 	$(SILENT)if [ -e $(CROSSTOOL_NG_BACKUP) ]; then \
 		mv $(CROSSTOOL_NG_BACKUP) $(CROSSTOOL_NG_BACKUP).old; \
 	fi
-	$(SILENT)cd $(CROSS_BASE); \
-	tar czf $(CROSSTOOL_NG_BACKUP) * -C $(CROSS_BASE)
+	$(SILENT)cd $(CROSS_DIR); \
+	tar czf $(CROSSTOOL_NG_BACKUP) * -C $(CROSS_DIR)
 
 crosstool-restore: $(CROSSTOOL_NG_BACKUP)
 	$(SILENT)rm -rf $(CROSS_DIR)
