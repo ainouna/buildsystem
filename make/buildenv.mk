@@ -63,7 +63,7 @@ KERNEL_STM           ?= p0217
 IMAGE                ?= neutrino-wlandriver
 FLAVOUR              ?= neutrino-ddt
 OPTIMIZATIONS        ?= size
-MEDIAFW              ?= buildinplayer
+MEDIAFW              ?= builtinplayer
 EXTERNAL_LCD         ?= none
 DESTINATION          ?= flash
 
@@ -379,7 +379,7 @@ else ifeq ($(MEDIAFW), gst-eplayer3)
 EPLAYER3           = 1
 gst-eplayer3       = 1
 else
-buildinplayer      = 1
+builtinplayer      = 1
 endif
 
 #

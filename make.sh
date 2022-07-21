@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20220719.1
+# Version 20220721.1
 
 ##############################################
 
@@ -365,12 +365,12 @@ case "$IMAGE" in
 				esac
 
 				case "$REPLY" in
-#					1) MEDIAFW="buildinplayer";;
+#					1) MEDIAFW="builtinplayer";;
 					2) MEDIAFW="gstreamer";;
-					*) MEDIAFW="buildinplayer";;
+					*) MEDIAFW="builtinplayer";;
 				esac;;
 			neutrino*)
-					MEDIAFW="buildinplayer";
+					MEDIAFW="builtinplayer";
 		esac
 
 		case "$FLAVOUR" in
@@ -403,7 +403,7 @@ case "$IMAGE" in
 		case $5 in
 			[1-2] ) REPLY=$5;;
 			*)	echo -e "\nWhich Titan variant do you want to build?"
-				echo "   1)  Titan without plugins"
+				echo "   1*) Titan without plugins"
 				echo "   2)  Titan with plugins (not tested/finished yet)"
 				read -p "Select Titan variant to build (1-2)? ";;
 		esac
@@ -429,7 +429,7 @@ case "$IMAGE" in
 		esac
 
 		case "$REPLY" in
-#			1) MEDIAFW="buildinplayer";;
+#			1) MEDIAFW="eplayer3";;
 			2) MEDIAFW="gst-explayer3";;
 			*) MEDIAFW="eplayer3";;
 		esac
@@ -452,7 +452,7 @@ case "$IMAGE" in
 #	enigma*)
 	*)
 		if [ "$OPTIMIZATIONS" == "small" ]; then
-			MEDIAFW="buildinplayer"
+			MEDIAFW="builtinplayer"
 		else
 			case $6 in
 				[1-5]) REPLY=$6;;
@@ -466,7 +466,7 @@ case "$IMAGE" in
 			esac
 
 			case "$REPLY" in
-				1) MEDIAFW="buildinplayer";;
+				1) MEDIAFW="builtinplayer";;
 				2) MEDIAFW="eplayer3";;
 				3) MEDIAFW="gstreamer";;
 #				4) MEDIAFW="gst-eplayer3";;
