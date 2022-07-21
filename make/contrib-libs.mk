@@ -1729,18 +1729,16 @@ LIBXML2_CONF_OPTS  = --with-python=$(HOST_DIR)
 LIBXML2_CONF_OPTS += --with-python-install-dir=/$(PYTHON_DIR)/site-packages
 endif
 
-ifeq ($(IMAGE), $(filter $(IMAGE), neutrino neutrino-wlandriver))
+ifeq ($(IMAGE), $(filter $(IMAGE), neutrino neutrino-wlandriver titan titan-wlandriver))
 LIBXML2_CONF_OPTS  = --without-python
-LIBXML2_CONF_OPTS += --without-catalog
-LIBXML2_CONF_OPTS += --without-legacy
+LIBXML2_CONF_OPTS += --without-iconv
+LIBXML2_CONF_OPTS += --with-minimum
+LIBXML2_CONF_OPTS += --with-schematron=yes
 ifeq ($(MEDIAFW), gstreamer)
 LIBXML2_CONF_OPTS += --with-tree
 LIBXML2_CONF_OPTS += --with-output
 LIBXML2_CONF_OPTS += --with-sax1
 endif
-LIBXML2_CONF_OPTS += --without-iconv
-LIBXML2_CONF_OPTS += --with-minimum
-LIBXML2_CONF_OPTS += --with-schematron=yes
 endif
 
 $(D)/libxml2: $(D)/bootstrap $(D)/zlib $(ARCHIVE)/$(LIBXML2_SOURCE)
@@ -1748,7 +1746,6 @@ $(D)/libxml2: $(D)/bootstrap $(D)/zlib $(ARCHIVE)/$(LIBXML2_SOURCE)
 	$(REMOVE)/libxml2-$(LIBXML2_VER).tar.gz
 	$(UNTAR)/$(LIBXML2_SOURCE)
 	$(CH_DIR)/libxml2-$(LIBXML2_VER); \
-		autoreconf -fi $(SILENT_OPT); \
 		$(call apply_patches, $(LIBXML2_PATCH)); \
 		autoreconf -fi $(SILENT_OPT); \
 		$(CONFIGURE) \
@@ -1757,7 +1754,6 @@ $(D)/libxml2: $(D)/bootstrap $(D)/zlib $(ARCHIVE)/$(LIBXML2_SOURCE)
 			--datarootdir=/.remove \
 			--enable-shared \
 			--disable-static \
-			--without-python \
 			--without-catalog \
 			--without-debug \
 			--without-legacy \
@@ -2954,7 +2950,7 @@ $(D)/libwrap: $(D)/bootstrap $(ARCHIVE)/$(LIBWRAP_SOURCE)
 		make all; \
 		make install $(SILENT_OPT) DESTDIR=$(TARGET_DIR)
 	$(REWRITE_LIBTOOL)/libwrap.la
-#	$(REMOVE)/libwrap-$(LIBWRAP_VER)
+	$(REMOVE)/libwrap-$(LIBWRAP_VER)
 	$(TOUCH)
 
 
