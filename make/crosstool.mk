@@ -76,7 +76,7 @@ crosstool-rpminstall
 	@echo
 
 $(TARGET_DIR)/lib/libc.so.6:
-#	$(START_BUILD)
+	$(START_BUILD)
 	$(SET) -e; cd $(CROSS_DIR); rm -f sh4-linux/sys-root; ln -s ../target sh4-linux/sys-root; \
 	if [ -e $(CROSS_DIR)/target/usr/lib/libstdc++.la ]; then \
 		sed -i "s,^libdir=.*,libdir='$(CROSS_DIR)/target/usr/lib'," $(CROSS_DIR)/target/usr/lib/lib{std,sup}c++.la; \
@@ -100,15 +100,15 @@ $(TARGET_DIR)/lib/libc.so.6:
 		cp -a $(CROSS_DIR)/target/etc/ld.so.conf $(TARGET_DIR)/etc; \
 		cp -a $(CROSS_DIR)/target/etc/host.conf $(TARGET_DIR)/etc; \
 	fi
-#	@touch $(D)/$(notdir $@)
-#	@echo "--------------------------------------------------------------"
-#	@echo -e "Build of $(TERM_GREEN_BOLD)$(PKG_NAME)$(TERM_NORMAL) completed."
-#	@echo
+	@touch $(D)/$(notdir $@)
+	@echo "--------------------------------------------------------------"
+	@echo -e "Build of $(TERM_GREEN_BOLD)$(PKG_NAME)$(TERM_NORMAL) completed."
+	@echo
 endif  # BS_GCC_VER is 4.6.3 or 4.8.4
 
 ifneq ($(BS_GCC_VER), $(filter $(BS_GCC_VER), 4.6.3 4.8.4))
 $(TARGET_DIR)/lib/libc.so.6:
-#	$(START_BUILD)
+	$(START_BUILD)
 	$(SILENT)if [ -e $(CROSS_DIR)/$(TARGET)/sys-root/lib ]; then \
 		cp -a $(CROSS_DIR)/$(TARGET)/sys-root/lib/*so* $(TARGET_DIR)/lib; \
 	else \
@@ -118,6 +118,10 @@ $(TARGET_DIR)/lib/libc.so.6:
 		mkdir -p $(TARGET_DIR)/usr/include/linux/dvb; \
 		cp -ar $(SKEL_ROOT)/usr/include/linux/* $(TARGET_DIR)/usr/include/linux; \
 	fi
+	@touch $(D)/$(notdir $@)
+	@echo "--------------------------------------------------------------"
+	@echo -e "Build of $(TERM_GREEN_BOLD)$(PKG_NAME)$(TERM_NORMAL) completed."
+	@echo
 
 ifeq ($(wildcard $(CROSS_DIR)/build.log.bz2),)
 CROSSTOOL = crosstool
@@ -137,7 +141,7 @@ endif # BS_GCC_VER is not 4.6.3 or 4.8.4
 # crosstool-ng
 #
 CROSSTOOL_GCC_VER = gcc-$(BS_GCC_VER)
-CROSSTOOL_NG_VER = 1.24.0
+CROSSTOOL_NG_VER = 1.25.0
 CROSSTOOL_NG_SOURCE = crosstool-ng-$(CROSSTOOL_NG_VER).tar.xz
 CROSSTOOL_NG_BACKUP = $(ARCHIVE)/$(CROSSTOOL_GCC_VER)-sh4-kernel-$(KERNEL_VER)-backup.tar.gz
 ifeq ($(CROSSTOOL_NG_VER), 1.23.0)

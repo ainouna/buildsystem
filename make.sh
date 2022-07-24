@@ -22,7 +22,7 @@ if [ "$1" == -h ] || [ "$1" == --help ]; then
 	echo "Parameter 1       : target system (1-37)"
 	echo "Parameter 2       : kernel (1-2)"
 	echo "Parameter 3       : optimization (1-5)"
-	echo "Parameter 4       : image (Enigma=1/2 Neutrino=3/4 Titan=5/6 (1-6)"
+	echo "Parameter 4       : image (Enigma=1/2 Neutrino=3/4 Titan=5/6)"
 	echo "Parameter 5       : Enigma2 diff (0-5), Neutrino variant (1-6), Titan plugins (1=no, 2=yes)"
 	echo "Parameter 6       : media Framework (Enigma2: 1-5; Neutrino: ignored, Titan: 1-2)"
 	echo "Parameter 7       : external LCD (1=none, 2=graphlcd, 3=lcd4linux, 4=both)"
@@ -53,15 +53,31 @@ echo "                            |___/"
 # Determine image type and receiver model of the previous build, if any
 if [ -e ./config ]; then
 	cp ./config ./config.old
-	LASTBOX=`grep -e "BOXTYPE=" ./config.old | awk '{print substr($0,9,length($0)-7)}'`
-	LASTIMAGE1=`grep -e "enigma2" ./config.old | awk '{print substr($0,7,length($0)-7)}'`
-	LASTIMAGE2=`grep -e "neutrino" ./config.old | awk '{print substr($0,7,length($0)-7)}'`
-	LASTIMAGE3=`grep -e "titan" ./config.old | awk '{print substr($0,7,length($0)-7)}'`
+	LASTBOX=`grep -e "BOXTYPE=" ./config.old | awk '{print substr($0,9,length($0)-8)}'`
+	LASTIMAGE1=`grep -e "enigma2" ./config.old | awk '{print substr($0,7,length($0)-6)}'`
+	LASTIMAGE2=`grep -e "neutrino" ./config.old | awk '{print substr($0,7,length($0)-6)}'`
+	LASTIMAGE3=`grep -e "titan" ./config.old | awk '{print substr($0,7,length($0)-6)}'`
 	if [ $LASTIMAGE1 ]; then
-		LASTDIFF=`grep -e "E2_DIFF=" ./config.old | awk '{print substr($0,9,length($0)-7)}'`
+		LASTDIFF=`grep -e "E2_DIFF=" ./config.old | awk '{print substr($0,9,length($0)-8)}'`
 	fi
 	rm -f ./config.old
 fi
+
+##############################################
+
+# Select gcc version by uncommenting one line
+#BS_GCC_VER="4.6.3" # Unpacks rpms, quick build
+BS_GCC_VER="4.8.4" # Unpacks rpms, quick build
+#BS_GCC_VER="4.9.4" # Builds gcc through crosstool-ng
+echo "BS_GCC_VER=$BS_GCC_VER" >> config
+export BS_GCC_VER
+
+# basic ffmpeg version numbers
+FFMPEG_VER2="2.8.20"
+FFMPEG_VER3="3.4.3"
+FFMPEG_VER42="4.2.2"
+FFMPEG_VER43="4.3.2"
+#FFMPEG_VER44="4.4.2"
 
 ##############################################
 
@@ -114,6 +130,29 @@ fi
 
 ##############################################
 
+echo -ne "\nChecking the .elf files in $CURDIR/root/boot..."
+set='audio_7100 audio_7105 audio_7109 audio_7111 video_7100 video_7105 video_7109 video_7111'
+ELFMISSING=0
+for i in $set;
+do
+	if [ ! -e $CURDIR/root/boot/$i.elf ]; then
+		echo -e -n "\n\033[31mERROR\033[0m: file $i.elf is missing in ./root/boot"
+		ELFMISSING=1
+	fi
+done
+if [ "$ELFMISSING" == "1" ]; then
+	echo -e "\n"
+	echo "Correct this and retry."
+	echo
+	exit
+fi
+echo " [OK]"
+if [ -e $CURDIR/root/boot/put_your_elf_files_here ]; then
+	rm $CURDIR/root/boot/put_your_elf_files_here
+fi
+
+##############################################
+
 case $1 in
 	[1-9] | 1[0-9] | 2[0-9] | 3[0-9] | 4[0-2]) REPLY=$1;;
 	*)
@@ -159,7 +198,7 @@ case $1 in
 #		echo "   39)  ADB ITI-2849ST/2850ST/2851S (in development, kernel P0217 only)"
 #		echo "   40)  Opticum/Orton HD (TS) 9600 (in development, kernel P0217 only)"
 #		echo "   41)  Opticum/Orton HD 9600 Mini (in development, kernel P0217 only)"
-#		echo "   42)  Opticum/Orton HD 9600 Prima (in development, kernel P0217 only)"
+#		echo "   42)  Opticum/Orton HD (TS) 9600 Prima (in development, kernel P0217 only)"
 		echo
 		read -p "Select target (1-37) ";;
 esac
@@ -212,29 +251,6 @@ esac
 echo "BOXTYPE=$BOXTYPE" >> config
 
 ##############################################
-
-echo -ne "\nChecking the .elf files in $CURDIR/root/boot..."
-set='audio_7100 audio_7105 audio_7109 audio_7111 video_7100 video_7105 video_7109 video_7111'
-ELFMISSING=0
-for i in $set;
-do
-	if [ ! -e $CURDIR/root/boot/$i.elf ]; then
-		echo -e -n "\n\033[31mERROR\033[0m: file $i.elf is missing in ./root/boot"
-		ELFMISSING=1
-	fi
-done
-if [ "$ELFMISSING" == "1" ]; then
-	echo -e "\n"
-	echo "Correct this and retry."
-	echo
-	exit
-fi
-echo " [OK]"
-if [ -e $CURDIR/root/boot/put_your_elf_files_here ]; then
-	rm $CURDIR/root/boot/put_your_elf_files_here
-fi
-
-##############################################
 case $2 in
 	[1-2]) REPLY=$2;;
 	*)	echo -e "\nKernel:"
@@ -274,25 +290,6 @@ case "$REPLY" in
 	*)  OPTIMIZATIONS="size";;
 esac
 
-##############################################
-
-# Select gcc version by uncommenting one line
-#BS_GCC_VER="4.6.3" # Unpacks rpms, quick build
-BS_GCC_VER="4.8.4" # Unpacks rpms, quick build
-#BS_GCC_VER="4.9.4" # Builds gcc through crosstool-ng
-#BS_GCC_VER="6.5.0" # Builds gcc through crosstool-ng - NOT tested
-#BS_GCC_VER="7.4.1" # Builds gcc through crosstool-ng - NOT tested
-#BS_GCC_VER="8.2.0" # Builds gcc through crosstool-ng - NOT tested
-#BS_GCC_VER="9.2.0" # Builds gcc through crosstool-ng - NOT tested
-echo "BS_GCC_VER=$BS_GCC_VER" >> config
-export BS_GCC_VER
-
-# basic ffmpeg version numbers
-FFMPEG_VER2="2.8.20"
-FFMPEG_VER3="3.4.3"
-FFMPEG_VER42="4.2.2"
-FFMPEG_VER43="4.3.2"
-#FFMPEG_VER44="4.4.2"
 ##############################################
 
 case $4 in
