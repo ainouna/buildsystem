@@ -1,7 +1,7 @@
 #
 # ncurses
 #
-NCURSES_VER = 6.0
+NCURSES_VER = 6.1
 NCURSES_SOURCE = ncurses-$(NCURSES_VER).tar.gz
 NCURSES_PATCH = ncurses-$(NCURSES_VER)-gcc-5.x-MKlib_gen.patch
 
@@ -38,7 +38,7 @@ $(D)/ncurses: $(D)/bootstrap $(ARCHIVE)/$(NCURSES_SOURCE)
 			--enable-overwrite \
 			--enable-widec \
 		; \
-		$(MAKE) libs \
+		$(MAKE) -j1 libs \
 			HOSTCC=gcc \
 			HOSTCCFLAGS="$(CFLAGS) -DHAVE_CONFIG_H -I../ncurses -DNDEBUG -D_GNU_SOURCE -I../include" \
 			HOSTLDFLAGS="$(LDFLAGS)"; \
