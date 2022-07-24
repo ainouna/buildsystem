@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20220721.1
+# Version 20220724.1
 
 ##############################################
 
@@ -278,8 +278,8 @@ esac
 
 # Select gcc version by uncommenting one line
 #BS_GCC_VER="4.6.3" # Unpacks rpms, quick build
-#BS_GCC_VER="4.8.4" # Unpacks rpms, quick build
-BS_GCC_VER="4.9.4" # Builds gcc through crosstool-ng
+BS_GCC_VER="4.8.4" # Unpacks rpms, quick build
+#BS_GCC_VER="4.9.4" # Builds gcc through crosstool-ng
 #BS_GCC_VER="6.5.0" # Builds gcc through crosstool-ng - NOT tested
 #BS_GCC_VER="7.4.1" # Builds gcc through crosstool-ng - NOT tested
 #BS_GCC_VER="8.2.0" # Builds gcc through crosstool-ng - NOT tested
