@@ -169,8 +169,8 @@ $(D)/crosstool-ng: directories $(ARCHIVE)/$(CROSSTOOL_NG_SOURCE)
 		./ct-ng oldconfig; \
 		./ct-ng build
 	$(SILENT)chmod -R +w $(CROSS_DIR)
-	$(SILENT)test -e $(CROSS_DIR)/sh4-unknown-linux-gnu/lib || ln -sf sys-root/lib $(CROSS_DIR)/sh4-unknown-linux-gnu/
-	$(SILENT)rm -f $(CROSS_DIR)/sh4-unknown-linux-gnu/sys-root/lib/libstdc++.so.6.0.20-gdb.py
+	$(SILENT)test -e $(CROSS_DIR)/sh4-stm-linux-gnu/lib || ln -sf sys-root/lib $(CROSS_DIR)/sh4-stm-linux-gnu/
+	$(SILENT)rm -f $(CROSS_DIR)/sh4-stm-linux-gnu/sys-root/lib/libstdc++.so.6.0.20-gdb.py
 	$(REMOVE)/crosstool-ng-$(CROSSTOOL_NG_VER)
 	$(TOUCH)
 
