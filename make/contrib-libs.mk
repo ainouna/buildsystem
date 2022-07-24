@@ -614,7 +614,7 @@ $(D)/boost: $(D)/bootstrap $(ARCHIVE)/$(BOOST_SOURCE)
 #
 # zlib
 #
-ZLIB_VER = 1.2.11
+ZLIB_VER = 1.2.12
 ZLIB_SOURCE = zlib-$(ZLIB_VER).tar.xz
 ZLIB_Patch = zlib-$(ZLIB_VER).patch
 
