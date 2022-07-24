@@ -38,7 +38,7 @@ $(D)/ncurses: $(D)/bootstrap $(ARCHIVE)/$(NCURSES_SOURCE)
 			--enable-overwrite \
 			--enable-widec \
 		; \
-		$(MAKE) -j1 libs \
+		$(MAKE) libs \
 			HOSTCC=gcc \
 			HOSTCCFLAGS="$(CFLAGS) -DHAVE_CONFIG_H -I../ncurses -DNDEBUG -D_GNU_SOURCE -I../include" \
 			HOSTLDFLAGS="$(LDFLAGS)"; \
