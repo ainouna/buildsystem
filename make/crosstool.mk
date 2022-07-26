@@ -76,7 +76,7 @@ crosstool-rpminstall
 	@echo
 
 $(TARGET_DIR)/lib/libc.so.6:
-	$(START_BUILD)
+#	$(START_BUILD)
 	$(SET) -e; cd $(CROSS_DIR); rm -f sh4-linux/sys-root; ln -s ../target sh4-linux/sys-root; \
 	if [ -e $(CROSS_DIR)/target/usr/lib/libstdc++.la ]; then \
 		sed -i "s,^libdir=.*,libdir='$(CROSS_DIR)/target/usr/lib'," $(CROSS_DIR)/target/usr/lib/lib{std,sup}c++.la; \
@@ -102,13 +102,14 @@ $(TARGET_DIR)/lib/libc.so.6:
 	fi
 	@touch $(D)/$(notdir $@)
 	@echo "--------------------------------------------------------------"
-	@echo -e "Build of $(TERM_GREEN_BOLD)$(PKG_NAME)$(TERM_NORMAL) completed."
+	@echo -e "Build of $(TERM_GREEN_BOLD)$(notdir $@)$(TERM_NORMAL) completed."
 	@echo
-endif  # BS_GCC_VER is 4.6.3 or 4.8.4
 
-ifneq ($(BS_GCC_VER), $(filter $(BS_GCC_VER), 4.6.3 4.8.4))
+else  # BS_GCC_VER is not 4.6.3 or 4.8.4
+
+#ifneq ($(BS_GCC_VER), $(filter $(BS_GCC_VER), 4.6.3 4.8.4))
 $(TARGET_DIR)/lib/libc.so.6:
-	$(START_BUILD)
+#	$(START_BUILD)
 	$(SILENT)if [ -e $(CROSS_DIR)/$(TARGET)/sys-root/lib ]; then \
 		cp -a $(CROSS_DIR)/$(TARGET)/sys-root/lib/*so* $(TARGET_DIR)/lib; \
 	else \
@@ -120,17 +121,17 @@ $(TARGET_DIR)/lib/libc.so.6:
 	fi
 	@touch $(D)/$(notdir $@)
 	@echo "--------------------------------------------------------------"
-	@echo -e "Build of $(TERM_GREEN_BOLD)$(PKG_NAME)$(TERM_NORMAL) completed."
+	@echo -e "Build of $(TERM_GREEN_BOLD)$(notdir $@)$(TERM_NORMAL) completed."
 	@echo
 
 ifeq ($(wildcard $(CROSS_DIR)/build.log.bz2),)
 CROSSTOOL = crosstool
-$(D)/crosstool:
+$(D)/crosstool: directories driver-symlink
 	$(START_BUILD)
 	$(SILENT)if [ -e $(CROSSTOOL_NG_BACKUP) ]; then \
 		make crosstool-restore; \
 	else \
-		make MAKEFLAGS=--no-print-directory crosstool-ng; \
+		make MAKEFLAGS=--no-print-directory crosstool_ng; \
 		make crosstool-backup; \
 	fi
 	$(TOUCH)
@@ -138,12 +139,19 @@ endif
 endif # BS_GCC_VER is not 4.6.3 or 4.8.4
 
 #
-# crosstool-ng
+# crosstool_ng
 #
 CROSSTOOL_GCC_VER = gcc-$(BS_GCC_VER)
-CROSSTOOL_NG_VER = 1.25.0
+CROSSTOOL_NG_VER = 1.22.0
 CROSSTOOL_NG_SOURCE = crosstool-ng-$(CROSSTOOL_NG_VER).tar.xz
 CROSSTOOL_NG_BACKUP = $(ARCHIVE)/$(CROSSTOOL_GCC_VER)-sh4-kernel-$(KERNEL_VER)-backup.tar.gz
+ifeq ($(CROSSTOOL_NG_VER), 1.25.0)
+CROSSTOOL_NG_BLDDIR = crosstool-ng
+CROSSTOOL_NG_PATCH  = ct-ng/crosstool-ng-1.22.0_add_gcc_494.patch
+CROSSTOOL_NG_PATCH += ct-ng/crosstool-ng-$(CROSSTOOL_NG_VER)_add_linux_2_6_32_71.patch
+else
+CROSSTOOL_NG_BLDDIR = crosstool-ng-$(CROSSTOOL_NG_VER)
+endif
 ifeq ($(CROSSTOOL_NG_VER), 1.23.0)
 CROSSTOOL_NG_PATCH = ct-ng/crosstool-ng-$(CROSSTOOL_NG_VER)_add_linux_2_6_32_71.patch
 endif
@@ -151,7 +159,7 @@ endif
 $(ARCHIVE)/$(CROSSTOOL_NG_SOURCE):
 	$(WGET) http://crosstool-ng.org/download/crosstool-ng/$(CROSSTOOL_NG_SOURCE)
 
-$(D)/crosstool-ng: directories $(ARCHIVE)/$(CROSSTOOL_NG_SOURCE)
+$(D)/crosstool_ng: directories $(ARCHIVE)/$(CROSSTOOL_NG_SOURCE)
 	$(START_BUILD)
 	$(SILENT)if [ ! -d $(BUILD_TMP) ]; then \
 		make $(BUILD_TMP); \
@@ -159,9 +167,9 @@ $(D)/crosstool-ng: directories $(ARCHIVE)/$(CROSSTOOL_NG_SOURCE)
 	$(SILENT)if [ ! -d $(CROSS_DIR) ]; then \
 		mkdir -p $(CROSS_DIR); \
 	fi
-	$(REMOVE)/crosstool-ng
+	$(REMOVE)/$(CROSSTOOL_NG_BLDDIR)
 	$(UNTAR)/$(CROSSTOOL_NG_SOURCE)
-	$(SET) -e; unset CONFIG_SITE; unset LD_LIBRARY_PATH; cd $(BUILD_TMP)/crosstool-ng-$(CROSSTOOL_NG_VER); \
+	$(SET) -e; unset CONFIG_SITE; unset LD_LIBRARY_PATH; cd $(BUILD_TMP)/$(CROSSTOOL_NG_BLDDIR); \
 		$(call apply_patches, $(CROSSTOOL_NG_PATCH)); \
 		cp -a $(PATCHES)/ct-ng/crosstool-ng-$(CROSSTOOL_NG_VER)-$(BS_GCC_VER)-sh4.config .config; \
 		sed -i "s@^CT_PARALLEL_JOBS=.*@CT_PARALLEL_JOBS=$$PARALLEL_JOBS@" .config; \
@@ -175,7 +183,7 @@ $(D)/crosstool-ng: directories $(ARCHIVE)/$(CROSSTOOL_NG_SOURCE)
 	$(SILENT)chmod -R +w $(CROSS_DIR)
 	$(SILENT)test -e $(CROSS_DIR)/sh4-stm-linux-gnu/lib || ln -sf sys-root/lib $(CROSS_DIR)/sh4-stm-linux-gnu/
 	$(SILENT)rm -f $(CROSS_DIR)/sh4-stm-linux-gnu/sys-root/lib/libstdc++.so.6.0.20-gdb.py
-	$(REMOVE)/crosstool-ng-$(CROSSTOOL_NG_VER)
+	$(REMOVE)/$(CROSSTOOL_NG_BLDDIR)
 	$(TOUCH)
 
 crosstool-backup:
@@ -207,9 +215,9 @@ endif
 
 $(D)/crossmenuconfig: directories $(ARCHIVE)/$(CROSSTOOL_NG_SOURCE)
 	$(START_BUILD)
-	$(REMOVE)/crosstool-ng-$(CROSSTOOL_NG_VER)
+	$(REMOVE)/$(CROSSTOOL_NG_BLDDIR)
 	$(UNTAR)/$(CROSSTOOL_NG_SOURCE)
-	$(SET) -e; unset CONFIG_SITE; cd $(BUILD_TMP)/crosstool-ng-$(CROSSTOOL_NG_VER); \
+	$(SET) -e; unset CONFIG_SITE; cd $(BUILD_TMP)/$(CROSSTOOL_NG_BLDDIR); \
 		cp -a $(PATCHES)/ct-ng/crosstool-ng-$(CROSSTOOL_NG_VER).config .config; \
 		test -f ./configure || ./bootstrap && \
 		./configure $(MINUS_Q) --enable-local; \
