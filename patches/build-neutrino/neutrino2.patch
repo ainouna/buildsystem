@@ -730,22 +730,6 @@
  
  		ffmpeg_printf(10, "pos %lld %d\n", pos, avContext->bit_rate);
  
---- neutrino2.org/src/neutrino.h
-+++ neutrino2/src/neutrino.h
-@@ -264,11 +264,11 @@
- 		
- 		// 0 - halt
- 		// 1 - reboot
--		// 2 - restart 
-+		// 3 - restart 
- 		enum {
- 			SHUTDOWN = 0,
- 			REBOOT,
--			RESTART
-+			RESTART = 3
- 		};
- 		
- 		void ExitRun(int retcode = SHUTDOWN, bool save = true);
 --- neutrino-hd2.org/src/driver/rcinput.h
 +++ neutrino-hd2/src/driver/rcinput.h
 @@ -84,7 +84,7 @@
@@ -831,14 +815,14 @@
 -		// 2 - reboot
 +		// 0 - halt
 +		// 1 - reboot
-+		// 2 - restart 
++		// 3 - restart 
  		enum {
 -			RESTART = 0,
 -			SHUTDOWN,
 -			REBOOT
 +			SHUTDOWN = 0,
 +			REBOOT,
-+			RESTART
++			RESTART = 3
  		};
  		
  		void ExitRun(int retcode = SHUTDOWN, bool save = true);
