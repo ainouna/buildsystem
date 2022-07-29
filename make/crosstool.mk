@@ -141,33 +141,26 @@ endif # BS_GCC_VER is not 4.6.3 or 4.8.4
 # crosstool_ng
 #
 CROSSTOOL_GCC_VER = gcc-$(BS_GCC_VER)
-CROSSTOOL_NG_VER = 1.25.0
-CROSSTOOL_NG_SOURCE = crosstool-ng-$(CROSSTOOL_NG_VER).tar.xz
+CROSSTOOL_NG_VER = 3ac6f17
+CROSSTOOL_NG_URL = https://github.com/crosstool-ng/crosstool-ng
 CROSSTOOL_NG_BACKUP = $(ARCHIVE)/$(CROSSTOOL_GCC_VER)-sh4-kernel-$(KERNEL_VER)-backup.tar.gz
-ifeq ($(CROSSTOOL_NG_VER), 1.22.0)
-CROSSTOOL_NG_DIR = crosstool-ng
-CROSSTOOL_NG_PATCH  = ct-ng/crosstool-ng-$(CROSSTOOL_NG_VER)_add_gcc_494.patch
-CROSSTOOL_NG_PATCH += ct-ng/crosstool-ng-$(CROSSTOOL_NG_VER)_add_linux_2_6_32_71.patch
-else
-CROSSTOOL_NG_DIR = crosstool-ng-$(CROSSTOOL_NG_VER)
-endif
-ifeq ($(CROSSTOOL_NG_VER), 1.23.0)
-CROSSTOOL_NG_PATCH = ct-ng/crosstool-ng-$(CROSSTOOL_NG_VER)_add_linux_2_6_32_71.patch
-endif
 
-$(ARCHIVE)/$(CROSSTOOL_NG_SOURCE):
-	$(WGET) http://crosstool-ng.org/download/crosstool-ng/$(CROSSTOOL_NG_SOURCE)
-
-$(D)/crosstool_ng: directories $(ARCHIVE)/$(CROSSTOOL_NG_SOURCE)
+$(D)/crosstool_ng: directories
 	$(START_BUILD)
-	$(REMOVE)/$(CROSSTOOL_NG_DIR)
-	$(UNTAR)/$(CROSSTOOL_NG_SOURCE)
-	$(SET) -e; unset CONFIG_SITE; unset LD_LIBRARY_PATH; ulimit -n 2048; cd $(BUILD_TMP)/$(CROSSTOOL_NG_DIR); \
-		$(call apply_patches, $(CROSSTOOL_NG_PATCH)); \
+	$(REMOVE)/crosstool-ng
+	$(SET) -e; unset CONFIG_SITE; unset LD_LIBRARY_PATH; ulimit -n 2048; \
+	if [ -d $(ARCHIVE)/crosstool-ng.git ]; \
+		then cd $(ARCHIVE)/crosstool-ng.git; git pull $(MINUS_Q); git checkout -q HEAD; \
+		else cd $(ARCHIVE); git clone $(MINUS_Q) -b master $(CROSSTOOL_NG_URL) crosstool-ng; \
+	fi; \
+	cp -ra $(ARCHIVE)/crosstool-ng.git $(BUILD_TMP)/crosstool-ng; \
+	cd $(BUILD_TMP)/crosstool-ng; \
+		git checkout -q $(CROSSTOOL_NG_VER); \
 		cp -a $(PATCHES)/ct-ng/crosstool-ng-$(CROSSTOOL_NG_VER)-$(BS_GCC_VER)-sh4.config .config; \
 		sed -i "s@^CT_PARALLEL_JOBS=.*@CT_PARALLEL_JOBS=$$PARALLEL_JOBS@" .config; \
 		export CT_ARCHIVE=$(ARCHIVE); \
 		export CT_BASE_DIR=$(CROSS_BASE); \
+		test -f ./configure || ./bootstrap; \
 		./configure $(MINUS_Q) --enable-local; \
 		MAKELEVEL=0 make; \
 		chmod 0755 ct-ng; \
@@ -176,7 +169,7 @@ $(D)/crosstool_ng: directories $(ARCHIVE)/$(CROSSTOOL_NG_SOURCE)
 	$(SILENT)chmod -R +w $(CROSS_BASE)
 	$(SILENT)test -e $(CROSS_BASE)/$(TARGET)/lib || ln -sf sys-root/lib $(CROSS_DIR)/$(TARGET)/
 	$(SILENT)rm -f $(CROSS_BASE)/$(TARGET)/sys-root/lib/libstdc++.so.6.0.20-gdb.py
-	$(REMOVE)/$(CROSSTOOL_NG_DIR)
+	$(REMOVE)/crosstool-ng
 	$(TOUCH)
 
 crosstool-backup:
@@ -185,7 +178,7 @@ crosstool-backup:
 		mv $(CROSSTOOL_NG_BACKUP) $(CROSSTOOL_NG_BACKUP).old; \
 	fi
 	$(SILENT)cd $(CROSS_BASE); \
-	tar czvf $(CROSSTOOL_NG_BACKUP) * #-C $(CROSS_BASE)
+	tar czf $(CROSSTOOL_NG_BACKUP) *
 
 crosstool-restore: $(CROSSTOOL_NG_BACKUP)
 	$(SILENT)rm -rf $(CROSS_BASE)
@@ -206,11 +199,17 @@ ifeq ($(KBUILD_VERBOSE), silent)
 	$(SILENT)tar xzf $(CROSSTOOL_NG_BACKUP) -C $(CROSS_BASE)
 endif
 
-$(D)/crossmenuconfig: directories $(ARCHIVE)/$(CROSSTOOL_NG_SOURCE)
+$(D)/crossmenuconfig: directories
 	$(START_BUILD)
-	$(REMOVE)/$(CROSSTOOL_NG_DIR)
-	$(UNTAR)/$(CROSSTOOL_NG_SOURCE)
-	$(SET) -e; unset CONFIG_SITE; cd $(BUILD_TMP)/$(CROSSTOOL_NG_DIR); \
+	$(REMOVE)/crosstool-ng
+	$(SET) -e; unset CONFIG_SITE; \
+	if [ -d $(ARCHIVE)/crosstool-ng.git ]; \
+		then cd $(ARCHIVE)/crosstool-ng.git; git pull $(MINUS_Q); git checkout -q HEAD; \
+		else cd $(ARCHIVE); git clone $(MINUS_Q) -b master $(CROSSTOOL_NG_URL) crosstool-ng; \
+	fi; \
+	cp -ra $(ARCHIVE)/crosstool-ng.git $(BUILD_TMP)/crosstool-ng; \
+	cd $(BUILD_TMP)/crosstool-ng; \
+		git checkout -q $(CROSSTOOL_NG_VER); \
 		cp -a $(PATCHES)/ct-ng/crosstool-ng-$(CROSSTOOL_NG_VER).config .config; \
 		test -f ./configure || ./bootstrap && \
 		./configure $(MINUS_Q) --enable-local; \
