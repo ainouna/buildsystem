@@ -33,7 +33,21 @@ SOURCE_DIR            = $(BASE_DIR)/build_source
 DRIVER_DIR            = $(BASE_DIR)/driver
 FLASH_DIR             = $(BASE_DIR)/flash
 
+# default config...
+KBUILD_VERBOSE       ?= normal
+BOXARCH              ?= sh4
+BOXTYPE              ?= hs8200
+BOXARCH              ?= sh4
+KERNEL_STM           ?= p0217
+IMAGE                ?= neutrino-wlandriver
+FLAVOUR              ?= neutrino-ddt
+OPTIMIZATIONS        ?= size
+MEDIAFW              ?= builtinplayer
+EXTERNAL_LCD         ?= none
+DESTINATION          ?= flash
+
 -include $(BASE_DIR)/config
+include make/linux-kernel-env.mk
 
 # for local extensions
 -include $(BASE_DIR)/config.local
@@ -53,19 +67,6 @@ GIT_NAME             ?= Audioniek
 GIT_NAME_DRIVER      ?= Audioniek
 GIT_NAME_TOOLS       ?= Audioniek
 GIT_NAME_FLASH       ?= Audioniek
-
-# default config...
-KBUILD_VERBOSE       ?= normal
-BOXARCH              ?= sh4
-BOXTYPE              ?= hs8200
-BOXARCH              ?= sh4
-KERNEL_STM           ?= p0217
-IMAGE                ?= neutrino-wlandriver
-FLAVOUR              ?= neutrino-ddt
-OPTIMIZATIONS        ?= size
-MEDIAFW              ?= builtinplayer
-EXTERNAL_LCD         ?= none
-DESTINATION          ?= flash
 
 TUFSBOX_DIR           = $(BASE_DIR)/tufsbox
 CROSS_BASE            = $(TUFSBOX_DIR)/cross
