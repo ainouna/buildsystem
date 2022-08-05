@@ -52,9 +52,11 @@ include make/linux-kernel-env.mk
 # for local extensions
 -include $(BASE_DIR)/config.local
 
-ifneq ($(GIT_USER), "")
-ifneq ($(GIT_TOKEN), "")
+ifneq ($(GIT_USER),)
+ifneq ($(GIT_TOKEN),)
 GIT_ACCESS            = $(GIT_USER):$(GIT_TOKEN)@
+else
+GIT_ACCESS            =
 endif
 endif
 GIT_PROTOCOL         ?= http
