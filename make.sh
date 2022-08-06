@@ -489,10 +489,10 @@ case "$IMAGE" in
 				echo "=================================================================================================="
 				echo " 1)  Use your own Enigma2 git dir without patchfile"
 				echo "=================================================================================================="
-				echo " 2*) Sat, 28 May 2022 21:13 - E2 OpenPLi  any framework  ab1618f3bfbb392bcbe2adc456966a45dd399796"
-				echo " 3)  Thu, 06 Apr 2022 22:14 - E2 OpenPLi  any framework  0dc1cdc75c815876ae5b0b28e598f52c0003b0b1"
-				echo " 4)  Sun, 30 Jan 2022 17:13 - E2 OpenPLi  any framework  20602dbaad4e08cd4377310edab245e3fcbadbe6"
-				echo " 5)  Mon, 29 Nov 2021 17:52 - E2 OpenPLi  any framework  38cf4849d225377497af435a2ea65c8487ce4966"
+				echo " 2*) Sat, 06 Aug 2022 13:10 - E2 OpenPLi  any framework  37427c7c563c47ab0a964da872f817a6f8900173"
+				echo " 3)  Sat, 28 May 2022 21:13 - E2 OpenPLi  any framework  ab1618f3bfbb392bcbe2adc456966a45dd399796"
+				echo " 4)  Thu, 06 Apr 2022 22:14 - E2 OpenPLi  any framework  0dc1cdc75c815876ae5b0b28e598f52c0003b0b1"
+				echo " 5)  Sun, 30 Jan 2022 17:13 - E2 OpenPLi  any framework  20602dbaad4e08cd4377310edab245e3fcbadbe6"
 				echo "=================================================================================================="
 				echo "Media Framework         : $MEDIAFW"
 				echo
@@ -503,15 +503,15 @@ case "$IMAGE" in
 			1)	DIFF="1"
 				REVISION="local";;
 			3)	DIFF="3"
-				REVISION="0dc1cdc75c815876ae5b0b28e598f52c0003b0b1";;
+				REVISION="ab1618f3bfbb392bcbe2adc456966a45dd399796";;
 			4)	DIFF="4"
-				REVISION="20602dbaad4e08cd4377310edab245e3fcbadbe6";;
+				REVISION="0dc1cdc75c815876ae5b0b28e598f52c0003b0b1";;
 			5)	DIFF="5"
-				REVISION="38cf4849d225377497af435a2ea65c8487ce4966";;
+				REVISION="20602dbaad4e08cd4377310edab245e3fcbadbe6";;
 			0)	DIFF="0"
 				REVISION="newest";;
 			*)	DIFF="2"
-				REVISION="ab1618f3bfbb392bcbe2adc456966a45dd399796";;
+				REVISION="37427c7c563c47ab0a964da872f817a6f8900173";;
 		esac
 
 		echo "E2_DIFF=$DIFF" >> config

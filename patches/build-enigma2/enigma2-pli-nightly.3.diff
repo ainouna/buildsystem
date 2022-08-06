@@ -1,4 +1,4 @@
-# revision 0dc1cdc75c815876ae5b0b28e598f52c0003b0b1 06/04/2022 22:11
+# revision ab1618f3bfbb392bcbe2adc456966a45dd399796 28/05/2022 21:13
 --- enigma2.org/configure.ac
 +++ enigma2/configure.ac
 @@ -18,6 +18,7 @@
@@ -554,7 +554,7 @@
  		dlg.isTmp = True
  		dlg.callback = None
  		self.execBegin()
-@@ -520,10 +524,10 @@
+@@ -521,10 +525,10 @@
  	if wakeupList:
  		from time import strftime
  		startTime = wakeupList[0]
@@ -2789,7 +2789,7 @@
  	{
  		ret = (int)(snr / 37.5);
  		sat_max = 1700;
-@@ -3084,7 +3096,11 @@
+@@ -3091,7 +3103,11 @@
  	}
  	else if (!strcmp(type, "DVB-C"))
  	{
@@ -2801,7 +2801,7 @@
  		fetype = feCable;
  	}
  	else if (!strcmp(type, "ATSC"))
-@@ -3216,11 +3232,16 @@
+@@ -3223,11 +3239,16 @@
  		case SYS_ISDBS:		ss << " ISDBS"; break;
  		case SYS_ISDBT:		ss << " ISDBT"; break;
  		case SYS_UNDEFINED:	ss << " UNDEFINED"; break;
@@ -6215,7 +6215,33 @@
  SystemInfo["LcdLiveTV"] = fileCheck("/proc/stb/fb/sd_detach") or fileCheck("/proc/stb/lcd/live_enable")
  SystemInfo["LcdLiveTVMode"] = fileCheck("/proc/stb/lcd/mode")
  SystemInfo["LcdLiveDecoder"] = fileCheck("/proc/stb/lcd/live_decoder")
-@@ -117,10 +117,10 @@
+@@ -98,29 +98,29 @@
+ SystemInfo["HasColorspace"] = fileCheck("/proc/stb/video/hdmi_colorspace")
+ SystemInfo["HasColorspaceSimple"] = SystemInfo["HasColorspace"] and SystemInfo["HasMMC"] and SystemInfo["Blindscan_t2_available"]
+ SystemInfo["HasTranscoding"] = pathExists("/proc/stb/encoder/0") or fileCheck("/dev/bcm_enc0")
+-SystemInfo["HasH265Encoder"] = fileHas("/proc/stb/encoder/0/vcodec_choices", "h265")
++SystemInfo["HasH265Encoder"] = False
+ SystemInfo["CanNotDoSimultaneousTranscodeAndPIP"] = model in ("vusolo4k", "gbquad4k", "gbue4k")
+ SystemInfo["HasColordepth"] = fileCheck("/proc/stb/video/hdmi_colordepth")
+-SystemInfo["HasFrontDisplayPicon"] = model in ("et8500", "vusolo4k", "vuuno4kse", "vuduo4k", "vuduo4kse", "vuultimo4k", "gbquad4k", "gbue4k")
++SystemInfo["HasFrontDisplayPicon"] = False
+ SystemInfo["Has24hz"] = fileCheck("/proc/stb/video/videomode_24hz")
+-SystemInfo["Has2160p"] = fileHas("/proc/stb/video/videomode_preferred", "2160p50")
++SystemInfo["Has2160p"] = False
+ SystemInfo["HasHDMIpreemphasis"] = fileCheck("/proc/stb/hdmi/preemphasis")
+ SystemInfo["HasColorimetry"] = fileCheck("/proc/stb/video/hdmi_colorimetry")
+ SystemInfo["HasHdrType"] = fileCheck("/proc/stb/video/hdmi_hdrtype")
+ SystemInfo["HasScaler_sharpness"] = pathExists("/proc/stb/vmpeg/0/pep_scaler_sharpness")
+ SystemInfo["HasHDMIin"] = model in ("vuduo4k", "vuduo4kse", "vuultimo4k", "vuuno4kse", "gbquad4k", "hd2400", "et10000")
+ SystemInfo["HasHDMI-CEC"] = HardwareInfo().has_hdmi() and fileExists(resolveFilename(SCOPE_PLUGINS, "SystemPlugins/HdmiCEC/plugin.pyo")) and (fileExists("/dev/cec0") or fileExists("/dev/hdmi_cec") or fileExists("/dev/misc/hdmi_cec0"))
+-SystemInfo["HasYPbPr"] = model in ("dm8000", "et5000", "et6000", "et6500", "et9000", "et9200", "et9500", "et10000", "formuler1", "mbtwinplus", "spycat", "vusolo", "vuduo", "vuduo2", "vuultimo")
+-SystemInfo["HasScart"] = model in ("dm8000", "et4000", "et6500", "et8000", "et9000", "et9200", "et9500", "et10000", "formuler1", "hd1100", "hd1200", "hd1265", "hd2400", "vusolo", "vusolo2", "vuduo", "vuduo2", "vuultimo", "vuuno", "xp1000")
+-SystemInfo["HasSVideo"] = model in ("dm8000")
+-SystemInfo["HasComposite"] = model not in ("i55", "gbquad4k", "gbue4k", "hd1500", "osnino", "osninoplus", "purehd", "purehdse", "revo4k", "vusolo4k", "vuzero4k", "vuduo4k", "vuduo4kse", "vuuno4k", "vuuno4kse", "vuultimo4k")
++SystemInfo["HasYPbPr"] = model in ("adb_box", "hs8200", "cuberevo", "cuberevo-mini-fta", "cuberevo-250hd", "cuberevo-mini", "cuberevo-mini2", "cuberevo-2000hd", "cuberevo-3000hd", "cuberevo-9500hd", "fs9000", "hs9510", "hs7420", "hs7429", "hl101", "tf7700hdpvr", "ufs910", "ufs912", "ufs913", "ufs922", "vip1_v1", "vip1_v2", "vip2", "vitamin_hd5000", "opt9600", "opt9600prima")
++SystemInfo["HasScart"] = model not in ("hs7110", "hs7119", "opt9600mini, atemio520")
++SystemInfo["HasSVideo"] = model in  ("cuberevo")
++SystemInfo["HasComposite"] = model not in ("cuberevo_mini_fta", "cuberevo_250hd")
  SystemInfo["hasXcoreVFD"] = model in ("osmega", "spycat4k", "spycat4kmini", "spycat4kcombo") and fileCheck("/sys/module/brcmstb_%s/parameters/pt6302_cgram" % model)
  SystemInfo["HasOfflineDecoding"] = model not in ("osmini", "osminiplus", "et7000mini", "et11000", "mbmicro", "mbtwinplus", "mbmicrov2", "et7000", "et8500")
  SystemInfo["MultibootStartupDevice"] = getMultibootStartupDevice()
@@ -6241,9 +6267,9 @@
  SystemInfo["CanBTAudio"] = fileHas("/proc/stb/audio/btaudio_choices", "off")
  SystemInfo["CanBTAudioDelay"] = fileCheck("/proc/stb/audio/btaudio_delay") or fileCheck("/proc/stb/audio/btaudio_delay_pcm")
  SystemInfo["BootDevice"] = getBootdevice()
--SystemInfo["FbcTunerPowerAlwaysOn"] = model in ("vusolo4k", "vuduo4k", "vuduo4kse", "vuultimo4k", "vuuno4k", "vuuno4kse", "gbquad4k", "gbue4k")
+-SystemInfo["FbcTunerPowerAlwaysOn"] = model in ("vusolo4k", "vuduo4k", "vuduo4kse", "vuultimo4k", "vuuno4k", "vuuno4kse")
 -SystemInfo["HasPhysicalLoopthrough"] = ["Vuplus DVB-S NIM(AVL2108)", "GIGA DVB-S2 NIM (Internal)"]
--SystemInfo["HasFBCtuner"] = ["Vuplus DVB-C NIM(BCM3158)", "Vuplus DVB-C NIM(BCM3148)", "Vuplus DVB-S NIM(7376 FBC)", "Vuplus DVB-S NIM(45308X FBC)", "Vuplus DVB-S NIM(45208 FBC)", "DVB-S NIM(45208 FBC)", "DVB-S2X NIM(45308X FBC)", "DVB-S2 NIM(45308 FBC)", "DVB-C NIM(3128 FBC)", "BCM45208", "BCM45308X", "BCM3158"]
+-SystemInfo["HasFBCtuner"] = ["Vuplus DVB-C NIM(BCM3158)", "Vuplus DVB-C NIM(BCM3148)", "Vuplus DVB-S NIM(7376 FBC)", "Vuplus DVB-S NIM(45308X FBC)", "Vuplus DVB-S NIM(45208 FBC)", "DVB-S2 NIM(45208 FBC)", "DVB-S2X NIM(45308X FBC)", "DVB-S2 NIM(45308 FBC)", "DVB-C NIM(3128 FBC)", "BCM45208", "BCM45308X", "BCM3158"]
 +SystemInfo["FbcTunerPowerAlwaysOn"] = False
 +SystemInfo["HasPhysicalLoopthrough"] = [""]
 +SystemInfo["HasFBCtuner"] = [""]
@@ -6362,7 +6388,7 @@
  from SystemInfo import SystemInfo
  import os
  import time
-@@ -267,7 +268,7 @@
+@@ -282,7 +283,7 @@
  
  	config.misc.disable_background_scan = ConfigYesNo(default=False)
  	config.misc.use_ci_assignment = ConfigYesNo(default=False)
@@ -8333,7 +8359,7 @@
  
  	def extensionCallback(self, answer):
  		if answer is not None:
-@@ -2464,7 +2513,7 @@
+@@ -2465,7 +2514,7 @@
  
  class InfoBarInstantRecord:
  	"""Instant Record - handles the instantRecord action in order to
@@ -8342,7 +8368,7 @@
  
  	def __init__(self):
  		self["InstantRecordActions"] = HelpableActionMap(self, "InfobarInstantRecord",
-@@ -2551,7 +2600,7 @@
+@@ -2552,7 +2601,7 @@
  	def startInstantRecording(self, limitEvent=False):
  		begin = int(time())
  		end = begin + 3600      # dummy
@@ -8351,7 +8377,7 @@
  		info = {}
  
  		self.getProgramInfoAndEvent(info, name)
-@@ -2781,7 +2830,7 @@
+@@ -2782,7 +2831,7 @@
  	def __init__(self):
  		self["AudioSelectionAction"] = HelpableActionMap(self, "InfobarAudioSelectionActions",
  			{
@@ -8360,7 +8386,7 @@
  			})
  
  	def audioSelection(self):
-@@ -2796,7 +2846,7 @@
+@@ -2797,7 +2847,7 @@
  	def __init__(self):
  		self["SubserviceSelectionAction"] = HelpableActionMap(self, "InfobarSubserviceSelectionActions",
  			{
@@ -8369,7 +8395,7 @@
  			})
  
  		self["SubserviceQuickzapAction"] = HelpableActionMap(self, "InfobarSubserviceQuickzapActions",
-@@ -2873,7 +2922,7 @@
+@@ -2874,7 +2923,7 @@
  					keys = ["red", "", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
  					selection += 2
  				if tlist:
@@ -8378,7 +8404,7 @@
  				else:
  					self.session.open(MessageBox, _("No active subservices available."), MessageBox.TYPE_INFO, timeout=5, simple=True)
  
-@@ -2923,7 +2972,7 @@
+@@ -2924,7 +2973,7 @@
  	def __init__(self):
  		self["RedButtonActions"] = HelpableActionMap(self, "InfobarRedButtonActions",
  			{
@@ -8387,7 +8413,7 @@
  			})
  		self.onHBBTVActivation = []
  		self.onRedButtonActivation = []
-@@ -2943,7 +2992,7 @@
+@@ -2944,7 +2993,7 @@
  	def __init__(self):
  		self["TimerButtonActions"] = HelpableActionMap(self, "InfobarTimerButtonActions",
  			{
@@ -8396,7 +8422,7 @@
  			})
  
  	def timerSelection(self):
-@@ -3360,7 +3409,7 @@
+@@ -3361,7 +3410,7 @@
  		if self.teletext_plugin is not None:
  			self["TeletextActions"] = HelpableActionMap(self, "InfobarTeletextActions",
  				{
@@ -8405,7 +8431,7 @@
  				})
  		else:
  			print "no teletext plugin found!"
-@@ -3374,8 +3423,8 @@
+@@ -3375,8 +3424,8 @@
  		object.__init__(self)
  		self["SubtitleSelectionAction"] = HelpableActionMap(self, "InfobarSubtitleSelectionActions",
  			{
@@ -9361,24 +9387,22 @@
  		self["GStreamerVersion"] = StaticText(GStreamerVersion)
  
  		ffmpegVersion = _("Media player: ffmpeg, version ") + about.getffmpegVersionString()
-@@ -73,8 +85,15 @@
+@@ -73,7 +85,14 @@
  		if fp_version is None:
  			fp_version = ""
  		else:
 -			fp_version = _("Frontprocessor version: %s") % fp_version
--			AboutText += fp_version + "\n"
-+			if fileExists("/proc/stb/fp/resellerID"):
++			model = HardwareInfo().get_device_model()
++			if fileExists("/proc/stb/fp/resellerID") and (model != "atemio520"):
 +				fp_version = _("Loader version: %d.%02d") % (fp_version / 100, fp_version % 100)
 +			else:
-+				model = HardwareInfo().get_device_model()
 +				if (model in ("cuberevo", "cuberevo_mini-fta", "cuberevo-250hd", "cuberevo-mini", "cuberevo-mini2", "cuberevo-2000hd", "cuberevo-3000hd", "cuberevo-9500hd")):
 +					fp_version = _("Frontprocessor version: %s") % fp_version
 +				else:
 +					fp_version = _("Frontprocessor version: %d.%02d") % (fp_version / 100, fp_version % 100)
-+			AboutText += fp_version + "\n"
+ 			AboutText += fp_version + "\n"
  
  		self["FPVersion"] = StaticText(fp_version)
- 
 --- enigma2.org/lib/python/Tools/StbHardware.py
 +++ enigma2/lib/python/Tools/StbHardware.py
 @@ -2,12 +2,16 @@
@@ -9402,7 +9426,7 @@
  			fp = open("/dev/dbox/fp0")
 --- enigma2.org/lib/python/Tools/KeyBindings.py
 +++ enigma2/lib/python/Tools/KeyBindings.py
-@@ -220,122 +220,509 @@
+@@ -220,122 +220,522 @@
  	KEYIDS["KEY_POWER2"]: ("POWER2",),
  	KEYIDS["KEY_SUSPEND"]: ("SUSPEND",),
  	KEYIDS["KEY_WAKEUP"]: ("WAKEUP",)
@@ -9952,7 +9976,7 @@
 +	KEYIDS["KEY_GREEN"]: ("GREEN",),
 +	KEYIDS["KEY_YELLOW"]: ("YELLOW",),
 +	KEYIDS["KEY_BLUE"]: ("BLUE",),
-+}, {  # id=13 - Opticum HD 9600 series
++}, {  # id=13 - Opticum HD 9600 series, Atemio AM 520 HD
 +	KEYIDS["KEY_POWER"]: ("POWER",),
 +	KEYIDS["KEY_MUTE"]: ("MUTE",),
  	KEYIDS["KEY_HELP"]: ("HELP",),
@@ -9979,9 +10003,9 @@
 -	KEYIDS["KEY_VOLUMEDOWN"]: ("VOL-",),
 -	KEYIDS["KEY_VOLUMEUP"]: ("VOL+",),
 -	KEYIDS["KEY_YELLOW"]: ("YELLOW",)
-+	KEYIDS["KEY_SWITCHVIDEOMODE"]: ("TV.FORMAT",),
-+	KEYIDS["KEY_TV2"]: ("TV/RADIO",),
-+	KEYIDS["KEY_MODE"]: ("MODE",),
++	KEYIDS["KEY_SWITCHVIDEOMODE"]: ("MODE",),
++	KEYIDS["KEY_TV2"]: ("TVRADIO",),
++#	KEYIDS["KEY_MODE"]: ("MODE",),
 +	KEYIDS["KEY_1"]: ("1",),
 +	KEYIDS["KEY_2"]: ("2",),
 +	KEYIDS["KEY_3"]: ("3",),
@@ -10019,10 +10043,23 @@
 +	KEYIDS["KEY_PROGRAM"]: ("STATUS",),
 +	KEYIDS["KEY_OPTION"]: ("OPTION",),
 +	KEYIDS["KEY_SUBTITLE"]: ("FIND",),
++# Additions for AM 520 HD
++	KEYIDS["KEY_VOLUMEUP"]: ("VOLUMEUP",),
++	KEYIDS["KEY_VOLUMEDOWN"]: ("VOLUMEDOWN",),
++	KEYIDS["KEY_CHANNELUP"]: ("CHANNELUP",),
++	KEYIDS["KEY_CHANNELDOWN"]: ("CHANNELDOWN",),
++	KEYIDS["KEY_PLAY"]: ("PLAY",),
++	KEYIDS["KEY_PAUSE"]: ("PAUSE",),
++	KEYIDS["KEY_SCREEN"]: ("PIP",),
++	KEYIDS["KEY_AUDIO"]: ("AUDIO",),
++	KEYIDS["KEY_WWW"]: ("WWW",),
++	KEYIDS["KEY_PROGRAM"]: ("SLEEP",),
++# Additions or Sogno HD 800 V3
++	KEYIDS["KEY_ZOOM"]: ("V.FORMAT",),
  }]
  
  
-@@ -374,10 +761,43 @@
+@@ -374,10 +774,45 @@
  	else:
  		rcType = config.plugins.remotecontroltype.rctype.value
  		# rcType = config.misc.inputdevices.rcType.value
@@ -10061,16 +10098,18 @@
 +			idx = 13
 +		elif rcType == 22:	# Cuberevo Standard
 +			idx = 7
-+#		elif rcType == 23:	# Fortis 4G
++		elif rcType == 23:	# Atemio AM 520 HD (version 2)
++			idx = 13
++#		elif rcType == 24:	# Fortis 4G
 +#			idx = 14
-+#		elif rcType == 24:	# ...
++#		elif rcType == 25:	# ...
 +#			idx = 15
  		else:
  			idx = 2
  	return keyDescriptions[idx].get(key)
 --- enigma2.org/lib/python/Screens/InputDeviceSetup.py
 +++ enigma2/lib/python/Screens/InputDeviceSetup.py
-@@ -282,77 +282,63 @@
+@@ -282,77 +282,65 @@
  	rcList = [
  			("0", _("Default")),
  			("4", _("DMM normal")),
@@ -10108,7 +10147,8 @@
 +			("20", _("Kathrein RC675 (UFS913)")),
 +			("21", _("Opticum HD 9600 series")),
 +			("22", _("CubeRevo standard")),
-+#			("23", _("fortis_4g")),
++			("23", _("Atemio AM 520 HD V2")),
++#			("24", _("fortis_4g")),
  		]
  
  	defaultRcList = [
@@ -10197,13 +10237,14 @@
 +			("opt9600", 21),
 +			("opt9600mini", 21),
 +			("opt9600prima", 21),
-+#			("fortis_4g", 23),
++			("atemio520", 23),
++#			("fortis_4g", 24),
  		]
  
  	def __init__(self, session):
 --- enigma2.org/data/rc_models/rc_models.cfg
 +++ enigma2/data/rc_models/rc_models.cfg
-@@ -19,161 +19,38 @@
+@@ -19,161 +19,39 @@
  #
  # When no entry matches at all, 'default' will be used as remoteName
  #
@@ -10400,6 +10441,7 @@
 +opt9600           opt9600
 +opt9600mini       opt9600
 +opt9600prima      opt9600
++atemio520         atemio520
 --- enigma2.org/data/rc_models/Makefile.am
 +++ enigma2/data/rc_models/Makefile.am
 @@ -2,15 +2,10 @@
@@ -10420,9 +10462,9 @@
 -	octagon.xml uclan.xml pulse.xml dual.xml hd66se.xml
 +	dmmadv.png \
 +	adb_xmp.png cuberevo_uni.png fs9000.png hs7110.png hs9510.png spark.png tf7700.png ufs912.png vitamin.png \
-+	pace7241.png hl101_1.png vip_1.png ufs910.png ufs913.png opt9600.png cuberevo.png dmm.png \
++	pace7241.png hl101_1.png vip_1.png ufs910.png ufs913.png opt9600.png cuberevo.png atemio520.png dmm.png \
 +	dmmadv.xml  \
 +	adb_xmp.xml cuberevo_uni.xml fs9000.xml hs7110.xml hs9510.xml spark.xml tf7700.xml ufs912.xml vitamin.xml \
-+	pace7241.xml hl101_1.xml vip_1.xml ufs910.xml ufs913.xml opt9600.xml cuberevo.xml dmm.xml
++	pace7241.xml hl101_1.xml vip_1.xml ufs910.xml ufs913.xml opt9600.xml cuberevo.xml atemio520.xml dmm.xml
 +
 

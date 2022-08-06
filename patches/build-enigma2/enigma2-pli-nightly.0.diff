@@ -1,4 +1,4 @@
-# revision 1ea7cb997cea20a66cb3587aec4abcadfb23641e 20/07/2022 14:07
+# revision 37427c7c563c47ab0a964da872f817a6f8900173 06/08/2022 13:10
 --- enigma2.org/configure.ac
 +++ enigma2/configure.ac
 @@ -18,6 +18,7 @@
@@ -2476,7 +2476,7 @@
  	::close(frontend);
  	frontend = -1;
  
-@@ -422,8 +440,6 @@
+@@ -433,8 +451,6 @@
  	ioctl(vtunerFd, VTUNER_SET_NAME, name);
  	ioctl(vtunerFd, VTUNER_SET_TYPE, type);
  	ioctl(vtunerFd, VTUNER_SET_FE_INFO, &fe_info);
@@ -2485,7 +2485,7 @@
  	ioctl(vtunerFd, VTUNER_SET_HAS_OUTPUTS, "no");
  	ioctl(vtunerFd, VTUNER_SET_ADAPTER, nr);
  
-@@ -1060,6 +1076,7 @@
+@@ -1071,6 +1087,7 @@
  	ePtr<eDVBRegisteredDemux> unused;
  	uint8_t d, a;
  
@@ -2493,7 +2493,7 @@
  	/*
  	 * For pvr playback, start with the last demux.
  	 * On some hardware, there are less ca devices than demuxes, so try to leave
-@@ -1107,15 +1124,61 @@
+@@ -1118,15 +1135,61 @@
  			--i;
  		}
  	}
@@ -2558,7 +2558,7 @@
  		else
  			demux->get().setSourcePVR(0);
  		return 0;
-@@ -2299,21 +2362,11 @@
+@@ -2310,21 +2373,11 @@
  
  	if (m_pvr_fd_dst < 0)
  	{
@@ -6216,9 +6216,36 @@
  SystemInfo["LcdLiveTV"] = fileCheck("/proc/stb/fb/sd_detach") or fileCheck("/proc/stb/lcd/live_enable")
  SystemInfo["LcdLiveTVMode"] = fileCheck("/proc/stb/lcd/mode")
  SystemInfo["LcdLiveDecoder"] = fileCheck("/proc/stb/lcd/live_decoder")
-@@ -117,10 +117,10 @@
+@@ -98,29 +98,29 @@
+ SystemInfo["HasColorspace"] = fileCheck("/proc/stb/video/hdmi_colorspace")
+ SystemInfo["HasColorspaceSimple"] = SystemInfo["HasColorspace"] and SystemInfo["HasMMC"] and SystemInfo["Blindscan_t2_available"]
+ SystemInfo["HasTranscoding"] = pathExists("/proc/stb/encoder/0") or fileCheck("/dev/bcm_enc0")
+-SystemInfo["HasH265Encoder"] = fileHas("/proc/stb/encoder/0/vcodec_choices", "h265")
++SystemInfo["HasH265Encoder"] = False
+ SystemInfo["CanNotDoSimultaneousTranscodeAndPIP"] = model in ("vusolo4k", "gbquad4k", "gbue4k")
+ SystemInfo["HasColordepth"] = fileCheck("/proc/stb/video/hdmi_colordepth")
+-SystemInfo["HasFrontDisplayPicon"] = model in ("et8500", "vusolo4k", "vuuno4kse", "vuduo4k", "vuduo4kse", "vuultimo4k", "gbquad4k", "gbue4k")
++SystemInfo["HasFrontDisplayPicon"] = False
+ SystemInfo["Has24hz"] = fileCheck("/proc/stb/video/videomode_24hz")
+-SystemInfo["Has2160p"] = fileHas("/proc/stb/video/videomode_preferred", "2160p50")
++SystemInfo["Has2160p"] = False
+ SystemInfo["HasHDMIpreemphasis"] = fileCheck("/proc/stb/hdmi/preemphasis")
+ SystemInfo["HasColorimetry"] = fileCheck("/proc/stb/video/hdmi_colorimetry")
+ SystemInfo["HasHdrType"] = fileCheck("/proc/stb/video/hdmi_hdrtype")
+ SystemInfo["HasScaler_sharpness"] = pathExists("/proc/stb/vmpeg/0/pep_scaler_sharpness")
+ SystemInfo["HasHDMIin"] = model in ("vuduo4k", "vuduo4kse", "vuultimo4k", "vuuno4kse", "gbquad4k", "hd2400", "et10000")
+ SystemInfo["HasHDMI-CEC"] = HardwareInfo().has_hdmi() and fileExists(resolveFilename(SCOPE_PLUGINS, "SystemPlugins/HdmiCEC/plugin.pyo")) and (fileExists("/dev/cec0") or fileExists("/dev/hdmi_cec") or fileExists("/dev/misc/hdmi_cec0"))
+-SystemInfo["HasYPbPr"] = model in ("dm8000", "et5000", "et6000", "et6500", "et9000", "et9200", "et9500", "et10000", "formuler1", "mbtwinplus", "spycat", "vusolo", "vuduo", "vuduo2", "vuultimo")
+-SystemInfo["HasScart"] = model in ("dm8000", "et4000", "et6500", "et8000", "et9000", "et9200", "et9500", "et10000", "formuler1", "hd1100", "hd1200", "hd1265", "hd2400", "vusolo", "vusolo2", "vuduo", "vuduo2", "vuultimo", "vuuno", "xp1000")
+-SystemInfo["HasSVideo"] = model in ("dm8000")
+-SystemInfo["HasComposite"] = model not in ("i55", "gbquad4k", "gbue4k", "hd1500", "osnino", "osninoplus", "purehd", "purehdse", "revo4k", "vusolo4k", "vuzero4k", "vuduo4k", "vuduo4kse", "vuuno4k", "vuuno4kse", "vuultimo4k")
++SystemInfo["HasYPbPr"] = model in ("adb_box", "hs8200", "cuberevo", "cuberevo-mini-fta", "cuberevo-250hd", "cuberevo-mini", "cuberevo-mini2", "cuberevo-2000hd", "cuberevo-3000hd", "cuberevo-9500hd", "fs9000", "hs9510", "hs7420", "hs7429", "hl101", "tf7700hdpvr", "ufs910", "ufs912", "ufs913", "ufs922", "vip1_v1", "vip1_v2", "vip2", "vitamin_hd5000", "opt9600", "opt9600prima")
++SystemInfo["HasScart"] = model not in ("hs7110", "hs7119", "opt9600mini, atemio520")
++SystemInfo["HasSVideo"] = model in  ("cuberevo")
++SystemInfo["HasComposite"] = model not in ("cuberevo_mini_fta", "cuberevo_250hd")
  SystemInfo["hasXcoreVFD"] = model in ("osmega", "spycat4k", "spycat4kmini", "spycat4kcombo") and fileCheck("/sys/module/brcmstb_%s/parameters/pt6302_cgram" % model)
- SystemInfo["HasOfflineDecoding"] = model not in ("osmini", "osminiplus", "et7000mini", "et11000", "mbmicro", "mbtwinplus", "mbmicrov2", "et7000", "et8500")
+-SystemInfo["HasOfflineDecoding"] = model not in ("osmini", "osminiplus", "et7000mini", "et11000", "mbmicro", "mbtwinplus", "mbmicrov2", "et7000", "et8500")
++SystemInfo["HasOfflineDecoding"] = False
  SystemInfo["MultibootStartupDevice"] = getMultibootStartupDevice()
 -SystemInfo["canMode12"] = "%s_4.boxmode" % model in cmdline and cmdline["%s_4.boxmode" % model] in ("1", "12") and "192M"
 +SystemInfo["canMode12"] = False
