@@ -341,7 +341,7 @@ KERNEL_CONFIG = linux-sh4-$(subst _stm24_,_,$(KERNEL_VER))_$(BOXTYPE).config
 REPOS = "https://github.com/Duckbox-Developers/linux-sh4-2.6.32.71.git"
 
 ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs7110 hs7420 hs7810a hs7119 hs7429 hs7819 opt9600 opt9600mini opt9600prima vitamin_hd5000))
-ifeq ($(DESTINATION), USB)
+ifeq ($(DESTINATION), $(filter $(DESTINATION), USB USB_HDD))
 KERNEL_DEPS  = busybox_usb
 KERNEL_DEPS += e2fsprogs
 KERNEL_DEPS += sysvinit
@@ -431,12 +431,16 @@ ifeq ($(IMAGE), $(filter $(IMAGE), enigma2-wlandriver neutrino-wlandriver titan-
 	$(SILENT)echo "# CONFIG_HOSTAP is not set" >> $(KERNEL_DIR)/.config
 endif
 ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs7110 hs7420 hs7810a hs7119 hs7429 hs7819 opt9600 opt9600mini opt9600prima vitamin_hd5000))
-ifeq ($(DESTINATION), USB)
-	@echo "Configuring kernel for running on USB."
+ifeq ($(DESTINATION), $(filter $(DESTINATION), USB USB_HDD))
+	@echo "Configuring kernel for running on USB (without built-in HDD)."
 	$(SILENT)grep -v "CONFIG_BLK_DEV_INITRD" "$(KERNEL_DIR)/.config" > $(KERNEL_DIR)/.config.tmp
 	$(SILENT)cp $(KERNEL_DIR)/.config.tmp $(KERNEL_DIR)/.config
 	$(SILENT)echo "CONFIG_BLK_DEV_INITRD=y " >> $(KERNEL_DIR)/.config
+ifeq ($(DESTINATION), USB)
 	$(SILENT)echo "CONFIG_INITRAMFS_SOURCE=\"$(TOOLS_DIR)/USB_boot/initramfs_no_hdd\"" >> $(KERNEL_DIR)/.config
+else
+	$(SILENT)echo "CONFIG_INITRAMFS_SOURCE=\"$(TOOLS_DIR)/USB_boot/initramfs_hdd\"" >> $(KERNEL_DIR)/.config
+endif
 	$(SILENT)echo "CONFIG_INITRAMFS_ROOT_UID=0" >> $(KERNEL_DIR)/.config
 	$(SILENT)echo "CONFIG_INITRAMFS_ROOT_GID=0" >> $(KERNEL_DIR)/.config
 	$(SILENT)echo "CONFIG_RD_GZIP=y" >> $(KERNEL_DIR)/.config

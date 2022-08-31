@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20220724.1
+# Version 20220831.1
 
 ##############################################
 
@@ -26,7 +26,7 @@ if [ "$1" == -h ] || [ "$1" == --help ]; then
 	echo "Parameter 5       : Enigma2 diff (0-5), Neutrino variant (1-6), Titan plugins (1=no, 2=yes)"
 	echo "Parameter 6       : media Framework (Enigma2: 1-5; Neutrino: ignored, Titan: 1-2)"
 	echo "Parameter 7       : external LCD (1=none, 2=graphlcd, 3=lcd4linux, 4=both)"
-	echo "Parameter 8       : destination (1-2, 1=flash, 2=USB)"
+	echo "Parameter 8       : destination (1-3, 1=flash, 2=USB, 3=USB with built-in HDD)"
 	exit
 fi
 
@@ -421,7 +421,7 @@ case "$IMAGE" in
 			[1-2]) REPLY=$6;;
 				*)	echo -e "\nMedia Framework:"
 					echo "   1*) eplayer3"
-					echo "   2)  eplayer3+Gstreamer (not recommended and not tested)"
+					echo "   2)  eplayer3+gstreamer (not recommended and not tested)"
 					read -p "Select media framework (1-2)? ";;
 		esac
 
@@ -458,8 +458,8 @@ case "$IMAGE" in
 					echo "   2)  eplayer3 (E2 player uses eplayer3 only)"
 					echo "   3)  gstreamer (E2 player uses gstreamer only)"
 					echo "   4*) gstreamer+eplayer3 (recommended, E2 player uses gstreamer + libeplayer3)"
-					echo "   5)  gstreamer/eplayer3 (E2 player is switchable between gstreamer & libeplayer3)"
-					read -p "Select media framework (1-5)? ";;
+#					echo "   5)  gstreamer/eplayer3 (E2 player is switchable between gstreamer & libeplayer3)"
+					read -p "Select media framework (1-4)? ";;
 			esac
 
 			case "$REPLY" in
@@ -562,16 +562,18 @@ echo "EXTERNAL_LCD=$EXTERNAL_LCD" >> config
 ##############################################
 
 case $8 in
-	[1-2])	REPLY=$8;;
+	[1-3])	REPLY=$8;;
 	*)	echo -e "\nWhere will the image be running:"
 		echo "   1*) Flash memory or hard disk"
-		echo "   2)  USB stick"
-		read -p "Select destination (1-2)? ";;
+		echo "   2)  USB stick (without built-in HDD)"
+		echo "   3)  USB stick (with built-in HDD)"
+		read -p "Select destination (1-3)? ";;
 esac
 
 case "$REPLY" in
 #	1) DESTINATION="flash";;
 	2) DESTINATION="USB";;
+	3) DESTINATION="USB_HDD";;
 	*) DESTINATION="flash";;
 esac
 
