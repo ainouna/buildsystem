@@ -221,7 +221,7 @@
  			brand = "Ferguson"
  			model = "Ariva @Link 200"
  		elif procmodel.startswith("spark"):
-@@ -356,204 +190,6 @@
+@@ -356,212 +190,6 @@
  				model = "Spark 7162"
  			else:
  				model = "Spark"
@@ -391,6 +391,14 @@
 -			brand = "Vimastec"
 -			model = "vs1500"
 -			grabpip = 1
+-		elif procmodel == "sfx6008":
+-			brand = "Octagon"
+-			sfx6008type = open("/proc/stb/info/type").read()
+-			if sfx6008type.startswith("10"):
+-				procmodel = "sfx6018"
+-				model = "SFX6018 S2 IP"
+-			else:  # sfx6008type.startswith("10")
+-				model = "SFX6008 IP"
 -		elif procmodel == "sf8008m":
 -			brand = "Octagon"
 -			model = "SF8008 4K Mini"
@@ -426,7 +434,7 @@
  		else:
  			model = procmodel
  
-@@ -649,20 +285,29 @@
+@@ -657,20 +285,29 @@
  	info['type'] = type
  
  	remote = "dmm1"
@@ -470,7 +478,7 @@
  	elif procmodel in ("et4x00", "et4000"):
  		remote = "et4x00"
  	elif procmodel == "et6500":
-@@ -832,7 +477,7 @@
+@@ -842,7 +479,7 @@
  	else:
  		# OE 2.2 uses apt, not opkg
  		if not fileExists("/etc/opkg/all-feed.conf"):
