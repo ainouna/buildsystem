@@ -127,10 +127,12 @@ $(D)/enigma2_openwebif: $(D)/bootstrap $(D)/enigma2 $(D)/python_cheetah $(D)/pyt
 	$(START_BUILD)
 	$(REMOVE)/e2openplugin-OpenWebif
 	$(SILENT)if [ -d $(ARCHIVE)/e2openplugin-OpenWebif.git ]; \
-		then echo -n "Updating OpenWebif.git..."; cd $(ARCHIVE)/e2openplugin-OpenWebif.git; git pull $(MINUS_Q); echo "Done."; \
-		else echo -n "Cloning OpenWebif.git"; cd $(ARCHIVE); git clone $(MINUS_Q) https://github.com/E2OpenPlugins/e2openplugin-OpenWebif.git e2openplugin-OpenWebif.git; echo "Done."; \
+		then echo -n "Updating OpenWebif.git..."; cd $(ARCHIVE)/e2openplugin-OpenWebif.git; git pull $(MINUS_Q); echo "done."; \
+		else echo -n "Cloning OpenWebif.git"; cd $(ARCHIVE); git clone $(MINUS_Q) https://github.com/E2OpenPlugins/e2openplugin-OpenWebif.git e2openplugin-OpenWebif.git; echo "done."; \
 	fi
+	$(SILENT)echo -n "Copying source code to build environment..."
 	$(SILENT)cp -ra $(ARCHIVE)/e2openplugin-OpenWebif.git $(BUILD_TMP)/e2openplugin-OpenWebif
+	$(SILENT)echo "done."
 	$(SET) -e; cd $(BUILD_TMP)/e2openplugin-OpenWebif; \
 		$(call apply_patches, $(OPENWEBIF_PATCH)); \
 		$(BUILDENV) \
