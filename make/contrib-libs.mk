@@ -1,7 +1,7 @@
 #
 # ncurses
 #
-NCURSES_VER = 6.0
+NCURSES_VER = 6.1
 NCURSES_SOURCE = ncurses-$(NCURSES_VER).tar.gz
 NCURSES_PATCH = ncurses-$(NCURSES_VER)-gcc-5.x-MKlib_gen.patch
 
@@ -36,17 +36,18 @@ $(D)/ncurses: $(D)/bootstrap $(ARCHIVE)/$(NCURSES_SOURCE)
 			--enable-echo \
 			--enable-const \
 			--enable-overwrite \
+			--enable-widec \
 		; \
 		$(MAKE) libs \
 			HOSTCC=gcc \
 			HOSTCCFLAGS="$(CFLAGS) -DHAVE_CONFIG_H -I../ncurses -DNDEBUG -D_GNU_SOURCE -I../include" \
 			HOSTLDFLAGS="$(LDFLAGS)"; \
 		$(MAKE) install.libs DESTDIR=$(TARGET_DIR)
-	$(SILENT)mv $(TARGET_DIR)/usr/bin/ncurses6-config $(HOST_DIR)/bin
+	$(SILENT)mv $(TARGET_DIR)/usr/bin/ncursesw6-config $(HOST_DIR)/bin
 	$(SILENT)rm -f $(addprefix $(TARGET_LIB_DIR)/,libform* libmenu* libpanel*)
 	$(SILENT)rm -f $(addprefix $(PKG_CONFIG_PATH)/,form.pc menu.pc panel.pc)
-	$(REWRITE_PKGCONF) $(HOST_DIR)/bin/ncurses6-config
-	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/ncurses.pc
+	$(REWRITE_PKGCONF) $(HOST_DIR)/bin/ncursesw6-config
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/ncursesw.pc
 	$(REMOVE)/ncurses-$(NCURSES_VER)
 	$(TOUCH)
 
@@ -336,16 +337,25 @@ $(D)/readline: $(D)/bootstrap $(ARCHIVE)/$(READLINE_SOURCE)
 #
 # openssl
 #
+ifeq ($(FFMPEG_VER), 2.8.18)
 OPENSSL_MAJOR = 1.0.2
 OPENSSL_MINOR = u
 OPENSSL_VER = $(OPENSSL_MAJOR)$(OPENSSL_MINOR)
-OPENSSL_SOURCE = openssl-$(OPENSSL_VER).tar.gz
 OPENSSL_PATCH  = openssl-$(OPENSSL_VER)-optimize-for-size.patch
 OPENSSL_PATCH += openssl-$(OPENSSL_VER)-makefile-dirs.patch
 OPENSSL_PATCH += openssl-$(OPENSSL_VER)-disable_doc_tests.patch
 OPENSSL_PATCH += openssl-$(OPENSSL_VER)-fix-parallel-building.patch
 OPENSSL_PATCH += openssl-$(OPENSSL_VER)-compat_versioned_symbols-1.patch
 OPENSSL_PATCH += openssl-$(OPENSSL_VER)-remove_timestamp_check.patch
+OPENSSL_TARGETDIR =
+else
+OPENSSL_MAJOR = 1.1.1
+OPENSSL_MINOR = j
+OPENSSL_VER = $(OPENSSL_MAJOR)$(OPENSSL_MINOR)
+OPENSSL_PATCH += openssl-$(OPENSSL_VER)-compat_versioned_symbols-1.patch
+OPENSSL_TARGETDIR = $(TARGET_DIR)
+endif
+OPENSSL_SOURCE = openssl-$(OPENSSL_VER).tar.gz
 OPENSSL_SED_PATCH = sed -i 's|MAKEDEPPROG=makedepend|MAKEDEPPROG=$(CROSS_DIR)/bin/$$(CC) -M|' Makefile
 
 $(ARCHIVE)/$(OPENSSL_SOURCE):
@@ -363,8 +373,8 @@ $(D)/openssl: $(D)/bootstrap $(ARCHIVE)/$(OPENSSL_SOURCE)
 			shared \
 			no-hw \
 			linux-generic32 \
-			--prefix=/usr \
-			--openssldir=/etc/ssl \
+			--prefix=$(OPENSSL_TARGETDIR)/usr \
+			--openssldir=$(OPENSSL_TARGETDIR)/etc/ssl \
 		; \
 		$(OPENSSL_SED_PATCH); \
 		$(MAKE) depend; \
@@ -374,9 +384,14 @@ $(D)/openssl: $(D)/bootstrap $(ARCHIVE)/$(OPENSSL_SOURCE)
 	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/openssl.pc
 	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libcrypto.pc
 	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libssl.pc
-	cd $(TARGET_DIR) && rm -rf etc/ssl/man usr/bin/openssl usr/lib/engines
+	cd $(TARGET_DIR) && rm -rf etc/ssl/man usr/bin/openssl usr/lib/engines-1.1
+ifeq ($(OPENSSL_MAJOR), 1.0.2)
 	ln -sf libcrypto.so.1.0.0 $(TARGET_DIR)/usr/lib/libcrypto.so.0.9.8
 	ln -sf libssl.so.1.0.0 $(TARGET_DIR)/usr/lib/libssl.so.0.9.8
+else
+	ln -sf libcrypto.so.1.1 $(TARGET_DIR)/usr/lib/libcrypto.so.0.9.8
+	ln -sf libssl.so.1.1 $(TARGET_DIR)/usr/lib/libssl.so.0.9.8
+endif
 	$(REMOVE)/openssl-$(OPENSSL_VER)
 	$(TOUCH)
 
@@ -428,7 +443,7 @@ LUA_SOURCE = lua-$(LUA_VER).tar.gz
 
 LUAPOSIX_VER = 31
 LUAPOSIX_SOURCE = luaposix-git-$(LUAPOSIX_VER).tar.bz2
-LUAPOSIX_URL = git://github.com/luaposix/luaposix.git
+LUAPOSIX_URL = https://github.com/luaposix/luaposix.git
 LUAPOSIX_PATCH = lua-$(LUA_VER)-luaposix-$(LUAPOSIX_VER).patch
 
 $(ARCHIVE)/$(LUA_SOURCE):
@@ -461,7 +476,7 @@ $(D)/lua: $(D)/bootstrap $(D)/ncurses $(ARCHIVE)/$(LUAPOSIX_SOURCE) $(ARCHIVE)/$
 #
 LUACURL_VER = 9ac72c7
 LUACURL_SOURCE = luacurl-git-$(LUACURL_VER).tar.bz2
-LUACURL_URL = git://github.com/Lua-cURL/Lua-cURLv3.git
+LUACURL_URL = https://github.com/Lua-cURL/Lua-cURLv3.git
 
 $(ARCHIVE)/$(LUACURL_SOURCE):
 	$(SCRIPTS_DIR)/get-git-archive.sh $(LUACURL_URL) $(LUACURL_VER) $(notdir $@) $(ARCHIVE)
@@ -504,7 +519,7 @@ $(D)/luaexpat: $(D)/bootstrap $(D)/lua $(D)/expat $(ARCHIVE)/$(LUAEXPAT_SOURCE)
 #
 LUASOCKET_VER = 5a17f79
 LUASOCKET_SOURCE = luasocket-git-$(LUASOCKET_VER).tar.bz2
-LUASOCKET_URL = git://github.com/diegonehab/luasocket.git
+LUASOCKET_URL = https://github.com/diegonehab/luasocket.git
 
 $(ARCHIVE)/$(LUASOCKET_SOURCE):
 	$(SCRIPTS_DIR)/get-git-archive.sh $(LUASOCKET_URL) $(LUASOCKET_VER) $(notdir $@) $(ARCHIVE)
@@ -525,7 +540,7 @@ $(D)/luasocket: $(D)/bootstrap $(D)/lua $(ARCHIVE)/$(LUASOCKET_SOURCE)
 #
 LUAFEEDPARSER_VER = 9b284bc
 LUAFEEDPARSER_SOURCE = luafeedparser-git-$(LUAFEEDPARSER_VER).tar.bz2
-LUAFEEDPARSER_URL = git://github.com/slact/lua-feedparser.git
+LUAFEEDPARSER_URL = https://github.com/slact/lua-feedparser.git
 
 $(ARCHIVE)/$(LUAFEEDPARSER_SOURCE):
 	$(SCRIPTS_DIR)/get-git-archive.sh $(LUAFEEDPARSER_URL) $(LUAFEEDPARSER_VER) $(notdir $@) $(ARCHIVE)
@@ -599,7 +614,7 @@ $(D)/boost: $(D)/bootstrap $(ARCHIVE)/$(BOOST_SOURCE)
 #
 # zlib
 #
-ZLIB_VER = 1.2.11
+ZLIB_VER = 1.2.12
 ZLIB_SOURCE = zlib-$(ZLIB_VER).tar.xz
 ZLIB_Patch = zlib-$(ZLIB_VER).patch
 
@@ -651,11 +666,10 @@ $(D)/bzip2: $(D)/bootstrap $(ARCHIVE)/$(BZIP2_SOURCE)
 #
 # timezone
 #
-TZDATA_VER = 2021a
+TZDATA_VER = 2022f
 TZDATA_SOURCE = tzdata$(TZDATA_VER).tar.gz
-TZDATA_ZONELIST = africa antarctica asia australasia europe northamerica southamerica pacificnew etcetera backzone
+TZDATA_ZONELIST = africa antarctica asia australasia europe northamerica southamerica etcetera
 DEFAULT_TIMEZONE ?= "CET"
-#ln -s /usr/share/zoneinfo/<country>/<city> /etc/localtime
 
 $(ARCHIVE)/$(TZDATA_SOURCE):
 	$(WGET) ftp://ftp.iana.org/tz/releases/$(TZDATA_SOURCE)
@@ -674,11 +688,11 @@ $(D)/timezone: $(D)/bootstrap $(ARCHIVE)/$(TZDATA_SOURCE)
 		done; \
 		install -d -m 0755 $(TARGET_DIR)/usr/share $(TARGET_DIR)/etc; \
 		cp -a zoneinfo $(TARGET_DIR)/usr/share/; \
-		cp -v zone.tab iso3166.tab $(TARGET_DIR)/usr/share/zoneinfo/; \
-		# Install default timezone
-		if [ -e $(TARGET_DIR)/usr/share/zoneinfo/$(DEFAULT_TIMEZONE) ]; then \
-			echo ${DEFAULT_TIMEZONE} > $(TARGET_DIR)/etc/timezone; \
-		fi; \
+		cp -v zone.tab iso3166.tab $(TARGET_DIR)/usr/share/zoneinfo/
+	# Install default timezone
+	$(SILENT)if [ -e $(TARGET_DIR)/usr/share/zoneinfo/$(DEFAULT_TIMEZONE) ]; then \
+		echo ${DEFAULT_TIMEZONE} > $(TARGET_DIR)/etc/timezone; \
+	fi
 	$(SILENT)install -m 0644 $(SKEL_ROOT)/etc/timezone.xml $(TARGET_DIR)/etc/
 	$(REMOVE)/timezone
 	$(TOUCH)
@@ -686,7 +700,7 @@ $(D)/timezone: $(D)/bootstrap $(ARCHIVE)/$(TZDATA_SOURCE)
 #
 # freetype
 #
-FREETYPE_VER = 2.10.4
+FREETYPE_VER = 2.11.0
 FREETYPE_SOURCE = freetype-$(FREETYPE_VER).tar.xz
 FREETYPE_PATCH = freetype-$(FREETYPE_VER).patch
 
@@ -735,7 +749,7 @@ $(D)/freetype: $(D)/bootstrap $(D)/zlib $(D)/libpng $(ARCHIVE)/$(FREETYPE_SOURCE
 #
 # lirc
 #
-ifeq ($(BOXTYPE), $(filter $(BOXTYPE), adb_box arivalink200 ipbox55 ipbox99 ipbox9900 cuberevo cuberevo_mini cuberevo_mini2 cuberevo_250hd cuberevo_2000hd cuberevo_3000hd hl101 pace7241 sagemcom88 spark spark7162 ufs910 vip1_v1 vip1_v2 vip2 vitamin_hd5000))
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE), adb_box arivalink200 ipbox55 ipbox99 ipbox9900 cuberevo cuberevo_mini cuberevo_mini2 cuberevo_250hd cuberevo_2000hd cuberevo_3000hd hchs8100 hl101 pace7241 sagemcom88 spark spark7162 ufs910 vip1_v1 vip1_v2 vip2 vitamin_hd5000))
 
 LIRC_VER = 0.9.0
 LIRC_SOURCE = lirc-$(LIRC_VER).tar.bz2
@@ -745,7 +759,7 @@ LIRC = $(D)/lirc
 $(ARCHIVE)/$(LIRC_SOURCE):
 	$(WGET) https://sourceforge.net/projects/lirc/files/LIRC/$(LIRC_VER)/$(LIRC_SOURCE)
 
-ifeq ($(IMAGE), $(filter $(IMAGE), neutrino neutrino-wlandriver))
+ifeq ($(IMAGE), $(filter $(IMAGE), neutrino neutrino-wlandriver titan titan-wlandriver))
 ifeq ($(BOXTYPE), $(filter $(BOXTYPE), spark spark7162))
 LIRC_OPTS = -D__KERNEL_STRICT_NAMES -DUINPUT_NEUTRINO_HACK -DSPARK -I$(DRIVER_DIR)/frontcontroller/aotom_spark
 else
@@ -828,7 +842,7 @@ endif
 #
 # libjpeg_turbo2
 #
-LIBJPEG_TURBO2_VER = 2.1.0
+LIBJPEG_TURBO2_VER = 2.1.4
 LIBJPEG_TURBO2_SOURCE = libjpeg-turbo-$(LIBJPEG_TURBO2_VER).tar.gz
 LIBJPEG_TURBO2_PATCH = libjpeg-turbo-$(LIBJPEG_TURBO2_VER)-tiff-ojpeg.patch
 
@@ -903,7 +917,7 @@ $(D)/libjpeg_turbo: $(D)/bootstrap $(ARCHIVE)/$(LIBJPEG_TURBO_SOURCE)
 #
 # libpng
 #
-LIBPNG_VER = 1.6.37
+LIBPNG_VER = 1.6.38
 LIBPNG_VER_X = 16
 LIBPNG_SOURCE = libpng-$(LIBPNG_VER).tar.xz
 LIBPNG_PATCH = libpng-$(LIBPNG_VER)-disable-tools.patch
@@ -1008,8 +1022,8 @@ $(D)/libconfig: $(D)/bootstrap $(ARCHIVE)/$(LIBCONFIG_SOURCE)
 
 #
 # libcurl
-#7
-LIBCURL_VER = 7.76.0
+#
+LIBCURL_VER = 7.85.0
 LIBCURL_SOURCE = curl-$(LIBCURL_VER).tar.bz2
 LIBCURL_PATCH = libcurl-$(LIBCURL_VER).patch
 
@@ -1047,10 +1061,10 @@ $(D)/libcurl: $(D)/bootstrap $(D)/zlib $(D)/openssl $(D)/ca-bundle $(ARCHIVE)/$(
 			--enable-optimize \
 			--disable-verbose \
 			--disable-ldap \
-			--without-libidn \
 			--without-libidn2 \
 			--without-winidn \
 			--without-libpsl \
+			--without-libgsasl \
 			--with-ca-bundle=$(CA_BUNDLE_DIR)/$(CA_BUNDLE) \
 			--with-random=/dev/urandom \
 			--with-ssl=$(TARGET_DIR)/usr \
@@ -1071,7 +1085,7 @@ $(D)/libcurl: $(D)/bootstrap $(D)/zlib $(D)/openssl $(D)/ca-bundle $(ARCHIVE)/$(
 #
 # libfribidi
 #
-LIBFRIBIDI_VER = 1.0.10
+LIBFRIBIDI_VER = 1.0.12
 LIBFRIBIDI_SOURCE = fribidi-$(LIBFRIBIDI_VER).tar.xz
 LIBFRIBIDI_PATCH = libfribidi-$(LIBFRIBIDI_VER).patch
 
@@ -1332,7 +1346,7 @@ $(D)/libiconv: $(D)/bootstrap $(ARCHIVE)/$(LIBICONV_SOURCE)
 #
 # expat
 #
-EXPAT_VER = 2.2.9
+EXPAT_VER = 2.5.0
 EXPAT_SOURCE = expat-$(EXPAT_VER).tar.bz2
 EXPAT_PATCH  = expat-$(EXPAT_VER)-libtool-tag.patch
 
@@ -1478,14 +1492,17 @@ $(D)/libdvdread: $(D)/bootstrap $(ARCHIVE)/$(LIBDVDREAD_SOURCE)
 #
 # libdreamdvd
 #
-LIBDREAMDVD_PATCH = libdreamdvd-1.0-sh4-support.patch
+LIBDREAMDVD_PATCH  = libdreamdvd-1.0-sh4-support.patch
+ifeq ($(IMAGE), $(filter $(IMAGE), titan titan-wlandriver))
+LIBDREAMDVD_PATCH += libdreamdvd-1.0-titan-support.patch
+endif
 
 $(D)/libdreamdvd: $(D)/bootstrap $(D)/libdvdnav
 	$(START_BUILD)
 	$(REMOVE)/libdreamdvd
 	$(SET) -e; if [ -d $(ARCHIVE)/libdreamdvd.git ]; \
 		then cd $(ARCHIVE)/libdreamdvd.git; git pull $(MINUS_Q); \
-		else cd $(ARCHIVE); git clone $(MINUS_Q) git://github.com/mirakels/libdreamdvd.git libdreamdvd.git; \
+		else cd $(ARCHIVE); git clone $(MINUS_Q) https://github.com/mirakels/libdreamdvd.git libdreamdvd.git; \
 		fi
 	$(SILENT)cp -ra $(ARCHIVE)/libdreamdvd.git $(BUILD_TMP)/libdreamdvd
 	$(CH_DIR)/libdreamdvd; \
@@ -1608,7 +1625,7 @@ $(D)/libpsl: $(D)/bootstrap $(D)/host_python
 	$(REMOVE)/libpsl
 	$(SET) -e; if [ -d $(ARCHIVE)/libpsl.git ]; \
 		then cd $(ARCHIVE)/libpsl.git; git pull $(MINUS_Q); \
-		else cd $(ARCHIVE); git clone $(MINUS_Q) git://github.com/rockdaboot/libpsl.git libpsl.git; \
+		else cd $(ARCHIVE); git clone $(MINUS_Q) https://github.com/rockdaboot/libpsl.git libpsl.git; \
 		fi
 	$(SILENT)cp -ra $(ARCHIVE)/libpsl.git $(BUILD_TMP)/libpsl
 	$(CH_DIR)/libpsl; \
@@ -1700,7 +1717,7 @@ $(D)/flac: $(D)/bootstrap $(ARCHIVE)/$(FLAC_SOURCE)
 #
 # libxml2
 #
-LIBXML2_VER = 2.9.10
+LIBXML2_VER = 2.9.12
 LIBXML2_SOURCE = libxml2-$(LIBXML2_VER).tar.gz
 LIBXML2_PATCH = libxml2-$(LIBXML2_VER).patch
 
@@ -1712,7 +1729,7 @@ LIBXML2_CONF_OPTS  = --with-python=$(HOST_DIR)
 LIBXML2_CONF_OPTS += --with-python-install-dir=/$(PYTHON_DIR)/site-packages
 endif
 
-ifeq ($(IMAGE), $(filter $(IMAGE), neutrino neutrino-wlandriver))
+ifeq ($(IMAGE), $(filter $(IMAGE), neutrino neutrino-wlandriver titan titan-wlandriver))
 LIBXML2_CONF_OPTS  = --without-python
 LIBXML2_CONF_OPTS += --without-catalog
 LIBXML2_CONF_OPTS += --without-legacy
@@ -1862,17 +1879,19 @@ $(D)/libroxml: $(D)/bootstrap $(ARCHIVE)/$(LIBROXML_SOURCE)
 #
 # pugixml
 #
-PUGIXML_VER = 1.11
-PUGIXML_SOURCE = pugixml-$(PUGIXML_VER).tar.gz
+PUGIXML_VER = 521b2cd
+PUGIXML_URL = https://github.com/zeux/pugixml.git
 PUGIXML_PATCH = pugixml-$(PUGIXML_VER)-config.patch
 
-$(ARCHIVE)/$(PUGIXML_SOURCE):
-	$(WGET) https://github.com/zeux/pugixml/releases/download/v$(PUGIXML_VER)/$(PUGIXML_SOURCE)
-
-$(D)/pugixml: $(D)/bootstrap $(ARCHIVE)/$(PUGIXML_SOURCE)
+$(D)/pugixml: $(D)/bootstrap
 	$(START_BUILD)
 	$(REMOVE)/pugixml-$(PUGIXML_VER)
-	$(UNTAR)/$(PUGIXML_SOURCE)
+	$(SET) -e; if [ -d $(ARCHIVE)/pugixml.git ]; \
+		then cd $(ARCHIVE)/pugixml.git; git pull $(MINUS_Q); \
+		else cd $(ARCHIVE); git clone $(MINUS_Q) $(PUGIXML_URL) pugixml.git; \
+		fi
+	$(SILENT)cp -ra $(ARCHIVE)/pugixml.git $(BUILD_TMP)/pugixml-$(PUGIXML_VER)
+	$(SILENT)(cd $(BUILD_TMP)/pugixml-$(PUGIXML_VER); git checkout $(MINUS_Q) $(PUGIXML_VER))
 	$(CH_DIR)/pugixml-$(PUGIXML_VER); \
 		$(call apply_patches, $(PUGIXML_PATCH)); \
 		cmake  --no-warn-unused-cli \
@@ -1896,7 +1915,7 @@ $(D)/pugixml: $(D)/bootstrap $(ARCHIVE)/$(PUGIXML_SOURCE)
 #
 GRAPHLCD_VER = 55d4bd8
 GRAPHLCD_SOURCE = graphlcd-git-$(GRAPHLCD_VER).tar.bz2
-GRAPHLCD_URL = git://projects.vdr-developer.org/graphlcd-base.git
+GRAPHLCD_URL = https://github.com/Duckbox-Developers/graphlcd.git
 GRAPHLCD_PATCH = graphlcd-git-$(GRAPHLCD_VER).patch
 
 $(ARCHIVE)/$(GRAPHLCD_SOURCE):
@@ -1945,7 +1964,7 @@ $(D)/libdpf: $(D)/bootstrap $(D)/libusb_compat $(ARCHIVE)/$(LIBDPF_SOURCE)
 #
 # lcd4linux
 #
-LCD4LINUX_VER = 91cfbc2
+LCD4LINUX_VER = e2cfdc5
 LCD4LINUX_SOURCE = lcd4linux-git-$(LCD4LINUX_VER).tar.bz2
 LCD4LINUX_URL = https://github.com/TangoCash/lcd4linux.git
 #LCD4LINUX_PATCH = lcd4linux-widget.patch
@@ -1977,7 +1996,7 @@ $(D)/lcd4linux: $(D)/bootstrap $(D)/libusb_compat $(D)/gd $(D)/libusb $(D)/libdp
 #
 # gd
 #
-GD_VER = 2.3.0
+GD_VER = 2.3.2
 GD_SOURCE = libgd-$(GD_VER).tar.xz
 
 $(ARCHIVE)/$(GD_SOURCE):
@@ -2074,7 +2093,7 @@ $(D)/libusb_compat: $(D)/bootstrap $(D)/libusb $(ARCHIVE)/$(LIBUSB_COMPAT_SOURCE
 #
 # alsa-lib
 #
-ALSA_LIB_VER = 1.2.4
+ALSA_LIB_VER = 1.2.7.2
 ALSA_LIB_SOURCE = alsa-lib-$(ALSA_LIB_VER).tar.bz2
 ALSA_LIB_PATCH  = alsa-lib-$(ALSA_LIB_VER).patch
 ALSA_LIB_PATCH += alsa-lib-$(ALSA_LIB_VER)-link_fix.patch
@@ -2118,7 +2137,7 @@ $(D)/alsa_lib: $(D)/bootstrap $(ARCHIVE)/$(ALSA_LIB_SOURCE)
 #
 # alsa-utils
 #
-ALSA_UTILS_VER = 1.2.4
+ALSA_UTILS_VER = 1.2.7
 ALSA_UTILS_SOURCE = alsa-utils-$(ALSA_UTILS_VER).tar.bz2
 ALSA_UTILS_PATCH  = alsa-utils-$(ALSA_UTILS_VER).patch
 
@@ -2195,7 +2214,7 @@ $(D)/libopenthreads: $(D)/bootstrap $(ARCHIVE)/$(LIBOPENTHREADS_SOURCE)
 #
 LIBRTMP_VER = ad70c64
 LIBRTMP_SOURCE = rtmpdump-git-$(LIBRTMP_VER).tar.bz2
-LIBRTMP_URL = git://github.com/oe-alliance/rtmpdump.git
+LIBRTMP_URL = https://github.com/oe-alliance/rtmpdump.git
 LIBRTMP_PATCH = rtmpdump-git-$(LIBRTMP_VER).patch
 
 $(ARCHIVE)/$(LIBRTMP_SOURCE):
@@ -2784,4 +2803,160 @@ $(D)/libevent: $(D)/bootstrap $(D)/openssl
 	$(REWRITE_LIBTOOL)/libevent_pthreads.la
 	$(REMOVE)/libevent-$(LIBEVENT_VER)
 	$(TOUCH)
+
+#
+# libnl
+#
+LIBNL_VER = 3.2.25
+LIBNL_SOURCE = libnl-$(LIBNL_VER).tar.gz
+
+$(ARCHIVE)/$(LIBNL_SOURCE):
+	$(WGET) https://www.infradead.org/~tgr/libnl/files/$(LIBNL_SOURCE)
+
+$(D)/libnl: $(D)/bootstrap $(D)/openssl $(ARCHIVE)/$(LIBNL_SOURCE)
+	$(START_BUILD)
+	$(REMOVE)/libnl-$(LIBNL_VER)
+	$(UNTAR)/$(LIBNL_SOURCE)
+	$(CH_DIR)/libnl-$(LIBNL_VER); \
+		$(CONFIGURE) \
+			--build=$(BUILD) \
+			--host=$(TARGET) \
+			--prefix=/usr \
+			--bindir=/.remove \
+			--mandir=/.remove \
+			--infodir=/.remove \
+		make $(SILENT_OPT); \
+		make install $(SILENT_OPT) DESTDIR=$(TARGET_DIR)
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libnl-3.0.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libnl-cli-3.0.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libnl-genl-3.0.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libnl-nf-3.0.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libnl-route-3.0.pc
+	$(REWRITE_LIBTOOL)/libnl-3.la
+	$(REWRITE_LIBTOOL)/libnl-cli-3.la
+	$(REWRITE_LIBTOOL)/libnl-genl-3.la
+	$(REWRITE_LIBTOOL)/libnl-idiag-3.la
+	$(REWRITE_LIBTOOL)/libnl-nf-3.la
+	$(REWRITE_LIBTOOL)/libnl-route-3.la
+	$(REMOVE)/libnl-$(LIBNL_VER)
+	$(TOUCH)
+
+#
+# mpg123
+#
+MPG123_VER = 1.28.2
+MPG123_SOURCE = mpg123-$(MPG123_VER).tar.bz2
+
+$(ARCHIVE)/$(MPG123_SOURCE):
+	$(WGET) https://sourceforge.net/projects/mpg123/files/mpg123/$(MPG123_VER)/$(MPG123_SOURCE)
+
+$(D)/mpg123: $(D)/bootstrap $(ARCHIVE)/$(MPG123_SOURCE)
+	$(START_BUILD)
+	$(REMOVE)/mpg123-$(MPG123_VER)
+	$(UNTAR)/$(MPG123_SOURCE)
+	$(CH_DIR)/mpg123-$(MPG123_VER); \
+		$(CONFIGURE) \
+			--build=$(BUILD) \
+			--host=$(TARGET) \
+			--target=$(TARGET) \
+			--prefix=/usr \
+			--bindir=/.remove \
+			--mandir=/.remove \
+			--docdir=/.remove \
+			--infodir=/.remove \
+			--with-audio=alsa \
+			--with-audio=oss \
+			--with-default-audio=alsa \
+			--with-default-audio=oss \
+		make $(SILENT_OPT); \
+		make install $(SILENT_OPT) DESTDIR=$(TARGET_DIR)
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libmpg123.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libout123.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libsyn123.pc
+	$(REWRITE_LIBTOOL)/libmpg123.la
+	$(REWRITE_LIBTOOL)/libout123.la
+	$(REWRITE_LIBTOOL)/libsyn123.la
+	$(REMOVE)/mpg123-$(MPG123_VER)
+	$(TOUCH)
+
+#
+# a52dec
+#
+A52DEC_VER = 0.7.4
+A52DEC_SOURCE = a52dec-$(A52DEC_VER).tar.gz
+
+$(ARCHIVE)/$(A52DEC_SOURCE):
+	$(WGET) https://ftp.osuosl.org/pub/blfs/conglomeration/a52dec/$(A52DEC_SOURCE)
+
+$(D)/a52dec: $(D)/bootstrap $(ARCHIVE)/$(A52DEC_SOURCE)
+	$(START_BUILD)
+	$(REMOVE)/a52dec-$(A52DEC_VER)
+	$(UNTAR)/$(A52DEC_SOURCE)
+	$(CH_DIR)/a52dec-$(A52DEC_VER); \
+		$(CONFIGURE) \
+			--build=$(BUILD) \
+			--host=$(TARGET) \
+			--target=$(TARGET) \
+			--disable-al-audio \
+			--disable-solaris-audio \
+			--disable-win \
+			--prefix=/usr \
+			--bindir=/.remove \
+			--mandir=/.remove \
+			--infodir=/.remove \
+		make $(SILENT_OPT); \
+		make install $(SILENT_OPT) DESTDIR=$(TARGET_DIR)
+	$(REWRITE_LIBTOOL)/liba52.la
+	$(REMOVE)/a52dec-$(A52DEC_VER)
+	$(TOUCH)
+
+#
+# amrnb
+#
+AMRNB_VER = 11.0.0.0
+AMRNB_SOURCE = amrnb-$(AMRNB_VER).tar.bz2
+
+$(ARCHIVE)/$(AMRNB_SOURCE):
+	$(WGET) http://www.penguin.cz/~utx/ftp/amr/$(AMRNB_SOURCE)
+
+$(D)/amrnb: $(D)/bootstrap $(ARCHIVE)/$(AMRNB_SOURCE)
+	$(START_BUILD)
+	$(REMOVE)/amrnb-$(AMRNB_VER)
+	$(UNTAR)/$(AMRNB_SOURCE)
+	$(CH_DIR)/amrnb-$(AMRNB_VER); \
+		autoreconf -fi $(SILENT_OPT); \
+		$(CONFIGURE) \
+			--build=$(BUILD) \
+			--host=$(TARGET) \
+			--target=$(TARGET) \
+			--prefix=/usr \
+			--bindir=/.remove \
+			--mandir=/.remove \
+			--docdir=/.remove \
+			--infodir=/.remove \
+		make $(SILENT_OPT); \
+		make install $(SILENT_OPT) DESTDIR=$(TARGET_DIR)
+	$(REMOVE)/amrnb-$(AMRNB_VER)
+	$(TOUCH)
+
+#
+# libwrap
+#
+LIBWRAP_VER = 7.6
+LIBWRAP_SOURCE = tcp_wrappers_$(LIBWRAP_VER).tar.bz2
+
+$(ARCHIVE)/$(LIBWRAP_SOURCE):
+	$(WGET) https://ftp.osuosl.org/pub/blfs/conglomeration/tcp_wrappers/$(LIBWRAP_SOURCE)
+
+$(D)/libwrap: $(D)/bootstrap $(ARCHIVE)/$(LIBWRAP_SOURCE)
+	$(START_BUILD)
+	$(REMOVE)/libwrap-$(LIBWRAP_VER)
+	$(UNTAR)/$(LIBWRAP_SOURCE)
+	$(CH_DIR)/tcp_wrappers_$(LIBWRAP_VER); \
+		make all; \
+		make install $(SILENT_OPT) DESTDIR=$(TARGET_DIR)
+	$(REWRITE_LIBTOOL)/libwrap.la
+	$(REMOVE)/libwrap-$(LIBWRAP_VER)
+	$(TOUCH)
+
 

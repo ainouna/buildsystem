@@ -1,0 +1,543 @@
+--- a/makesh4.sh.orig
++++ b/makesh4.sh
+@@ -6,29 +6,27 @@
+ #*****************************************************#
+ 
+ STM=$1
+-MEDIAFW=$2
++MEDIA_FW=$2
+ GROUP=$3
+ BOX=$4
+-DISTRO=$5
+-ARCH=$6
+-SRCDIR=$7
++SRC_DIR=$5
++TP_CPPFLAGS=$6
+ 
+-echo $*
++#echo $*
+ 
+-echo STM=$1
+-echo MEDIAFW=$2
+-echo GROUP=$3
+-echo BOX=$4
+-echo DISTRO=$5
+-echo ARCH=$6
+-echo SRCDIR=$7
++#echo "STM = $STM"
++#echo "MEDIA_FW = $MEDIA_FW"
++#echo "GROUP = $GROUP"
++#echo "BOX = $BOX"
++#echo "SRC_DIR = $SRC_DIR"
++#echo "TP_CPPFLAGS = $TP_CPPFLAGS"
+ 
+ if [ -z "$STM" ]; then
+-	echo "error: use makesh4.sh <stm23|stm23|stm24> <1|2>"
++	echo "error: use makesh4.sh <stm23|stm23|stm24> <eplayer3|>"
+ 	exit 1
+ fi
+-if [ -z "$MEDIAFW" ]; then
+-	echo "error: use makesh4.sh <stm23|stm23|stm24> <1|2>"
++if [ -z "$MEDIA_FW" ]; then
++	echo "error: use makesh4.sh <stm23|stm23|stm24> <eplayer3|>"
+ 	exit 1
+ fi
+ 
+@@ -38,33 +36,13 @@
+ 	devflag=""
+ fi
+ 
+-cd "$HOME"/flashimg/$SRCDIR/plugins
+-ln -s "$HOME"/flashimg/$SRCDIR/titan "$HOME"/flashimg/$SRCDIR/plugins/titan
++cd "$SRC_DIR"/titan/plugins
++#ln -s "$SRC_DIR"/titan "$SRC_DIR"/titan/plugins
+ 
+-if [ $MEDIAFW = 1 ]; then
++if [ "$MEDIA_FW" == "eplayer3" ]; then
+     eplayer=EPLAYER3
+-    eplayerinclude="$HOME"/flashimg/BUILDGIT/checkout_"$STM"/apps/tools/libeplayer3/include
++    eplayerinclude="$SRC_DIR"/../tools/exteplayer3/include
+ 	linking="-lm -lpthread -ldl -lpng -lfreetype -leplayer3 -ldreamdvd -ljpeg -lmmeimage -lmme_host -lz -lssl -lcrypto"
+-fi
+-if [ $MEDIAFW = 2 ]; then
+-    eplayer=EPLAYER4
+-    eplayerinclude="$HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cdkroot/usr/include/gstreamer-1.0
+-             -I$HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cdkroot/usr/include/glib-2.0
+-             -I$HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cdkroot/usr/include/libxml2
+-             -I$HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cdkroot/usr/lib/glib-2.0/include
+-             -I$HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cdkroot/usr/lib/gstreamer-1.0/include"
+-	linking="-lm -lglib-2.0 -lgobject-2.0 -lgio-2.0 -lpthread -ldl -lz -lpng -lfreetype -lgstreamer-1.0 -ldreamdvd -ljpeg -lmmeimage -lmme_host -lz -lssl -lcrypto"
+-fi
+-if [ $MEDIAFW = 4 ]; then
+-    eplayer="EPLAYER3 -DEPLAYER4"
+-    eplayerinclude="$HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cdkroot/usr/include/gstreamer-1.0
+-             -I$HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cdkroot/usr/include/glib-2.0
+-             -I$HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cdkroot/usr/include/libxml2
+-             -I$HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cdkroot/usr/lib/glib-2.0/include
+-             -I$HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cdkroot/usr/lib/gstreamer-1.0/include
+-             -I$HOME/flashimg/BUILDGIT/checkout_"$STM"/apps/tools/libeplayer3/include"
+-    eplayerlib=gstreamer-1.0
+-	linking="-lm -lglib-2.0 -lgobject-2.0 -lgio-2.0 -lpthread -ldl -lz -lpng -lfreetype -lgstreamer-1.0 -leplayer3 -ldreamdvd -ljpeg -lmmeimage -lmme_host -lz -lssl -lcrypto"
+ fi
+ 
+ if [ "$GROUP" = "dev" ] && [ "$TYPE" != "ufs910" ] && [ "$TYPE" != "ufs922" ]; then
+@@ -78,36 +56,38 @@
+ 
+ #if [ "$GROUP" = "dev" ];then
+ 	eplayerinclude="$eplayerinclude
+-    -I "$HOME"/flashimg/BUILDGIT/checkout_"$STM"/tufsbox/cdkroot/usr/include
+-    -I "$HOME"/flashimg/BUILDGIT/checkout_"$STM"/tufsbox/cdkroot/usr/include/freetype2
+-    -I "$HOME"/flashimg/BUILDGIT/checkout_"$STM"/tufsbox/cdkroot/usr/include/openssl
+-    -I "$HOME"/flashimg/BUILDGIT/checkout_"$STM"/apps/titan/libdreamdvd
+-    -I "$HOME"/flashimg/BUILDGIT/checkout_"$STM"/driver/bpamem
+-	-I "$HOME"/flashimg/BUILDGIT/checkout_"$STM"/apps/tools/libmme_image
+-	-I "$HOME"/flashimg/BUILDGIT/checkout_"$STM"/build_tmp/linux-sh4-2.6.32.71_stm24_0217/include
+-	-I "$HOME"/flashimg/$SRCDIR/titan
+-    -I "$HOME"/flashimg/$SRCDIR"
++    -I "$SRC_DIR"/../tufsbox/cdkroot/usr/include
++    -I "$SRC_DIR"/../tufsbox/cdkroot/usr/include/freetype2
++    -I "$SRC_DIR"/../tufsbox/cdkroot/usr/include/openssl
++    -I "$SRC_DIR"/libdreamdvd
++    -I "$SRC_DIR"/../driver/bpamem
++    -I "$SRC_DIR"/../tools/libmme_image
++    -I "$SRC_DIR"/../build_tmp/linux-sh4-2.6.32.71_stm24_0217/include
++    -I "$SRC_DIR"/titan/titan
++    -I "$SRC_DIR"/titan"
+ #else
+-#	eplayerinclude="$eplayerinclude
+-#    -I "$HOME"/flashimg/BUILDGIT/checkout_"$STM"/tufsbox/cdkroot/usr/include
+-#    -I "$HOME"/flashimg/BUILDGIT/checkout_"$STM"/tufsbox/cdkroot/usr/include/freetype2
+-#    -I "$HOME"/flashimg/BUILDGIT/checkout_"$STM"/tufsbox/cdkroot/usr/include/openssl
+-#    -I "$HOME"/flashimg/BUILDGIT/checkout_"$STM"/apps/titan/libdreamdvd
+-#    -I "$HOME"/flashimg/BUILDGIT/checkout_"$STM"/driver/bpamem
+-#	-I "$HOME"/flashimg/BUILDGIT/checkout_"$STM"/apps/tools/libmme_image
+-#	-I "$HOME"/flashimg/BUILDGIT/checkout_"$STM"/cdk/linux-sh4-2.6.32.61_stm24_0217/include
+-#    -I "$HOME"/flashimg/$SRCDIR"
++#    -I "$SRC_DIR"/../tufsbox/cdkroot/usr/include
++#    -I "$SRC_DIR"/../tufsbox/cdkroot/usr/include/freetype2
++#    -I "$SRC_DIR"/../tufsbox/cdkroot/usr/include/openssl
++#    -I "$SRC_DIR"/libdreamdvd
++#    -I "$SRC_DIR"/../../driver/bpamem
++#    -I "$SRC_DIR"/../../tools/libmme_image
++#    -I "$SRC_DIR"/../../build_tmp/linux-sh4-2.6.32.61_stm24_0217/include
++#    -I "$SRC_DIR""
+ #fi
++#echo "eplayerinclude = $eplayerinclude"
+ 
+ compile()
+ {
+-	cd $1
++	cd "$SRC_DIR"/titan/plugins/$1
+ 	echo "[titan]--------------------------------------------------------"
+ 	echo "[titan] Make Plugin $1"
+ 	echo "[titan]--------------------------------------------------------"
+ 
+ 	LIB=""
+-	mkdir .deps
++	if [ ! -d .deps ]; then
++		mkdir .deps
++	fi
+ 	if [ ! -z $3 ]; then
+ 		LIB=$3.a
+ 	fi
+@@ -116,30 +96,28 @@
+ 		rm -rf .deps
+ 		rm -rf .libs
+ 		mkdir .deps
+-		STM=stm24
+-		cp $HOME/flashimg/BUILDGIT/checkout_$STM/apps/titan/plugins/libtool $HOME/flashimg/source.titan/plugins/libtool
+-		sed s#^AR=.*#AR=$HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cross/bin/sh4-linux-ar# -i $HOME/flashimg/source.titan/plugins/libtool
+-		sed s#^CC=.*#CC=$HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cross/bin/sh4-linux-gcc# -i $HOME/flashimg/source.titan/plugins/libtool
+-		sed s#^RANLIB=.*#RANLIB=$HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cross/bin/sh4-linux-ranlib# -i $HOME/flashimg/source.titan/plugins/libtool
+-		sed s#^NM=.*#NM=$HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cross/bin/sh4-linux-nm# -i $HOME/flashimg/source.titan/plugins/libtool
+-		sed s#^STRIP=.*#STRIP=$HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cross/bin/sh4-linux-strip# -i $HOME/flashimg/source.titan/plugins/libtool
+-		sed s#^OBJDUMP=.*#OBJDUMP=$HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cross/bin/sh4-linux-objdump# -i $HOME/flashimg/source.titan/plugins/libtool
++		sed s#^AR=.*#AR="$SRC_DIR"/../tufsbox/cross/bin/sh4-linux-ar# -i $SRC_DIR/libtool
++		sed s#^CC=.*#CC="$SRC_DIR"/../tufsbox/cross/bin/sh4-linux-gcc# -i $SRC_DIR/libtool
++		sed s#^RANLIB=.*#RANLIB="$SRC_DIR"/../tufsbox/cross/bin/sh4-linux-ranlib# -i $SRC_DIR/libtool
++		sed s#^NM=.*#NM="$SRC_DIR"/../tufsbox/cross/bin/sh4-linux-nm# -i $SRC_DIR/libtool
++		sed s#^STRIP=.*#STRIP="$SRC_DIR"/tufsbox/cross/bin/sh4-linux-strip# -i $SRC_DIR/libtool
++		sed s#^OBJDUMP=.*#OBJDUMP="$SRC_DIR"/../tufsbox/cross/bin/sh4-linux-objdump# -i $SRC_DIR/libtool
+ 	
+-		/bin/sh $HOME/flashimg/source.titan/plugins/libtool  --tag=CC   --mode=compile $HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cross/bin/sh4-linux-gcc -DPACKAGE_NAME=\"tuxbox-apps-titan-plugins\" -DPACKAGE_TARNAME=\"tuxbox-titan-plugins\" -DPACKAGE_VERSION=\"0.0.1\" -DPACKAGE_STRING=\"tuxbox-apps-titan-plugins\ 0.0.1\" -DPACKAGE_BUGREPORT=\"\" -DPACKAGE_URL=\"\" -DPACKAGE=\"tuxbox-titan-plugins\" -DVERSION=\"0.0.1\" -DSTDC_HEADERS=1 -DHAVE_SYS_TYPES_H=1 -DHAVE_SYS_STAT_H=1 -DHAVE_STDLIB_H=1 -DHAVE_STRING_H=1 -DHAVE_MEMORY_H=1 -DHAVE_STRINGS_H=1 -DHAVE_INTTYPES_H=1 -DHAVE_STDINT_H=1 -DHAVE_UNISTD_H=1 -DHAVE_DLFCN_H=1 -DLT_OBJDIR=\".libs/\" -I.  -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE -pipe -Os -I$eplayerinclude -MT $2.lo -MD -MP -MF .deps/$2.Tpo -c -o $2.lo $2.c
++		/bin/sh "$SRC_DIR"/libtool  --tag=CC   --mode=compile $SRC_DIR/../tufsbox/cross/bin/sh4-linux-gcc -DPACKAGE_NAME=\"tuxbox-apps-titan-plugins\" -DPACKAGE_TARNAME=\"tuxbox-titan-plugins\" -DPACKAGE_VERSION=\"0.0.1\" -DPACKAGE_STRING=\"tuxbox-apps-titan-plugins\ 0.0.1\" -DPACKAGE_BUGREPORT=\"\" -DPACKAGE_URL=\"\" -DPACKAGE=\"tuxbox-titan-plugins\" -DVERSION=\"0.0.1\" -DSTDC_HEADERS=1 -DHAVE_SYS_TYPES_H=1 -DHAVE_SYS_STAT_H=1 -DHAVE_STDLIB_H=1 -DHAVE_STRING_H=1 -DHAVE_MEMORY_H=1 -DHAVE_STRINGS_H=1 -DHAVE_INTTYPES_H=1 -DHAVE_STDINT_H=1 -DHAVE_UNISTD_H=1 -DHAVE_DLFCN_H=1 -DLT_OBJDIR=\".libs/\" -I.  -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE -pipe -Os -I$eplayerinclude -MT $2.lo -MD -MP -MF .deps/$2.Tpo -c -o $2.lo $2.c
+ 		mv -f .deps/$2.Tpo .deps/$2.Plo
+ 	
+-		#/bin/sh $HOME/flashimg/source.titan/plugins/libtool  --tag=CC   --mode=link $HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cross/bin/sh4-linux-gcc  -I$HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cdkroot/usr/include -I$HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cdkroot/usr/include/freetype2 -I$HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cdkroot/usr/include/gstreamer-1.0 -I$HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cdkroot/usr/include/glib-2.0 -I$HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cdkroot/usr/include/libxml2 -I$HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cdkroot/usr/lib/glib-2.0/include -I$HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cdkroot/usr/lib/gstreamer-1.0/include -I$HOME/flashimg/BUILDGIT/checkout_$STM/driver/bpamem -I$HOME/flashimg/BUILDGIT/checkout_$STM/apps/titan/libdreamdvd -I$HOME/flashimg/BUILDGIT/checkout_$STM/apps/tools/libeplayer3/include -I$HOME/flashimg/BUILDGIT/checkout_$STM/apps/tools/libmmeimage -I$HOME/flashimg/BUILDGIT/checkout_$STM/apps/titan/titan  -Wl,-rpath -Wl,/usr/lib -Wl,-rpath-link -Wl,$HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cdkroot/usr/lib -L$HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cdkroot/usr/lib -L$HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cdkroot/lib -o lib$2.la -rpath /lib $2.lo
+-		$HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cross/bin/sh4-linux-gcc  -shared  -fPIC -DPIC  .libs/$2.o    $devflag -DSH4 -D$eplayer -Wl,-O1 -Wl,--as-needed   -Wl,-soname -Wl,lib$2.so.0 -L$HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cdkroot/usr/lib -L$HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cdkroot/lib $LIB -o .libs/lib$2.so $4
++		#/bin/sh $SRC_DIR/libtool  --tag=CC   --mode=link "$SRC_DIR"/../tufsbox//tufsbox/cross/bin/sh4-linux-gcc  -I"$SRC_DIR"/../tufsbox//tufsbox/cdkroot/usr/include -I"$SRC_DIR"/../tufsbox//tufsbox/cdkroot/usr/include/freetype2 -I"$SRC_DIR"/../tufsbox//tufsbox/cdkroot/usr/include/gstreamer-1.0 -I"$SRC_DIR"/../tufsbox//tufsbox/cdkroot/usr/include/glib-2.0 -I"$SRC_DIR"/../tufsbox//tufsbox/cdkroot/usr/include/libxml2 -I"$SRC_DIR"/../tufsbox//tufsbox/cdkroot/usr/lib/glib-2.0/include -I"$SRC_DIR"/../tufsbox//tufsbox/cdkroot/usr/lib/gstreamer-1.0/include -I"$SRC_DIR"/../tufsbox//driver/bpamem -I"$SRC_DIR"/../tufsbox//apps/titan/libdreamdvd -I"$SRC_DIR"/../tufsbox//apps/tools/libeplayer3/include -I"$SRC_DIR"/../tufsbox//apps/tools/libmmeimage -I"$SRC_DIR"/../tufsbox//apps/titan/titan  -Wl,-rpath -Wl,/usr/lib -Wl,-rpath-link -Wl,"$SRC_DIR"/../tufsbox//tufsbox/cdkroot/usr/lib -L"$SRC_DIR"/../tufsbox//tufsbox/cdkroot/usr/lib -L"$SRC_DIR"/../tufsbox//tufsbox/cdkroot/lib -o lib$2.la -rpath /lib $2.lo
++		"$SRC_DIR"/../../tufsbox/cross/bin/sh4-linux-gcc -shared -fPIC -DPIC  .libs/$2.o  $devflag -DSH4 -D$eplayer -Wl,-O1 -Wl,--as-needed  -Wl,-soname -Wl,lib$2.so.0 $TP_CPPFLAGS -L"$SRC_DIR"/../tufsbox/cdkroot/usr/lib -L"$SRC_DIR"/../tufsbox/cdkroot/lib $LIB -o .libs/lib$2.so -D$BOX
+ 	
+ 		cp .libs/lib$2.so lib$2.so
+ 	else
+-		$HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cross/bin/sh4-linux-gcc -D$eplayer -Os $devflag -fPIC -Wall -Wno-unused-but-set-variable $4 -I$eplayerinclude -c $2.c -o $2.o
+-		$HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cross/bin/sh4-linux-gcc  -shared  -fPIC -DPIC  $2.o    $devflag -DSH4 -D$eplayer -Wl,-O1 -Wl,--as-needed   -Wl,-soname -Wl,lib$2.so.0 -L$HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cdkroot/usr/lib -L$HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cdkroot/lib $LIB -o lib$2.so $4
++		"$SRC_DIR"/../tufsbox/cross/bin/sh4-linux-gcc -D$eplayer -Os $devflag -fPIC -Wall -Wno-unused-but-set-variable -D$BOX -I$eplayerinclude -c $2.c -o $2.o
++		"$SRC_DIR"/../tufsbox/cross/bin/sh4-linux-gcc -shared -fPIC -DPIC $2.o $devflag -DSH4 -D$eplayer -Wl,-O1 -Wl,--as-needed   -Wl,-soname -Wl,lib$2.so.0 -I$eplayerinclude -L$SRC_DIR/../../tufsbox/cdkroot/usr/lib -L$SRC_DIR/../../tufsbox/cdkroot/lib $LIB -o lib$2.so -D$BOX
+ 	fi
+ 
+-	$HOME/flashimg/BUILDGIT/checkout_$STM/tufsbox/cross/bin/sh4-linux-strip lib$2.so
++	"$SRC_DIR"/../tufsbox/cross/bin/sh4-linux-strip lib$2.so
+ 
+-cd "$HOME"/flashimg/$SRCDIR/plugins
++	cd "$SRC_DIR"/titan/plugins
+ 	echo "[titan]--------------------------------------------------------"
+ 	echo "[titan] Plugin $1 done"
+ 	echo "[titan]--------------------------------------------------------"
+@@ -147,70 +125,70 @@
+ 
+ uselibtool=n
+ 
+-rm -rf `find "$HOME"/flashimg/$SRCDIR/plugins -type f -name "*.o"`
+-rm -rf `find "$HOME"/flashimg/$SRCDIR/plugins -type f -name "*.so"`
++rm -rf `find "$SRC_DIR"/titan/plugins -type f -name "*.o"`
++rm -rf `find "$SRC_DIR"/titan/plugins -type f -name "*.so"`
+ 
+ echo "[titan]--------------------------------------------------------"
+ echo "[titan] Make networkbrowser"
+ echo "[titan]--------------------------------------------------------"
+-cd network/networkbrowser/netlib
++cd "$SRC_DIR"/titan/plugins/network/networkbrowser/netlib
+ cp Makefile."$STM".sh4 Makefile
+-make clean
++#make clean
+ make
+-cd "$HOME"/flashimg/$SRCDIR/plugins
++cd "$SRC_DIR"/titan/plugins
+ echo "[titan]--------------------------------------------------------"
+ echo "[titan] networkbrowser done"
+ echo "[titan]--------------------------------------------------------"
+ 
+ #dir, file, extralib
+-compile "browser/netsurf" "browser" "" ""
++#compile "browser/netsurf" "browser" "" ""
+ 
+-compile "games/catcatch" "catcatch" "" ""
+-compile "games/sudoku" "sudoku" "" ""
+-compile "games/wins3" "wins3" "" ""
++#compile "games/catcatch" "catcatch" "" ""
++#compile "games/sudoku" "sudoku" "" ""
++#compile "games/wins3" "wins3" "" ""
+ 
+ compile "infos/imdb" "imdb" "" "-l curl"
+ compile "infos/imdbapi" "imdbapi" "" ""
+-compile "infos/mboxinfo" "mboxinfo" "" ""
+-compile "infos/stock" "stock" "" ""
++#compile "infos/mboxinfo" "mboxinfo" "" ""
++#compile "infos/stock" "stock" "" ""
+ compile "infos/streaminfo" "streaminfo" "" ""
+-compile "infos/tinews" "tinews" "" ""
++#compile "infos/tinews" "tinews" "" ""
+ compile "infos/tmdb" "tmdb" "" ""
+-compile "infos/weather" "weather" "" ""
+-compile "infos/wm2018" "wm2018" "" ""
++#compile "infos/weather" "weather" "" ""
++#compile "infos/wm2018" "wm2018" "" ""
+ 
+-compile "network/dlna" "dlna" "" ""
+-compile "network/facebook" "facebook" "" "-l curl"
++#compile "network/dlna" "dlna" "" ""
++#compile "network/facebook" "facebook" "" "-l curl"
+ compile "network/networkbrowser" "networkbrowser" "netlib/netlib" ""
+-compile "network/xupnpd" "xupnpd" "" ""
++#compile "network/xupnpd" "xupnpd" "" ""
+ 
+-compile "player/dvdplayer" "dvdplay" "" ""
+-compile "player/gmediarender" "gmediarender" "" ""
+-compile "player/hbbtv_sh4" "hbbtv" "" ""
+-compile "player/mc" "mc" "" "-l curl"
++#compile "player/dvdplayer" "dvdplay" "" ""
++#compile "player/gmediarender" "gmediarender" "" ""
++#compile "player/hbbtv_sh4" "hbbtv" "" ""
++#compile "player/mc" "mc" "" "-l curl"
+ compile "player/tithek" "tithek" "" "-l curl"
+ compile "player/tmc" "tmc" "" ""
+ 
+-compile "tools/autotimer" "autotimer" "" ""
+-compile "tools/callmonitor1" "callmonitor1" "" ""
+-compile "tools/filemanager" "filemanager" "" ""
+-compile "tools/hello" "hello" "" ""
+-compile "tools/instar" "instar" "" ""
+-compile "tools/keylock" "keylock" "" ""
+-compile "tools/kravencfg" "kravencfg" "" ""
+-compile "tools/lcdpearl1" "lcdpearl1" "" ""
+-compile "tools/lcdsamsung" "lcdsamsung" "" ""
+-compile "tools/optimize" "optimize" "" ""
+-compile "tools/panel" "panel" "" ""
+-compile "tools/permtime" "permtime" "" ""
++#compile "tools/autotimer" "autotimer" "" ""
++#compile "tools/callmonitor1" "callmonitor1" "" ""
++#compile "tools/filemanager" "filemanager" "" ""
++#compile "tools/hello" "hello" "" ""
++#compile "tools/instar" "instar" "" ""
++#compile "tools/keylock" "keylock" "" ""
++#compile "tools/kravencfg" "kravencfg" "" ""
++#compile "tools/lcdpearl1" "lcdpearl1" "" ""
++#compile "tools/lcdsamsung" "lcdsamsung" "" ""
++#compile "tools/optimize" "optimize" "" ""
++#compile "tools/panel" "panel" "" ""
++#compile "tools/permtime" "permtime" "" ""
+ compile "tools/readerconfig" "readerconfig" "" ""
+-compile "tools/rgui" "rgui" "" ""
+-compile "tools/scriptexec" "scriptexec" "" ""
+-compile "tools/stopifnotused" "stopifnotused" "" ""
+-compile "tools/tiwakeup" "tiwakeup" "" ""
+-compile "tools/TopfieldVFD" "TopfieldVFD" "" ""
+-compile "tools/tsschnitt" "tsschnitt" "" ""
+-compile "tools/usbreset" "usbreset" "" ""
+-compile "tools/wlandisplay" "wlandisplay" "" ""
+-compile "tools/zapback" "zapback" "" ""
++#compile "tools/rgui" "rgui" "" ""
++#compile "tools/scriptexec" "scriptexec" "" ""
++#compile "tools/stopifnotused" "stopifnotused" "" ""
++#compile "tools/tiwakeup" "tiwakeup" "" ""
++#compile "tools/TopfieldVFD" "TopfieldVFD" "" ""
++#compile "tools/tsschnitt" "tsschnitt" "" ""
++#compile "tools/usbreset" "usbreset" "" ""
++#compile "tools/wlandisplay" "wlandisplay" "" ""
++#compile "tools/zapback" "zapback" "" ""
+ 
+--- a/network/networkbrowser/netlib/Makefile.stm24.sh4.orig
++++ b/network/networkbrowser/netlib/Makefile.stm24.sh4
+@@ -4,8 +4,8 @@
+ 
+ DEPS = $(patsubst %.o,%.d,$(OBJS))
+ 
+-CC = $(HOME)/flashimg/BUILDGIT/checkout_stm24/tufsbox/cross/bin/sh4-linux-gcc
+-AR = $(HOME)/flashimg/BUILDGIT/checkout_stm24/tufsbox/cross/bin/sh4-linux-ar
++CC = @../../../../../../tufsbox/cross/bin/sh4-linux-gcc
++AR = @../../../../../../tufsbox/cross/bin/sh4-linux-ar
+ 
+ CFLAGS = -Os -Wall -fPIC -I.
+ 
+--- a/player/tithek/kinox.h.orig
++++ b/player/tithek/kinox.h
+@@ -23,7 +23,9 @@
+ 	int ret = 1;
+ 	int debuglevel = getconfigint("debuglevel", NULL);
+ 	int localhoster = getconfigint("tithek_kinox_localhoster", NULL);
+-	int usepic = getconfigint("tithek_kinox_pic", NULL);
++	int usepic;
++
++	usepic = getconfigint("tithek_kinox_pic", NULL);
+ 
+ 	if(listbox == NULL || listbox->select == NULL || listbox->select->handle == NULL)
+ 		return ret;
+--- a/player/tithek/tithek.h.orig
++++ b/player/tithek/tithek.h
+@@ -809,6 +809,7 @@
+ 	char* tithekfile = NULL;
+ 	char* tithekpic = NULL;
+ 	int localfile = 0;
++	int linecount;
+ 
+ //	tithekfile = tithekdownload(titheklink);
+ 	if(!ostrncmp("http://", titheklink, 7))
+@@ -824,7 +825,7 @@
+ 	freetithek();
+ 
+ //	if(readtithek(tithekfile) != 0) return 1;
+-	int linecount = readtithek(tithekfile);
++	linecount = readtithek(tithekfile);
+ 
+ 	struct tithek* titheknode = tithek;
+ 
+@@ -2284,6 +2285,9 @@
+ void screentithekplay(char* titheklink, char* title, int first)
+ {
+ 	int savevol = 0;
++//	int lastview;
++//	int lastcover;
++
+ 	if(!file_exist("/mnt/swapextensions/player"))
+ 		mkdir("/mnt/swapextensions/player", 0777);
+ 
+@@ -3288,8 +3292,8 @@
+ //				if(showinfo(listbox, ((struct tithek*)listbox->select->handle)->title, ((struct tithek*)listbox->select->handle)->link, ((struct tithek*)listbox->select->handle)->pic, ((struct tithek*)listbox->select->handle)->localname, ((struct tithek*)listbox->select->handle)->menutitle, ((struct tithek*)listbox->select->handle)->description, ((struct tithek*)listbox->select->handle)->flag) == 0)
+ //					if(screenlistbox(grid, listbox, countlabel, title, titheklink, &pagecount, &tithekexit, &oaktpage, &oaktline, &ogridcol, 0, 0) == 0) break;
+ 
+-				int lastview = getconfigint("tithek_view", NULL);
+-				int lastcover = getconfigint("tithek_cover", NULL);
++				pagecount = getconfigint("tithek_view", NULL);
++				pagecount = getconfigint("tithek_cover", NULL);
+ 				addconfiginttmp("tithek_view", 7);
+ 				addconfiginttmp("tithek_cover", 7);
+ 				addconfiginttmp("tithek_description", 1);
+--- a/player/tithek/tithek_global.h.orig
++++ b/player/tithek/tithek_global.h
+@@ -1553,7 +1553,7 @@
+ 
+ int localparser_search_file(char* localparser, char* filename)
+ {
+-	char* tmpstr = NULL, *menu = NULL, *search = NULL, *cmd = NULL, *link = NULL;
++	char* tmpstr = NULL, *search = NULL, *cmd = NULL, *link = NULL;
+ 	int ret = 1;
+ 
+ //    search = ostrcat(basename(filename), NULL, 0, 0);
+--- a/tools/autotimer/autotimer.c.orig
++++ b/tools/autotimer/autotimer.c
+@@ -1,6 +1,6 @@
+-#include "../../titan/struct.h"
+-#include "../../titan/debug.h"
+-#include "../../titan/header.h"
++#include "../../../titan/struct.h"
++#include "../../../titan/debug.h"
++#include "../../../titan/header.h"
+ 
+ char pluginname[] = "Auto Timer";
+ char plugindesc[] = "Extensions";
+--- a/tools/callmonitor1/callmonitor1.c.orig
++++ b/tools/callmonitor1/callmonitor1.c
+@@ -1,6 +1,6 @@
+-#include "../../titan/struct.h"
+-#include "../../titan/debug.h"
+-#include "../../titan/header.h"
++#include "../../../titan/struct.h"
++#include "../../../titan/debug.h"
++#include "../../../titan/header.h"
+ #include "callmon_main.h"
+ 
+ 
+--- a/tools/instar/instar.c.orig
++++ b/tools/instar/instar.c
+@@ -1,6 +1,6 @@
+-#include "../../titan/struct.h"
+-#include "../../titan/debug.h"
+-#include "../../titan/header.h"
++#include "../../../titan/struct.h"
++#include "../../../titan/debug.h"
++#include "../../../titan/header.h"
+ 
+ #include "instar.h"
+ 
+--- a/tools/keylock/keylock.c.orig
++++ b/tools/keylock/keylock.c
+@@ -1,6 +1,6 @@
+-#include "../../titan/struct.h"
+-#include "../../titan/debug.h"
+-#include "../../titan/header.h"
++#include "../../../titan/struct.h"
++#include "../../../titan/debug.h"
++#include "../../../titan/header.h"
+ 
+ char pluginname[] = "KeyLock";
+ char plugindesc[] = "Extensions";
+--- a/tools/lcdpearl1/lcdpearl1.c/orig
++++ b/tools/lcdpearl1/lcdpearl1.c
+@@ -1,6 +1,6 @@
+-#include "../../titan/struct.h"
+-#include "../../titan/debug.h"
+-#include "../../titan/header.h"
++#include "../../../titan/struct.h"
++#include "../../../titan/debug.h"
++#include "../../../titan/header.h"
+ 
+ #include "lcd_weather.h"
+ 
+--- a/tools/lcdsamsung/lcdsamsung.c.orig
++++ b/tools/lcdsamsung/lcdsamsung.c
+@@ -1,6 +1,6 @@
+-#include "../../titan/struct.h"
+-#include "../../titan/debug.h"
+-#include "../../titan/header.h"
++#include "../../../titan/struct.h"
++#include "../../../titan/debug.h"
++#include "../../../titan/header.h"
+ 
+ #include "lcd_weather.h"
+ 
+--- a/tools/multiimage/MultiImage.c/orig
++++ b/tools/multiimage/MultiImage.c
+@@ -1,6 +1,6 @@
+-#include "../../titan/struct.h"
+-#include "../../titan/debug.h"
+-#include "../../titan/header.h"
++#include "../../../titan/struct.h"
++#include "../../../titan/debug.h"
++#include "../../../titan/header.h"
+ 
+ char pluginname[] = "MultiImage";
+ char plugindesc[] = "Start Images from USB device";
+--- a/tools/permtime/permtime.c.orig
++++ b/tools/permtime/permtime.c
+@@ -1,6 +1,6 @@
+-#include "../../titan/struct.h"
+-#include "../../titan/debug.h"
+-#include "../../titan/header.h"
++#include "../../../titan/struct.h"
++#include "../../../titan/debug.h"
++#include "../../../titan/header.h"
+ 
+ char pluginname[] = "Permanent Time";
+ char plugindesc[] = "Extensions";
+#--- a/tools/readerconfig/readerconfig.h.orig
+#+++ b/tools/readerconfig/readerconfig.h
+#@@ -1,5 +1,7 @@
+# #ifndef READERCONFIG_H
+# #define READERCONFIG_H
+#+
+#+#include <security.h>
+# 
+# struct oscam
+# {
+--- a/tools/sispmctl/sispmctl.c.orig
++++ b/tools/sispmctl/sispmctl.c
+@@ -1,6 +1,6 @@
+-#include "../../titan/struct.h"
+-#include "../../titan/debug.h"
+-#include "../../titan/header.h"
++#include "../../../titan/struct.h"
++#include "../../../titan/debug.h"
++#include "../../../titan/header.h"
+ 
+ #include "sispmctl.h"
+ 
+--- a/tools/stopifnotused/stopifnotused.c.orig
++++ b/tools/stopifnotused/stopifnotused.c
+@@ -1,6 +1,6 @@
+-#include "../../titan/struct.h"
+-#include "../../titan/debug.h"
+-#include "../../titan/header.h"
++#include "../../../titan/struct.h"
++#include "../../../titan/debug.h"
++#include "../../../titan/header.h"
+ 
+ char pluginname[] = "Stop if not used";
+ char plugindesc[] = "Auschalten der Box wenn in einem bestimmten Zeitraum keine Aktion erfolgte";
+--- a/tools/tsschnitt/tsschnitt.c.orig
++++ b/tools/tsschnitt/tsschnitt.c
+@@ -1,6 +1,6 @@
+-#include "../../titan/struct.h"
+-#include "../../titan/debug.h"
+-#include "../../titan/header.h"
++#include "../../../titan/struct.h"
++#include "../../../titan/debug.h"
++#include "../../../titan/header.h"
+ 
+ char pluginname[] = "Record cut";
+ char plugindesc[] = "Extensions";
+--- a/tools/wlandisplay/wlandisplay.c.orig
++++ b/tools/wlandisplay/wlandisplay.c
+@@ -1,6 +1,6 @@
+-#include "../../titan/struct.h"
+-#include "../../titan/debug.h"
+-#include "../../titan/header.h"
++#include "../../../titan/struct.h"
++#include "../../../titan/debug.h"
++#include "../../../titan/header.h"
+ 
+ #include "lcd_weather.h"
+ 
+--- a/tools/zapback/zapback.c.orig
++++ b/tools/zapback/zapback.c
+@@ -1,6 +1,6 @@
+-#include "../../titan/struct.h"
+-#include "../../titan/debug.h"
+-#include "../../titan/header.h"
++#include "../../../titan/struct.h"
++#include "../../../titan/debug.h"
++#include "../../../titan/header.h"
+ 
+ char pluginname[] = "zapback (Werbezapper)";
+ char plugindesc[] = "Extensions";
+

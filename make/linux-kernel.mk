@@ -1,43 +1,13 @@
 #
 # kernel
 #
-ifeq ($(KERNEL_STM), p0209)
-KERNEL_VER             = 2.6.32.46_stm24_0209
-KERNEL_REVISION        = 8c676f1a85935a94de1fb103c0de1dd25ff69014
-STM_KERNEL_HEADERS_VER = 2.6.32.46-47
-P0209                  = p0209
-endif
-
-ifeq ($(KERNEL_STM), p0217_61)
-KERNEL_VER             = 2.6.32.61_stm24_0217
-KERNEL_REVISION        = b43f8252e9f72e5b205c8d622db3ac97736351fc
-STM_KERNEL_HEADERS_VER = 2.6.32.46-48
-P0217                  = p0217
-endif
-
-ifeq ($(KERNEL_STM), p0217)
-KERNEL_VER             = 2.6.32.71_stm24_0217
-KERNEL_REVISION        = 3ec500f4212f9e4b4d2537c8be5ea32ebf68c43b
-STM_KERNEL_HEADERS_VER = 2.6.32.46-48
-P0217                  = p0217
-endif
-
-split_version=$(subst _, ,$(1))
-KERNEL_UPSTREAM    =$(word 1,$(call split_version,$(KERNEL_VER)))
-KERNEL_STM        :=$(word 2,$(call split_version,$(KERNEL_VER)))
-KERNEL_LABEL      :=$(word 3,$(call split_version,$(KERNEL_VER)))
-KERNEL_RELEASE    :=$(subst ^0,,^$(KERNEL_LABEL))
-KERNEL_STM_LABEL  :=_$(KERNEL_STM)_$(KERNEL_LABEL)
-KERNEL_DIR         =$(BUILD_TMP)/linux-sh4-$(KERNEL_VER)
-
-DEPMOD = $(HOST_DIR)/bin/depmod
 
 #
 # Patches Kernel 24
 #
 COMMON_PATCHES_24 = \
 		linux-sh4-makefile_stm24.patch \
-		linux-stm-gpio-fix-build-CONFIG_BUG.patch \
+		linux-stm-gpio-fix-build-CONFIG_BUG_$(KERNEL_LABEL).patch \
 		linux-kbuild-generate-modules-builtin_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-linuxdvb_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-sound_stm24_$(KERNEL_LABEL).patch \
@@ -59,6 +29,11 @@ COMMON_PATCHES_24 = \
 		$(if $(P0209),linux-sh4-dwmac_stm24_$(KERNEL_LABEL).patch)
 ifneq ($(BS_GCC_VER), $(filter $(BS_GCC_VER), 4.6.3 4.8.4))
 COMMON_PATCHES_24 += linux-sh4-remove_m4-nofpu-arg_$(KERNEL_LABEL).patch
+endif
+ifdef POWER_VU_DES
+ifeq ($(P0217), p0217)
+COMMON_PATCHES_24 += linux-pti_power_vu_des_fix_stm24_$(KERNEL_LABEL).patch
+endif
 endif
 
 TF7700_PATCHES_24 = $(COMMON_PATCHES_24) \
@@ -89,12 +64,34 @@ UFS913_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-sh4-7105_clocks_no_warnings_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-ufs913_setup_stm24_$(KERNEL_LABEL).patch
 
+UFS922_PATCHES_24 = $(COMMON_PATCHES_24) \
+		linux-sh4-ufs922_setup_stm24_$(KERNEL_LABEL).patch \
+		linux-sh4-stmmac_stm24_$(KERNEL_LABEL).patch \
+		linux-sh4-i2c-st40-pio_stm24_$(KERNEL_LABEL).patch \
+		linux-sh4-fs9000_i2c_st40_stm24_$(KERNEL_LABEL).patch
+
+UFC960_PATCHES_24 = $(COMMON_PATCHES_24) \
+		linux-sh4-ufs922_setup_stm24_$(KERNEL_LABEL).patch \
+		linux-sh4-stmmac_stm24_$(KERNEL_LABEL).patch \
+		linux-sh4-i2c-st40-pio_stm24_$(KERNEL_LABEL).patch \
+		linux-sh4-fs9000_i2c_st40_stm24_$(KERNEL_LABEL).patch
+
+FS9000_PATCHES_24 = $(COMMON_PATCHES_24) \
+		linux-sh4-fs9000_setup_stm24_$(KERNEL_LABEL).patch \
+		linux-usbwait123_stm24.patch \
+		linux-sh4-stmmac_stm24_$(KERNEL_LABEL).patch \
+		linux-sh4-i2c-st40-pio_stm24_$(KERNEL_LABEL).patch \
+		$(if $(P0209),linux-sh4-fs9000_i2c_st40_stm24_$(KERNEL_LABEL).patch)
+ifeq ($(IMAGE), $(filter $(IMAGE), neutrino neutrino-wlandriver titan titan-wlandriver))
+FS9000_PATCHES_24 += linux-sh4-fs9000_mtdconcat_stm24_$(KERNEL_LABEL).patch
+endif
+
 HS9510_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-sh4-hs9510_setup_stm24_$(KERNEL_LABEL).patch \
 		linux-usbwait123_stm24.patch \
 		linux-sh4-stmmac_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-i2c-st40-pio_stm24_$(KERNEL_LABEL).patch
-ifeq ($(IMAGE), $(filter $(IMAGE), neutrino neutrino-wlandriver))
+ifeq ($(IMAGE), $(filter $(IMAGE), neutrino neutrino-wlandriver titan titan-wlandriver))
 HS9510_PATCHES_24 += linux-sh4-hs9510_mtdconcat_stm24_$(KERNEL_LABEL).patch
 endif
 
@@ -110,7 +107,7 @@ HS7110_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-sh4-hs7110_setup_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-stmmac_stm24_$(KERNEL_LABEL).patch \
 		$(if $(P0209),linux-sh4-i2c-stm-downgrade_stm24_$(KERNEL_LABEL).patch)
-ifeq ($(IMAGE), $(filter $(IMAGE), neutrino neutrino-wlandriver))
+ifeq ($(IMAGE), $(filter $(IMAGE), neutrino neutrino-wlandriver titan titan-wlandriver))
 HS7110_PATCHES_24 += linux-sh4-hs7110_mtdconcat_stm24_$(KERNEL_LABEL).patch
 endif
 
@@ -125,7 +122,7 @@ HS7420_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-sh4-hs7420_setup_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-stmmac_stm24_$(KERNEL_LABEL).patch \
 		$(if $(P0209),linux-sh4-i2c-stm-downgrade_stm24_$(KERNEL_LABEL).patch)
-ifeq ($(IMAGE), $(filter $(IMAGE), neutrino neutrino-wlandriver))
+ifeq ($(IMAGE), $(filter $(IMAGE), neutrino neutrino-wlandriver titan titan-wlandriver))
 HS7420_PATCHES_24 += linux-sh4-hs7420_mtdconcat_stm24_$(KERNEL_LABEL).patch
 endif
 
@@ -140,7 +137,7 @@ HS7810A_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-sh4-hs7810a_setup_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-stmmac_stm24_$(KERNEL_LABEL).patch \
 		$(if $(P0209),linux-sh4-i2c-stm-downgrade_stm24_$(KERNEL_LABEL).patch)
-ifeq ($(IMAGE), $(filter $(IMAGE), neutrino neutrino-wlandriver))
+ifeq ($(IMAGE), $(filter $(IMAGE), neutrino neutrino-wlandriver titan titan-wlandriver))
 HS7810A_PATCHES_24 += linux-sh4-hs7810a_mtdconcat_stm24_$(KERNEL_LABEL).patch
 endif
 
@@ -155,32 +152,10 @@ ATEMIO520_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-sh4-lmb_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-atemio520_setup_stm24_$(KERNEL_LABEL).patch \
 		$(if $(P0209),linux-sh4-i2c-stm-downgrade_stm24_$(KERNEL_LABEL).patch) \
-		linux-squashfs-downgrade-stm24_$(KERNEL_LABEL)-to-stm23.patch \
-		linux-squashfs3.0_lzma_stm23.patch \
-		linux-squashfs-downgrade-stm24-patch-2.6.25 \
-		linux-squashfs-downgrade-stm24-rm_d_alloc_anon.patch
-
-ATEMIO530_PATCHES_24 = $(COMMON_PATCHES_24) \
-		linux-sh4-stmmac_stm24_$(KERNEL_LABEL).patch \
-		linux-sh4-lmb_stm24_$(KERNEL_LABEL).patch \
-		linux-sh4-atemio530_setup_stm24_$(KERNEL_LABEL).patch \
-		$(if $(P0209),linux-sh4-i2c-stm-downgrade_stm24_$(KERNEL_LABEL).patch) \
-		linux-squashfs-downgrade-stm24_$(KERNEL_LABEL)-to-stm23.patch \
-		linux-squashfs3.0_lzma_stm23.patch \
-		linux-squashfs-downgrade-stm24-patch-2.6.25 \
-		linux-squashfs-downgrade-stm24-rm_d_alloc_anon.patch
-
-UFS922_PATCHES_24 = $(COMMON_PATCHES_24) \
-		linux-sh4-ufs922_setup_stm24_$(KERNEL_LABEL).patch \
-		linux-sh4-stmmac_stm24_$(KERNEL_LABEL).patch \
-		linux-sh4-i2c-st40-pio_stm24_$(KERNEL_LABEL).patch \
-		linux-sh4-fs9000_i2c_st40_stm24_$(KERNEL_LABEL).patch
-
-UFC960_PATCHES_24 = $(COMMON_PATCHES_24) \
-		linux-sh4-ufs922_setup_stm24_$(KERNEL_LABEL).patch \
-		linux-sh4-stmmac_stm24_$(KERNEL_LABEL).patch \
-		linux-sh4-i2c-st40-pio_stm24_$(KERNEL_LABEL).patch \
-		linux-sh4-fs9000_i2c_st40_stm24_$(KERNEL_LABEL).patch
+		$(if $(P0209),linux-squashfs-downgrade-stm24_$(KERNEL_LABEL)-to-stm23.patch) \
+		$(if $(P0209),linux-squashfs3.0_lzma_stm24.patch) \
+		$(if $(P0209),linux-squashfs-downgrade-stm24-2.6.25.patch) \
+		$(if $(P0209),linux-squashfs-downgrade-stm24-rm_d_alloc_anon.patch)
 
 SPARK_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-sh4-stmmac_stm24_$(KERNEL_LABEL).patch \
@@ -194,16 +169,6 @@ SPARK7162_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-sh4-lmb_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-7105_clocks_no_warnings_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-spark7162_setup_stm24_$(KERNEL_LABEL).patch
-
-FS9000_PATCHES_24 = $(COMMON_PATCHES_24) \
-		linux-sh4-fs9000_setup_stm24_$(KERNEL_LABEL).patch \
-		linux-usbwait123_stm24.patch \
-		linux-sh4-stmmac_stm24_$(KERNEL_LABEL).patch \
-		linux-sh4-i2c-st40-pio_stm24_$(KERNEL_LABEL).patch \
-		$(if $(P0209),linux-sh4-fs9000_i2c_st40_stm24_$(KERNEL_LABEL).patch)
-ifeq ($(IMAGE), $(filter $(IMAGE), neutrino neutrino-wlandriver))
-FS9000_PATCHES_24 += linux-sh4-fs9000_mtdconcat_stm24_$(KERNEL_LABEL).patch
-endif
 
 ADB_BOX_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-sh4-stx7100_fdma_fix_stm24_$(KERNEL_LABEL).patch \
@@ -234,7 +199,7 @@ CUBEREVO_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-sh4-cuberevo_setup_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-i2c-st40-pio_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-cuberevo_rtl8201_stm24_$(KERNEL_LABEL).patch
-ifeq ($(IMAGE), $(filter $(IMAGE), neutrino neutrino-wlandriver))
+ifeq ($(IMAGE), $(filter $(IMAGE), neutrino neutrino-wlandriver titan titan-wlandriver))
 CUBEREVO_PATCHES_24 += linux-sh4-cuberevo_mtdconcat_stm24_$(KERNEL_LABEL).patch
 endif
 
@@ -242,7 +207,7 @@ CUBEREVO_MINI_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-sh4-cuberevo_mini_setup_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-i2c-st40-pio_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-cuberevo_rtl8201_stm24_$(KERNEL_LABEL).patch
-ifeq ($(IMAGE), $(filter $(IMAGE), neutrino neutrino-wlandriver))
+ifeq ($(IMAGE), $(filter $(IMAGE), neutrino neutrino-wlandriver titan titan-wlandriver))
 CUBEREVO_MINI_PATCHES_24 += linux-sh4-cuberevo_mtdconcat_stm24_$(KERNEL_LABEL).patch
 endif
 
@@ -250,7 +215,7 @@ CUBEREVO_MINI2_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-sh4-cuberevo_mini2_setup_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-i2c-st40-pio_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-cuberevo_rtl8201_stm24_$(KERNEL_LABEL).patch
-ifeq ($(IMAGE), $(filter $(IMAGE), neutrino neutrino-wlandriver))
+ifeq ($(IMAGE), $(filter $(IMAGE), neutrino neutrino-wlandriver titan titan-wlandriver))
 CUBEREVO_MINI2_PATCHES_24 += linux-sh4-cuberevo_mtdconcat_stm24_$(KERNEL_LABEL).patch
 endif
 
@@ -259,7 +224,7 @@ CUBEREVO_MINI_FTA_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-sh4-i2c-st40-pio_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-cuberevo_rtl8201_stm24_$(KERNEL_LABEL).patch \
 		$(if $(P0217),linux-sh4-cuberevo_250hd_sound_stm24_$(KERNEL_LABEL).patch)
-ifeq ($(IMAGE), $(filter $(IMAGE), neutrino neutrino-wlandriver))
+ifeq ($(IMAGE), $(filter $(IMAGE), neutrino neutrino-wlandriver titan titan-wlandriver))
 CUBEREVO_MINI_FTA_PATCHES_24 += linux-sh4-cuberevo_mtdconcat_stm24_$(KERNEL_LABEL).patch
 endif
 
@@ -268,7 +233,7 @@ CUBEREVO_250HD_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-sh4-i2c-st40-pio_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-cuberevo_rtl8201_stm24_$(KERNEL_LABEL).patch \
 		$(if $(P0217),linux-sh4-cuberevo_250hd_sound_stm24_$(KERNEL_LABEL).patch)
-ifeq ($(IMAGE), $(filter $(IMAGE), neutrino neutrino-wlandriver))
+ifeq ($(IMAGE), $(filter $(IMAGE), neutrino neutrino-wlandriver titan titan-wlandriver))
 CUBEREVO_250HD_PATCHES_24 += linux-sh4-cuberevo_mtdconcat_stm24_$(KERNEL_LABEL).patch
 endif
 
@@ -276,6 +241,9 @@ CUBEREVO_2000HD_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-sh4-cuberevo_2000hd_setup_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-i2c-st40-pio_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-cuberevo_rtl8201_stm24_$(KERNEL_LABEL).patch
+ifeq ($(IMAGE), $(filter $(IMAGE), neutrino neutrino-wlandriver titan titan-wlandriver))
+CUBEREVO_2000HD_PATCHES_24 += linux-sh4-cuberevo_mtdconcat_stm24_$(KERNEL_LABEL).patch
+endif
 
 CUBEREVO_9500HD_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-sh4-cuberevo_9500hd_setup_stm24_$(KERNEL_LABEL).patch \
@@ -286,6 +254,9 @@ CUBEREVO_3000HD_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-sh4-cuberevo_3000hd_setup_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-i2c-st40-pio_stm24_$(KERNEL_LABEL).patch \
 		linux-sh4-cuberevo_rtl8201_stm24_$(KERNEL_LABEL).patch
+ifeq ($(IMAGE), $(filter $(IMAGE), neutrino neutrino-wlandriver titan titan-wlandriver))
+CUBEREVO_3000HD_PATCHES_24 += linux-sh4-cuberevo_mtdconcat_stm24_$(KERNEL_LABEL).patch
+endif
 
 VITAMIN_HD5000_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-sh4-lmb_stm24_$(KERNEL_LABEL).patch \
@@ -346,6 +317,22 @@ OPT9600_PATCHES_24 = $(COMMON_PATCHES_24) \
 		linux-sh4-i2c-st40-pio_stm24_$(KERNEL_LABEL).patch \
 		$(if $(P0209),linux-sh4-i2c-stm-downgrade_stm24_$(KERNEL_LABEL).patch)
 
+OPT9600MINI_PATCHES_24 = $(COMMON_PATCHES_24) \
+		linux-sh4-stmmac_stm24_$(KERNEL_LABEL).patch \
+		linux-sh4-lmb_stm24_$(KERNEL_LABEL).patch \
+		linux-sh4-opt9600mini_setup_stm24_$(KERNEL_LABEL).patch \
+		$(if $(P0209),linux-sh4-i2c-stm-downgrade_stm24_$(KERNEL_LABEL).patch) \
+		$(if $(P0209),linux-squashfs-downgrade-stm24_$(KERNEL_LABEL)-to-stm23.patch) \
+		$(if $(P0209),linux-squashfs3.0_lzma_stm24.patch) \
+		$(if $(P0209),linux-squashfs-downgrade-stm24-2.6.25.patch) \
+		$(if $(P0209),linux-squashfs-downgrade-stm24-rm_d_alloc_anon.patch)
+
+OPT9600PRIMA_PATCHES_24 = $(COMMON_PATCHES_24) \
+		linux-sh4-lmb_stm24_$(KERNEL_LABEL).patch \
+		linux-sh4-7105_clocks_no_warnings_stm24_$(KERNEL_LABEL).patch \
+		linux-sh4-opt9600prima_setup_stm24_$(KERNEL_LABEL).patch \
+		linux-sh4-stmmac_stm24_$(KERNEL_LABEL).patch
+
 #
 # KERNEL
 #
@@ -353,14 +340,19 @@ KERNEL_PATCHES = $(KERNEL_PATCHES_24)
 KERNEL_CONFIG = linux-sh4-$(subst _stm24_,_,$(KERNEL_VER))_$(BOXTYPE).config
 REPOS = "https://github.com/Duckbox-Developers/linux-sh4-2.6.32.71.git"
 
-ifneq ($(DESTINATION), USB)
-$(D)/kernel.do_prepare: $(PATCHES)/$(BUILD_CONFIG)/$(KERNEL_CONFIG) \
-	$(if $(KERNEL_PATCHES),$(KERNEL_PATCHES:%=$(PATCHES)/$(BUILD_CONFIG)/%))
-else
-$(D)/kernel.do_prepare: $(PATCHES)/$(BUILD_CONFIG)/$(KERNEL_CONFIG) \
-	busybox_usb e2fsprogs sysvinit \
-	$(if $(KERNEL_PATCHES),$(KERNEL_PATCHES:%=$(PATCHES)/$(BUILD_CONFIG)/%))
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs7110 hs7420 hs7810a hs7119 hs7429 hs7819 opt9600 opt9600mini opt9600prima vitamin_hd5000))
+ifeq ($(DESTINATION), $(filter $(DESTINATION), USB USB_HDD))
+KERNEL_DEPS  = busybox_usb
+KERNEL_DEPS += e2fsprogs
+KERNEL_DEPS += sysvinit
 endif
+else
+KERNEL_DEPS =
+endif
+
+$(D)/kernel.do_prepare: $(PATCHES)/$(BUILD_CONFIG)/$(KERNEL_CONFIG) \
+	$(KERNEL_DEPS) \
+	$(if $(KERNEL_PATCHES),$(KERNEL_PATCHES:%=$(PATCHES)/$(BUILD_CONFIG)/%))
 	@rm -rf $(KERNEL_DIR)
 	@echo
 	@echo "Starting Kernel build"
@@ -413,7 +405,7 @@ ifeq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), kerneldebug debug))
 	$(SILENT)cp $(KERNEL_DIR)/.config.tmp $(KERNEL_DIR)/.config
 	$(SILENT)echo "# CONFIG_DYNAMIC_DEBUG is not set" >> $(KERNEL_DIR)/.config
 endif
-ifeq ($(IMAGE), $(filter $(IMAGE), enigma2-wlandriver neutrino-wlandriver))
+ifeq ($(IMAGE), $(filter $(IMAGE), enigma2-wlandriver neutrino-wlandriver titan-wlandriver))
 	@echo "Configuring kernel for wireless LAN."
 	$(SILENT)grep -v "CONFIG_WIRELESS" "$(KERNEL_DIR)/.config" > $(KERNEL_DIR)/.config.tmp
 	$(SILENT)cp $(KERNEL_DIR)/.config.tmp $(KERNEL_DIR)/.config
@@ -438,13 +430,17 @@ ifeq ($(IMAGE), $(filter $(IMAGE), enigma2-wlandriver neutrino-wlandriver))
 	$(SILENT)echo "# CONFIG_USB_ZD1201 is not set" >> $(KERNEL_DIR)/.config
 	$(SILENT)echo "# CONFIG_HOSTAP is not set" >> $(KERNEL_DIR)/.config
 endif
-ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs7110 hs7420 hs7810a hs7119 hs7429 hs7819 opt9600 vitamin_hd5000))
-ifeq ($(DESTINATION), USB)
-	@echo "Configuring kernel for running on USB."
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs7110 hs7420 hs7810a hs7119 hs7429 hs7819 opt9600 opt9600mini opt9600prima vitamin_hd5000))
+ifeq ($(DESTINATION), $(filter $(DESTINATION), USB USB_HDD))
+	@echo "Configuring kernel for running on USB (without built-in HDD)."
 	$(SILENT)grep -v "CONFIG_BLK_DEV_INITRD" "$(KERNEL_DIR)/.config" > $(KERNEL_DIR)/.config.tmp
 	$(SILENT)cp $(KERNEL_DIR)/.config.tmp $(KERNEL_DIR)/.config
 	$(SILENT)echo "CONFIG_BLK_DEV_INITRD=y " >> $(KERNEL_DIR)/.config
+ifeq ($(DESTINATION), USB)
 	$(SILENT)echo "CONFIG_INITRAMFS_SOURCE=\"$(TOOLS_DIR)/USB_boot/initramfs_no_hdd\"" >> $(KERNEL_DIR)/.config
+else
+	$(SILENT)echo "CONFIG_INITRAMFS_SOURCE=\"$(TOOLS_DIR)/USB_boot/initramfs_hdd\"" >> $(KERNEL_DIR)/.config
+endif
 	$(SILENT)echo "CONFIG_INITRAMFS_ROOT_UID=0" >> $(KERNEL_DIR)/.config
 	$(SILENT)echo "CONFIG_INITRAMFS_ROOT_GID=0" >> $(KERNEL_DIR)/.config
 	$(SILENT)echo "CONFIG_RD_GZIP=y" >> $(KERNEL_DIR)/.config
@@ -555,6 +551,45 @@ $(D)/tfkernel: $(D)/kernel
 		$(MAKE) $(if $(TF7700),TF7700=y) ARCH=sh CROSS_COMPILE=$(TARGET)- uImage
 	$(TOUCH)
 
+tfinstaller-clean:
+	$(SILENT)rm -f $(D)/tfinstaller
+	$(SILENT)rm -f $(D)/tfkernel
+	$(SILENT)rm -f $(D)/tfpacker
+	$(SILENT)rm -f $(TFINSTALLER_DIR)/*.o
+	$(SILENT)rm -f $(TFINSTALLER_DIR)/tfpacker
+	$(SILENT)rm -f $(TFINSTALLER_DIR)/uImage
+	$(SILENT)rm -f $(TFINSTALLER_DIR)/u-boot.ftfd
+
+#
+# UFSinstaller
+#
+
+UFSINSTALLER_DIR := $(BASE_DIR)/ufsinstaller
+
+$(D)/ufsinstaller: $(D)/bootstrap $(D)/kernel
+	$(START_BUILD)
+	$(MAKE) $(MAKE_OPTS) -C $(UFSINSTALLER_DIR) HOST_DIR=$(HOST_DIR) BASE_DIR=$(BASE_DIR) KERNEL_DIR=$(KERNEL_DIR)
+	$(TOUCH)
+
+
+#ifneq ($(BS_GCC_VER), $(filter $(BS_GCC_VER), 4.6.3 4.8.4))
+#UFSKERNEL_PATCHES_24  = linux-sh4-remove_m4-nofpu-arg_$(KERNEL_LABEL).patch
+#endif
+
+$(D)/ufskernel: $(D)/kernel
+	$(START_BUILD)
+	$(SILENT)cd $(KERNEL_DIR); \
+		$(call apply_patches, $(UFSKERNEL_PATCHES_24)); \
+		cd $(KERNEL_DIR); \
+		$(MAKE) $(if $(UFS922),UFS922=y) ARCH=sh CROSS_COMPILE=$(TARGET)- uImage
+	$(TOUCH)
+
+ufsinstaller-clean:
+	$(SILENT)rm -f $(D)/ufsinstaller
+	$(SILENT)rm -f $(D)/ufskernel
+	$(SILENT)rm -f $(UFSINSTALLER_DIR)/uImage
+	$(SILENT)rm -f $(UFSINSTALLER_DIR)/.config.inst
+
 #
 # u-boot
 #
@@ -562,6 +597,9 @@ UBOOT_VER = 1.3.1
 UBOOT_PATCH  = u-boot-$(UBOOT_VER).patch
 ifeq ($(BOXTYPE), tf7700)
 UBOOT_PATCH += u-boot-$(UBOOT_VER)-tf7700.patch
+endif
+ifeq ($(BOXTYPE), ufs922)
+UBOOT_PATCH += u-boot-$(UBOOT_VER)-ufs922.patch
 endif
 ifneq ($(BS_GCC_VER), $(filter $(BS_GCC_VER), 4.6.3 4.8.4))
 UBOOT_PATCH += u-boot-sh4-remove_m4-nofpu-arg.patch
@@ -578,7 +616,6 @@ $(D)/uboot: bootstrap $(ARCHIVE)/u-boot-$(UBOOT_VER).tar.bz2
 		$(call apply_patches,$(UBOOT_PATCH)); \
 		$(MAKE) $(BOXTYPE)_config; \
 		$(MAKE)
-#	$(REMOVE)/u-boot-$(UBOOT_VER)
 	$(TOUCH)
 
 #

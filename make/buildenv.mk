@@ -11,6 +11,8 @@ export CONFIG_SITE
 LD_LIBRARY_PATH =
 export LD_LIBRARY_PATH
 
+export BOXTYPE
+
 # -----------------------------------------------------------------------------
 
 # set up default parallelism
@@ -31,14 +33,30 @@ SOURCE_DIR            = $(BASE_DIR)/build_source
 DRIVER_DIR            = $(BASE_DIR)/driver
 FLASH_DIR             = $(BASE_DIR)/flash
 
+# default config...
+KBUILD_VERBOSE       ?= normal
+BOXARCH              ?= sh4
+BOXTYPE              ?= hs8200
+BOXARCH              ?= sh4
+KERNEL_STM           ?= p0217
+IMAGE                ?= neutrino-wlandriver
+FLAVOUR              ?= neutrino-ddt
+OPTIMIZATIONS        ?= size
+MEDIAFW              ?= builtinplayer
+EXTERNAL_LCD         ?= none
+DESTINATION          ?= flash
+
 -include $(BASE_DIR)/config
+include make/linux-kernel-env.mk
 
 # for local extensions
 -include $(BASE_DIR)/config.local
 
-ifneq ($(GIT_USER), "")
-ifneq ($(GIT_TOKEN), "")
+ifneq ($(GIT_USER),)
+ifneq ($(GIT_TOKEN),)
 GIT_ACCESS            = $(GIT_USER):$(GIT_TOKEN)@
+else
+GIT_ACCESS            =
 endif
 endif
 GIT_PROTOCOL         ?= http
@@ -52,21 +70,7 @@ GIT_NAME_DRIVER      ?= Audioniek
 GIT_NAME_TOOLS       ?= Audioniek
 GIT_NAME_FLASH       ?= Audioniek
 
-# default config...
-KBUILD_VERBOSE       ?= normal
-BOXARCH              ?= sh4
-BOXTYPE              ?= hs8200
-BOXARCH              ?= sh4
-KERNEL_STM           ?= p0217
-IMAGE                ?= neutrino-wlandriver
-FLAVOUR              ?= neutrino-ddt
-OPTIMIZATIONS        ?= size
-MEDIAFW              ?= buildinplayer
-EXTERNAL_LCD         ?= none
-DESTINATION          ?= flash
-
 TUFSBOX_DIR           = $(BASE_DIR)/tufsbox
-#CROSS_BASE            = $(BASE_DIR)/cross/$(BOXTYPE)
 CROSS_BASE            = $(TUFSBOX_DIR)/cross
 TARGET_DIR            = $(TUFSBOX_DIR)/cdkroot
 BOOT_DIR              = $(TUFSBOX_DIR)/cdkroot-tftpboot
@@ -96,7 +100,7 @@ BS_GCC_VER           ?= 4.8.4
 ifeq ($(BS_GCC_VER), $(filter $(BS_GCC_VER), 4.6.3 4.8.4))
 TARGET               ?= sh4-linux
 else
-TARGET               ?= sh4-stm-linux-gnu
+TARGET               ?= sh4-unknown-linux-gnu
 endif
 KERNELNAME            = uImage
 TARGET_MARCH_CFLAGS   =
@@ -113,6 +117,8 @@ TARGET_O_CFLAGS       = -Os
 TARGET_EXTRA_CFLAGS   = -ffunction-sections -fdata-sections
 TARGET_EXTRA_LDFLAGS  = -Wl,--gc-sections
 ENIGMA_OPT_OPTION     =
+# Uncomment next line to support Power VU DES (requires public pti!)
+#POWER_VU_DES          = 1
 endif
 ifeq ($(OPTIMIZATIONS), normal)
 TARGET_O_CFLAGS       = -O2
@@ -139,7 +145,7 @@ TARGET_INCLUDE_DIR    = $(TARGET_DIR)/usr/include
 TARGET_CFLAGS         = -pipe $(TARGET_O_CFLAGS) $(TARGET_MARCH_CFLAGS) $(TARGET_EXTRA_CFLAGS) -I$(TARGET_INCLUDE_DIR)
 TARGET_CPPFLAGS       = $(TARGET_CFLAGS)
 TARGET_CXXFLAGS       = $(TARGET_CFLAGS)
-TARGET_LDFLAGS        = $(CORTEX_STRINGS) -Wl,-rpath -Wl,/usr/lib -Wl,-rpath-link -Wl,$(TARGET_LIB_DIR) -L$(TARGET_LIB_DIR) -L$(TARGET_DIR)/lib $(TARGET_EXTRA_LDFLAGS)
+TARGET_LDFLAGS        = -Wl,-rpath -Wl,/usr/lib -Wl,-rpath-link -Wl,$(TARGET_LIB_DIR) -L$(TARGET_LIB_DIR) -L$(TARGET_DIR)/lib $(TARGET_EXTRA_LDFLAGS)
 LD_FLAGS              = $(TARGET_LDFLAGS)
 PKG_CONFIG            = $(HOST_DIR)/bin/$(TARGET)-pkg-config
 PKG_CONFIG_PATH       = $(TARGET_LIB_DIR)/pkgconfig
@@ -225,7 +231,7 @@ START_BUILD           = @echo "=================================================
 
 TOUCH                 = @touch $@; \
                         echo "--------------------------------------------------------------"; \
-        		if [ $(PKG_VER_HELPER) == "AA" ]; then \
+                        if [ $(PKG_VER_HELPER) == "AA" ]; then \
                             echo -e "Build of $(TERM_GREEN_BOLD)$(PKG_NAME)$(TERM_NORMAL) completed."; \
                         else \
                             echo -e "Build of $(TERM_GREEN_BOLD)$(PKG_NAME) $(PKG_VER)$(TERM_NORMAL) completed."; \
@@ -357,8 +363,11 @@ BUILD_CONFIG       = build-neutrino
 else ifeq ($(IMAGE), neutrino-wlandriver)
 BUILD_CONFIG       = build-neutrino
 WLANDRIVER         = WLANDRIVER=wlandriver
-else ifeq ($(IMAGE), tvheadend)
-BUILD_CONFIG       = build-tvheadend
+else ifeq ($(IMAGE), titan)
+BUILD_CONFIG       = build-titan
+else ifeq ($(IMAGE), titan-wlandriver)
+BUILD_CONFIG       = build-titan
+WLANDRIVER         = WLANDRIVER=wlandriver
 else
 BUILD_CONFIG       = build-neutrino
 endif
@@ -374,7 +383,7 @@ else ifeq ($(MEDIAFW), gst-eplayer3)
 EPLAYER3           = 1
 gst-eplayer3       = 1
 else
-buildinplayer      = 1
+builtinplayer      = 1
 endif
 
 #
@@ -626,5 +635,17 @@ KERNEL_PATCHES_24  = $(OPT9600_PATCHES_24)
 PLATFORM_CPPFLAGS += -DPLATFORM_OPT9600
 DRIVER_PLATFORM   += OPT9600=opt9600
 E_CONFIG_OPTS     += --enable-opt9600
+endif
+ifeq ($(BOXTYPE), opt9600mini)
+KERNEL_PATCHES_24  = $(OPT9600MINI_PATCHES_24)
+PLATFORM_CPPFLAGS += -DPLATFORM_OPT9600MINI
+DRIVER_PLATFORM   += OPT9600MINI=opt9600mini
+E_CONFIG_OPTS     += --enable-opt9600mini
+endif
+ifeq ($(BOXTYPE), opt9600prima)
+KERNEL_PATCHES_24  = $(OPT9600PRIMA_PATCHES_24)
+PLATFORM_CPPFLAGS += -DPLATFORM_OPT9600PRIMA
+DRIVER_PLATFORM   += OPT9600PRIMA=opt9600prima
+E_CONFIG_OPTS     += --enable-opt9600prima
 endif
 

@@ -1,4 +1,4 @@
---- a/arch/sh/kernel/setup.c
+--- a/arch/sh/kernel/setup.c.org
 +++ b/arch/sh/kernel/setup.c
 @@ -587,6 +587,7 @@
  	seq_printf(m, "cpu family\t: %s\n", init_utsname()->machine);
@@ -81,21 +81,21 @@
 +0x48400000 - 0x4FFFFFFF - lmi_io  ( 124mb (0x07C00000))
 +*/
 +static struct bpa2_partition_desc bpa2_parts_table[] = {
-+    {
-+ 	    .name  = "LMI_IO",
-+ 	    .start = 0x47600000,
-+ 	    .size  = 0x07C00000, /* 124 Mb */
-+ 	    .flags = 0,
-+ 	    .aka   = LMI_IO_partalias
-+    }, 
-+    {
-+ 	    .name  = "bigphysarea",
-+ 	    .start = 0x4F200000,
-+ 	    .size  = 0x00E00000, /* 14 Mb */
-+ 	    .flags = 0,
-+ 	    .aka   = NULL
-+    }, 
-+ };
++	{
++		.name  = "LMI_IO",
++		.start = 0x47600000,
++		.size  = 0x07C00000, /* 124 Mb */
++		.flags = 0,
++		.aka   = LMI_IO_partalias
++	},
++	{
++		.name  = "bigphysarea",
++		.start = 0x4F200000,
++		.size  = 0x00E00000, /* 14 Mb */
++		.flags = 0,
++		.aka   = NULL
++	}, 
++};
 +#else
 +/*
 +0x40000000 - 0x403FFFFF - cocpu 1 ram (4mb)
@@ -105,20 +105,20 @@
 +0x4A000000 - 0x4FFFFFFF - lmi_io  ( 96mb)
 +*/
 +static struct bpa2_partition_desc bpa2_parts_table[] = {
-+    {
-+ 	    .name  = "bigphysarea",
-+ 	    .start = 0x48000000,
-+ 	    .size  = 0x02000000, /* 32 Mb */
-+ 	    .flags = 0,
-+ 	    .aka   = NULL
-+    }, 
-+    {
-+ 	    .name  = "LMI_IO",
-+ 	    .start = 0x4A000000,
-+ 	    .size  = 0x06000000, /* 96 Mb */
-+ 	    .flags = 0,
-+ 	    .aka   = LMI_IO_partalias
-+    }, 
++	{
++		.name  = "bigphysarea",
++		.start = 0x48000000,
++		.size  = 0x02000000,  /* 32 Mb */
++		.flags = 0,
++		.aka   = NULL
++	},
++	{
++		.name  = "LMI_IO",
++		.start = 0x4A000000,
++		.size  = 0x06000000, /* 96 Mb */
++		.flags = 0,
++		.aka   = LMI_IO_partalias
++	},
 + };
 +#endif
  
@@ -216,7 +216,7 @@
  	.num_resources	= 1,
  	.resource	= (struct resource[]) {
 -		STM_PLAT_RESOURCE_MEM(0, 32*1024*1024),
-+		STM_PLAT_RESOURCE_MEM(0, 4*1024*1024),
++		STM_PLAT_RESOURCE_MEM(0, 4 * 1024 * 1024),  // M29GA321EL device (4Mbyte)
  	},
  	.dev.platform_data = &(struct physmap_flash_data) {
  		.width		= 2,

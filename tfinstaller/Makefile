@@ -56,7 +56,7 @@ endif
 		sed -i 's/CONFIG_INITRAMFS_COMPRESSION_BZIP2=y/# CONFIG_INITRAMFS_COMPRESSION_BZIP2 is not set/g' $(KERNEL_DIR)/.config; \
 	fi
 	$(SILENT)if [ `grep -x -c "# CONFIG_INITRAMFS_COMPRESSION_BZIP2 is not set" $(KERNEL_DIR)/.config` == 0 ]; then \
-		echo "# CONFIG_INITRAMFS_COMPRESSION_GZIP is not set" >> $(KERNEL_DIR)/.config; \
+		echo "# CONFIG_INITRAMFS_COMPRESSION_BZIP2 is not set" >> $(KERNEL_DIR)/.config; \
 	fi
 	$(SILENT)if [ `grep -x -c "CONFIG_INITRAMFS_COMPRESSION_LZMA=y" $(KERNEL_DIR)/.config` == 1 ]; then \
 		sed -i 's/CONFIG_INITRAMFS_COMPRESSION_LZMA=y/# CONFIG_INITRAMFS_COMPRESSION_LZMA is not set/g' $(KERNEL_DIR)/.config; \

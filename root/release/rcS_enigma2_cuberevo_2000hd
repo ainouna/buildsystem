@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 201008.1
+#Version 210813.1
 
 echo "[rcS] Start"
 echo "CubeRevo 2000HD Enigma2"
@@ -74,13 +74,13 @@ if [ ! -e /boot/audio.elf ] || [ ! -e /boot/video.elf ]; then
    sleep 5
 fi
 
-echo "[rcS] Load audio firmware (LOAD 8)"
+echo "[rcS] Load video firmware (LOAD 8)"
 echo "Load 8" > /dev/vfd
-/bin/ustslave /dev/st231-1 /boot/audio.elf > /dev/null
-
-echo "[rcS] Load video firmware (LOAD 7)"
-echo "Load 7" > /dev/vfd
 /bin/ustslave /dev/st231-0 /boot/video.elf > /dev/null
+
+echo "[rcS] Load audio firmware (LOAD 7)"
+echo "Load 7" > /dev/vfd
+/bin/ustslave /dev/st231-1 /boot/audio.elf > /dev/null
 
 echo "[rcS] Init embx (LOAD 6)"
 echo "Load 6" > /dev/vfd
@@ -182,6 +182,9 @@ if [ -e $MODDIR/usbserial.ko ]; then
    fi
    if [ -e $MODDIR/pl2303.ko ]; then
       insmod $MODDIR/pl2303.ko
+   fi
+   if [ -e $MODDIR/ch341.ko ]; then
+      insmod $MODDIR/ch341.ko
    fi
 fi
 
@@ -303,20 +306,20 @@ do
    rtv=$?
    echo "[rcS] E2 ended <- return value: " $rtv
    case "$rtv" in
-      0) echo "E2 ERROR"
+      0) echo "[rcS] E2 ERROR"
          echo "E2 Error" > /dev/vfd
          init 6;;
-      1) echo "SHUTDOWN"
-         echo "Shutdown" > /dev/vfd
+      1) echo "[rcS] Deep standby"
+         echo "Deep standby" > /dev/vfd
          if [ -e /usr/local/share/enigma2/shutdown.mvi ]; then
             showiframe -p /usr/local/share/enigma2/shutdown.mvi &
          fi
          init 0;;
-      2) echo "REBOOT"
+      2) echo "[rcS] REBOOT"
          echo "Reboot" > /dev/vfd
          fp_control -r 00:00:00 01-01-1980;;
 #         init 6;;
-      3) echo "E2 RESTART"
+      3) echo "[rcS] E2 RESTART"
          echo "Restart GUI" > /dev/vfd
          echo "0" > /proc/progress
          if [ -e /usr/local/share/enigma2/backdrop.mvi ]; then
@@ -324,7 +327,7 @@ do
          else
             showiframe -p /boot/bootlogo.mvi &
          fi;;
-      6) echo "E2 DEBUG RESTART"
+      6) echo "[rcS] E2 DEBUG RESTART"
          echo "Restart Debug" > /dev/vfd
          echo "0" > /proc/progress
          if [ -e /usr/local/share/enigma2/backdrop.mvi ]; then
@@ -332,9 +335,9 @@ do
          else
             showiframe -p /boot/bootlogo.mvi &
          fi;;
-      *) echo "ERROR"
+      *) echo "[rcS] ERROR"
          echo "Error" > /dev/vfd
-         fp_control -r 00:00:00 01.01.1980;;
+         fp_control -r 00:00:00 01-01-1980;;
    esac
 done
 

@@ -1,0 +1,259 @@
+#!/bin/sh
+#Version 220711.1
+
+echo "[rcS] Start"
+echo "Fortis HS7429 Titan"
+
+MODDIR=/lib/modules
+
+insmod $MODDIR/e2_proc.ko
+
+startconfig=/mnt/config/start-config
+if [ ! -e "$startconfig" ]; then
+   startconfig="/etc/titan.restore/mnt/config/start-config"
+fi
+
+. $startconfig
+. /sbin/start-function
+
+echo "[rcS] Init frontpanel"
+if [ ! -e /dev/vfd ]; then
+   mknod -m 0660 /dev/vfd c 147 0
+fi
+insmod $MODDIR/nuvoton.ko
+insmod $MODDIR/simu_button.ko
+
+if [ -e /var/etc/.first ]; then
+   echo "Wait 1m." > /dev/vfd
+   echo "[rcS] Wait 1 minute"
+   rm /var/etc/.first
+   sleep 1
+   touch /dev/.devfsd
+else
+   echo "[rcS] LOAD 10"
+   echo "LOAD 10" > /dev/vfd
+fi
+
+/etc/init.d/mountvirtfs start
+
+# Start automounter with umount timeout of 5 seconds
+if [ -e $MODDIR/autofs4.ko ]; then
+   insmod $MODDIR/autofs4.ko
+fi
+if [ -e /etc/init.d/automount ]; then
+   /usr/sbin/automount --timeout=5 /autofs file /etc/auto.usb
+fi
+
+echo "[rcS] Starting DEBUG Interface"
+/etc/init.d/mountall start
+/etc/init.d/hostname start
+
+echo -n "[rcS] Starting telnetd "
+/usr/sbin/telnetd -l /bin/autologin
+echo "with autologin"
+
+echo "[rcS] Init stmfb (LOAD 9)"
+echo "LOAD 9" > /dev/vfd
+insmod $MODDIR/stmcore-display-sti7111.ko
+insmod $MODDIR/stmfb.ko display0=1280x720-32@50:12m::pal:rgb:rgb # display1=720x576-16@50:1m::pal:cvbs
+if [ -e /var/etc/.scart ]; then
+   echo "$CMD [$INPUT] enable SCART (576i)"
+   rmmod stmfb.ko
+   insmod /lib/modules/stmfb.ko display0=720x576-32@50:1m::pal:cvbs
+fi
+stfbset -p
+
+echo "[rcS] Loading modules"
+
+if [ ! -e /boot/audio.elf ] || [ ! -e /boot/video.elf ]; then
+   echo "[rcS] Firmware(s) missing!"
+   echo "NO FIRMW" > /dev/vfd
+   sleep 5
+fi
+
+echo "[rcS] Load video firmware (LOAD 8)"
+echo "LOAD 8" > /dev/vfd
+/bin/ustslave /dev/st231-0 /boot/video.elf > /dev/null
+
+echo "[rcS] Load audio firmware (LOAD 7)"
+echo "LOAD 7" > /dev/vfd
+if [ -e /boot/audio_dts.elf ]; then
+   /bin/ustslave /dev/st231-1 /boot/audio_dts.elf > /dev/null
+else
+   /bin/ustslave /dev/st231-1 /boot/audio.elf > /dev/null
+fi
+
+echo "[rcS] Init embx (LOAD 6)"
+echo "LOAD 6" > /dev/vfd
+insmod $MODDIR/embxshell.ko
+insmod $MODDIR/embxmailbox.ko mailbox0=0xfe211000:136:set2 mailbox1=0xfe212000:0
+insmod $MODDIR/embxshm.ko mailbox0=shm:0:7:0x60000000:0:256:256:0:512:0x40000000:0x10000000
+insmod $MODDIR/mme_host.ko transport0=shm
+insmod $MODDIR/mmelog.ko
+
+echo "[rcS] Init AVS (LOAD 5)"
+echo "LOAD 5" > /dev/vfd
+insmod $MODDIR/avs.ko type=avs_pio
+
+player=`cat /proc/stb/player/version | awk '{ print substr( $0, length($0) - 2, length($0) ) }'`
+echo "[rcS] Init player $player (LOAD 4)"
+echo "LOAD 4" > /dev/vfd
+insmod $MODDIR/ksound.ko
+insmod $MODDIR/p2div64.ko
+insmod $MODDIR/stm_v4l2.ko
+insmod $MODDIR/stmvout.ko
+insmod $MODDIR/stmvbi.ko
+
+insmod $MODDIR/pseudocard.ko
+
+if [ "$bootlogo" == 'y' ]; then
+   if [ -e /mnt/swapextensions/etc/boot/bootlogo.jpg ]; then
+     infobox 200 "nobox#/mnt/swapextensions/etc/boot/bootlogo.jpg" &
+   else
+      if [ -e /var/etc/boot/bootlogo.jpg ]; then
+         infobox 200 "nobox#/var/etc/boot/bootlogo.jpg" &
+      fi
+   fi
+fi
+
+echo "[rcS] Init frontend"
+insmod $MODDIR/lnb.ko type=a8293
+insmod $MODDIR/stv090x.ko paramDebug=0
+insmod $MODDIR/starci.ko
+insmod $MODDIR/smartcard.ko
+mknod /dev/lnb c 149 0
+
+insmod $MODDIR/pti.ko waitMS=20 videoMem=4096
+if [ $? -ne '0' ]; then
+   insmod $MODDIR/pti.ko
+   echo "[rcS] Simple pti"
+else
+   echo "[rcS] Full feature pti"
+fi
+insmod $MODDIR/stm_monitor.ko
+insmod $MODDIR/stmsysfs.ko
+insmod $MODDIR/stmdvb.ko
+
+echo "[rcS] Init player2 (LOAD 3)"
+echo "LOAD 3" > /dev/vfd
+insmod $MODDIR/player2.ko
+insmod $MODDIR/sth264pp.ko
+insmod $MODDIR/stmalloc.ko
+insmod $MODDIR/platform.ko
+insmod $MODDIR/silencegen.ko
+
+insmod $MODDIR/bpamem.ko
+mknod /dev/bpamem c 153 0
+
+if [ -e $MODDIR/cec.ko ]; then
+   echo "[rcS] Init HDMI-CEC"
+   insmod $MODDIR/cec.ko activemode=1
+fi
+
+#stfbcontrol a 0
+
+if [ -e $MODDIR/exportfs.ko ]; then
+   insmod $MODDIR/exportfs.ko
+fi
+if [ -e $MODDIR/cifs.ko ]; then
+   insmod $MODDIR/cifs.ko
+fi
+if [ -e $MODDIR/ntfs.ko ]; then
+   insmod $MODDIR/ntfs.ko
+fi
+if [ -e $MODDIR/tun.ko ]; then
+   insmod $MODDIR/tun.ko
+fi
+if [ -e $MODDIR/usbserial.ko ]; then
+   insmod $MODDIR/usbserial.ko
+   if [ -e $MODDIR/ftdi.ko ]; then
+      insmod $MODDIR/ftdi.ko
+   fi
+   if [ -e $MODDIR/pl2303.ko ]; then
+      insmod $MODDIR/pl2303.ko
+   fi
+   if [ -e $MODDIR/ch341.ko ]; then
+      insmod $MODDIR/ch341.ko
+   fi
+fi
+
+echo "[rcS] Init remote control (LOAD 2)"
+echo "LOAD 2" > /dev/vfd
+/bin/evremote2 10 140 &
+
+#stfbcontrol a 255
+
+NFS=`grep -c nfs /proc/cmdline`
+if [ "$NFS" -eq "1" ]; then
+   echo "[rcS] Booting from NFS, do not set network"
+else
+   echo "[rcS] Setting wired network"
+   if [ -e /mnt/network/interfaces ]; then
+      ip addr flush eth0
+      /etc/init.d/networking stop
+      DHCP=`grep -c dhcp /mnt/network/interfaces`
+      if [ "$DHCP" -eq "1" ]; then
+         echo "[rcS] Starting DHCP"
+         /etc/init.d/udhcpc start
+      fi
+      /etc/init.d/networking start
+   fi
+fi
+
+#wlan=rtl8188cu
+if [ ! $wlan ] || [ ! -e $MODDIR/$wlan.ko ]; then
+   echo "[rcS] No WLAN"
+else
+   insmod $MODDIR/$wlan.ko
+   echo "$wlan WLAN"
+#   echo "[rcS] $wlan WLAN" > /dev/vfd
+#   sleep 3
+fi
+
+# Try and synchronise time
+if [ -x /usr/sbin/ntpd ]; then
+   echo "[rcS] Set internet time"
+   (ntpd -n -p 0.europe.pool.ntp.org -q; /bin/fp_control -sst)
+fi
+
+echo "[rcS] Init portmap & ftp (LOAD 1)"
+echo "LOAD 1" >/dev/vfd
+/etc/init.d/portmap start
+/etc/init.d/vsftpd start
+/usr/sbin/inetd
+
+echo "[rcS] Loading Titan"
+echo "LOAD TITAN" > /dev/vfd
+
+until false
+do
+   echo "[rcS] Starting Titan ->"
+   /usr/local/bin/titan /mnt/config/titan.cfg
+   rtv=$?
+   echo "[rcS] Titan ended <- return value: " $rtv
+   case "$rtv" in
+      1) echo "[rcS] Shutdown"
+         echo "SHUTDOWN" > /dev/vfd
+         /bin/fp_control -sst
+         /bin/fp_control -e
+         init 0;;
+      2) echo "[rcS] Reboot"
+         echo "REBOOT" > /dev/vfd
+         if [ -f /proc/stb/fp/force_restart ]; then
+            echo 1 > /proc/stb/fp/force_restart
+         fi
+#         /var/etc/autostart/start.sh reboot 
+         /sbin/reboot;;
+      3) echo "[rcS] Restart Titan"
+         echo "RESTART" > /dev/vfd
+         ;;
+      *) echo "[rcS] ERROR"
+         echo "Error" > /dev/vfd
+         init 6;;
+   esac
+done
+
+#never reached
+echo "Reboot [rcS] HS7429"
+echo "REBOOT HS7429" > /dev/vfd
+init 6

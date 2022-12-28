@@ -1,0 +1,130 @@
+#!/bin/sh
+
+startFlash()
+{
+	case $imagetype in
+		flash)
+			case $model in
+				atemio520|atemio530)
+					echo "[rcS] mount VAR-FLASH (MTD3)"
+					xmount -n -t jffs2 -o rw,noatime,nodiratime /dev/mtdblock3 /var
+					echo "[rcS] mount SWAP-FLASH (MTD5)"
+					xmount -n -t jffs2 -o rw,noatime,nodiratime /dev/mtdblock5 /mnt;;
+				atemio7600|atemio510|atevio700|atevio7000|hs8200|hs7110|ufs910|ufs922|ufc960)
+					echo "[rcS] mount VAR-FLASH (MTD3)"
+					xmount -n -t jffs2 -o rw,noatime,nodiratime /dev/mtdblock3 /var
+					echo "[rcS] mount SWAP-FLASH (MTD4)"
+					xmount -n -t jffs2 -o rw,noatime,nodiratime /dev/mtdblock4 /mnt
+					;;
+				ufc9602222)
+					echo "[rcS] mount VAR-FLASH (MTD3)"
+					xmount -n -t jffs2 -o rw,noatime,nodiratime /dev/mtdblock3 /var
+					;;
+				ipbox910|ipbox900|ipbox91|ipbox9000)
+					echo "[rcS] mount VAR-FLASH (MTD4)"
+					xmount -n -t jffs2 -o rw,noatime,nodiratime /dev/mtdblock4 /var
+					echo "[rcS] mount SWAP-FLASH (MTD5)"
+					xmount -n -t jffs2 -o rw,noatime,nodiratime /dev/mtdblock5 /mnt;;
+				ufs912)
+					echo "[rcS] mount VAR-FLASH (MTD4)"
+					xmount -n -t jffs2 -o rw,noatime,nodiratime /dev/mtdblock4 /var
+					echo "[rcS] mount SWAP-FLASH (MTD5)"
+					xmount -n -t jffs2 -o rw,noatime,nodiratime /dev/mtdblock5 /mnt;;
+				ufs913)
+					echo "[rcS] mount VAR-FLASH (MTD8)"
+					xmount -n -t jffs2 -o rw,noatime,nodiratime /dev/mtdblock8 /var
+					echo "[rcS] mount SWAP-FLASH (MTD10)"
+					xmount -n -t jffs2 -o rw,noatime,nodiratime /dev/mtdblock10 /mnt;;
+				spark|spark7162)
+					echo "[rcS] mount SWAP-FLASH (MTD7)"
+					xmount -n -t jffs2 -o rw,noatime,nodiratime /dev/mtdblock7 /mnt;;
+			esac
+	esac
+}
+
+startMounts()
+{
+	#fast mountvirtfs start
+	xmount -n -t proc -o defaults,noatime,nodiratime proc /proc
+	xmount -n -t sysfs -o noatime,nodiratime sysfs /sys
+	xmount -n -t tmpfs -o noatime,nodiratime tmpfs /ram
+	xdevtar #extract /dev/dev.lst to /ram
+	xmount -n -o noatime,nodiratime --bind /ram /dev
+	xmount -n -t devpts -o gid=5,mode=620,noatime,nodiratime devpts /dev/pts
+	xmount -n -t tmpfs -o noatime,nodiratime tmpfs /dev/shm
+	xmount -n -t usbfs -o noatime,nodiratime usbfs /proc/bus/usb
+	#fast mountvirtfs end
+
+	xmount -n -o noatime,nodiratime tmpfs
+	mkdir /var/lock/subsys
+}
+
+startFirst()
+{
+	echo "[rcS] start start.sh first $SWTYPE $model $imagetype $linuxver"
+	/var/etc/autostart/start.sh first "" "$SWTYPE" "$model" "$imagetype" "$linuxver"
+}
+
+startSwapPath() 
+{ 
+	export PATH=$PATH:/var/swap/bin:/var/bin:/mnt/swapextensions/bin
+	export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/var/swap/lib:/mnt/swapextensions/lib:/var/lib
+}
+
+startGui()
+{
+	until false
+	do
+		echo "[rcS] starting $SWTYPE"
+		rm /tmp/.bootvfd
+
+		if [ "$model" = "atemio520" ] || [ "$model" = "atemio530" ] || [ "$model" = "atemio7600" ] || [ "$model" = "hs8200" ] || [ "$model" = "ufs912" ] || [ "$model" = "ufs913" ]; then
+			logdir="/mnt/logs"
+		fi
+		if [ -e /var/swap ]; then
+			logdir="/var/swap/logs"
+		fi
+		if [ -e /media/hdd/movie ]; then
+			logdir="/media/hdd/logs"
+		fi
+		
+		if [ -e /var/etc/.swaplog ] || [ -e /mnt/swapextensions/etc/.swaplog ]; then
+			mkdir -p $logdir
+			if [ -e "$logdir" ]; then
+				starttime=`date +"%Y.%m.%d %H.%M.%S"`
+				/usr/local/bin/titan /mnt/config/titan.cfg > $logdir/$SWTYPE.$starttime.log 2>&1
+				crashtime=`date +"%Y.%m.%d %H.%M.%S"`
+				mv -f $logdir/$SWTYPE.$starttime.log $logdir/$SWTYPE.$crashtime.log
+			else
+				/usr/local/bin/titan /mnt/config/titan.cfg
+			fi
+		else
+			/usr/local/bin/titan /mnt/config/titan.cfg
+		fi
+
+		rtv=$?
+		echo "[rcS] $SWTYPE ended <- RTV: " $rtv
+		echo "[rcS] start start.sh reboot $rtv $SWTYPE $model $imagetype $linuxver"
+
+		/var/etc/autostart/start.sh reboot "$rtv" "$SWTYPE" "$model" "$imagetype" "$linuxver"
+	done
+}
+
+echo "[rcS] start /etc/init.d/rcS"
+read version < /etc/version-svn
+read model < /etc/model
+echo "[rcS] booting $version"
+linuxver=`uname -a`; linuxver=${linuxver#*_}; linuxver=${linuxver%_*}
+SWTYPE="titan"
+
+if [ -e /etc/.usbimage ];then
+	imagetype=usbimage
+else
+	imagetype=flash
+fi
+
+startFlash
+startMounts
+startSwapPath
+startFirst
+startGui

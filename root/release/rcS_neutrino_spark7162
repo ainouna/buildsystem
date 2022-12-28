@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 191113.1
+#Version 220711.1
 
 echo "Spark 7162 Neutrino"
 
@@ -203,9 +203,9 @@ if [ -e /etc/ownscript.sh ]; then
 fi
 
 # Try and synchronise time
-if [ -e /sbin/ntpdate ]; then
+if [ -x /usr/sbin/ntpd ]; then
    echo "Set internet time"
-   (/sbin/ntpdate de.pool.ntp.org; /bin/fp_control -sst) &
+   (ntpd -n -p 0.europe.pool.ntp.org -q; /bin/fp_control -sst) &
 else
    if [ -e /usr/sbin/time.sh ]; then
       echo "Use transponder time"

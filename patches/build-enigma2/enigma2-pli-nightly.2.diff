@@ -1,4 +1,4 @@
-# revision a84bd16d5bc55a74c4c318669a6446ddd78cb841 28/05/2021 20:04
+# revision 37427c7c563c47ab0a964da872f817a6f8900173 06/08/2022 13:10
 --- enigma2.org/configure.ac
 +++ enigma2/configure.ac
 @@ -18,6 +18,7 @@
@@ -9,7 +9,7 @@
  AX_PYTHON_DEVEL
  AX_PKG_SWIG
  AX_SWIG_ENABLE_CXX
-@@ -35,6 +36,289 @@
+@@ -35,6 +36,313 @@
  PKG_CHECK_MODULES(LIBDDVD, libdreamdvd, HAVE_LIBDDVD="yes", HAVE_LIBDDVD="no")
  AM_CONDITIONAL(HAVE_LIBDDVD, test "$HAVE_LIBDDVD" = "yes")
  PKG_CHECK_MODULES(AVAHI, avahi-client)
@@ -234,7 +234,7 @@
 +fi
 +
 +AC_ARG_ENABLE(adb_box,
-+	[  --adb_box  enable adb_box stuff],
++	[  --adb_box                  enable adb_box stuff],
 +	[AC_DEFINE(ENABLE_ADB_BOX, 1, [enable adb_box stuff])])
 +AM_CONDITIONAL(ENABLE_ADB_BOX, test "$enable_adb_box" = "yes")
 +if test "$enable_adb_box" = "yes"; then
@@ -296,10 +296,34 @@
 +if test "$enable_opt9600" = "yes"; then
 +	AC_DEFINE(ENABLE_OPT9600, 1, [enable opt9600 stuff])
 +fi
++
++AC_ARG_ENABLE(opt9600mini,
++	[  --enable-opt9600mini       enable opt9600mini stuff],
++	[AC_DEFINE(ENABLE_OPT9600MINI, 1, [enable opt9600mini stuff])])
++AM_CONDITIONAL(ENABLE_OPT9600MINI, test "$enable_opt9600mini" = "yes")
++if test "$enable_opt9600mini" = "yes"; then
++	AC_DEFINE(ENABLE_OPT9600MINI, 1, [enable opt9600mini stuff])
++fi
++
++AC_ARG_ENABLE(opt9600prima,
++	[  --enable-opt9600prima      enable opt9600prima stuff],
++	[AC_DEFINE(ENABLE_OPT9600PRIMA, 1, [enable opt9600prima stuff])])
++AM_CONDITIONAL(ENABLE_OPT9600PRIMA, test "$enable_opt9600prima" = "yes")
++if test "$enable_opt9600prima" = "yes"; then
++	AC_DEFINE(ENABLE_OPT9600PRIMA, 1, [enable opt9600prima stuff])
++fi
++
++AC_ARG_ENABLE(atemio520,
++	[  --enable-atemio520         enable atemio520 stuff],
++	[AC_DEFINE(ENABLE_ATEMIO520, 1, [enable atemio520 stuff])])
++AM_CONDITIONAL(ENABLE_ATEMIO520, test "$enable_atemio520" = "yes")
++if test "$enable_atemio520" = "yes"; then
++	AC_DEFINE(ENABLE_ATEMIO520, 1, [enable atemio520 stuff])
++fi
  
  AC_CHECK_LIB([udfread], [udfread_init])
  AC_CHECK_LIB([dl], [dlopen], [LIBDL_LIBS="-ldl"], [AC_MSG_ERROR([Could not find libdl])])
-@@ -51,8 +335,8 @@
+@@ -51,13 +359,13 @@
  AC_DEFINE_UNQUOTED(CRASH_EMAILADDR,"$CRASHLOGEMAIL",[crash log email address])
  
  AC_ARG_WITH(boxtype,
@@ -310,7 +334,13 @@
  AC_SUBST(BOXTYPE)
  AC_DEFINE_UNQUOTED(BOXTYPE,"$BOXTYPE",[box type])
  
-@@ -79,19 +363,6 @@
+ AM_CONDITIONAL(DREAMBOX, test `echo "$BOXTYPE" | cut -b 1-2` == "dm")
+-AM_CONDITIONAL(HAVE_TEMPFANCONTROL, test "$BOXTYPE" == dm8000 -o "$BOXTYPE" == dm800se -o "$BOXTYPE" == dm500hd)
++AM_CONDITIONAL(HAVE_TEMPFANCONTROL, test "$BOXTYPE" == adb_box -o "$BOXTYPE" == cuberevo -o "$BOXTYPE" == cuberevo-9500hd -o "$BOXTYPE" == ipbox99 -o "$BOXTYPE" == ipbox9900 -o "$BOXTYPE" == sagemcom88 -o "$BOXTYPE" == pace7241 -o "$BOXTYPE" == ufs922)
+ if test `echo "$BOXTYPE" | cut -b 1-2` == "dm"; then
+ 	AC_DEFINE(DREAMBOX, 1, [Dreambox hardware])
+ 	AC_DEFINE(KEY_PLAY_ACTUALLY_IS_KEY_PLAYPAUSE, 1,[define when rc sends a KEY_PLAY event for its KEY_PLAYPAUSE key])
+@@ -79,19 +387,6 @@
  	[[TEXTSKIN="default"]]
  )
  AC_SUBST(TEXTSKIN)
@@ -330,7 +360,7 @@
  
  AC_ARG_WITH(libsdl,
  	AS_HELP_STRING([--with-libsdl],[use libsdl, yes or no]),
-@@ -141,8 +412,8 @@
+@@ -141,8 +436,8 @@
  
  AC_ARG_WITH(alsa,
  	AC_HELP_STRING([--with-alsa], [Enable ALSA support]),
@@ -341,7 +371,7 @@
  )
  if test x"$with_alsa" == xyes ; then
  	AC_DEFINE(HAVE_ALSA, 1,[Enables ALSA support])
-@@ -190,19 +461,37 @@
+@@ -190,19 +477,37 @@
  	[[with_alphablendingacceleration=$withval]],
  	[[with_alphablendingacceleration=auto]]
  )
@@ -381,7 +411,7 @@
  AC_DEFINE_UNQUOTED(GFX_SURFACE_ACCELERATION_THRESHOLD, $with_accelerationthreshold,[Configure threshold for accelerated surfaces (in bytes)])
  
  AC_ARG_WITH(fillaccelerationthreshold,
-@@ -210,7 +499,6 @@
+@@ -210,7 +523,6 @@
  	[[with_fillaccelerationthreshold=$withval]],
  	[[with_fillaccelerationthreshold=80000]]
  )
@@ -389,7 +419,7 @@
  AC_DEFINE_UNQUOTED(GFX_SURFACE_FILL_ACCELERATION_THRESHOLD, $with_fillaccelerationthreshold,[Configure threshold for accelerated fill operations (in bytes)])
  
  AC_ARG_WITH(blitaccelerationthreshold,
-@@ -218,7 +506,6 @@
+@@ -218,7 +530,6 @@
  	[[with_blitaccelerationthreshold=$withval]],
  	[[with_blitaccelerationthreshold=0]]
  )
@@ -397,7 +427,7 @@
  AC_DEFINE_UNQUOTED(GFX_SURFACE_BLIT_ACCELERATION_THRESHOLD, $with_blitaccelerationthreshold,[Configure threshold for accelerated blit operations (in bytes)])
  
  AC_ARG_WITH(accelerationaccumulation,
-@@ -226,7 +513,6 @@
+@@ -226,7 +537,6 @@
  	[[with_accelerationaccumulation=$withval]],
  	[[with_accelerationaccumulation=no]]
  )
@@ -405,7 +435,7 @@
  if test x"$with_accelerationaccumulation" = xyes ; then
  	AC_DEFINE(SUPPORT_ACCUMULATED_ACCELERATION_OPERATIONS, 1,[Accumulate blit/fill acceleration operations])
  fi
-@@ -248,17 +534,16 @@
+@@ -248,17 +558,16 @@
  
  CPPFLAGS="$CPPFLAGS $PYTHON_CPPFLAGS"
  CFLAGS="$CFLAGS -Wall"
@@ -431,7 +461,7 @@
  	-Wno-error=aggregate-return -Wno-error=missing-field-initializers \
  	-Wno-error=packed -Wno-error=vla -Wno-error=clobbered -Wno-error=unused-parameter \
  	$BASE_CFLAGS $ENIGMA2_CFLAGS $PTHREAD_CFLAGS $OPENMP_CFLAGS $ALSA_CFLAGS"
-@@ -316,8 +601,6 @@
+@@ -316,8 +625,6 @@
  lib/python/Plugins/Extensions/SocketMMI/meta/Makefile
  lib/python/Plugins/Extensions/SocketMMI/src/Makefile
  lib/python/Plugins/PLi/Makefile
@@ -440,7 +470,7 @@
  lib/python/Plugins/SystemPlugins/DefaultServicesScanner/Makefile
  lib/python/Plugins/SystemPlugins/DefaultServicesScanner/meta/Makefile
  lib/python/Plugins/SystemPlugins/DiseqcTester/Makefile
-@@ -345,6 +628,65 @@
+@@ -347,6 +654,70 @@
  lib/python/Plugins/SystemPlugins/Videomode/meta/Makefile
  lib/python/Plugins/SystemPlugins/WirelessLan/Makefile
  lib/python/Plugins/SystemPlugins/WirelessLan/meta/Makefile
@@ -500,6 +530,11 @@
 +lib/python/Plugins/Extensions/spark7162VFD/locale/Makefile
 +lib/python/Plugins/Extensions/spark7162VFD/locale/nl/Makefile
 +lib/python/Plugins/Extensions/spark7162VFD/locale/nl/LC_MESSAGES/Makefile
++lib/python/Plugins/Extensions/ufs9xxVFD/Makefile
++lib/python/Plugins/Extensions/ufs9xxVFD/meta/Makefile
++lib/python/Plugins/Extensions/ufs9xxVFD/locale/Makefile
++lib/python/Plugins/Extensions/ufs9xxVFD/locale/nl/Makefile
++lib/python/Plugins/Extensions/ufs9xxVFD/locale/nl/LC_MESSAGES/Makefile
 +lib/python/Plugins/Extensions/TopfieldVFD/Makefile
 +lib/python/Plugins/SystemPlugins/VFD-Icons/Makefile
 +lib/python/Plugins/SystemPlugins/VFD-Icons/meta/Makefile
@@ -519,7 +554,7 @@
  		dlg.isTmp = True
  		dlg.callback = None
  		self.execBegin()
-@@ -520,10 +524,10 @@
+@@ -521,10 +525,10 @@
  	if wakeupList:
  		from time import strftime
  		startTime = wakeupList[0]
@@ -587,42 +622,28 @@
  			int i, j = 0;	   // remove leading whitespace and control chars, and comments
 --- enigma2.org/lib/base/estring.cpp
 +++ enigma2/lib/base/estring.cpp
-@@ -783,12 +783,12 @@
- 		eTrace("[convertDVBUTF8] %d chars converted, and %d chars left..", convertedLen, len-convertedLen);
- 	eTrace("[convertDVBUTF8] table=0x%02X twochar=%d output:%s\n", table, useTwoCharMapping, output.c_str());
- 
--	eTrace("[convertDVBUTF8] table=0x%02X tsid:onid=0x%X:0x%X data[0..14]=%s   output:%s\n",
--		table, (unsigned int)tsidonid >> 16, tsidonid & 0xFFFFU,
--		string_to_hex(std::string((char*)data, len < 15 ? len : 15)).c_str(),
--		output.c_str());
-+//	eTrace("[convertDVBUTF8] table=0x%02X tsid:onid=0x%X:0x%X data[0..14]=%s   output:%s\n",
-+//		table, (unsigned int)tsidonid >> 16, tsidonid & 0xFFFFU,
-+//		string_to_hex(std::string((char*)data, len < 15 ? len : 15)).c_str(),
-+//		output.c_str());
+@@ -788,7 +788,7 @@
+ 	//	string_to_hex(std::string((char*)data, len < 15 ? len : 15)).c_str(),
+ 	//	output.c_str());
  	// replace EIT CR/LF with standard newline:
 -	output = replace_all(replace_all(output, "\xC2\x8A", "\n"), "\xEE\x82\x8A", "\n");
 +//	output = replace_all(replace_all(output, "\xC2\x8A", "\n"), "\xEE\x82\x8A", "\n");
  	return output;
  }
  
-@@ -1088,13 +1088,13 @@
+@@ -1088,6 +1088,7 @@
      return output;
  }
  
--std::string strip_non_graph(std::string s)
--{
--	s = std::regex_replace(s, std::regex("[[^:graph:]]"), " ");
--	s = std::regex_replace(s, std::regex("\\s{2,}"), " ");
--	s = std::regex_replace(s, std::regex("^\\s+|\\s+$"), "");
--	return s;
--}
-+//std::string strip_non_graph(std::string s)
-+//{
-+//	s = std::regex_replace(s, std::regex("[[^:graph:]]"), (std::basic_string<char>)" ");
-+//	s = std::regex_replace(s, std::regex("\\s{2,}"), (std::basic_string<char>)" ");
-+//	s = std::regex_replace(s, std::regex("^\\s+|\\s+$"), (std::basic_string<char>)"");
-+//	return s;
-+//}
++#if 0
+ std::string strip_non_graph(std::string s)
+ {
+ 	s = std::regex_replace(s, std::regex("[[^:graph:]]"), " ");
+@@ -1095,6 +1096,7 @@
+ 	s = std::regex_replace(s, std::regex("^\\s+|\\s+$"), "");
+ 	return s;
+ }
++#endif
  
  std::vector<std::string> split(std::string s, const std::string& separator)
  {
@@ -865,7 +886,7 @@
  		{
 --- enigma2.org/lib/driver/vfd.cpp
 +++ enigma2/lib/driver/vfd.cpp
-@@ -0,0 +1,1061 @@
+@@ -0,0 +1,1087 @@
 +/***************************************************************************
 + *
 + * vfd.cpp
@@ -919,6 +940,10 @@
 + * 20210322 Audioniek       Set display width on spark7162 to match actual
 + *                          display type and time mode.
 + * 20210326 Audioniek       Set correct display width on spark with VFD.
++ * 20210625 Audioniek       Kathrein UFS922 added.
++ * 20210922 Audioniek       Atemio AM 520 HD added.
++ * 20211105 Audioniek       Opticum HD 9600 Mini added.
++ * 20220127 Audioniek       Opticum HD 9600 Prima added.
 + *
 + ***************************************************************************/
 +#include <stdarg.h>
@@ -1029,7 +1054,8 @@
 +   || defined (ENABLE_HS7429)
 +	vfd_type = 11;
 +#elif defined (ENABLE_UFS912) \
-+   || defined (ENABLE_UFS913)
++   || defined (ENABLE_UFS913) \
++   || defined (ENABLE_UFS922)
 +	vfd_type = 12;
 +#elif defined (ENABLE_CUBEREVO)
 +	vfd_type = 13;
@@ -1049,8 +1075,11 @@
 +	vfd_type = 18;
 +#elif defined (ENABLE_PACE7241)
 +	vfd_type = 19;
-+#elif defined (ENABLE_OPT9600)
++#elif defined (ENABLE_OPT9600) \
++ ||   defined (ENABLE_OPT9600PRIMA)
 +	vfd_type = 20;
++#elif defined (ENABLE_OPT9600MINI)
++	vfd_type = 21;
 +#else
 +	vfd_type = -1;
 +#endif
@@ -1290,6 +1319,8 @@
 +		char str[] = "UFS912 Enigma2";
 +	#elif defined (ENABLE_UFS913)
 +		char str[] = "UFS913 Enigma2";
++	#elif defined (ENABLE_UFS922)
++		char str[] = "UFS922 Enigma2";
 +	#elif defined (ENABLE_VITAMIN_HD5000)
 +		char str[] = "Vitamin E2";
 +	#elif defined (ENABLE_ADB_BOX)
@@ -1304,8 +1335,13 @@
 +		char str[] = "VIP1_2 E2";
 +	#elif defined (ENABLE_VIP2)
 +		char str[] = "VIP2 E2";
-+	#elif defined (ENABLE_OPT9600)
++	#elif defined (ENABLE_OPT9600) \
++	 ||   defined (ENABLE_OPT9600PRIMA)
 +		char str[] = "HD 9600 Enigma2";
++	#elif defined (ENABLE_OPT9600MINI)
++		char str[] = "Mini Enigma2";
++	#elif defined (ENABLE_ATEMIO520)
++		char str[] = "520 HD Enigma2";
 +	#else
 +		char str[] = "SH4 Git Enigma2";
 +	#endif
@@ -1326,8 +1362,10 @@
 +	 || defined (ENABLE_CUBEREVO_3000HD) \
 +	 || defined (ENABLE_CUBEREVO_9500HD) \
 +	 || defined (ENABLE_SPARK7162) \
++	 || defined (ENABLE_UFS910) \
 +	 || defined (ENABLE_UFS912) \
 +	 || defined (ENABLE_UFS913) \
++	 || defined (ENABLE_UFS922) \
 +	 || defined (ENABLE_HS7119) \
 +	 || defined (ENABLE_HS7420) \
 +	 || defined (ENABLE_HS7429) \
@@ -1431,8 +1469,10 @@
 +	 && !defined (ENABLE_CUBEREVO_3000HD) \
 +	 && !defined (ENABLE_CUBEREVO_9500HD) \
 +	 && !defined (ENABLE_SPARK7162) \
++	 && !defined (ENABLE_UFS910) \
 +	 && !defined (ENABLE_UFS912) \
 +	 && !defined (ENABLE_UFS913) \
++	 && !defined (ENABLE_UFS922) \
 +	 && !defined (ENABLE_HS7119) \
 +	 && !defined (ENABLE_HS7420) \
 +	 && !defined (ENABLE_HS7429) \
@@ -1445,7 +1485,10 @@
 +	 && !defined (ENABLE_VIP1_V1) \
 +	 && !defined (ENABLE_VIP1_V2) \
 +	 && !defined (ENABLE_VIP2) \
-+	 && !defined (ENABLE_OPT9600)
++	 && !defined (ENABLE_OPT9600) \
++	 && !defined (ENABLE_OPT9600MINI) \
++	 && !defined (ENABLE_OPT9600PRIMA) \
++	 && !defined (ENABLE_ATEMIO520)
 +	// Set all blocked icons
 +	for (int id = 0x10; id < 0x20; id++)
 +	{
@@ -1483,7 +1526,10 @@
 + || defined (ENABLE_VIP1_V1) \
 + || defined (ENABLE_VIP1_V2) \
 + || defined (ENABLE_VIP2) \
-+ || defined (ENABLE_OPT9600)
++ || defined (ENABLE_OPT9600) \
++ || defined (ENABLE_OPT9600MINI) \
++ || defined (ENABLE_OPT9600PRIMA) \
++ || defined (ENABLE_ATEMIO520)
 +void evfd::vfd_write_string_scrollText(char *text)
 +{
 +	return;
@@ -1888,7 +1934,8 @@
 +	memset(&data, 0, sizeof(struct vfd_ioctl_data));
 +
 +#if defined (ENABLE_CUBEREVO) \
-+ || defined (ENABLE_CUBEREVO_9500HD)
++ || defined (ENABLE_CUBEREVO_9500HD) \
++ || defined (ENABLE_ADB_BOX)
 +	if (speed)
 +	{
 +		data.start = 0x01;
@@ -1929,7 +1976,7 @@
 +// vim:ts=4
 --- enigma2.org/lib/driver/vfd.h
 +++ enigma2/lib/driver/vfd.h
-@@ -0,0 +1,140 @@
+@@ -0,0 +1,145 @@
 +#ifndef VFD_H_
 +#define VFD_H_
 +
@@ -1942,7 +1989,9 @@
 +   || defined (ENABLE_HS7119) \
 +   || defined (ENABLE_SPARK) \
 +   || defined (ENABLE_CUBEREVO_MINI_FTA) \
-+   || defined (ENABLE_CUBEREVO_250HD)
++   || defined (ENABLE_CUBEREVO_250HD) \
++   || defined (ENABLE_OPT9600MINI) \
++   || defined (ENABLE_ATEMIO520)
 +	#define VFDLENGTH 4
 +#elif defined (ENABLE_HS9510) \
 +   || defined (ENABLE_HS7420) \
@@ -1952,7 +2001,8 @@
 +   || defined (ENABLE_VIP1_V1) \
 +   || defined (ENABLE_VIP1_V2) \
 +   || defined (ENABLE_VIP2) \
-+   || defined (ENABLE_OPT9600)
++   || defined (ENABLE_OPT9600) \
++   || defined (ENABLE_OPT9600PRIMA)
 +	#define VFDLENGTH 8
 +#elif defined (ENABLE_VITAMIN_HD5000)
 +	#define VFDLENGTH 11
@@ -1984,9 +2034,11 @@
 +#define ICON_MAX 28
 +#elif defined (ENABLE_HS8200)
 +#define ICON_MAX 22
-+#elif defined (ENABLE_UFS912) \
-+ ||   defined (ENABLE_UFS913)
-+#define ICON_MAX 15
++#elif defined (ENABLE_UFS910) \
++ ||   defined (ENABLE_UFS912) \
++ ||   defined (ENABLE_UFS913) \
++ ||   defined (ENABLE_UFS922)
++#define ICON_MAX 16
 +#elif defined (ENABLE_CUBEREVO)
 +#define ICON_MAX 27
 +#elif defined (ENABLE_CUBEREVO_MINI) \
@@ -2016,7 +2068,7 @@
 +#define ICON_OFF 0
 +
 +#if 0 //!defined (ENABLE_FS9000)
-+typedef enum { USB = 0x10, HD, HDD, LOCK, BT, MP3, MUSIC, DD, MAIL, MUTE, PLAY, PAUSE, FF, FR, REC, CLOCK } tvfd_icon;
++typedef enum { USB = 1, HD, HDD, LOCK, BT, MP3, MUSIC, DD, MAIL, MUTE, PLAY, PAUSE, FF, FR, REC, CLOCK } tvfd_icon;
 +typedef enum { RED_LED = 0, GREEN_LED } tvfd_led;
 +//#else
 +//typedef enum { USB = 1, I_STANDBY, I_SAT, I_REC, I_TIMESHIFT, I_TIMER, I_HD, I_LOCK, I_DD, I_MUTE, I_TUNER1, I_TUNER2, I_MP3, I_REPEAT,
@@ -2072,7 +2124,7 @@
 +// vim:ts=4
 --- enigma2.org/lib/dvb/decoder.cpp
 +++ enigma2/lib/dvb/decoder.cpp
-@@ -50,12 +50,10 @@
+@@ -52,12 +52,10 @@
  		m_fd_demux = -1;
  	}
  
@@ -2085,7 +2137,7 @@
  }
  
  int eDVBAudio::startPid(int pid, int type)
-@@ -82,21 +80,16 @@
+@@ -84,21 +82,16 @@
  			pes.pes_type = DMX_PES_AUDIO3;
  			break;
  		}
@@ -2111,7 +2163,7 @@
  	}
  
  	if (m_fd >= 0)
-@@ -131,11 +124,7 @@
+@@ -133,11 +126,7 @@
  			bypass = 0x40;
  			break;
  		case aDDP:
@@ -2123,7 +2175,7 @@
  		break;
  		}
  
-@@ -144,7 +133,6 @@
+@@ -146,7 +135,6 @@
  			eDebugNoNewLine("failed: %m\n");
  		else
  			eDebugNoNewLine("ok\n");
@@ -2131,7 +2183,7 @@
  		eDebugNoNewLineStart("[eDVBAudio%d] AUDIO_PLAY ", m_dev);
  		if (::ioctl(m_fd, AUDIO_PLAY) < 0)
  			eDebugNoNewLine("failed: %m\n");
-@@ -241,7 +229,7 @@
+@@ -243,7 +231,7 @@
  
  eDVBAudio::~eDVBAudio()
  {
@@ -2140,7 +2192,7 @@
  	if (m_fd >= 0)
  		::close(m_fd);
  	if (m_fd_demux >= 0)
-@@ -282,12 +270,10 @@
+@@ -284,12 +272,10 @@
  		m_fd_demux = -1;
  	}
  
@@ -2153,7 +2205,7 @@
  	if (m_close_invalidates_attributes < 0)
  	{
  		/*
-@@ -380,7 +366,8 @@
+@@ -389,7 +375,8 @@
  			pes.pes_type = DMX_PES_VIDEO3;
  			break;
  		}
@@ -2163,7 +2215,7 @@
  		eDebugNoNewLineStart("[eDVBVideo%d] DMX_SET_PES_FILTER pid=0x%04x ", m_dev, pid);
  		if (::ioctl(m_fd_demux, DMX_SET_PES_FILTER, &pes) < 0)
  		{
-@@ -388,18 +375,11 @@
+@@ -397,18 +384,11 @@
  			return -errno;
  		}
  		eDebugNoNewLine("ok\n");
@@ -2187,7 +2239,7 @@
  		eDebugNoNewLineStart("[eDVBVideo%d] VIDEO_PLAY ", m_dev);
  		if (::ioctl(m_fd, VIDEO_PLAY) < 0)
  			eDebugNoNewLine("failed: %m\n");
-@@ -717,7 +697,8 @@
+@@ -729,7 +709,8 @@
  		pes.pes_type = DMX_PES_PCR3;
  		break;
  	}
@@ -2197,7 +2249,7 @@
  	eDebugNoNewLineStart("[eDVBPCR%d] DMX_SET_PES_FILTER pid=0x%04x ", m_dev, pid);
  	if (::ioctl(m_fd_demux, DMX_SET_PES_FILTER, &pes) < 0)
  	{
-@@ -725,13 +706,7 @@
+@@ -737,13 +718,7 @@
  		return -errno;
  	}
  	eDebugNoNewLine("ok\n");
@@ -2212,7 +2264,7 @@
  	return 0;
  }
  
-@@ -787,7 +762,8 @@
+@@ -799,7 +776,8 @@
  		pes.pes_type = DMX_PES_TELETEXT3;
  		break;
  	}
@@ -2222,7 +2274,7 @@
  
  	eDebugNoNewLineStart("[eDVBText%d] DMX_SET_PES_FILTER pid=0x%04x ", m_dev, pid);
  	if (::ioctl(m_fd_demux, DMX_SET_PES_FILTER, &pes) < 0)
-@@ -796,13 +772,7 @@
+@@ -808,13 +784,7 @@
  		return -errno;
  	}
  	eDebugNoNewLine("ok\n");
@@ -2237,7 +2289,7 @@
  	return 0;
  }
  
-@@ -939,12 +909,23 @@
+@@ -951,12 +921,23 @@
  		int *s = state_table[m_state];
  		if (changed & (changeState|changeVideo) && m_video)
  		{
@@ -2263,7 +2315,7 @@
  		}
  		if (changed & (changeState|changeAudio) && m_audio)
  		{
-@@ -1245,6 +1226,9 @@
+@@ -1260,6 +1241,9 @@
  		{
  			struct stat s;
  			fstat(f, &s);
@@ -2273,7 +2325,7 @@
  			if (m_video_clip_fd == -1)
  				m_video_clip_fd = open("/dev/dvb/adapter0/video0", O_WRONLY);
  			if (m_video_clip_fd >= 0)
-@@ -1258,36 +1242,56 @@
+@@ -1273,36 +1257,56 @@
  				int streamtype;
  				memset(stuffing, 0, sizeof(stuffing));
  				ssize_t ret = read(f, iframe, s.st_size);
@@ -2365,7 +2417,7 @@
  	flt.pid     = i->first;
 --- enigma2.org/lib/dvb/dvb.cpp
 +++ enigma2/lib/dvb/dvb.cpp
-@@ -114,7 +114,38 @@
+@@ -118,7 +118,38 @@
  
  	m_fbcmng = new eFBCTunerManager(instance);
  
@@ -2404,7 +2456,7 @@
  }
  
  void eDVBResourceManager::feStateChanged()
-@@ -317,19 +348,6 @@
+@@ -321,19 +352,6 @@
  		frontend = -1;
  		goto error;
  	}
@@ -2424,7 +2476,7 @@
  	::close(frontend);
  	frontend = -1;
  
-@@ -418,8 +436,6 @@
+@@ -433,8 +451,6 @@
  	ioctl(vtunerFd, VTUNER_SET_NAME, name);
  	ioctl(vtunerFd, VTUNER_SET_TYPE, type);
  	ioctl(vtunerFd, VTUNER_SET_FE_INFO, &fe_info);
@@ -2433,7 +2485,7 @@
  	ioctl(vtunerFd, VTUNER_SET_HAS_OUTPUTS, "no");
  	ioctl(vtunerFd, VTUNER_SET_ADAPTER, nr);
  
-@@ -1003,6 +1019,7 @@
+@@ -1071,6 +1087,7 @@
  	ePtr<eDVBRegisteredDemux> unused;
  	uint8_t d, a;
  
@@ -2441,7 +2493,7 @@
  	/*
  	 * For pvr playback, start with the last demux.
  	 * On some hardware, there are less ca devices than demuxes, so try to leave
-@@ -1050,15 +1067,61 @@
+@@ -1118,15 +1135,61 @@
  			--i;
  		}
  	}
@@ -2506,7 +2558,7 @@
  		else
  			demux->get().setSourcePVR(0);
  		return 0;
-@@ -2180,21 +2243,11 @@
+@@ -2310,21 +2373,11 @@
  
  	if (m_pvr_fd_dst < 0)
  	{
@@ -2535,7 +2587,7 @@
  	m_pvr_thread = new eDVBChannelFilePush(m_source->getPacketSize());
 --- enigma2.org/lib/dvb/dvb.h
 +++ enigma2/lib/dvb/dvb.h
-@@ -243,6 +243,8 @@
+@@ -244,6 +244,8 @@
  	bool frontendIsMultistream(int index);
  	std::string getFrontendCapabilities(int index);
  	void setFrontendType(int index, const char *types);
@@ -2544,7 +2596,7 @@
  };
  SWIG_TEMPLATE_TYPEDEF(ePtr<eDVBResourceManager>, eDVBResourceManager);
  SWIG_EXTEND(ePtr<eDVBResourceManager>,
-@@ -270,6 +272,8 @@
+@@ -271,6 +273,8 @@
  		/* cannot be used for PVR channels. */
  	RESULT setChannel(const eDVBChannelID &id, ePtr<iDVBFrontendParameters> &feparam);
  	eDVBChannelID getChannelID() { return m_channel_id; }
@@ -2718,7 +2770,7 @@
  
  	if (!m_multitype)
  		m_type = feSatellite;
-@@ -945,12 +953,16 @@
+@@ -946,12 +954,16 @@
  	int cab_max = 4200;
  	int atsc_max = 4200;
  
@@ -2737,7 +2789,7 @@
  	{
  		ret = (int)(snr / 37.5);
  		sat_max = 1700;
-@@ -3055,7 +3067,11 @@
+@@ -3095,7 +3107,11 @@
  	}
  	else if (!strcmp(type, "DVB-C"))
  	{
@@ -2749,7 +2801,7 @@
  		fetype = feCable;
  	}
  	else if (!strcmp(type, "ATSC"))
-@@ -3187,11 +3203,16 @@
+@@ -3227,11 +3243,16 @@
  		case SYS_ISDBS:		ss << " ISDBS"; break;
  		case SYS_ISDBT:		ss << " ISDBT"; break;
  		case SYS_UNDEFINED:	ss << " UNDEFINED"; break;
@@ -2769,7 +2821,7 @@
  
 --- enigma2.org/lib/dvb/pmt.cpp
 +++ enigma2/lib/dvb/pmt.cpp
-@@ -909,6 +909,11 @@
+@@ -921,6 +921,11 @@
  			eDVBCIInterfaces::getInstance()->addPMTHandler(this);
  	} else if (!simulate) // no simulation of playback services
  	{
@@ -2845,9 +2897,32 @@
  }
  
  int eDVBVolumecontrol::openMixer()
+--- enigma2.org/lib/dvb_ci/descrambler.cpp
++++ enigma2/lib/dvb_ci/descrambler.cpp
+@@ -20,6 +20,7 @@
+ #define CA_SET_PID _IOW('o', 135, struct ca_pid)
+ #endif
+ 
++#if 0
+ enum ca_descr_data_type {
+ 	CA_DATA_IV,
+ 	CA_DATA_KEY,
+@@ -37,9 +38,11 @@
+ 	unsigned int length;
+ 	unsigned char *data;
+ };
++#endif
+ 
+-
++#ifndef CA_SET_PID
+ #define CA_SET_DESCR_DATA _IOW('o', 137, struct ca_descr_data)
++#endif
+ 
+ int descrambler_set_key(int desc_fd, int index, int parity, unsigned char *data)
+ {
 --- enigma2.org/lib/dvb_ci/dvbci_appmgr.cpp
 +++ enigma2/lib/dvb_ci/dvbci_appmgr.cpp
-@@ -94,6 +94,7 @@
+@@ -96,6 +96,7 @@
  	eDebug("[CI AM] in appmanager -> startmmi()");
  	const unsigned char tag[3]={0x9F, 0x80, 0x22};  // Tenter_menu
  	sendAPDU(tag);
@@ -2857,28 +2932,19 @@
  
 --- enigma2.org/lib/dvb_ci/dvbci.cpp
 +++ enigma2/lib/dvb_ci/dvbci.cpp
-@@ -25,6 +25,9 @@
+@@ -26,11 +26,265 @@
  
  #include <dvbsi++/ca_program_map_section.h>
  
 +#include <linux/dvb/ca.h>
 +//#define x_debug
 +
- //#define CIDEBUG 1
- 
- #ifdef CIDEBUG
-@@ -34,7 +37,6 @@
- #endif
  
  eDVBCIInterfaces *eDVBCIInterfaces::instance = 0;
--
  
- eCIClient::eCIClient(eDVBCIInterfaces *handler, int socket) : eUnixDomainSocket(socket, 1, eApp), parent(handler)
- {
-@@ -146,6 +148,257 @@
- 
- #define CIPLUS_SERVER_SOCKET "/tmp/.listen.ciplus.socket"
- 
+ pthread_mutex_t eDVBCIInterfaces::m_pmt_handler_lock = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
+ pthread_mutex_t eDVBCIInterfaces::m_slot_lock = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
++
 +bool eDVBCISlot::checkQueueSize()
 +{
 +	return (sendqueue.size() > 0);
@@ -3129,11 +3195,10 @@
 +			printf("unhandled tpdu_tag 0x%0x\n", tpdu_tag);
 +	}
 +}
-+
+ 
  eDVBCIInterfaces::eDVBCIInterfaces()
-  : eServerSocket(CIPLUS_SERVER_SOCKET, eApp)
- {
-@@ -163,7 +416,7 @@
+  : m_messagepump_thread(this,1), m_messagepump_main(eApp,1), m_runTimer(eTimer::create(this))
+@@ -54,7 +308,7 @@
  	{
  		path.str("");
  		path.clear();
@@ -3142,7 +3207,7 @@
  
  		if(::access(path.str().c_str(), R_OK) < 0)
  			break;
-@@ -1093,7 +1346,7 @@
+@@ -1168,7 +1422,7 @@
  	{
  		unsigned char *d = new unsigned char[len];
  		memcpy(d, data, len);
@@ -3151,10 +3216,10 @@
  		notifier->setRequested(eSocketNotifier::Read | eSocketNotifier::Priority | eSocketNotifier::Write);
  	}
  
-@@ -1103,61 +1356,168 @@
- void eDVBCISlot::data(int what)
+@@ -1179,61 +1433,168 @@
  {
- 	eDebugCI("[CI] Slot %d what %d\n", getSlotID(), what);
+ 	singleLock s(eDVBCIInterfaces::m_slot_lock);
+ 	eTrace("[CI] Slot %d what %d\n", getSlotID(), what);
 -	if(what == eSocketNotifier::Priority) {
 -		if(state != stateRemoved) {
 -			state = stateRemoved;
@@ -3166,7 +3231,7 @@
 -			eDVBCISession::deleteSessions(this);
 -			eDVBCIInterfaces::getInstance()->ciRemoved(this);
 -			notifier->setRequested(eSocketNotifier::Read);
--			eDVBCI_UI::getInstance()->setState(getSlotID(),0);
+-			/* emit */ eDVBCI_UI::getInstance()->m_messagepump.send(eDVBCIInterfaces::Message(eDVBCIInterfaces::Message::slotStateChanged, getSlotID(), 0));
 -		}
 -		return;
 -	}
@@ -3177,7 +3242,7 @@
 -	if(state != stateInserted) {
 -		eDebug("[CI] ci inserted in slot %d", getSlotID());
 -		state = stateInserted;
--		eDVBCI_UI::getInstance()->setState(getSlotID(),1);
+-		/* emit */ eDVBCI_UI::getInstance()->m_messagepump.send(eDVBCIInterfaces::Message(eDVBCIInterfaces::Message::slotStateChanged, getSlotID(), 1));
 -		notifier->setRequested(eSocketNotifier::Read|eSocketNotifier::Priority);
 -		/* enable PRI to detect removal or errors */
 -	}
@@ -3187,11 +3252,11 @@
 -		int r;
 -		r = ::read(fd, data, 4096);
 -		if(r > 0) {
--//			int i;
--//			eDebugNoNewLineStart("> ");
--//			for(i=0;i<r;i++)
--//				eDebugNoNewLine("%02x ",data[i]);
--//			eDebugNoNewLine("\n");
+-			int i;
+-			eTraceNoNewLineStart("> ");
+-			for(i=0;i<r;i++)
+-				eTraceNoNewLine("%02x ",data[i]);
+-			eTraceNoNewLine("\n");
 -			eDVBCISession::receiveData(this, data, r);
 -			eDVBCISession::pollAll();
 -			return;
@@ -3218,18 +3283,18 @@
 +
 +	if (what & eSocketNotifier::Read)
 +	{
-+		eDebugCI("eSocketNotifier::Read\n");
++		eTrace("eSocketNotifier::Read\n");
 +		status = eDataReady;
 +		len = ::read(fd, data, len);
 +	}
 +	else if (what & eSocketNotifier::Write)
 +	{
-+		eDebugCI("eSocketNotifier::Write\n");
++		eTrace("eSocketNotifier::Write\n");
 +		status = eDataWrite;
 +	}
 +	else if (what & eSocketNotifier::Priority)
 +	{
-+		eDebugCI("eSocketNotifier::Priority\n");
++		eTrace("eSocketNotifier::Priority\n");
 +		status = eDataStatusChanged;
 +	}
 +	else
@@ -3270,7 +3335,7 @@
 +		{
 +			if (status == eDataReady)
 +			{
-+				eDebugCI("received data - len %d\n", len);
++				eTrace("received data - len %d\n", len);
 +				//int s_id = data[0];
 +				//int c_id = data[1];
 +				//printf("%d: s_id = %d, c_id = %d\n", slot->slot, s_id, c_id);
@@ -3375,17 +3440,17 @@
  }
  
  DEFINE_REF(eDVBCISlot);
-@@ -1176,7 +1536,7 @@
+@@ -1266,7 +1627,7 @@
+ 	plugged = true;
+ 	m_ci_version = versionUnknown;
  
- 	slotid = nr;
- 
--	sprintf(filename, "/dev/ci%d", nr);
-+	sprintf(filename, "/dev/dvb/adapter0/ci%d", nr);
+-	sprintf(filename, "/dev/ci%d", slotid);
++	sprintf(filename, "/dev/dvb/adapter0/ci%d", slotid);
  
  //	possible_caids.insert(0x1702);
  //	possible_providers.insert(providerPair("PREMIERE", 0xC00000));
-@@ -1187,10 +1547,18 @@
- 	eDebugCI("[CI] Slot %d has fd %d", getSlotID(), fd);
+@@ -1277,10 +1638,18 @@
+ 	eTrace("[CI] Slot %d has fd %d", getSlotID(), fd);
  	state = stateInvalid;
  
 +	receivedLen = 0;
@@ -3397,13 +3462,13 @@
 +		tx_time.tv_usec = 0;
 +		last_poll_time.tv_sec = 0;
 +		last_poll_time.tv_nsec = 0;
- 		notifier = eSocketNotifier::create(context, fd, eSocketNotifier::Read | eSocketNotifier::Priority | eSocketNotifier::Write);
+ 		notifier = eSocketNotifier::create(m_context, fd, eSocketNotifier::Read | eSocketNotifier::Priority | eSocketNotifier::Write);
  		CONNECT(notifier->activated, eDVBCISlot::data);
 +		reset();
  	} else
  	{
  		perror(filename);
-@@ -1226,13 +1594,11 @@
+@@ -1412,13 +1773,11 @@
  {
  	eDebug("[CI] Slot %d: reset requested", getSlotID());
  
@@ -3422,7 +3487,7 @@
  
  	while(sendqueue.size())
  	{
-@@ -1240,7 +1606,8 @@
+@@ -1426,7 +1785,8 @@
  		sendqueue.pop();
  	}
  
@@ -3434,15 +3499,15 @@
  }
 --- enigma2.org/lib/dvb_ci/dvbci.h
 +++ enigma2/lib/dvb_ci/dvbci.h
-@@ -5,6 +5,7 @@
- 
- #include <lib/base/ebase.h>
+@@ -7,6 +7,7 @@
+ #include <lib/base/message.h>
+ #include <lib/base/thread.h>
  #include <lib/service/iservice.h>
 +#include <lib/base/thread.h>
  #include <lib/python/python.h>
  #include <set>
  #include <queue>
-@@ -39,6 +40,40 @@
+@@ -40,6 +41,40 @@
  typedef std::set<providerPair> providerSet;
  typedef std::set<uint16_t> caidSet;
  typedef std::set<eServiceReference> serviceSet;
@@ -3483,22 +3548,32 @@
  
  class eDVBCISlot: public iObject, public sigc::trackable
  {
-@@ -63,6 +98,11 @@
- 	bool user_mapped;
+@@ -67,6 +101,11 @@
  	void data(int);
  	bool plugged;
+ 	eMainloop *m_context;
 +	//dagobert
 +	char connection_id;
 +	bool mmi_active;
 +	int receivedLen;
 +	unsigned char* receivedData;
- public:
- 	enum {stateRemoved, stateInserted, stateInvalid, stateResetted};
- 	eDVBCISlot(eMainloop *context, int nr);
-@@ -92,6 +132,15 @@
- 	int getNumOfServices() { return running_services.size(); }
- 	int setSource(const std::string &source);
- 	int setClockRate(int);
+ 
+ 	eDVBCIApplicationManagerSession *getAppManager() { return application_manager; }
+ 	eDVBCIMMISession *getMMIManager() { return mmi_session; }
+@@ -74,7 +113,6 @@
+ 	eDVBCICcSession *getCCManager() { return cc_manager; }
+ 
+ 	int getState() { return state; }
+-	int reset();
+ 	int startMMI();
+ 	int stopMMI();
+ 	int answerText(int answer);
+@@ -105,7 +144,17 @@
+ 
+ 	int getSlotID();
+ 	int getNumOfServices();
++	int reset();
+ 	int getVersion();
 +	bool checkQueueSize();
 +	void thread();
 +	void mmiOpened() { mmi_active = true; };
@@ -3508,15 +3583,15 @@
 +	eData sendData(unsigned char* data, int len);
 +	struct timeval tx_time;
 +	struct timespec last_poll_time;
- 	static std::string getTunerLetter(int tuner_no) { return std::string(1, char(65 + tuner_no)); }
  };
  
+ struct CIPmtHandler
 --- enigma2.org/lib/dvb_ci/dvbci_session.cpp
 +++ enigma2/lib/dvb_ci/dvbci_session.cpp
-@@ -298,6 +298,10 @@
+@@ -296,6 +296,10 @@
  		if ((!session_nb) || (session_nb >= SLMS))
  		{
- 			eDebug("[CI SESS] PROTOCOL: illegal session number %x", session_nb);
+ 			eWarning("[CI SESS] PROTOCOL: illegal session number %x", session_nb);
 +			//Dagobert during start-up we seem to have some problems
 +			//on some modules which "lose" the connection. So reset it
 +			deleteSessions(slot);
@@ -4370,7 +4445,7 @@
  	~gLCDDC();
 --- enigma2.org/lib/gdi/gpixmap.cpp
 +++ enigma2/lib/gdi/gpixmap.cpp
-@@ -191,14 +191,20 @@
+@@ -195,14 +195,20 @@
  static bool is_a_candidate_for_accel(const gUnmanagedSurface* surface)
  {
  	if (surface->stride < 48)
@@ -4391,7 +4466,7 @@
  	}
  }
  
-@@ -224,11 +230,13 @@
+@@ -228,11 +234,13 @@
  	if (data)
  	{
  		delete [] (unsigned char*)data;
@@ -4405,7 +4480,7 @@
  	}
  }
  
-@@ -244,8 +252,9 @@
+@@ -248,8 +256,9 @@
  		if (surface->bpp == 8)
  		{
  			for (int y=area.top(); y<area.bottom(); y++)
@@ -4417,7 +4492,7 @@
  		{
  			uint32_t icol;
  
-@@ -272,9 +281,14 @@
+@@ -276,9 +285,14 @@
  			if (surface->clut.data && color < surface->clut.colors)
  				col = surface->clut.data[color].argb();
  			else
@@ -4434,7 +4509,7 @@
  
  #ifdef GPIXMAP_DEBUG
  			Stopwatch s;
-@@ -329,7 +343,11 @@
+@@ -333,7 +347,11 @@
  			uint32_t col;
  
  			col = color.argb();
@@ -4447,7 +4522,7 @@
  
  #ifdef GPIXMAP_DEBUG
  			Stopwatch s;
-@@ -617,7 +635,8 @@
+@@ -621,7 +639,8 @@
  		Stopwatch s;
  #endif
  		if (accel) {
@@ -4457,7 +4532,7 @@
  #ifdef GPIXMAP_DEBUG
  				s.stop();
  				eDebug("[gPixmap] [BLITBENCH] accel blit (%d bytes) took %u us", srcarea.surface() * src.surface->bypp, s.elapsed_us());
-@@ -1006,6 +1025,7 @@
+@@ -1010,6 +1029,7 @@
  	}
  
  	delete [] lookup;
@@ -4805,7 +4880,7 @@
  	for (int j = 0; j < dy; j++)
  	{
  		unsigned char* p = cr + (j * stride);
-@@ -603,12 +612,9 @@
+@@ -617,12 +626,9 @@
  	ColorMapObject *cmap;
  	int cmaps;
  	int extcode;
@@ -4821,7 +4896,7 @@
  	if (gft == NULL)
  		return;
  	do
-@@ -698,19 +704,11 @@
+@@ -712,19 +718,11 @@
  	}
  	while (rt != TERMINATE_RECORD_TYPE);
  
@@ -4843,7 +4918,7 @@
  }
  
  //---------------------------------------------------------------------------------------------
-@@ -775,9 +773,10 @@
+@@ -789,9 +787,10 @@
  
  void ePicLoad::decodePic()
  {
@@ -4855,7 +4930,7 @@
  	switch(m_filepara->id)
  	{
  		case F_PNG:	png_load(m_filepara, m_conf.background);
-@@ -791,6 +790,37 @@
+@@ -805,6 +804,37 @@
  		case F_SVG:	svg_load(m_filepara);
  				break;
  	}
@@ -4893,7 +4968,7 @@
  }
  
  void ePicLoad::decodeThumb()
-@@ -803,6 +833,7 @@
+@@ -817,6 +847,7 @@
  	std::string cachedir = "/.Thumbnails";
  
  	getExif(m_filepara->file, m_filepara->id, 1);
@@ -4901,7 +4976,7 @@
  	if (m_exif && m_exif->m_exifinfo->IsExif)
  	{
  		if (m_exif->m_exifinfo->Thumnailstate == 2)
-@@ -859,8 +890,53 @@
+@@ -873,8 +904,53 @@
  		}
  	}
  
@@ -4957,7 +5032,7 @@
  		case F_PNG:	png_load(m_filepara, m_conf.background, true);
  				break;
  		case F_JPEG:	m_filepara->pic_buffer = jpeg_load(m_filepara->file, &m_filepara->ox, &m_filepara->oy, m_filepara->max_x, m_filepara->max_y);
-@@ -871,6 +947,7 @@
+@@ -885,6 +961,7 @@
  				break;
  		case F_SVG:	svg_load(m_filepara, true);
  				break;
@@ -4965,7 +5040,7 @@
  	}
  	//eDebug("[ePicLoad] getThumb picture loaded %s", m_filepara->file);
  
-@@ -886,25 +963,32 @@
+@@ -900,25 +977,32 @@
  				::mkdir(cachedir.c_str(), 0755);
  
  			// Resize for Thumbnail
@@ -5014,7 +5089,7 @@
  		}
  	}
  }
-@@ -1015,7 +1099,7 @@
+@@ -1029,7 +1113,7 @@
  {
  	ePyObject list;
  
@@ -5023,7 +5098,7 @@
  	getExif(filename, m_filepara ? m_filepara->id : -1);
  	if(m_exif && m_exif->m_exifinfo->IsExif)
  	{
-@@ -1174,11 +1258,11 @@
+@@ -1189,11 +1273,11 @@
  					*row_buffer++ = background;
  			}
  			int y;
@@ -5037,7 +5112,7 @@
  			for (y = yoff + scry; y < m_filepara->max_y; ++y)
  				memcpy(tmp_buffer + y * surface->stride, tmp_buffer,
  					m_filepara->max_x * surface->bypp);
-@@ -1203,7 +1287,7 @@
+@@ -1218,7 +1302,7 @@
  				for (x = xoff + scrx; x < m_filepara->max_x; ++x) // fill right side of first line
  					*row_buffer++ = background;
  			}
@@ -5046,7 +5121,7 @@
  			for (int y = yoff + 1; y < scry; ++y) { // copy from first line
  				memcpy(tmp_buffer + y*surface->stride,
  					tmp_buffer + yoff * surface->stride,
-@@ -1286,7 +1370,7 @@
+@@ -1301,7 +1385,7 @@
  	// Fill surface with image data, resize and correct for orientation on the fly
  	if (m_filepara->bits == 8)
  	{
@@ -5055,7 +5130,7 @@
  		for (int y = 0; y < scry; ++y) {
  			const unsigned char *irow, *irowy = origin + iyfac * (int)(y * yscale);
  			unsigned char *srow = tmp_buffer + surface->stride * y;
-@@ -1300,7 +1384,7 @@
+@@ -1315,7 +1399,7 @@
  	}
  	else // 24-bit images
  	{
@@ -5455,6 +5530,190 @@
  };
  
  void eConsoleInit(void)
+--- enigma2.org/lib/python/Components/About.py
++++ enigma2/lib/python/Components/About.py
+@@ -58,13 +58,15 @@
+ 
+ 
+ def getGStreamerVersionString():
+-	try:
+-		from glob import glob
+-		gst = [x.split("Version: ") for x in open(glob("/var/lib/opkg/info/gstreamer[0-9].[0-9].control")[0], "r") if x.startswith("Version:")][0]
+-		return "%s" % gst[1].split("+")[0].replace("\n", "")
+-	except:
+-		return ""
+-
++	from glob import glob
++	if os.path.isfile('/usr/lib/pkgconfig/gstreamer-1.0.pc'):
++		gstversion = [x.split("Version:") for x in open(glob("/usr/lib/pkgconfig/gstreamer-1.0.pc")[0], "r") if x.startswith("Version:")][0]
++		if os.path.isfile('/usr/lib/libeplayer3.so'):
++			return "Gstreamer " + ("%s" % gstversion[1].replace("\n","")) + " + eplayer3"
++		else:
++			return "Gstreamer " + ("%s" % gstversion[1].replace("\n",""))
++	else:
++		return _("eplayer3")
+ 
+ def getffmpegVersionString():
+ 	try:
+@@ -83,7 +85,7 @@
+ 
+ 
+ def getHardwareTypeString():
+-	return HardwareInfo().get_device_string()
++	return HardwareInfo().get_device_string().upper()
+ 
+ 
+ def getImageTypeString():
+@@ -97,29 +99,19 @@
+ def getCPUInfoString():
+ 	try:
+ 		cpu_count = 0
+-		cpu_speed = 0
++		cpu_speed = "unknown"
+ 		processor = ""
+ 		for line in open("/proc/cpuinfo").readlines():
+ 			line = [x.strip() for x in line.strip().split(":")]
+-			if not processor and line[0] in ("system type", "model name", "Processor"):
++			if not processor and line[0] == "cpu type":
+ 				processor = line[1].split()[0]
+-			elif not cpu_speed and line[0] == "cpu MHz":
++			elif cpu_speed == "unknown" and line[0] == "cpu MHz":
+ 				cpu_speed = "%1.0f" % float(line[1])
+ 			elif line[0] == "processor":
+ 				cpu_count += 1
+ 
+ 		if processor.startswith("ARM") and os.path.isfile("/proc/stb/info/chipset"):
+ 			processor = "%s (%s)" % (open("/proc/stb/info/chipset").readline().strip().upper(), processor)
+-
+-		if not cpu_speed:
+-			try:
+-				cpu_speed = int(open("/sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq").read()) / 1000
+-			except:
+-				try:
+-					import binascii
+-					cpu_speed = int(int(binascii.hexlify(open('/sys/firmware/devicetree/base/cpus/cpu@0/clock-frequency', 'rb').read()), 16) / 100000000) * 100
+-				except:
+-					cpu_speed = "-"
+ 
+ 		temperature = None
+ 		freq = _("MHz")
+#--- enigma2.org/lib/python/Components/FanControl.py
+#+++ enigma2/lib/python/Components/FanControl.py
+#@@ -6,6 +6,14 @@
+# import NavigationInstance
+# from enigma import iRecordableService
+# 
+#+
+#+def fanSpeedChanged(configElement=None):
+#+	from Screens.Standby import inStandby
+#+	print "[FanControl]: fanSpeedChanged"
+#+	if inStandby is False:
+#+		self.setVoltage_PWM()
+#+	else:
+#+		self.setVoltage_PWM_Standby()
+# 
+# class FanControl:
+# 	# ATM there's only support for one fan
+#@@ -54,22 +62,38 @@
+# 		if not recordings:
+# 			self.setVoltage_PWM_Standby()
+# 
+#+#	def fanSpeedChanged(configElement=None):
+#+#		from Screens.Standby import inStandby
+#+#		print "[FanControl]: fanSpeedChanged"
+#+#		if inStandby is False:
+#+#			self.setVoltage_PWM()
+#+#		else:
+#+#			self.setVoltage_PWM_Standby()
+#+
+# 	def createConfig(self):
+#-		def setVlt(fancontrol, fanid, configElement):
+#-			fancontrol.setVoltage(fanid, configElement.value)
+#+		if os.path.exists("/proc/stb/fp/fan_vlt"):
+#+			def setVlt(fancontrol, fanid, configElement):
+#+				fancontrol.setVoltage(fanid, configElement.value)
+# 
+#-		def setPWM(fancontrol, fanid, configElement):
+#-			fancontrol.setPWM(fanid, configElement.value)
+#+		if os.path.exists("/proc/stb/fp/fan_pwm"):
+#+			def setPWM(fancontrol, fanid, configElement):
+#+				fancontrol.setPWM(fanid, configElement.value)
+# 
+# 		config.fans = ConfigSubList()
+# 		for fanid in range(self.getFanCount()):
+# 			fan = ConfigSubsection()
+#-			fan.vlt = ConfigSlider(default=15, increment=5, limits=(0, 255))
+#-			fan.pwm = ConfigSlider(default=0, increment=5, limits=(0, 255))
+#-			fan.vlt_standby = ConfigSlider(default=5, increment=5, limits=(0, 255))
+#-			fan.pwm_standby = ConfigSlider(default=0, increment=5, limits=(0, 255))
+#-			fan.vlt.addNotifier(boundFunction(setVlt, self, fanid))
+#-			fan.pwm.addNotifier(boundFunction(setPWM, self, fanid))
+#+			if os.path.exists("/proc/stb/fp/fan_vlt"):
+#+				fan.vlt = ConfigSlider(default=127, increment=8, limits=(0, 255))
+#+			if os.path.exists("/proc/stb/fp/fan_pwm"):
+#+				fan.pwm = ConfigSlider(default=127, increment=8, limits=(0, 255))
+#+			if os.path.exists("/proc/stb/fp/fan_vlt"):
+#+				fan.vlt_standby = ConfigSlider(default=63, increment=8, limits=(0, 255))
+#+			if os.path.exists("/proc/stb/fp/fan_pwm"):
+#+				fan.pwm_standby = ConfigSlider(default=63, increment=8, limits=(0, 255))
+#+			if os.path.exists("/proc/stb/fp/fan_vlt"):
+#+				fan.vlt.addNotifier(boundFunction(setVlt, self, fanid))
+#+			if os.path.exists("/proc/stb/fp/fan_pwm"):
+#+				fan.pwm.addNotifier(boundFunction(setPWM, self, fanid))
+# 			config.fans.append(fan)
+# 
+# 	def getConfig(self, fanid):
+#@@ -79,29 +103,43 @@
+# 		return self.fancount
+# 
+# 	def hasRPMSensor(self, fanid):
+#-		return os.path.exists("/proc/stb/fp/fan_speed")
+#+		if os.path.exists("/proc/stb/fp/fan_speed"):
+#+			return 1
+#+		return 0
+# 
+# 	def hasFanControl(self, fanid):
+#-		return os.path.exists("/proc/stb/fp/fan_vlt") or os.path.exists("/proc/stb/fp/fan_pwm")
+#+		if os.path.exists("/proc/stb/fp/fan_vlt"):
+#+			return 1
+#+		if os.path.exists("/proc/stb/fp/fan_pwm"):
+#+			return 1
+#+		return 0
+# 
+# 	def getFanSpeed(self, fanid):
+#-		return int(open("/proc/stb/fp/fan_speed", "r").readline().strip()[:-4])
+#+		if os.path.exists("/proc/stb/fp/fan_speed"):
+#+			return int(open("/proc/stb/fp/fan_speed", "r").readline().strip()[:-4])
+#+		return 0
+# 
+# 	def getVoltage(self, fanid):
+#-		return int(open("/proc/stb/fp/fan_vlt", "r").readline().strip(), 16)
+#+		if os.path.exists("/proc/stb/fp/fan_vlt"):
+#+			return int(open("/proc/stb/fp/fan_vlt", "r").readline().strip(), 16)
+#+		return 0;
+# 
+# 	def setVoltage(self, fanid, value):
+# 		if value > 255:
+# 			return
+#-		open("/proc/stb/fp/fan_vlt", "w").write("%x" % value)
+#+		if os.path.exists("/proc/stb/fp/fan_vlt"):
+#+			open("/proc/stb/fp/fan_vlt", "w").write("%x" % value)
+# 
+# 	def getPWM(self, fanid):
+#-		return int(open("/proc/stb/fp/fan_pwm", "r").readline().strip(), 16)
+#+		if os.path.exists("/proc/stb/fp/fan_pwm"):
+#+			return int(open("/proc/stb/fp/fan_pwm", "r").readline().strip(), 16)
+#+		return 0
+# 
+# 	def setPWM(self, fanid, value):
+# 		if value > 255:
+# 			return
+#-		open("/proc/stb/fp/fan_pwm", "w").write("%x" % value)
+#+		if os.path.exists("/proc/stb/fp/fan_pwm"):
+#+			open("/proc/stb/fp/fan_pwm", "w").write("%x" % value)
+# 
+# 
+# fancontrol = FanControl()
 --- enigma2.org/lib/python/Components/Converter/RemainingToText.py
 +++ enigma2/lib/python/Components/Converter/RemainingToText.py
 @@ -10,6 +10,9 @@
@@ -5549,7 +5808,7 @@
 +		else:
 +			print "[Harddisk] self.type =", self.type
  
- 		print "[Harddisk] new device", self.device, '->', self.dev_path, '->', self.disk_path
+ 		print "[Harddisk] new device=%s dev_path=%s disk_path=%s removable=%s internal=%s rotational=%s card=%s" % (self.device, self.dev_path, self.disk_path, removable, self.internal, self.rotational, self.card)
  		if (self.internal or not removable) and not self.card:
  			self.startIdle()
 +		Console().ePopen(("mount", "mount", "-a"))
@@ -5574,8 +5833,8 @@
  		zero = 512 * '\0'
  		h = open(self.dev_path, 'wb')
  		# delete first 9 sectors, which will likely kill the first partition too
-@@ -311,25 +319,30 @@
- 		h.close()
+@@ -314,25 +322,30 @@
+ 		os.mkdir(os.path.join(self.mount_path, 'movie'))
  
  	def createInitializeJob(self):
 -		job = Task.Job(_("Initializing storage device..."))
@@ -5623,7 +5882,7 @@
  
  		if os.path.exists('/usr/sbin/parted'):
  			use_parted = True
-@@ -340,7 +353,9 @@
+@@ -343,7 +356,9 @@
  			else:
  				use_parted = False
  
@@ -5634,7 +5893,7 @@
  		task.weighting = 5
  		if use_parted:
  			task.setTool('parted')
-@@ -352,9 +367,17 @@
+@@ -355,9 +370,17 @@
  				alignment = 'opt'
  			if size > 2097151:
  				parttype = 'gpt'
@@ -5653,7 +5912,7 @@
  		else:
  			task.setTool('sfdisk')
  			task.args.append('-f')
-@@ -362,53 +385,100 @@
+@@ -365,52 +388,91 @@
  			task.args.append(self.disk_path)
  			if size > 128000:
  				# Start at sector 8 to better support 4k aligned disks
@@ -5767,21 +6026,12 @@
  		task = Task.ConditionTask(job, _("Waiting for mount"), timeoutCount=20)
  		task.check = self.mountDevice
  		task.weighting = 1
- 
++
 +		print "[Harddisk init] Waiting for mount to succeed"
-+
-+		task = Task.LoggingTask(job, _("Create /media/hdd/movie"))
-+		task.weighting = 1
-+		task.setTool('mkdir')
-+		task.args.append('-p')
-+		task.args.append('/media/hdd/movie')
-+		print "[Harddisk init] Create /media/hdd/movie directory"
-+
-+		print "[Harddisk init] End of job: ", job
- 		return job
  
- 	def initialize(self):
-@@ -674,16 +744,19 @@
+ 		task = Task.PythonTask(job, _("Create directory") + ": movie")
+ 		task.work = self.createMovieDir
+@@ -681,16 +743,19 @@
  				self.devices_scanned_on_init.append((blockdev, removable, is_cdrom, medium_found))
  
  	def getAutofsMountpoint(self, device):
@@ -5805,7 +6055,7 @@
  		return None
  
  	def addHotplugPartition(self, device, physdev=None):
-@@ -699,6 +772,10 @@
+@@ -706,6 +771,10 @@
  		error, blacklisted, removable, is_cdrom, partitions, medium_found = self.getBlockDevInfo(device)
  		if not blacklisted and medium_found:
  			description = self.getUserfriendlyDeviceName(device, physdev)
@@ -5816,7 +6066,7 @@
  			p = Partition(mountpoint=self.getMountpoint(device), description=description, force_mounted=True, device=device)
  			self.partitions.append(p)
  			if p.mountpoint: # Plugins won't expect unmounted devices
-@@ -720,7 +797,7 @@
+@@ -727,7 +796,7 @@
  				physdev = os.path.realpath('/sys/block/' + dev + '/device')[4:]
  			except OSError:
  				physdev = dev
@@ -5825,7 +6075,7 @@
  		error, blacklisted, removable, is_cdrom, partitions, medium_found = self.getBlockDevInfo(device)
  		if not blacklisted and medium_found:
  			description = self.getUserfriendlyDeviceName(device, physdev)
-@@ -791,7 +868,7 @@
+@@ -798,7 +867,7 @@
  		try:
  			description = readFile("/sys" + phys + "/model")
  		except IOError, s:
@@ -5834,7 +6084,7 @@
  		# not wholedisk and not partition 1
  		if part and part != 1:
  			description += _(" (Partition %d)") % part
-@@ -834,7 +911,7 @@
+@@ -841,7 +910,7 @@
  			dev = self.hdd.disk_path.split('/')[-1]
  			open('/dev/nomount.%s' % dev, "wb").close()
  		except Exception, e:
@@ -5843,7 +6093,7 @@
  		self.setTool('umount')
  		self.args.append('-f')
  		for dev in self.hdd.enumMountDevices():
-@@ -842,7 +919,7 @@
+@@ -849,7 +918,7 @@
  			self.postconditions.append(Task.ReturncodePostcondition())
  			self.mountpoints.append(dev)
  		if not self.mountpoints:
@@ -5852,7 +6102,7 @@
  			self.cmd = 'true'
  			self.args = [self.cmd]
  
-@@ -851,7 +928,7 @@
+@@ -858,7 +927,7 @@
  			try:
  				os.rmdir(path)
  			except Exception, ex:
@@ -5861,7 +6111,7 @@
  
  
  class MountTask(Task.LoggingTask):
-@@ -864,7 +941,7 @@
+@@ -871,7 +940,7 @@
  			dev = self.hdd.disk_path.split('/')[-1]
  			os.unlink('/dev/nomount.%s' % dev)
  		except Exception, e:
@@ -5870,7 +6120,7 @@
  		# try mounting through fstab first
  		if self.hdd.mount_device is None:
  			dev = self.hdd.partitionPath("1")
-@@ -894,7 +971,7 @@
+@@ -901,7 +970,7 @@
  		self.fsck_state = None
  
  	def processOutput(self, data):
@@ -5881,7 +6131,7 @@
  		elif 'Creating journal' in data:
 --- enigma2.org/lib/python/Components/Network.py
 +++ enigma2/lib/python/Components/Network.py
-@@ -528,16 +528,18 @@
+@@ -537,16 +537,18 @@
  			return True
  
  		# r871x_usb_drv on kernel 2.6.12 is not identifiable over /sys/class/net/'ifacename'/wireless so look also inside /proc/net/wireless
@@ -5912,7 +6162,7 @@
  
 --- enigma2.org/lib/python/Components/NimManager.py
 +++ enigma2/lib/python/Components/NimManager.py
-@@ -20,6 +20,10 @@
+@@ -17,6 +17,10 @@
  
  
  def getConfigSatlist(orbpos, satlist):
@@ -5935,13 +6185,14 @@
 +SystemInfo["LCDsymbol_circle_recording"] = fileCheck("/proc/stb/lcd/symbol_circle")
  SystemInfo["LCDsymbol_timeshift"] = fileCheck("/proc/stb/lcd/symbol_timeshift")
  SystemInfo["LCDshow_symbols"] = (model.startswith("et9") or model in ("hd51", "vs1500")) and fileCheck("/proc/stb/lcd/show_symbols")
- SystemInfo["LCDsymbol_hdd"] = model in ("hd51", "vs1500") and fileCheck("/proc/stb/lcd/symbol_hdd")
+-SystemInfo["LCDsymbol_hdd"] = model in ("hd51", "vs1500") and fileCheck("/proc/stb/lcd/symbol_hdd")
++SystemInfo["LCDsymbol_hdd"] = fileCheck("/proc/stb/lcd/symbol_hdd")
  SystemInfo["FrontpanelDisplayGrayscale"] = fileExists("/dev/dbox/oled0")
 -SystemInfo["DeepstandbySupport"] = HardwareInfo().get_device_name() != "dm800"
-+SystemInfo["DeepstandbySupport"] = HardwareInfo().get_device_name() != model in ("adb_box", "hl101", "vip1_v1")
++SystemInfo["DeepstandbySupport"] = HardwareInfo().get_device_model() not in ("adb_box", "hl101", "vip1_v1")
  SystemInfo["Fan"] = fileCheck("/proc/stb/fp/fan")
  SystemInfo["FanPWM"] = SystemInfo["Fan"] and fileCheck("/proc/stb/fp/fan_pwm")
- SystemInfo["PowerLED"] = fileCheck("/proc/stb/power/powerled")
+ SystemInfo["PowerLED"] = fileCheck("/proc/stb/power/powerled") or model in ("gbue4k", "gbquad4k") and fileCheck("/proc/stb/fp/led1_pattern")
 @@ -74,16 +74,16 @@
  SystemInfo["Power4x7On"] = fileCheck("/proc/stb/fp/power4x7on")
  SystemInfo["Power4x7Standby"] = fileCheck("/proc/stb/fp/power4x7standby")
@@ -5965,59 +6216,67 @@
  SystemInfo["LcdLiveTV"] = fileCheck("/proc/stb/fb/sd_detach") or fileCheck("/proc/stb/lcd/live_enable")
  SystemInfo["LcdLiveTVMode"] = fileCheck("/proc/stb/lcd/mode")
  SystemInfo["LcdLiveDecoder"] = fileCheck("/proc/stb/lcd/live_decoder")
-@@ -92,7 +92,7 @@
- SystemInfo["3DZNorm"] = fileCheck("/proc/stb/fb/znorm") or fileCheck("/proc/stb/fb/primary/zoffset")
- SystemInfo["Blindscan_t2_available"] = fileCheck("/proc/stb/info/vumodel") and model.startswith("vu")
- SystemInfo["RcTypeChangable"] = not(model.startswith("et8500") or model.startswith("et7")) and pathExists("/proc/stb/ir/rc/type")
--SystemInfo["HasFullHDSkinSupport"] = model not in ("et4000", "et5000", "sh1", "hd500c", "hd1100", "xp1000", "lc")
-+SystemInfo["HasFullHDSkinSupport"] = HardwareInfo().get_device_model() in ("adb_box", "hs8200", "cuberevo", "cuberevo_mini-fta", "cuberevo-250hd", "cuberevo-mini", "cuberevo-mini2", "cuberevo-2000hd", "cuberevo-3000hd", "cuberevo-9500hd", "hdbox", "hs7110", "hs7420", "hs7810a", "hs7119", "hs7429", "hs7819", "hl101", "hs9510", "spark", "spark7162", "tf7700hdpvr", "ufs912", "ufs913", "vip1_v1", "vip1_v2", "vip2", "vitamin-hd5000", "opt9600")
- SystemInfo["HasBypassEdidChecking"] = fileCheck("/proc/stb/hdmi/bypass_edid_checking")
+@@ -98,29 +98,29 @@
  SystemInfo["HasColorspace"] = fileCheck("/proc/stb/video/hdmi_colorspace")
- SystemInfo["HasColorspaceSimple"] = SystemInfo["HasColorspace"] and model in "vusolo4k"
-@@ -108,12 +108,12 @@
+ SystemInfo["HasColorspaceSimple"] = SystemInfo["HasColorspace"] and SystemInfo["HasMMC"] and SystemInfo["Blindscan_t2_available"]
+ SystemInfo["HasTranscoding"] = pathExists("/proc/stb/encoder/0") or fileCheck("/dev/bcm_enc0")
+-SystemInfo["HasH265Encoder"] = fileHas("/proc/stb/encoder/0/vcodec_choices", "h265")
++SystemInfo["HasH265Encoder"] = False
+ SystemInfo["CanNotDoSimultaneousTranscodeAndPIP"] = model in ("vusolo4k", "gbquad4k", "gbue4k")
+ SystemInfo["HasColordepth"] = fileCheck("/proc/stb/video/hdmi_colordepth")
+-SystemInfo["HasFrontDisplayPicon"] = model in ("et8500", "vusolo4k", "vuuno4kse", "vuduo4k", "vuduo4kse", "vuultimo4k", "gbquad4k", "gbue4k")
++SystemInfo["HasFrontDisplayPicon"] = False
+ SystemInfo["Has24hz"] = fileCheck("/proc/stb/video/videomode_24hz")
+-SystemInfo["Has2160p"] = fileHas("/proc/stb/video/videomode_preferred", "2160p50")
++SystemInfo["Has2160p"] = False
  SystemInfo["HasHDMIpreemphasis"] = fileCheck("/proc/stb/hdmi/preemphasis")
  SystemInfo["HasColorimetry"] = fileCheck("/proc/stb/video/hdmi_colorimetry")
  SystemInfo["HasHdrType"] = fileCheck("/proc/stb/video/hdmi_hdrtype")
--SystemInfo["HasHDMIin"] = model in ("vuduo4k", "vuduo4kse", "vuultimo4k", "vuuno4kse", "gbquad4k", "hd2400", "et10000")
--SystemInfo["HasHDMI-CEC"] = HardwareInfo().has_hdmi() and fileExists(resolveFilename(SCOPE_PLUGINS, "SystemPlugins/HdmiCEC/plugin.pyo")) and (fileExists("/dev/cec0") or fileExists("/dev/hdmi_cec") or fileExists("/dev/misc/hdmi_cec0"))
+ SystemInfo["HasScaler_sharpness"] = pathExists("/proc/stb/vmpeg/0/pep_scaler_sharpness")
+ SystemInfo["HasHDMIin"] = model in ("vuduo4k", "vuduo4kse", "vuultimo4k", "vuuno4kse", "gbquad4k", "hd2400", "et10000")
+ SystemInfo["HasHDMI-CEC"] = HardwareInfo().has_hdmi() and fileExists(resolveFilename(SCOPE_PLUGINS, "SystemPlugins/HdmiCEC/plugin.pyo")) and (fileExists("/dev/cec0") or fileExists("/dev/hdmi_cec") or fileExists("/dev/misc/hdmi_cec0"))
 -SystemInfo["HasYPbPr"] = model in ("dm8000", "et5000", "et6000", "et6500", "et9000", "et9200", "et9500", "et10000", "formuler1", "mbtwinplus", "spycat", "vusolo", "vuduo", "vuduo2", "vuultimo")
 -SystemInfo["HasScart"] = model in ("dm8000", "et4000", "et6500", "et8000", "et9000", "et9200", "et9500", "et10000", "formuler1", "hd1100", "hd1200", "hd1265", "hd2400", "vusolo", "vusolo2", "vuduo", "vuduo2", "vuultimo", "vuuno", "xp1000")
 -SystemInfo["HasSVideo"] = model in ("dm8000")
 -SystemInfo["HasComposite"] = model not in ("i55", "gbquad4k", "gbue4k", "hd1500", "osnino", "osninoplus", "purehd", "purehdse", "revo4k", "vusolo4k", "vuzero4k", "vuduo4k", "vuduo4kse", "vuuno4k", "vuuno4kse", "vuultimo4k")
-+SystemInfo["HasHDMIin"] = False
-+SystemInfo["HasHDMI-CEC"] = fileExists("/lib/modules/cec.ko") and (fileExists("proc/stb/cec/send") or fileExists("stb/hdmi/cec"))
-+SystemInfo["HasYPbPr"] = HardwareInfo().get_device_model() in ("adb_box", "hs8200", "cuberevo", "cuberevo-mini-fta", "cuberevo-250hd", "cuberevo-mini", "cuberevo-mini2", "cuberevo-2000hd", "cuberevo-3000hd", "cuberevo-9500hd", "hdbox", "hs9510", "hs7420", "hs7429", "hl101", "tf7700hdpvr", "ufs912", "ufs913", "vip1_v1", "vip1_v2", "vip2", "vitamin_hd5000", "opt9600")
-+SystemInfo["HasScart"] = HardwareInfo().get_device_model() not in ("hs7110", "hs7119")
-+SystemInfo["HasSVideo"] = HardwareInfo().get_device_model() in ("cuberevo")
-+SystemInfo["HasComposite"] = HardwareInfo().get_device_model() not in ("cuberevo_mini_fta", "cuberevo_250hd")
- SystemInfo["HasAutoVolume"] = fileExists("/proc/stb/audio/avl_choices") and fileCheck("/proc/stb/audio/avl")
- SystemInfo["HasAutoVolumeLevel"] = fileExists("/proc/stb/audio/autovolumelevel_choices") and fileCheck("/proc/stb/audio/autovolumelevel")
- SystemInfo["Has3DSurround"] = fileExists("/proc/stb/audio/3d_surround_choices") and fileCheck("/proc/stb/audio/3d_surround")
-@@ -121,17 +121,17 @@
- SystemInfo["Has3DSurroundSpeaker"] = fileExists("/proc/stb/audio/3dsurround_choices") and fileCheck("/proc/stb/audio/3dsurround")
- SystemInfo["Has3DSurroundSoftLimiter"] = fileExists("/proc/stb/audio/3dsurround_softlimiter_choices") and fileCheck("/proc/stb/audio/3dsurround_softlimiter")
++SystemInfo["HasYPbPr"] = model in ("adb_box", "hs8200", "cuberevo", "cuberevo-mini-fta", "cuberevo-250hd", "cuberevo-mini", "cuberevo-mini2", "cuberevo-2000hd", "cuberevo-3000hd", "cuberevo-9500hd", "fs9000", "hs9510", "hs7420", "hs7429", "hl101", "tf7700hdpvr", "ufs910", "ufs912", "ufs913", "ufs922", "vip1_v1", "vip1_v2", "vip2", "vitamin_hd5000", "opt9600", "opt9600prima")
++SystemInfo["HasScart"] = model not in ("hs7110", "hs7119", "opt9600mini, atemio520")
++SystemInfo["HasSVideo"] = model in  ("cuberevo")
++SystemInfo["HasComposite"] = model not in ("cuberevo_mini_fta", "cuberevo_250hd")
  SystemInfo["hasXcoreVFD"] = model in ("osmega", "spycat4k", "spycat4kmini", "spycat4kcombo") and fileCheck("/sys/module/brcmstb_%s/parameters/pt6302_cgram" % model)
 -SystemInfo["HasOfflineDecoding"] = model not in ("osmini", "osminiplus", "et7000mini", "et11000", "mbmicro", "mbtwinplus", "mbmicrov2", "et7000", "et8500")
 +SystemInfo["HasOfflineDecoding"] = False
  SystemInfo["MultibootStartupDevice"] = getMultibootStartupDevice()
 -SystemInfo["canMode12"] = "%s_4.boxmode" % model in cmdline and cmdline["%s_4.boxmode" % model] in ("1", "12") and "192M"
--SystemInfo["canMultiBoot"] = getMultibootslots()
--SystemInfo["canFlashWithOfgwrite"] = not(model.startswith("dm"))
 +SystemInfo["canMode12"] = False
-+SystemInfo["canMultiBoot"] = False
+ SystemInfo["canMultiBoot"] = getMultibootslots()
+ SystemInfo["canDualBoot"] = fileExists("/dev/block/by-name/flag")
+-SystemInfo["canFlashWithOfgwrite"] = not(model.startswith("dm"))
 +SystemInfo["canFlashWithOfgwrite"] = False
  SystemInfo["HDRSupport"] = fileExists("/proc/stb/hdmi/hlg_support_choices") and fileCheck("/proc/stb/hdmi/hlg_support")
- SystemInfo["CanDownmixAC3"] = fileHas("/proc/stb/audio/ac3_choices", "downmix")
+ SystemInfo["CanProc"] = SystemInfo["HasMMC"] and not SystemInfo["Blindscan_t2_available"]
+ SystemInfo["HasMultichannelPCM"] = fileCheck("/proc/stb/audio/multichannel_pcm")
+@@ -134,7 +134,7 @@
  SystemInfo["CanDownmixDTS"] = fileHas("/proc/stb/audio/dts_choices", "downmix")
  SystemInfo["CanDownmixAAC"] = fileHas("/proc/stb/audio/aac_choices", "downmix")
  SystemInfo["HDMIAudioSource"] = fileCheck("/proc/stb/hdmi/audio_source")
+-SystemInfo["CanAC3Transcode"] = fileHas("/proc/stb/audio/ac3plus_choices", "force_ac3")
++SystemInfo["CanAC3Transcode"] = False
+ SystemInfo["CanDTSHD"] = fileHas("/proc/stb/audio/dtshd_choices", "downmix")
+ SystemInfo["CanDownmixAACPlus"] = fileHas("/proc/stb/audio/aacplus_choices", "downmix")
+ SystemInfo["CanAACTranscode"] = fileHas("/proc/stb/audio/aac_transcode_choices", "off")
+@@ -142,8 +142,8 @@
+ SystemInfo["CanBTAudio"] = fileHas("/proc/stb/audio/btaudio_choices", "off")
+ SystemInfo["CanBTAudioDelay"] = fileCheck("/proc/stb/audio/btaudio_delay") or fileCheck("/proc/stb/audio/btaudio_delay_pcm")
  SystemInfo["BootDevice"] = getBootdevice()
--SystemInfo["FbcTunerPowerAlwaysOn"] = model in ("vusolo4k", "vuduo4k", "vuduo4kse", "vuultimo4k", "vuuno4k", "vuuno4kse", "gbquad4k", "gbue4k")
+-SystemInfo["FbcTunerPowerAlwaysOn"] = model in ("vusolo4k", "vuduo4k", "vuduo4kse", "vuultimo4k", "vuuno4k", "vuuno4kse")
 -SystemInfo["HasPhysicalLoopthrough"] = ["Vuplus DVB-S NIM(AVL2108)", "GIGA DVB-S2 NIM (Internal)"]
--SystemInfo["HasFBCtuner"] = ["Vuplus DVB-C NIM(BCM3158)", "Vuplus DVB-C NIM(BCM3148)", "Vuplus DVB-S NIM(7376 FBC)", "Vuplus DVB-S NIM(45308X FBC)", "Vuplus DVB-S NIM(45208 FBC)", "DVB-S NIM(45208 FBC)", "DVB-S2X NIM(45308X FBC)", "DVB-S2 NIM(45308 FBC)", "DVB-C NIM(3128 FBC)","BCM45208", "BCM45308X", "BCM3158"]
+-SystemInfo["HasFBCtuner"] = ["Vuplus DVB-C NIM(BCM3158)", "Vuplus DVB-C NIM(BCM3148)", "Vuplus DVB-S NIM(7376 FBC)", "Vuplus DVB-S NIM(45308X FBC)", "Vuplus DVB-S NIM(45208 FBC)", "DVB-S2 NIM(45208 FBC)", "DVB-S2X NIM(45308X FBC)", "DVB-S2 NIM(45308 FBC)", "DVB-C NIM(3128 FBC)", "BCM45208", "BCM45308X", "BCM3158"]
 +SystemInfo["FbcTunerPowerAlwaysOn"] = False
 +SystemInfo["HasPhysicalLoopthrough"] = [""]
 +SystemInfo["HasFBCtuner"] = [""]
+ SystemInfo["HasHiSi"] = pathExists("/proc/hisi")
+ SystemInfo["FCCactive"] = False
 --- enigma2.org/lib/python/Components/Renderer/Makefile.am
 +++ enigma2/lib/python/Components/Renderer/Makefile.am
 @@ -3,4 +3,4 @@
@@ -6123,7 +6382,15 @@
 +		self.text = text
 --- enigma2.org/lib/python/Components/UsageConfig.py
 +++ enigma2/lib/python/Components/UsageConfig.py
-@@ -297,7 +297,7 @@
+@@ -7,6 +7,7 @@
+ from Components.NimManager import nimmanager
+ from Components.Renderer.FrontpanelLed import ledPatterns, PATTERN_ON, PATTERN_OFF, PATTERN_BLINK
+ from Components.ServiceList import refreshServiceList
++#from Components.FanControl import fanSpeedChanged
+ from SystemInfo import SystemInfo
+ import os
+ import time
+@@ -282,7 +283,7 @@
  
  	config.misc.disable_background_scan = ConfigYesNo(default=False)
  	config.misc.use_ci_assignment = ConfigYesNo(default=False)
@@ -6164,17 +6431,17 @@
  		self.muteDialog.hide()
 --- enigma2.org/lib/python/enigma_python.i
 +++ enigma2/lib/python/enigma_python.i
-@@ -112,6 +112,7 @@
- #include <lib/python/python.h>
+@@ -113,6 +113,7 @@
  #include <lib/python/python_helpers.h>
  #include <lib/gdi/picload.h>
-+#include <lib/driver/vfd.h> 
+ #include <lib/dvb/fcc.h>
++#include <lib/driver/vfd.h>
  %}
  
  %feature("ref")   iObject "$this->AddRef(); /* eDebug(\"AddRef (%s:%d)!\", __FILE__, __LINE__); */ "
-@@ -259,6 +260,7 @@
- %include <lib/python/pythonconfig.h>
+@@ -262,6 +263,7 @@
  %include <lib/gdi/picload.h>
+ %include <lib/dvb/fcc.h>
  %include <lib/dvb/streamserver.h>
 +%include <lib/driver/vfd.h>
  /**************  eptr  **************/
@@ -7079,7 +7346,7 @@
 +		PluginDescriptor(where = [PluginDescriptor.WHERE_SESSIONSTART, PluginDescriptor.WHERE_AUTOSTART], fnc = autostart) ]
 --- enigma2.org/lib/python/Plugins/SystemPlugins/HdmiCEC/plugin.py
 +++ enigma2/lib/python/Plugins/SystemPlugins/HdmiCEC/plugin.py
-@@ -144,14 +144,14 @@
+@@ -125,14 +125,14 @@
  
  def startSetup(menuid):
  	# only show in the menu when set to intermediate or higher
@@ -7117,8 +7384,8 @@
 -	DefaultServicesScanner DiseqcTester CommonInterfaceAssignment \
 +	DefaultServicesScanner DiseqcTester \
  	CableScan FastScan OSDPositionSetup OSD3DSetup HdmiCEC VideoClippingSetup \
--	VideoEnhancement WirelessLan NetworkWizard
-+	VideoEnhancement WirelessLan NetworkWizard VFD-Icons
+-	VideoEnhancement WirelessLan NetworkWizard FastChannelChange
++	VideoEnhancement WirelessLan NetworkWizard FastChannelChange VFD-Icons
  
  if HAVE_TEMPFANCONTROL
  SUBDIRS += TempFanControl
@@ -7337,7 +7604,7 @@
 +	return [ PluginDescriptor(name="VFDIcons", description="Icons in VFD", where = PluginDescriptor.WHERE_SESSIONSTART, fnc=main ) ]
 --- enigma2.org/lib/python/Plugins/SystemPlugins/Videomode/plugin.py
 +++ enigma2/lib/python/Plugins/SystemPlugins/Videomode/plugin.py
-@@ -69,6 +69,9 @@
+@@ -64,6 +64,9 @@
  				self.list.append(getConfigListEntry(_("Resolution"), config.av.videorate[config.av.videomode[config.av.videoport.value].value], _("Configure the screen resolution in PC output mode.")))
  			else:
  				self.list.append(getConfigListEntry(_("Refresh rate"), config.av.videorate[config.av.videomode[config.av.videoport.value].value], _("Configure the refresh rate of the screen.")))
@@ -7347,7 +7614,7 @@
  
  		port = config.av.videoport.value
  		if port not in config.av.videomode:
-@@ -110,6 +113,15 @@
+@@ -105,6 +108,15 @@
  					self.list.append(getConfigListEntry(_("HDR10 support"), config.av.hdr10_support, _("This option allows you to force the HDR10 modes for UHD")))
  					self.list.append(getConfigListEntry(_("Allow 12bit"), config.av.allow_12bit, _("This option allows you to enable or disable the 12 bit color mode")))
  					self.list.append(getConfigListEntry(_("Allow 10bit"), config.av.allow_10bit, _("This option allows you to enable or disable the 10 bit color mode")))
@@ -7582,7 +7849,7 @@
  			"4_3_letterbox": _("4:3 Letterbox"),
 -			"4_3_panscan": _("4:3 PanScan"),
 +			"4_3_panscan": _("4:3 Zoom"),
- 			"16_9": _("16:9"),
+ 			"16_9": "16:9",
  			"16_9_always": _("16:9 always"),
  			"16_10_letterbox": _("16:10 Letterbox"),
 -			"16_10_panscan": _("16:10 PanScan"),
@@ -7625,7 +7892,7 @@
  	except:
  		pass
  	config.av.policy_43 = ConfigSelection(choices=policy_choices, default="pillarbox")
--	config.av.tvsystem = ConfigSelection(choices={"pal": _("PAL"), "ntsc": _("NTSC"), "multinorm": _("multinorm")}, default="pal")
+-	config.av.tvsystem = ConfigSelection(choices={"pal": "PAL", "ntsc": "NTSC", "multinorm": "multinorm"}, default="pal")
 -	config.av.wss = ConfigEnableDisable(default=True)
 +	config.av.tvsystem = ConfigSelection(choices = {"pal": _("PAL"), "ntsc": _("NTSC"), "multinorm": _("Multinorm")}, default="multinorm")
 +	config.av.wss = ConfigEnableDisable(default = False)
@@ -7692,7 +7959,7 @@
  		</condition>
 --- enigma2.org/lib/python/Plugins/SystemPlugins/OSDPositionSetup/overscanwizard.py
 +++ enigma2/lib/python/Plugins/SystemPlugins/OSDPositionSetup/overscanwizard.py
-@@ -172,7 +172,7 @@
+@@ -152,7 +152,7 @@
  		if self.step == 1:
  			self.step = self.yes_no.value and 5 or 2
  		elif self.step == 2:
@@ -7701,9 +7968,45 @@
  		elif self.step == 3:
  			self.save_new_position = True
  			self.step = 5
+--- enigma2.org/lib/python/Plugins/SystemPlugins/TempFanControl/plugin.py
++++ enigma2/lib/python/Plugins/SystemPlugins/TempFanControl/plugin.py
+@@ -127,9 +127,9 @@
+ 
+ 		self.list = []
+ 		for count in range(fancontrol.getFanCount()):
+-			self.list.append(getConfigListEntry(_("Fan %d voltage") % (count + 1), fancontrol.getConfig(count).vlt))
++#			self.list.append(getConfigListEntry(_("Fan %d voltage") % (count + 1), fancontrol.getConfig(count).vlt))
+ 			self.list.append(getConfigListEntry(_("Fan %d PWM") % (count + 1), fancontrol.getConfig(count).pwm))
+-			self.list.append(getConfigListEntry(_("Standby fan %d voltage") % (count + 1), fancontrol.getConfig(count).vlt_standby))
++#			self.list.append(getConfigListEntry(_("Standby fan %d voltage") % (count + 1), fancontrol.getConfig(count).vlt_standby))
+ 			self.list.append(getConfigListEntry(_("Standby fan %d PWM") % (count + 1), fancontrol.getConfig(count).pwm_standby))
+ 
+ 		ConfigListScreen.__init__(self, self.list, session=self.session)
+@@ -149,17 +149,17 @@
+ 
+ 	def save(self):
+ 		for count in range(fancontrol.getFanCount()):
+-			fancontrol.getConfig(count).vlt.save()
++#			fancontrol.getConfig(count).vlt.save()
+ 			fancontrol.getConfig(count).pwm.save()
+-			fancontrol.getConfig(count).vlt_standby.save()
++#			fancontrol.getConfig(count).vlt_standby.save()
+ 			fancontrol.getConfig(count).pwm_standby.save()
+ 		self.close()
+ 
+ 	def revert(self):
+ 		for count in range(fancontrol.getFanCount()):
+-			fancontrol.getConfig(count).vlt.load()
++#			fancontrol.getConfig(count).vlt.load()
+ 			fancontrol.getConfig(count).pwm.load()
+-			fancontrol.getConfig(count).vlt_standby.load()
++#			fancontrol.getConfig(count).vlt_standby.load()
+ 			fancontrol.getConfig(count).pwm_standby.load()
+ 		self.close()
+ 
 --- enigma2.org/lib/python/Screens/ChannelSelection.py
 +++ enigma2/lib/python/Screens/ChannelSelection.py
-@@ -6,6 +6,11 @@
+@@ -7,6 +7,11 @@
  import Components.ParentalControl
  from Components.Button import Button
  from Components.ServiceList import ServiceList, refreshServiceList
@@ -7715,59 +8018,7 @@
  from Components.ActionMap import NumberActionMap, ActionMap, HelpableActionMap
  from Components.MenuList import MenuList
  from Components.ServiceEventTracker import ServiceEventTracker, InfoBarBase
-@@ -130,7 +135,7 @@
- 		self.csel = csel
- 		self.bsel = None
- 		if self.isProtected():
--			self.onFirstExecBegin.append(boundFunction(self.session.openWithCallback, self.protectResult, PinInput, pinList=[x.value for x in config.ParentalControl.servicepin], triesEntry=config.ParentalControl.retries.servicepin, title=_("Please enter the correct pin code"), windowTitle=_("Enter pin code")))
-+			self.onFirstExecBegin.append(boundFunction(self.session.openWithCallback, self.protectResult, PinInput, pinList=[x.value for x in config.ParentalControl.servicepin], triesEntry=config.ParentalControl.retries.servicepin, title=_("Please enter the correct PIN code"), windowTitle=_("Enter PIN code")))
- 
- 		self["actions"] = ActionMap(["OkCancelActions", "ColorActions", "NumberActions", "MenuActions"],
- 			{
-@@ -344,7 +349,7 @@
- 		if answer:
- 			self.csel.protectContextMenu = False
- 		elif answer is not None:
--			self.session.openWithCallback(self.close, MessageBox, _("The pin code you entered is wrong."), MessageBox.TYPE_ERROR)
-+			self.session.openWithCallback(self.close, MessageBox, _("The PIN code you entered is wrong."), MessageBox.TYPE_ERROR)
- 		else:
- 			self.close()
- 
-@@ -488,7 +493,7 @@
- 		self.close()
- 
- 	def removeParentalProtection(self, service):
--		self.session.openWithCallback(boundFunction(self.pinEntered, service.toCompareString()), PinInput, pinList=[config.ParentalControl.servicepin[0].value], triesEntry=config.ParentalControl.retries.servicepin, title=_("Enter the service pin"), windowTitle=_("Enter pin code"))
-+		self.session.openWithCallback(boundFunction(self.pinEntered, service.toCompareString()), PinInput, pinList=[config.ParentalControl.servicepin[0].value], triesEntry=config.ParentalControl.retries.servicepin, title=_("Enter the service PIN"), windowTitle=_("Enter PIN code"))
- 
- 	def pinEntered(self, service, answer):
- 		if answer:
-@@ -497,13 +502,13 @@
- 				self.csel.servicelist.resetRoot()
- 			self.close()
- 		elif answer is not None:
--			self.session.openWithCallback(self.close, MessageBox, _("The pin code you entered is wrong."), MessageBox.TYPE_ERROR)
-+			self.session.openWithCallback(self.close, MessageBox, _("The PIN code you entered is wrong."), MessageBox.TYPE_ERROR)
- 		else:
- 			self.close()
- 
- 	def unhideParentalServices(self):
- 		if self.csel.protectContextMenu:
--			self.session.openWithCallback(self.unhideParentalServicesCallback, PinInput, pinList=[config.ParentalControl.servicepin[0].value], triesEntry=config.ParentalControl.retries.servicepin, title=_("Enter the service pin"), windowTitle=_("Enter pin code"))
-+			self.session.openWithCallback(self.unhideParentalServicesCallback, PinInput, pinList=[config.ParentalControl.servicepin[0].value], triesEntry=config.ParentalControl.retries.servicepin, title=_("Enter the service PIN"), windowTitle=_("Enter PIN code"))
- 		else:
- 			self.unhideParentalServicesCallback(True)
- 
-@@ -516,7 +521,7 @@
- 			self.csel.servicelist.setCurrent(service)
- 			self.close()
- 		elif answer is not None:
--			self.session.openWithCallback(self.close, MessageBox, _("The pin code you entered is wrong."), MessageBox.TYPE_ERROR)
-+			self.session.openWithCallback(self.close, MessageBox, _("The PIN code you entered is wrong."), MessageBox.TYPE_ERROR)
- 		else:
- 			self.close()
- 
-@@ -895,6 +900,9 @@
+@@ -898,6 +903,9 @@
  		self.saved_title = None
  		self.saved_root = None
  		self.current_ref = None
@@ -7777,7 +8028,7 @@
  		self.editMode = False
  		self.confirmRemove = True
  
-@@ -995,7 +1003,7 @@
+@@ -998,7 +1006,7 @@
  				if mutableAlternatives:
  					mutableAlternatives.setListName(name)
  					if mutableAlternatives.addService(cur_service.ref):
@@ -7786,7 +8037,7 @@
  					mutableAlternatives.flushChanges()
  					self.servicelist.addService(new_ref.ref, True)
  					self.servicelist.removeCurrent()
-@@ -1006,7 +1014,7 @@
+@@ -1009,7 +1017,7 @@
  					if self.startServiceRef and cur_service.ref == self.startServiceRef:
  						self.startServiceRef = new_ref.ref
  				else:
@@ -7795,7 +8046,7 @@
  			else:
  				print "add", str, "to", cur_root.getServiceName(), "failed"
  		else:
-@@ -1030,10 +1038,10 @@
+@@ -1033,10 +1041,10 @@
  					if services is not None:
  						for service in services:
  							if mutableBouquet.addService(service):
@@ -7808,7 +8059,7 @@
  				# do some voodoo to check if current_root is equal to bouquet_root
  				cur_root = self.getRoot()
  				str1 = cur_root and cur_root.toString()
-@@ -1043,9 +1051,9 @@
+@@ -1046,9 +1054,9 @@
  					self.servicelist.addService(new_bouquet_ref)
  					self.servicelist.resetRoot()
  			else:
@@ -7821,7 +8072,7 @@
  
  	def copyCurrentToBouquetList(self):
  		provider = ServiceReference(self.getCurrentSelection())
-@@ -1071,11 +1079,11 @@
+@@ -1074,11 +1083,11 @@
  					if self.startServiceRef and cur_service.ref == self.startServiceRef:
  						self.startServiceRef = first_in_alternative
  				else:
@@ -7838,7 +8089,7 @@
  		self.removeBouquet()
  		if not end:
  			self.servicelist.moveUp()
-@@ -1157,6 +1165,9 @@
+@@ -1160,6 +1168,9 @@
  			else:
  				new_title += ' ' + _("[favourite edit]")
  		self.setTitle(new_title)
@@ -7848,7 +8099,7 @@
  		self.__marked = self.servicelist.getRootServices()
  		for x in self.__marked:
  			self.servicelist.addMarked(eServiceReference(x))
-@@ -1184,6 +1195,9 @@
+@@ -1187,6 +1198,9 @@
  		self.bouquet_mark_edit = OFF
  		self.mutableList = None
  		self.setTitle(self.saved_title)
@@ -7858,7 +8109,7 @@
  		self.saved_title = None
  		# self.servicePath is just a reference to servicePathTv or Radio...
  		# so we never ever do use the asignment operator in self.servicePath
-@@ -1262,6 +1276,9 @@
+@@ -1265,6 +1279,9 @@
  			self.mutableList.flushChanges() # FIXME add check if changes was made
  			self.mutableList = None
  			self.setTitle(self.saved_title)
@@ -7868,7 +8119,7 @@
  			self.saved_title = None
  			self.servicelist.resetRoot()
  			self.servicelist.l.setHideNumberMarker(config.usage.hide_number_markers.value)
-@@ -1273,6 +1290,9 @@
+@@ -1276,6 +1293,9 @@
  			self.saved_title = self.getTitle()
  			pos = self.saved_title.find(')')
  			self.setTitle(self.saved_title[:pos + 1] + ' ' + _("[move mode]") + self.saved_title[pos + 1:])
@@ -7878,7 +8129,7 @@
  			self.servicelist.l.setHideNumberMarker(False)
  			self.setCurrentSelection(self.servicelist.getCurrent())
  		self["Service"].editmode = True
-@@ -1329,6 +1349,11 @@
+@@ -1333,6 +1353,11 @@
  
  		self["list"] = ServiceList(self)
  		self.servicelist = self["list"]
@@ -7890,7 +8141,7 @@
  
  		self.numericalTextInput = NumericalTextInput(handleTimeout=False)
  		self.numericalTextInput.setUseableChars(u'1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ')
-@@ -1423,6 +1448,9 @@
+@@ -1427,6 +1452,9 @@
  			title = title[:pos]
  		title += _(" (TV)")
  		self.setTitle(title)
@@ -7900,7 +8151,7 @@
  
  	def setRadioMode(self):
  		self.mode = MODE_RADIO
-@@ -1434,6 +1462,9 @@
+@@ -1438,6 +1466,9 @@
  			title = title[:pos]
  		title += _(" (Radio)")
  		self.setTitle(title)
@@ -7910,7 +8161,7 @@
  
  	def setRoot(self, root, justSet=False):
  		if self.startRoot is None:
-@@ -1488,6 +1519,9 @@
+@@ -1492,6 +1523,9 @@
  					end_ref = None
  				nameStr = self.getServiceName(base_ref)
  				titleStr += ' - ' + nameStr
@@ -7920,7 +8171,7 @@
  				if end_ref is not None:
  					if Len > 2:
  						titleStr += '/../'
-@@ -1495,7 +1529,13 @@
+@@ -1499,7 +1533,13 @@
  						titleStr += '/'
  					nameStr = self.getServiceName(end_ref)
  					titleStr += nameStr
@@ -7953,24 +8204,6 @@
  
  from enigma import eTimer, eServiceCenter, eDVBServicePMTHandler, iServiceInformation, iPlayableService, eServiceReference, eEPGCache, eActionMap, getDesktop, eDVBDB
  
-@@ -112,7 +113,7 @@
- 	global resumePointCache, resumePointCacheLast
- 	import cPickle
- 	try:
--		f = open('/home/root/resumepoints.pkl', 'wb')
-+		f = open('/etc/enigma2/resumepoints.pkl', 'wb')
- 		cPickle.dump(resumePointCache, f, cPickle.HIGHEST_PROTOCOL)
- 	except Exception, ex:
- 		print "[InfoBar] Failed to write resumepoints:", ex
-@@ -122,7 +123,7 @@
- def loadResumePoints():
- 	import cPickle
- 	try:
--		return cPickle.load(open('/home/root/resumepoints.pkl', 'rb'))
-+		return cPickle.load(open('/etc/enigma2/resumepoints.pkl', 'rb'))
- 	except Exception, ex:
- 		print "[InfoBar] Failed to load resumepoints:", ex
- 		return {}
 @@ -257,6 +258,7 @@
  	STATE_HIDING = 1
  	STATE_SHOWING = 2
@@ -8128,7 +8361,7 @@
  
  	def extensionCallback(self, answer):
  		if answer is not None:
-@@ -2464,12 +2513,12 @@
+@@ -2465,7 +2514,7 @@
  
  class InfoBarInstantRecord:
  	"""Instant Record - handles the instantRecord action in order to
@@ -8137,13 +8370,7 @@
  
  	def __init__(self):
  		self["InstantRecordActions"] = HelpableActionMap(self, "InfobarInstantRecord",
- 			{
--				"instantRecord": (self.instantRecord, _("Instant recording...")),
-+				"instantRecord": (self.instantRecord, _("Instant recording")),
- 			})
- 		self.SelectedInstantServiceRef = None
- 		if isStandardInfoBar(self):
-@@ -2551,7 +2600,7 @@
+@@ -2552,7 +2601,7 @@
  	def startInstantRecording(self, limitEvent=False):
  		begin = int(time())
  		end = begin + 3600      # dummy
@@ -8152,7 +8379,7 @@
  		info = {}
  
  		self.getProgramInfoAndEvent(info, name)
-@@ -2781,7 +2830,7 @@
+@@ -2782,7 +2831,7 @@
  	def __init__(self):
  		self["AudioSelectionAction"] = HelpableActionMap(self, "InfobarAudioSelectionActions",
  			{
@@ -8161,7 +8388,7 @@
  			})
  
  	def audioSelection(self):
-@@ -2796,7 +2846,7 @@
+@@ -2797,7 +2847,7 @@
  	def __init__(self):
  		self["SubserviceSelectionAction"] = HelpableActionMap(self, "InfobarSubserviceSelectionActions",
  			{
@@ -8170,7 +8397,7 @@
  			})
  
  		self["SubserviceQuickzapAction"] = HelpableActionMap(self, "InfobarSubserviceQuickzapActions",
-@@ -2873,7 +2922,7 @@
+@@ -2874,7 +2923,7 @@
  					keys = ["red", "", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
  					selection += 2
  				if tlist:
@@ -8179,7 +8406,7 @@
  				else:
  					self.session.open(MessageBox, _("No active subservices available."), MessageBox.TYPE_INFO, timeout=5, simple=True)
  
-@@ -2923,7 +2972,7 @@
+@@ -2924,7 +2973,7 @@
  	def __init__(self):
  		self["RedButtonActions"] = HelpableActionMap(self, "InfobarRedButtonActions",
  			{
@@ -8188,7 +8415,7 @@
  			})
  		self.onHBBTVActivation = []
  		self.onRedButtonActivation = []
-@@ -2943,7 +2992,7 @@
+@@ -2944,7 +2993,7 @@
  	def __init__(self):
  		self["TimerButtonActions"] = HelpableActionMap(self, "InfobarTimerButtonActions",
  			{
@@ -8197,7 +8424,7 @@
  			})
  
  	def timerSelection(self):
-@@ -3360,7 +3409,7 @@
+@@ -3361,7 +3410,7 @@
  		if self.teletext_plugin is not None:
  			self["TeletextActions"] = HelpableActionMap(self, "InfobarTeletextActions",
  				{
@@ -8206,7 +8433,7 @@
  				})
  		else:
  			print "no teletext plugin found!"
-@@ -3374,8 +3423,8 @@
+@@ -3375,8 +3424,8 @@
  		object.__init__(self)
  		self["SubtitleSelectionAction"] = HelpableActionMap(self, "InfobarSubtitleSelectionActions",
  			{
@@ -8432,7 +8659,7 @@
  			self.createMenu()
 --- enigma2.org/lib/python/Screens/ScanSetup.py
 +++ enigma2/lib/python/Screens/ScanSetup.py
-@@ -1257,7 +1257,7 @@
+@@ -1263,7 +1263,7 @@
  		self.cable_toggle = {"single_transponder": "complete", "complete": "single_transponder"}
  		self.scan_typeterrestrial = ConfigSelection(default=defaultTerrSearchType, choices=[("single_transponder", _("User defined transponder")), ("predefined_transponder", _("Predefined transponder")), ("complete", _("Complete"))])
  		self.scan_type_atsc = ConfigSelection(default=defaultATSCSearchType, choices=[("single_transponder", _("User defined transponder")), ("predefined_transponder", _("Predefined transponder")), ("complete", _("Complete"))])
@@ -8443,7 +8670,7 @@
  		self.scan_onlyfree = ConfigYesNo(default=False)
 --- enigma2.org/lib/python/Screens/Standby.py
 +++ enigma2/lib/python/Screens/Standby.py
-@@ -17,6 +17,11 @@
+@@ -18,6 +18,11 @@
  from GlobalActions import globalActionMap
  from enigma import eDVBVolumecontrol, eTimer, eDVBLocalTimeHandler, eServiceReference, eStreamServer, quitMainloop, iRecordableService
  
@@ -8455,7 +8682,7 @@
  inStandby = None
  infoBarInstance = None
  
-@@ -77,6 +82,40 @@
+@@ -78,6 +83,40 @@
  		self.timeHandler = None
  
  		self.setMute()
@@ -8496,7 +8723,7 @@
  
  		self.paused_service = self.paused_action = False
  
-@@ -107,6 +146,9 @@
+@@ -111,6 +150,9 @@
  			self.avswitch.setInput("SCART")
  		else:
  			self.avswitch.setInput("AUX")
@@ -8506,7 +8733,7 @@
  
  		gotoShutdownTime = int(config.usage.standby_to_shutdown_timer.value)
  		if gotoShutdownTime:
-@@ -160,6 +202,42 @@
+@@ -164,6 +206,42 @@
  
  	def Power(self):
  		print "[Standby] leave standby"
@@ -8549,7 +8776,7 @@
  		self.close(True)
  
  	def setMute(self):
-@@ -253,6 +331,7 @@
+@@ -257,6 +333,7 @@
  			QUIT_RESTART: _("The user interface of your receiver is restarting"),
  			QUIT_UPGRADE_FP: _("Your frontprocessor will be updated\nPlease wait until your receiver reboots\nThis may take a few minutes"),
  			QUIT_DEBUG_RESTART: _("The user interface of your receiver is restarting in debug mode"),
@@ -8557,7 +8784,7 @@
  			QUIT_UPGRADE_PROGRAM: _("Unattended update in progress\nPlease wait until your receiver reboots\nThis may take a few minutes"),
  			QUIT_MANUFACTURER_RESET: _("Manufacturer reset in progress\nPlease wait until enigma2 restarts")
  		}.get(retvalue)
-@@ -298,6 +377,7 @@
+@@ -302,6 +381,7 @@
  				QUIT_RESTART: _("Really restart now?"),
  				QUIT_UPGRADE_FP: _("Really update the frontprocessor and reboot now?"),
  				QUIT_DEBUG_RESTART: _("Really restart in debug mode now?"),
@@ -8633,7 +8860,7 @@
  
  	def __init__(self):
  		global hw_info
-@@ -43,45 +43,19 @@
+@@ -43,48 +43,19 @@
  			pass
  
  		# Model
@@ -8668,7 +8895,10 @@
 -		elif self.device_model == "et11000":
 -			self.machine_name = "et1x000"
 -		elif self.device_brandname == "Zgemma":
--			self.device_model = self.device_name
+-			if self.device_model and self.device_name and "H9Twin" in self.device_model and "combo" in self.device_name:
+-				self.device_model = self.device_model.lower().replace(" ", "")
+-			else:
+-				self.device_model = self.device_name
 -			self.machine_name = self.device_name
 -
 -		if self.device_revision:
@@ -8688,7 +8918,7 @@
  		return hw_info.device_name
 --- enigma2.org/lib/python/Tools/Makefile.am
 +++ enigma2/lib/python/Tools/Makefile.am
-@@ -5,7 +5,7 @@
+@@ -5,6 +5,6 @@
  	KeyBindings.py BoundFunction.py ISO639.py Notifications.py __init__.py \
  	RedirectOutput.py StbHardware.py Import.py Event.py CList.py CIHelper.py \
  	LoadPixmap.py Profile.py HardwareInfo.py Transponder.py ASCIItranslit.py \
@@ -8696,7 +8926,6 @@
 +	Downloader.py Trashcan.py GetEcmInfo.py Alternatives.py TextBoundary.py Command.py \
  	camcontrol.py CountryCodes.py Multiboot.py FallbackTimer.py Hex2strColor.py \
  	Geolocation.py
- 
 --- enigma2.org/lib/python/Tools/Profile.py
 +++ enigma2/lib/python/Tools/Profile.py
 @@ -1,6 +1,7 @@
@@ -8734,7 +8963,7 @@
 +					if perc > 20:
 +						if os.path.isfile('/proc/stb/info/model'):
 +							model = str(open("/proc/stb/info/model").read())
-+							if model.startswith("spark7162") or model.startswith("tf7700hdpvr") or model.startswith("hs9510") or model.startswith("hdbox") or model.startswith("hs8200") or model.startswith("hs7420") or model.startswith("hs7429") or model.startswith("vitamin-hd5000") or model.startswith("hl101") or model.startswith("vip1-v1") or model.startswith("vip1-v2") or model.startswith("vip2"):
++							if model.startswith("spark7162") or model.startswith("tf7700hdpvr") or model.startswith("hs9510") or model.startswith("fs9000") or model.startswith("hs8200") or model.startswith("hs7420") or model.startswith("hs7429") or model.startswith("vitamin-hd5000") or model.startswith("hl101") or model.startswith("vip1-v1") or model.startswith("vip1-v2") or model.startswith("vip2"):
 +								evfd.getInstance().vfd_write_string("START %02d" % perc)
 +							elif model.startswith("cuberevo") or model.startswith("cuberevo_mini") or model.startswith("cuberevo_mini2") or model.startswith("cuberevo_2000hd") or model.startswith("cuberevo_3000hd") or model.startswith("cuberevo_9500hd"):
 +								evfd.getInstance().vfd_write_string("E2 Start %02d" % perc)
@@ -8752,7 +8981,7 @@
  
 --- enigma2.org/lib/service/iservice.h
 +++ enigma2/lib/service/iservice.h
-@@ -698,6 +698,7 @@
+@@ -699,6 +699,7 @@
  struct eDVBTeletextSubtitlePage;
  struct eDVBSubtitlePage;
  struct ePangoSubtitlePage;
@@ -8760,7 +8989,7 @@
  class eRect;
  class gRegion;
  class gPixmap;
-@@ -709,6 +710,7 @@
+@@ -710,6 +711,7 @@
  	virtual void setPage(const eDVBTeletextSubtitlePage &p) = 0;
  	virtual void setPage(const eDVBSubtitlePage &p) = 0;
  	virtual void setPage(const ePangoSubtitlePage &p) = 0;
@@ -8770,7 +8999,7 @@
  };
 --- enigma2.org/lib/service/listboxservice.cpp
 +++ enigma2/lib/service/listboxservice.cpp
-@@ -193,14 +193,14 @@
+@@ -204,14 +204,14 @@
  	{
  		--i;
  		--index;
@@ -8787,7 +9016,7 @@
  			break;
  	}
  	return cursorResolve(index);
-@@ -216,7 +216,7 @@
+@@ -227,7 +227,7 @@
  	{
  		++i;
  		++index;
@@ -8798,7 +9027,7 @@
  	return cursorResolve(index);
 --- enigma2.org/lib/service/servicedvb.cpp
 +++ enigma2/lib/service/servicedvb.cpp
-@@ -646,6 +646,8 @@
+@@ -649,6 +649,8 @@
  	if (sc)
  	{
  		std::list<std::string> extensions;
@@ -8807,7 +9036,7 @@
  		extensions.push_back("ts");
  		extensions.push_back("trp");
  		sc->addServiceFactory(eServiceFactoryDVB::id, this, extensions);
-@@ -1214,7 +1216,8 @@
+@@ -1222,7 +1224,8 @@
  		break;
  	}
  	case eDVBServicePMTHandler::eventPreStart:
@@ -8817,7 +9046,7 @@
  		break;
  	case eDVBServicePMTHandler::eventEOF:
  		m_event((iPlayableService*)this, evEOF);
-@@ -1367,6 +1370,8 @@
+@@ -1375,6 +1378,8 @@
  			scrambled = true;
  
  		type = eDVBServicePMTHandler::streamclient;
@@ -8826,7 +9055,7 @@
  	}
  
  	m_first_program_info = 1;
-@@ -1738,9 +1743,9 @@
+@@ -1747,9 +1752,9 @@
  				return -2;
  			}
  
@@ -8851,7 +9080,7 @@
  
  DEFINE_REF(eDVBServiceRecord);
  
-@@ -286,9 +289,40 @@
+@@ -291,9 +294,40 @@
  
  	if (!m_record && m_tuned && !m_streaming && !m_simulate)
  	{
@@ -8931,7 +9160,7 @@
  	AC_SUBST([PYTHON_SITE_PKG])
 --- enigma2.org/main/bsod.cpp
 +++ enigma2/main/bsod.cpp
-@@ -14,11 +14,13 @@
+@@ -16,11 +16,13 @@
  
  /************************************************/
  
@@ -8945,7 +9174,7 @@
  #endif
  
  /* Defined in bsod.cpp */
-@@ -98,7 +100,14 @@
+@@ -100,7 +102,14 @@
  {
  	/* show no more than one bsod while shutting down/crashing */
  	if (bsodhandled)
@@ -8960,7 +9189,7 @@
  	bsodhandled = true;
  
  	if (!component)
-@@ -165,7 +174,6 @@
+@@ -167,7 +176,6 @@
  			component);
  
  		stringFromFile(f, "stbmodel", "/proc/stb/info/boxtype");
@@ -8968,7 +9197,7 @@
  		stringFromFile(f, "stbmodel", "/proc/stb/info/model");
  		stringFromFile(f, "kernelcmdline", "/proc/cmdline");
  		stringFromFile(f, "nimsockets", "/proc/bus/nim_sockets");
-@@ -191,7 +199,7 @@
+@@ -193,7 +201,7 @@
  	gPainter p(my_dc);
  	p.resetOffset();
  	p.resetClip(eRect(ePoint(0, 0), my_dc->size()));
@@ -8977,7 +9206,7 @@
  	p.setForegroundColor(gRGB(0xFFFFFF));
  
  	int hd =  my_dc->size().width() == 1920;
-@@ -205,14 +213,14 @@
+@@ -207,14 +215,14 @@
  	os.clear();
  	os << "We are really sorry. Your STB encountered "
  		"a software problem, and needs to be restarted.\n"
@@ -8995,7 +9224,7 @@
  	
  	if (logp2)
  	{
-@@ -256,12 +264,12 @@
+@@ -258,12 +266,12 @@
  
  	if (!logtail.empty())
  	{
@@ -9020,6 +9249,15 @@
  
  #include "bsod.h"
  #include "version_info.h"
+@@ -204,7 +205,7 @@
+ 	printf("DVB_API_VERSION %d DVB_API_VERSION_MINOR %d\n", DVB_API_VERSION, DVB_API_VERSION_MINOR);
+ 
+ 	// get enigma2 debug level settings
+-	debugLvl = getenv("ENIGMA_DEBUG_LVL") ? atoi(getenv("ENIGMA_DEBUG_LVL")) : 3;
++	debugLvl = getenv("ENIGMA_DEBUG_LVL") ? atoi(getenv("ENIGMA_DEBUG_LVL")) : 4;
+ 	if (debugLvl < 0)
+ 		debugLvl = 0;
+ 	printf("ENIGMA_DEBUG_LVL=%d\n", debugLvl);
 @@ -235,6 +236,12 @@
  	eWidgetDesktop dsk_lcd(my_lcd_dc->size());
  
@@ -9114,83 +9352,18 @@
  
  if [ -d /home/root ]; then
  	export HOME=/home/root
---- enigma2.org/lib/python/Components/About.py
-+++ enigma2/lib/python/Components/About.py
-@@ -58,12 +58,15 @@
- 
- 
- def getGStreamerVersionString():
--	try:
--		from glob import glob
--		gst = [x.split("Version: ") for x in open(glob("/var/lib/opkg/info/gstreamer[0-9].[0-9].control")[0], "r") if x.startswith("Version:")][0]
--		return "%s" % gst[1].split("+")[0].replace("\n", "")
--	except:
--		return _("Not Installed")
-+	from glob import glob
-+	if os.path.isfile('/usr/lib/pkgconfig/gstreamer-1.0.pc'):
-+		gstversion = [x.split("Version:") for x in open(glob("/usr/lib/pkgconfig/gstreamer-1.0.pc")[0], "r") if x.startswith("Version:")][0]
-+		if os.path.isfile('/usr/lib/libeplayer3.so'):
-+			return "Gstreamer " + ("%s" % gstversion[1].replace("\n","")) + " + eplayer3"
-+		else:
-+			return "Gstreamer " + ("%s" % gstversion[1].replace("\n",""))
-+	else:
-+		return _("eplayer3")
- 
- 
- def getffmpegVersionString():
-@@ -83,7 +86,7 @@
- 
- 
- def getHardwareTypeString():
--	return HardwareInfo().get_device_string()
-+	return HardwareInfo().get_device_string().upper()
- 
- 
- def getImageTypeString():
-@@ -97,29 +100,19 @@
- def getCPUInfoString():
- 	try:
- 		cpu_count = 0
--		cpu_speed = 0
-+		cpu_speed = "unknown"
- 		processor = ""
- 		for line in open("/proc/cpuinfo").readlines():
- 			line = [x.strip() for x in line.strip().split(":")]
--			if not processor and line[0] in ("system type", "model name", "Processor"):
-+			if not processor and line[0] == "cpu type":
- 				processor = line[1].split()[0]
--			elif not cpu_speed and line[0] == "cpu MHz":
-+			elif cpu_speed == "unknown" and line[0] == "cpu MHz":
- 				cpu_speed = "%1.0f" % float(line[1])
- 			elif line[0] == "processor":
- 				cpu_count += 1
- 
- 		if processor.startswith("ARM") and os.path.isfile("/proc/stb/info/chipset"):
- 			processor = "%s (%s)" % (open("/proc/stb/info/chipset").readline().strip().upper(), processor)
--
--		if not cpu_speed:
--			try:
--				cpu_speed = int(open("/sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq").read()) / 1000
--			except:
--				try:
--					import binascii
--					cpu_speed = int(int(binascii.hexlify(open('/sys/firmware/devicetree/base/cpus/cpu@0/clock-frequency', 'rb').read()), 16) / 100000000) * 100
--				except:
--					cpu_speed = "-"
- 
- 		temperature = None
- 		if os.path.isfile('/proc/stb/fp/temp_sensor_avs'):
 --- enigma2.org/lib/python/Screens/About.py
 +++ enigma2/lib/python/Screens/About.py
-@@ -13,6 +13,7 @@
+@@ -14,6 +14,8 @@
  from Components.ProgressBar import ProgressBar
  
  from Tools.StbHardware import getFPVersion
 +from Tools.Directories import fileExists, pathExists
++from Tools.HardwareInfo import HardwareInfo
  from enigma import eTimer, eLabel, eConsoleAppContainer, getDesktop, eGetEnigmaDebugLvl
  
  from Components.GUIComponent import GUIComponent
-@@ -28,6 +29,16 @@
+@@ -30,6 +32,16 @@
  		hddsplit = parameters.get("AboutHddSplit", 1)
  
  		AboutText = _("Hardware: ") + about.getHardwareTypeString() + "\n"
@@ -9207,32 +9380,55 @@
  		cpu = about.getCPUInfoString()
  		AboutText += _("CPU: ") + cpu + "\n"
  		AboutText += _("Image: ") + about.getImageTypeString() + "\n"
-@@ -51,7 +62,7 @@
+@@ -53,7 +65,7 @@
  
  		AboutText += _("DVB driver version: ") + about.getDriverInstalledDate() + "\n"
  
--		GStreamerVersion = _("Media player: GStreamer, version ") + about.getGStreamerVersionString().replace("GStreamer", "")
+-		GStreamerVersion = about.getGStreamerVersionString().replace("GStreamer", "")
 +		GStreamerVersion = "Media framework: " + about.getGStreamerVersionString()
  		self["GStreamerVersion"] = StaticText(GStreamerVersion)
  
- 		ffmpegVersion = _("Media player: ffmpeg, version ") + about.getffmpegVersionString()
-@@ -72,8 +83,11 @@
+ 		ffmpegVersion = about.getffmpegVersionString()
+@@ -84,7 +96,14 @@
  		if fp_version is None:
  			fp_version = ""
- 		else:
+ 		elif fp_version != 0:
 -			fp_version = _("Frontprocessor version: %s") % fp_version
--			AboutText += fp_version + "\n"
-+			if fileExists("/proc/stb/fp/resellerID"):
++			model = HardwareInfo().get_device_model()
++			if fileExists("/proc/stb/fp/resellerID") and (model != "atemio520"):
 +				fp_version = _("Loader version: %d.%02d") % (fp_version / 100, fp_version % 100)
 +			else:
-+				fp_version = _("Frontprocessor version: %d.%02d") % (fp_version / 100, fp_version % 100)
-+		AboutText += fp_version + "\n"
++				if (model in ("cuberevo", "cuberevo_mini-fta", "cuberevo-250hd", "cuberevo-mini", "cuberevo-mini2", "cuberevo-2000hd", "cuberevo-3000hd", "cuberevo-9500hd")):
++					fp_version = _("Frontprocessor version: %s") % fp_version
++				else:
++					fp_version = _("Frontprocessor version: %d.%02d") % (fp_version / 100, fp_version % 100)
+ 			AboutText += fp_version + "\n"
  
  		self["FPVersion"] = StaticText(fp_version)
+--- enigma2.org/lib/python/Tools/StbHardware.py
++++ enigma2/lib/python/Tools/StbHardware.py
+@@ -2,12 +2,16 @@
+ from fcntl import ioctl
+ from struct import pack, unpack
+ from time import time, localtime, gmtime
+-
++from Tools.HardwareInfo import HardwareInfo
  
+ def getFPVersion():
+ 	ret = None
++	model = HardwareInfo().get_device_model()
+ 	try:
+-		ret = long(open("/proc/stb/fp/version", "r").read())
++		if (model in ("cuberevo", "cuberevo_mini-fta", "cuberevo-250hd", "cuberevo-mini", "cuberevo-mini2", "cuberevo-2000hd", "cuberevo-3000hd", "cuberevo-9500hd")):
++			ret = open("/proc/stb/fp/version", "r").read()
++		else:
++			ret = long(open("/proc/stb/fp/version", "r").read())
+ 	except IOError:
+ 		try:
+ 			fp = open("/dev/dbox/fp0")
 --- enigma2.org/lib/python/Tools/KeyBindings.py
 +++ enigma2/lib/python/Tools/KeyBindings.py
-@@ -220,122 +220,509 @@
+@@ -220,122 +220,522 @@
  	KEYIDS["KEY_POWER2"]: ("POWER2",),
  	KEYIDS["KEY_SUSPEND"]: ("SUSPEND",),
  	KEYIDS["KEY_WAKEUP"]: ("WAKEUP",)
@@ -9782,7 +9978,7 @@
 +	KEYIDS["KEY_GREEN"]: ("GREEN",),
 +	KEYIDS["KEY_YELLOW"]: ("YELLOW",),
 +	KEYIDS["KEY_BLUE"]: ("BLUE",),
-+}, {  # id=13 - Opticum HD 9600 series
++}, {  # id=13 - Opticum HD 9600 series, Atemio AM 520 HD
 +	KEYIDS["KEY_POWER"]: ("POWER",),
 +	KEYIDS["KEY_MUTE"]: ("MUTE",),
  	KEYIDS["KEY_HELP"]: ("HELP",),
@@ -9809,9 +10005,9 @@
 -	KEYIDS["KEY_VOLUMEDOWN"]: ("VOL-",),
 -	KEYIDS["KEY_VOLUMEUP"]: ("VOL+",),
 -	KEYIDS["KEY_YELLOW"]: ("YELLOW",)
-+	KEYIDS["KEY_SWITCHVIDEOMODE"]: ("TV.FORMAT",),
-+	KEYIDS["KEY_TV2"]: ("TV/RADIO",),
-+	KEYIDS["KEY_MODE"]: ("MODE",),
++	KEYIDS["KEY_SWITCHVIDEOMODE"]: ("MODE",),
++	KEYIDS["KEY_TV2"]: ("TVRADIO",),
++#	KEYIDS["KEY_MODE"]: ("MODE",),
 +	KEYIDS["KEY_1"]: ("1",),
 +	KEYIDS["KEY_2"]: ("2",),
 +	KEYIDS["KEY_3"]: ("3",),
@@ -9849,10 +10045,23 @@
 +	KEYIDS["KEY_PROGRAM"]: ("STATUS",),
 +	KEYIDS["KEY_OPTION"]: ("OPTION",),
 +	KEYIDS["KEY_SUBTITLE"]: ("FIND",),
++# Additions for AM 520 HD
++	KEYIDS["KEY_VOLUMEUP"]: ("VOLUMEUP",),
++	KEYIDS["KEY_VOLUMEDOWN"]: ("VOLUMEDOWN",),
++	KEYIDS["KEY_CHANNELUP"]: ("CHANNELUP",),
++	KEYIDS["KEY_CHANNELDOWN"]: ("CHANNELDOWN",),
++	KEYIDS["KEY_PLAY"]: ("PLAY",),
++	KEYIDS["KEY_PAUSE"]: ("PAUSE",),
++	KEYIDS["KEY_SCREEN"]: ("PIP",),
++	KEYIDS["KEY_AUDIO"]: ("AUDIO",),
++	KEYIDS["KEY_WWW"]: ("WWW",),
++	KEYIDS["KEY_PROGRAM"]: ("SLEEP",),
++# Additions or Sogno HD 800 V3
++	KEYIDS["KEY_ZOOM"]: ("V.FORMAT",),
  }]
  
  
-@@ -374,10 +761,43 @@
+@@ -374,10 +767,45 @@
  	else:
  		rcType = config.plugins.remotecontroltype.rctype.value
  		# rcType = config.misc.inputdevices.rcType.value
@@ -9891,16 +10100,18 @@
 +			idx = 13
 +		elif rcType == 22:	# Cuberevo Standard
 +			idx = 7
-+#		elif rcType == 23:	# Fortis 4G
++		elif rcType == 23:	# Atemio AM 520 HD (version 2)
++			idx = 13
++#		elif rcType == 24:	# Fortis 4G
 +#			idx = 14
-+#		elif rcType == 24:	# ...
++#		elif rcType == 25:	# ...
 +#			idx = 15
  		else:
  			idx = 2
  	return keyDescriptions[idx].get(key)
 --- enigma2.org/lib/python/Screens/InputDeviceSetup.py
 +++ enigma2/lib/python/Screens/InputDeviceSetup.py
-@@ -300,68 +300,61 @@
+@@ -282,77 +282,65 @@
  	rcList = [
  			("0", _("Default")),
  			("4", _("DMM normal")),
@@ -9917,16 +10128,18 @@
 -			("19", _("HD2400")),
 -			("20", _("Zgemma Star S/2S/H1/H2")),
 -			("21", _("Zgemma H.S/H.2S/H.2H/H5/H7(old model)")),
--			("25", _("Zgemma H9(old model)/I55Plus")),
--			("27", _("HD60/Multibox/Multibox SE")),
--			("28", _("I55SE/H7(new model)/H9(new model)/H9COMBO/H9TWIN/H9SE/H9COMBOSE/H10"))
+-			("24", _("Axas E4HD Ultra")),
+-			("25", _("Zgemma H9(old model)/I55Plus/H8")),
+-			("27", _("HD60/HD66SE/Multibox/Multibox SE")),
+-			("28", _("I55SE/H7(new model)/H9(new model)/H9COMBO/H9TWIN/H9SE/H9COMBOSE/H10/H11")),
+-			("30", _("PULSe 4K(mini)"))
 +			("7", _("Fortis universal")),
 +			("8", _("Fortis standard")),
 +			("9", _("Fortis mini")),
 +			("10", _("Spark")),
 +			("11", _("Topfield TF77X0HDPVR")),
 +			("12", _("Kathrein RC671 (UFS912")),
-+			("13", _("Cuberevo universal")),
++			("13", _("CubeRevo universal")),
 +			("14", _("Vitamin 5000HD")),
 +			("15", _("ADB XMP")),
 +			("16", _("Pace HDS7241")),
@@ -9935,8 +10148,9 @@
 +			("19", _("Kathrein RC660 (UFS910/922")),
 +			("20", _("Kathrein RC675 (UFS913)")),
 +			("21", _("Opticum HD 9600 series")),
-+			("22", _("Cuberevo standard")),
-+#			("23", _("fortis_4g")),
++			("22", _("CubeRevo standard")),
++			("23", _("Atemio AM 520 HD V2")),
++#			("24", _("fortis_4g")),
  		]
  
  	defaultRcList = [
@@ -9966,6 +10180,7 @@
 -			("hd1100", 16),
 -			("hd2400", 19),
 -			("hd60", 27),
+-			("hd66se", 27),
 -			("multibox", 27),
 -			("multiboxse", 27),
 -			("et7000mini", 16),
@@ -9975,14 +10190,20 @@
 -			("sh1", 20),
 -			("h3", 21),
 -			("h5", 21),
+-			("e4hd", 24),
+-			("h8", 25),
 -			("h9se", 28),
 -			("h9combo", 28),
 -			("h9combose", 28),
 -			("i55se", 28),
 -			("h7", 28), # new model /old 21
 -			("h9", 28), # new model /old 25
--			("h9combo", 28),
--			("h10", 28)
+-			("h9twin", 28),
+-			("h9twinse", 28),
+-			("h10", 28),
+-			("h11", 28),
+-			("pulse4k", 30),
+-			("pulse4kmini", 30)
 +			("fs9000", 7),
 +			("hs8200", 7),
 +			("hs9510", 8),
@@ -10016,13 +10237,16 @@
 +			("vip1-v2", 17),
 +			("vip2", 17),
 +			("opt9600", 21),
-+#			("fortis_4g", 23),
++			("opt9600mini", 21),
++			("opt9600prima", 21),
++			("atemio520", 23),
++#			("fortis_4g", 24),
  		]
  
  	def __init__(self, session):
 --- enigma2.org/data/rc_models/rc_models.cfg
 +++ enigma2/data/rc_models/rc_models.cfg
-@@ -19,153 +19,36 @@
+@@ -19,163 +19,39 @@
  #
  # When no entry matches at all, 'default' will be used as remoteName
  #
@@ -10077,6 +10301,7 @@
 -hd11            hd-gen
 -hd51            hd-gen
 -hd60            hd60
+-hd66se          hd66se
 -hd500c          hd-gen
 -hd530c          hd-gen
 -hd1100          hd-gen
@@ -10096,6 +10321,7 @@
 -lunix           qviart
 -lunix3-4k       qviart
 -lunix4k         lunix4k
+-dual            dual
 -#
 -# Spycat
 -spycat          spycat
@@ -10162,11 +10388,15 @@
 -h5              zgemma
 -h6              zgemma
 -h7              zgemma
+-h8              zgemma
 -h9              zgemma
 -h9se            zgemma
 -h9combo         zgemma
+-h9twin          zgemma
 -h9combose       zgemma
+-h9twinse        zgemma
 -h10             zgemma
+-h11             zgemma
 -lc              sh1
 -sh1             sh1
 -#
@@ -10176,6 +10406,10 @@
 -#
 -# uClan
 -ustym4kpro     uclan
+-#
+-# AB-COM
+-pulse4k        pulse
+-pulse4kmini    pulse
 +fs9000            fs9000
 +hs9510            hs9510
 +hs8200            fs9000
@@ -10209,9 +10443,12 @@
 +vip1-v2           vip_1
 +vip2              vip_1
 +opt9600           opt9600
++opt9600mini       opt9600
++opt9600prima      opt9600
++atemio520         atemio520
 --- enigma2.org/data/rc_models/Makefile.am
 +++ enigma2/data/rc_models/Makefile.am
-@@ -2,15 +2,9 @@
+@@ -2,15 +2,10 @@
  
  dist_install_DATA = \
  	rc_models.cfg \
@@ -10220,17 +10457,18 @@
 -	hd2400.png hd-gen.png vs1x00.png osmini.png zgemma.png miraclebox.png miraclebox2.png \
 -	spycat.png xpeedlx.png revo4k.png sab.png sh1.png i55.png qviart.png gb7252.png e4hd.png \
 -	edision2.png edision3.png edision4.png hd60.png lunix4k.png multibox.png viperslim.png octagon.png \
--	uclan.png \
+-	uclan.png pulse.png dual.png hd66se.png \
 -	dmmadv.xml edision1.xml et4x00.xml et8000.xml et9x00.xml vuultimo.xml xp1000.xml dmm.xml amiko.xml \
 -	amiko1.xml et6x00.xml et9500.xml et7x00.xml vuduo2.xml vu.xml vu2.xml formuler1.xml hd2400.xml hd-gen.xml \
 -	vs1x00.xml xsarius.xml xsarius.png osmini.xml zgemma.xml miraclebox.xml miraclebox2.xml \
 -	spycat.xml xpeedlx.xml et7000mini.png et7000mini.xml revo4k.xml sab.xml sh1.xml i55.xml qviart.xml \
 -	gb7252.xml e4hd.xml edision2.xml edision3.xml edision4.xml hd60.xml lunix4k.xml multibox.xml viperslim.xml \
--	octagon.xml uclan.xml
+-	octagon.xml uclan.xml pulse.xml dual.xml hd66se.xml
 +	dmmadv.png \
 +	adb_xmp.png cuberevo_uni.png fs9000.png hs7110.png hs9510.png spark.png tf7700.png ufs912.png vitamin.png \
-+	pace7241.png hl101_1.png vip_1.png ufs910.png ufs913.png opt9600.png cuberevo.png dmm.png \
++	pace7241.png hl101_1.png vip_1.png ufs910.png ufs913.png opt9600.png cuberevo.png atemio520.png dmm.png \
 +	dmmadv.xml  \
 +	adb_xmp.xml cuberevo_uni.xml fs9000.xml hs7110.xml hs9510.xml spark.xml tf7700.xml ufs912.xml vitamin.xml \
-+	pace7241.xml hl101_1.xml vip_1.xml ufs910.xml ufs913.xml opt9600.xml cuberevo.xml dmm.xml
++	pace7241.xml hl101_1.xml vip_1.xml ufs910.xml ufs913.xml opt9600.xml cuberevo.xml atemio520.xml dmm.xml
++
 

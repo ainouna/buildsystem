@@ -1,9 +1,13 @@
 #!/bin/sh
+#Version 210813.1
+
+echo "[rcS] Start"
+echo "Kathrein UFC960 Enigma2"
 
 MODDIR=/lib/modules
 
 insmod $MODDIR/e2_proc.ko
-insmod $MODDIR/kathrein_micom.ko paramDebug=0
+insmod $MODDIR/kathrein_micom.ko #paramDebug=50
 
 if [ -e /var/etc/.firstboot ]; then
    echo "WAIT 3 min" > /dev/vfd
@@ -32,8 +36,8 @@ if [ ! -e /var/etc/.firstboot ]; then
    fp_control -t "LOADING MODULES"
 
    echo "load a/v firmware"
-   /bin/ustslave /dev/st231-1 /boot/audio.elf
    /bin/ustslave /dev/st231-0 /boot/video.elf
+   /bin/ustslave /dev/st231-1 /boot/audio.elf
 
    echo "init embx"
    insmod $MODDIR/embxshell.ko

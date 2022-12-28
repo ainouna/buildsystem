@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 200910.1
+#Version .1
 
 echo "[rcS] Start"
 echo "Pace HDS7241/91 Enigma2"
@@ -61,18 +61,18 @@ if [ ! -e /boot/audio.elf ] || [ ! -e /boot/video.elf ]; then
    sleep 5
 fi
 
-echo "[rcS] Load audio firmware (LOAD 8)"
+echo "[rcS] Load video firmware (LOAD 8)"
 echo "Load 8" > /dev/vfd
+/bin/ustslave /dev/st231-0 /boot/video.elf > /dev/null
+
+echo "[rcS] Load audio firmware (LOAD 7)"
+echo "Load 7" > /dev/vfd
 dtsdown=`cat /etc/enigma2/settings | grep systemoptions.dtsdownmix | cut -d "=" -f2`
 if [ ! $dtsdown ] && [ -e /boot/audio_dts.elf ]; then
    /bin/ustslave /dev/st231-1 /boot/audio_dts.elf > /dev/null
 else
    /bin/ustslave /dev/st231-1 /boot/audio.elf > /dev/null
 fi
-
-echo "[rcS] Load video firmware (LOAD 7)"
-echo "Load 7" > /dev/vfd
-/bin/ustslave /dev/st231-0 /boot/video.elf > /dev/null
 
 echo "[rcS] Init embx (LOAD 6)"
 echo "Load 6" > /dev/vfd
@@ -163,6 +163,10 @@ if [ -e $MODDIR/usbserial.ko ]; then
       echo "[rcS] Init PL2303 USB serial support"
       insmod $MODDIR/pl2303.ko
    fi
+   if [ -e $MODDIR/ch341.ko ]; then
+      echo "[rcS] Init CH341 serial support"
+      insmod $MODDIR/ch341.ko
+   fi
 fi
 
 echo "[rcS] Init remote control (LOAD 2)"
@@ -239,9 +243,13 @@ if [ ! -e /tmp/reference.dat ] && [ -e /var/bin/reference.dat ]; then
 fi
 
 # Try and synchronise time
-echo "[rcS] Set internet time"
-ntpd -n -p 0.europe.pool.ntp.org -q
-/bin/fp_control -sst
+#inettime=`cat /etc/enigma2/settings | grep systemoptions.inettime | cut -d "=" -f2`
+# if [ ! $inettime ] && [ -x /usr/sbin/ntpd ]; then
+if [ -x /usr/sbin/ntpd ]; then
+   echo "[rcS] Set internet time"
+   ntpd -n -p 0.europe.pool.ntp.org -q
+   /bin/fp_control -sst
+fi
 
 echo "[rcS] Init portmap & ftp"
 /etc/init.d/portmap start

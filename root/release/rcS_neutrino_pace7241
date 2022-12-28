@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 201020.1
+#Version 220711.1
 
 echo "[rcS] Start"
 echo "Pace HDS7241/91 Neutrino"
@@ -211,8 +211,8 @@ fi
 
 # Try and synchronise time
 echo "[rcS] Set internet time"
-if [ -e /usr/bin/ntpd ]; then
-   (/usr/bin/ntpd -n -p 0.europe.pool.ntp.org -q; /bin/fp_control -sst) &
+if [ -x /usr/sbin/ntpd ]; then
+   (/usr/sbin/ntpd -n -p 0.europe.pool.ntp.org -q; /bin/fp_control -sst) &
 fi
 
 # Do own extras

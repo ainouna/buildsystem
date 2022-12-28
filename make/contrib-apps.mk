@@ -1,7 +1,7 @@
 #
 # busybox
 #
-BUSYBOX_VER = 1.33.1
+BUSYBOX_VER = 1.35.0
 BUSYBOX_SOURCE = busybox-$(BUSYBOX_VER).tar.bz2
 BUSYBOX_PATCH  = busybox-$(BUSYBOX_VER)-nandwrite.patch
 BUSYBOX_PATCH += busybox-$(BUSYBOX_VER)-unicode.patch
@@ -10,7 +10,8 @@ BUSYBOX_PATCH += busybox-$(BUSYBOX_VER)-extra2.patch
 BUSYBOX_PATCH += busybox-$(BUSYBOX_VER)-flashcp-small-output.patch
 BUSYBOX_PATCH += busybox-$(BUSYBOX_VER)-block-telnet-internet.patch
 BUSYBOX_PATCH += busybox-$(BUSYBOX_VER)-recursive_action-fix.patch
-#BUSYBOX_PATCH += busybox-$(BUSYBOX_VER)-sh4-revert_ifa_flags.patch
+#BUSYBOX_PATCH += busybox-$(BUSYBOX_VER)-tar-fix.patch
+BUSYBOX_PATCH += busybox-$(BUSYBOX_VER)-sh4-revert_ifa_flags.patch
 
 $(ARCHIVE)/$(BUSYBOX_SOURCE):
 	$(WGET) https://busybox.net/downloads/$(BUSYBOX_SOURCE)
@@ -40,7 +41,7 @@ $(D)/busybox: $(D)/bootstrap $(ARCHIVE)/$(BUSYBOX_SOURCE) $(PATCHES)/$(BUSYBOX_C
 #
 BUSYBOX_USB_VER = $(BUSYBOX_VER)
 
-ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs7119 hs7429 hs7819 spark spark7162 ufs912 ufs913 vitamin_hd5000))
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE), adb_box hs7119 hs7429 hs7819 spark spark7162 ufs912 ufs913 vitamin_hd5000))
 BUSYBOX_USB_CONFIG = busybox_usb-$(BUSYBOX_USB_VER).config_nandwrite
 else
 BUSYBOX_USB_CONFIG = busybox_usb-$(BUSYBOX_USB_VER).config
@@ -65,8 +66,31 @@ $(D)/busybox_usb: $(D)/bootstrap $(ARCHIVE)/$(BUSYBOX_SOURCE) $(PATCHES)/$(BUSYB
 #
 # mtd_utils
 #
-MTD_UTILS_VER = 1.5.2
+MTD_UTILS_OLD_VER = 1.5.2
+MTD_UTILS_OLD_SOURCE = mtd-utils-$(MTD_UTILS_OLD_VER).tar.bz2
+
+$(ARCHIVE)/$(MTD_UTILS_OLD_SOURCE):
+	$(WGET) ftp://ftp.infradead.org/pub/mtd-utils/$(MTD_UTILS_OLD_SOURCE)
+
+$(D)/mtd_utils_old: $(D)/bootstrap $(D)/zlib $(D)/lzo $(D)/e2fsprogs $(ARCHIVE)/$(MTD_UTILS_OLD_SOURCE)
+	$(START_BUILD)
+	$(REMOVE)/mtd-utils-$(MTD_UTILS_OLD_VER)
+	$(UNTAR)/$(MTD_UTILS_OLD_SOURCE)
+	$(CH_DIR)/mtd-utils-$(MTD_UTILS_OLD_VER); \
+		$(BUILDENV) \
+		$(MAKE) PREFIX= CC=$(TARGET)-gcc LD=$(TARGET)-ld STRIP=$(TARGET)-strip WITHOUT_XATTR=1 DESTDIR=$(TARGET_DIR); \
+		cp -a $(BUILD_TMP)/mtd-utils-$(MTD_UTILS_OLD_VER)/mkfs.jffs2 $(TARGET_DIR)/usr/sbin
+		cp -a $(BUILD_TMP)/mtd-utils-$(MTD_UTILS_OLD_VER)/sumtool $(TARGET_DIR)/usr/sbin
+#		$(MAKE) install DESTDIR=$(TARGET_DIR)
+	$(REMOVE)/mtd-utils-$(MTD_UTILS_OLD_VER)
+	$(TOUCH)
+
+#
+# mtd_utils
+#
+MTD_UTILS_VER = 2.1.2
 MTD_UTILS_SOURCE = mtd-utils-$(MTD_UTILS_VER).tar.bz2
+#MTD_UTILS_PATCH = mtd-utils-$(MTD_UTILS_VER).patch
 
 $(ARCHIVE)/$(MTD_UTILS_SOURCE):
 	$(WGET) ftp://ftp.infradead.org/pub/mtd-utils/$(MTD_UTILS_SOURCE)
@@ -76,8 +100,16 @@ $(D)/mtd_utils: $(D)/bootstrap $(D)/zlib $(D)/lzo $(D)/e2fsprogs $(ARCHIVE)/$(MT
 	$(REMOVE)/mtd-utils-$(MTD_UTILS_VER)
 	$(UNTAR)/$(MTD_UTILS_SOURCE)
 	$(CH_DIR)/mtd-utils-$(MTD_UTILS_VER); \
-		$(BUILDENV) \
-		$(MAKE) PREFIX= CC=$(TARGET)-gcc LD=$(TARGET)-ld STRIP=$(TARGET)-strip WITHOUT_XATTR=1 DESTDIR=$(TARGET_DIR); \
+		$(call apply_patches, $(MTD_UTILS_PATCH)); \
+		$(CONFIGURE) \
+			--target=$(TARGET) \
+			--prefix= \
+			--program-suffix="" \
+			--mandir=/.remove \
+			--docdir=/.remove \
+			--disable-builddir \
+		; \
+		$(MAKE); \
 		cp -a $(BUILD_TMP)/mtd-utils-$(MTD_UTILS_VER)/mkfs.jffs2 $(TARGET_DIR)/usr/sbin
 		cp -a $(BUILD_TMP)/mtd-utils-$(MTD_UTILS_VER)/sumtool $(TARGET_DIR)/usr/sbin
 #		$(MAKE) install DESTDIR=$(TARGET_DIR)
@@ -111,7 +143,7 @@ $(D)/module_init_tools: $(D)/bootstrap $(D)/lsb $(ARCHIVE)/$(MODULE_INIT_TOOLS_S
 			--disable-builddir \
 		; \
 		$(MAKE); \
-		$(MAKE) install sbin_PROGRAMS="depmod modinfo" bin_PROGRAMS= DESTDIR=$(TARGET_DIR)
+		$(MAKE) install sbin_PROGRAMS="depmod insmod modinfo" bin_PROGRAMS= DESTDIR=$(TARGET_DIR)
 	$(call adapted-etc-files, $(MODULE_INIT_TOOLS_ADAPTED_ETC_FILES))
 	$(REMOVE)/module-init-tools-$(MODULE_INIT_TOOLS_VER)
 	$(TOUCH)
@@ -119,10 +151,11 @@ $(D)/module_init_tools: $(D)/bootstrap $(D)/lsb $(ARCHIVE)/$(MODULE_INIT_TOOLS_S
 #
 # sysvinit
 #
-SYSVINIT_VER = 2.99
+SYSVINIT_VER = 3.04
 SYSVINIT_SOURCE = sysvinit-$(SYSVINIT_VER).tar.xz
 SYSVINIT_PATCH  = sysvinit-$(SYSVINIT_VER)-crypt-lib.patch
 SYSVINIT_PATCH += sysvinit-$(SYSVINIT_VER)-change-INIT_FIFO.patch
+SYSVINIT_PATCH += sysvinit-$(SYSVINIT_VER)-remove-killall5.patch
 
 $(ARCHIVE)/$(SYSVINIT_SOURCE):
 #	$(WGET) http://ftp.debian.org/debian/pool/main/s/sysvinit/$(SYSVINIT_SOURCE)
@@ -317,7 +350,7 @@ $(D)/portmap: $(D)/bootstrap $(D)/lsb $(ARCHIVE)/$(PORTMAP_SOURCE) $(ARCHIVE)/po
 #
 # e2fsprogs
 #
-E2FSPROGS_VER = 1.46.2
+E2FSPROGS_VER = 1.46.5
 E2FSPROGS_SOURCE = e2fsprogs-$(E2FSPROGS_VER).tar.gz
 E2FSPROGS_PATCH  = e2fsprogs-$(E2FSPROGS_VER).patch
 
@@ -377,10 +410,11 @@ $(D)/e2fsprogs: $(D)/bootstrap $(D)/util_linux $(ARCHIVE)/$(E2FSPROGS_SOURCE)
 #
 # util_linux
 #
-UTIL_LINUX_MAJOR = 2.36
-UTIL_LINUX_MINOR = .2
+UTIL_LINUX_MAJOR = 2.38
+UTIL_LINUX_MINOR = .1
 UTIL_LINUX_VER = $(UTIL_LINUX_MAJOR)$(UTIL_LINUX_MINOR)
 UTIL_LINUX_SOURCE = util-linux-$(UTIL_LINUX_VER).tar.xz
+UTIL_LINUX_PATCH = util-linux-$(UTIL_LINUX_MAJOR)$(UTIL_LINUX_MINOR).patch
 
 $(ARCHIVE)/$(UTIL_LINUX_SOURCE):
 	$(WGET) https://mirrors.edge.kernel.org/pub/linux/utils/util-linux/v$(UTIL_LINUX_MAJOR)/$(UTIL_LINUX_SOURCE)
@@ -390,6 +424,7 @@ $(D)/util_linux: $(D)/bootstrap $(D)/zlib $(ARCHIVE)/$(UTIL_LINUX_SOURCE)
 	$(REMOVE)/util-linux-$(UTIL_LINUX_VER)
 	$(UNTAR)/$(UTIL_LINUX_SOURCE)
 	$(CH_DIR)/util-linux-$(UTIL_LINUX_VER); \
+		$(call apply_patches, $(UTIL_LINUX_PATCH)); \
 		$(CONFIGURE) \
 			--prefix=/usr \
 			--mandir=/.remove \
@@ -469,7 +504,7 @@ $(D)/util_linux: $(D)/bootstrap $(D)/zlib $(ARCHIVE)/$(UTIL_LINUX_SOURCE)
 #
 # gptfdisk
 #
-GPTFDISK_VER = 1.0.5
+GPTFDISK_VER = 1.0.9
 GPTFDISK_SOURCE = gptfdisk-$(GPTFDISK_VER).tar.gz
 
 $(ARCHIVE)/$(GPTFDISK_SOURCE):
@@ -525,7 +560,7 @@ $(D)/parted: $(D)/bootstrap $(D)/e2fsprogs $(ARCHIVE)/$(PARTED_SOURCE)
 #
 # dosfstools
 #
-DOSFSTOOLS_VER = 4.1
+DOSFSTOOLS_VER = 4.2
 DOSFSTOOLS_SOURCE = dosfstools-$(DOSFSTOOLS_VER).tar.xz
 
 $(ARCHIVE)/$(DOSFSTOOLS_SOURCE):
@@ -622,10 +657,9 @@ $(D)/ntfs_3g: $(D)/bootstrap $(ARCHIVE)/$(NTFS_3G_SOURCE)
 #
 # mc
 #
-MC_VER = 4.8.26
+MC_VER = 4.8.27
 MC_SOURCE = mc-$(MC_VER).tar.xz
 MC_PATCH  = mc-$(MC_VER).patch
-MC_PATCH += mc-$(MC_VER)_fix-mouse-handling-newer-terminfo.patch
 
 $(ARCHIVE)/$(MC_SOURCE):
 	$(WGET) ftp.midnight-commander.org/$(MC_SOURCE)
@@ -780,8 +814,9 @@ $(D)/curlftpfs: $(D)/bootstrap $(D)/libcurl $(D)/fuse $(D)/libglib2 $(ARCHIVE)/$
 #
 # sdparm
 #
-SDPARM_VER = 1.11
+SDPARM_VER = 1.12
 SDPARM_SOURCE = sdparm-$(SDPARM_VER).tgz
+SDPARM_PATCH = sdparm-$(SDPARM_VER).patch
 
 $(ARCHIVE)/$(SDPARM_SOURCE):
 	$(WGET) http://sg.danny.cz/sg/p/$(SDPARM_SOURCE)
@@ -791,6 +826,7 @@ $(D)/sdparm: $(D)/bootstrap $(ARCHIVE)/$(SDPARM_SOURCE)
 	$(REMOVE)/sdparm-$(SDPARM_VER)
 	$(UNTAR)/$(SDPARM_SOURCE)
 	$(CH_DIR)/sdparm-$(SDPARM_VER); \
+	$(call apply_patches, $(SDPARM_PATCH)); \
 		$(CONFIGURE) \
 			--prefix= \
 			--bindir=/sbin \
@@ -833,7 +869,7 @@ $(D)/hddtemp: $(D)/bootstrap $(ARCHIVE)/$(HDDTEMP_SOURCE)
 #
 # hdparm
 #
-HDPARM_VER = 9.58
+HDPARM_VER = 9.65
 HDPARM_SOURCE = hdparm-$(HDPARM_VER).tar.gz
 
 $(ARCHIVE)/$(HDPARM_SOURCE):
@@ -898,7 +934,7 @@ $(D)/fbshot: $(D)/bootstrap $(D)/libpng $(ARCHIVE)/$(FBSHOT_SOURCE)
 #
 # sysstat
 #
-SYSSTAT_VER = 12.5.3
+SYSSTAT_VER = 12.5.4
 SYSSTAT_SOURCE = sysstat-$(SYSSTAT_VER).tar.bz2
 
 $(ARCHIVE)/$(SYSSTAT_SOURCE):
@@ -916,6 +952,29 @@ $(D)/sysstat: $(D)/bootstrap $(ARCHIVE)/$(SYSSTAT_SOURCE)
 		$(MAKE) all; \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
 	$(REMOVE)/sysstat-$(SYSSTAT_VER)
+	$(TOUCH)
+
+#
+# libnsl
+#
+LIBNSL_VER    = 2.0.0
+LIBNSL_SOURCE = libnsl-$(LIBNSL_VER).tar.gz
+
+$(ARCHIVE)/$(LIBNSL_SOURCE):
+	$(DOWNLOAD) https://github.com/thkukuk/libnsl/archive/v$(LIBNSL_VER)/$(LIBNSL_SOURCE)
+
+$(D)/libnsl: $(D)/bootstrap $(ARCHIVE)/$(LIBNSL_SOURCE)
+	$(START_BUILD)
+	$(REMOVE)/libnsl-$(LIBNSL_VER)
+	$(UNTAR)/$(LIBNSL_SOURCE)
+	$(CHDIR)/libnsl-$(LIBNSL_VER); \
+		$(CONFIGURE) \
+			--prefix=/usr \
+			; \
+		$(MAKE) all; \
+		$(MAKE) install DESTDIR=$(CROSS_DIR)/$(TARGET)/sys-root
+		cp -a $(CROSS_DIR)/$(TARGET)/sys-root/usr/lib/libnsl.so* $(TARGET_LIB_DIR)
+	$(REMOVE)/libnsl-$(LIBNSL_VER)
 	$(TOUCH)
 
 #
@@ -958,7 +1017,7 @@ $(D)/shairport: $(D)/bootstrap $(D)/openssl $(D)/howl $(D)/alsa_lib
 	$(REMOVE)/shairport
 	$(SET) -e; if [ -d $(ARCHIVE)/shairport.git ]; \
 		then cd $(ARCHIVE)/shairport.git; git pull $(MINUS_Q); \
-		else cd $(ARCHIVE); git clone $(MINUS_Q) -b 1.0-dev git://github.com/abrasive/shairport.git shairport.git; \
+		else cd $(ARCHIVE); git clone $(MINUS_Q) -b 1.0-dev https://github.com/abrasive/shairport.git shairport.git; \
 		fi
 	cp -ra $(ARCHIVE)/shairport.git $(BUILD_TMP)/shairport
 	$(CH_DIR)/shairport; \
@@ -1101,7 +1160,7 @@ $(D)/avahi: $(D)/bootstrap $(D)/expat $(D)/libdaemon $(D)/dbus $(ARCHIVE)/$(AVAH
 #
 # wget
 #
-WGET_VER = 1.21.1
+WGET_VER = 1.21.3
 WGET_SOURCE = wget-$(WGET_VER).tar.gz
 WGET_PATCH = wget-$(WGET_VER).patch
 
@@ -1161,7 +1220,7 @@ $(D)/coreutils: $(D)/bootstrap $(D)/openssl $(ARCHIVE)/$(COREUTILS_SOURCE)
 #
 # smartmontools
 #
-SMARTMONTOOLS_VER = 7.2
+SMARTMONTOOLS_VER = 7.3
 SMARTMONTOOLS_SOURCE = smartmontools-$(SMARTMONTOOLS_VER).tar.gz
 
 $(ARCHIVE)/$(SMARTMONTOOLS_SOURCE):
@@ -1246,14 +1305,15 @@ $(D)/libnfsidmap: $(D)/bootstrap $(ARCHIVE)/$(LIBNFSIDMAP_SOURCE)
 #
 # vsftpd
 #
-VSFTPD_VER = 3.0.3
+VSFTPD_VER = 3.0.5
 VSFTPD_SOURCE = vsftpd-$(VSFTPD_VER).tar.gz
-VSFTPD_PATCH = vsftpd-$(VSFTPD_VER).patch
+VSFTPD_PATCH  = vsftpd-$(VSFTPD_VER).patch
+VSFTPD_PATCH += vsftpd-$(VSFTPD_VER)-find_libs.patch
 
 $(ARCHIVE)/$(VSFTPD_SOURCE):
 	$(WGET) https://security.appspot.com/downloads/$(VSFTPD_SOURCE)
 
-$(D)/vsftpd: $(D)/bootstrap $(ARCHIVE)/$(VSFTPD_SOURCE)
+$(D)/vsftpd: $(D)/bootstrap $(D)/openssl $(ARCHIVE)/$(VSFTPD_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/vsftpd-$(VSFTPD_VER)
 	$(UNTAR)/$(VSFTPD_SOURCE)
@@ -1330,7 +1390,7 @@ $(D)/htop: $(D)/bootstrap $(D)/ncurses $(ARCHIVE)/$(HTOP_SOURCE)
 #
 # ethtool
 #
-ETHTOOL_VER = 5.12
+ETHTOOL_VER = 6.0
 ETHTOOL_SOURCE = ethtool-$(ETHTOOL_VER).tar.xz
 ETHTOOL_PATCH = ethtool-$(ETHTOOL_VER).patch
 
@@ -1537,57 +1597,21 @@ $(D)/wireless_tools: $(D)/bootstrap $(ARCHIVE)/$(WIRELESS_TOOLS_SOURCE)
 	$(TOUCH)
 
 #
-# libnl
-#
-LIBNL_VER = 3.2.25
-LIBNL_SOURCE = libnl-$(LIBNL_VER).tar.gz
-
-$(ARCHIVE)/$(LIBNL_SOURCE):
-	$(WGET) https://www.infradead.org/~tgr/libnl/files/$(LIBNL_SOURCE)
-
-$(D)/libnl: $(D)/bootstrap $(D)/openssl $(ARCHIVE)/$(LIBNL_SOURCE)
-	$(START_BUILD)
-	$(REMOVE)/libnl-$(LIBNL_VER)
-	$(UNTAR)/$(LIBNL_SOURCE)
-	$(CH_DIR)/libnl-$(LIBNL_VER); \
-		$(CONFIGURE) \
-			--target=$(TARGET) \
-			--prefix=/usr \
-			--bindir=/.remove \
-			--mandir=/.remove \
-			--infodir=/.remove \
-		make $(SILENT_OPT); \
-		make install $(SILENT_OPT) DESTDIR=$(TARGET_DIR)
-	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libnl-3.0.pc
-	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libnl-cli-3.0.pc
-	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libnl-genl-3.0.pc
-	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libnl-nf-3.0.pc
-	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libnl-route-3.0.pc
-	$(REWRITE_LIBTOOL)/libnl-3.la
-	$(REWRITE_LIBTOOL)/libnl-cli-3.la
-	$(REWRITE_LIBTOOL)/libnl-genl-3.la
-	$(REWRITE_LIBTOOL)/libnl-idiag-3.la
-	$(REWRITE_LIBTOOL)/libnl-nf-3.la
-	$(REWRITE_LIBTOOL)/libnl-route-3.la
-	$(REMOVE)/libnl-$(LIBNL_VER)
-	$(TOUCH)
-
-#
 # wpa_supplicant
 #
-WPA_SUPPLICANT_VER = 0.7.3
+WPA_SUPPLICANT_VER = 2.9
 WPA_SUPPLICANT_SOURCE = wpa_supplicant-$(WPA_SUPPLICANT_VER).tar.gz
 
 $(ARCHIVE)/$(WPA_SUPPLICANT_SOURCE):
 	$(WGET) https://w1.fi/releases/$(WPA_SUPPLICANT_SOURCE)
 
-$(D)/wpa_supplicant: $(D)/bootstrap $(D)/openssl $(D)/wireless_tools $(ARCHIVE)/$(WPA_SUPPLICANT_SOURCE)
+$(D)/wpa_supplicant: $(D)/bootstrap $(D)/openssl $(D)/wireless_tools $(D)/libnl $(D)/dbus $(ARCHIVE)/$(WPA_SUPPLICANT_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/wpa_supplicant-$(WPA_SUPPLICANT_VER)
 	$(UNTAR)/$(WPA_SUPPLICANT_SOURCE)
 	$(CH_DIR)/wpa_supplicant-$(WPA_SUPPLICANT_VER)/wpa_supplicant; \
 		cp -f defconfig .config; \
-		sed -i 's/#CONFIG_DRIVER_RALINK=y/CONFIG_DRIVER_RALINK=y/' .config; \
+		sed -i 's/#CONFIG_LIBNL32=y/CONFIG_LIBNL32=y/' .config; \
 		sed -i 's/#CONFIG_IEEE80211W=y/CONFIG_IEEE80211W=y/' .config; \
 		sed -i 's/#CONFIG_OS=unix/CONFIG_OS=unix/' .config; \
 		sed -i 's/#CONFIG_TLS=openssl/CONFIG_TLS=openssl/' .config; \
@@ -1606,21 +1630,18 @@ $(D)/wpa_supplicant: $(D)/bootstrap $(D)/openssl $(D)/wireless_tools $(ARCHIVE)/
 #
 # dvbsnoop
 #
-DVBSNOOP_VER = d3f134b
-DVBSNOOP_SOURCE = dvbsnoop-git-$(DVBSNOOP_VER).tar.bz2
-#DVBSNOOP_URL = https://github.com/cotdp/dvbsnoop.git
 DVBSNOOP_URL = https://github.com/Duckbox-Developers/dvbsnoop.git
-
-$(ARCHIVE)/$(DVBSNOOP_SOURCE):
-	$(SCRIPTS_DIR)/get-git-archive.sh $(DVBSNOOP_URL) $(DVBSNOOP_VER) $(notdir $@) $(ARCHIVE)
-
 DVBSNOOP_CONF_OPTS = --with-dvbincludes=$(KERNEL_DIR)/include
 
-$(D)/dvbsnoop: $(D)/bootstrap $(D)/kernel $(ARCHIVE)/$(DVBSNOOP_SOURCE)
+$(D)/dvbsnoop: $(D)/bootstrap $(D)/kernel
 	$(START_BUILD)
-	$(REMOVE)/dvbsnoop-git-$(DVBSNOOP_VER)
-	$(UNTAR)/$(DVBSNOOP_SOURCE)
-	$(CH_DIR)/dvbsnoop-git-$(DVBSNOOP_VER); \
+	$(REMOVE)/dvbsnoop
+	$(SET) -e; if [ -d $(ARCHIVE)/dvbsnoop.git ]; \
+		then cd $(ARCHIVE)/dvbsnoop.git; git pull $(MINUS_Q); \
+		else cd $(ARCHIVE); git clone $(MINUS_Q) $(DVBSNOOP_URL) dvbsnoop.git; \
+		fi
+	$(SILENT)cp -ra $(ARCHIVE)/dvbsnoop.git $(BUILD_TMP)/dvbsnoop
+	$(CH_DIR)/dvbsnoop; \
 		$(CONFIGURE) \
 			--enable-silent-rules \
 			--prefix=/usr \
@@ -1629,7 +1650,7 @@ $(D)/dvbsnoop: $(D)/bootstrap $(D)/kernel $(ARCHIVE)/$(DVBSNOOP_SOURCE)
 		; \
 		$(MAKE); \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
-	$(REMOVE)/dvbsnoop-git-$(DVBSNOOP_VER)
+	$(REMOVE)/dvbsnoop
 	$(TOUCH)
 
 #
@@ -1658,7 +1679,7 @@ $(D)/udpxy: $(D)/bootstrap $(ARCHIVE)/$(UDPXY_SOURCE)
 #
 # openvpn
 #
-OPENVPN_VER = 2.5.2
+OPENVPN_VER = 2.5.5
 OPENVPN_SOURCE = openvpn-$(OPENVPN_VER).tar.xz
 
 $(ARCHIVE)/$(OPENVPN_SOURCE):
@@ -1697,7 +1718,7 @@ $(D)/openvpn: $(D)/bootstrap $(D)/openssl $(D)/lzo $(ARCHIVE)/$(OPENVPN_SOURCE)
 #
 # openssh
 #
-OPENSSH_VER = 8.6p1
+OPENSSH_VER = 9.1p1
 OPENSSH_SOURCE = openssh-$(OPENSSH_VER).tar.gz
 
 $(ARCHIVE)/$(OPENSSH_SOURCE):
@@ -1760,7 +1781,7 @@ $(D)/dropbear: $(D)/bootstrap $(D)/zlib $(ARCHIVE)/$(DROPBEAR_SOURCE)
 #
 # dropbearmulti
 #
-DROPBEARMULTI_VER = c8d852c
+DROPBEARMULTI_VER = 808bc39
 DROPBEARMULTI_SOURCE = dropbearmulti-git-$(DROPBEARMULTI_VER).tar.bz2
 DROPBEARMULTI_URL = https://github.com/mkj/dropbear.git
 
@@ -1874,5 +1895,29 @@ $(D)/ofgwrite: $(D)/bootstrap $(ARCHIVE)/$(OFGWRITE_SOURCE)
 	$(SILENT)install -m 755 $(BUILD_TMP)/ofgwrite-git-$(OFGWRITE_VER)/ofgwrite_tgz $(TARGET_DIR)/usr/bin
 	$(SILENT)install -m 755 $(BUILD_TMP)/ofgwrite-git-$(OFGWRITE_VER)/ofgwrite $(TARGET_DIR)/usr/bin
 	$(REMOVE)/ofgwrite-git-$(OFGWRITE_VER)
+	$(TOUCH)
+
+#
+# uboot-utils
+#
+UBOOT_UTILS_VER = 20081215
+UBOOT_UTILS_URL = https://github.com/mcmilk/uboot-utils
+UBOOT_UTILS_PATCH = uboot-utils-$(UBOOT_UTILS_VER)_sh4.patch
+
+$(D)/uboot-utils: $(D)/bootstrap
+	$(START_BUILD)
+	$(REMOVE)/uboot-utils-$(UBOOT_UTILS_VER)
+	$(SET) -e; if [ -d $(ARCHIVE)/uboot-utils.git ]; \
+		then cd $(ARCHIVE)/uboot-utils.git; git pull $(MINUS_Q); \
+		else cd $(ARCHIVE); git clone $(MINUS_Q) $(UBOOT_UTILS_URL) uboot-utils.git; \
+		fi
+	$(SILENT)cp -ra $(ARCHIVE)/uboot-utils.git $(BUILD_TMP)/uboot-utils-$(UBOOT_UTILS_VER)
+	$(SET) -e; cd $(BUILD_TMP)/uboot-utils-$(UBOOT_UTILS_VER); \
+		$(call apply_patches, $(UBOOT_UTILS_PATCH)); \
+		$(BUILDENV) \
+		$(MAKE)
+	$(SILENT)install -m 755 $(BUILD_TMP)/uboot-utils-$(UBOOT_UTILS_VER)/fw_setenv $(TARGET_DIR)/usr/bin
+#	ln -s $(TARGET_DIR)/usr/bin/fw_setenv $(TARGET_DIR)/usr/bin/fw_printenv
+	$(REMOVE)/uboot-utils-$(UBOOT_UTILS_VER)
 	$(TOUCH)
 

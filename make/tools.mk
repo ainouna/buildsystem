@@ -2,35 +2,42 @@
 # tools
 #
 tools-clean:
-	rm -f $(D)/tools-*
-	-$(MAKE) -C $(TOOLS_DIR)/aio-grab distclean
-	-$(MAKE) -C $(TOOLS_DIR)/devinit distclean
-	-$(MAKE) -C $(TOOLS_DIR)/eeprom_fortis distclean
-	-$(MAKE) -C $(TOOLS_DIR)/eeprom_ipbox distclean
-	-$(MAKE) -C $(TOOLS_DIR)/eeprom_ufs913 distclean
-	-$(MAKE) -C $(TOOLS_DIR)/eplayer3 distclean
-	-$(MAKE) -C $(TOOLS_DIR)/exteplayer3 distclean
-	-$(MAKE) -C $(TOOLS_DIR)/evremote2 distclean
-	-$(MAKE) -C $(TOOLS_DIR)/fp_control distclean
-	-$(MAKE) -C $(TOOLS_DIR)/gitVCInfo distclean
-	-$(MAKE) -C $(TOOLS_DIR)/hotplug distclean
-	-$(MAKE) -C $(TOOLS_DIR)/libeplayer3_org distclean
-	-$(MAKE) -C $(TOOLS_DIR)/libeplayer3 distclean
-	-$(MAKE) -C $(TOOLS_DIR)/libmme_host distclean
-	-$(MAKE) -C $(TOOLS_DIR)/libmme_image distclean
-	-$(MAKE) -C $(TOOLS_DIR)/minimon distclean
-	-$(MAKE) -C $(TOOLS_DIR)/msgbox distclean
-	-$(MAKE) -C $(TOOLS_DIR)/satfind distclean
-	-$(MAKE) -C $(TOOLS_DIR)/showiframe distclean
-	-$(MAKE) -C $(TOOLS_DIR)/spf_tool distclean
-	-$(MAKE) -C $(TOOLS_DIR)/stfbcontrol distclean
-	-$(MAKE) -C $(TOOLS_DIR)/streamproxy distclean
-	-$(MAKE) -C $(TOOLS_DIR)/tfd2mtd distclean
-	-$(MAKE) -C $(TOOLS_DIR)/tffpctl distclean
-	-$(MAKE) -C $(TOOLS_DIR)/tuxcom distclean
-	-$(MAKE) -C $(TOOLS_DIR)/ustslave distclean
-	-$(MAKE) -C $(TOOLS_DIR)/vfdctl distclean
-	-$(MAKE) -C $(TOOLS_DIR)/wait4button distclean
+	@rm -f $(D)/tools-*
+	@-$(MAKE) -C $(TOOLS_DIR)/aio-grab distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/devinit distclean
+#	@-$(MAKE) -C $(TOOLS_DIR)/eeprom_crenova distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/eeprom_dgs distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/eeprom_fortis distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/eeprom_ipbox distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/eeprom_ufs910 distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/eeprom_ufs913 distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/eeprom_ufs922 distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/eplayer3 distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/exteplayer3 distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/evremote2 distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/infobox distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/fp_control distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/gitVCInfo distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/hotplug distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/libeplayer3_org distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/libeplayer3 distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/libmme_host distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/libmme_image distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/minimon distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/msgbox distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/read-edid distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/satfind distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/showiframe distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/spf_tool distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/stfbcontrol distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/streamproxy distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/tfd2mtd distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/tffpctl distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/titan-tools distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/tuxcom distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/ustslave distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/vfdctl distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/wait4button distclean
 ifneq ($(wildcard $(TOOLS_DIR)/own-tools),)
 	-$(MAKE) -C $(TOOLS_DIR)/own-tools distclean
 endif
@@ -92,6 +99,20 @@ $(D)/tools-eeprom-cuberevo_led: $(D)/bootstrap
 	$(TOUCH)
 
 #
+# eeprom_crenova
+#
+$(D)/tools-eeprom-crenova: $(D)/bootstrap
+	$(START_BUILD)
+	$(SET) -e; cd $(TOOLS_DIR)/eeprom_crenova; \
+		if [ ! -d m4 ]; then mkdir m4; fi; \
+		$(CONFIGURE_TOOLS) \
+			--prefix= \
+		; \
+		$(MAKE); \
+		$(MAKE) install DESTDIR=$(TARGET_DIR)
+	$(TOUCH)
+
+#
 # eeprom_dgs
 #
 $(D)/tools-eeprom-dgs: $(D)/bootstrap
@@ -134,11 +155,39 @@ $(D)/tools-eeprom-ipbox: $(D)/bootstrap
 	$(TOUCH)
 
 #
+# eeprom_ufs910
+#
+$(D)/tools-eeprom-ufs910: $(D)/bootstrap
+	$(START_BUILD)
+	$(SET) -e; cd $(TOOLS_DIR)/eeprom_ufs910; \
+		if [ ! -d m4 ]; then mkdir m4; fi; \
+		$(CONFIGURE_TOOLS) \
+			--prefix= \
+		; \
+		$(MAKE); \
+		$(MAKE) install DESTDIR=$(TARGET_DIR)
+	$(TOUCH)
+
+#
 # eeprom_ufs913
 #
 $(D)/tools-eeprom-ufs913: $(D)/bootstrap
 	$(START_BUILD)
 	$(SET) -e; cd $(TOOLS_DIR)/eeprom_ufs913; \
+		if [ ! -d m4 ]; then mkdir m4; fi; \
+		$(CONFIGURE_TOOLS) \
+			--prefix= \
+		; \
+		$(MAKE); \
+		$(MAKE) install DESTDIR=$(TARGET_DIR)
+	$(TOUCH)
+
+#
+# eeprom_ufs922
+#
+$(D)/tools-eeprom-ufs922: $(D)/bootstrap
+	$(START_BUILD)
+	$(SET) -e; cd $(TOOLS_DIR)/eeprom_ufs922; \
 		if [ ! -d m4 ]; then mkdir m4; fi; \
 		$(CONFIGURE_TOOLS) \
 			--prefix= \
@@ -181,6 +230,20 @@ $(D)/tools-gitVCInfo: $(D)/bootstrap
 $(D)/tools-hotplug: $(D)/bootstrap
 	$(START_BUILD)
 	$(SET) -e; cd $(TOOLS_DIR)/hotplug; \
+		if [ ! -d m4 ]; then mkdir m4; fi; \
+		$(CONFIGURE_TOOLS) \
+			--prefix= \
+		; \
+		$(MAKE); \
+		$(MAKE) install DESTDIR=$(TARGET_DIR)
+	$(TOUCH)
+
+#
+# infobox
+#
+$(D)/tools-infobox: $(D)/bootstrap $(D)/freetype $(D)/libjpeg $(D)/libpng $(D)/zlib
+	$(START_BUILD)
+	$(SET) -e; cd $(TOOLS_DIR)/infobox; \
 		if [ ! -d m4 ]; then mkdir m4; fi; \
 		$(CONFIGURE_TOOLS) \
 			--prefix= \
@@ -272,6 +335,20 @@ $(D)/tools-msgbox: $(D)/bootstrap $(D)/libpng $(D)/freetype
 			--prefix= \
 			--with-boxmodel=$(BOXTYPE) \
 			--with-boxtype=$(BOXTYPE) \
+		; \
+		$(MAKE); \
+		$(MAKE) install DESTDIR=$(TARGET_DIR)
+	$(TOUCH)
+
+#
+# read-edid
+#
+$(D)/tools-read-edid: $(D)/bootstrap
+	$(START_BUILD)
+	$(SET) -e; cd $(TOOLS_DIR)/read-edid; \
+		if [ ! -d m4 ]; then mkdir m4; fi; \
+		$(CONFIGURE_TOOLS) \
+			--prefix= \
 		; \
 		$(MAKE); \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
@@ -370,6 +447,21 @@ $(D)/tools-tffpctl: $(D)/bootstrap
 		if [ ! -d m4 ]; then mkdir m4; fi; \
 		$(CONFIGURE_TOOLS) \
 			--prefix= \
+		; \
+		$(MAKE); \
+		$(MAKE) install DESTDIR=$(TARGET_DIR)
+	$(TOUCH)
+
+#
+# titan-tools
+#
+$(D)/tools-titan-tools: $(D)/bootstrap $(D)/enigma2_tuxtxt32bpp $(D)/freetype
+	$(START_BUILD)
+	$(SET) -e; cd $(TOOLS_DIR)/titan-tools; \
+		if [ ! -d m4 ]; then mkdir m4; fi; \
+		$(CONFIGURE_TOOLS) \
+			--prefix= \
+			--with-fontdir=/usr/share/fonts \
 		; \
 		$(MAKE); \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
@@ -485,24 +577,36 @@ ifneq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), small size))
 TOOLS += $(D)/tools-aio-grab
 endif
 TOOLS += $(D)/tools-devinit
-ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs7110 hs7420 hs7810a hs7119 hs7249 hs7819))
-TOOLS += $(D)/tools-eeprom-fortis
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE), opt9600 opt9600mini opt9600prima))
+TOOLS += $(D)/tools-eeprom-crenova
 endif
 ifeq ($(BOXTYPE), $(filter $(BOXTYPE), cuberevo cuberevo_mini cuberevo_mini2 cuberevo_mini_fta cuberevo_250hd cuberevo_2000hd cuberevo_3000hd))
 TOOLS += $(D)/tools-eeprom-dgs
 endif
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs7110 hs7420 hs7810a hs7119 hs7249 hs7819))
+TOOLS += $(D)/tools-eeprom-fortis
+endif
 ifeq ($(BOXTYPE), $(filter $(BOXTYPE), ipbox55 ipbox99 ipbox9900))
 TOOLS += $(D)/tools-eeprom-ipbox
+endif
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE), ufs910))
+TOOLS += $(D)/tools-eeprom-ufs910
 endif
 ifeq ($(BOXTYPE), $(filter $(BOXTYPE), ufs913))
 TOOLS += $(D)/tools-eeprom-ufs913
 endif
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE), ufs922))
+TOOLS += $(D)/tools-eeprom-ufs922
+endif
 TOOLS += $(D)/tools-evremote2
-ifeq ($(BOXTYPE), $(filter $(BOXTYPE), adb_box atemio520 atemio530 cuberevo cuberevo_250hd cuberevo_2000hd cuberevo_3000hd cuberevo_9500hd cuberevo_mini cuberevo_mini2 cuberevo_mini_fta fs9000 hl101 hs5101 hs7110 hs7420 hs7810a hs7119 hs7429 hs7819 hs8200 hs9510 opt9600 ufc960 ufs910 ufs912 ufs913 ufs922 spark spark7162 tf7700hdpvr vip1_v1 vip1_v2 vip2 vitamin_hd5000))
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE), adb_box atemio520 cuberevo cuberevo_mini cuberevo_mini2 cuberevo_mini_fta cuberevo_250hd cuberevo_2000hd cuberevo_3000hd cuberevo_9500hd fs9000 hl101 hs5101 hs7110 hs7420 hs7810a hs7119 hs7429 hs7819 hs8200 hs9510 opt9600 opt9600mini opt9600prima ufc960 ufs910 ufs912 ufs913 ufs922 spark spark7162 tf7700hdpvr vip1_v1 vip1_v2 vip2 vitamin_hd5000))
 TOOLS += $(D)/tools-fp_control
 endif
 TOOLS += $(D)/tools-hotplug
-ifeq ($(IMAGE), $(filter $(IMAGE), enigma2 enigma2-wlandriver))
+ifeq ($(IMAGE), $(filter $(IMAGE), titan titan-wlandriver))
+TOOLS += $(D)/tools-infobox
+endif
+ifeq ($(IMAGE), $(filter $(IMAGE), enigma2 enigma2-wlandriver titan titan-wlandriver))
 TOOLS += $(D)/tools-libmme_host
 TOOLS += $(D)/tools-libmme_image
 endif
@@ -515,12 +619,16 @@ ifeq ($(PLUGINS_NEUTRINO), Yes)
 TOOLS += $(D)/tools-msgbox
 endif
 ifneq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), small size))
+TOOLS += $(D)/tools-read-edid
 TOOLS += $(D)/tools-satfind
 endif
 TOOLS += $(D)/tools-showiframe
 TOOLS += $(D)/tools-stfbcontrol
 ifneq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), small))
 TOOLS += $(D)/tools-streamproxy
+endif
+ifeq ($(IMAGE), $(filter $(IMAGE), titan titan-wlandriver))
+TOOLS += $(D)/tools-titan-tools
 endif
 TOOLS += $(D)/tools-ustslave
 ifeq ($(BOXTYPE), $(filter $(BOXTYPE), tf7700))

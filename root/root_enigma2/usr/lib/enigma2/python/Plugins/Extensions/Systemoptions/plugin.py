@@ -5,7 +5,7 @@ from Screens.Screen import Screen
 from Screens.MessageBox import MessageBox
 from Screens.ChoiceBox import ChoiceBox
 from Screens.Standby import TryQuitMainloop
-from enigma import evfd
+from enigma import evfd, eTimer
 from time import localtime, strftime, sleep
 from Components.Console import Console
 from Tools.Directories import fileExists, resolveFilename, SCOPE_LANGUAGE, SCOPE_PLUGINS
@@ -21,8 +21,9 @@ from Components.Sources.StaticText import StaticText
 import os
 #from Components.AVSwitch import AVSwitch
 from Tools.HardwareInfo import HardwareInfo
+from time import sleep
 import gettext
-#Version 210208.1
+#Version 210606.1
 
 lang = language.getLanguage()
 environ['LANGUAGE'] = lang[:2]
@@ -107,8 +108,8 @@ if os.path.isfile("/boot/audio_dts.elf"):
 			('on', _('on')),
 			('off', _('off'))
 			])
-#if stb.lower() == 'fs9000':
-#	fs9000 specific options go here
+#if stb.lower() == 'hdbox':
+#	hdbox specific options go here
 if stb.lower() == 'spark7162' or stb.lower() == 'spark':
 	config.plugins.systemoptions.tunertype = ConfigSelection(default='t',
 		choices = [
@@ -206,6 +207,7 @@ class ConfigOptions(Screen, ConfigListScreen):
 	def __init__(self, session):
 	        Screen.__init__(self, session)
 	        self.session = session
+		self.restartbox = None
 #		self.version = 'V1.1'
 #		self['OptionVersion'] = Label(_(self.version + ' by Audioniek'))
 		self.skinName = ["PartnerboxEntryConfigScreen"]
@@ -213,7 +215,7 @@ class ConfigOptions(Screen, ConfigListScreen):
 		self.setTitle(_("System options configuration"))
 		self["key_red"] = self["red"] = Label(_("Cancel"))
 		if stb.lower() == 'spark7162' or stb.lower() == 'spark':
-			self["key_green"] = self["green"] = Label(_("OK (reboots)"))
+			self["key_green"] = self["green"] = Label(_("OK"))
 #			self["key_blue"] = self["blue"] = Label(_("Test overclock"))
 		else:
 			self["key_green"] = self["green"] = Label(_("OK"))
@@ -323,19 +325,20 @@ class ConfigOptions(Screen, ConfigListScreen):
 		ConfigListScreen.keySave(self)
 		if config.plugins.systemoptions.swap.value == True:
 			dummy = open('/tmp/setswap', 'a')
-	 		self.close()
+ 		self.close()
 
 	def keySaveSpark(self):
 		ConfigListScreen.keySave(self)
 		if config.plugins.systemoptions.swap.value == True:
 			dummy = open('/tmp/setswap', 'a')
-	 		self.close()
-		restartbox = self.session.openWithCallback(self.restartE2, MessageBox, _('The receiver needs to be restarted to apply the new options.\n \nRebooting in a moment!\n'), MessageBox.TYPE_INFO, timeout=8)
-		restartbox.setTitle(_('Reboot receiver'))
+#		sleep(5.0)
+#		self.restartbox = self.session.openWithCallback(self.restartE2, MessageBox, _('The receiver needs to be restarted to apply the new options.\n\nRebooting in a moment!'), type = MessageBox.TYPE_INFO, timeout = 8)
+#		self.restartbox.setTitle(_('Reboot receiver'))
+#		self.close()
 
 	def keyYellow(self):
-		restartbox = self.session.openWithCallback(self.restartE2, MessageBox, _('Do you really want to restart the receiver now?'), MessageBox.TYPE_YESNO)
-		restartbox.setTitle(_('Reboot receiver'))
+		self.restartbox = self.session.openWithCallback(self.restartE2, MessageBox, _('Do you really want to restart the receiver now?'), type = MessageBox.TYPE_YESNO, default = False)
+		self.restartbox.setTitle(_('Reboot receiver'))
 
 #	if stb.lower() == 'spark7162' or stb.lower() == 'spark':
 #		def keyBlue(self):

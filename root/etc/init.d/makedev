@@ -36,7 +36,7 @@ start()
     fi
   done
 
-  for TARGET in spark7162; do
+  for TARGET in spark7162 sagemcom88; do
     if [ ${HOST} == ${TARGET} ]; then
       TUNER="3"
       break
@@ -107,9 +107,12 @@ start()
   fi
   ${MAKEDEV} ttyusb
   ${MAKEDEV} rfkill
-  if [ "${HOST}" == "spark7162" ]; then
-    ${MAKEDEV} rfmod
-  fi
+  for TARGET in spark7162 ipbox-9900hd; do
+    if [ "${HOST}" == "${TARGET}" ]; then
+      ${MAKEDEV} rfmod
+      break
+    fi
+  done
   if [ "${HOST}" == "fortis" ]; then
     ${MAKEDEV} sci_fortis
   else
@@ -129,7 +132,7 @@ start()
 
   # Additional box specific stuff
   for TARGET in spark spark7162; do
-    if [ ${HOST} == ${TARGET} ]; then
+    if [ "${HOST}" == "${TARGET}" ]; then
       ${MAKEDEV} uinput
       break
     fi

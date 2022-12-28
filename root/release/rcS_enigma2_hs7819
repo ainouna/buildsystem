@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 200722.1
+#Version 220711.1
 
 echo "[rcS] Start"
 echo "Fortis HS7819 Enigma2"
@@ -64,18 +64,18 @@ if [ ! -e /boot/audio.elf ] || [ ! -e /boot/video.elf ]; then
    sleep 5
 fi
 
-echo "[rcS] Load audio firmware (LOAD 8)"
+echo "[rcS] Load video firmware (LOAD 8)"
 echo "LD 8" > /dev/vfd
+/bin/ustslave /dev/st231-0 /boot/video.elf > /dev/null
+
+echo "[rcS] Load audio firmware (LOAD 7)"
+echo "LD 7" > /dev/vfd
 dtsdown=`cat /etc/enigma2/settings | grep systemoptions.dtsdownmix | cut -d "=" -f2`
 if [ ! $dtsdown ] && [ -e /boot/audio_dts.elf ]; then
    /bin/ustslave /dev/st231-1 /boot/audio_dts.elf > /dev/null
 else
    /bin/ustslave /dev/st231-1 /boot/audio.elf > /dev/null
 fi
-
-echo "[rcS] Load video firmware (LOAD 7)"
-echo "LD 7" > /dev/vfd
-/bin/ustslave /dev/st231-0 /boot/video.elf > /dev/null
 
 echo "[rcS] Init embx (LOAD 6)"
 echo "LD 6" > /dev/vfd
@@ -169,6 +169,10 @@ if [ -e $MODDIR/usbserial.ko ]; then
       echo "[rcS] Init PL2303 USB serial support"
       insmod $MODDIR/pl2303.ko
    fi
+   if [ -e $MODDIR/ch341.ko ]; then
+      echo "[rcS] Init CH341 USB serial support"
+      insmod $MODDIR/ch341.ko
+   fi
 fi
 
 echo "[rcS] Init remote control (LOAD 2)"
@@ -253,7 +257,7 @@ fi
 # Try and synchronise time
 #inettime=`cat /etc/enigma2/settings | grep systemoptions.inettime | cut -d "=" -f2`
 # if [ ! $inettime ] && [ -e /sbin/ntpd ]; then
-#if [ -e /sbin/ntpd ]; then
+if [ -x /usr/sbin/ntpd ]; then
    echo "[rcS] Set internet time"
    (ntpd -n -p 0.europe.pool.ntp.org -q; /bin/fp_control -sst)
 #else
@@ -261,7 +265,7 @@ fi
 #      echo "[rcS] Use transponder time"
 #      /usr/sbin/time.sh &
 #   fi
-#fi
+fi
 
 echo "[rcS] Init portmap & ftp"
 /etc/init.d/portmap start
@@ -289,7 +293,7 @@ do
       0) echo "[rcS] E2 ERROR"
          echo "E2Er" > /dev/vfd
          init 6;;
-      1) echo "[rcS] SHUTDOWN"
+      1) echo "[rcS] DEEP STANDBY"
          echo "Shdn" > /dev/vfd
          if [ -e /usr/local/share/enigma2/shutdown.mvi ]; then
             showiframe -p /usr/local/share/enigma2/shutdown.mvi &
@@ -308,7 +312,7 @@ do
          fi
          echo -n " ";;
       6) echo "[rcS] E2 DEBUG RESTART"
-         echo "dbg" > /dev/vfd
+         echo "Rdbg" > /dev/vfd
          echo "0" > /proc/progress
          if [ -e /usr/local/share/enigma2/backdrop.mvi ]; then
             showiframe -p /usr/local/share/enigma2/backdrop.mvi &

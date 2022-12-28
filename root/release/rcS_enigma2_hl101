@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 200803.1
+#Version 220711.1
 
 echo "Spiderbox HD HL-101"
 
@@ -57,13 +57,13 @@ if [ ! -e /boot/audio.elf ] || [ ! -e /boot/video.elf ]; then
    echo "FW MISSING!" > /dev/vfd
 fi
 
-echo "[rcS] Load audio firmware (LOAD 8)"
+echo "[rcS] Load video firmware (LOAD 8)"
 echo "Load 8" > /dev/vfd
-/bin/ustslave  /dev/st231-1 /boot/audio.elf > /dev/null
-
-echo "[rcS] Load video firmware (LOAD 7)"
-echo "Load 7" > /dev/vfd
 /bin/ustslave /dev/st231-0 /boot/video.elf > /dev/null
+
+echo "[rcS] Load audio firmware (LOAD 7)"
+echo "Load 7" > /dev/vfd
+/bin/ustslave  /dev/st231-1 /boot/audio.elf > /dev/null
 
 echo "[rcS] Init embx (LOAD 6)"
 echo "Load 6" > /dev/vfd
@@ -216,8 +216,8 @@ fi
 
 # Try and synchronise time
 #inettime=`cat /etc/enigma2/settings | grep systemoptions.inettime | cut -d "=" -f2`
-#if [ ! $inettime ] && [ -h /usr/sbin/ntpd ]; then
-if [ -h /usr/sbin/ntpd ]; then
+#if [ ! $inettime ] && [ -x /usr/sbin/ntpd ]; then
+if [ -x /usr/sbin/ntpd ]; then
    echo "[rcS] Set internet time"
    (ntpd -n -p 0.europe.pool.ntp.org -q; /bin/fp_control -sst)
 else

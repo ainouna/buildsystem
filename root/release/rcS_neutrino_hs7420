@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 191113.1
+#Version 220705.1
 
 echo "[rcS] Start"
 echo "Fortis HS7420 Neutrino"
@@ -17,12 +17,12 @@ insmod $MODDIR/simu_button.ko
 
 if [ -e /var/etc/.firstboot ]; then
    echo "Wait 1m." > /dev/vfd
-   echo "[rcS] WAIT 1 minute"
+   echo "[rcS] Wait 1 minute"
    rm /var/etc/.firstboot
    sleep 1
    touch /dev/.devfsd
 else
-   echo "[rcS] Start (LOAD 10)"
+   echo "[rcS] LOAD 10"
    echo "Load 10" > /dev/vfd
 fi
 
@@ -40,13 +40,14 @@ echo "[rcS] Starting DEBUG Interface"
 /etc/init.d/mountall start
 /etc/init.d/hostname start
 
-echo "[rcS] Starting telnetd"
+echo -n "[rcS] Starting telnetd "
 /usr/sbin/telnetd -l /bin/autologin
+echo "with autologin"
 
 echo "[rcS] Init stmfb (LOAD 9)"
 echo "Load 9" > /dev/vfd
 insmod $MODDIR/stmcore-display-sti7111.ko
-insmod $MODDIR/stmfb.ko display0=1280x720-32@50:12m:pal:rgb:rgb;# display1=720x576-16@50:1m:pal:cvbs;
+insmod $MODDIR/stmfb.ko display0=1280x720-32@50:12m::pal:rgb:rgb # display1=720x576-16@50:1m:pal:cvbs
 
 echo "[rcS] Loading modules"
 
@@ -72,17 +73,20 @@ insmod $MODDIR/embxshell.ko
 insmod $MODDIR/embxmailbox.ko mailbox0=0xfe211000:136:set2 mailbox1=0xfe212000:0
 insmod $MODDIR/embxshm.ko mailbox0=shm:0:7:0x60000000:0:256:256:0:512:0x40000000:0x10000000
 insmod $MODDIR/mme_host.ko transport0=shm
+insmod $MODDIR/mmelog.ko
 
 echo "[rcS] Init AVS (LOAD 5)"
 echo "Load 5" > /dev/vfd
 insmod $MODDIR/avs.ko type=avs_pio
 
-echo "[rcS] Init player (LOAD 4)"
+player=`cat /proc/stb/player/version | awk '{ print substr( $0, length($0) - 2, length($0) ) }'`
+echo "[rcS] Init player $player (LOAD 4)"
 echo "Load 4" > /dev/vfd
-insmod $MODDIR/mmelog.ko
 insmod $MODDIR/ksound.ko
 insmod $MODDIR/p2div64.ko
 insmod $MODDIR/stm_v4l2.ko
+insmod $MODDIR/stmvout.ko
+insmod $MODDIR/stmvbi.ko
 
 insmod $MODDIR/pseudocard.ko
 
@@ -93,7 +97,14 @@ insmod $MODDIR/starci.ko
 insmod $MODDIR/smartcard.ko
 mknod /dev/lnb c 149 0
 
-insmod $MODDIR/pti.ko
+insmod $MODDIR/pti.ko waitMS=20 videoMem=4096
+#echo "pti return = $?"
+if [ $? -ne '0' ]; then
+   insmod $MODDIR/pti.ko
+   echo "[rcS] Simple pti"
+else
+   echo "[rcS] Full feature pti"
+fi
 insmod $MODDIR/stm_monitor.ko
 insmod $MODDIR/stmsysfs.ko
 insmod $MODDIR/stmdvb.ko
@@ -110,12 +121,10 @@ insmod $MODDIR/bpamem.ko
 mknod /dev/bpamem c 153 0
 
 if [ -e $MODDIR/cec.ko ]; then
+   echo "[rcS] Init HDMI-CEC"
    insmod $MODDIR/cec.ko activemode=1
 fi
 
-if [ -e /boot/neutrinologo.mvi ]; then
-   showiframe -p /boot/neutrinologo.mvi &
-fi
 stfbcontrol a 0
 
 if [ -e $MODDIR/exportfs.ko ]; then
@@ -132,15 +141,16 @@ if [ -e $MODDIR/tun.ko ]; then
 fi
 if [ -e $MODDIR/usbserial.ko ]; then
    insmod $MODDIR/usbserial.ko
+   if [ -e $MODDIR/ftdi.ko ]; then
+      insmod $MODDIR/ftdi.ko
+   fi
+   if [ -e $MODDIR/pl2303.ko ]; then
+      insmod $MODDIR/pl2303.ko
+   fi
+   if [ -e $MODDIR/ch341.ko ]; then
+      insmod $MODDIR/ch341.ko
+   fi
 fi
-if [ -e $MODDIR/ftdi.ko ]; then
-   insmod $MODDIR/ftdi.ko
-fi
-if [ -e $MODDIR/pl2303.ko ]; then
-   insmod $MODDIR/pl2303.ko
-fi
-
-stfbcontrol a 0
 
 echo "[rcS] Init remote control (LOAD 2)"
 echo "Load 2" > /dev/vfd
@@ -151,15 +161,9 @@ echo "Load 2" > /dev/vfd
 
 stfbcontrol a 255
 
-echo "[rcS] Init portmap & ftp (LOAD 1)"
-echo "Load 1" >/dev/vfd
-/etc/init.d/portmap start
-/etc/init.d/vsftpd start
-/usr/sbin/inetd
-
 NFS=`grep -c nfs /proc/cmdline`
 if [ "$NFS" -eq "1" ]; then
-   echo "[rcS] Booting from nfs, don't set network"
+   echo "[rcS] Booting from NFS, do not set network"
 else
    if [ -e /etc/network/interfaces ]; then
       ip addr flush eth0
@@ -183,13 +187,17 @@ else
 #   sleep 3
 fi
 
-#timefix
-#date -s "201605011200"
 # Try and synchronise time
-if [ -e /usr/bin/ntpdate ]; then
+if [ -x /usr/sbin/ntpd ]; then
    echo "Set internet time"
-   (/usr/bin/ntpdate de.pool.ntp.org; /bin/fp_control -sst)
+   (ntpd -n -p 0.europe.pool.ntp.org -q; /bin/fp_control -sst)
 fi
+
+echo "[rcS] Init portmap & ftp (LOAD 1)"
+echo "Load 1" >/dev/vfd
+/etc/init.d/portmap start
+/etc/init.d/vsftpd start
+/usr/sbin/inetd
 
 echo "[rcS] LOADING neutrino"
 echo "Load Neutrino" > /dev/vfd

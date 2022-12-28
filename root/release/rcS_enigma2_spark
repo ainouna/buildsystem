@@ -1,6 +1,7 @@
 #!/bin/sh
-#Version 210307.1
+#Version 210903.1
 
+echo "[rcS] Start"
 echo "Spark Enigma2"
 
 MODDIR=/lib/modules
@@ -8,8 +9,9 @@ MODDIR=/lib/modules
 insmod $MODDIR/e2_proc.ko
 
 echo "Init frontpanel"
-insmod $MODDIR/aotom.ko paramDebug=0
+insmod $MODDIR/aotom.ko #paramDebug=0
 insmod $MODDIR/simu_button.ko
+
 if [ -e $MODDIR/encrypt.ko ]; then
    insmod $MODDIR/encrypt.ko
 fi
@@ -68,6 +70,15 @@ else
    echo "with normal login"
 fi
 
+FP_TYPE=0
+#until [ -r /proc/stb/fp/displaytype ]
+#do
+#  sleep 1
+#done
+cat /proc/stb/fp/displaytype
+FP_TYPE=`cat /proc/stb/fp/displaytype`
+echo "Frontpanel type = $FP_TYPE"
+
 echo "[rcS] Init stmfb (LOAD 9)"
 echo "Ld 9" > /dev/vfd
 insmod $MODDIR/stmcore-display-sti7111.ko
@@ -85,18 +96,18 @@ if [ ! -e /boot/audio.elf ] || [ ! -e /boot/video.elf ]; then
    echo "NOFW" > /dev/vfd
 fi
 
-echo "[rcS] Load audio firmware (LOAD 8)"
+echo "[rcS] Load video firmware (LOAD 8)"
 echo "Ld 8" > /dev/vfd
+/bin/ustslave /dev/st231-0 /boot/video.elf > /dev/null
+
+echo "[rcS] Load audio firmware (LOAD 7)"
+echo "Ld 7" > /dev/vfd
 dtsdown=`cat /etc/enigma2/settings | grep systemoptions.dtsdownmix | cut -d "=" -f2`
 if [ ! $dtsdown ] && [ -e /boot/audio_dts.elf ]; then
    /bin/ustslave /dev/st231-1 /boot/audio_dts.elf > /dev/null
 else
    /bin/ustslave /dev/st231-1 /boot/audio.elf > /dev/null
 fi
-
-echo "[rcS] Load video firmware (LOAD 7)"
-echo "Ld 7" > /dev/vfd
-/bin/ustslave /dev/st231-0 /boot/video.elf > /dev/null
 
 echo "[rcS] Init embx (LOAD 6)"
 echo "Ld 6" > /dev/vfd
@@ -145,6 +156,33 @@ insmod $MODDIR/silencegen.ko
 
 insmod $MODDIR/smartcard.ko
 
+if [ -e $MODDIR/usbserial.ko ]; then
+   insmod $MODDIR/usbserial.ko
+   if [ -e $MODDIR/ch341.ko ]; then
+      echo "[rcS] Init CH341 USB serial support"
+      insmod $MODDIR/ch341.ko
+   fi
+   if [ -e $MODDIR/ftdi.ko ]; then
+      echo "[rcS] Init FTDI USB serial support"
+      insmod $MODDIR/ftdi.ko
+   fi
+   if [ -e $MODDIR/pl2303.ko ]; then
+   echo "[rcS] Init PL2303 USB serial support"
+      insmod $MODDIR/pl2303.ko
+   fi
+   if [ -e $MODDIR/ch341.ko ]; then
+   echo "[rcS] Init CH341 USB serial support"
+      insmod $MODDIR/ch341.ko
+   fi
+  if [ -e $MODDIR/option.ko ]; then
+    insmod $MODDIR/option.ko
+  fi
+  if [ -e $MODDIR/usb_wwan.ko ]; then # 3G modem
+    insmod $MODDIR/usb_wwan.ko
+  fi
+  insmod $MODDIR/option.ko
+fi
+
 echo "[rcS] Init HDMI-CEC"
 insmod $MODDIR/cec.ko activemode=1
 
@@ -192,7 +230,7 @@ echo "[rcS] Init FTP & network"
 
 NFS=`grep -c nfs /proc/cmdline`
 if [ "$NFS" -eq "1" ]; then
-   echo "Booting from nfs, don't set network"
+   echo "Booting from NFS, do not set network"
 else
    if [ -e /etc/network/interfaces ]; then
       ip addr flush eth0
@@ -227,7 +265,8 @@ fi
 
 # Try and synchronise time
 #inettime=`cat /etc/enigma2/settings | grep systemoptions.inettime | cut -d "=" -f2`
-#if [ ! $inettime ] && [ -e /sbin/ntpdate ]; then
+# if [ ! $inettime ] && [ -e /sbin/ntpd ]; then
+if [ -r /usr/sbin/ntpd ]; then
    echo "[rcS] Set internet time"
    (ntpd -n -p 0.europe.pool.ntp.org -q; /bin/fp_control -sst)
 #else
@@ -235,7 +274,7 @@ fi
 #      echo "[rcS] Use transponder time"
 #      /usr/sbin/time.sh &
 #   fi
-#fi
+fi
 
 echo "[rcS] Start Enigma2"
 echo "StE2" > /dev/vfd
@@ -248,12 +287,12 @@ do
    fi
    /usr/local/bin/enigma2
    rtv=$?
-   echo "[rcS] E2 ended <- RTV:" $rtv
+   echo "[rcS] E2 ended <- RTV: " $rtv
    case "$rtv" in
       0)  echo "[rcS] E2 ERROR"
           echo "E2Er" > /dev/vfd
           init 6;;
-      1)  echo "[rcS] SHUTDOWN"
+      1)  echo "[rcS] DEEP STANDBY"
           echo "Shdn" > /dev/vfd
           if [ -e /usr/local/share/enigma2/shutdown.mvi ]; then
              showiframe -p /usr/local/share/enigma2/shutdown.mvi
@@ -263,18 +302,20 @@ do
           echo "rEbt" > /dev/vfd
           init 6;;
       3)  echo "[rcS] E2 RESTART"
+          echo "rEst" > /dev/vfd
           echo "0" > /proc/progress
           if [ -e /usr/local/share/enigma2/backdrop.mvi ]; then
              showiframe -p /usr/local/share/enigma2/backdrop.mvi
           else
-             showiframe -p /boot/bootlogo.mvi
+             showiframe -p /boot/bootlogo.mvi &
           fi;;
       6)  echo "[rcS] E2 DEBUG RESTART"
+          echo "dbg" > /dev/vfd
           echo "0" > /proc/progress
           if [ -e /usr/local/share/enigma2/backdrop.mvi ]; then
              showiframe -p /usr/local/share/enigma2/backdrop.mvi
           else
-             showiframe -p /boot/bootlogo.mvi
+             showiframe -p /boot/bootlogo.mvi &
           fi;;
       10) echo "[rcS] SPARK RESTART"
           echo "SPrK" > /dev/vfd
@@ -283,17 +324,17 @@ do
              echo "fw_env.config not found - will create it"
              echo '/dev/mtd7 0x000A0000 0x00020000 0x20000' > /etc/fw_env.config
           fi
-          var=`fw_printenv | grep 'bootargs_spark='` ; fw_setenv bootargs ${var#*=}
-          var=`fw_printenv | grep 'bootcmd_spark='` ; fw_setenv bootcmd ${var#*=}
-          var=`fw_printenv | grep 'boot_system_spark='` ; fw_setenv boot_system ${var#*=}
-          var=`fw_printenv | grep 'userfs_base_spark='` ; fw_setenv userfs_base ${var#*=}
-          var=`fw_printenv | grep 'userfs_len_spark='` ; fw_setenv userfs_len ${var#*=}
-          var=`fw_printenv | grep 'kernel_base_spark='` ; fw_setenv kernel_base ${var#*=}
-          var=`fw_printenv | grep 'kernel_name_spark='` ; fw_setenv kernel_name ${var#*=}
-          var=`fw_printenv | grep 'userfs_name_spark='` ; fw_setenv userfs_name ${var#*=} 
-          var=`fw_printenv | grep 'loadu_userfs_spark='` ; fw_setenv loadu_userfs ${var#*=}
-          var=`fw_printenv | grep 'loadu_kernel_spark='` ; fw_setenv loadu_kernel ${var#*=}
-          var=`fw_printenv | grep 'kernel_len_spark='` ; fw_setenv kernel_len ${var#*=}
+          var=`fw_printenv | grep 'bootargs_spark='`; fw_setenv bootargs ${var#*=}
+          var=`fw_printenv | grep 'bootcmd_spark='`; fw_setenv bootcmd ${var#*=}
+          var=`fw_printenv | grep 'boot_system_spark='`; fw_setenv boot_system ${var#*=}
+          var=`fw_printenv | grep 'userfs_base_spark='`; fw_setenv userfs_base ${var#*=}
+          var=`fw_printenv | grep 'userfs_len_spark='`; fw_setenv userfs_len ${var#*=}
+          var=`fw_printenv | grep 'kernel_base_spark='`; fw_setenv kernel_base ${var#*=}
+          var=`fw_printenv | grep 'kernel_name_spark='`; fw_setenv kernel_name ${var#*=}
+          var=`fw_printenv | grep 'userfs_name_spark='`; fw_setenv userfs_name ${var#*=} 
+          var=`fw_printenv | grep 'loadu_userfs_spark='`; fw_setenv loadu_userfs ${var#*=}
+          var=`fw_printenv | grep 'loadu_kernel_spark='`; fw_setenv loadu_kernel ${var#*=}
+          var=`fw_printenv | grep 'kernel_len_spark='`; fw_setenv kernel_len ${var#*=}
           sync
           init 6;;
       *)  echo "[rcS] ERROR"

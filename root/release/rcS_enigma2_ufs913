@@ -1,6 +1,7 @@
 #!/bin/sh
-#Version 210411.1
+#Version 220711.1
 
+echo "[rcS] Start"
 echo "Kathrein UFS913 Enigma2"
 
 MODDIR=/lib/modules
@@ -8,12 +9,12 @@ MODDIR=/lib/modules
 insmod $MODDIR/e2_proc.ko
 
 echo "[rcS] Init frontpanel"
-insmod $MODDIR/kathrein_micom.ko  paramDebug=50
+insmod $MODDIR/kathrein_micom.ko #paramDebug=30
 
 if [ -e /var/etc/.firstboot ]; then
    echo "config.plugins.remotecontroltype.rctype=20" >> /etc/enigma2/settings
-   echo "WAIT 1 minute" > /dev/vfd
-   echo "[rcS] WAIT 1 minute"
+   echo "Wait 1 minute" > /dev/vfd
+   echo "[rcS] Wait 1 minute"
    rm /var/etc/.firstboot
    sleep 1
    touch /dev/.devfsd
@@ -27,11 +28,6 @@ fi
 echo "[rcS] Starting DEBUG Interface"
 /etc/init.d/mountall start
 /etc/init.d/hostname start
-
-# green led on
-fp_control -l 2 1
-# led brightness
-fp_control -led 80
 
 /etc/init.d/autofs start
 
@@ -61,13 +57,13 @@ if [ ! -e /boot/audio.elf ] || [ ! -e /boot/video.elf ]; then
    sleep 5
 fi
 
-echo "[rcS] Load audio firmware (LOAD 8)"
+echo "[rcS] Load video firmware (LOAD 8)"
 echo "LOAD 8" > /dev/vfd
-/bin/ustslave /dev/st231-1 /boot/audio.elf > /dev/null
-
-echo "[rcS] Load video firmware (LOAD 7)"
-echo "LOAD 7" > /dev/vfd
 /bin/ustslave /dev/st231-0 /boot/video.elf > /dev/null
+
+echo "[rcS] Load audio firmware (LOAD 7)"
+echo "LOAD 7" > /dev/vfd
+/bin/ustslave /dev/st231-1 /boot/audio.elf > /dev/null
 
 echo "[rcS] Init embx (LOAD 6)"
 echo "LOAD 6" > /dev/vfd
@@ -89,7 +85,7 @@ insmod $MODDIR/p2div64.ko
 insmod $MODDIR/stm_v4l2.ko
 insmod $MODDIR/pseudocard.ko
 
-echo "[rcS] Init frontends"
+echo "[rcS] Init frontends and CI"
 insmod $MODDIR/frontend_platform.ko
 insmod $MODDIR/socket.ko
 insmod $MODDIR/lnbh221.ko
@@ -145,6 +141,9 @@ if [ -e $MODDIR/usbserial.ko ]; then
    if [ -e $MODDIR/pl2303.ko ]; then
       insmod $MODDIR/pl2303.ko
    fi
+   if [ -e $MODDIR/ch341.ko ]; then
+      insmod $MODDIR/ch341.ko
+   fi
 fi
 
 echo "[rcS] Init frontpanel (LOAD 2)"
@@ -156,7 +155,7 @@ echo "[rcS] Init remote control"
 
 NFS=`grep -c nfs /proc/cmdline`
 if [ "$NFS" -eq "1" ]; then
-   echo "[rcS] Booting from nfs, do not set network"
+   echo "[rcS] Booting from NFS, do not set network"
 else
    if [ -e /etc/network/interfaces ]; then
       ip addr flush eth0
@@ -221,10 +220,10 @@ if [ ! -e /tmp/reference.dat ] && [ -e /var/bin/reference.dat ]; then
    cp /var/bin/reference.dat /tmp
 fi
 
-# Try and synchronise time
+echo "[rcS] Try and synchronise time"
 #inettime=`cat /etc/enigma2/settings | grep systemoptions.inettime | cut -d "=" -f2`
-# if [ ! $inettime ] && [ -e /sbin/ntpd ]; then
-#if [ -e /sbin/ntpd ]; then
+# if [ ! $inettime ] && [ -e /usr/sbin/ntpd ]; then
+if [ -x /usr/sbin/ntpd ]; then
    echo "[rcS] Set internet time"
    (ntpd -n -p 0.europe.pool.ntp.org -q; /bin/fp_control -sst) &
 #else
@@ -232,7 +231,7 @@ fi
 #      echo "[rcS] Use transponder time"
 #      /usr/sbin/time.sh &
 #   fi
-#fi
+fi
 
 echo "[rcS] Init portmap & ftp"
 /etc/init.d/portmap start
@@ -244,24 +243,25 @@ if [ -e /etc/ownscript.sh ]; then
    /etc/ownscript.sh &
 fi
 
-echo "LOADING Enigma2" > /dev/vfd
+echo "LOAD Enigma2" > /dev/vfd
 echo "[rcS] Loading Enigma2"
 
 stfbcontrol a 255
+export ENIGMA_DEBUG_LVL=3
 
 until false
 do
-   echo "[rcS] starting E2 ->"
+   echo "[rcS] Starting Enigma2 ->"
    /usr/local/bin/enigma2
    rtv=$?
-   echo "[rcS] E2 ended <- RTV: " $rtv
+   echo "[rcS] E2 ended <- return value: " $rtv
    fp_control -i 17 0  # all icons off
    case "$rtv" in
-      0) echo "[rcS] E2 ERROR"
-         echo "E2 Error" > /dev/vfd
+      0) echo "[rcS] Enigma2 ERROR"
+         echo "Enigma2 ERROR" > /dev/vfd
          init 6;;
-      1) echo "[rcS] SHUTDOWN"
-         echo "Shutdown" > /dev/vfd
+      1) echo "[rcS] Deep Standby"
+         echo "Deep Standby" > /dev/vfd
          if [ -e /usr/local/share/enigma2/shutdown.mvi ]; then
             showiframe -p /usr/local/share/enigma2/shutdown.mvi &
          fi
@@ -269,8 +269,9 @@ do
       2) echo "[rcS] REBOOT"
          echo "Reboot" > /dev/vfd
          init 6;;
-      3) echo "[rcS] E2 RESTART"
-         echo "E2 Restart" > /dev/vfd
+      3) echo "[rcS] Enigma2 RESTART"
+         echo "Enigma2 Restart" > /dev/vfd
+         export ENIGMA_DEBUG_LVL=3
          echo "0" > /proc/progress
          if [ -e /usr/local/share/enigma2/backdrop.mvi ]; then
             showiframe -p /usr/local/share/enigma2/backdrop.mvi &
@@ -279,6 +280,7 @@ do
          fi;;
       6) echo "[rcS] E2 DEBUG RESTART"
          echo "E2 Debug Restart" > /dev/vfd
+         export ENIGMA_DEBUG_LVL=4
          echo "0" > /proc/progress
          if [ -e /usr/local/share/enigma2/backdrop.mvi ]; then
             showiframe -p /usr/local/share/enigma2/backdrop.mvi &
@@ -286,7 +288,7 @@ do
             showiframe -p /boot/bootlogo.mvi &
          fi;;
       *) echo "[rcS] ERROR"
-         echo "Error" > /dev/vfd
+         echo "ERROR" > /dev/vfd
          init 6;;
    esac
 done

@@ -90,7 +90,7 @@
  		except Exception, e:
  			print "[MountManager] Error reading /etc/enigma2/automounts.xml:", e
  			try:
-@@ -66,56 +63,67 @@
+@@ -66,23 +63,56 @@
  			Len = len(definitions)
  			return Len > 0 and definitions[Len - 1].text or default
  
@@ -121,7 +121,7 @@
 +
 +					if data["active"] == 'True':
  						self.activeMountsCounter += 1
--					data['hdd_replacement'] = getValue(mount.findall("hdd_replacement"), "False").encode("UTF-8")
+ 					data['hdd_replacement'] = getValue(mount.findall("hdd_replacement"), "False").encode("UTF-8")
 -					data['ip'] = getValue(mount.findall("ip"), "").encode("UTF-8")
 -					data['host'] = getValue(mount.findall("host"), "").encode("UTF-8")
 -					data['sharedir'] = getValue(mount.findall("sharedir"), "/media/").encode("UTF-8")
@@ -159,49 +159,13 @@
  					self.automounts[data['sharename']] = data
  				except Exception, e:
  					print "[MountManager] Error reading Mounts:", e
- 
--		# Read out CIFS Mounts
--		for nfs in tree.findall("cifs"):
--			for mount in nfs.findall("mount"):
--				data = {'isMounted': False, 'active': False, 'ip': False, 'host': False, 'sharename': False, 'sharedir': False, 'username': False,
--							'password': False, 'mounttype': False, 'options': False, 'hdd_replacement': False}
--				try:
--					data['mounttype'] = 'cifs'.encode("UTF-8")
--					data['active'] = getValue(mount.findall("active"), False).encode("UTF-8")
--					if data["active"] == 'True' or data["active"] == True:
--						self.activeMountsCounter += 1
--					data['hdd_replacement'] = getValue(mount.findall("hdd_replacement"), "False").encode("UTF-8")
--					data['ip'] = getValue(mount.findall("ip"), "").encode("UTF-8")
--					data['host'] = getValue(mount.findall("host"), "").encode("UTF-8")
--					data['sharedir'] = getValue(mount.findall("sharedir"), "/media/").encode("UTF-8")
--					data['sharename'] = getValue(mount.findall("sharename"), "MEDIA").encode("UTF-8")
--					data['options'] = getValue(mount.findall("options"), "").encode("UTF-8")
--					data['username'] = getValue(mount.findall("username"), "guest").encode("UTF-8")
--					data['password'] = getValue(mount.findall("password"), "").encode("UTF-8")
--					self.automounts[data['sharename']] = data
--				except Exception, e:
--					print "[MountManager] Error reading Mounts:", e
--
- 		self.checkList = self.automounts.keys()
- 		if not self.checkList:
- 			print "[AutoMount.py] self.automounts without mounts", self.automounts
--			if callback is not None:
--				callback(True)
- 		else:
- 			self.CheckMountPoint(self.checkList.pop(), callback)
-+
-+		if callback is not None:
-+			callback(True)
- 
- 	def sanitizeOptions(self, origOptions, mounttype=None, username=None, password=None):
- 		# split the options into their components
-@@ -181,118 +189,13 @@
+@@ -182,118 +192,13 @@
  		return ",".join(options)
  
  	def CheckMountPoint(self, item, callback):
 -		# possible CIFS version/security combinations
 -		secvers = (
--			'vers=3,sec=ntlmssp', 'vers=3,sec=ntlmv2', 'vers=2.1,sec=ntlmssp', 'vers=2.1,sec=ntlmv2',
+-			'vers=3.0,sec=ntlmssp', 'vers=3.0,sec=ntlmv2', 'vers=2.1,sec=ntlmssp', 'vers=2.1,sec=ntlmv2',
 -			'vers=2.1,sec=ntlm', 'vers=1.0,sec=ntlmssp', 'vers=1.0,sec=ntlmv2', 'vers=1.0,sec=ntlm',
 -			'vers=default', ''
 -		)
@@ -319,7 +283,7 @@
  
  	def CheckMountPointFinished(self, result, retval, extra_args):
  		print "[AutoMount.py] CheckMountPointFinished", result, retval
-@@ -300,25 +203,12 @@
+@@ -301,25 +206,12 @@
  		path = os.path.join('/media/net', data['sharename'])
  		print "[AutoMount.py] CheckMountPointFinished, verifying: ", path
  
@@ -351,7 +315,7 @@
  
  		if self.checkList:
  			# Go to next item in list...
-@@ -376,40 +266,37 @@
+@@ -377,40 +269,37 @@
  
  	def writeMountsConfig(self):
  		# Generate List in RAM
@@ -414,7 +378,7 @@
  
  	def removeMount(self, mountpoint, callback=None):
  		print "[AutoMount.py] removing mount: ", mountpoint
-@@ -419,28 +306,5 @@
+@@ -420,28 +309,5 @@
  				self.newautomounts[sharename] = sharedata
  		self.automounts.clear()
  		self.automounts = self.newautomounts

@@ -1,6 +1,7 @@
 #!/bin/sh
-#Version 200828.1
+#Version 220711.1
 
+echo "[rcS] Start"
 echo "Edision argus VIP (fixed tuner) Enigma2"
 
 MODDIR=/lib/modules
@@ -8,12 +9,12 @@ MODDIR=/lib/modules
 insmod $MODDIR/e2_proc.ko
 
 echo "[rcS] Init frontpanel"
-insmod $MODDIR/proton.ko paramDebug=20
+insmod $MODDIR/proton.ko #paramDebug=20
 insmod $MODDIR/simu_button.ko
 
 if [ -e /var/etc/.firstboot ]; then
    echo "config.plugins.remotecontroltype.rctype=17" >> /etc/enigma2/settings
-   echo "WAIT 3 min" > /dev/vfd
+   echo "WAIT 3 m." > /dev/vfd
    echo "[rcS] WAIT 3 minutes"
    rm /var/etc/.firstboot
    sleep 1
@@ -45,9 +46,9 @@ echo "[rcS] Init stmfb (LOAD 9)"
 echo "Load 9" > /dev/vfd
 insmod $MODDIR/stmcore-display-stx7109c3.ko
 if grep -q "config.av.videoport=Scart" /etc/enigma2/settings; then
-  insmod $MODDIR/stmfb.ko display0=720x576i-32@50:15m::pal:cvbs:rgb #SCART
+   insmod $MODDIR/stmfb.ko display0=720x576i-32@50:15m::pal:cvbs:rgb #SCART
 else
-  insmod $MODDIR/stmfb.ko display0=1280x720-32@50:16m::pal:cvbs:rgb #HDMI
+   insmod $MODDIR/stmfb.ko display0=1280x720-32@50:16m::pal:cvbs:rgb #HDMI
 fi
 
 echo "[rcS] Loading modules"
@@ -57,13 +58,13 @@ if [ ! -e /boot/audio.elf ] || [ ! -e /boot/video.elf ]; then
    echo "FW MISSING!" > /dev/vfd
 fi
 
-echo "[rcS] Load audio firmware (LOAD 8)"
+echo "[rcS] Load video firmware (LOAD 8)"
 echo "Load 8" > /dev/vfd
-/bin/ustslave  /dev/st231-1 /boot/audio.elf > /dev/null
-
-echo "[rcS] Load video firmware (LOAD 7)"
-echo "Load 7" > /dev/vfd
 /bin/ustslave /dev/st231-0 /boot/video.elf > /dev/null
+
+echo "[rcS] Load audio firmware (LOAD 7)"
+echo "Load 7" > /dev/vfd
+/bin/ustslave /dev/st231-1 /boot/audio.elf > /dev/null
 
 echo "[rcS] Init embx (LOAD 6)"
 echo "Load 6" > /dev/vfd
@@ -89,7 +90,7 @@ insmod $MODDIR/stmvout.ko
 insmod $MODDIR/stmvbi.ko
 insmod $MODDIR/pseudocard.ko
 
-echo "[rcS] Init frontends"
+echo "[rcS] Init frontend and CI"
 #demodulator type: stb0899(default) stv090x
 #tuner type: stb6100(default) stv6110x, sharp7306
 insmod $MODDIR/fe-core.ko demod=stv090x tuner=stv6110x #paramDebug=50
@@ -116,23 +117,25 @@ insmod $MODDIR/platform.ko
 insmod $MODDIR/smartcard.ko
 
 if [ -e $MODDIR/usbserial.ko ]; then
-  insmod $MODDIR/usbserial.ko
-  if [ -e $MODDIR/ch341.ko ]; then
-    insmod $MODDIR/ch341.ko
-  fi
-  if [ -e $MODDIR/ftdi.ko ]; then
-    insmod $MODDIR/ftdi.ko
-  fi
-  if [ -e $MODDIR/pl2303.ko ]; then
-    insmod $MODDIR/pl2303.ko
-  fi
-  if [ -e $MODDIR/option.ko ]; then
-    insmod $MODDIR/option.ko
-  fi
-  if [ -e $MODDIR/usb_wwan.ko ]; then # 3G modem
-    insmod $MODDIR/usb_wwan.ko
-  fi
-  insmod $MODDIR/option.ko
+   insmod $MODDIR/usbserial.ko
+   if [ -e $MODDIR/ch341.ko ]; then
+      insmod $MODDIR/ch341.ko
+   fi
+   if [ -e $MODDIR/ftdi.ko ]; then
+      insmod $MODDIR/ftdi.ko
+   fi
+   if [ -e $MODDIR/pl2303.ko ]; then
+      insmod $MODDIR/pl2303.ko
+   fi
+   if [ -e $MODDIR/ch341.ko ]; then
+      insmod $MODDIR/ch341.ko
+   fi
+   if [ -e $MODDIR/option.ko ]; then
+      insmod $MODDIR/option.ko
+   fi
+   if [ -e $MODDIR/usb_wwan.ko ]; then # 3G modem
+      insmod $MODDIR/usb_wwan.ko
+   fi
 fi
 
 insmod $MODDIR/bpamem.ko
@@ -182,7 +185,7 @@ echo "[rcS] Init FTP & network"
 
 NFS=`grep -c nfs /proc/cmdline`
 if [ "$NFS" -eq "1" ]; then
-   echo "[rcS] Booting from nfs, do not set network"
+   echo "[rcS] Booting from NFS, do not set network"
 else
    if [ -e /etc/network/interfaces ]; then
       ip addr flush eth0
@@ -216,8 +219,8 @@ fi
 
 # Try and synchronise time
 #inettime=`cat /etc/enigma2/settings | grep systemoptions.inettime | cut -d "=" -f2`
-#if [ ! $inettime ] && [ -h /usr/sbin/ntpd ]; then
-if [ -h /usr/sbin/ntpd ]; then
+#if [ ! $inettime ] && [ -x /usr/sbin/ntpd ]; then
+if [ -x /usr/sbin/ntpd ]; then
    echo "[rcS] Set internet time"
    (ntpd -n -p 0.europe.pool.ntp.org -q; /bin/fp_control -sst)
 else

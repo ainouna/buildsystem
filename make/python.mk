@@ -29,7 +29,8 @@ PYTHON_VER_MAJOR = 2.7
 PYTHON_VER_MINOR = 18
 PYTHON_VER = $(PYTHON_VER_MAJOR).$(PYTHON_VER_MINOR)
 PYTHON_SOURCE = Python-$(PYTHON_VER).tar.xz
-HOST_PYTHON_PATCH = python-$(PYTHON_VER).patch
+HOST_PYTHON_PATCH  = python-$(PYTHON_VER).patch
+HOST_PYTHON_PATCH += python-$(PYTHON_VER)-support_64bit.patch
 
 $(ARCHIVE)/$(PYTHON_SOURCE):
 	$(WGET) https://www.python.org/ftp/python/$(PYTHON_VER)/$(PYTHON_SOURCE)
@@ -136,7 +137,7 @@ $(D)/python: $(D)/bootstrap $(D)/host_python $(D)/ncurses $(D)/zlib $(D)/openssl
 #
 # python_setuptools
 #
-PYTHON_SETUPTOOLS_VER = 5.2
+PYTHON_SETUPTOOLS_VER = 18.5
 PYTHON_SETUPTOOLS_SOURCE = setuptools-$(PYTHON_SETUPTOOLS_VER).tar.gz
 
 $(ARCHIVE)/$(PYTHON_SETUPTOOLS_SOURCE):
@@ -182,10 +183,11 @@ $(D)/libxmlccwrap: $(D)/bootstrap $(D)/libxml2 $(D)/libxslt $(ARCHIVE)/$(LIBXMLC
 PYTHON_LXML_MAJOR = 2.2
 PYTHON_LXML_MINOR = 8
 PYTHON_LXML_VER = $(PYTHON_LXML_MAJOR).$(PYTHON_LXML_MINOR)
-PYTHON_LXML_SOURCE = lxml-$(PYTHON_LXML_VER).tgz
+PYTHON_LXML_SOURCE = lxml-$(PYTHON_LXML_VER).tar.gz
 
 $(ARCHIVE)/$(PYTHON_LXML_SOURCE):
-	$(WGET) http://launchpad.net/lxml/$(PYTHON_LXML_MAJOR)/$(PYTHON_LXML_VER)/+download/$(PYTHON_LXML_SOURCE)
+#	$(WGET) http://launchpad.net/lxml/$(PYTHON_LXML_MAJOR)/$(PYTHON_LXML_VER)/+download/$(PYTHON_LXML_SOURCE)
+	$(WGET) https://files.pythonhosted.org/packages/48/71/397947beaadda1b2ad589a685160b8848888364af387b6c6707bb2769a23/$(PYTHON_LXML_SOURCE)
 
 $(D)/python_lxml: $(D)/bootstrap $(D)/python $(D)/libxml2 $(D)/libxslt $(D)/python_setuptools $(ARCHIVE)/$(PYTHON_LXML_SOURCE)
 	$(START_BUILD)
@@ -202,12 +204,13 @@ $(D)/python_lxml: $(D)/bootstrap $(D)/python $(D)/libxml2 $(D)/libxslt $(D)/pyth
 #
 # python_twisted
 #
-PYTHON_TWISTED_VER = 16.4.0
+PYTHON_TWISTED_VER = 16.4.1
 PYTHON_TWISTED_SOURCE = Twisted-$(PYTHON_TWISTED_VER).tar.bz2
 
 $(ARCHIVE)/$(PYTHON_TWISTED_SOURCE):
 #	$(WGET) https://pypi.python.org/packages/source/T/Twisted/$(PYTHON_TWISTED_SOURCE)
-	$(WGET) https://twistedmatrix.com/Releases/Twisted/16.4/$(PYTHON_TWISTED_SOURCE)
+#	$(WGET) https://twistedmatrix.com/Releases/Twisted/16.4/$(PYTHON_TWISTED_SOURCE)
+	$(WGET) https://files.pythonhosted.org/packages/6b/23/8dbe86fc83215015e221fbd861a545c6ec5c9e9cd7514af114d1f64084ab/$(PYTHON_TWISTED_SOURCE)
 
 $(D)/python_twisted: $(D)/bootstrap $(D)/python $(D)/python_zope_interface $(D)/python_setuptools $(ARCHIVE)/$(PYTHON_TWISTED_SOURCE)
 	$(START_BUILD)
@@ -328,7 +331,7 @@ $(D)/python_six: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(ARCHIVE)/$(
 #
 # python_cffi
 #
-PYTHON_CFFI_VER = 1.2.1
+PYTHON_CFFI_VER = 1.14.6
 PYTHON_CFFI_SOURCE = cffi-$(PYTHON_CFFI_VER).tar.gz
 
 $(ARCHIVE)/$(PYTHON_CFFI_SOURCE):
@@ -339,8 +342,19 @@ $(D)/python_cffi: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(D)/libffi 
 	$(REMOVE)/cffi-$(PYTHON_CFFI_VER)
 	$(UNTAR)/$(PYTHON_CFFI_SOURCE)
 	$(CH_DIR)/cffi-$(PYTHON_CFFI_VER); \
-		$(PYTHON_BUILD); \
+		PYTHONPATH=$(TARGET_DIR)/$(PYTHON_DIR)/site-packages \
+		CPPFLAGS="$(TARGET_CPPFLAGS) -I$(TARGET_DIR)/$(PYTHON_INCLUDE_DIR)" \
+		$(HOST_DIR)/bin/python ./setup.py $(MINUS_Q) build_ext -f -i; \
 		$(PYTHON_INSTALL)
+		$(SILENT)cd $(BUILD_TMP)/cffi-$(PYTHON_CFFI_VER); \
+		CC="$(TARGET)-gcc" \
+		CFLAGS="$(TARGET_CFLAGS)" \
+		LDFLAGS="$(TARGET_LDFLAGS)" \
+		LDSHARED="$(TARGET)-gcc -shared" \
+		PYTHONPATH=$(TARGET_DIR)/$(PYTHON_DIR)/site-packages \
+		CPPFLAGS="$(TARGET_CPPFLAGS) -I$(TARGET_DIR)/$(PYTHON_INCLUDE_DIR)" \
+		$(HOST_DIR)/bin/python ./setup.py $(MINUS_Q) build_ext -f -i; \
+		cp ./_cffi_backend.so $(TARGET_DIR)/$(PYTHON_DIR)/site-packages/_cffi_backend.so.sh4
 	$(REMOVE)/cffi-$(PYTHON_CFFI_VER)
 	$(TOUCH)
 
@@ -355,12 +369,12 @@ $(ARCHIVE)/$(PYTHON_SQLITE3_SOURCE):
 
 $(D)/python_sqlite3: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(D)/libffi $(D)/python_pycparser $(ARCHIVE)/$(PYTHON_CFFI_SOURCE)
 	$(START_BUILD)
-	$(REMOVE)/cffi-$(PYTHON_SQLITE3_VER)
+	$(REMOVE)/sqlite3-$(PYTHON_SQLITE3_VER)
 	$(UNTAR)/$(PYTHON_SQLITE3_SOURCE)
-	$(CH_DIR)/cffi-$(PYTHON_SQLITE3_VER); \
+	$(CH_DIR)/sqlite3-$(PYTHON_SQLITE3_VER); \
 		$(PYTHON_BUILD); \
 		$(PYTHON_INSTALL)
-	$(REMOVE)/cffi-$(PYTHON_SQLITE3_VER)
+	$(REMOVE)/sqlite3-$(PYTHON_SQLITE3_VER)
 	$(TOUCH)
 
 #
@@ -442,13 +456,13 @@ $(D)/python_pycparser: $(D)/bootstrap $(D)/python $(ARCHIVE)/$(PYTHON_PYCPARSER_
 #
 # python_cryptography
 #
-PYTHON_CRYPTOGRAPHY_VER = 0.8.1
+PYTHON_CRYPTOGRAPHY_VER = 3.3.1
 PYTHON_CRYPTOGRAPHY_SOURCE = cryptography-$(PYTHON_CRYPTOGRAPHY_VER).tar.gz
 
 $(ARCHIVE)/$(PYTHON_CRYPTOGRAPHY_SOURCE):
 	$(WGET) https://pypi.python.org/packages/source/c/cryptography/$(PYTHON_CRYPTOGRAPHY_SOURCE)
 
-$(D)/python_cryptography: $(D)/bootstrap $(D)/python_cffi $(D)/python_pyasn1 $(D)/python_enum34 $(D)/python $(D)/python_setuptools $(D)/python_pyopenssl $(D)/python_six $(ARCHIVE)/$(PYTHON_CRYPTOGRAPHY_SOURCE)
+$(D)/python_cryptography: $(D)/bootstrap $(D)/python_cffi $(D)/python_pyasn1 $(D)/python_enum34 $(D)/python $(D)/python_setuptools $(D)/python_six $(ARCHIVE)/$(PYTHON_CRYPTOGRAPHY_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/cryptography-$(PYTHON_CRYPTOGRAPHY_VER)
 	$(UNTAR)/$(PYTHON_CRYPTOGRAPHY_SOURCE)
@@ -461,14 +475,14 @@ $(D)/python_cryptography: $(D)/bootstrap $(D)/python_cffi $(D)/python_pyasn1 $(D
 #
 # python_pyopenssl
 #
-PYTHON_PYOPENSSL_VER = 0.13.1
+PYTHON_PYOPENSSL_VER = 20.0.1
 PYTHON_PYOPENSSL_SOURCE = pyOpenSSL-$(PYTHON_PYOPENSSL_VER).tar.gz
-PYTHON_PYOPENSSL_PATCH = python-pyopenssl-$(PYTHON_PYOPENSSL_VER).patch
+PYTHON_PYOPENSSL_PATCH =
 
 $(ARCHIVE)/$(PYTHON_PYOPENSSL_SOURCE):
 	$(WGET) https://pypi.python.org/packages/source/p/pyOpenSSL/$(PYTHON_PYOPENSSL_SOURCE)
 
-$(D)/python_pyopenssl: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(D)/openssl $(ARCHIVE)/$(PYTHON_PYOPENSSL_SOURCE)
+$(D)/python_pyopenssl: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(D)/openssl $(D)/python_cryptography $(ARCHIVE)/$(PYTHON_PYOPENSSL_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/pyOpenSSL-$(PYTHON_PYOPENSSL_VER)
 	$(UNTAR)/$(PYTHON_PYOPENSSL_SOURCE)
@@ -525,7 +539,7 @@ $(D)/python_attr: $(D)/bootstrap $(D)/python $(ARCHIVE)/$(PYTHON_ATTR_SOURCE)
 #
 PYTHON_ATTRS_VER = 19.1.0
 PYTHON_ATTRS_SOURCE = attrs-$(PYTHON_ATTRS_VER).tar.gz
-PYTHON_ATTRS_PARCH =
+PYTHON_ATTRS_PATCH =
 
 $(ARCHIVE)/$(PYTHON_ATTRS_SOURCE):
 	$(WGET) https://pypi.io/packages/source/a/attrs/$(PYTHON_ATTRS_SOURCE)
@@ -547,7 +561,8 @@ PYTHON_ELEMENTTREE_VER = 1.2.6-20050316
 PYTHON_ELEMENTTREE_SOURCE = elementtree-$(PYTHON_ELEMENTTREE_VER).tar.gz
 
 $(ARCHIVE)/$(PYTHON_ELEMENTTREE_SOURCE):
-	$(WGET) http://effbot.org/media/downloads/$(PYTHON_ELEMENTTREE_SOURCE)
+#	$(WGET) http://effbot.org/media/downloads/$(PYTHON_ELEMENTTREE_SOURCE)
+	$(WGET) https://sourceforge.net/projects/rlsuite/files/rlsuite/support-files/$(PYTHON_ELEMENTTREE_SOURCE)
 
 $(D)/python_elementtree: $(D)/bootstrap $(D)/python $(ARCHIVE)/$(PYTHON_ELEMENTTREE_SOURCE)
 	$(START_BUILD)
@@ -749,11 +764,12 @@ $(D)/python_livestreamersrv: $(D)/bootstrap $(D)/python $(D)/python_setuptools $
 #
 # python_netifaces
 #
-PYTHON_NETIFACES_VER = 0.10.9
+PYTHON_NETIFACES_VER = w38-0.10.9
 PYTHON_NETIFACES_SOURCE = netifaces-$(PYTHON_NETIFACES_VER).tar.gz
 
 $(ARCHIVE)/$(PYTHON_NETIFACES_SOURCE):
-	$(WGET) http://qpypi.qpython.org/repository/15020/$(PYTHON_NETIFACES_SOURCE)
+#	$(WGET) http://qpypi.qpython.org/repository/15020/$(PYTHON_NETIFACES_SOURCE)
+	$(WGET) https://files.pythonhosted.org/packages/04/06/2b337652548387021f33c936dc5bd3008e7527affee2bed7b36bbc6d2211/$(PYTHON_NETIFACES_SOURCE)
 
 $(D)/python_netifaces: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(ARCHIVE)/$(PYTHON_NETIFACES_SOURCE)
 	$(START_BUILD)
