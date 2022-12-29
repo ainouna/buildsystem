@@ -94,7 +94,7 @@ insmod $MODDIR/embxshell.ko
 insmod $MODDIR/embxmailbox.ko mailbox0=0xb9211000:136:set2 mailbox1=0xb9212000:137:set2
 insmod $MODDIR/embxshm.ko mailbox0=shm:0:7:0x60000000:0:256:256:0:1024:0xa4000000:0x10000000
 insmod $MODDIR/mme_host.ko transport0=shm
-   
+
 echo "[rcS] Init AVS (LOAD 5)"
 if [ $boxtype == 'bska' ] || [ $boxtype == 'bxzb' ]; then
    echo "Ld 5" > /dev/vfd
@@ -162,6 +162,7 @@ insmod $MODDIR/player2.ko
 insmod $MODDIR/sth264pp.ko
 insmod $MODDIR/stmalloc.ko
 insmod $MODDIR/platform.ko
+
 insmod $MODDIR/bpamem.ko
 insmod $MODDIR/smartcard.ko
 
@@ -178,7 +179,7 @@ if [ -e $MODDIR/exportfs.ko ]; then
 fi
 
 if [ -e $MODDIR/cifs.ko ]; then
-echo "[rcS] Init CIFS support"
+   echo "[rcS] Init CIFS support"
    insmod $MODDIR/cifs.ko
 fi
 
@@ -188,19 +189,29 @@ if [ -e $MODDIR/ntfs.ko ]; then
 fi
 
 if [ -e $MODDIR/tun.ko ]; then
-echo "[rcS] Init tun support"
+   echo "[rcS] Init tun support"
    insmod $MODDIR/tun.ko
 fi
 
 if [ -e $MODDIR/usbserial.ko ]; then
    insmod $MODDIR/usbserial.ko
+   if [ -e $MODDIR/ch341.ko ]; then
+   echo "[rcS] Init CH341 USB serial support"
+      insmod $MODDIR/ch341.ko
+   fi
    if [ -e $MODDIR/ftdi.ko ]; then
-   echo "[rcS] Init FTDI USB serial support"
+      echo "[rcS] Init FTDI USB serial support"
       insmod $MODDIR/ftdi.ko
    fi
    if [ -e $MODDIR/pl2303.ko ]; then
    echo "[rcS] Init PL2303 USB serial support"
       insmod $MODDIR/pl2303.ko
+   fi
+   if [ -e $MODDIR/option.ko ]; then
+      insmod $MODDIR/option.ko
+   fi
+   if [ -e $MODDIR/usb_wwan.ko ]; then # 3G modem
+      insmod $MODDIR/usb_wwan.ko
    fi
 fi
 
@@ -219,17 +230,21 @@ if [ -e /etc/init.d/sshd ]; then
    (sleep 30; /etc/init.d/sshd start) &
 fi
 
-# Module aus modules.extra laden
+echo "[rcS] Load extra modules"
+# Load modules from /var/etc/modules.extra
 [ -f /var/etc/modules.extra ] && eval `sed -e 's/#.*//' -e '/^\s*$/d' -e 's/^\(.*\)/insmod \0;/' < /var/etc/modules.extra`
 
+#stfbcontrol a 255
+
+echo "[rcS] Set up wired network"
 NFS=`grep -c nfs /proc/cmdline`
 if [ "$NFS" -eq "1" ]; then
-   echo "[rcS] Booting from nfs, don't set network"
+   echo "[rcS] Booting from NFS, do not set network"
 else
    if [ -e /etc/network/interfaces ]; then
       ip addr flush eth0
       /etc/init.d/networking stop
-      DHCP=`grep -c dhcp /etc/network/interfaces`
+      DHCP=`grep -c 'iface eth0 inet dhcp' /etc/network/interfaces`
       if [ "$DHCP" -eq "1" ]; then
          echo "[rcS] Starting DHCP"
          /etc/init.d/udhcpc start
@@ -238,6 +253,17 @@ else
    fi
 fi
 
+#wlan=rtl8188cu
+if [ ! $wlan ] || [ ! -e $MODDIR/$wlan.ko ]; then
+   echo "No WLAN"
+else
+   insmod $MODDIR/$wlan.ko
+   echo "$wlan WLAN"
+#   echo "$wlan WLAN" > /dev/vfd
+#   sleep 3
+fi
+
+echo "[rcS] Do extras (LOAD 1)"
 if [ $boxtype == 'bska' ] || [ $boxtype == 'bxzb' ]; then
    echo "Ld 1" > /dev/vfd
 else
@@ -245,8 +271,9 @@ else
 fi
 # Try and synchronise time
 echo "[rcS] Set internet time"
-ntpd -n -p 0.europe.pool.ntp.org -q
-/bin/fp_control -sst
+if [ -x /usr/sbin/ntpd ]; then
+   (ntpd -n -p 0.europe.pool.ntp.org -q; /bin/fp_control -sst)
+fi
 
 echo "[rcS] Init portmap & ftp"
 /etc/init.d/portmap start
@@ -269,7 +296,7 @@ do
    echo "[rcS] Starting Neutrino->"
    /usr/bin/neutrino
    rtv=$?
-   echo "neutrino ended <- RTV: " $rtv
+   echo "[rcS] Neutrino ended <- return value: " $rtv
    case "$rtv" in
       0) echo "[rcS] SHUTDOWN"
           if [ $boxtype == 'bska' ] || [ $boxtype == 'bxzb' ]; then

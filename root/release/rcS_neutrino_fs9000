@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 220711.1
+#Version 221128.1
 
 echo "[rcS] Start"
 echo "Fortis FS9000/9200 Neutrino"
@@ -50,7 +50,7 @@ echo "[rcS] Starting telnetd"
 echo "[rcS] Init stmfb (LOAD 9)"
 echo "LOAD 9" > /dev/vfd
 insmod $MODDIR/stmcore-display-stx7109c3.ko
-insmod $MODDIR/stmfb.ko display0=1280x720-32@50:12m:pal:rgb:rgb;# display1=720x576-16@50:1m:pal:cvbs;
+insmod $MODDIR/stmfb.ko display0=1280x720-32@50:12m:0:pal:rgb:rgb; # display1=720x576-16@50:1m:pal:cvbs;
 
 echo "[rcS] Loading modules"
 
@@ -95,10 +95,10 @@ insmod $MODDIR/pseudocard.ko
 
 echo "[rcS] Init frontends"
 insmod $MODDIR/stv090x.ko
-insmod $MODDIR/starci.ko
-insmod $MODDIR/smartcard.ko
 
 echo "[rcS] Init CI & cardreader"
+insmod $MODDIR/starci.ko
+insmod $MODDIR/smartcard.ko
 insmod $MODDIR/pti.ko waitMS=20 videoMem=4096
 if [ $? -ne 0 ]; then
    insmod $MODDIR/pti.ko
@@ -116,6 +116,7 @@ insmod $MODDIR/player2.ko discardlateframe=0
 insmod $MODDIR/sth264pp.ko
 insmod $MODDIR/stmalloc.ko
 insmod $MODDIR/platform.ko
+
 insmod $MODDIR/bpamem.ko
 
 #if [ -e /boot/neutrinologo.mvi ]; then
@@ -124,48 +125,74 @@ insmod $MODDIR/bpamem.ko
 stfbcontrol a 0
 
 if [ -e $MODDIR/exportfs.ko ]; then
+   echo "[rcS] Init exportfs"
    insmod $MODDIR/exportfs.ko
 fi
+
 if [ -e $MODDIR/cifs.ko ]; then
+   echo "[rcS] Init CIFS support"
    insmod $MODDIR/cifs.ko
 fi
+
 if [ -e $MODDIR/ntfs.ko ]; then
+   echo "[rcS] Init NTFS support"
    insmod $MODDIR/ntfs.ko
 fi
+
 if [ -e $MODDIR/tun.ko ]; then
+   echo "[rcS] Init tun support"
    insmod $MODDIR/tun.ko
 fi
+
 if [ -e $MODDIR/usbserial.ko ]; then
    insmod $MODDIR/usbserial.ko
    if [ -e $MODDIR/ch341.ko ]; then
+   echo "[rcS] Init CH341 USB serial support"
       insmod $MODDIR/ch341.ko
    fi
    if [ -e $MODDIR/ftdi.ko ]; then
+      echo "[rcS] Init FTDI USB serial support"
       insmod $MODDIR/ftdi.ko
    fi
    if [ -e $MODDIR/pl2303.ko ]; then
+   echo "[rcS] Init PL2303 USB serial support"
       insmod $MODDIR/pl2303.ko
    fi
+   if [ -e $MODDIR/option.ko ]; then
+      insmod $MODDIR/option.ko
+   fi
+   if [ -e $MODDIR/usb_wwan.ko ]; then # 3G modem
+      insmod $MODDIR/usb_wwan.ko
+   fi
 fi
-echo "[rcS] Init frontpanel (LOAD 2)"
+
+echo "[rcS] Init front panel (LOAD 2)"
 echo "LOAD 2" > /dev/vfd
-insmod $MODDIR/boxtype.ko
 insmod $MODDIR/simu_button.ko
 
 echo "[rcS] Init remote control"
 /bin/evremote2 10 140 &
 
+# OpenSSh daemon
+if [ -e /etc/init.d/sshd ]; then
+   (sleep 30; /etc/init.d/sshd start) &
+fi
+
+echo "[rcS] Load extra modules"
 # Load modules from /var/etc/modules.extra
 [ -f /var/etc/modules.extra ] && eval `sed -e 's/#.*//' -e '/^\s*$/d' -e 's/^\(.*\)/insmod \0;/' < /var/etc/modules.extra`
 
+#stfbcontrol a 255
+
+echo "[rcS] Set up wired network"
 NFS=`grep -c nfs /proc/cmdline`
 if [ "$NFS" -eq "1" ]; then
-   echo "[rcS] Booting from nfs, don't set network"
+   echo "[rcS] Booting from NFS, do not set network"
 else
    if [ -e /etc/network/interfaces ]; then
       ip addr flush eth0
       /etc/init.d/networking stop
-      DHCP=`grep -c dhcp /etc/network/interfaces`
+      DHCP=`grep -c 'iface eth0 inet dhcp' /etc/network/interfaces`
       if [ "$DHCP" -eq "1" ]; then
          echo "[rcS] Starting DHCP"
          /etc/init.d/udhcpc start
@@ -184,24 +211,30 @@ else
 #   sleep 3
 fi
 
+echo "[rcS] Do extras (LOAD 1)"
+echo "Load 1" > /dev/vfd
+
 # Try and synchronise time
 if [ -x /usr/sbin/ntpd ]; then
-   echo "Set internet time"
+   echo "[rcS] Set internet time"
    (ntpd -n -p 0.europe.pool.ntp.org -q; /bin/fp_control -sst)
 fi
 
-echo "[rcS] Init portmap & ftp (LOAD 1)"
-echo "LOAD 1" >/dev/vfd
+echo "[rcS] Init portmap & ftp"
 /etc/init.d/portmap start
 /etc/init.d/vsftpd start
 /usr/sbin/inetd
 
-echo "[rcS] LOADING neutrino"
+# Do own extras
+if [ -e /etc/ownscript.sh ]; then
+   /etc/ownscript.sh &
+fi
+
+echo "[rcS] Loading neutrino"
 echo "Loading Neutrino" > /dev/vfd
 
 until false
 do
-#   killall -9 showiframe
    echo "[rcS] Starting neutrino ->"
    /usr/bin/neutrino
    rtv=$?
@@ -216,7 +249,7 @@ do
       3) echo "[rcS] RESTART"
          echo "Restart" > /dev/vfd
          ;;
-      *) echo "[rcS] ERROR"
+      *) echo "[rcS] Neutrino ERROR"
          echo "Error" > /dev/vfd
          init 6;;
    esac

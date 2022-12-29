@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20220831.1
+# Version 20221229.1
 
 ##############################################
 
@@ -154,7 +154,7 @@ fi
 ##############################################
 
 case $1 in
-	[1-9] | 1[0-9] | 2[0-9] | 3[0-9] | 4[0-2]) REPLY=$1;;
+	[1-9] | 1[0-9] | 2[0-9] | 3[0-9] | 4[0-4]) REPLY=$1;;
 	*)
 		echo "Target receivers:"
 		echo
@@ -194,13 +194,9 @@ case $1 in
 		echo "   35)  Showbox Vitamin HD5000 (256Mbyte flash version)"
 		echo "   36)  SagemCom 88 series (untested)"
 		echo "   37)  Ferguson Ariva @Link 200 (untested)"
-#		echo "   38)  Pace HDS-7241 (in development, kernel P0217 only)"
-#		echo "   39)  ADB ITI-2849ST/2850ST/2851S (in development, kernel P0217 only)"
-#		echo "   40)  Opticum/Orton HD (TS) 9600 (in development, kernel P0217 only)"
-#		echo "   41)  Opticum/Orton HD 9600 Mini (in development, kernel P0217 only)"
-#		echo "   42)  Opticum/Orton HD (TS) 9600 Prima (in development, kernel P0217 only)"
+		echo "   38)  Homecast HS8100 CI series (FTA only, experimental, kernel P0217 only)"
 		echo
-		read -p "Select target (1-37) ";;
+		read -p "Select target (1-38) ";;
 esac
 
 case "$REPLY" in
@@ -241,11 +237,12 @@ case "$REPLY" in
 	35) BOXTYPE="vitamin_hd5000";;
 	36) BOXTYPE="sagemcom88";;
 	37) BOXTYPE="arivalink200";;
-	38) BOXTYPE="pace7241";;
-	39) BOXTYPE="adb_2850";;
-	40) BOXTYPE="opt9600";;
-	41) BOXTYPE="opt9600mini";;
-	42) BOXTYPE="opt9600prima";;
+	38) BOXTYPE="hchs8100";;
+	39) BOXTYPE="pace7241";;
+	40) BOXTYPE="adb_2850";;
+	41) BOXTYPE="opt9600";;
+	42) BOXTYPE="opt9600mini";;
+	43) BOXTYPE="opt9600prima";;
 	 *) BOXTYPE="hs8200";;
 esac
 echo "BOXTYPE=$BOXTYPE" >> config
