@@ -159,8 +159,8 @@ $(D)/enigma2.do_prepare: | $(ENIGMA2_DEPS)
 		fi; \
 		echo "Patching to diff-$$DIFF completed."; \
 		cd $(SOURCE_DIR)/enigma2; \
-		echo -n "Building VFD-icons plugins..."; \
-		patch -p1 -s -i "$(PATCHES)/build-enigma2/vfd-drivers.patch"; echo " done."; \
+		echo -n "Unpacking VFD-Icons plugins..."; \
+		patch -p1 -s -i "$(PATCHES)/build-enigma2/vfd-icons.patch"; echo " done."; \
 		rm -rf $(TARGET_DIR)/usr/local/share/enigma2/rc_models; \
 		echo; \
 		echo -n "Patching remote control files..."; \

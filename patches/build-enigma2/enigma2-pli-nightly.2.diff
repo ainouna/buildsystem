@@ -9,7 +9,7 @@
  AX_PYTHON_DEVEL
  AX_PKG_SWIG
  AX_SWIG_ENABLE_CXX
-@@ -35,6 +36,313 @@
+@@ -35,6 +36,321 @@
  PKG_CHECK_MODULES(LIBDDVD, libdreamdvd, HAVE_LIBDDVD="yes", HAVE_LIBDDVD="no")
  AM_CONDITIONAL(HAVE_LIBDDVD, test "$HAVE_LIBDDVD" = "yes")
  PKG_CHECK_MODULES(AVAHI, avahi-client)
@@ -320,10 +320,18 @@
 +if test "$enable_atemio520" = "yes"; then
 +	AC_DEFINE(ENABLE_ATEMIO520, 1, [enable atemio520 stuff])
 +fi
++
++AC_ARG_ENABLE(hchs8100,
++	[  --enable-hchs8100          enable hchs8100 stuff],
++	[AC_DEFINE(ENABLE_HCHS8100, 1, [enable hchs8100 stuff])])
++AM_CONDITIONAL(ENABLE_HCHS8100, test "$enable_hchs8100" = "yes")
++if test "$enable_hchs8100" = "yes"; then
++	AC_DEFINE(ENABLE_HCHS8100, 1, [enable hchs8100 stuff])
++fi
  
  AC_CHECK_LIB([udfread], [udfread_init])
  AC_CHECK_LIB([dl], [dlopen], [LIBDL_LIBS="-ldl"], [AC_MSG_ERROR([Could not find libdl])])
-@@ -51,13 +359,13 @@
+@@ -51,13 +367,13 @@
  AC_DEFINE_UNQUOTED(CRASH_EMAILADDR,"$CRASHLOGEMAIL",[crash log email address])
  
  AC_ARG_WITH(boxtype,
@@ -340,7 +348,7 @@
  if test `echo "$BOXTYPE" | cut -b 1-2` == "dm"; then
  	AC_DEFINE(DREAMBOX, 1, [Dreambox hardware])
  	AC_DEFINE(KEY_PLAY_ACTUALLY_IS_KEY_PLAYPAUSE, 1,[define when rc sends a KEY_PLAY event for its KEY_PLAYPAUSE key])
-@@ -79,19 +387,6 @@
+@@ -79,19 +395,6 @@
  	[[TEXTSKIN="default"]]
  )
  AC_SUBST(TEXTSKIN)
@@ -360,7 +368,7 @@
  
  AC_ARG_WITH(libsdl,
  	AS_HELP_STRING([--with-libsdl],[use libsdl, yes or no]),
-@@ -141,8 +436,8 @@
+@@ -141,8 +444,8 @@
  
  AC_ARG_WITH(alsa,
  	AC_HELP_STRING([--with-alsa], [Enable ALSA support]),
@@ -371,7 +379,7 @@
  )
  if test x"$with_alsa" == xyes ; then
  	AC_DEFINE(HAVE_ALSA, 1,[Enables ALSA support])
-@@ -190,19 +477,37 @@
+@@ -190,19 +485,37 @@
  	[[with_alphablendingacceleration=$withval]],
  	[[with_alphablendingacceleration=auto]]
  )
@@ -411,7 +419,7 @@
  AC_DEFINE_UNQUOTED(GFX_SURFACE_ACCELERATION_THRESHOLD, $with_accelerationthreshold,[Configure threshold for accelerated surfaces (in bytes)])
  
  AC_ARG_WITH(fillaccelerationthreshold,
-@@ -210,7 +523,6 @@
+@@ -210,7 +531,6 @@
  	[[with_fillaccelerationthreshold=$withval]],
  	[[with_fillaccelerationthreshold=80000]]
  )
@@ -419,7 +427,7 @@
  AC_DEFINE_UNQUOTED(GFX_SURFACE_FILL_ACCELERATION_THRESHOLD, $with_fillaccelerationthreshold,[Configure threshold for accelerated fill operations (in bytes)])
  
  AC_ARG_WITH(blitaccelerationthreshold,
-@@ -218,7 +530,6 @@
+@@ -218,7 +538,6 @@
  	[[with_blitaccelerationthreshold=$withval]],
  	[[with_blitaccelerationthreshold=0]]
  )
@@ -427,7 +435,7 @@
  AC_DEFINE_UNQUOTED(GFX_SURFACE_BLIT_ACCELERATION_THRESHOLD, $with_blitaccelerationthreshold,[Configure threshold for accelerated blit operations (in bytes)])
  
  AC_ARG_WITH(accelerationaccumulation,
-@@ -226,7 +537,6 @@
+@@ -226,7 +545,6 @@
  	[[with_accelerationaccumulation=$withval]],
  	[[with_accelerationaccumulation=no]]
  )
@@ -435,7 +443,7 @@
  if test x"$with_accelerationaccumulation" = xyes ; then
  	AC_DEFINE(SUPPORT_ACCUMULATED_ACCELERATION_OPERATIONS, 1,[Accumulate blit/fill acceleration operations])
  fi
-@@ -248,17 +558,16 @@
+@@ -248,17 +566,16 @@
  
  CPPFLAGS="$CPPFLAGS $PYTHON_CPPFLAGS"
  CFLAGS="$CFLAGS -Wall"
@@ -461,7 +469,7 @@
  	-Wno-error=aggregate-return -Wno-error=missing-field-initializers \
  	-Wno-error=packed -Wno-error=vla -Wno-error=clobbered -Wno-error=unused-parameter \
  	$BASE_CFLAGS $ENIGMA2_CFLAGS $PTHREAD_CFLAGS $OPENMP_CFLAGS $ALSA_CFLAGS"
-@@ -316,8 +625,6 @@
+@@ -316,8 +631,6 @@
  lib/python/Plugins/Extensions/SocketMMI/meta/Makefile
  lib/python/Plugins/Extensions/SocketMMI/src/Makefile
  lib/python/Plugins/PLi/Makefile
@@ -470,7 +478,7 @@
  lib/python/Plugins/SystemPlugins/DefaultServicesScanner/Makefile
  lib/python/Plugins/SystemPlugins/DefaultServicesScanner/meta/Makefile
  lib/python/Plugins/SystemPlugins/DiseqcTester/Makefile
-@@ -347,6 +654,70 @@
+@@ -347,6 +662,75 @@
  lib/python/Plugins/SystemPlugins/Videomode/meta/Makefile
  lib/python/Plugins/SystemPlugins/WirelessLan/Makefile
  lib/python/Plugins/SystemPlugins/WirelessLan/meta/Makefile
@@ -535,6 +543,11 @@
 +lib/python/Plugins/Extensions/ufs9xxVFD/locale/Makefile
 +lib/python/Plugins/Extensions/ufs9xxVFD/locale/nl/Makefile
 +lib/python/Plugins/Extensions/ufs9xxVFD/locale/nl/LC_MESSAGES/Makefile
++lib/python/Plugins/Extensions/hchsxx00VFD/Makefile
++lib/python/Plugins/Extensions/hchsxx00VFD/meta/Makefile
++lib/python/Plugins/Extensions/hchsxx00VFD/locale/Makefile
++lib/python/Plugins/Extensions/hchsxx00VFD/locale/nl/Makefile
++lib/python/Plugins/Extensions/hchsxx00VFD/locale/nl/LC_MESSAGES/Makefile
 +lib/python/Plugins/Extensions/TopfieldVFD/Makefile
 +lib/python/Plugins/SystemPlugins/VFD-Icons/Makefile
 +lib/python/Plugins/SystemPlugins/VFD-Icons/meta/Makefile
@@ -568,6 +581,17 @@
  			print "[StartEnigma] DVB time sync disabled... so set RTC now to current linux time!", strftime("%Y/%m/%d %H:%M", localtime(nowTime))
  			setRTCtime(nowTime)
  			setRTCtime(nowTime)
+--- enigma2.org/data/menu.xml
++++ enigma2/data/menu.xml
+@@ -48,7 +48,7 @@
+ 					<item level="0" entryID="timezone_setup"><setup id="timezone"/></item>
+ 					<item level="0" entryID="user_interface"><setup id="userinterface"/></item>
+ 					<item level="0" text="GUI Skin" entryID="primary_skin_selector"><screen module="SkinSelector" screen="SkinSelector"/></item>
+-					<item level="0" requires="FrontpanelDisplay" text="Display Skin" entryID="display_skin_selector"><screen module="SkinSelector" screen="LcdSkinSelector"/></item>
++					<!--item level="0" requires="FrontpanelDisplay" text="Display Skin" entryID="display_skin_selector"><screen module="SkinSelector" screen="LcdSkinSelector"/></item-->
+ 				</menu>
+ 				<menu level="0" text="EPG" entryID="epg_menu">
+ 					<id val="epg"/>
 --- enigma2.org/data/Makefile.am
 +++ enigma2/data/Makefile.am
 @@ -1,4 +1,4 @@
@@ -886,7 +910,7 @@
  		{
 --- enigma2.org/lib/driver/vfd.cpp
 +++ enigma2/lib/driver/vfd.cpp
-@@ -0,0 +1,1087 @@
+@@ -0,0 +1,1095 @@
 +/***************************************************************************
 + *
 + * vfd.cpp
@@ -944,6 +968,7 @@
 + * 20210922 Audioniek       Atemio AM 520 HD added.
 + * 20211105 Audioniek       Opticum HD 9600 Mini added.
 + * 20220127 Audioniek       Opticum HD 9600 Prima added.
++ * 20221104 Audioniek       Homecast HS8100 series added.
 + *
 + ***************************************************************************/
 +#include <stdarg.h>
@@ -1080,6 +1105,8 @@
 +	vfd_type = 20;
 +#elif defined (ENABLE_OPT9600MINI)
 +	vfd_type = 21;
++#elif defined (ENABLE_HCHS8100)
++	vfd_type = 22;
 +#else
 +	vfd_type = -1;
 +#endif
@@ -1342,6 +1369,8 @@
 +		char str[] = "Mini Enigma2";
 +	#elif defined (ENABLE_ATEMIO520)
 +		char str[] = "520 HD Enigma2";
++	#elif defined (ENABLE_HCHS8100)
++		char str[] = "HS8100 CI E2";
 +	#else
 +		char str[] = "SH4 Git Enigma2";
 +	#endif
@@ -1378,7 +1407,8 @@
 +	 || defined (ENABLE_HL101) \
 +	 || defined (ENABLE_VIP1_V1) \
 +	 || defined (ENABLE_VIP1_V2) \
-+	 || defined (ENABLE_VIP2)
++	 || defined (ENABLE_VIP2) \
++	 || defined (ENABLE_HCHS8100)
 +	// Modulate brightness 3 times
 +	for (int vloop = 0; vloop < 3 * 14; vloop++)
 +	{
@@ -1488,7 +1518,8 @@
 +	 && !defined (ENABLE_OPT9600) \
 +	 && !defined (ENABLE_OPT9600MINI) \
 +	 && !defined (ENABLE_OPT9600PRIMA) \
-+	 && !defined (ENABLE_ATEMIO520)
++	 && !defined (ENABLE_ATEMIO520) \
++	 && !defined (ENABLE_HCHS8100)
 +	// Set all blocked icons
 +	for (int id = 0x10; id < 0x20; id++)
 +	{
@@ -1529,7 +1560,8 @@
 + || defined (ENABLE_OPT9600) \
 + || defined (ENABLE_OPT9600MINI) \
 + || defined (ENABLE_OPT9600PRIMA) \
-+ || defined (ENABLE_ATEMIO520)
++ || defined (ENABLE_ATEMIO520) \
++ || defined (ENABLE_HCHS8100)
 +void evfd::vfd_write_string_scrollText(char *text)
 +{
 +	return;
@@ -1976,7 +2008,7 @@
 +// vim:ts=4
 --- enigma2.org/lib/driver/vfd.h
 +++ enigma2/lib/driver/vfd.h
-@@ -0,0 +1,145 @@
+@@ -0,0 +1,148 @@
 +#ifndef VFD_H_
 +#define VFD_H_
 +
@@ -2008,7 +2040,8 @@
 +	#define VFDLENGTH 11
 +#elif defined (ENABLE_FS9000) \
 +   || defined (ENABLE_HS8200) \
-+   || defined (ENABLE_CUBEREVO)
++   || defined (ENABLE_CUBEREVO) \
++   || defined (ENABLE_HCHS8100)
 +	#define VFDLENGTH 12
 +#elif defined (ENABLE_CUBEREVO_9500HD)
 +	#define VFDLENGTH 13
@@ -2051,6 +2084,8 @@
 +#elif defined (ENABLE_ADB_BOX) \
 + ||   defined (ENABLE_PACE7241)
 +#define ICON_MAX 20
++#elif defined (ENABLE_HCHS8100)
++#define ICON_MAX 34
 +#else
 +#define ICON_MAX -1
 +#endif
@@ -6239,8 +6274,8 @@
 -SystemInfo["HasScart"] = model in ("dm8000", "et4000", "et6500", "et8000", "et9000", "et9200", "et9500", "et10000", "formuler1", "hd1100", "hd1200", "hd1265", "hd2400", "vusolo", "vusolo2", "vuduo", "vuduo2", "vuultimo", "vuuno", "xp1000")
 -SystemInfo["HasSVideo"] = model in ("dm8000")
 -SystemInfo["HasComposite"] = model not in ("i55", "gbquad4k", "gbue4k", "hd1500", "osnino", "osninoplus", "purehd", "purehdse", "revo4k", "vusolo4k", "vuzero4k", "vuduo4k", "vuduo4kse", "vuuno4k", "vuuno4kse", "vuultimo4k")
-+SystemInfo["HasYPbPr"] = model in ("adb_box", "hs8200", "cuberevo", "cuberevo-mini-fta", "cuberevo-250hd", "cuberevo-mini", "cuberevo-mini2", "cuberevo-2000hd", "cuberevo-3000hd", "cuberevo-9500hd", "fs9000", "hs9510", "hs7420", "hs7429", "hl101", "tf7700hdpvr", "ufs910", "ufs912", "ufs913", "ufs922", "vip1_v1", "vip1_v2", "vip2", "vitamin_hd5000", "opt9600", "opt9600prima")
-+SystemInfo["HasScart"] = model not in ("hs7110", "hs7119", "opt9600mini, atemio520")
++SystemInfo["HasYPbPr"] = model in ("adb_box", "hs8200", "cuberevo", "cuberevo-mini-fta", "cuberevo-250hd", "cuberevo-mini", "cuberevo-mini2", "cuberevo-2000hd", "cuberevo-3000hd", "cuberevo-9500hd", "fs9000", "hs9510", "hs7420", "hs7429", "hchs8100", "hl101", "tf7700hdpvr", "ufs910", "ufs912", "ufs913", "ufs922", "vip1_v1", "vip1_v2", "vip2", "vitamin_hd5000", "opt9600", "opt9600prima")
++SystemInfo["HasScart"] = model not in ("hs7110", "hs7119", "opt9600mini", "atemio520")
 +SystemInfo["HasSVideo"] = model in  ("cuberevo")
 +SystemInfo["HasComposite"] = model not in ("cuberevo_mini_fta", "cuberevo_250hd")
  SystemInfo["hasXcoreVFD"] = model in ("osmega", "spycat4k", "spycat4kmini", "spycat4kcombo") and fileCheck("/sys/module/brcmstb_%s/parameters/pt6302_cgram" % model)
@@ -8965,8 +9000,8 @@
 +							model = str(open("/proc/stb/info/model").read())
 +							if model.startswith("spark7162") or model.startswith("tf7700hdpvr") or model.startswith("hs9510") or model.startswith("fs9000") or model.startswith("hs8200") or model.startswith("hs7420") or model.startswith("hs7429") or model.startswith("vitamin-hd5000") or model.startswith("hl101") or model.startswith("vip1-v1") or model.startswith("vip1-v2") or model.startswith("vip2"):
 +								evfd.getInstance().vfd_write_string("START %02d" % perc)
-+							elif model.startswith("cuberevo") or model.startswith("cuberevo_mini") or model.startswith("cuberevo_mini2") or model.startswith("cuberevo_2000hd") or model.startswith("cuberevo_3000hd") or model.startswith("cuberevo_9500hd"):
-+								evfd.getInstance().vfd_write_string("E2 Start %02d" % perc)
++							elif model.startswith("cuberevo") or model.startswith("cuberevo_mini") or model.startswith("cuberevo_mini2") or model.startswith("cuberevo_2000hd") or model.startswith("cuberevo_3000hd") or model.startswith("cuberevo_9500hd") or model.startswith("hchs8100"):
++								evfd.getInstance().vfd_write_string("E2 Start %02d%%" % perc)
 +							elif model.startswith("ufs912") or model.startswith("ufs913"):
 +								evfd.getInstance().vfd_write_string("Enigma2 START %02d" % perc)
 +							elif model.startswith("spark") or model.startswith("hs7119") or model.startswith("hs7810a") or model.startswith("hs7819") or model.startswith("cuberevo_250hd") or model.startswith("cuberevo_mini_fta"):
@@ -9380,16 +9415,41 @@
  		cpu = about.getCPUInfoString()
  		AboutText += _("CPU: ") + cpu + "\n"
  		AboutText += _("Image: ") + about.getImageTypeString() + "\n"
-@@ -53,7 +65,7 @@
+@@ -53,27 +65,17 @@
  
  		AboutText += _("DVB driver version: ") + about.getDriverInstalledDate() + "\n"
  
 -		GStreamerVersion = about.getGStreamerVersionString().replace("GStreamer", "")
-+		GStreamerVersion = "Media framework: " + about.getGStreamerVersionString()
++		GStreamerVersion = about.getGStreamerVersionString()
  		self["GStreamerVersion"] = StaticText(GStreamerVersion)
  
  		ffmpegVersion = about.getffmpegVersionString()
-@@ -84,7 +96,14 @@
+ 		self["ffmpegVersion"] = StaticText(ffmpegVersion)
+ 
+-		player = None
+-		if cpu.upper().startswith('HI') or os.path.isdir('/proc/hisi'):
+-			if os.path.isdir("/usr/lib/hisilicon") and glob.glob("/usr/lib/hisilicon/libavcodec.so.*"):
+-				player = _("Media player") + ": ffmpeg, " + _("Hardware Accelerated")
+-			elif ffmpegVersion and ffmpegVersion[0].isdigit():
+-				player = _("Media player") + ": ffmpeg, " + _("version") + " " + ffmpegVersion
+-
+-		if player is None:
+-			if GStreamerVersion:
+-				player = _("Media player") + ": Gstreamer, " + _("version") + " " + GStreamerVersion
+-			else:
+-				player = _("Media player") + ": " + _("Not Installed")
+-
+-		AboutText += player + "\n"
+-
++		AboutText += _("Media framework: ") + GStreamerVersion + "\n"
++
++		if ffmpegVersion and ffmpegVersion[0].isdigit():
++			AboutText += _("FFmpeg version: ") + ffmpegVersion + "\n"
++	
+ 		AboutText += _("Python version: ") + about.getPythonVersionString() + "\n"
+ 
+ 		AboutText += _("Enigma (re)starts: %d\n") % config.misc.startCounter.value
+@@ -84,7 +86,14 @@
  		if fp_version is None:
  			fp_version = ""
  		elif fp_version != 0:
@@ -9428,7 +9488,7 @@
  			fp = open("/dev/dbox/fp0")
 --- enigma2.org/lib/python/Tools/KeyBindings.py
 +++ enigma2/lib/python/Tools/KeyBindings.py
-@@ -220,122 +220,522 @@
+@@ -220,122 +220,570 @@
  	KEYIDS["KEY_POWER2"]: ("POWER2",),
  	KEYIDS["KEY_SUSPEND"]: ("SUSPEND",),
  	KEYIDS["KEY_WAKEUP"]: ("WAKEUP",)
@@ -10058,10 +10118,58 @@
 +	KEYIDS["KEY_PROGRAM"]: ("SLEEP",),
 +# Additions or Sogno HD 800 V3
 +	KEYIDS["KEY_ZOOM"]: ("V.FORMAT",),
++}, {  # id=14 - Homecast HS8100/9000
++	KEYIDS["KEY_POWER"]: ("POWER",),
++	KEYIDS["KEY_TV2"]: ("TV_RADIO",),
++	KEYIDS["KEY_TEXT"]: ("TEXT",),
++	KEYIDS["KEY_1"]: ("1BUTTON",),
++	KEYIDS["KEY_2"]: ("2BUTTON",),
++	KEYIDS["KEY_3"]: ("3BUTTON",),
++	KEYIDS["KEY_4"]: ("4BUTTON",),
++	KEYIDS["KEY_5"]: ("5BUTTON",),
++	KEYIDS["KEY_6"]: ("6BUTTON",),
++	KEYIDS["KEY_7"]: ("7BUTTON",),
++	KEYIDS["KEY_8"]: ("8BUTTON",),
++	KEYIDS["KEY_9"]: ("9BUTTON",),
++	KEYIDS["KEY_BACK"]: ("BACK",),
++	KEYIDS["KEY_0"]: ("0BUTTON",),
++	KEYIDS["KEY_MUTE"]: ("MUTE",),
++	KEYIDS["KEY_RED"]: ("RED",),
++	KEYIDS["KEY_GREEN"]: ("GREEN",),
++	KEYIDS["KEY_YELLOW"]: ("YELLOW",),
++	KEYIDS["KEY_BLUE"]: ("BLUE",),
++	KEYIDS["KEY_MENU"]: ("MENU",),
++	KEYIDS["KEY_EPG"]: ("EPG",),
++	KEYIDS["KEY_INFO"]: ("INFO",),
++	KEYIDS["KEY_UP"]: ("UP",),
++	KEYIDS["KEY_LEFT"]: ("LEFT",),
++	KEYIDS["KEY_OK"]: ("OK",),
++	KEYIDS["KEY_RIGHT"]: ("RIGHT",),
++	KEYIDS["KEY_DOWN"]: ("DOWN",),
++	KEYIDS["KEY_VOLUMEUP"]: ("VOLUMEUP",),
++	KEYIDS["KEY_CHANNELUP"]: ("CHANNELUP",),
++	KEYIDS["KEY_EXIT"]: ("EXIT",),
++	KEYIDS["KEY_VOLUMEDOWN"]: ("VOLUMEDOWN",),
++	KEYIDS["KEY_CHANNELDOWN"]: ("CHANNELDOWN",),
++	KEYIDS["KEY_PAUSE"]: ("PAUSE",),
++	KEYIDS["KEY_PLAY"]: ("PLAY",),
++	KEYIDS["KEY_REWIND"]: ("REWIND",),
++	KEYIDS["KEY_STOP"]: ("STOP",),
++	KEYIDS["KEY_FASTFORWARD"]: ("FASTFORWARD",),
++	KEYIDS["KEY_RECORD"]: ("RECORD",),
++	KEYIDS["KEY_SLOW"]: ("SLOW",),
++	KEYIDS["KEY_FILE"]: ("LIST",),
++#	KEYIDS["KEY_REPEAT"]: ("REPEAT",),
++	KEYIDS["KEY_HELP"]: ("MARK",),
++	KEYIDS["KEY_GOTO"]: ("JUMP",),
++	KEYIDS["KEY_SCREEN"]: ("PIP",),
++#	KEYIDS["KEY_GOTO"]: ("PIP_SWAP",),
++#	KEYIDS["KEY_GOTO]": ("PIP_MOVE",),
++	KEYIDS["KEY_PROGRAM"]: ("SLEEP",)
  }]
  
  
-@@ -374,10 +767,45 @@
+@@ -374,10 +822,47 @@
  	else:
  		rcType = config.plugins.remotecontroltype.rctype.value
  		# rcType = config.misc.inputdevices.rcType.value
@@ -10102,16 +10210,18 @@
 +			idx = 7
 +		elif rcType == 23:	# Atemio AM 520 HD (version 2)
 +			idx = 13
-+#		elif rcType == 24:	# Fortis 4G
-+#			idx = 14
-+#		elif rcType == 25:	# ...
++		elif rcType == 24:	# Homecast HS8100/9000 series
++			idx = 14
++#		elif rcType == 25:	# Fortis 4G
 +#			idx = 15
++#		elif rcType == 26:	# ...
++#			idx = 16
  		else:
  			idx = 2
  	return keyDescriptions[idx].get(key)
 --- enigma2.org/lib/python/Screens/InputDeviceSetup.py
 +++ enigma2/lib/python/Screens/InputDeviceSetup.py
-@@ -282,77 +282,65 @@
+@@ -282,77 +282,67 @@
  	rcList = [
  			("0", _("Default")),
  			("4", _("DMM normal")),
@@ -10150,7 +10260,8 @@
 +			("21", _("Opticum HD 9600 series")),
 +			("22", _("CubeRevo standard")),
 +			("23", _("Atemio AM 520 HD V2")),
-+#			("24", _("fortis_4g")),
++			("24", _("Homecast HS8100/9000")),
++#			("25", _("fortis_4g")),
  		]
  
  	defaultRcList = [
@@ -10240,13 +10351,14 @@
 +			("opt9600mini", 21),
 +			("opt9600prima", 21),
 +			("atemio520", 23),
-+#			("fortis_4g", 24),
++			("hchs8100", 24),
++#			("fortis_4g", 25),
  		]
  
  	def __init__(self, session):
 --- enigma2.org/data/rc_models/rc_models.cfg
 +++ enigma2/data/rc_models/rc_models.cfg
-@@ -19,163 +19,39 @@
+@@ -19,163 +19,40 @@
  #
  # When no entry matches at all, 'default' will be used as remoteName
  #
@@ -10446,6 +10558,7 @@
 +opt9600mini       opt9600
 +opt9600prima      opt9600
 +atemio520         atemio520
++hchs8100          hchs8100
 --- enigma2.org/data/rc_models/Makefile.am
 +++ enigma2/data/rc_models/Makefile.am
 @@ -2,15 +2,10 @@
@@ -10466,9 +10579,9 @@
 -	octagon.xml uclan.xml pulse.xml dual.xml hd66se.xml
 +	dmmadv.png \
 +	adb_xmp.png cuberevo_uni.png fs9000.png hs7110.png hs9510.png spark.png tf7700.png ufs912.png vitamin.png \
-+	pace7241.png hl101_1.png vip_1.png ufs910.png ufs913.png opt9600.png cuberevo.png atemio520.png dmm.png \
++	pace7241.png hl101_1.png vip_1.png ufs910.png ufs913.png opt9600.png cuberevo.png atemio520.png hchs8100.png dmm.png \
 +	dmmadv.xml  \
 +	adb_xmp.xml cuberevo_uni.xml fs9000.xml hs7110.xml hs9510.xml spark.xml tf7700.xml ufs912.xml vitamin.xml \
-+	pace7241.xml hl101_1.xml vip_1.xml ufs910.xml ufs913.xml opt9600.xml cuberevo.xml atemio520.xml dmm.xml
++	pace7241.xml hl101_1.xml vip_1.xml ufs910.xml ufs913.xml opt9600.xml cuberevo.xml atemio520.xml hchs8100.xml dmm.xml
 +
 
