@@ -666,7 +666,7 @@ $(D)/bzip2: $(D)/bootstrap $(ARCHIVE)/$(BZIP2_SOURCE)
 #
 # timezone
 #
-TZDATA_VER = 2022f
+TZDATA_VER = 2022g
 TZDATA_SOURCE = tzdata$(TZDATA_VER).tar.gz
 TZDATA_ZONELIST = africa antarctica asia australasia europe northamerica southamerica etcetera
 DEFAULT_TIMEZONE ?= "CET"
@@ -796,7 +796,7 @@ $(D)/lirc: $(D)/bootstrap $(ARCHIVE)/$(LIRC_SOURCE)
 		$(MAKE) -j1 all; \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
 	$(REWRITE_LIBTOOL)/liblirc_client.la
-	rm -f $(addprefix $(TARGET_DIR)/usr/bin/,lircmd ircat irpty irsend lircrcd mode2 pronto2lirc)
+	rm -f $(addprefix $(TARGET_DIR)/usr/bin/,lircmd ircat irpty irsend irw lircrcd mode2 pronto2lirc)
 	$(REMOVE)/lirc-$(LIRC_VER)
 	$(TOUCH)
 endif
