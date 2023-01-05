@@ -126,6 +126,9 @@ neutrino-release-ufs910: $(D)/uboot-utils
 	$(SILENT)rm -f $(RELEASE_DIR)/bin/vdstandby
 	$(SILENT)cp $(TARGET_DIR)/usr/bin/fw_setenv $(RELEASE_DIR)/usr/bin/
 	$(SILENT)ln -sf $(RELEASE_DIR)/usr/bin/fw_setenv $(RELEASE_DIR)/usr/bin/fw_printenv
+ifeq ($(DESTINATION), flash)
+	$(MAKE) $(D)/ufsinstaller
+endif
 
 #
 # ufs912

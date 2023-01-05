@@ -140,7 +140,7 @@
  };
  
  static void mb442_set_vpp(struct map_info *info, int enable)
-@@ -70,94 +109,177 @@
+@@ -70,94 +109,181 @@
  	gpio_set_value(MB442_PIO_FLASH_VPP, enable);
  }
  
@@ -164,7 +164,7 @@
 +	.flags = IORESOURCE_MEM,
 +};
 +
-+static struct mtd_partition mtd_parts_table[8] =
++static struct mtd_partition mtd_parts_table[9] =
 +{
 +    {  // This is the same as the Kathrein factory setup
 +		.name   = "Boot firmware",     // mtd0
@@ -205,6 +205,11 @@
 +		.name   = "BootConfiguration", // mtd7 (boot loader environment)
 +		.size   = 0x00020000,          // 128 kbyte
 +		.offset = 0x00020000           // 128 kbyte
++    },
++    {
++		.name   = "miniUboot",         // mtd8 (occupies the upper 64k of the original bootargs)
++		.size   = 0x00030000,          // 192 kbyte
++		.offset = 0x00010000           // 64 kbyte
 +    }
 +};
 +
