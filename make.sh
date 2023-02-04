@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20221229.1
+# Version 20230204.1
 
 ##############################################
 
@@ -424,7 +424,7 @@ case "$IMAGE" in
 
 		case "$REPLY" in
 #			1) MEDIAFW="eplayer3";;
-			2) MEDIAFW="gst-explayer3";;
+			2) MEDIAFW="gst-eplayer3";;
 			*) MEDIAFW="eplayer3";;
 		esac
 		# Titan is always built with ffmpeg version 3.X.X
