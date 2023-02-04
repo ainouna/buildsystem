@@ -1616,20 +1616,20 @@ $(D)/libsoup: $(D)/bootstrap $(D)/sqlite $(D)/libxml2 $(D)/libglib2 $(D)/libpsl 
 #
 # libpsl
 #
-LIBPSL_VER_MAJOR = 0.20
+LIBPSL_VER_MAJOR = 0.21
 LIBPSL_VER_MINOR = 2
 LIBPSL_VER = $(LIBPSL_VER_MAJOR).$(LIBPSL_VER_MINOR)
+LIBPSL_SOURCE = libpsl-$(LIBPSL_VER).tar.gz
 LIBPSL_PATCH =
 
-$(D)/libpsl: $(D)/bootstrap $(D)/host_python
+$(ARCHIVE)/$(LIBPSL_SOURCE):
+	$(WGET) https://github.com/rockdaboot/libpsl/releases/download/$(LIBPSL_VER)/$(LIBPSL_SOURCE)
+
+$(D)/libpsl: $(D)/bootstrap $(D)/host_python $(ARCHIVE)/$(LIBPSL_SOURCE)
 	$(START_BUILD)
-	$(REMOVE)/libpsl
-	$(SET) -e; if [ -d $(ARCHIVE)/libpsl.git ]; \
-		then cd $(ARCHIVE)/libpsl.git; git pull $(MINUS_Q); \
-		else cd $(ARCHIVE); git clone $(MINUS_Q) https://github.com/rockdaboot/libpsl.git libpsl.git; \
-		fi
-	$(SILENT)cp -ra $(ARCHIVE)/libpsl.git $(BUILD_TMP)/libpsl
-	$(CH_DIR)/libpsl; \
+	$(REMOVE)/libpsl-$(LIBPSL_VER)
+	$(UNTAR)/$(LIBPSL_SOURCE)
+	$(CH_DIR)/libpsl-$(LIBPSL_VER); \
 		$(call apply_patches, $(LIBPSL_PATCH)); \
 		$(BUILDENV) \
 		$(CONFIGURE) \
@@ -1642,7 +1642,7 @@ $(D)/libpsl: $(D)/bootstrap $(D)/host_python
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
 	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libpsl.pc
 	$(REWRITE_LIBTOOL)/libpsl.la
-	$(REMOVE)/libpsl
+	$(REMOVE)/libpsl-$(LIBPSL_VER)
 	$(TOUCH)
 
 #
