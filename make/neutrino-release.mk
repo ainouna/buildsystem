@@ -553,7 +553,10 @@ neutrino-release-hchs8100:
 	$(SILENT)cp $(SKEL_ROOT)/boot/audio_7109.elf $(RELEASE_DIR)/lib/firmware/audio.elf
 	$(SILENT)cp $(SKEL_ROOT)/firmware/dvb-fe-cx24116.fw $(RELEASE_DIR)/lib/firmware/
 	$(SILENT)mkdir -p $(RELEASE_DIR)/var/run/lirc
-	$(SILENT)cp -dp $(SKEL_ROOT)/release/lircd_hchs8100.conf $(RELEASE_DIR)/etc/lircd.conf
+	$(SILENT)cp -dp $(SKEL_ROOT)/release/lircd_homecast.conf $(RELEASE_DIR)/etc/lircd.conf
+ifeq ($(DESTINATION), flash)
+	$(MAKE) $(D)/hcinstaller
+endif
 
 
 #

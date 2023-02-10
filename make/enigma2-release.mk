@@ -748,7 +748,7 @@ enigma2_release_hchs8100:
 	$(SILENT)cp $(SKEL_ROOT)/boot/audio_7109.elf $(RELEASE_DIR)/boot/audio.elf
 	$(SILENT)cp $(SKEL_ROOT)/firmware/dvb-fe-cx24116.fw $(RELEASE_DIR)/lib/firmware/
 	$(SILENT)mkdir -p $(RELEASE_DIR)/var/run/lirc
-	$(SILENT)cp -dp $(SKEL_ROOT)/release/lircd_hchs8100.conf $(RELEASE_DIR)/etc/lircd.conf
+	$(SILENT)cp -dp $(SKEL_ROOT)/release/lircd_homecast.conf $(RELEASE_DIR)/etc/lircd.conf
 	$(SILENT)if [ -e $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/hchsxx00VFD/plugin.py ]; then \
 		rm -f $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/SystemPlugins/VFD-Icons/*; \
 		cp -f $(SKEL_ROOT)/release/vfddisplay.png $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/hchsxx00VFD; \
@@ -756,6 +756,9 @@ enigma2_release_hchs8100:
 		rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/hchsxx00VFD; \
 	fi
 	$(SILENT)cp -f $(SKEL_ROOT)/root_enigma2/usr/local/share/enigma2/keymap_hchs8100.xml $(RELEASE_DIR)/usr/local/share/enigma2/keymap.xml
+ifeq ($(DESTINATION), flash)
+	$(MAKE) $(D)/hcinstaller
+endif
 
 #
 # release_base
