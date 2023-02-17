@@ -202,7 +202,8 @@ $(D)/tools-eeprom-ufs922: $(D)/bootstrap
 #
 $(D)/tools-femon: $(D)/bootstrap
 	$(START_BUILD)
-	set -e; cd $(TOOLS_DIR)/femon; \
+	$(SET) -e; cd $(TOOLS_DIR)/femon; \
+		if [ ! -d m4 ]; then mkdir m4; fi; \
 		$(CONFIGURE_TOOLS) CPPFLAGS="$(CPPFLAGS)" \
 			--prefix= \
 		; \
@@ -651,8 +652,8 @@ TOOLS += $(D)/tools-tffpctl
 endif
 ifneq ($(BOXTYPE), $(filter $(BOXTYPE), ufs910 ufs922))
 ifneq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), small))
-ifeq ($(PLUGINS_NEUTRINO), Yes)
 TOOLS += $(D)/tools-femon
+ifeq ($(PLUGINS_NEUTRINO), Yes)
 TOOLS += $(D)/tools-tuxcom
 endif
 endif
