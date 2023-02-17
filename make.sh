@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20230204.1
+# Version 20230217.1
 
 ##############################################
 
@@ -73,7 +73,7 @@ echo "BS_GCC_VER=$BS_GCC_VER" >> config
 export BS_GCC_VER
 
 # basic ffmpeg version numbers
-FFMPEG_VER2="2.8.20"
+FFMPEG_VER2="2.8.21"
 FFMPEG_VER3="3.4.3"
 FFMPEG_VER42="4.2.2"
 FFMPEG_VER43="4.3.2"
