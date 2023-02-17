@@ -15,10 +15,11 @@ tools-clean:
 	@-$(MAKE) -C $(TOOLS_DIR)/eplayer3 distclean
 	@-$(MAKE) -C $(TOOLS_DIR)/exteplayer3 distclean
 	@-$(MAKE) -C $(TOOLS_DIR)/evremote2 distclean
-	@-$(MAKE) -C $(TOOLS_DIR)/infobox distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/femon distclean
 	@-$(MAKE) -C $(TOOLS_DIR)/fp_control distclean
 	@-$(MAKE) -C $(TOOLS_DIR)/gitVCInfo distclean
 	@-$(MAKE) -C $(TOOLS_DIR)/hotplug distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/infobox distclean
 	@-$(MAKE) -C $(TOOLS_DIR)/libeplayer3_org distclean
 	@-$(MAKE) -C $(TOOLS_DIR)/libeplayer3 distclean
 	@-$(MAKE) -C $(TOOLS_DIR)/libmme_host distclean
@@ -190,6 +191,19 @@ $(D)/tools-eeprom-ufs922: $(D)/bootstrap
 	$(SET) -e; cd $(TOOLS_DIR)/eeprom_ufs922; \
 		if [ ! -d m4 ]; then mkdir m4; fi; \
 		$(CONFIGURE_TOOLS) \
+			--prefix= \
+		; \
+		$(MAKE); \
+		$(MAKE) install DESTDIR=$(TARGET_DIR)
+	$(TOUCH)
+
+#
+# femon
+#
+$(D)/tools-femon: $(D)/bootstrap
+	$(START_BUILD)
+	set -e; cd $(TOOLS_DIR)/femon; \
+		$(CONFIGURE_TOOLS) CPPFLAGS="$(CPPFLAGS)" \
 			--prefix= \
 		; \
 		$(MAKE); \
@@ -638,6 +652,7 @@ endif
 ifneq ($(BOXTYPE), $(filter $(BOXTYPE), ufs910 ufs922))
 ifneq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), small))
 ifeq ($(PLUGINS_NEUTRINO), Yes)
+TOOLS += $(D)/tools-femon
 TOOLS += $(D)/tools-tuxcom
 endif
 endif
