@@ -5,7 +5,7 @@
 #
 # ffmpeg 2.x
 #
-ifeq ($(FFMPEG_VER), 2.8.20)
+ifeq ($(FFMPEG_VER), 2.8.21)
 FFMPEG_SOURCE = ffmpeg-$(FFMPEG_VER).tar.xz
 FFMPEG_PATCH  = ffmpeg-$(FFMPEG_VER)-buffer-size.patch
 FFMPEG_PATCH += ffmpeg-$(FFMPEG_VER)-hds-libroxml.patch
@@ -13,6 +13,7 @@ FFMPEG_PATCH += ffmpeg-$(FFMPEG_VER)-aac.patch
 FFMPEG_PATCH += ffmpeg-$(FFMPEG_VER)-kodi.patch
 FFMPEG_PATCH += ffmpeg-$(FFMPEG_VER)-tls.patch
 FFMPEG_PATCH += ffmpeg-$(FFMPEG_VER)-discon.patch
+FFMPEG_PATCH += ffmpeg-$(FFMPEG_VER)-nolog.patch
 
 FFMPEG_DEPS =
 FFMPEG_CONF_OPTS = 

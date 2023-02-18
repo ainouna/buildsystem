@@ -737,6 +737,30 @@ enigma2_release_opt9600prima:
 	$(SILENT)cp -f $(SKEL_ROOT)/root_enigma2/usr/local/share/enigma2/keymap_opt9600.xml $(RELEASE_DIR)/usr/local/share/enigma2/keymap.xml
 
 #
+# hchs8100 series
+#
+enigma2_release_hchs8100:
+	$(SILENT)install -m 0755 $(SKEL_ROOT)/release/halt_opt9600 $(RELEASE_DIR)/etc/init.d/halt
+	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/frontcontroller/hchs8100_fp/hchs8100_fp.ko $(RELEASE_DIR)/lib/modules/
+	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/frontends/*.ko $(RELEASE_DIR)/lib/modules/
+	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/stgfb/stmfb/stmcore-display-stx7109c3.ko $(RELEASE_DIR)/lib/modules/
+	$(SILENT)cp $(SKEL_ROOT)/boot/video_7109.elf $(RELEASE_DIR)/boot/video.elf
+	$(SILENT)cp $(SKEL_ROOT)/boot/audio_7109.elf $(RELEASE_DIR)/boot/audio.elf
+	$(SILENT)cp $(SKEL_ROOT)/firmware/dvb-fe-cx24116.fw $(RELEASE_DIR)/lib/firmware/
+	$(SILENT)mkdir -p $(RELEASE_DIR)/var/run/lirc
+	$(SILENT)cp -dp $(SKEL_ROOT)/release/lircd_homecast.conf $(RELEASE_DIR)/etc/lircd.conf
+	$(SILENT)if [ -e $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/hchsxx00VFD/plugin.py ]; then \
+		rm -f $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/SystemPlugins/VFD-Icons/*; \
+		cp -f $(SKEL_ROOT)/release/vfddisplay.png $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/hchsxx00VFD; \
+		cp -rf $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/hchsxx00VFD/* $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/SystemPlugins/VFD-Icons; \
+		rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/hchsxx00VFD; \
+	fi
+	$(SILENT)cp -f $(SKEL_ROOT)/root_enigma2/usr/local/share/enigma2/keymap_hchs8100.xml $(RELEASE_DIR)/usr/local/share/enigma2/keymap.xml
+ifeq ($(DESTINATION), flash)
+	$(MAKE) $(D)/hcinstaller
+endif
+
+#
 # release_base
 #
 # the following target creates the common file base
@@ -761,7 +785,8 @@ enigma2_release_base:
 	$(SILENT)install -d $(RELEASE_DIR)/usr/local/share/{enigma2,keymaps}
 	$(SILENT)ln -s /usr/local/share/keymaps $(RELEASE_DIR)/usr/share/keymaps
 	$(SILENT)install -d $(RELEASE_DIR)/usr/share/{fonts,udhcpc,zoneinfo}
-	$(SILENT)install -d $(RELEASE_DIR)/var/{etc,opkg}
+	$(SILENT)install -d $(RELEASE_DIR)/var/{etc,lib}
+	$(SILENT)install -d $(RELEASE_DIR)/var/lib/opkg
 	$(SILENT)ln -fs halt $(RELEASE_DIR)/sbin/reboot
 	$(SILENT)ln -fs halt $(RELEASE_DIR)/sbin/poweroff
 	$(SILENT)mkdir -p $(RELEASE_DIR)/etc/rc.d/rc0.d
@@ -798,7 +823,7 @@ enigma2_release_base:
 	$(SILENT)ln -sf ../../bin/showiframe $(RELEASE_DIR)/usr/bin/showiframe
 	$(SILENT)ln -sf ../../usr/sbin/fw_printenv $(RELEASE_DIR)/usr/sbin/fw_setenv
 	$(SILENT)ln -sf ../../bin/grab $(RELEASE_DIR)/usr/bin/grab
-ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs8200 fs9000 hs9510 ufs910 ufs912 ufs913 ufs922 ufc960 spark spark7162 ipbox55 ipbox99 ipbox9900 cuberevo cuberevo_mini cuberevo_mini2 cuberevo_250hd cuberevo_2000hd cuberevo_3000hd adb_box tf7700 vitamin_hd5000))
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs8200 fs9000 hs9510 hchs8100 ufs910 ufs912 ufs913 ufs922 ufc960 spark spark7162 ipbox55 ipbox99 ipbox9900 cuberevo cuberevo_mini cuberevo_mini2 cuberevo_250hd cuberevo_2000hd cuberevo_3000hd adb_box tf7700 vitamin_hd5000))
 	$(SILENT)cp $(SKEL_ROOT)/release/fw_env.config_$(BOXTYPE) $(RELEASE_DIR)/etc/fw_env.config
 endif
 	$(SILENT)install -m 0755 $(SKEL_ROOT)/release/rcS_enigma2_$(BOXTYPE) $(RELEASE_DIR)/etc/init.d/rcS
@@ -806,9 +831,9 @@ endif
 # player
 #
 	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/stgfb/stmfb/stm_v4l2.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/stgfb/stmfb/stm_v4l2.ko $(RELEASE_DIR)/lib/modules/ || true
+	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/stgfb/stmfb/stmfb.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/stgfb/stmfb/stmfb.ko $(RELEASE_DIR)/lib/modules/ || true
 	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/stgfb/stmfb/stmvbi.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/stgfb/stmfb/stmvbi.ko $(RELEASE_DIR)/lib/modules/ || true
 	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/stgfb/stmfb/stmvout.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/stgfb/stmfb/stmvout.ko $(RELEASE_DIR)/lib/modules/ || true
-	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/stgfb/stmfb/stmfb.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/stgfb/stmfb/stmfb.ko $(RELEASE_DIR)/lib/modules/ || true
 	$(SILENT)cd $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra && \
 	for mod in \
 		sound/pseudocard/pseudocard.ko \
@@ -862,12 +887,10 @@ endif
 	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/pti/pti.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/pti/pti.ko $(RELEASE_DIR)/lib/modules/ || true
 	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/pti_np/pti.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/pti_np/pti.ko $(RELEASE_DIR)/lib/modules/ || true
 	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/smartcard/smartcard.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/smartcard/smartcard.ko $(RELEASE_DIR)/lib/modules/ || true
+	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/sata_switch/sata.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/sata_switch/sata.ko $(RELEASE_DIR)/lib/modules/ || true
+	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/fs/mini_fo/mini_fo.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/fs/mini_fo/mini_fo.ko $(RELEASE_DIR)/lib/modules/ || true
 	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/fs/autofs4/autofs4.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/fs/autofs4/autofs4.ko $(RELEASE_DIR)/lib/modules/ || true
 	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/drivers/net/tun.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/drivers/net/tun.ko $(RELEASE_DIR)/lib/modules/ || true
-	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/drivers/usb/serial/ftdi_sio.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/drivers/usb/serial/ftdi_sio.ko $(RELEASE_DIR)/lib/modules/ftdi.ko || true
-	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/drivers/usb/serial/pl2303.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/drivers/usb/serial/pl2303.ko $(RELEASE_DIR)/lib/modules/ || true
-	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/drivers/usb/serial/ch341.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/drivers/usb/serial/ch341.ko $(RELEASE_DIR)/lib/modules/ || true
-	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/drivers/usb/serial/usbserial.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/drivers/usb/serial/usbserial.ko $(RELEASE_DIR)/lib/modules/ || true
 	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/fs/fuse/fuse.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/fs/fuse/fuse.ko $(RELEASE_DIR)/lib/modules/ || true
 	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/fs/ntfs/ntfs.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/fs/ntfs/ntfs.ko $(RELEASE_DIR)/lib/modules/ || true
 	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/fs/cifs/cifs.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/fs/cifs/cifs.ko $(RELEASE_DIR)/lib/modules/ || true
@@ -878,8 +901,11 @@ endif
 	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/fs/exportfs/exportfs.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/fs/exportfs/exportfs.ko $(RELEASE_DIR)/lib/modules/ || true
 	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/fs/nfs_common/nfs_acl.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/fs/nfs_common/nfs_acl.ko $(RELEASE_DIR)/lib/modules/ || true
 	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/fs/nfs/nfs.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/fs/nfs/nfs.ko $(RELEASE_DIR)/lib/modules/ || true
-	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/sata_switch/sata.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/sata_switch/sata.ko $(RELEASE_DIR)/lib/modules/ || true
-	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/fs/mini_fo/mini_fo.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/fs/mini_fo/mini_fo.ko $(RELEASE_DIR)/lib/modules/ || true
+	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/drivers/usb/serial/usbserial.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/drivers/usb/serial/usbserial.ko $(RELEASE_DIR)/lib/modules/ || true
+	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/drivers/usb/serial/ftdi_sio.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/drivers/usb/serial/ftdi_sio.ko $(RELEASE_DIR)/lib/modules/ftdi.ko || true
+	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/drivers/usb/serial/pl2303.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/drivers/usb/serial/pl2303.ko $(RELEASE_DIR)/lib/modules/ || true
+	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/drivers/usb/serial/ch341.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/drivers/usb/serial/ch341.ko $(RELEASE_DIR)/lib/modules/ || true
+	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/drivers/rtc/*.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/drivers/rtc/*.ko $(RELEASE_DIR)/lib/modules/ || true
 #
 # wlan
 #
@@ -892,6 +918,9 @@ endif
 	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/wireless/rtl8192cu/8192cu.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/wireless/rtl8192cu/8192cu.ko $(RELEASE_DIR)/lib/modules/ || true
 	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/wireless/rtl8192du/8192du.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/wireless/rtl8192du/8192du.ko $(RELEASE_DIR)/lib/modules/ || true
 	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/wireless/rtl8192eu/8192eu.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/wireless/rtl8192eu/8192eu.ko $(RELEASE_DIR)/lib/modules/ || true
+#
+# wlan firmware
+#
 ifeq ($(IMAGE), $(filter $(IMAGE), enigma2-wlandriver))
 	$(SILENT)install -d $(RELEASE_DIR)/etc/Wireless
 	$(SILENT)cp -aR $(SKEL_ROOT)/firmware/Wireless/* $(RELEASE_DIR)/etc/Wireless/
@@ -1142,6 +1171,7 @@ endif
 	$(SILENT)cp -f $(SKEL_ROOT)/release/rc_hl101_1.png $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/hl101_1.png
 	$(SILENT)cp -f $(SKEL_ROOT)/release/rc_vip_1.png $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/vip_1.png
 	$(SILENT)cp -f $(SKEL_ROOT)/release/rc_opt9600.png $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/opt9600.png
+	$(SILENT)cp -f $(SKEL_ROOT)/release/rc_hchs8100.png $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/hchs8100.png
 # delete mips remote control files
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/et4x00.*
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/et6x00.*
@@ -1154,6 +1184,240 @@ endif
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/hd2400.*
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/vu*.*
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/local/share/enigma2/rc_models/xp1000.*
+#
+# delete unnecessary OpenWebif files
+#
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/adb2849.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/alphatriplehd.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/dm500hd.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/dm520.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/dm7020hd.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/dm7080.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/dm8000.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/dm800.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/dm800se.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/dm820.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/dm900.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/dm920.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/dual.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/e3hd.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/e4hd.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/elite.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/et10000.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/et11000.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/et4x00.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/et5x00.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/et6500.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/et6x00.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/et7000.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/et7500.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/et7x00mini.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/et7x00.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/et8000.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/et8500.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/et8500s.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/et9x00.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/formuler1.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/formuler3.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/formuler4.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/formuler4turbo.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/fusionhd.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/fusionhdse.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/galaxy4k.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/gb800ueplus.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/gbquad4k.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/gbquad.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/gbtrio4k.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/gbue4k.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/h10.2h.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/h10.2s.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/h10.t.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/h11.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/h11.s.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/h3.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/h4.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/h5.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/h6.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/h7.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/h8.2h.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/h8.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/h9.2h.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/h9.2h.se.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/h9.2s.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/h9.2s.se.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/h9combo.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/h9combose.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/h9.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/h9se.2h.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/h9se.2s.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/h9se.s.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/h9.s.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/h9.s.se.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/h9.t.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/h9twin.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/h9twinse.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/hd1100.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/hd11.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/hd1200.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/hd1265.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/hd1500.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/hd2400.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/hd500c.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/hd51.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/hd530c.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/hd60.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/hd66se.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/hzero.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/i55plus.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/i55.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/ini-1000.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/ini-3000.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/ini-5000.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/ini-7000.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/ixussone.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/ixusszero.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/lc.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/lunix3-4k.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/lunix4k.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/lunix.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/mbmicro.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/mbmicrov2.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/mbtwinplus.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/me.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/minime.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/miraclebox.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/multibox.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/multiboxse.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/nbox.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/nbox_white.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/optimussos1plus.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/optimussos1.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/optimussos2plus.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/optimussos2.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/osmega.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/osmini4k.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/osminiplus.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/osmini.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/osmio4kplus.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/osmio4k.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/osninoplus.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/osnino.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/osninopro.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/premium.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/premium+.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/pulse4kmini.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/pulse4k.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/purehd.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/purehdse.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/revo4k.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/sf4008.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/sf8008c.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/sf8008m.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/sf8008s.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/sf8008t.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/sh1.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/spycat4kmini.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/spycatminiplus.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/spycatmini.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/spycat.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/uhd88.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/ultra.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/ustym4kpro.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/vipercombohdd.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/vipercombo.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/viperslim.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/vipert2c.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/vs1000.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/vs1500.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/vuduo2.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/vuduo4k.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/vuduo4kse.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/vuduo.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/vusolo2.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/vusolo4k.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/vusolo.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/vusolose.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/vuultimo4k.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/vuultimo.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/vuuno4k.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/vuuno4kse.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/vuuno.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/vuzero4k.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/vuzero.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/wetekplay.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/xcombo.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/xp1000.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/xpeedlx3.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/boxes/xpeedlx.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/remotes/alphatriplehd.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/remotes/amiko1.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/remotes/amiko.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/remotes/dmm1.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/remotes/dmm2.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/remotes/dm_normal.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/remotes/dual.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/remotes/e3hd.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/remotes/e4hd.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/remotes/edision1.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/remotes/edision2.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/remotes/edision3.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/remotes/edision4.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/remotes/elite.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/remotes/et6500.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/remotes/et7000mini.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/remotes/et7x00.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/remotes/et8000.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/remotes/et_rc13_normal.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/remotes/et_rc5_normal.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/remotes/et_rc7_normal.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/remotes/formuler1.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/remotes/fusionhd.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/remotes/fusionhdse.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/remotes/galaxy4k.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/remotes/gb7252.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/remotes/gbquadplus.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/remotes/gigablue_black.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/remotes/h3.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/remotes/hd1x00.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/remotes/hd2400.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/remotes/hd60.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/remotes/hd66se.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/remotes/i55.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/remotes/ini-1000.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/remotes/ini-3000.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/remotes/ini-5000.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/remotes/ini-7000.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/remotes/ixussone.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/remotes/ixusszero.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/remotes/lunix4k.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/remotes/me.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/remotes/miraclebox2.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/remotes/miraclebox.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/remotes/multibox.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/remotes/nbox.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/remotes/octagon.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/remotes/optimuss.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/remotes/osmini.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/remotes/ow_remote.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/remotes/premium.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/remotes/pulse4k.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/remotes/purehd.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/remotes/qviart.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/remotes/revo4k.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/remotes/sh1.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/remotes/spark.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/remotes/spycat.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/remotes/uclan.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/remotes/viperslim.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/remotes/vs1x00.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/remotes/vu_duo2.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/remotes/vu_normal_02.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/remotes/vu_normal.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/remotes/vu_ultimo.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/remotes/wetekplay.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/remotes/xcombo.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/remotes/xpeedlx.png
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/plugin/public/images/remotes/xp_rc14_normal.png
 #
 # Do not remove pyo files, remove pyc instead
 #
@@ -1185,6 +1449,9 @@ endif
 	$(SILENT)find $(RELEASE_DIR)/$(PYTHON_DIR)/ -name '*.pyx' -exec rm -f {} \;
 	$(SILENT)find $(RELEASE_DIR)/$(PYTHON_DIR)/ -name '*.o' -exec rm -f {} \;
 	$(SILENT)find $(RELEASE_DIR)/$(PYTHON_DIR)/ -name '*.la' -exec rm -f {} \;
+#
+# Remove non-working plugins
+	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/SystemPlugins/VideoEnhancement/*
 	@echo " done."
 #
 # The main target depends on the model.
@@ -1197,7 +1464,7 @@ $(D)/%enigma2_release: enigma2_release_base enigma2_release_$(BOXTYPE)
 # FOR YOUR OWN CHANGES use this folder in /own_build/enigma2
 #
 #	default for all receivers
-	@echo -n "Processing own_build..." ;
+	@echo -n "Processing own_build..."
 	$(SILENT)find $(OWN_BUILD)/enigma2/ -mindepth 1 -maxdepth 1 -exec cp -at$(RELEASE_DIR)/ -- {} +
 	@echo " done."
 #	receiver specific (only if directory exists)
@@ -1210,9 +1477,9 @@ $(D)/%enigma2_release: enigma2_release_base enigma2_release_$(BOXTYPE)
 # sh4-linux-strip all
 #
 ifneq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), kerneldebug debug))
-	@echo -n "Stripping..." ;
+	@echo -n "Stripping...";
 	$(SILENT)find $(RELEASE_DIR)/ -name '*' -exec $(TARGET)-strip --strip-unneeded {} &>/dev/null \;
-	@echo -e " done.\n" ;
+	@echo -e " done.\n";
 endif
 #
 # release-clean

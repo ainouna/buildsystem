@@ -15,10 +15,11 @@ tools-clean:
 	@-$(MAKE) -C $(TOOLS_DIR)/eplayer3 distclean
 	@-$(MAKE) -C $(TOOLS_DIR)/exteplayer3 distclean
 	@-$(MAKE) -C $(TOOLS_DIR)/evremote2 distclean
-	@-$(MAKE) -C $(TOOLS_DIR)/infobox distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/femon distclean
 	@-$(MAKE) -C $(TOOLS_DIR)/fp_control distclean
 	@-$(MAKE) -C $(TOOLS_DIR)/gitVCInfo distclean
 	@-$(MAKE) -C $(TOOLS_DIR)/hotplug distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/infobox distclean
 	@-$(MAKE) -C $(TOOLS_DIR)/libeplayer3_org distclean
 	@-$(MAKE) -C $(TOOLS_DIR)/libeplayer3 distclean
 	@-$(MAKE) -C $(TOOLS_DIR)/libmme_host distclean
@@ -190,6 +191,20 @@ $(D)/tools-eeprom-ufs922: $(D)/bootstrap
 	$(SET) -e; cd $(TOOLS_DIR)/eeprom_ufs922; \
 		if [ ! -d m4 ]; then mkdir m4; fi; \
 		$(CONFIGURE_TOOLS) \
+			--prefix= \
+		; \
+		$(MAKE); \
+		$(MAKE) install DESTDIR=$(TARGET_DIR)
+	$(TOUCH)
+
+#
+# femon
+#
+$(D)/tools-femon: $(D)/bootstrap
+	$(START_BUILD)
+	$(SET) -e; cd $(TOOLS_DIR)/femon; \
+		if [ ! -d m4 ]; then mkdir m4; fi; \
+		$(CONFIGURE_TOOLS) CPPFLAGS="$(CPPFLAGS)" \
 			--prefix= \
 		; \
 		$(MAKE); \
@@ -599,7 +614,7 @@ ifeq ($(BOXTYPE), $(filter $(BOXTYPE), ufs922))
 TOOLS += $(D)/tools-eeprom-ufs922
 endif
 TOOLS += $(D)/tools-evremote2
-ifeq ($(BOXTYPE), $(filter $(BOXTYPE), adb_box atemio520 cuberevo cuberevo_mini cuberevo_mini2 cuberevo_mini_fta cuberevo_250hd cuberevo_2000hd cuberevo_3000hd cuberevo_9500hd fs9000 hl101 hs5101 hs7110 hs7420 hs7810a hs7119 hs7429 hs7819 hs8200 hs9510 opt9600 opt9600mini opt9600prima ufc960 ufs910 ufs912 ufs913 ufs922 spark spark7162 tf7700hdpvr vip1_v1 vip1_v2 vip2 vitamin_hd5000))
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE), adb_box atemio520 cuberevo cuberevo_mini cuberevo_mini2 cuberevo_mini_fta cuberevo_250hd cuberevo_2000hd cuberevo_3000hd cuberevo_9500hd fs9000 hl101 hs5101 hs7110 hs7420 hs7810a hs7119 hs7429 hs7819 hs8200 hs9510 hchs8100 hchs9100 opt9600 opt9600mini opt9600prima spark spark7162 tf7700hdpvr ufc960 ufs910 ufs912 ufs913 ufs922 vip1_v1 vip1_v2 vip2 vitamin_hd5000))
 TOOLS += $(D)/tools-fp_control
 endif
 TOOLS += $(D)/tools-hotplug
@@ -637,6 +652,7 @@ TOOLS += $(D)/tools-tffpctl
 endif
 ifneq ($(BOXTYPE), $(filter $(BOXTYPE), ufs910 ufs922))
 ifneq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), small))
+TOOLS += $(D)/tools-femon
 ifeq ($(PLUGINS_NEUTRINO), Yes)
 TOOLS += $(D)/tools-tuxcom
 endif

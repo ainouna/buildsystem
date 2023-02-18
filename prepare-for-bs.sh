@@ -120,6 +120,12 @@ PACKAGES="\
 	${UBUNTU:+autoconf-archive}                                                                                   \
 	${UBUNTU:+cpio}                                                                                               \
 	${UBUNTU:+bc}                                                                                                 \
+	${UBUNTU:+libbz2-dev} \
+	${UBUNTU:+libreadline-dev} \
+	${UBUNTU:+libsqlite3-dev} \
+	${UBUNTU:+llvm} \
+	${UBUNTU:+xz-utils} \
+	${UBUNTU:+tk-dev} \
 ";
 
 if [ "$UBUNTU" == 1 ]; then

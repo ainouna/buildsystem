@@ -10,6 +10,7 @@ $(ARCHIVE)/$(GSTREAMER_SOURCE):
 ifneq ($(GSTREAMER_VER), 1.18.0)
 GSTREAMER_PATCH  = gstreamer-$(GSTREAMER_VER)-fix-crash-with-gst-inspect.patch
 GSTREAMER_PATCH += gstreamer-$(GSTREAMER_VER)-revert-use-new-gst-adapter-get-buffer.patch
+GSTREAMER_PATCH += gstreamer-$(GSTREAMER_VER)-fix-meson-_msvc.patch
 
 $(D)/gstreamer: $(D)/bootstrap $(D)/libglib2 $(D)/libxml2 $(D)/glib_networking $(ARCHIVE)/$(GSTREAMER_SOURCE)
 #$(D)/gstreamer: $(D)/bootstrap $(D)/libglib2 $(ARCHIVE)/$(GSTREAMER_SOURCE)
@@ -52,7 +53,7 @@ $(D)/gstreamer: $(D)/bootstrap $(D)/libglib2 $(D)/libxml2 $(D)/glib_networking $
 	$(REMOVE)/gstreamer-$(GSTREAMER_VER)
 	$(TOUCH)
 else
-GSTREAMER_PATCH  =
+GSTREAMER_PATCH  = gstreamer-$(GSTREAMER_VER)-make-meson-cross-txt.patch
 
 $(D)/gstreamer: $(D)/bootstrap $(D)/libglib2 $(D)/libxml2 $(D)/glib_networking $(ARCHIVE)/$(GSTREAMER_SOURCE)
 #$(D)/gstreamer: $(D)/bootstrap $(D)/libglib2 $(ARCHIVE)/$(GSTREAMER_SOURCE)
@@ -61,7 +62,9 @@ $(D)/gstreamer: $(D)/bootstrap $(D)/libglib2 $(D)/libxml2 $(D)/glib_networking $
 	$(UNTAR)/$(GSTREAMER_SOURCE)
 	$(CH_DIR)/gstreamer-$(GSTREAMER_VER); \
 		$(call apply_patches, $(GSTREAMER_PATCH)); \
-		meson
+		meson setup . ./builddir --cross-file sh4-linux-cross.txt --build.pkg-config-path $(TARGET_DIR)/usr/lib/pkgconfig
+		cd $(BUILD_TMP)/gstreamer-$(GSTREAMER_VER)/builddir; \
+		meson compile
 endif
 
 #

@@ -1,0 +1,136 @@
+--- a/sh4-linux-cross.txt.org
++++ b/sh4-linux-cross.txt
+@@ -0,0 +1,13 @@
++[binaries]
++c = 'sh4-linux-gcc'
++cpp = 'sh4-linux-g++'
++ar = 'sh4-linux-ar'
++strip = 'sh4-linux-strip'
++pkgconfig = 'pkg-config'
++exe_wrapper = ''
++
++[host_machine]
++system = 'linux'
++cpu_family = 'sh4'
++cpu = 'sh4'
++endian = 'little'
++
++[properties]
++#c_link_args = 
++add_global_arguments('-L$(TARGET_DIR)/usr/lib', language : 'c')
+--- a/meson.build.org
++++ b/meson.build
+@@ -1,6 +1,6 @@
+ project('gstreamer', 'c',
+   version : '1.18.0',
+-  meson_version : '>= 0.48',
++  meson_version : '>= 0.56',
+   default_options : [ 'warning_level=1',
+                       'buildtype=debugoptimized' ])
+ 
+@@ -516,7 +516,7 @@
+ if bashcomp_dep.found()
+   bashcomp_found = true
+   bashcomp_dir_override = bashcomp_dep.version().version_compare('>= 2.10') ? ['datadir', datadir] : ['prefix', prefix]
+-  bash_completions_dir = bashcomp_dep.get_pkgconfig_variable('completionsdir', define_variable: bashcomp_dir_override)
++  bash_completions_dir = bashcomp_dep.get_variable(pkgconfig : 'completionsdir', define_variable: bashcomp_dir_override)
+   if bash_completions_dir == ''
+     msg = 'Found bash-completion but the .pc file did not set \'completionsdir\'.'
+     if bashcomp_option.enabled()
+@@ -527,7 +527,7 @@
+     bashcomp_found = false
+   endif
+ 
+-  bash_helpers_dir = bashcomp_dep.get_pkgconfig_variable('helpersdir', define_variable: bashcomp_dir_override)
++  bash_helpers_dir = bashcomp_dep.get_variable(pkgconfig : 'helpersdir', define_variable: bashcomp_dir_override)
+   if bash_helpers_dir == ''
+     msg = 'Found bash-completion, but the .pc file did not set \'helpersdir\'.'
+     if bashcomp_option.enabled()
+--- a/tests/check/meson.build.org
++++ b/tests/check/meson.build
+@@ -154,7 +154,7 @@
+     )
+ 
+     env = environment()
+-    env.set('GST_PLUGIN_PATH_1_0', meson.build_root())
++    env.set('GST_PLUGIN_PATH_1_0', meson.project_build_root())
+     env.set('GST_PLUGIN_SYSTEM_PATH_1_0', '')
+     env.set('GST_STATE_IGNORE_ELEMENTS', '')
+     env.set('CK_DEFAULT_TIMEOUT', '20')
+--- a/pkgconfig/meson.build.org
++++ b/pkgconfig/meson.build
+@@ -17,10 +17,10 @@
+ # needed for generating -uninstalled.pc files
+ pkgconf.set('abs_top_builddir', join_paths(meson.current_build_dir(), '..'))
+ pkgconf.set('abs_top_srcdir', join_paths(meson.current_source_dir(), '..'))
+-pkgconf.set('gstlibdir', join_paths(meson.build_root(), libgst.outdir()))
+-pkgconf.set('baselibdir', join_paths(meson.build_root(), gst_base.outdir()))
+-pkgconf.set('controllerlibdir', join_paths(meson.build_root(), gst_controller.outdir()))
+-pkgconf.set('netlibdir', join_paths(meson.build_root(), gst_net.outdir()))
++pkgconf.set('gstlibdir', join_paths(meson.project_build_root(), libgst.outdir()))
++pkgconf.set('baselibdir', join_paths(meson.project_build_root(), gst_base.outdir()))
++pkgconf.set('controllerlibdir', join_paths(meson.project_build_root(), gst_controller.outdir()))
++pkgconf.set('netlibdir', join_paths(meson.project_build_root(), gst_net.outdir()))
+ 
+ pkg_install_dir = '@0@/pkgconfig'.format(get_option('libdir'))
+ 
+@@ -33,7 +33,7 @@
+ 
+ if not get_option('check').disabled()
+   pkg_files += ['gstreamer-check']
+-  pkgconf.set('checklibdir', join_paths(meson.build_root(), gst_check.outdir()))
++  pkgconf.set('checklibdir', join_paths(meson.project_build_root(), gst_check.outdir()))
+ endif
+ 
+ foreach p : pkg_files
+--- a/tests/validate/meson.build.org
++++ b/tests/validate/meson.build
+@@ -1,6 +1,6 @@
+ gst_tester = executable('gst-tester-' + apiversion,
+     'gst-tester.c',
+-    c_args : gst_c_args + ['-DBUILDDIR=' + meson.build_root()],
++    c_args : gst_c_args + ['-DBUILDDIR=' + meson.project_build_root()],
+     include_directories : [configinc],
+     install: true,
+     dependencies : [gio_dep],
+@@ -13,7 +13,7 @@
+ ]
+ 
+ env = environment()
+-env.set('GST_PLUGIN_PATH_1_0', meson.build_root())
++env.set('GST_PLUGIN_PATH_1_0', meson.project_build_root())
+ env.set('GST_PLUGIN_SYSTEM_PATH_1_0', '')
+ env.set('GST_REGISTRY', '@0@/@1@.registry'.format(meson.current_build_dir(), 'validate'))
+ env.set('GST_PLUGIN_SCANNER_1_0', gst_scanner_dir + '/gst-plugin-scanner')
+--- a/libs/gst/check/gstcheck.h.org
++++ b/libs/gst/check/gstcheck.h
+@@ -33,6 +33,10 @@
+ #include <gst/check/check-prelude.h>
+ 
+ #define CK_DLL_EXP GST_CHECK_API
++#if defined CK_DLL_EXP
++#undef CK_DLL_EXP
++#define CK_DLL_EXP extern
++#endif
+ #include <gst/check/internal-check.h>
+ 
+ G_BEGIN_DECLS
+--- a/libs/gst/check/libcheck/check.h.in.org
++++ b/libs/gst/check/libcheck/check.h.in
+@@ -67,11 +67,11 @@
+  * on the command line.
+  */
+ #ifndef CK_DLL_EXP
+-#  if defined(_MSC_VER)
+-#    define CK_DLL_EXP __declspec(dllimport)
+-#  else
++//#  if defined(_MSC_VER)
++//#    define CK_DLL_EXP __declspec(dllimport)
++//#  else
+ #    define CK_DLL_EXP extern
+-#  endif
++//#  endif
+ #endif
+ 
+ /* check version numbers */
+

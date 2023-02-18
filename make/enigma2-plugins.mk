@@ -127,10 +127,12 @@ $(D)/enigma2_openwebif: $(D)/bootstrap $(D)/enigma2 $(D)/python_cheetah $(D)/pyt
 	$(START_BUILD)
 	$(REMOVE)/e2openplugin-OpenWebif
 	$(SILENT)if [ -d $(ARCHIVE)/e2openplugin-OpenWebif.git ]; \
-		then cd $(ARCHIVE)/e2openplugin-OpenWebif.git; git pull $(MINUS_Q); \
-		else cd $(ARCHIVE); git clone $(MINUS_Q) https://github.com/E2OpenPlugins/e2openplugin-OpenWebif.git e2openplugin-OpenWebif.git; \
+		then echo -n "Updating OpenWebif.git..."; cd $(ARCHIVE)/e2openplugin-OpenWebif.git; git pull $(MINUS_Q); echo "done."; \
+		else echo -n "Cloning OpenWebif.git"; cd $(ARCHIVE); git clone $(MINUS_Q) https://github.com/E2OpenPlugins/e2openplugin-OpenWebif.git e2openplugin-OpenWebif.git; echo "done."; \
 	fi
+	$(SILENT)echo -n "Copying source code to build environment..."
 	$(SILENT)cp -ra $(ARCHIVE)/e2openplugin-OpenWebif.git $(BUILD_TMP)/e2openplugin-OpenWebif
+	$(SILENT)echo "done."
 	$(SET) -e; cd $(BUILD_TMP)/e2openplugin-OpenWebif; \
 		$(call apply_patches, $(OPENWEBIF_PATCH)); \
 		$(BUILDENV) \
@@ -185,28 +187,28 @@ $(D)/enigma2_openwebif: $(D)/bootstrap $(D)/enigma2 $(D)/python_cheetah $(D)/pyt
 		msgfmt -o $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/tr/LC_MESSAGES/OpenWebif.mo locale/tr.po; \
 		msgfmt -o $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/uk/LC_MESSAGES/OpenWebif.mo locale/uk.po
 ifeq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), small size))
-		rm -f $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/ar.po
-		rm -f $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/bg.po
-		rm -f $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/ca.po
-		rm -f $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/cs.po
-		rm -f $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/da.po
-		rm -f $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/de.po
-		rm -f $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/el.po
-		rm -f $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/es.po
-		rm -f $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/et.po
-		rm -f $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/fi.po
-		rm -f $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/fr.po
-		rm -f $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/hu.po
-		rm -f $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/it.po
-		rm -f $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/lt.po
-		rm -f $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/nb.po
-		rm -f $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/nl.po
-		rm -f $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/pl.po
-		rm -f $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/pt.po
-		rm -f $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/ru.po
-		rm -f $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/sk.po
-		rm -f $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/sv.po
-		rm -f $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/tr.po
+		$(SILENT)rm -f $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/ar.po
+		$(SILENT)rm -f $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/bg.po
+		$(SILENT)rm -f $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/ca.po
+		$(SILENT)rm -f $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/cs.po
+		$(SILENT)rm -f $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/da.po
+		$(SILENT)rm -f $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/de.po
+		$(SILENT)rm -f $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/el.po
+		$(SILENT)rm -f $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/es.po
+		$(SILENT)rm -f $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/et.po
+		$(SILENT)rm -f $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/fi.po
+		$(SILENT)rm -f $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/fr.po
+		$(SILENT)rm -f $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/hu.po
+		$(SILENT)rm -f $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/it.po
+		$(SILENT)rm -f $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/lt.po
+		$(SILENT)rm -f $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/nb.po
+		$(SILENT)rm -f $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/nl.po
+		$(SILENT)rm -f $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/pl.po
+		$(SILENT)rm -f $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/pt.po
+		$(SILENT)rm -f $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/ru.po
+		$(SILENT)rm -f $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/sk.po
+		$(SILENT)rm -f $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/sv.po
+		$(SILENT)rm -f $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/locale/tr.po
 endif
 # Remove non-SH4 remote control, box pictures and html files
 		$(SILENT)rm -f $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/public/images/boxes/{alphatriplehd.png,dm500hd.png,dm520.png,dm7020hd.png,dm7080.png,dm8000.png,dm800.jpg,dm800se.png,dm820.png,dm900.png,dm920.png,e3hd.jpg}
@@ -258,6 +260,7 @@ endif
 #		$(SILENT)cp -f $(SKEL_ROOT)/release/rc_hl101_1.png $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/public/images/remotes/hl101_1.png
 #		$(SILENT)cp -f $(SKEL_ROOT)/release/rc_vip_1.png $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/public/images/remotes/vip_1.png
 #		$(SILENT)cp -f $(SKEL_ROOT)/release/rc_opt9600.png $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/public/images/remotes/opt9600.png
+#		$(SILENT)cp -f $(SKEL_ROOT)/release/rc_hchs8100.png $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/public/images/remotes/hchs8100.png
 		$(REMOVE)/e2openplugin-OpenWebif
 	$(TOUCH)
 

@@ -114,6 +114,7 @@ include make/ffmpeg.mk
 include make/gstreamer.mk
 include make/root-etc.mk
 include make/python.mk
+include make/python3.mk
 include make/tools.mk
 include make/enigma2.mk
 include make/enigma2-plugins.mk

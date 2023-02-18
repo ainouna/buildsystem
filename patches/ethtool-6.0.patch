@@ -1,5 +1,14 @@
 --- a/uapi/linux/netlink.h_org
 +++ b/uapi/linux/netlink.h
+@@ -3,7 +3,7 @@
+ #define __LINUX_NETLINK_H
+ 
+ #include <linux/const.h>
+-#include <linux/socket.h> /* for __kernel_sa_family_t */
++#include <linux/socket.h> /* for sa_family_t */
+ #include <linux/types.h>
+ 
+ #define NETLINK_ROUTE		0	/* Routing/device hook				*/
 @@ -35,7 +35,7 @@
  #define MAX_LINKS 32		
  
@@ -17,6 +26,7 @@
  struct rtvia {
 -	__kernel_sa_family_t	rtvia_family;
 +	sa_family_t		rtvia_family;
- 	__u8			rtvia_addr[0];
+ 	__u8			rtvia_addr[];
  };
  
+

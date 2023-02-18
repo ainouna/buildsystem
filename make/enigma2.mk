@@ -37,7 +37,7 @@ ifeq ($(IMAGE), enigma2-wlandriver)
 ENIGMA2_DEPS += $(D)/wpa_supplicant $(D)/wireless_tools
 endif
 
-ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs7110 hs7119 hs7420 hs7429 hs7810a hs7819 opt9600 opt9600mini opt9600prima vitamin_hd5000))
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs7110 hs7119 hs7420 hs7429 hs7810a hs7819 hchs8100 opt9600 opt9600mini opt9600prima vitamin_hd5000))
 ifeq ($(DESTINATION), USB)
 E_CONFIG_OPTS += --enable-run_from_usb
 endif
@@ -153,14 +153,14 @@ $(D)/enigma2.do_prepare: | $(ENIGMA2_DEPS)
 			set -e; cd $(SOURCE_DIR)/enigma2 && patch -p1 $(SILENT_PATCH) < "$(PATCHES)/build-enigma2/enigma2-eplayer3.$$DIFF.patch"; \
 		fi; \
 		if [ "$(E2_DIFF)" != "1" ]; then \
-			if [ "$(BOXTYPE)" == "fs9000" ] || [ "$(BOXTYPE)" == "hs9510" ] || [ "$(BOXTYPE)" == "cuberevo" ] || [ "$(BOXTYPE)" == "cuberevo_250hd" ] || [ "$(BOXTYPE)" == "cuberevo_mini_fta" ] || [ "$(BOXTYPE)" == "cuberevo_mini" ] || [ "$(BOXTYPE)" == "cuberevo_mini2" ] || [ "$(BOXTYPE)" == "tf7700" ]; then \
+			if [ "$(BOXTYPE)" == "fs9000" ] || [ "$(BOXTYPE)" == "hs9510" ] || [ "$(BOXTYPE)" == "cuberevo" ] || [ "$(BOXTYPE)" == "cuberevo_250hd" ] || [ "$(BOXTYPE)" == "cuberevo_mini_fta" ] || [ "$(BOXTYPE)" == "cuberevo_mini" ] || [ "$(BOXTYPE)" == "cuberevo_mini2" ] || [ "$(BOXTYPE)" == "hchs8100" ] || [ "$(BOXTYPE)" == "tf7700" ]; then \
 				patch -p1 $(SILENT_PATCH) < "$(PATCHES)/build-enigma2/enigma2-no_hdmi_cec.$$DIFF.patch"; \
 			fi; \
 		fi; \
 		echo "Patching to diff-$$DIFF completed."; \
 		cd $(SOURCE_DIR)/enigma2; \
-		echo -n "Building VFD-drivers..."; \
-		patch -p1 -s -i "$(PATCHES)/build-enigma2/vfd-drivers.patch"; echo " done."; \
+		echo -n "Unpacking VFD-Icons plugins..."; \
+		patch -p1 -s -i "$(PATCHES)/build-enigma2/vfd-icons.patch"; echo " done."; \
 		rm -rf $(TARGET_DIR)/usr/local/share/enigma2/rc_models; \
 		echo; \
 		echo -n "Patching remote control files..."; \
@@ -223,6 +223,8 @@ $(D)/enigma2: $(D)/enigma2.do_prepare $(D)/enigma2.do_compile
 	$(SILENT)echo "Adding PLi-HD skin"
 	$(SILENT)if [ ! -d $(ARCHIVE)/PLi-HD_skin.git ]; then \
 		(echo -n "Cloning PLi-HD skin git..."; git clone -q -b $(HEAD) $(REPO_0) $(ARCHIVE)/PLi-HD_skin.git; echo " done."); \
+	else \
+		(cd $(ARCHIVE)/enigma2-pli-nightly.git; echo -n "Updating PLi-HD skin git..."; git pull -q; echo " done."; cd "$(BUILD_TMP)"); \
 	fi
 #	$(SILENT)(cd $(ARCHIVE)/PLi-HD_skin.git; echo -n "Checkout commit $(REVISION_HD)..."; git checkout -q $(REVISION_HD); echo " done.")
 	$(SILENT)cp -ra $(ARCHIVE)/PLi-HD_skin.git/usr/share/enigma2/* $(TARGET_DIR)/usr/local/share/enigma2

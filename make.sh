@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20220724.1
+# Version 20230217.1
 
 ##############################################
 
@@ -26,7 +26,7 @@ if [ "$1" == -h ] || [ "$1" == --help ]; then
 	echo "Parameter 5       : Enigma2 diff (0-5), Neutrino variant (1-6), Titan plugins (1=no, 2=yes)"
 	echo "Parameter 6       : media Framework (Enigma2: 1-5; Neutrino: ignored, Titan: 1-2)"
 	echo "Parameter 7       : external LCD (1=none, 2=graphlcd, 3=lcd4linux, 4=both)"
-	echo "Parameter 8       : destination (1-2, 1=flash, 2=USB)"
+	echo "Parameter 8       : destination (1-3, 1=flash, 2=USB, 3=USB with built-in HDD)"
 	exit
 fi
 
@@ -73,7 +73,7 @@ echo "BS_GCC_VER=$BS_GCC_VER" >> config
 export BS_GCC_VER
 
 # basic ffmpeg version numbers
-FFMPEG_VER2="2.8.20"
+FFMPEG_VER2="2.8.21"
 FFMPEG_VER3="3.4.3"
 FFMPEG_VER42="4.2.2"
 FFMPEG_VER43="4.3.2"
@@ -154,7 +154,7 @@ fi
 ##############################################
 
 case $1 in
-	[1-9] | 1[0-9] | 2[0-9] | 3[0-9] | 4[0-2]) REPLY=$1;;
+	[1-9] | 1[0-9] | 2[0-9] | 3[0-9] | 4[0-4]) REPLY=$1;;
 	*)
 		echo "Target receivers:"
 		echo
@@ -194,13 +194,9 @@ case $1 in
 		echo "   35)  Showbox Vitamin HD5000 (256Mbyte flash version)"
 		echo "   36)  SagemCom 88 series (untested)"
 		echo "   37)  Ferguson Ariva @Link 200 (untested)"
-#		echo "   38)  Pace HDS-7241 (in development, kernel P0217 only)"
-#		echo "   39)  ADB ITI-2849ST/2850ST/2851S (in development, kernel P0217 only)"
-#		echo "   40)  Opticum/Orton HD (TS) 9600 (in development, kernel P0217 only)"
-#		echo "   41)  Opticum/Orton HD 9600 Mini (in development, kernel P0217 only)"
-#		echo "   42)  Opticum/Orton HD (TS) 9600 Prima (in development, kernel P0217 only)"
+		echo "   38)  Homecast HS8100 CI series (FTA only, experimental, kernel P0217 only)"
 		echo
-		read -p "Select target (1-37) ";;
+		read -p "Select target (1-38) ";;
 esac
 
 case "$REPLY" in
@@ -241,11 +237,12 @@ case "$REPLY" in
 	35) BOXTYPE="vitamin_hd5000";;
 	36) BOXTYPE="sagemcom88";;
 	37) BOXTYPE="arivalink200";;
-	38) BOXTYPE="pace7241";;
-	39) BOXTYPE="adb_2850";;
-	40) BOXTYPE="opt9600";;
-	41) BOXTYPE="opt9600mini";;
-	42) BOXTYPE="opt9600prima";;
+	38) BOXTYPE="hchs8100";;
+	39) BOXTYPE="pace7241";;
+	40) BOXTYPE="adb_2850";;
+	41) BOXTYPE="opt9600";;
+	42) BOXTYPE="opt9600mini";;
+	43) BOXTYPE="opt9600prima";;
 	 *) BOXTYPE="hs8200";;
 esac
 echo "BOXTYPE=$BOXTYPE" >> config
@@ -421,13 +418,13 @@ case "$IMAGE" in
 			[1-2]) REPLY=$6;;
 				*)	echo -e "\nMedia Framework:"
 					echo "   1*) eplayer3"
-					echo "   2)  eplayer3+Gstreamer (not recommended and not tested)"
+					echo "   2)  eplayer3+gstreamer (not recommended and not tested)"
 					read -p "Select media framework (1-2)? ";;
 		esac
 
 		case "$REPLY" in
 #			1) MEDIAFW="eplayer3";;
-			2) MEDIAFW="gst-explayer3";;
+			2) MEDIAFW="gst-eplayer3";;
 			*) MEDIAFW="eplayer3";;
 		esac
 		# Titan is always built with ffmpeg version 3.X.X
@@ -458,8 +455,8 @@ case "$IMAGE" in
 					echo "   2)  eplayer3 (E2 player uses eplayer3 only)"
 					echo "   3)  gstreamer (E2 player uses gstreamer only)"
 					echo "   4*) gstreamer+eplayer3 (recommended, E2 player uses gstreamer + libeplayer3)"
-					echo "   5)  gstreamer/eplayer3 (E2 player is switchable between gstreamer & libeplayer3)"
-					read -p "Select media framework (1-5)? ";;
+#					echo "   5)  gstreamer/eplayer3 (E2 player is switchable between gstreamer & libeplayer3)"
+					read -p "Select media framework (1-4)? ";;
 			esac
 
 			case "$REPLY" in
@@ -489,10 +486,10 @@ case "$IMAGE" in
 				echo "=================================================================================================="
 				echo " 1)  Use your own Enigma2 git dir without patchfile"
 				echo "=================================================================================================="
-				echo " 2*) Sat, 28 May 2022 21:13 - E2 OpenPLi  any framework  ab1618f3bfbb392bcbe2adc456966a45dd399796"
-				echo " 3)  Thu, 06 Apr 2022 22:14 - E2 OpenPLi  any framework  0dc1cdc75c815876ae5b0b28e598f52c0003b0b1"
-				echo " 4)  Sun, 30 Jan 2022 17:13 - E2 OpenPLi  any framework  20602dbaad4e08cd4377310edab245e3fcbadbe6"
-				echo " 5)  Mon, 29 Nov 2021 17:52 - E2 OpenPLi  any framework  38cf4849d225377497af435a2ea65c8487ce4966"
+				echo " 2*) Sat, 06 Aug 2022 13:10 - E2 OpenPLi  any framework  37427c7c563c47ab0a964da872f817a6f8900173"
+				echo " 3)  Sat, 28 May 2022 21:13 - E2 OpenPLi  any framework  ab1618f3bfbb392bcbe2adc456966a45dd399796"
+				echo " 4)  Thu, 06 Apr 2022 22:14 - E2 OpenPLi  any framework  0dc1cdc75c815876ae5b0b28e598f52c0003b0b1"
+				echo " 5)  Sun, 30 Jan 2022 17:13 - E2 OpenPLi  any framework  20602dbaad4e08cd4377310edab245e3fcbadbe6"
 				echo "=================================================================================================="
 				echo "Media Framework         : $MEDIAFW"
 				echo
@@ -503,15 +500,15 @@ case "$IMAGE" in
 			1)	DIFF="1"
 				REVISION="local";;
 			3)	DIFF="3"
-				REVISION="0dc1cdc75c815876ae5b0b28e598f52c0003b0b1";;
+				REVISION="ab1618f3bfbb392bcbe2adc456966a45dd399796";;
 			4)	DIFF="4"
-				REVISION="20602dbaad4e08cd4377310edab245e3fcbadbe6";;
+				REVISION="0dc1cdc75c815876ae5b0b28e598f52c0003b0b1";;
 			5)	DIFF="5"
-				REVISION="38cf4849d225377497af435a2ea65c8487ce4966";;
+				REVISION="20602dbaad4e08cd4377310edab245e3fcbadbe6";;
 			0)	DIFF="0"
 				REVISION="newest";;
 			*)	DIFF="2"
-				REVISION="ab1618f3bfbb392bcbe2adc456966a45dd399796";;
+				REVISION="37427c7c563c47ab0a964da872f817a6f8900173";;
 		esac
 
 		echo "E2_DIFF=$DIFF" >> config
@@ -562,16 +559,18 @@ echo "EXTERNAL_LCD=$EXTERNAL_LCD" >> config
 ##############################################
 
 case $8 in
-	[1-2])	REPLY=$8;;
+	[1-3])	REPLY=$8;;
 	*)	echo -e "\nWhere will the image be running:"
 		echo "   1*) Flash memory or hard disk"
-		echo "   2)  USB stick"
-		read -p "Select destination (1-2)? ";;
+		echo "   2)  USB stick (without built-in HDD)"
+		echo "   3)  USB stick (with built-in HDD)"
+		read -p "Select destination (1-3)? ";;
 esac
 
 case "$REPLY" in
 #	1) DESTINATION="flash";;
 	2) DESTINATION="USB";;
+	3) DESTINATION="USB_HDD";;
 	*) DESTINATION="flash";;
 esac
 

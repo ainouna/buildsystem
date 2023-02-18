@@ -614,12 +614,13 @@ $(D)/boost: $(D)/bootstrap $(ARCHIVE)/$(BOOST_SOURCE)
 #
 # zlib
 #
-ZLIB_VER = 1.2.12
+ZLIB_VER = 1.2.13
 ZLIB_SOURCE = zlib-$(ZLIB_VER).tar.xz
 ZLIB_Patch = zlib-$(ZLIB_VER).patch
 
 $(ARCHIVE)/$(ZLIB_SOURCE):
-	$(WGET) https://sourceforge.net/projects/libpng/files/zlib/$(ZLIB_VER)/$(ZLIB_SOURCE)
+#	$(WGET) https://sourceforge.net/projects/libpng/files/zlib/$(ZLIB_VER)/$(ZLIB_SOURCE)
+	$(WGET) https://www.zlib.net/$(ZLIB_SOURCE)
 
 $(D)/zlib: $(D)/bootstrap $(ARCHIVE)/$(ZLIB_SOURCE)
 	$(START_BUILD)
@@ -666,7 +667,7 @@ $(D)/bzip2: $(D)/bootstrap $(ARCHIVE)/$(BZIP2_SOURCE)
 #
 # timezone
 #
-TZDATA_VER = 2022a
+TZDATA_VER = 2022g
 TZDATA_SOURCE = tzdata$(TZDATA_VER).tar.gz
 TZDATA_ZONELIST = africa antarctica asia australasia europe northamerica southamerica etcetera
 DEFAULT_TIMEZONE ?= "CET"
@@ -749,7 +750,7 @@ $(D)/freetype: $(D)/bootstrap $(D)/zlib $(D)/libpng $(ARCHIVE)/$(FREETYPE_SOURCE
 #
 # lirc
 #
-ifeq ($(BOXTYPE), $(filter $(BOXTYPE), adb_box arivalink200 ipbox55 ipbox99 ipbox9900 cuberevo cuberevo_mini cuberevo_mini2 cuberevo_250hd cuberevo_2000hd cuberevo_3000hd hl101 pace7241 sagemcom88 spark spark7162 ufs910 vip1_v1 vip1_v2 vip2 vitamin_hd5000))
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE), adb_box arivalink200 ipbox55 ipbox99 ipbox9900 cuberevo cuberevo_mini cuberevo_mini2 cuberevo_250hd cuberevo_2000hd cuberevo_3000hd hchs8100 hl101 pace7241 sagemcom88 spark spark7162 ufs910 vip1_v1 vip1_v2 vip2 vitamin_hd5000))
 
 LIRC_VER = 0.9.0
 LIRC_SOURCE = lirc-$(LIRC_VER).tar.bz2
@@ -842,7 +843,7 @@ endif
 #
 # libjpeg_turbo2
 #
-LIBJPEG_TURBO2_VER = 2.1.3
+LIBJPEG_TURBO2_VER = 2.1.4
 LIBJPEG_TURBO2_SOURCE = libjpeg-turbo-$(LIBJPEG_TURBO2_VER).tar.gz
 LIBJPEG_TURBO2_PATCH = libjpeg-turbo-$(LIBJPEG_TURBO2_VER)-tiff-ojpeg.patch
 
@@ -917,7 +918,7 @@ $(D)/libjpeg_turbo: $(D)/bootstrap $(ARCHIVE)/$(LIBJPEG_TURBO_SOURCE)
 #
 # libpng
 #
-LIBPNG_VER = 1.6.37
+LIBPNG_VER = 1.6.39
 LIBPNG_VER_X = 16
 LIBPNG_SOURCE = libpng-$(LIBPNG_VER).tar.xz
 LIBPNG_PATCH = libpng-$(LIBPNG_VER)-disable-tools.patch
@@ -1023,7 +1024,7 @@ $(D)/libconfig: $(D)/bootstrap $(ARCHIVE)/$(LIBCONFIG_SOURCE)
 #
 # libcurl
 #
-LIBCURL_VER = 7.83.1
+LIBCURL_VER = 7.87.0
 LIBCURL_SOURCE = curl-$(LIBCURL_VER).tar.bz2
 LIBCURL_PATCH = libcurl-$(LIBCURL_VER).patch
 
@@ -1182,6 +1183,43 @@ $(D)/libsigc241: $(D)/bootstrap $(ARCHIVE)/$(LIBSIGC241_SOURCE)
 	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/sigc++-2.0.pc
 	$(REWRITE_LIBTOOL)/libsigc-2.0.la
 	$(REMOVE)/libsigc++-$(LIBSIGC241_VER)
+	$(TOUCH)
+
+#
+# libsigc3
+#
+LIBSIGC3_VER_MAJOR = 3
+LIBSIGC3_VER_MINOR = 0
+LIBSIGC3_VER_MICRO = 7
+LIBSIGC3_VER = $(LIBSIGC3_VER_MAJOR).$(LIBSIGC3_VER_MINOR).$(LIBSIGC3_VER_MICRO)
+LIBSIGC3_SOURCE = libsigc++-$(LIBSIGC3_VER).tar.xz
+#LIBSIGC3_PATCH = libsigc-$(LIBSIGC_VER_MAJOR).$(LIBSIGC_VER_MINOR).$(LIBSIGC_VER_MICRO).patch
+
+$(ARCHIVE)/$(LIBSIGC3_SOURCE):
+	$(WGET) https://ftp.gnome.org/pub/GNOME/sources/libsigc++/$(LIBSIGC3_VER_MAJOR).$(LIBSIGC3_VER_MINOR)/$(LIBSIGC3_SOURCE)
+
+$(D)/libsigc3: $(D)/bootstrap $(ARCHIVE)/$(LIBSIGC3_SOURCE)
+	$(START_BUILD)
+	$(REMOVE)/libsigc++-$(LIBSIGC3_VER)
+	$(UNTAR)/$(LIBSIGC3_SOURCE)
+	$(CH_DIR)/libsigc++-$(LIBSIGC3_VER); \
+		$(call apply_patches, $(LIBSIGC3_PATCH)); \
+		$(CONFIGURE) \
+			--prefix=/usr \
+			--enable-shared \
+			--enable-silent-rules \
+			--disable-documentation \
+		; \
+		$(MAKE); \
+		$(MAKE) install DESTDIR=$(TARGET_DIR); \
+		if [ -d $(TARGET_DIR)/usr/include/sigc++-3.0/sigc++ ] ; then \
+			ln -sf ./sigc++-3.0/sigc++ $(TARGET_DIR)/usr/include/sigc++; \
+		fi;
+		mv $(TARGET_DIR)/usr/lib/sigc++-3.0/include/sigc++config.h $(TARGET_DIR)/usr/include; \
+		rm -fr $(TARGET_DIR)/usr/lib/sigc++-3.0
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/sigc++-3.0.pc
+	$(REWRITE_LIBTOOL)/libsigc-3.0.la
+	$(REMOVE)/libsigc++-$(LIBSIGC3_VER)
 	$(TOUCH)
 
 #
@@ -1346,7 +1384,7 @@ $(D)/libiconv: $(D)/bootstrap $(ARCHIVE)/$(LIBICONV_SOURCE)
 #
 # expat
 #
-EXPAT_VER = 2.4.7
+EXPAT_VER = 2.5.0
 EXPAT_SOURCE = expat-$(EXPAT_VER).tar.bz2
 EXPAT_PATCH  = expat-$(EXPAT_VER)-libtool-tag.patch
 
@@ -1615,20 +1653,20 @@ $(D)/libsoup: $(D)/bootstrap $(D)/sqlite $(D)/libxml2 $(D)/libglib2 $(D)/libpsl 
 #
 # libpsl
 #
-LIBPSL_VER_MAJOR = 0.20
+LIBPSL_VER_MAJOR = 0.21
 LIBPSL_VER_MINOR = 2
 LIBPSL_VER = $(LIBPSL_VER_MAJOR).$(LIBPSL_VER_MINOR)
+LIBPSL_SOURCE = libpsl-$(LIBPSL_VER).tar.gz
 LIBPSL_PATCH =
 
-$(D)/libpsl: $(D)/bootstrap $(D)/host_python
+$(ARCHIVE)/$(LIBPSL_SOURCE):
+	$(WGET) https://github.com/rockdaboot/libpsl/releases/download/$(LIBPSL_VER)/$(LIBPSL_SOURCE)
+
+$(D)/libpsl: $(D)/bootstrap $(D)/host_python $(ARCHIVE)/$(LIBPSL_SOURCE)
 	$(START_BUILD)
-	$(REMOVE)/libpsl
-	$(SET) -e; if [ -d $(ARCHIVE)/libpsl.git ]; \
-		then cd $(ARCHIVE)/libpsl.git; git pull $(MINUS_Q); \
-		else cd $(ARCHIVE); git clone $(MINUS_Q) https://github.com/rockdaboot/libpsl.git libpsl.git; \
-		fi
-	$(SILENT)cp -ra $(ARCHIVE)/libpsl.git $(BUILD_TMP)/libpsl
-	$(CH_DIR)/libpsl; \
+	$(REMOVE)/libpsl-$(LIBPSL_VER)
+	$(UNTAR)/$(LIBPSL_SOURCE)
+	$(CH_DIR)/libpsl-$(LIBPSL_VER); \
 		$(call apply_patches, $(LIBPSL_PATCH)); \
 		$(BUILDENV) \
 		$(CONFIGURE) \
@@ -1641,7 +1679,7 @@ $(D)/libpsl: $(D)/bootstrap $(D)/host_python
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
 	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libpsl.pc
 	$(REWRITE_LIBTOOL)/libpsl.la
-	$(REMOVE)/libpsl
+	$(REMOVE)/libpsl-$(LIBPSL_VER)
 	$(TOUCH)
 
 #
@@ -1879,17 +1917,19 @@ $(D)/libroxml: $(D)/bootstrap $(ARCHIVE)/$(LIBROXML_SOURCE)
 #
 # pugixml
 #
-PUGIXML_VER = 1.12
-PUGIXML_SOURCE = pugixml-$(PUGIXML_VER).tar.gz
+PUGIXML_VER = 521b2cd
+PUGIXML_URL = https://github.com/zeux/pugixml.git
 PUGIXML_PATCH = pugixml-$(PUGIXML_VER)-config.patch
 
-$(ARCHIVE)/$(PUGIXML_SOURCE):
-	$(WGET) https://github.com/zeux/pugixml/releases/download/v$(PUGIXML_VER)/$(PUGIXML_SOURCE)
-
-$(D)/pugixml: $(D)/bootstrap $(ARCHIVE)/$(PUGIXML_SOURCE)
+$(D)/pugixml: $(D)/bootstrap
 	$(START_BUILD)
 	$(REMOVE)/pugixml-$(PUGIXML_VER)
-	$(UNTAR)/$(PUGIXML_SOURCE)
+	$(SET) -e; if [ -d $(ARCHIVE)/pugixml.git ]; \
+		then cd $(ARCHIVE)/pugixml.git; git pull $(MINUS_Q); \
+		else cd $(ARCHIVE); git clone $(MINUS_Q) $(PUGIXML_URL) pugixml.git; \
+		fi
+	$(SILENT)cp -ra $(ARCHIVE)/pugixml.git $(BUILD_TMP)/pugixml-$(PUGIXML_VER)
+	$(SILENT)(cd $(BUILD_TMP)/pugixml-$(PUGIXML_VER); git checkout $(MINUS_Q) $(PUGIXML_VER))
 	$(CH_DIR)/pugixml-$(PUGIXML_VER); \
 		$(call apply_patches, $(PUGIXML_PATCH)); \
 		cmake  --no-warn-unused-cli \
@@ -2091,7 +2131,7 @@ $(D)/libusb_compat: $(D)/bootstrap $(D)/libusb $(ARCHIVE)/$(LIBUSB_COMPAT_SOURCE
 #
 # alsa-lib
 #
-ALSA_LIB_VER = 1.2.7.2
+ALSA_LIB_VER = 1.2.8
 ALSA_LIB_SOURCE = alsa-lib-$(ALSA_LIB_VER).tar.bz2
 ALSA_LIB_PATCH  = alsa-lib-$(ALSA_LIB_VER).patch
 ALSA_LIB_PATCH += alsa-lib-$(ALSA_LIB_VER)-link_fix.patch
@@ -2135,7 +2175,7 @@ $(D)/alsa_lib: $(D)/bootstrap $(ARCHIVE)/$(ALSA_LIB_SOURCE)
 #
 # alsa-utils
 #
-ALSA_UTILS_VER = 1.2.7
+ALSA_UTILS_VER = 1.2.8
 ALSA_UTILS_SOURCE = alsa-utils-$(ALSA_UTILS_VER).tar.bz2
 ALSA_UTILS_PATCH  = alsa-utils-$(ALSA_UTILS_VER).patch
 
@@ -2312,7 +2352,7 @@ $(D)/lzo: $(D)/bootstrap $(ARCHIVE)/$(LZO_SOURCE)
 #
 # minidlna
 #
-MINIDLNA_VER = 1.3.0
+MINIDLNA_VER = 1.3.2
 MINIDLNA_SOURCE = minidlna-$(MINIDLNA_VER).tar.gz
 MINIDLNA_PATCH = minidlna-$(MINIDLNA_VER).patch
 

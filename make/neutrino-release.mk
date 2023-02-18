@@ -126,6 +126,9 @@ neutrino-release-ufs910: $(D)/uboot-utils
 	$(SILENT)rm -f $(RELEASE_DIR)/bin/vdstandby
 	$(SILENT)cp $(TARGET_DIR)/usr/bin/fw_setenv $(RELEASE_DIR)/usr/bin/
 	$(SILENT)ln -sf $(RELEASE_DIR)/usr/bin/fw_setenv $(RELEASE_DIR)/usr/bin/fw_printenv
+ifeq ($(DESTINATION), flash)
+	$(MAKE) $(D)/ufsinstaller
+endif
 
 #
 # ufs912
@@ -539,6 +542,24 @@ neutrino-release-opt9600prima:
 	$(SILENT)cp $(SKEL_ROOT)/firmware/dvb-fe-avl2108.fw $(RELEASE_DIR)/lib/firmware/
 
 #
+# hchs8100 series
+#
+neutrino-release-hchs8100:
+	$(SILENT)install -m 0755 $(SKEL_ROOT)/release/halt_opt9600 $(RELEASE_DIR)/etc/init.d/halt
+	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/frontcontroller/hchs8100_fp/hchs8100_fp.ko $(RELEASE_DIR)/lib/modules/
+	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/frontends/*.ko $(RELEASE_DIR)/lib/modules/
+	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/stgfb/stmfb/stmcore-display-stx7109c3.ko $(RELEASE_DIR)/lib/modules/
+	$(SILENT)cp $(SKEL_ROOT)/boot/video_7109.elf $(RELEASE_DIR)/lib/firmware/video.elf
+	$(SILENT)cp $(SKEL_ROOT)/boot/audio_7109.elf $(RELEASE_DIR)/lib/firmware/audio.elf
+	$(SILENT)cp $(SKEL_ROOT)/firmware/dvb-fe-cx24116.fw $(RELEASE_DIR)/lib/firmware/
+	$(SILENT)mkdir -p $(RELEASE_DIR)/var/run/lirc
+	$(SILENT)cp -dp $(SKEL_ROOT)/release/lircd_homecast.conf $(RELEASE_DIR)/etc/lircd.conf
+ifeq ($(DESTINATION), flash)
+	$(MAKE) $(D)/hcinstaller
+endif
+
+
+#
 # neutrino-release-base
 #
 # the following target creates the common file base
@@ -613,7 +634,7 @@ endif
 	$(SILENT)ln -sf ../../bin/busybox $(RELEASE_DIR)/usr/bin/ether-wake
 	$(SILENT)ln -sf ../../bin/showiframe $(RELEASE_DIR)/usr/bin/showiframe
 	$(SILENT)ln -sf ../../usr/sbin/fw_printenv $(RELEASE_DIR)/usr/sbin/fw_setenv
-ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs8200 fs9000 hs9510 ufs910 ufs912 ufs913 ufs922 ufc960 spark ipbox55 ipbox99 ipbox9900 cuberevo cuberevo_mini cuberevo_mini2 cuberevo_250hd cuberevo_2000hd cuberevo_3000hd adb_box tf7700 vitamin_hd5000))
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs8200 fs9000 hs9510 hchs8100 ufs910 ufs912 ufs913 ufs922 ufc960 spark ipbox55 ipbox99 ipbox9900 cuberevo cuberevo_mini cuberevo_mini2 cuberevo_250hd cuberevo_2000hd cuberevo_3000hd adb_box tf7700 vitamin_hd5000))
 	$(SILENT)cp $(SKEL_ROOT)/release/fw_env.config_$(BOXTYPE) $(RELEASE_DIR)/etc/fw_env.config
 endif
 	$(SILENT)install -m 0755 $(SKEL_ROOT)/release/rcS_neutrino_$(BOXTYPE) $(RELEASE_DIR)/etc/init.d/rcS
@@ -693,6 +714,7 @@ endif
 	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/drivers/usb/serial/ftdi_sio.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/drivers/usb/serial/ftdi_sio.ko $(RELEASE_DIR)/lib/modules/ftdi.ko || true
 	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/drivers/usb/serial/pl2303.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/drivers/usb/serial/pl2303.ko $(RELEASE_DIR)/lib/modules/ || true
 	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/drivers/usb/serial/ch341.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/drivers/usb/serial/ch341.ko $(RELEASE_DIR)/lib/modules/ || true
+	$(SILENT)[ -e $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/drivers/rtc/*.ko ] && cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/kernel/drivers/rtc/*.ko $(RELEASE_DIR)/lib/modules/ || true
 #
 # wlan
 #
@@ -880,7 +902,7 @@ endif
 #
 # delete unnecessary files
 #
-	$(SILENT)echo -n "Cleaning up..."
+	@echo -n "Cleaning up..."
 ifneq ($(BOXTYPE), $(filter $(BOXTYPE), ufs910 ufs922))
 	$(SILENT)rm -f $(RELEASE_DIR)/sbin/jfs_fsck
 	$(SILENT)rm -f $(RELEASE_DIR)/sbin/fsck.jfs
@@ -928,7 +950,7 @@ $(D)/neutrino_release: neutrino-release-base neutrino-release-$(BOXTYPE)
 	$(TUXBOX_CUSTOMIZE)
 	@touch $@
 #
-# FOR YOUR OWN CHANGES use these folder in own_build/neutrino-hd
+# FOR YOUR OWN CHANGES use this folder in own_build/neutrino-{FLAVOUR}
 #
 #	default for all receivers
 	@echo -n "Processing own_build..."
@@ -952,6 +974,7 @@ $(D)/neutrino_release: neutrino-release-base neutrino-release-$(BOXTYPE)
 	$(SILENT)ln -s /tmp $(RELEASE_DIR)/var/lock
 	$(SILENT)ln -s /tmp $(RELEASE_DIR)/var/log
 	$(SILENT)ln -s /tmp $(RELEASE_DIR)/var/run
+#	$(SILENT)ln -s /tmp $(RELEASE_DIR)/var/run/tmp
 	$(SILENT)ln -s /tmp $(RELEASE_DIR)/var/tmp
 #
 ifneq ($(FLAVOUR), $(filter $(FLAVOUR), neutrino2, neutrino2 + plugins))
