@@ -222,7 +222,7 @@
  			brand = "Ferguson"
  			model = "Ariva @Link 200"
  		elif procmodel.startswith("spark"):
-@@ -356,221 +190,6 @@
+@@ -356,225 +190,6 @@
  				model = "Spark 7162"
  			else:
  				model = "Spark"
@@ -360,6 +360,10 @@
 -			brand = "Zgemma"
 -			model = "H9.S SE"
 -			grabpip = 1
+-		elif procmodel == "h9se":
+-			brand = "Zgemma"
+-			model = "H9S SE"
+-			grabpip = 1
 -		elif procmodel == "h9.2s.se":
 -			brand = "Zgemma"
 -			model = "H9.2S SE"
@@ -444,7 +448,7 @@
  		else:
  			model = procmodel
  
-@@ -641,17 +260,7 @@
+@@ -649,17 +264,7 @@
  			procmodel = "vg2000"
  
  	type = procmodel
@@ -463,7 +467,7 @@
  		type = "nbox_white"
  	elif type in ("bsla", "bzzb"):
  		type = "nbox"
-@@ -666,138 +275,31 @@
+@@ -674,138 +279,30 @@
  	info['type'] = type
  
  	remote = "dmm1"
@@ -577,7 +581,7 @@
 -		remote = "dual"
 -	elif procmodel in ("sh1", "lc"):
 -		remote = "sh1"
--	elif procmodel in ("hzero", "h3", "h4", "h5", "h6", "h7", "h8", "h9", "i55plus", "h8.2h", "h9.s", "h9.t", "h9.2h", "h9.2s", "h9combo", "h9combose", "h9twin", "h9twinse", "h9.s.se", "h9.2s.se", "h9.2h.se", "h10.t", "h10.2s", "h10.2h", "h11", "h11.s"):
+-	elif procmodel in ("hzero", "h3", "h4", "h5", "h6", "h7", "h8", "h9", "i55plus", "h8.2h", "h9.s", "h9.t", "h9.2h", "h9.2s", "h9combo", "h9combose", "h9twin", "h9twinse", "h9.s.se", "h9se", "h9.2s.se", "h9.2h.se", "h10.t", "h10.2s", "h10.2h", "h11", "h11.s"):
 -		remote = "h3"
 -	elif procmodel == "i55":
 -		remote = "i55"
@@ -599,7 +603,6 @@
 -		remote = "uclan"
 -	elif procmodel in ("pulse4k", "pulse4kmini"):
 -		remote = "pulse4k"
-+	
 +	if procmodel in ("fs9000", "hs8200"):
 +		remote = "fs9000"
 +	elif procmodel in ("hs9510", "hs7420", "hs7429", "hs7810a", "hs7819"):
@@ -627,7 +630,7 @@
  
  	info['remote'] = remote
  
-@@ -851,7 +353,7 @@
+@@ -859,7 +356,7 @@
  	else:
  		# OE 2.2 uses apt, not opkg
  		if not fileExists("/etc/opkg/all-feed.conf"):
