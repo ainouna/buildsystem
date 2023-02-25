@@ -222,7 +222,7 @@
  			brand = "Ferguson"
  			model = "Ariva @Link 200"
  		elif procmodel.startswith("spark"):
-@@ -356,225 +190,6 @@
+@@ -356,228 +190,6 @@
  				model = "Spark 7162"
  			else:
  				model = "Spark"
@@ -431,6 +431,9 @@
 -					model = "SF8008 4K Single"
 -			else:
 -				model = procmodel.upper()
+-		elif procmodel == "sx88v2":
+-			brand = "Octagon"
+-			model = "SX888 4K UHD"
 -		elif procmodel == "e4hd":
 -			brand = "Axas"
 -			model = "E4HD"
@@ -448,9 +451,64 @@
  		else:
  			model = procmodel
  
-@@ -649,17 +264,7 @@
- 			procmodel = "vg2000"
+@@ -597,72 +209,11 @@
+ 				model = "Spark 7162"
+ 			else:
+ 				model = "Spark"
+-		elif (procmodel.startswith("dm") and not procmodel == "dm8000"):
+-			brand = "Dream Multimedia"
+-			if procmodel == "dm800":
+-				model = "DM800 HD PVR"
+-			elif procmodel == "dm800se":
+-				model = "DM800 HD se"
+-			elif procmodel == "dm500hd":
+-				model = "DM500 HD"
+-			elif procmodel == "dm7020hd":
+-				model = "DM7020 HD"
+-			elif procmodel == "dm820":
+-				model = "DM820 HD"
+-			elif procmodel == "dm7080":
+-				model = "DM7080 HD"
+-			elif procmodel == "dm520":
+-				model = "DM520 HD"
+-			elif procmodel == "dm525":
+-				model = "DM525 HD"
+-			elif procmodel == "dm900":
+-				model = "DM900 HD"
+-				grabpip = 1
+-			elif procmodel == "dm920":
+-				model = "DM920 HD"
+-				grabpip = 1
+-			else:
+-				model = procmodel.replace("dm", "DM", 1)
+-		# A "dm8000" is only a Dreambox if it passes the tpm verification:
+-		elif procmodel == "dm8000" and orgdream:
+-			brand = "Dream Multimedia"
+-			model = "DM8000"
+-		elif procmodel == "one":
+-			model = "dreamone"
+-		elif procmodel == "two":
+-			model = "Dreamtwo"
+ 		else:
+ 			model = procmodel
  
+-	if fileExists("/etc/.box"):
+-		distro = "HDMU"
+-		f = open("/etc/.box", 'r')
+-		tempmodel = f.readline().strip().lower()
+-		if tempmodel.startswith("ufs") or model.startswith("ufc"):
+-			brand = "Kathrein"
+-			model = tempmodel.upcase()
+-			procmodel = tempmodel
+-		elif tempmodel.startswith("spark"):
+-			brand = "Fulan"
+-			model = tempmodel.title()
+-			procmodel = tempmodel
+-		elif tempmodel.startswith("xcombo"):
+-			brand = "EVO"
+-			model = "enfinityX combo plus"
+-			procmodel = "vg2000"
+-
  	type = procmodel
 -	if type in ("et9x00", "et9000", "et9100", "et9200", "et9500"):
 -		type = "et9x00"
@@ -467,7 +525,7 @@
  		type = "nbox_white"
  	elif type in ("bsla", "bzzb"):
  		type = "nbox"
-@@ -674,138 +279,30 @@
+@@ -677,138 +228,30 @@
  	info['type'] = type
  
  	remote = "dmm1"
@@ -591,7 +649,7 @@
 -		remote = "amiko1"
 -	elif procmodel == "viperslim":
 -		remote = "viperslim"
--	elif procmodel.startswith("sfx"):
+-	elif procmodel.startswith("sfx") or procmodel.startswith("sx"):
 -		remote = "octagon3"
 -	elif procmodel.startswith("sf"):
 -		remote = "octagon"
@@ -630,7 +688,7 @@
  
  	info['remote'] = remote
  
-@@ -859,7 +356,7 @@
+@@ -862,7 +305,7 @@
  	else:
  		# OE 2.2 uses apt, not opkg
  		if not fileExists("/etc/opkg/all-feed.conf"):
