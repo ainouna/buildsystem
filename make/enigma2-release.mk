@@ -1231,9 +1231,9 @@ endif
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/public/images/boxes/xcombo.png
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/public/images/boxes/xpeedlx3.png
 	$(SILENT)mv -f $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/public/images/boxes/nbox.png \
-		$(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/public/images/boxes/topf.png
-	$(SILENT)mv -f $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/public/images/boxes/tf7700.png \
 		$(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/public/images/boxes/adb_box.png
+	$(SILENT)mv -f $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/public/images/boxes/topf.png \
+		$(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/public/images/boxes/tf7700.png
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/public/images/remotes/alphatriplehd.png
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/public/images/remotes/amiko1.png
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/public/images/remotes/amiko.png
