@@ -222,7 +222,7 @@
  			brand = "Ferguson"
  			model = "Ariva @Link 200"
  		elif procmodel.startswith("spark"):
-@@ -356,228 +190,6 @@
+@@ -356,231 +190,6 @@
  				model = "Spark 7162"
  			else:
  				model = "Spark"
@@ -442,6 +442,9 @@
 -		elif procmodel == "ustym4kpro":
 -			brand = "uClan"
 -			model = "Ustym 4K Pro"
+-		elif procmodel == "ustym4ks2ottx":
+-			brand = "uClan"
+-			model = "Ustym 4K S2 OTT X"
 -		elif procmodel == "pulse4k":
 -			brand = "AB-COM"
 -			model = "PULSe 4K"
@@ -451,7 +454,7 @@
  		else:
  			model = procmodel
  
-@@ -597,72 +209,11 @@
+@@ -600,72 +209,11 @@
  				model = "Spark 7162"
  			else:
  				model = "Spark"
@@ -525,7 +528,7 @@
  		type = "nbox_white"
  	elif type in ("bsla", "bzzb"):
  		type = "nbox"
-@@ -677,138 +228,30 @@
+@@ -680,141 +228,32 @@
  	info['type'] = type
  
  	remote = "dmm1"
@@ -659,8 +662,11 @@
 -		remote = "e4hd"
 -	elif procmodel in ("ustym4kpro"):
 -		remote = "uclan"
+-	elif procmodel in ("ustym4ks2ottx"):
+-		remote = "ustym4ks2ottx"
 -	elif procmodel in ("pulse4k", "pulse4kmini"):
 -		remote = "pulse4k"
+-
 +	if procmodel in ("fs9000", "hs8200"):
 +		remote = "fs9000"
 +	elif procmodel in ("hs9510", "hs7420", "hs7429", "hs7810a", "hs7819"):
@@ -685,10 +691,12 @@
 +		remote = "cuberevo"
 +	elif procmodel in ("hchs8100", "hchs9000"):
 +		remote = "hchs8100"
- 
++	elif procmodel in ("opt9600", "opt9600mini", "opt9600prima"):
++		remote = "opt9600"
  	info['remote'] = remote
  
-@@ -862,7 +305,7 @@
+ 	try:
+@@ -867,7 +306,7 @@
  	else:
  		# OE 2.2 uses apt, not opkg
  		if not fileExists("/etc/opkg/all-feed.conf"):
