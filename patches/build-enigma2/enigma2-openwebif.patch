@@ -222,7 +222,7 @@
  			brand = "Ferguson"
  			model = "Ariva @Link 200"
  		elif procmodel.startswith("spark"):
-@@ -356,231 +190,6 @@
+@@ -356,236 +190,6 @@
  				model = "Spark 7162"
  			else:
  				model = "Spark"
@@ -441,7 +441,12 @@
 -			grabpip = 1
 -		elif procmodel == "ustym4kpro":
 -			brand = "uClan"
--			model = "Ustym 4K Pro"
+-			ustymtype = open("/proc/stb/info/type").read()
+-			if ustymtype.startswith("11"):
+-				procmodel = "ustym4ktwin"
+-				model = "uStym 4K Twin"
+-			elif ustymtype.startswith("12"):
+-				model = "Usytm 4K Pro"
 -		elif procmodel == "ustym4ks2ottx":
 -			brand = "uClan"
 -			model = "Ustym 4K S2 OTT X"
@@ -454,7 +459,7 @@
  		else:
  			model = procmodel
  
-@@ -600,72 +209,11 @@
+@@ -605,72 +209,11 @@
  				model = "Spark 7162"
  			else:
  				model = "Spark"
@@ -528,7 +533,7 @@
  		type = "nbox_white"
  	elif type in ("bsla", "bzzb"):
  		type = "nbox"
-@@ -680,140 +228,32 @@
+@@ -685,140 +228,32 @@
  	info['type'] = type
  
  	remote = "dmm1"
@@ -662,7 +667,7 @@
 -		remote = "e4hd"
 -	elif procmodel in ("ustym4kpro"):
 -		remote = "uclan"
--	elif procmodel in ("ustym4ks2ottx"):
+-	elif procmodel in ("ustym4ktwin", "ustym4ks2ottx"):
 -		remote = "uclan3"
 -	elif procmodel in ("pulse4k", "pulse4kmini"):
 -		remote = "pulse4k"
@@ -695,7 +700,7 @@
  
  	info['remote'] = remote
  
-@@ -867,7 +307,7 @@
+@@ -872,7 +307,7 @@
  	else:
  		# OE 2.2 uses apt, not opkg
  		if not fileExists("/etc/opkg/all-feed.conf"):
