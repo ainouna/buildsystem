@@ -656,7 +656,7 @@ $(D)/ntfs_3g: $(D)/bootstrap $(ARCHIVE)/$(NTFS_3G_SOURCE)
 #
 # mc
 #
-MC_VER = 4.8.27
+MC_VER = 4.8.29
 MC_SOURCE = mc-$(MC_VER).tar.xz
 MC_PATCH  = mc-$(MC_VER).patch
 
@@ -671,10 +671,10 @@ $(D)/mc: $(D)/bootstrap $(D)/ncurses $(D)/libglib2 $(ARCHIVE)/$(MC_SOURCE)
 		$(call apply_patches, $(MC_PATCH)); \
 		autoreconf -fi $(SILENT_OPT); \
 		$(CONFIGURE) \
+			CFLAGS="$(TARGET_CFLAGS) -std=c99" \
 			--prefix=/usr \
 			--mandir=/.remove \
 			--sysconfdir=/etc \
-			--with-homedir=/var/tuxbox/config/mc \
 			--without-gpm-mouse \
 			--disable-doxygen-doc \
 			--disable-doxygen-dot \
@@ -694,8 +694,8 @@ $(D)/mc: $(D)/bootstrap $(D)/ncurses $(D)/libglib2 $(ARCHIVE)/$(MC_SOURCE)
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
 	rm -rf $(TARGET_DIR)/usr/share/mc/examples
 	find $(TARGET_DIR)/usr/share/mc/skins -type f ! -name default.ini | xargs --no-run-if-empty rm
-	$(REMOVE)/mc-$(MC_VER)
-	$(TOUCH)
+#	$(REMOVE)/mc-$(MC_VER)
+#	$(TOUCH)
 
 #
 # nano
