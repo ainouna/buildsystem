@@ -1,0 +1,23 @@
+--- a/src/Makefile
++++ b/src/Makefile
+@@ -94,6 +94,10 @@
+ 
+ ROOT	?= $(DESTDIR)
+ 
++ifneq ($(LCRYPT),)
++  SULOGINLIBS	+= $(LCRYPT)
++else
++
+ # Additional libs for GNU libc.
+ ifneq ($(wildcard $(ROOT)/usr/lib*/libcrypt.*),)
+   SULOGINLIBS	+= -lcrypt
+@@ -104,6 +108,8 @@
+ ifneq ($(findstring -lcrypt, $(SULOGINLIBS)), -lcrypt)
+   SULOGINLIBS	+= -lcrypt
+ endif
++endif
++
+ endif
+ 
+ all:		$(BIN) $(SBIN) $(USRBIN)
+

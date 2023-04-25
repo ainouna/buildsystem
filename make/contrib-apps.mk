@@ -151,15 +151,14 @@ $(D)/module_init_tools: $(D)/bootstrap $(D)/lsb $(ARCHIVE)/$(MODULE_INIT_TOOLS_S
 #
 # sysvinit
 #
-SYSVINIT_VER = 3.04
+SYSVINIT_VER = 3.06
 SYSVINIT_SOURCE = sysvinit-$(SYSVINIT_VER).tar.xz
 SYSVINIT_PATCH  = sysvinit-$(SYSVINIT_VER)-crypt-lib.patch
 SYSVINIT_PATCH += sysvinit-$(SYSVINIT_VER)-change-INIT_FIFO.patch
 SYSVINIT_PATCH += sysvinit-$(SYSVINIT_VER)-remove-killall5.patch
 
 $(ARCHIVE)/$(SYSVINIT_SOURCE):
-#	$(WGET) http://ftp.debian.org/debian/pool/main/s/sysvinit/$(SYSVINIT_SOURCE)
-	$(WGET) https://download.savannah.gnu.org/releases/sysvinit/$(SYSVINIT_SOURCE)
+	$(WGET) https://github.com/slicer69/sysvinit/releases/download/$(SYSVINIT_VER)/$(SYSVINIT_SOURCE)
 
 $(D)/sysvinit: $(D)/bootstrap $(ARCHIVE)/$(SYSVINIT_SOURCE)
 	$(START_BUILD)
