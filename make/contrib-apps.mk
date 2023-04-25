@@ -1717,7 +1717,7 @@ $(D)/openvpn: $(D)/bootstrap $(D)/openssl $(D)/lzo $(ARCHIVE)/$(OPENVPN_SOURCE)
 #
 # openssh
 #
-OPENSSH_VER = 9.1p1
+OPENSSH_VER = 9.3p1
 OPENSSH_SOURCE = openssh-$(OPENSSH_VER).tar.gz
 
 $(ARCHIVE)/$(OPENSSH_SOURCE):
@@ -1738,6 +1738,7 @@ $(D)/openssh: $(D)/bootstrap $(D)/zlib $(D)/openssl $(ARCHIVE)/$(OPENSSH_SOURCE)
 			--with-privsep-path=/var/empty \
 			--with-cppflags="-pipe -Os -I$(TARGET_DIR)/usr/include" \
 			--with-ldflags=-"L$(TARGET_DIR)/usr/lib" \
+			--disable-strip \
 		; \
 		$(MAKE); \
 		$(MAKE) install-nokeys DESTDIR=$(TARGET_DIR)
