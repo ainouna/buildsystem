@@ -1022,12 +1022,8 @@ $(D)/libconfig: $(D)/bootstrap $(ARCHIVE)/$(LIBCONFIG_SOURCE)
 	$(TOUCH)
 
 #
-# libcurl
+# ca-bundle
 #
-LIBCURL_VER = 7.88.1
-LIBCURL_SOURCE = curl-$(LIBCURL_VER).tar.bz2
-LIBCURL_PATCH = libcurl-$(LIBCURL_VER).patch
-
 $(ARCHIVE)/cacert.pem:
 	$(WGET) https://curl.haxx.se/ca/cacert.pem
 
@@ -1035,6 +1031,13 @@ $(D)/ca-bundle: $(ARCHIVE)/cacert.pem
 	$(START_BUILD)
 	$(SILENT)install -D -m 644 $(ARCHIVE)/cacert.pem $(TARGET_DIR)/$(CA_BUNDLE_DIR)/$(CA_BUNDLE)
 	$(TOUCH)
+
+#
+# libcurl
+#
+LIBCURL_VER = 8.0.1
+LIBCURL_SOURCE = curl-$(LIBCURL_VER).tar.bz2
+LIBCURL_PATCH = libcurl-$(LIBCURL_VER).patch
 
 $(ARCHIVE)/$(LIBCURL_SOURCE):
 	$(WGET) https://curl.haxx.se/download/$(LIBCURL_SOURCE)
