@@ -127,7 +127,7 @@ neutrino-release-ufs910: $(D)/uboot-utils
 	$(SILENT)cp $(TARGET_DIR)/usr/bin/fw_setenv $(RELEASE_DIR)/usr/bin/
 	$(SILENT)ln -sf $(RELEASE_DIR)/usr/bin/fw_setenv $(RELEASE_DIR)/usr/bin/fw_printenv
 ifeq ($(DESTINATION), flash)
-	$(MAKE) $(D)/ufsinstaller
+	$(MAKE) $(D)/ufs910installer
 endif
 
 #
@@ -172,7 +172,7 @@ neutrino-release-ufs922:
 	$(SILENT)touch $(RELEASE_DIR)/var/etc/.rccode
 	$(SILENT)echo "1" > $(RELEASE_DIR)/var/etc/.rccode
 ifeq ($(DESTINATION), flash)
-	$(MAKE) $(D)/ufsinstaller
+	$(MAKE) $(D)/ufs922installer
 endif
 
 #
@@ -242,7 +242,7 @@ neutrino-release-hs8200:
 	$(SILENT)cp $(SKEL_ROOT)/firmware/dvb-fe-avl2108.fw $(RELEASE_DIR)/lib/firmware/
 	$(SILENT)cp $(SKEL_ROOT)/firmware/dvb-fe-stv6306.fw $(RELEASE_DIR)/lib/firmware/
 	$(SILENT)rm -f $(RELEASE_DIR)/lib/modules/boxtype.ko
-	$(SILENT)rm  -f $(RELEASE_DIR)/lib/modules/mpeg2hw.ko
+	$(SILENT)rm -f $(RELEASE_DIR)/lib/modules/mpeg2hw.ko
 
 #
 # hs9510
@@ -533,13 +533,15 @@ neutrino-release-opt9600mini:
 neutrino-release-opt9600prima:
 	$(SILENT)install -m 0755 $(SKEL_ROOT)/release/halt_atemio520 $(RELEASE_DIR)/etc/init.d/halt
 	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/frontcontroller/cn_micom/cn_micom.ko $(RELEASE_DIR)/lib/modules/
-	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/frontends/lnb/lnb.ko $(RELEASE_DIR)/lib/modules/
 	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/frontends/*.ko $(RELEASE_DIR)/lib/modules/
 	$(SILENT)cp $(TARGET_DIR)/lib/modules/$(KERNEL_VER)/extra/stgfb/stmfb/stmcore-display-sti7105.ko $(RELEASE_DIR)/lib/modules/
 	$(SILENT)cp $(SKEL_ROOT)/boot/video_7105.elf $(RELEASE_DIR)/lib/firmware/video.elf
 	$(SILENT)cp $(SKEL_ROOT)/boot/audio_7105.elf $(RELEASE_DIR)/lib/firmware/audio.elf
 	$(SILENT)cp $(SKEL_ROOT)/firmware/component_7105_pdk7105.fw $(RELEASE_DIR)/lib/firmware/component.fw
 	$(SILENT)cp $(SKEL_ROOT)/firmware/dvb-fe-avl2108.fw $(RELEASE_DIR)/lib/firmware/
+ifeq ($(DESTINATION), flash)
+	$(MAKE) $(D)/opt9600primainstaller
+endif
 
 #
 # hchs8100 series
@@ -555,7 +557,7 @@ neutrino-release-hchs8100:
 	$(SILENT)mkdir -p $(RELEASE_DIR)/var/run/lirc
 	$(SILENT)cp -dp $(SKEL_ROOT)/release/lircd_homecast.conf $(RELEASE_DIR)/etc/lircd.conf
 ifeq ($(DESTINATION), flash)
-	$(MAKE) $(D)/hcinstaller
+	$(MAKE) $(D)/hchs8100installer
 endif
 
 

@@ -138,7 +138,7 @@ enigma2_release_ufs910:
 	fi
 	$(SILENT)cp -f $(SKEL_ROOT)/root_enigma2/usr/local/share/enigma2/keymap_ufs910.xml $(RELEASE_DIR)/usr/local/share/enigma2/keymap.xml
 ifeq ($(DESTINATION), flash)
-	$(MAKE) $(D)/ufsinstaller
+	$(MAKE) $(D)/ufs910installer
 endif
 
 #
@@ -208,7 +208,7 @@ enigma2_release_ufs922:
 	$(SILENT)touch $(RELEASE_DIR)/etc/.rccode
 	$(SILENT)echo "1" > $(RELEASE_DIR)/etc/.rccode
 ifeq ($(DESTINATION), flash)
-	$(MAKE) $(D)/ufsinstaller
+	$(MAKE) $(D)/ufs922installer
 endif
 
 #
@@ -735,6 +735,9 @@ enigma2_release_opt9600prima:
 	$(SILENT)cp $(SKEL_ROOT)/firmware/component_7105_pdk7105.fw $(RELEASE_DIR)/lib/firmware/component.fw
 	$(SILENT)cp $(SKEL_ROOT)/firmware/dvb-fe-avl2108.fw $(RELEASE_DIR)/lib/firmware/
 	$(SILENT)cp -f $(SKEL_ROOT)/root_enigma2/usr/local/share/enigma2/keymap_opt9600.xml $(RELEASE_DIR)/usr/local/share/enigma2/keymap.xml
+ifeq ($(DESTINATION), flash)
+	$(MAKE) $(D)/opt9600primainstaller
+endif
 
 #
 # hchs8100 series
@@ -757,7 +760,7 @@ enigma2_release_hchs8100:
 	fi
 	$(SILENT)cp -f $(SKEL_ROOT)/root_enigma2/usr/local/share/enigma2/keymap_hchs8100.xml $(RELEASE_DIR)/usr/local/share/enigma2/keymap.xml
 ifeq ($(DESTINATION), flash)
-	$(MAKE) $(D)/hcinstaller
+	$(MAKE) $(D)/hchs8100installer
 endif
 
 #
@@ -823,7 +826,7 @@ enigma2_release_base:
 	$(SILENT)ln -sf ../../bin/showiframe $(RELEASE_DIR)/usr/bin/showiframe
 	$(SILENT)ln -sf ../../usr/sbin/fw_printenv $(RELEASE_DIR)/usr/sbin/fw_setenv
 	$(SILENT)ln -sf ../../bin/grab $(RELEASE_DIR)/usr/bin/grab
-ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs8200 fs9000 hs9510 hchs8100 ufs910 ufs912 ufs913 ufs922 ufc960 spark spark7162 ipbox55 ipbox99 ipbox9900 cuberevo cuberevo_mini cuberevo_mini2 cuberevo_250hd cuberevo_2000hd cuberevo_3000hd adb_box tf7700 vitamin_hd5000))
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs8200 fs9000 hs9510 hchs8100 ufs910 ufs912 ufs913 ufs922 ufc960 opt9600 opt9600prima spark spark7162 ipbox55 ipbox99 ipbox9900 cuberevo cuberevo_mini cuberevo_mini2 cuberevo_250hd cuberevo_2000hd cuberevo_3000hd adb_box tf7700 vitamin_hd5000))
 	$(SILENT)cp $(SKEL_ROOT)/release/fw_env.config_$(BOXTYPE) $(RELEASE_DIR)/etc/fw_env.config
 endif
 	$(SILENT)install -m 0755 $(SKEL_ROOT)/release/rcS_enigma2_$(BOXTYPE) $(RELEASE_DIR)/etc/init.d/rcS
@@ -1305,7 +1308,7 @@ endif
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/public/images/remotes/xcombo.png
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/public/images/remotes/xpeedlx.png
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/public/images/remotes/xp_rc14_normal.png
-
+#
 # Do not remove pyo files, remove pyc instead
 #
 	$(SILENT)find $(RELEASE_DIR)/usr/lib/enigma2/ -name '*.pyc' -exec rm -f {} \;
