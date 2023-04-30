@@ -6,8 +6,10 @@ clean: depsclean
 	@-$(MAKE) kernel-clean
 	@-$(MAKE) tools-clean
 	@-$(MAKE) driver-clean
+	@-$(MAKE) opt9600primainstaller-clean
 	@-$(MAKE) tfinstaller-clean
-	@-$(MAKE) ufsinstaller-clean
+	@-$(MAKE) ufs910installer-clean
+	@-$(MAKE) ufs922installer-clean
 	@-rm -rf $(BASE_DIR)/tufsbox
 	@-rm -rf $(D)/kernel
 	@-rm -rf $(D)/kernel.do_compile
@@ -18,8 +20,10 @@ distclean:
 	@echo -en "$(TERM_YELLOW)Cleaning system build directories and files...$(TERM_NORMAL)"
 	@-$(MAKE) tools-clean
 	@-$(MAKE) driver-clean
+	@-$(MAKE) opt9600primainstaller-clean
 	@-$(MAKE) tfinstaller-clean
-	@-$(MAKE) ufsinstaller-clean
+	@-$(MAKE) ufs910installer-clean
+	@-$(MAKE) ufs922installer-clean
 	@-rm -rf $(BASE_DIR)/tufsbox
 	@-rm -rf $(BUILD_TMP)
 	@-rm -rf $(SOURCE_DIR)

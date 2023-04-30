@@ -46,7 +46,7 @@
  	*cmdline_p = command_line;
 --- a/arch/sh/boards/mach-hdk7105/setup.c.org
 +++ b/arch/sh/boards/mach-hdk7105/setup.c
-@@ -1,327 +1,432 @@
+@@ -1,327 +1,437 @@
  /*
   * arch/sh/boards/mach-hdk7105/setup.c
   *
@@ -461,26 +461,31 @@
 +	},
 +	{
 +		.name   = "U-Boot environment",  // mtd1
-+		.size   = 0x00020000,            // 128k
++		.size   = 0x00010000,            // 64k
 +		.offset = 0x00040000,
 +	},
 +	{
-+		.name   = "kernel",              // mtd2
++		.name   = "U-Boot logo",         // mtd2
++		.size   = 0x00010000,            // 64k
++		.offset = 0x00050000,
++	},
++	{
++		.name   = "kernel",              // mtd3
 +		.size   = 0x00300000,            // 3,0M
 +		.offset = 0x00060000,            // 384k (0.375M)
 +	},
 +	{
-+		.name   = "ROOT_FS",             // mtd3
++		.name   = "ROOT_FS",             // mtd4
 +		.size   = 0x004A0000,            // 4,625M
 +		.offset = 0x00360000,            // 3.375M
 +	},
 +	{
-+		.name   = "Full, w/o u-Boot",    // mtd4
++		.name   = "Full, w/o u-Boot",    // mtd5
 +		.size   = 0x007A0000,            //  7,625M
 +		.offset = 0x00060000,
 +	},
 +	{
-+		.name   = "Full",                // mtd5
++		.name   = "Full",                // mtd6
 +		.size   = 0x00800000,            // 8M
 +		.offset = 0x00000000,
 +	}
@@ -753,7 +758,7 @@
  	gpio_request(stm_gpio(15, 0), "SPI Boot CLK");
  	gpio_direction_input(stm_gpio(15, 0));
  	gpio_request(stm_gpio(15, 1), "SPI Boot DOUT");
-@@ -330,6 +434,7 @@
+@@ -330,6 +439,7 @@
  	gpio_direction_input(stm_gpio(15, 2));
  	gpio_request(stm_gpio(15, 3), "SPI Boot DIN");
  	gpio_direction_input(stm_gpio(15, 3));
@@ -761,7 +766,7 @@
  
  	/*
  	 * Fix the reset chain so it correct to start with in case the
-@@ -340,80 +446,125 @@
+@@ -340,80 +451,125 @@
  	/* Release the sysconf bits so the coprocessor driver can claim them */
  	sysconf_release(sc);
  
@@ -959,7 +964,7 @@
  {
  	/*
  	 * If we have PCI then this should never be called because we
-@@ -425,10 +576,12 @@
+@@ -425,10 +581,12 @@
  	return (void __iomem *)CCN_PVR;
  }
  

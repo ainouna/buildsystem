@@ -523,9 +523,39 @@ kernel-clean:
 	$(SILENT)rm -f $(D)/kernel.do_compile
 
 #
+# HCHS8100 installer
+#
+
+HCHS8100INSTALLER_DIR := $(BASE_DIR)/installers/hchs8100
+
+$(D)/hchs8100installer: $(D)/bootstrap $(D)/kernel
+	$(START_BUILD)
+	$(MAKE) $(MAKE_OPTS) -C $(HCHS8100INSTALLER_DIR) HOST_DIR=$(HOST_DIR) BASE_DIR=$(BASE_DIR) KERNEL_DIR=$(KERNEL_DIR)
+	$(TOUCH)
+
+
+#ifneq ($(BS_GCC_VER), $(filter $(BS_GCC_VER), 4.6.3 4.8.4))
+#HCHS8100KERNEL_PATCHES_24  = linux-sh4-remove_m4-nofpu-arg_$(KERNEL_LABEL).patch
+#endif
+
+$(D)/hchs8100kernel: $(D)/kernel
+	$(START_BUILD)
+	$(SILENT)cd $(KERNEL_DIR); \
+		$(call apply_patches, $(HCHS8100KERNEL_PATCHES_24)); \
+		cd $(KERNEL_DIR); \
+		$(MAKE) $(if $(HCHS8100),HCHS8100=y) ARCH=sh CROSS_COMPILE=$(TARGET)- uImage
+	$(TOUCH)
+
+hchs8100installer-clean:
+	$(SILENT)rm -f $(D)/hchs8100installer
+	$(SILENT)rm -f $(D)/hchs8100kernel
+	$(SILENT)rm -f $(OPT9600PRIMAINSTALLER_DIR)/uImage
+	$(SILENT)rm -f $(OPT9600PRIMAINSTALLER_DIR)/.config.inst
+
+#
 # TF7700 installer
 #
-TFINSTALLER_DIR := $(BASE_DIR)/tfinstaller
+TFINSTALLER_DIR := $(BASE_DIR)/installers/tf7700
 
 $(D)/tfinstaller: $(D)/bootstrap $(TFINSTALLER_DIR)/u-boot.ftfd $(D)/kernel
 	$(START_BUILD)
@@ -569,34 +599,94 @@ tfinstaller-clean:
 	$(SILENT)rm -f $(TFINSTALLER_DIR)/u-boot.ftfd
 
 #
-# UFSinstaller
+# UFS910 installer
 #
 
-UFSINSTALLER_DIR := $(BASE_DIR)/ufsinstaller
+UFS910INSTALLER_DIR := $(BASE_DIR)/installers/ufs910
 
-$(D)/ufsinstaller: $(D)/bootstrap $(D)/kernel
+$(D)/ufs910installer: $(D)/bootstrap $(D)/kernel
 	$(START_BUILD)
-	$(MAKE) $(MAKE_OPTS) -C $(UFSINSTALLER_DIR) HOST_DIR=$(HOST_DIR) BASE_DIR=$(BASE_DIR) KERNEL_DIR=$(KERNEL_DIR)
+	$(MAKE) $(MAKE_OPTS) -C $(UFS910INSTALLER_DIR) HOST_DIR=$(HOST_DIR) BASE_DIR=$(BASE_DIR) KERNEL_DIR=$(KERNEL_DIR)
 	$(TOUCH)
 
 
 #ifneq ($(BS_GCC_VER), $(filter $(BS_GCC_VER), 4.6.3 4.8.4))
-#UFSKERNEL_PATCHES_24  = linux-sh4-remove_m4-nofpu-arg_$(KERNEL_LABEL).patch
+#UFS910KERNEL_PATCHES_24  = linux-sh4-remove_m4-nofpu-arg_$(KERNEL_LABEL).patch
 #endif
 
-$(D)/ufskernel: $(D)/kernel
+$(D)/ufs910kernel: $(D)/kernel
 	$(START_BUILD)
 	$(SILENT)cd $(KERNEL_DIR); \
-		$(call apply_patches, $(UFSKERNEL_PATCHES_24)); \
+		$(call apply_patches, $(UFS910KERNEL_PATCHES_24)); \
+		cd $(KERNEL_DIR); \
+		$(MAKE) $(if $(UFS910),UFS910=y) ARCH=sh CROSS_COMPILE=$(TARGET)- uImage
+	$(TOUCH)
+
+ufs910installer-clean:
+	$(SILENT)rm -f $(D)/ufs910installer
+	$(SILENT)rm -f $(D)/ufs910kernel
+	$(SILENT)rm -f $(UFS910INSTALLER_DIR)/uImage
+	$(SILENT)rm -f $(UFS910INSTALLER_DIR)/.config.inst
+
+#
+# UFS922 installer
+#
+
+UFS922INSTALLER_DIR := $(BASE_DIR)/installers/ufs922
+
+$(D)/ufs922installer: $(D)/bootstrap $(D)/kernel
+	$(START_BUILD)
+	$(MAKE) $(MAKE_OPTS) -C $(UFS922INSTALLER_DIR) HOST_DIR=$(HOST_DIR) BASE_DIR=$(BASE_DIR) KERNEL_DIR=$(KERNEL_DIR)
+	$(TOUCH)
+
+
+#ifneq ($(BS_GCC_VER), $(filter $(BS_GCC_VER), 4.6.3 4.8.4))
+#UFS922KERNEL_PATCHES_24  = linux-sh4-remove_m4-nofpu-arg_$(KERNEL_LABEL).patch
+#endif
+
+$(D)/ufs922kernel: $(D)/kernel
+	$(START_BUILD)
+	$(SILENT)cd $(KERNEL_DIR); \
+		$(call apply_patches, $(UFS922KERNEL_PATCHES_24)); \
 		cd $(KERNEL_DIR); \
 		$(MAKE) $(if $(UFS922),UFS922=y) ARCH=sh CROSS_COMPILE=$(TARGET)- uImage
 	$(TOUCH)
 
-ufsinstaller-clean:
-	$(SILENT)rm -f $(D)/ufsinstaller
-	$(SILENT)rm -f $(D)/ufskernel
-	$(SILENT)rm -f $(UFSINSTALLER_DIR)/uImage
-	$(SILENT)rm -f $(UFSINSTALLER_DIR)/.config.inst
+ufs922installer-clean:
+	$(SILENT)rm -f $(D)/ufs922installer
+	$(SILENT)rm -f $(D)/ufs922kernel
+	$(SILENT)rm -f $(UFS922INSTALLER_DIR)/uImage
+	$(SILENT)rm -f $(UFS922INSTALLER_DIR)/.config.inst
+
+#
+# OPT9600PRIMA installer
+#
+
+OPT9600PRIMAINSTALLER_DIR := $(BASE_DIR)/installers/opt9600prima
+
+$(D)/opt9600primainstaller: $(D)/bootstrap $(D)/kernel
+	$(START_BUILD)
+	$(MAKE) $(MAKE_OPTS) -C $(OPT9600PRIMAINSTALLER_DIR) HOST_DIR=$(HOST_DIR) BASE_DIR=$(BASE_DIR) KERNEL_DIR=$(KERNEL_DIR)
+	$(TOUCH)
+
+
+#ifneq ($(BS_GCC_VER), $(filter $(BS_GCC_VER), 4.6.3 4.8.4))
+#OPT9600PRIMAKERNEL_PATCHES_24  = linux-sh4-remove_m4-nofpu-arg_$(KERNEL_LABEL).patch
+#endif
+
+$(D)/opt9600primakernel: $(D)/kernel
+	$(START_BUILD)
+	$(SILENT)cd $(KERNEL_DIR); \
+		$(call apply_patches, $(OPT9600PRIMAKERNEL_PATCHES_24)); \
+		cd $(KERNEL_DIR); \
+		$(MAKE) $(if $(OPT9600PRIMA),OPT9600PRIMA=y) ARCH=sh CROSS_COMPILE=$(TARGET)- uImage
+	$(TOUCH)
+
+opt9600primainstaller-clean:
+	$(SILENT)rm -f $(D)/opt9600primainstaller
+	$(SILENT)rm -f $(D)/opt9600primakernel
+	$(SILENT)rm -f $(OPT9600PRIMAINSTALLER_DIR)/uImage
+	$(SILENT)rm -f $(OPT9600PRIMAINSTALLER_DIR)/.config.inst
 
 #
 # u-boot
@@ -606,9 +696,15 @@ UBOOT_PATCH  = u-boot-$(UBOOT_VER).patch
 ifeq ($(BOXTYPE), tf7700)
 UBOOT_PATCH += u-boot-$(UBOOT_VER)-tf7700.patch
 endif
+#ifeq ($(BOXTYPE), ufs910)
+#UBOOT_PATCH += u-boot-$(UBOOT_VER)-ufs910.patch
+#endif
 ifeq ($(BOXTYPE), ufs922)
 UBOOT_PATCH += u-boot-$(UBOOT_VER)-ufs922.patch
 endif
+#ifeq ($(BOXTYPE), opt9600)
+#UBOOT_PATCH += u-boot-$(UBOOT_VER)-opt9600.patch
+#endif
 ifneq ($(BS_GCC_VER), $(filter $(BS_GCC_VER), 4.6.3 4.8.4))
 UBOOT_PATCH += u-boot-sh4-remove_m4-nofpu-arg.patch
 endif
