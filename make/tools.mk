@@ -5,7 +5,7 @@ tools-clean:
 	@rm -f $(D)/tools-*
 	@-$(MAKE) -C $(TOOLS_DIR)/aio-grab distclean
 	@-$(MAKE) -C $(TOOLS_DIR)/devinit distclean
-#	@-$(MAKE) -C $(TOOLS_DIR)/eeprom_crenova distclean
+	@-$(MAKE) -C $(TOOLS_DIR)/eeprom_crenova distclean
 	@-$(MAKE) -C $(TOOLS_DIR)/eeprom_dgs distclean
 	@-$(MAKE) -C $(TOOLS_DIR)/eeprom_fortis distclean
 	@-$(MAKE) -C $(TOOLS_DIR)/eeprom_ipbox distclean
@@ -592,7 +592,7 @@ ifneq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), small size))
 TOOLS += $(D)/tools-aio-grab
 endif
 TOOLS += $(D)/tools-devinit
-ifeq ($(BOXTYPE), $(filter $(BOXTYPE), opt9600 opt9600mini opt9600prima))
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE), atemio520 opt9600 opt9600mini opt9600prima))
 TOOLS += $(D)/tools-eeprom-crenova
 endif
 ifeq ($(BOXTYPE), $(filter $(BOXTYPE), cuberevo cuberevo_mini cuberevo_mini2 cuberevo_mini_fta cuberevo_250hd cuberevo_2000hd cuberevo_3000hd))
