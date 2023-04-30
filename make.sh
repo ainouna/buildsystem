@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version 20230217.1
+# Version 20230428.1
 
 ##############################################
 
@@ -19,7 +19,7 @@ if [ "$1" == -h ] || [ "$1" == --help ]; then
 	echo "-v or --verbose   : verbose build (very noisy!)"
 	echo "-q or --quiet     : quiet build, fastest, almost silent"
 	echo "-b or --batchmode : batch mode; do not become interactive"
-	echo "Parameter 1       : target system (1-37)"
+	echo "Parameter 1       : target system (1-39)"
 	echo "Parameter 2       : kernel (1-2)"
 	echo "Parameter 3       : optimization (1-5)"
 	echo "Parameter 4       : image (Enigma=1/2 Neutrino=3/4 Titan=5/6)"
@@ -154,49 +154,50 @@ fi
 ##############################################
 
 case $1 in
-	[1-9] | 1[0-9] | 2[0-9] | 3[0-9] | 4[0-4]) REPLY=$1;;
+	[1-9] | 1[0-9] | 2[0-9] | 3[0-9] | 4[0]) REPLY=$1;;
 	*)
 		echo "Target receivers:"
 		echo
 		echo "  Kathrein             Fortis"
-		echo "    1)  UFS-910          7)  FS9000 / FS9200 (formerly Fortis HDbox)"
-		echo "    2)  UFS-912          8)  HS9510 (formerly Octagon SF1008P)"
-		echo "    3)  UFS-913          9*) HS8200 (bootloader 6.00, formerly Atevio AV7500)"
-		echo "    4)  UFS-922         10)  HS7110 (bootloader 6.4X)"
-		echo "    5)  UFC-960         11)  HS7119"
-		echo "                        12)  HS7420 (bootloader 6.3X)"
-		echo "  Topfield              13)  HS7429"
-		echo "    6)  TF77X0 HDPVR    14)  HS7810A (bootloader 6.2X)"
-		echo "                        15)  HS7819"
+		echo "    1)  UFS-910          8)  FS9000 / FS9200 (formerly Fortis HDbox)"
+		echo "    2)  UFS-912          9)  HS9510 (formerly Octagon SF1008P)"
+		echo "    3)  UFS-913         10*) HS8200 (bootloader 6.00, formerly Atevio AV7500)"
+		echo "    4)  UFS-922         11)  HS7110 (bootloader 6.4X)"
+		echo "    5)  UFC-960         12)  HS7119"
+		echo "                        13)  HS7420 (bootloader 6.3X)"
+		echo "  Fulan                 14)  HS7429"
+		echo "    6)  Spark           15)  HS7810A (bootloader 6.2X)"
+		echo "    7)  Spark7162       16)  HS7819"
 		echo
 		echo "  ABcom                Cuberevo"
-		echo "   16)  IPBox 55HD      19)  id."
-		echo "   17)  IPBox 99HD      20)  mini"
-		echo "   18)  IPBox 9900HD    21)  mini2"
-		echo "   19)  IPBox 9000HD    22)  250HD"
-		echo "   20)  IPBox 900HD     23)  9500HD / 7000HD"
-		echo "   21)  IPBox 910HD     24)  2000HD"
-		echo "   22)  IPBox 91HD      25)  200HD / mini FTA"
-		echo "                        26)  3000HD / Xsarius Alpha HD10"
-		echo "  Fulan"
-		echo "   27)  Spark"
-		echo "   28)  Spark7162"       
-		echo
+		echo "   17)  IPBox 55HD      20)  id."
+		echo "   18)  IPBox 99HD      21)  mini"
+		echo "   19)  IPBox 9900HD    22)  mini2"
+		echo "   20)  IPBox 9000HD    23)  250HD"
+		echo "   21)  IPBox 900HD     24)  9500HD / 7000HD"
+		echo "   22)  IPBox 910HD     25)  2000HD"
+		echo "   23)  IPBox 91HD      26)  200HD / mini FTA"
+		echo "                        27)  3000HD / Xsarius Alpha HD10"
 		echo "  Edision"
-		echo "   29)  argus VIP V1 [ 1 fixed tuner + 2 CI + 1.5 USB ]"
-		echo "   30)  argus VIP V2 [ 1 plugin tuner + 2 CI + 1 USB ]"
-		echo "   31)  argus VIP2   [ 2 plugin tuners + 1 USB ]"
+		echo "   28)  argus VIP V1 [ 1 fixed tuner + 2 CI + 1.5 USB ]"
+		echo "   29)  argus VIP V2 [ 1 plugin tuner + 2 CI + 1 USB ]"
+		echo "   30)  argus VIP2   [ 2 plugin tuners + 1 USB ]"
+		echo
+		echo "  CreNova"
+		echo "   31)  Atemio AM 520 HD / Sogno HD 800-V3 (untested)"
+		echo "   32)  Opticum/Orton/Globo HD (TS) 9600 (experimental, kernel P0217 only)"
+		echo "   33)  Opticum/Orton/Globo HD (TS) 9600 PRIMA (kernel P0217 only)"
 		echo
 		echo "  Various SH4-based receivers"
-		echo "   32)  Atemio AM 520 HD / Sogno HD 800-V3 (untested)"
-		echo "   33)  SpiderBox HL-101"
-		echo "   34)  ADB ITI-5800S(X) (nBox BSKA, BSLA, BXZB or BZZB)"
-		echo "   35)  Showbox Vitamin HD5000 (256Mbyte flash version)"
-		echo "   36)  SagemCom 88 series (untested)"
-		echo "   37)  Ferguson Ariva @Link 200 (untested)"
-		echo "   38)  Homecast HS8100 CI series (FTA only, experimental, kernel P0217 only)"
+		echo "   34)  Topfield TF77X0 HDPVR"
+		echo "   35)  SpiderBox HL-101"
+		echo "   36)  ADB ITI-5800S(X) (nBox BSKA, BSLA, BXZB or BZZB)"
+		echo "   37)  Showbox Vitamin HD5000 (256Mbyte flash version)"
+		echo "   38)  SagemCom 88 series (untested)"
+		echo "   39)  Ferguson Ariva @Link 200 (untested)"
+		echo "   40)  Homecast HS8100 CI series (FTA only, experimental, kernel P0217 only)"
 		echo
-		read -p "Select target (1-38) ";;
+		read -p "Select target (1-40) ";;
 esac
 
 case "$REPLY" in
@@ -205,44 +206,44 @@ case "$REPLY" in
 	 3) BOXTYPE="ufs913";;
 	 4) BOXTYPE="ufs922";;
 	 5) BOXTYPE="ufc960";;
-	 6) BOXTYPE="tf7700";;
-	 7) BOXTYPE="fs9000";;
-	 8) BOXTYPE="hs9510";;
-#	 9) BOXTYPE="hs8200";;
-	10) BOXTYPE="hs7110";;
-	11) BOXTYPE="hs7119";;
-	12) BOXTYPE="hs7420";;
-	13) BOXTYPE="hs7429";;
-	14) BOXTYPE="hs7810a";;
-	15) BOXTYPE="hs7819";;
-	16) BOXTYPE="ipbox55";;
-	17) BOXTYPE="ipbox99";;
-	18) BOXTYPE="ipbox9900";;
-	19) BOXTYPE="cuberevo";;
-	20) BOXTYPE="cuberevo_mini";;
-	21) BOXTYPE="cuberevo_mini2";;
-	22) BOXTYPE="cuberevo_250hd";;
-	23) BOXTYPE="cuberevo_9500hd";;
-	24) BOXTYPE="cuberevo_2000hd";;
-	25) BOXTYPE="cuberevo_mini_fta";;
-	26) BOXTYPE="cuberevo_3000hd";;
-	27) BOXTYPE="spark";;
-	28) BOXTYPE="spark7162";;
-	29) BOXTYPE="vip1_v1";;
-	30) BOXTYPE="vip1_v2";;
-	31) BOXTYPE="vip2";;
-	32) BOXTYPE="atemio520";;
-	33) BOXTYPE="hl101";;
-	34) BOXTYPE="adb_box";;
-	35) BOXTYPE="vitamin_hd5000";;
-	36) BOXTYPE="sagemcom88";;
-	37) BOXTYPE="arivalink200";;
-	38) BOXTYPE="hchs8100";;
-	39) BOXTYPE="pace7241";;
-	40) BOXTYPE="adb_2850";;
-	41) BOXTYPE="opt9600";;
-	42) BOXTYPE="opt9600mini";;
-	43) BOXTYPE="opt9600prima";;
+	 6) BOXTYPE="spark";;
+	 7) BOXTYPE="spark7162";;
+	 8) BOXTYPE="fs9000";;
+	 9) BOXTYPE="hs9510";;
+#	10) BOXTYPE="hs8200";;
+	11) BOXTYPE="hs7110";;
+	12) BOXTYPE="hs7119";;
+	13) BOXTYPE="hs7420";;
+	14) BOXTYPE="hs7429";;
+	15) BOXTYPE="hs7810a";;
+	16) BOXTYPE="hs7819";;
+	17) BOXTYPE="ipbox55";;
+	18) BOXTYPE="ipbox99";;
+	19) BOXTYPE="ipbox9900";;
+	20) BOXTYPE="cuberevo";;
+	21) BOXTYPE="cuberevo_mini";;
+	22) BOXTYPE="cuberevo_mini2";;
+	23) BOXTYPE="cuberevo_250hd";;
+	24) BOXTYPE="cuberevo_9500hd";;
+	25) BOXTYPE="cuberevo_2000hd";;
+	26) BOXTYPE="cuberevo_mini_fta";;
+	27) BOXTYPE="cuberevo_3000hd";;
+	28) BOXTYPE="vip1_v1";;
+	29) BOXTYPE="vip1_v2";;
+	30) BOXTYPE="vip2";;
+	31) BOXTYPE="atemio520";;
+	32) BOXTYPE="opt9600";;
+	33) BOXTYPE="opt9600prima";;
+	34) BOXTYPE="tf7700";;
+	35) BOXTYPE="hl101";;
+	36) BOXTYPE="adb_box";;
+	37) BOXTYPE="vitamin_hd5000";;
+	38) BOXTYPE="sagemcom88";;
+	39) BOXTYPE="arivalink200";;
+	40) BOXTYPE="hchs8100";;
+	41) BOXTYPE="opt9600mini";;
+	42) BOXTYPE="pace7241";;
+	43) BOXTYPE="adb_2850";;
 	 *) BOXTYPE="hs8200";;
 esac
 echo "BOXTYPE=$BOXTYPE" >> config
