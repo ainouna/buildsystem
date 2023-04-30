@@ -966,7 +966,7 @@
  	caps.can_shutdown = 1;
  	caps.has_HDMI = 1;
  	caps.has_SCART = 1;
-@@ -96,49 +96,47 @@
+@@ -96,105 +96,214 @@
  	caps.display_type = HW_DISPLAY_LINE_TEXT;
  	caps.display_xres = 16;
  #endif
@@ -1013,54 +1013,13 @@
 -	caps.has_HDMI = 1;
 -	caps.has_SCART = 1;
 -	caps.can_cec = 0;
-+#if defined(BOXMODEL_HS8200)
-+	initialized = 1;
-+	strcpy(caps.boxvendor, "Fortis");
-+	strcpy(caps.boxname, "HS8200");
-+	strcpy(caps.boxarch, "STx7105");
-+	caps.can_shutdown = 1;
-+	caps.has_HDMI = 1;
-+	caps.has_SCART = 1;
-+//	caps.has_SCART_input = 1;
-+	caps.can_cec = 1;
-+	caps.has_CI = 2;
-+	caps.display_can_set_brightness = 1;
-+	caps.display_can_deepstandby = 0;
-+	caps.display_has_statusline = 0;
-+	caps.display_type = HW_DISPLAY_LINE_TEXT;
-+	caps.display_xres = 12;
-+#endif
-+#if defined(BOXMODEL_HS7110)
-+	initialized = 1;
-+	strcpy(caps.boxvendor, "Fortis");
-+	strcpy(caps.boxname, "HS7110");
-+	strcpy(caps.boxarch, "STx7111");
-+	caps.can_shutdown = 1;
-+	caps.has_HDMI = 1;
-+	caps.has_SCART = 0;
-+	caps.can_cec = 1;
-+	caps.has_CI = 1;
-+	caps.display_can_set_brightness = 1;
-+	caps.display_type = HW_DISPLAY_LINE_TEXT;
-+	caps.display_xres = 0;
-+#endif
-+#if defined(BOXMODEL_HS7420)
-+	initialized = 1;
-+	strcpy(caps.boxvendor, "Fortis");
-+	strcpy(caps.boxname, "HS7420");
-+	strcpy(caps.boxarch, "STx7111");
-+	caps.can_shutdown = 1;
-+	caps.has_HDMI = 1;
-+	caps.has_SCART = 1;
-+//	caps.has_SCART_input = 1;
-+	caps.can_cec = 1;
- 	caps.has_CI = 2;
- 	caps.display_can_set_brightness = 1;
- 	caps.display_can_deepstandby = 0;
-@@ -146,55 +144,166 @@
- 	caps.display_type = HW_DISPLAY_LINE_TEXT;
- 	caps.display_xres = 8;
- #endif
+-	caps.has_CI = 2;
+-	caps.display_can_set_brightness = 1;
+-	caps.display_can_deepstandby = 0;
+-	caps.display_has_statusline = 0;
+-	caps.display_type = HW_DISPLAY_LINE_TEXT;
+-	caps.display_xres = 8;
+-#endif
 -#if BOXMODEL_CUBEREVO
 -	initialized = 1;
 -	strcpy(caps.boxvendor, "DUCKBOX");
@@ -1102,6 +1061,54 @@
 -	caps.display_can_set_brightness = 1;
 -	caps.display_can_deepstandby = 0;
 -	caps.display_has_statusline = 0;
++#if defined(BOXMODEL_HS8200)
++	initialized = 1;
++	strcpy(caps.boxvendor, "Fortis");
++	strcpy(caps.boxname, "HS8200");
++	strcpy(caps.boxarch, "STx7105");
++	caps.can_shutdown = 1;
++	caps.has_HDMI = 1;
++	caps.has_SCART = 1;
++//	caps.has_SCART_input = 1;
++	caps.can_cec = 1;
++	caps.has_CI = 2;
++	caps.display_can_set_brightness = 1;
++	caps.display_can_deepstandby = 0;
++	caps.display_has_statusline = 0;
++	caps.display_type = HW_DISPLAY_LINE_TEXT;
++	caps.display_xres = 12;
++#endif
++#if defined(BOXMODEL_HS7110)
++	initialized = 1;
++	strcpy(caps.boxvendor, "Fortis");
++	strcpy(caps.boxname, "HS7110");
++	strcpy(caps.boxarch, "STx7111");
++	caps.can_shutdown = 1;
++	caps.has_HDMI = 1;
++	caps.has_SCART = 0;
++	caps.can_cec = 1;
++	caps.has_CI = 1;
++	caps.display_can_set_brightness = 1;
++	caps.display_type = HW_DISPLAY_LINE_TEXT;
++	caps.display_xres = 0;
++#endif
++#if defined(BOXMODEL_HS7420)
++	initialized = 1;
++	strcpy(caps.boxvendor, "Fortis");
++	strcpy(caps.boxname, "HS7420");
++	strcpy(caps.boxarch, "STx7111");
++	caps.can_shutdown = 1;
++	caps.has_HDMI = 1;
++	caps.has_SCART = 1;
++//	caps.has_SCART_input = 1;
++	caps.can_cec = 1;
++	caps.has_CI = 2;
++	caps.display_can_set_brightness = 1;
++	caps.display_can_deepstandby = 0;
++	caps.display_has_statusline = 0;
++	caps.display_type = HW_DISPLAY_LINE_TEXT;
++	caps.display_xres = 8;
++#endif
 +#if defined(BOXMODEL_HS7810A)
 +	initialized = 1;
 +	strcpy(caps.boxvendor, "Fortis");
@@ -1356,10 +1363,42 @@
  	initialized = 1;
  	strcpy(caps.boxvendor, "DUCKBOX");
  	strcpy(caps.boxname, "TF7700");
-@@ -287,6 +408,40 @@
+@@ -287,6 +408,72 @@
  	caps.has_SCART = 1;
  	caps.can_cec = 0;
  	caps.has_CI = 2;
++	caps.display_type = HW_DISPLAY_LINE_TEXT;
++	caps.display_xres = 8;
++#endif
++#if defined(BOXMODEL_OPT9600)
++	initialized = 1;
++	strcpy(caps.boxvendor, "CreNova");
++	strcpy(caps.boxname, "Opticum HD 9600");
++	strcpy(caps.boxarch, "STi7109");
++	caps.can_shutdown = 1;
++	caps.has_HDMI = 1;
++	caps.has_SCART = 1;
++	caps.can_cec = 0;
++	caps.has_CI = 2;
++	caps.display_can_set_brightness = 0;
++	caps.display_can_deepstandby = 1;
++	caps.display_has_statusline = 0;
++	caps.display_type = HW_DISPLAY_LINE_TEXT;
++	caps.display_xres = 8;
++#endif
++#if defined(BOXMODEL_OPT9600PRIMA)
++	initialized = 1;
++	strcpy(caps.boxvendor, "CreNova");
++	strcpy(caps.boxname, "Opticum HD 9600 PRIMA");
++	strcpy(caps.boxarch, "STi7105");
++	caps.can_shutdown = 1;
++	caps.has_HDMI = 1;
++	caps.has_SCART = 1;
++	caps.can_cec = 0;
++	caps.has_CI = 2;
++	caps.display_can_set_brightness = 0;
++	caps.display_can_deepstandby = 1;
++	caps.display_has_statusline = 0;
 +	caps.display_type = HW_DISPLAY_LINE_TEXT;
 +	caps.display_xres = 8;
 +#endif

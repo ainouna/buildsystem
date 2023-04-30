@@ -203,7 +203,7 @@
  	backbuf_sz = 1280 * 720 * sizeof(fb_pixel_t);
  	BPAMemAllocMemData bpa_data;
 -#if BOXMODEL_OCTAGON1008 || BOXMODEL_FORTIS_HDBOX || BOXMODEL_CUBEREVO || BOXMODEL_CUBEREVO_MINI || BOXMODEL_CUBEREVO_MINI2 || BOXMODEL_CUBEREVO_250HD || BOXMODEL_CUBEREVO_2000HD || BOXMODEL_CUBEREVO_3000HD || BOXMODEL_IPBOX9900 || BOXMODEL_IPBOX99 || BOXMODEL_IPBOX55 || BOXMODEL_TF7700
-+#if BOXMODEL_HS9510 || BOXMODEL_FS9000 || BOXMODEL_CUBEREVO || BOXMODEL_CUBEREVO_MINI || BOXMODEL_CUBEREVO_MINI2 || BOXMODEL_CUBEREVO_250HD || BOXMODEL_CUBEREVO_MINI_FTA|| BOXMODEL_CUBEREVO_2000HD || BOXMODEL_CUBEREVO_3000HD || BOXMODEL_IPBOX9900 || BOXMODEL_IPBOX99 || BOXMODEL_IPBOX55 || BOXMODEL_TF7700 || BOXMODEL_OPT9600
++#if BOXMODEL_HS9510 || BOXMODEL_FS9000 || BOXMODEL_CUBEREVO || BOXMODEL_CUBEREVO_MINI || BOXMODEL_CUBEREVO_MINI2 || BOXMODEL_CUBEREVO_250HD || BOXMODEL_CUBEREVO_MINI_FTA|| BOXMODEL_CUBEREVO_2000HD || BOXMODEL_CUBEREVO_3000HD || BOXMODEL_IPBOX9900 || BOXMODEL_IPBOX99 || BOXMODEL_IPBOX55 || BOXMODEL_TF7700 || BOXMODEL_OPT9600 || BOXMODEL_OPT9600PRIMA || BOXMODEL_HCHS8100 || BOXMODEL_HCHS9000
  	bpa_data.bpa_part = (char *)"LMI_SYS";
  #else
  	bpa_data.bpa_part = (char *)"LMI_VID";
@@ -214,7 +214,7 @@
  	backbuf_sz = DEFAULT_XRES * DEFAULT_YRES * sizeof(fb_pixel_t);
  	BPAMemAllocMemData bpa_data;
 -#if BOXMODEL_OCTAGON1008 || BOXMODEL_FORTIS_HDBOX || BOXMODEL_CUBEREVO || BOXMODEL_CUBEREVO_MINI || BOXMODEL_CUBEREVO_MINI2 || BOXMODEL_CUBEREVO_250HD || BOXMODEL_CUBEREVO_2000HD || BOXMODEL_CUBEREVO_3000HD || BOXMODEL_IPBOX9900 || BOXMODEL_IPBOX99 || BOXMODEL_IPBOX55 || BOXMODEL_TF7700
-+#if BOXMODEL_HS9510 || BOXMODEL_FS9000 || BOXMODEL_CUBEREVO || BOXMODEL_CUBEREVO_MINI || BOXMODEL_CUBEREVO_MINI2 || BOXMODEL_CUBEREVO_250HD || BOXMODEL_CUBEREVO_MINI_FTA || BOXMODEL_CUBEREVO_2000HD || BOXMODEL_CUBEREVO_3000HD || BOXMODEL_IPBOX9900 || BOXMODEL_IPBOX99 || BOXMODEL_IPBOX55 || BOXMODEL_TF7700 || BOXMODEL_OPT9600
++#if BOXMODEL_HS9510 || BOXMODEL_FS9000 || BOXMODEL_CUBEREVO || BOXMODEL_CUBEREVO_MINI || BOXMODEL_CUBEREVO_MINI2 || BOXMODEL_CUBEREVO_250HD || BOXMODEL_CUBEREVO_MINI_FTA || BOXMODEL_CUBEREVO_2000HD || BOXMODEL_CUBEREVO_3000HD || BOXMODEL_IPBOX9900 || BOXMODEL_IPBOX99 || BOXMODEL_IPBOX55 || BOXMODEL_TF7700 || BOXMODEL_OPT9600 || BOXMODEL_OPT9600PRIMA || BOXMODEL_HCHS8100 || BOXMODEL_HCHS9000
  	bpa_data.bpa_part = (char *)"LMI_SYS";
  #else
  	bpa_data.bpa_part = (char *)"LMI_VID";
@@ -240,23 +240,45 @@
  		bool tstarted = false;
 --- neutrino-ddt.org/src/neutrino.cpp
 +++ neutrino-ddt/src/neutrino.cpp
-@@ -3055,6 +3055,7 @@
- 					switchTvRadioMode(); //used with defined default tv/radio rc key
+@@ -2905,6 +2905,8 @@
+ 					g_InfoViewer->showSubchan();
+ 				}
+ 				else if ( msg == CRCInput::RC_left || msg == CRCInput::RC_right) {
++//#if !defined(BOXMODEL_OPT9600) 
++// && !defined(BOXMODEL_OPT9600PRIMA)
+ 					switch (g_settings.mode_left_right_key_tv)
+ 					{
+ 						case SNeutrinoSettings::INFOBAR:
+@@ -2919,6 +2921,9 @@
+ 							quickZap(msg);
+ 							break;
+ 					}
++//#else
++//					g_volume->setVolume(msg);
++//#endif
+ 				}
+ 				else
+ 					quickZap( msg );
+@@ -3056,6 +3061,8 @@
  			}
  			/* in case key_subchannel_up/down redefined */
-+#if !defined(BOXMODEL_OPT9600)
  			else if( msg == CRCInput::RC_left || msg == CRCInput::RC_right) {
++//#if !defined(BOXMODEL_OPT9600) 
++// && !defined(BOXMODEL_OPT9600PRIMA)
  				switch (g_settings.mode_left_right_key_tv)
  				{
-@@ -3071,6 +3172,7 @@
+ 					case SNeutrinoSettings::INFOBAR:
+@@ -3070,6 +3077,9 @@
+ 						quickZap(msg);
  						break;
  				}
++//#else
++//				g_volume->setVolume(msg);
++//#endif
  			}
-+#endif
  			else if( msg == CRCInput::RC_epg ) {
  				InfoClock->enableInfoClock(false);
- 				StopSubtitles();
-@@ -3362,6 +3364,10 @@
+@@ -3362,6 +3372,10 @@
  #if defined (BOXMODEL_IPBOX9900) || defined (BOXMODEL_IPBOX99)
  		system("echo 0 > /proc/stb/misc/fan");
  #endif
@@ -267,11 +289,12 @@
  	}
  }
  
-@@ -3622,7 +3628,11 @@
+@@ -3622,7 +3636,12 @@
  			}
  #endif
  	}
-+#if defined(BOXMODEL_OPT9600)
++#if defined(BOXMODEL_OPT9600) \
++ || defined(BOXMODEL_OPT9600PRIMA)
 +	else if ((msg == CRCInput::RC_left) || (msg == CRCInput::RC_right))
 +#else
  	else if ((msg == CRCInput::RC_plus) || (msg == CRCInput::RC_minus))
@@ -833,7 +856,7 @@
 +				}
 +				ShowText(timestr);
 +#elif defined (BOXMODEL_OPT9600) \
-+ ||   defined (BOXMODEL_OPT9600PRIMA)
++ ||   defined (BOXMODEL_OPT9600PRIMA) \
 + ||   defined (BOXMODEL_HCHS8100) \
 + ||   defined (BOXMODEL_HCHS9000)
 +				strftime(timestr, 6, (second % 2 == 0 ? "%H-%M" : "%H %M"), t);
