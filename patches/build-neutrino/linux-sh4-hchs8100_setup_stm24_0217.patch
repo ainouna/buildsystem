@@ -7,7 +7,7 @@
 +	{
 +		int command_line_len = strlen(command_line);
 +		char sda1_org_command_line[] = "console=ttyAS0,115200 root=/dev/sda1";
-+		char sda1_new_command_line[] = "console=ttyAS0,115200 root=/dev/sda1/root.img rootfstype=ext3 rw init=/bin/devinit coprocessor_mem=4m@0x10000000,4m@0x10400000 printk=1 console_loglevel=7 rootdelay=3 nwhwconf=device:eth0,hwaddr:";
++		char sda1_new_command_line[] = "console=ttyAS0,115200 root=/dev/sda1 rootfstype=ext3 rw init=/bin/devinit coprocessor_mem=4m@0x10000000,4m@0x10400000 printk=1 console_loglevel=7 rootdelay=3 nwhwconf=device:eth0,hwaddr:";
 +		char sdb1_org_command_line[] = "console=ttyAS0,115200 root=/dev/sdb1";
 +		char sdb1_new_command_line[] = "console=ttyAS0,115200 root=/dev/sdb1/root.img rootfstype=ext3 rw init=/bin/devinit coprocessor_mem=4m@0x10000000,4m@0x10400000 printk=1 console_loglevel=7 rootdelay=3 nwhwconf=device:eth0,hwaddr:";
 +		char mac[] = "12:34:56:78:9A:BC";
@@ -19,21 +19,21 @@
 +		{
 +			if (!strncmp(command_line + i, "ethaddr", 7))
 +			{
-+//				strlcpy(mac, command_line + i + 8, sizeof(mac));
++				strlcpy(mac, command_line + i + 8, sizeof(mac));
 +				break;
 +			}
 +			if (!strncmp(command_line + i, "hwaddr", 6))
 +			{
-+//				strlcpy(mac, command_line + i + 7, sizeof(mac));
++				strlcpy(mac, command_line + i + 7, sizeof(mac));
 +				break;
 +			}
 +		}
 +		/* boot from /dev/sda1 */
-+//		if (command_line_len >= sda1_org_command_line_len && !strncmp(command_line, sda1_org_command_line, sda1_org_command_line_len))
-+//		{
-+//			strlcpy(command_line, sda1_new_command_line, sizeof(sda1_new_command_line));
-+//			strlcat(command_line, mac, sizeof(mac));
-+//		}
++		if (command_line_len >= sda1_org_command_line_len && !strncmp(command_line, sda1_org_command_line, sda1_org_command_line_len))
++		{
++			strlcpy(command_line, sda1_new_command_line, sizeof(sda1_new_command_line));
++			strlcat(command_line, mac, sizeof(mac));
++		}
 +		/* boot from /dev/sdb1 */
 +		if (command_line_len >= sdb1_org_command_line_len && !strncmp(command_line, sdb1_org_command_line, sdb1_org_command_line_len))
 +		{
@@ -181,8 +181,8 @@
 +PIO2.2 (i) = HDMI hotplug detect
 +PIO2.3 (?) = 
 +PIO2.4 (?) = 
-+PIO2.5 (?) = 
-+PIO2.6 (?) = 
++PIO2.5 (?) = StarCI2Win power bottom slot
++PIO2.6 (?) = StarCI2Win power top slot
 +PIO2.7 (I) = ?? flash Vpp ??
 +
 +PIO3.0 (B) = I2C1_SCL
@@ -191,7 +191,7 @@
 +PIO3.3 (i) = LIRC Rx (IR)
 +PIO3.4 (?) = (LIRC Rx (UHF))
 +PIO3.5 (?) = (LIRC Tx)
-+PIO3.6 (?) = (LIRC Tx OD)
++PIO3.6 (?) = (LIRC Tx OD) LNB on/off frontend 1 on HS9000
 +PIO3.7 (?) = 
 +
 +PIO4.0 (B) = I2C2_SCL
@@ -213,7 +213,7 @@
 +PIO5.7 (?) =    // TODO: find LNB on/off frontend 1
 +#endif
 +
-+#define HS8100_PIO_AC101L_RESET stm_gpio(0, 6)  // TODO: find PIO
++#define HS8100_PIO_AC101L_RESET stm_gpio(0, 6)  // ACL101 reset is not PIO controlled
 +#define HS8100_PIO_FLASH_VPP stm_gpio(2, 7)  // TODO: find PIO
 +#define HS8100_PIO_POWER_CTL stm_gpio(3, 2)  // do not touch, receiver will reset
 +
@@ -328,24 +328,24 @@
 +static struct mtd_partition hs8100_nor_parts[] =
 +{
 +	{
-+		.name   = "uboot",                  // mtd0: U-boot from A0000000 to A005FFFF
-+		.size   = 0x00060000,               // 384 kbyte
++		.name   = "uboot",                  // mtd0: U-boot from A0000000 to A004FFFF
++		.size   = 0x00050000,               // 320 kbyte
 +		.offset = 0x00000000,
 +	},
 +	{
 +		.name   = "uboot env",              // mtd 1
 +		.size   = 0x00010000,               //  64 kbyte
-+		.offset = 0x00060000,               // 384 kbyte
++		.offset = 0x00050000,               // 320 kbyte
 +	},
 +	{
 +		.name   = "kernel",                 // mtd 2
 +		.size   = 0x00300000,               // 3 Mbyte
-+		.offset = 0x00070000,               // 448 kbyte (0,4375 Mbyte)
++		.offset = 0x00060000,               // 384 kbyte (0,375 Mbyte)
 +	},
 +	{
 +		.name   = "nor_unused",             // mtd 3
-+		.size   = MTDPART_SIZ_FULL,         // 4,5625 Mbyte
-+		.offset = 0x00370000,               // 3,4375 Mbyte
++		.size   = MTDPART_SIZ_FULL,         // 4,625 Mbyte
++		.offset = 0x00360000,               // 3,375 Mbyte
 +	}
 +};
 +
@@ -367,7 +367,7 @@
 +	},
 +};
 +
-+static int hs8100_phy_reset(void* bus)
++static int hs8100_phy_reset(void *bus)
 +{
 +	gpio_set_value(HS8100_PIO_AC101L_RESET, 1);
  	udelay(1);

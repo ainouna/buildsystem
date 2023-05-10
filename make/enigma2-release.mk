@@ -706,6 +706,7 @@ enigma2_release_opt9600:
 		cp -rf $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/opt9600VFD/* $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/SystemPlugins/VFD-Icons; \
 		rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/opt9600VFD; \
 	fi
+	$(SILENT)cp $(SKEL_ROOT)/firmware/dvb-fe-avl2108.fw $(RELEASE_DIR)/lib/firmware/
 	$(SILENT)cp -f $(SKEL_ROOT)/root_enigma2/usr/local/share/enigma2/keymap_opt9600.xml $(RELEASE_DIR)/usr/local/share/enigma2/keymap.xml
 
 #

@@ -549,8 +549,8 @@ $(D)/hchs8100kernel: $(D)/kernel
 hchs8100installer-clean:
 	$(SILENT)rm -f $(D)/hchs8100installer
 	$(SILENT)rm -f $(D)/hchs8100kernel
-	$(SILENT)rm -f $(OPT9600PRIMAINSTALLER_DIR)/uImage
-	$(SILENT)rm -f $(OPT9600PRIMAINSTALLER_DIR)/.config.inst
+	$(SILENT)rm -f $(HCHS8100INSTALLER_DIR)/uImage
+	$(SILENT)rm -f $(HCHS8100INSTALLER_DIR)/.config.inst
 
 #
 # TF7700 installer
