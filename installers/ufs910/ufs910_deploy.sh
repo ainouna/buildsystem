@@ -1,9 +1,7 @@
 #!/bin/sh
-# Version 20230510.1
-echo "---------------------------------------------------------------"
-echo " deploy.sh version V0.13"
-echo
-echo " Version for Homecast HS8100 series)"
+# Version 20210714.1
+echo "------------------------------------------------------------"
+echo "deploy.sh version V0.13 (version for Kathrein UFS910)"
 #echo
 #echo "V0.13: Fix keepsettings mechanism; add neutrino settings."
 #echo "V0.12: sfdisk parameters rewritten to use sector (512 byte)"
@@ -23,13 +21,13 @@ echo " Version for Homecast HS8100 series)"
 #echo "V0.03: Suppress meaningless tar errors during save settings"
 #echo "V0.02: Format Mini partitions with Ext3 instead of Ext2"
 #echo "V0.01: New parameter CREATEMINI and cleanup of KEEPSETTINGS"
-echo "---------------------------------------------------------------"
+echo "------------------------------------------------------------"
 
 # default installation device
 HDD=/dev/sda
 
 # Check if the correct MTD setup has been used
-if [ -z "`cat /proc/mtd | grep mtd2 | grep 'kernel'`" ]
+if [ -z "`cat /proc/mtd | grep mtd8 | grep 'miniUboot'`" ]
 then
   echo "MTD ERROR" > /dev/vfd
   echo "MTD ERROR "
@@ -67,16 +65,40 @@ while (true) do
   i=`expr $i + 1`
 done
 
-if [ -f /instsrc/uImage_ ]; then
-  echo "Installation" > /dev/vfd
+if [ -f /instsrc/kathrein/ufs910/uImage_ ]; then
+  echo "Installation"  /dev/vfd
   sleep 3
-  echo "already done" > /dev/vfd
+  echo "already done"  /dev/vfd
   sleep 3
-  echo "Remove stick" > /dev/vfd
+  echo "Remove stick"  /dev/vfd
   sleep 10
   reboot -f
   exit
 fi
+
+# If the file topfield.tfd is located on the stick, flash it (normal topfield update)
+#if [ -f /instsrc/topfield.tfd ]; then
+#  echo "1 FLASH" > /dev/vfd
+#
+#  echo
+#  echo "Please stand by. This will take about 1.5 minutes..."
+#  echo "After the reboot of the box, it may take another 2 or"
+#  echo "3 minutes until the picture comes back."
+#  echo
+#
+#  cat /instsrc/topfield.tfd | tfd2mtd > /dev/mtdblock5
+#  mv /instsrc/topfield.tfd /instsrc/topfield.tfd_
+#  dd if=/dev/zero of=/dev/sda bs=512 count=64
+#  umount /instsrc
+
+#  echo
+#  echo "<- Job done, rebooting... ->"
+#  echo "   0" > /dev/fpsmall
+#  echo "0 REBOOT" > /dev/vfd
+#  sleep 2
+#  reboot -f
+#  exit
+#fi
 
 mkdir /instdest
 
@@ -258,6 +280,17 @@ fi
 
 # Skip formatting if the keyword 'format' is not specified in the control file
 if [ $format == "1" ]; then
+#  echo
+#  echo "<- Checking HDD ->"
+#  echo " 8 HDD CHK" > /dev/vfd
+#
+#  fsck.ext3 -y $ROOTFS
+#  if [ "$usejfs" = "1" ]; then
+#    fsck.jfs -p $DATAFS
+#  else
+#    fsck.ext2 -y $DATAFS
+#  fi
+#else
   if [ "$partition" == "1" ]; then
     echo
     echo "<- Partitioning HDD ->"
@@ -320,7 +353,7 @@ fi #format
 # Format Linux rootfs partitions
 echo
 echo "<- Formatting HDD (rootfs) ->"
-echo "7 FORMT ROOT" > /dev/vfd
+echo "7 FORMAT ROOT" > /dev/vfd
 #ln -s /proc/mounts /etc/mtab
   
 fs="ext3"
@@ -345,7 +378,7 @@ if [ "$partition" == "1" ]; then
   # Initialise the swap partition
   echo
   echo "<- Formatting HDD (swap) ->"
-  echo "6 FORMT SWAP" > /dev/vfd
+  echo "6 FORMAT SWAP" > /dev/vfd
   mkswap $SWAPFS
   echo "SWAPPART" > /deploy/swaplabel
   dd if=/deploy/swaplabel of="$SWAPFS" seek=1052 bs=1 count=8 2> /dev/null
@@ -356,7 +389,7 @@ if [ $format == "1" ]; then
   echo
   echo "<- Formatting HDD (record) ->"
   if [ "$usejfs" == "1" ]; then
-    echo "5 FORMT REC JFS"  > /dev/vfd
+    echo "5 FORMAT REC JFS"  > /dev/vfd
     mkfs.jfs -q -L RECORD $DATAFS
   else
     if [ "$useext2e2" == "1" ]; then
@@ -372,8 +405,8 @@ fi
 if [ "$update" == "1" ]; then
   echo
   echo "<- Installing root file system ->"
-  echo "4 COPY ROOT" > /dev/vfd
-  mount $ROOTFS /instdest  2> /dev/null 
+  echo "4 COPY ROOT FS" > /dev/vfd
+  mount $ROOTFS /instdest
   cd /instdest
   gunzip -c /instsrc/rootfs.tar.gz | tar -x
   if [ "$usbhdd" == "1" ]; then
@@ -422,11 +455,40 @@ mkdir -p /mnt/logos
 sync
 umount /mnt
 
-# Skip Flash of MTD1 if 'keepbootargs=1' is specified in the control file
+# Write U-Boot settings into the flash
+#echo
+#echo -n "<- Flashing U-Boot settings: "
+#echo "3 LOADER" > /dev/vfd
+#dd if=/deploy/u-boot.mtd1 of=/dev/mtdblock1 2> /dev/null
+#if [ $? -ne 0 ]; then  
+#  echo "FAIL" > /dev/fpsmall  
+#  exit  
+#fi 
+#sleep 3
+#echo "done ->"
+
+#ls -l /usr/sbin
+
+# Skip Flash of MTD7 if 'keepbootargs=1' is specified in the control file
 if [ "$keepbootargs" != "1" ]; then
   echo -n "<- Flashing U-Boot args: "
   echo "3 SET BOOTARGS" > /dev/vfd
-  /usr/sbin/fw_setenv bootdesc_default '1'
+#  if [ "$usbhdd" == "1" ]; then
+#    dd if=/deploy/U-Boot_Settings_usb.mtd7 of=/dev/mtdblock7 2> /dev/null
+#  else
+#    dd if=/deploy/U-Boot_Settings_hdd.mtd7 of=/dev/mtdblock7 2> /dev/null
+#  fi
+#  if [ $? -ne 0 ]; then
+#    echo "FAIL" > /dev/vfd
+#    exit
+#  fi
+  /usr/sbin/fw_setenv bootcmd_6 'run bootargs_6; bootm a0040000'
+  sleep 1
+  /usr/sbin/fw_setenv bootargs_6 'set bootargs console=ttyAS0,115200 root=/dev/sda1 rw ip=192.168.178.119:192.168.178.101:192.168.178.1:255.255.255.0:kathrein:eth0:off mem=64m coprocessor_mem=4m@0x10000000,4m@0x10400000 rootdelay=6 nwhwconf=device:eth0,hwaddr:${ethaddr} init=/bin/devinit'
+  sleep 1
+  /usr/sbin/fw_setenv bootdesc_6 '-----HDD-----'
+  sleep 1
+  /usr/sbin/fw_setenv bootdesc_default '6'
   sleep 1
   echo "done ->"
 else
@@ -436,10 +498,10 @@ fi
 # write the kernel to flash
 echo
 echo -n "<- Flashing kernel: "
-echo "2 FLASH KRNL" > /dev/vfd
-dd if=/instsrc/uImage.flash of=/dev/mtdblock2 2> /dev/null
+echo "2 FLASH KERNEL" > /dev/vfd
+dd if=/instsrc/kathrein/ufs910/uImage.flash of=/dev/mtdblock1 2> /dev/null
 if [ $? -ne 0 ]; then
-  echo "ERR KRNL FLASH" > /dev/vfd
+  echo "ERROR KRNL FLASH" > /dev/vfd
   exit
 fi
 echo "done ->"
@@ -456,7 +518,7 @@ sleep 2
 
 # rename uImage to avoid infinite installation loop
 if [ "$usbhdd" != "1" -a -f /instsrc/uImage ]; then
-  mv -f /instsrc/uImage /instsrc/uImage_
+  mv -f /instsrc/kathrein/ufs910/uImage /instsrc/kathrein/ufs910/uImage_
   sync
   umount /instsrc
 fi
