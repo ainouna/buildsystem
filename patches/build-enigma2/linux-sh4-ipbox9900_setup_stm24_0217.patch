@@ -1,6 +1,5 @@
-diff -urN linux-sh4-2.6.32.16_stm24_0205.org/arch/sh/boards/ipbox9900/mach.c linux-sh4-2.6.32.16_stm24_0205/arch/sh/boards/ipbox9900/mach.c
---- linux-sh4-2.6.32.16_stm24_0205.org/arch/sh/boards/ipbox9900/mach.c	1970-01-01 01:00:00.000000000 +0100
-+++ linux-sh4-2.6.32.16_stm24_0205/arch/sh/boards/ipbox9900/mach.c	2011-07-03 17:37:41.000000000 +0200
+--- a/arch/sh/boards/ipbox9900/mach.c.org
++++ b/arch/sh/boards/ipbox9900/mach.c
 @@ -0,0 +1,60 @@
 +/*
 + * arch/sh/boards/st/mb442/mach.c
@@ -62,18 +61,16 @@ diff -urN linux-sh4-2.6.32.16_stm24_0205.org/arch/sh/boards/ipbox9900/mach.c lin
 +	.mv_init_irq		= mb442_init_irq,
 +	.mv_ioport_map		= mb442_ioport_map,
 +};
-diff -urN linux-sh4-2.6.32.16_stm24_0205.org/arch/sh/boards/ipbox9900/Makefile linux-sh4-2.6.32.16_stm24_0205/arch/sh/boards/ipbox9900/Makefile
---- linux-sh4-2.6.32.16_stm24_0205.org/arch/sh/boards/ipbox9900/Makefile	1970-01-01 01:00:00.000000000 +0100
-+++ linux-sh4-2.6.32.16_stm24_0205/arch/sh/boards/ipbox9900/Makefile	2011-07-03 17:37:41.000000000 +0200
+--- a/arch/sh/boards/ipbox9900/Makefile.org
++++ b/arch/sh/boards/ipbox9900/Makefile
 @@ -0,0 +1,5 @@
 +#
 +# Makefile for STMicroelectronics STb7100 Reference board
 +#
 +
 +obj-y := setup.o mach.o
-diff -urN linux-sh4-2.6.32.16_stm24_0205.org/arch/sh/boards/ipbox9900/setup.c linux-sh4-2.6.32.16_stm24_0205/arch/sh/boards/ipbox9900/setup.c
---- linux-sh4-2.6.32.16_stm24_0205.org/arch/sh/boards/ipbox9900/setup.c	1970-01-01 01:00:00.000000000 +0100
-+++ linux-sh4-2.6.32.16_stm24_0205/arch/sh/boards/ipbox9900/setup.c	2011-07-03 17:37:41.000000000 +0200
+--- a/arch/sh/boards/ipbox9900/setup.c.org
++++ b/arch/sh/boards/ipbox9900/setup.c
 @@ -0,0 +1,177 @@
 +/*
 + * arch/sh/boards/st/mb442/setup.c
@@ -252,12 +249,11 @@ diff -urN linux-sh4-2.6.32.16_stm24_0205.org/arch/sh/boards/ipbox9900/setup.c li
 +			ARRAY_SIZE(mb442_devices));
 +}
 +device_initcall(mb442_device_init);
-diff -urN linux-sh4-2.6.32.16_stm24_0205.org/arch/sh/boards/Kconfig linux-sh4-2.6.32.16_stm24_0205/arch/sh/boards/Kconfig
---- linux-sh4-2.6.32.16_stm24_0205.org/arch/sh/boards/Kconfig	2011-07-17 20:30:23.000000000 +0200
-+++ linux-sh4-2.6.32.16_stm24_0205/arch/sh/boards/Kconfig	2011-07-17 23:23:34.590734928 +0200
-@@ -702,6 +702,17 @@
- 	  Select this option to enable a simple driver for the front
- 	  pannel button on the mb705.
+--- a/arch/sh/boards/Kconfig.org
++++ b/arch/sh/boards/Kconfig
+@@ -899,6 +899,17 @@
+ source "arch/sh/boards/mach-hdkh225/Kconfig"
+ source "arch/sh/boards/mach-adi7108/Kconfig"
  
 +comment "Ipbox Boards"
 +
@@ -272,20 +268,19 @@ diff -urN linux-sh4-2.6.32.16_stm24_0205.org/arch/sh/boards/Kconfig linux-sh4-2.
 +
  endmenu
  
- source "arch/sh/boards/mach-r2d/Kconfig"
-diff -urN linux-sh4-2.6.32.16_stm24_0205.org/arch/sh/Makefile linux-sh4-2.6.32.16_stm24_0205/arch/sh/Makefile
---- linux-sh4-2.6.32.16_stm24_0205.org/arch/sh/Makefile	2011-07-17 20:30:23.000000000 +0200
-+++ linux-sh4-2.6.32.16_stm24_0205/arch/sh/Makefile	2011-07-17 23:24:40.798578590 +0200
-@@ -182,6 +182,7 @@
- machdir-$(CONFIG_SH_ST_MB837)			+= mach-mb837
+ if SH_MAGIC_PANEL_R2
+--- a/arch/sh/Makefile.org
++++ b/arch/sh/Makefile
+@@ -203,6 +203,7 @@
+ machdir-$(CONFIG_SH_ST_MB837)			+= mach-mb837 mach-st
  machdir-$(CONFIG_SH_ST_MB839)			+= mach-mb839
  machdir-$(CONFIG_SH_ST_MB903)			+= mach-mb903
 +machdir-$(CONFIG_SH_IPBOX9900)			+= ipbox9900
  
  ifneq ($(machdir-y),)
  core-y	+= $(addprefix arch/sh/boards/, \
---- linux-sh4/drivers/stm/stx7100_comms.c.orig	2011-01-09 14:19:17.000000000 +0100
-+++ linux-sh4/drivers/stm/stx7100_comms.c	2011-01-09 14:19:52.000000000 +0100
+--- a/drivers/stm/stx7100_comms.c.orig
++++ b/drivers/stm/stx7100_comms.c
 @@ -240,12 +240,12 @@
  			STM_PAD_PIO_BIDIR_NAMED(3, 0, 1, "SCL"),
  			STM_PAD_PIO_BIDIR_NAMED(3, 1, 1, "SDA"),
@@ -301,7 +296,7 @@ diff -urN linux-sh4-2.6.32.16_stm24_0205.org/arch/sh/Makefile linux-sh4-2.6.32.1
  		},
  	},
  	[2] = {
-@@ -344,7 +344,7 @@
+@@ -345,7 +345,7 @@
  	BUG_ON(stx7100_ssc_configured[ssc]);
  	stx7100_ssc_configured[ssc] = 1;
  
@@ -310,10 +305,9 @@ diff -urN linux-sh4-2.6.32.16_stm24_0205.org/arch/sh/Makefile linux-sh4-2.6.32.1
  	stx7100_ssc_devices[ssc].id = i2c_busnum;
  
  	plat_data = stx7100_ssc_devices[ssc].dev.platform_data;
-diff -urN linux-sh4-2.6.32.16_stm24_0205.org/drivers/usb/core/hub.c linux-sh4-2.6.32.16_stm24_0205/drivers/usb/core/hub.c
---- linux-sh4-2.6.32.16_stm24_0205.org/drivers/usb/core/hub.c	2011-08-16 07:36:25.947316046 +0200
-+++ linux-sh4-2.6.32.16_stm24_0205/drivers/usb/core/hub.c	2011-08-16 07:24:47.494815389 +0200
-@@ -1051,7 +1051,11 @@
+--- a/drivers/usb/core/hub.c.org
++++ b/drivers/usb/core/hub.c
+@@ -1111,7 +1111,11 @@
  				dev_warn(hub_dev,
  					"insufficient power available "
  					"to use all downstream ports\n");
@@ -325,9 +319,9 @@ diff -urN linux-sh4-2.6.32.16_stm24_0205.org/drivers/usb/core/hub.c linux-sh4-2.
  		}
  	} else {	/* Self-powered external hub */
  		/* FIXME: What about battery-powered external hubs that
---- linux-sh4/drivers/stm/stx7100_hispeed.c.orig
-+++ linux-sh4/drivers/stm/stx7100_hispeed.c
-@@ -193,6 +193,12 @@
+--- a/drivers/stm/stx7100_hispeed.c.orig
++++ b/drivers/stm/stx7100_hispeed.c
+@@ -192,6 +192,12 @@
  	 */
  	stx7100_usb_pwr_gpio = stm_pad_gpio_request_output(state, "PWR", 1);
  	BUG_ON(stx7100_usb_pwr_gpio == STM_GPIO_INVALID);
@@ -340,9 +334,8 @@ diff -urN linux-sh4-2.6.32.16_stm24_0205.org/drivers/usb/core/hub.c linux-sh4-2.
  
  	return 0;
  }
-diff -urN linux-sh4-2.6.32.16_stm24_0205.org/drivers/media/dvb/dvb-core/dvb_ca_en50221.c linux-sh4-2.6.32.16_stm24_0205/drivers/media/dvb/dvb-core/dvb_ca_en50221.c
---- linux-sh4-2.6.32.16_stm24_0205.org/drivers/media/dvb/dvb-core/dvb_ca_en50221.c	2011-08-28 17:32:52.000000000 +0200
-+++ linux-sh4-2.6.32.16_stm24_0205/drivers/media/dvb/dvb-core/dvb_ca_en50221.c	2011-08-28 18:33:15.580391981 +0200
+--- a/drivers/media/dvb/dvb-core/dvb_ca_en50221.c.org
++++ b/drivers/media/dvb/dvb-core/dvb_ca_en50221.c
 @@ -2008,13 +2008,13 @@
  		atomic_set(&ca->slot_info[i].camchange_count, 0);
  		ca->slot_info[i].camchange_type = DVB_CA_EN50221_CAMCHANGE_REMOVED;
