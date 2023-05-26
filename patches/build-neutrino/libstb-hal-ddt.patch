@@ -345,7 +345,7 @@
 +	FP_ICON_CAM1 = 0,
 +	FP_ICON_MAX = ICON_MAX
 +#elif defined(BOXMODEL_HS7810A) \
-+ || defined(BOXMODEL_HS7819)
++ ||   defined(BOXMODEL_HS7819)
 +	ICON_COLON = 1, // 01
 +	ICON_PERIOD1,   // 02
 +	ICON_PERIOD2,   // 03
@@ -673,11 +673,11 @@
 +	FP_ICON_TIMESHIFT = 0,
 +	FP_ICON_MAX = ICON_MAX
 +#elif defined(BOXMODEL_IPBOX9900) \
-+ || defined(BOXMODEL_IPBOX99)
++ ||   defined(BOXMODEL_IPBOX99)
  	ICON_STANDBY,
  	ICON_SAT,
  	ICON_REC,
-@@ -220,8 +559,115 @@
+@@ -220,8 +558,189 @@
  	FP_ICON_TV = 0,
  	FP_ICON_MAIL = 0,
  	FP_ICON_BT = 0,
@@ -727,6 +727,80 @@
 +	FP_ICON_DOWNLOAD = 0,
 +	FP_ICON_TIMESHIFT = ICON_TIMESHIFT,
 +	FP_ICON_MAX = ICON_RADIO + 1
++#elif defined(BOXMODEL_HL101) \
++ ||   defined(BOXMODEL_VIP1_V1) \
++ ||   defined(BOXMODEL_VIP1_V2) \
++ ||   defined(BOXMODEL_VIP2)
++	// Note display and icon arrangement is the same on spark7162
++	ICON_REWIND = 1,  // Icon 1
++	ICON_PLAY_STEPBACK,
++	ICON_PLAY,
++	ICON_PLAY_STEP,
++	ICON_FASTFORWARD,
++	ICON_PAUSE,
++	ICON_REC1,
++	ICON_MUTE,
++	ICON_REPEAT,
++	ICON_DOLBY,
++	ICON_CA,
++	ICON_CI,
++	ICON_USB,
++	ICON_DOUBLESCREEN,
++	ICON_REC2,
++	ICON_HDD_A8, // Icon 16
++	ICON_HDD_A7,
++	ICON_HDD_A6,
++	ICON_HDD_A5,
++	ICON_HDD_A4,
++	ICON_HDD_A3,
++	ICON_HDD_FULL,
++	ICON_HDD_A2,
++	ICON_HDD_A1,
++	ICON_MP3,
++	ICON_AC3,
++	ICON_TVMODE,
++	ICON_AUDIO,
++	ICON_ALERT,
++	ICON_HDD_GRID,
++	ICON_CLOCK_PM, // Icon 31
++	ICON_CLOCK_AM,
++	ICON_TIMER,
++	ICON_TIME_COLON,
++	ICON_DOT2,
++	ICON_STANDBY,
++	ICON_TER,
++	ICON_DISK_S3,
++	ICON_DISK_S2,
++	ICON_DISK_S1,
++	ICON_DISK_CIRCLE,
++	ICON_SAT,
++	ICON_TIMESHIFT,
++	ICON_DOT1,
++	ICON_CABLE,
++	ICON_LAST = ICON_CABLE,  // Icon 45
++	FP_ICON_MIN = ICON_REWIND,
++	FP_ICON_USB = ICON_USB,
++	FP_ICON_HD = ICON_DOUBLESCREEN,
++	FP_ICON_HDD = 0,
++	FP_ICON_LOCK = ICON_CA,
++	FP_ICON_BT = 0,
++	FP_ICON_MP3 = ICON_MP3,
++	FP_ICON_MUSIC = 0,
++	FP_ICON_DD = ICON_DOLBY,
++	FP_ICON_MAIL = 0,
++	FP_ICON_MUTE = ICON_MUTE,
++	FP_ICON_PLAY = ICON_PLAY,
++	FP_ICON_PAUSE = ICON_PAUSE,
++	FP_ICON_FF = ICON_FASTFORWARD,
++	FP_ICON_FR = ICON_REWIND,
++	FP_ICON_REC = ICON_REC1,
++	FP_ICON_CLOCK = ICON_TIMER,
++	FP_ICON_TIMESHIFT = ICON_TIMESHIFT,
++	FP_ICON_RADIO = ICON_AUDIO,
++	FP_ICON_TV = ICON_TVMODE,
++	FP_ICON_DOWNLOAD = 0,
++	FP_ICON_CAM1 = ICON_CI,
++	FP_ICON_MAX = ICON_LAST
 +#elif defined(BOXMODEL_HCHS8100) \
 + ||   defined(BOXMODEL_HCHS9000)
 +	ICON_CIRCLE_0 = 1,  // 01
@@ -793,28 +867,12 @@
  	FP_ICON_HD,
  	FP_ICON_HDD,
  	FP_ICON_LOCK,
-@@ -243,49 +688,63 @@
+@@ -243,49 +762,47 @@
  	FP_ICON_RECORD = FP_ICON_REC,
  	FP_ICON_DOWNLOAD,
  	FP_ICON_TIMESHIFT,
 -#endif
 -#if !defined(BOXMODEL_UFS910) && !defined(BOXMODEL_UFS922) && !defined(BOXMODEL_UFS912) && !defined(BOXMODEL_UFS913) && !defined(BOXMODEL_FORTIS_HDBOX)
-+/*#endif
-+#if !defined(BOXMODEL_TF7700) \
-+ && !defined(BOXMODEL_UFS910) \
-+ && !defined(BOXMODEL_UFS922) \
-+ && !defined(BOXMODEL_UFS912) \
-+ && !defined(BOXMODEL_UFS913) \
-+ && !defined(BOXMODEL_FS9000) \
-+ && !defined(BOXMODEL_hs8200) \
-+ && !defined(BOXMODEL_HS8200) \
-+ && !defined(BOXMODEL_HS7110) \
-+ && !defined(BOXMODEL_HS7420) \
-+ && !defined(BOXMODEL_HS7810A) \
-+ && !defined(BOXMODEL_HS7119) \
-+ && !defined(BOXMODEL_HS7429) \
-+ && !defined(BOXMODEL_HS7819)
-+*/
  	FP_ICON_MAX
  #endif
  } fp_icon;
@@ -966,7 +1024,7 @@
  	caps.can_shutdown = 1;
  	caps.has_HDMI = 1;
  	caps.has_SCART = 1;
-@@ -96,105 +96,214 @@
+@@ -96,11 +96,11 @@
  	caps.display_type = HW_DISPLAY_LINE_TEXT;
  	caps.display_xres = 16;
  #endif
@@ -975,109 +1033,23 @@
 -	strcpy(caps.boxvendor, "DUCKBOX");
 -	strcpy(caps.boxname, "ATEVIO7500");
 -	strcpy(caps.boxarch, "STX7105");
--	caps.can_shutdown = 1;
--	caps.has_HDMI = 1;
--	caps.has_SCART = 1;
--//	caps.has_SCART_input = 1;
--	caps.can_cec = 1;
--	caps.has_CI = 2;
--	caps.display_can_set_brightness = 1;
--	caps.display_can_deepstandby = 0;
--	caps.display_has_statusline = 0;
--	caps.display_type = HW_DISPLAY_LINE_TEXT;
--	caps.display_xres = 12;
--#endif
--#if BOXMODEL_FORTIS_HDBOX
--	initialized = 1;
--	strcpy(caps.boxvendor, "DUCKBOX");
--	strcpy(caps.boxname, "HDBOX");
--	strcpy(caps.boxarch, "STX7109");
--	caps.can_shutdown = 1;
--	caps.has_HDMI = 1;
--	caps.has_SCART = 1;
--//	caps.has_SCART_input = 1;
--	caps.can_cec = 0;
--	caps.has_CI = 2;
--	caps.display_can_set_brightness = 1;
--	caps.display_can_deepstandby = 0;
--	caps.display_has_statusline = 0;
--	caps.display_type = HW_DISPLAY_LINE_TEXT;
--	caps.display_xres = 12;
--#endif
--#if BOXMODEL_OCTAGON1008
--	initialized = 1;
--	strcpy(caps.boxvendor, "DUCKBOX");
--	strcpy(caps.boxname, "OCTAGON1008");
--	strcpy(caps.boxarch, "STX7109");
--	caps.can_shutdown = 1;
--	caps.has_HDMI = 1;
--	caps.has_SCART = 1;
--	caps.can_cec = 0;
--	caps.has_CI = 2;
--	caps.display_can_set_brightness = 1;
--	caps.display_can_deepstandby = 0;
--	caps.display_has_statusline = 0;
--	caps.display_type = HW_DISPLAY_LINE_TEXT;
--	caps.display_xres = 8;
--#endif
--#if BOXMODEL_CUBEREVO
--	initialized = 1;
--	strcpy(caps.boxvendor, "DUCKBOX");
--	strcpy(caps.boxname, "CUBEREVO");
--	strcpy(caps.boxarch, "STX7109");
--	caps.can_shutdown = 1;
--	caps.display_can_set_brightness = 0;
--	caps.display_can_deepstandby = 0;
--	caps.display_has_statusline = 0;
--	caps.has_HDMI = 1;
--	caps.has_SCART = 1;
--	caps.can_cec = 0;
--	caps.has_CI = 2;
--#endif
--#if BOXMODEL_CUBEREVO_MINI
--	initialized = 1;
--	strcpy(caps.boxvendor, "DUCKBOX");
--	strcpy(caps.boxname, "CUBEREVO-MINI");
--	strcpy(caps.boxarch, "STX7109");
--	caps.can_shutdown = 1;
--	caps.display_can_set_brightness = 0;
--	caps.display_can_deepstandby = 0;
--	caps.display_has_statusline = 0;
--	caps.has_HDMI = 1;
--	caps.has_SCART = 1;
--	caps.can_cec = 0;
--	caps.has_CI = 2;
--#endif
--#if BOXMODEL_CUBEREVO_MINI2
--	initialized = 1;
--	strcpy(caps.boxvendor, "DUCKBOX");
--	strcpy(caps.boxname, "CUBEREVO-MINI2");
--	strcpy(caps.boxarch, "STX7109");
--	caps.can_shutdown = 1;
--	caps.has_HDMI = 1;
--	caps.has_SCART = 1;
--	caps.can_cec = 0;
--	caps.has_CI = 2;
--	caps.display_can_set_brightness = 1;
--	caps.display_can_deepstandby = 0;
--	caps.display_has_statusline = 0;
 +#if defined(BOXMODEL_HS8200)
 +	initialized = 1;
 +	strcpy(caps.boxvendor, "Fortis");
 +	strcpy(caps.boxname, "HS8200");
 +	strcpy(caps.boxarch, "STx7105");
-+	caps.can_shutdown = 1;
-+	caps.has_HDMI = 1;
-+	caps.has_SCART = 1;
-+//	caps.has_SCART_input = 1;
-+	caps.can_cec = 1;
-+	caps.has_CI = 2;
-+	caps.display_can_set_brightness = 1;
-+	caps.display_can_deepstandby = 0;
-+	caps.display_has_statusline = 0;
-+	caps.display_type = HW_DISPLAY_LINE_TEXT;
-+	caps.display_xres = 12;
-+#endif
+ 	caps.can_shutdown = 1;
+ 	caps.has_HDMI = 1;
+ 	caps.has_SCART = 1;
+@@ -113,11 +113,117 @@
+ 	caps.display_type = HW_DISPLAY_LINE_TEXT;
+ 	caps.display_xres = 12;
+ #endif
+-#if BOXMODEL_FORTIS_HDBOX
+-	initialized = 1;
+-	strcpy(caps.boxvendor, "DUCKBOX");
+-	strcpy(caps.boxname, "HDBOX");
+-	strcpy(caps.boxarch, "STX7109");
 +#if defined(BOXMODEL_HS7110)
 +	initialized = 1;
 +	strcpy(caps.boxvendor, "Fortis");
@@ -1189,18 +1161,70 @@
 +	strcpy(caps.boxvendor, "Fortis");
 +	strcpy(caps.boxname, "FS9000/9200");
 +	strcpy(caps.boxarch, "STi7109");
-+	caps.can_shutdown = 1;
-+	caps.has_HDMI = 1;
-+	caps.has_SCART = 1;
-+//	caps.has_SCART_input = 1;
-+	caps.can_cec = 0;
-+	caps.has_CI = 2;
-+	caps.display_can_set_brightness = 1;
-+	caps.display_can_deepstandby = 0;
-+	caps.display_has_statusline = 0;
-+	caps.display_type = HW_DISPLAY_LINE_TEXT;
-+	caps.display_xres = 12;
-+#endif
+ 	caps.can_shutdown = 1;
+ 	caps.has_HDMI = 1;
+ 	caps.has_SCART = 1;
+@@ -130,71 +236,74 @@
+ 	caps.display_type = HW_DISPLAY_LINE_TEXT;
+ 	caps.display_xres = 12;
+ #endif
+-#if BOXMODEL_OCTAGON1008
+-	initialized = 1;
+-	strcpy(caps.boxvendor, "DUCKBOX");
+-	strcpy(caps.boxname, "OCTAGON1008");
+-	strcpy(caps.boxarch, "STX7109");
+-	caps.can_shutdown = 1;
+-	caps.has_HDMI = 1;
+-	caps.has_SCART = 1;
+-	caps.can_cec = 0;
+-	caps.has_CI = 2;
+-	caps.display_can_set_brightness = 1;
+-	caps.display_can_deepstandby = 0;
+-	caps.display_has_statusline = 0;
+-	caps.display_type = HW_DISPLAY_LINE_TEXT;
+-	caps.display_xres = 8;
+-#endif
+-#if BOXMODEL_CUBEREVO
+-	initialized = 1;
+-	strcpy(caps.boxvendor, "DUCKBOX");
+-	strcpy(caps.boxname, "CUBEREVO");
+-	strcpy(caps.boxarch, "STX7109");
+-	caps.can_shutdown = 1;
+-	caps.display_can_set_brightness = 0;
+-	caps.display_can_deepstandby = 0;
+-	caps.display_has_statusline = 0;
+-	caps.has_HDMI = 1;
+-	caps.has_SCART = 1;
+-	caps.can_cec = 0;
+-	caps.has_CI = 2;
+-#endif
+-#if BOXMODEL_CUBEREVO_MINI
+-	initialized = 1;
+-	strcpy(caps.boxvendor, "DUCKBOX");
+-	strcpy(caps.boxname, "CUBEREVO-MINI");
+-	strcpy(caps.boxarch, "STX7109");
+-	caps.can_shutdown = 1;
+-	caps.display_can_set_brightness = 0;
+-	caps.display_can_deepstandby = 0;
+-	caps.display_has_statusline = 0;
+-	caps.has_HDMI = 1;
+-	caps.has_SCART = 1;
+-	caps.can_cec = 0;
+-	caps.has_CI = 2;
+-#endif
+-#if BOXMODEL_CUBEREVO_MINI2
+-	initialized = 1;
+-	strcpy(caps.boxvendor, "DUCKBOX");
+-	strcpy(caps.boxname, "CUBEREVO-MINI2");
+-	strcpy(caps.boxarch, "STX7109");
+-	caps.can_shutdown = 1;
+-	caps.has_HDMI = 1;
+-	caps.has_SCART = 1;
+-	caps.can_cec = 0;
+-	caps.has_CI = 2;
+-	caps.display_can_set_brightness = 1;
+-	caps.display_can_deepstandby = 0;
+-	caps.display_has_statusline = 0;
 +#if defined(BOXMODEL_HS9510)
 +	initialized = 1;
 +	strcpy(caps.boxvendor, "Fortis");
@@ -1298,7 +1322,7 @@
  	caps.can_shutdown = 1;
  	caps.display_can_set_brightness = 0;
  	caps.display_can_deepstandby = 0;
-@@ -217,8 +328,10 @@
+@@ -217,26 +328,30 @@
  	caps.has_SCART = 1;
  	caps.can_cec = 0;
  	caps.has_CI = 0;
@@ -1311,12 +1335,26 @@
  	initialized = 1;
  	strcpy(caps.boxvendor, "DUCKBOX");
  	strcpy(caps.boxname, "CUBEREVO-3000HD");
-@@ -231,8 +344,10 @@
- 	caps.has_SCART = 1;
- 	caps.can_cec = 0;
- 	caps.has_CI = 2;
+-	strcpy(caps.boxarch, "STX7109");
+-	caps.can_shutdown = 1;
+-	caps.display_can_set_brightness = 0;
+-	caps.display_can_deepstandby = 0;
+-	caps.display_has_statusline = 0;
+-	caps.has_HDMI = 1;
+-	caps.has_SCART = 1;
+-	caps.can_cec = 0;
+-	caps.has_CI = 2;
 -#endif
 -#if BOXMODEL_IPBOX9900
++	strcpy(caps.boxarch, "STi7109");
++	caps.can_shutdown = 1;
++	caps.display_can_set_brightness = 0;
++	caps.display_can_deepstandby = 0;
++	caps.display_has_statusline = 0;
++	caps.has_HDMI = 1;
++	caps.has_SCART = 1;
++	caps.can_cec = 0;
++	caps.has_CI = 2;
 +	caps.display_type = HW_DISPLAY_LINE_TEXT;
 +	caps.display_xres = 14;
 +#endif
@@ -1324,7 +1362,12 @@
  	initialized = 1;
  	strcpy(caps.boxvendor, "DUCKBOX");
  	strcpy(caps.boxname, "IPBOX9900");
-@@ -245,8 +360,10 @@
+-	strcpy(caps.boxarch, "STX7109");
++	strcpy(caps.boxarch, "STi7109");
+ 	caps.can_shutdown = 1;
+ 	caps.display_can_set_brightness = 0;
+ 	caps.display_can_deepstandby = 0;
+@@ -245,12 +360,14 @@
  	caps.has_SCART = 2;
  	caps.can_cec = 0;
  	caps.has_CI = 2;
@@ -1337,7 +1380,12 @@
  	initialized = 1;
  	strcpy(caps.boxvendor, "DUCKBOX");
  	strcpy(caps.boxname, "IPBOX99");
-@@ -259,8 +376,10 @@
+-	strcpy(caps.boxarch, "STX7109");
++	strcpy(caps.boxarch, "STi7109");
+ 	caps.can_shutdown = 1;
+ 	caps.display_can_set_brightness = 0;
+ 	caps.display_can_deepstandby = 0;
+@@ -259,12 +376,14 @@
  	caps.has_SCART = 1;
  	caps.can_cec = 0;
  	caps.has_CI = 0;
@@ -1350,23 +1398,93 @@
  	initialized = 1;
  	strcpy(caps.boxvendor, "DUCKBOX");
  	strcpy(caps.boxname, "IPBOX55");
-@@ -273,8 +392,10 @@
+-	strcpy(caps.boxarch, "STX7109");
++	strcpy(caps.boxarch, "STi7109");
+ 	caps.can_shutdown = 1;
+ 	caps.display_can_set_brightness = 0;
+ 	caps.display_can_deepstandby = 0;
+@@ -273,20 +392,136 @@
  	caps.has_SCART = 1;
  	caps.can_cec = 0;
  	caps.has_CI = 0;
 -#endif
 -#if BOXMODEL_TF7700
+-	initialized = 1;
+-	strcpy(caps.boxvendor, "DUCKBOX");
+-	strcpy(caps.boxname, "TF7700");
+-	strcpy(caps.boxarch, "STX7109");
+-	caps.can_shutdown = 1;
+-	caps.display_can_set_brightness = 0;
+-	caps.display_can_deepstandby = 0;
+-	caps.display_has_statusline = 0;
+-	caps.has_HDMI = 1;
+-	caps.has_SCART = 1;
+-	caps.can_cec = 0;
+-	caps.has_CI = 2;
 +	caps.display_type = HW_DISPLAY_LINE_TEXT;
 +	caps.display_xres = 4;
 +#endif
 +#if defined(BOXMODEL_TF7700)
- 	initialized = 1;
- 	strcpy(caps.boxvendor, "DUCKBOX");
- 	strcpy(caps.boxname, "TF7700");
-@@ -287,6 +408,72 @@
- 	caps.has_SCART = 1;
- 	caps.can_cec = 0;
- 	caps.has_CI = 2;
++	initialized = 1;
++	strcpy(caps.boxvendor, "Topfield");
++	strcpy(caps.boxname, "TF77X0HDPVR");
++	strcpy(caps.boxarch, "STi7109");
++	caps.can_shutdown = 1;
++	caps.display_can_set_brightness = 0;
++	caps.display_can_deepstandby = 0;
++	caps.display_has_statusline = 0;
++	caps.has_HDMI = 1;
++	caps.has_SCART = 1;
++	caps.can_cec = 0;
++	caps.has_CI = 2;
++	caps.display_type = HW_DISPLAY_LINE_TEXT;
++	caps.display_xres = 8;
++#endif
++#if defined(BOXMODEL_VIP1_V1)
++	initialized = 1;
++	strcpy(caps.boxvendor, "Edision");
++	strcpy(caps.boxname, "argus VIP (V1)");
++	strcpy(caps.boxarch, "STi7109");
++	caps.can_shutdown = 0;
++	caps.display_can_set_brightness = 1;
++	caps.display_can_deepstandby = 0;
++	caps.display_has_statusline = 0;
++	caps.has_HDMI = 1;
++	caps.has_SCART = 1;
++	caps.can_cec = 0;
++	caps.has_CI = 2;
++	caps.display_type = HW_DISPLAY_LINE_TEXT;
++	caps.display_xres = 8;
++#endif
++#if defined(BOXMODEL_VIP1_V2)
++	initialized = 1;
++	strcpy(caps.boxvendor, "Edision");
++	strcpy(caps.boxname, "argus VIP (V2)");
++	strcpy(caps.boxarch, "STi7109");
++	caps.can_shutdown = 0;
++	caps.display_can_set_brightness = 1;
++	caps.display_can_deepstandby = 0;
++	caps.display_has_statusline = 0;
++	caps.has_HDMI = 1;
++	caps.has_SCART = 1;
++	caps.can_cec = 0;
++	caps.has_CI = 2;
++	caps.display_type = HW_DISPLAY_LINE_TEXT;
++	caps.display_xres = 8;
++#endif
++#if defined(BOXMODEL_VIP2)
++	initialized = 1;
++	strcpy(caps.boxvendor, "Edision");
++	strcpy(caps.boxname, "argus VIP2");
++	strcpy(caps.boxarch, "STi7109");
++	caps.can_shutdown = 0;
++	caps.display_can_set_brightness = 1;
++	caps.display_can_deepstandby = 0;
++	caps.display_has_statusline = 0;
++	caps.has_HDMI = 1;
++	caps.has_SCART = 1;
++	caps.can_cec = 0;
++	caps.has_CI = 2;
 +	caps.display_type = HW_DISPLAY_LINE_TEXT;
 +	caps.display_xres = 8;
 +#endif
@@ -1405,7 +1523,7 @@
 +#if defined(BOXMODEL_HCHS8100)
 +	initialized = 1;
 +	strcpy(caps.boxvendor, "Homecast");
-+	strcpy(caps.boxname, "Homecast HS8100 CI series");
++	strcpy(caps.boxname, "HS8100 CI series");
 +	strcpy(caps.boxarch, "STi7109");
 +	caps.can_shutdown = 1;
 +	caps.display_can_set_brightness = 1;
@@ -1421,7 +1539,7 @@
 +#if defined(BOXMODEL_HCHS9000)
 +	initialized = 1;
 +	strcpy(caps.boxvendor, "Homecast");
-+	strcpy(caps.boxname, "Homecast HS9000 CI series");
++	strcpy(caps.boxname, "HS9000 CI series");
 +	strcpy(caps.boxarch, "STi7109");
 +	caps.can_shutdown = 1;
 +	caps.has_HDMI = 1;
