@@ -10,15 +10,6 @@ nod   /dev/fb2        0744 0 0 c  29   2
 nod   /dev/fpc        0755 0 0 c  62   0
 nod   /dev/loop0      0644 0 0 b   7   0
 nod   /dev/null       0644 0 0 c   1   3
-nod   /dev/mtd0       0664 0 0 c  90   0
-nod   /dev/mtd1       0664 0 0 c  90   1
-nod   /dev/mtd2       0664 0 0 c  90   2
-nod   /dev/mtd3       0664 0 0 c  90   3
-nod   /dev/mtd4       0664 0 0 c  90   4
-nod   /dev/mtd5       0664 0 0 c  90   5
-nod   /dev/mtd6       0664 0 0 c  90   6
-nod   /dev/mtd7       0777 0 0 c  90   7
-nod   /dev/mtd8       0777 0 0 c  90   8
 nod   /dev/mtdblock0  0664 0 0 b  31   0
 nod   /dev/mtdblock1  0664 0 0 b  31   1
 nod   /dev/mtdblock2  0664 0 0 b  31   2
@@ -27,7 +18,6 @@ nod   /dev/mtdblock4  0664 0 0 b  31   4
 nod   /dev/mtdblock5  0664 0 0 b  31   5
 nod   /dev/mtdblock6  0664 0 0 b  31   6
 nod   /dev/mtdblock7  0664 0 0 b  31   7
-nod   /dev/mtdblock8  0664 0 0 b  31   8
 nod   /dev/ram0       0755 0 0 b   1   1
 nod   /dev/rc         0755 0 0 c 147   1
 nod   /dev/sda        0744 0 0 b   8   0
@@ -40,11 +30,11 @@ nod   /dev/sda6       0744 0 0 b   8   6
 nod   /dev/sda7       0744 0 0 b   8   7
 nod   /dev/sda8       0744 0 0 b   8   8
 nod   /dev/sda9       0744 0 0 b   8   9
-nod   /dev/sdb        0744 0 0 b   8  16
-nod   /dev/sdb1       0744 0 0 b   8  17
-nod   /dev/sdb2       0744 0 0 b   8  18
-nod   /dev/sdb3       0744 0 0 b   8  19
-nod   /dev/sdb4       0744 0 0 b   8  20
+nod   /dev/sdb        0744 0 0 b   8   16
+nod   /dev/sdb1       0744 0 0 b   8   17
+nod   /dev/sdb2       0744 0 0 b   8   18
+nod   /dev/sdb3       0744 0 0 b   8   19
+nod   /dev/sdb4       0744 0 0 b   8   20
 nod   /dev/tty0       0700 0 0 c   4   0
 nod   /dev/tty1       0700 0 0 c   4   1
 nod   /dev/tty2       0700 0 0 c   4   2
@@ -98,14 +88,12 @@ slink /bin/tar                         /bin/busybox                             
 file  /bin/fp_control                  ../../tufsbox/release/bin/fp_control                0755 0 0
 
 dir   /etc                                                                                 0777 0 0
-dir   /etc/inittab.d                                                                       0777 0 0
-file  /etc/inittab                     ../../ufsinstaller/inittab                          0755 0 0
-file  /etc/fw_env.config               ../../tufsbox/release/etc/fw_env.config             0755 0 0
+file  /etc/inittab                     ../../installers/ufs922/inittab                     0755 0 0
 file  /etc/vdstandby.cfg               ../../tufsbox/release/etc/vdstandby.cfg             0755 0 0
 
 dir   /etc/init.d                                                                          0777 0 0
 file  /etc/init.d/rc                   ../../tufsbox/release/etc/init.d/rc                 0755 0 0
-file  /etc/init.d/rcS                  ../../ufsinstaller/ufs910_rcS                       0755 0 0
+file  /etc/init.d/rcS                  ../../installers/ufs922/ufs922_rcS                  0755 0 0
 
 dir   /etc/rc.d                                                                            0777 0 0
 dir   /etc/rc.d/rc0.d                                                                      0777 0 0
@@ -118,12 +106,12 @@ dir   /etc/rc.d/rc6.d                                                           
 dir   /etc/rc.d/rcS.d                                                                      0777 0 0
 
 dir   /deploy                                                                              0777 0 0
-file  /deploy/deploy.sh                ../../ufsinstaller/ufs910_deploy.sh                 0755 0 0
-file  /deploy/go_back.sh               ../../ufsinstaller/go_back.sh                       0755 0 0
+file  /deploy/deploy.sh                ../../installers/ufs922/ufs922_deploy.sh            0755 0 0
+file  /deploy/go_back.sh               ../../installers/ufs922/go_back.sh                  0755 0 0
 
 dir   /drvko                                                                               0777 0 0
 file  /drvko/e2_proc.ko                ../../tufsbox/release/lib/modules/e2_proc.ko        0755 0 0
-file  /drvko/ufs910_fp.ko              ../../tufsbox/release/lib/modules/ufs910_fp.ko      0755 0 0
+file  /drvko/kathrein_micom.ko         ../../tufsbox/release/lib/modules/kathrein_micom.ko 0755 0 0
 
 dir   /lib                                                                                 0777 0 0
 file  /lib/libc.so.6                   ../../tufsbox/release/lib/libc.so.6                 0755 0 0             
@@ -177,6 +165,4 @@ dir   /sys                                                                      
 dir   /usr                                                                                 0777 0 0
 dir   /usr/bin                                                                             0777 0 0
 dir   /usr/sbin                                                                            0777 0 0
-file  /usr/sbin/fw_printenv            ../../tufsbox/release/usr/sbin/fw_printenv          0755 0 0
-slink /usr/sbin/fw_setenv              /usr/sbin/fw_printenv                               0755 0 0
 

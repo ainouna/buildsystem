@@ -1,18 +1,18 @@
-UFSINSTALLER_DIR=.
+UFS922INSTALLER_DIR=.
 
 all:
-	$(SILENT)cp $(KERNEL_DIR)/arch/sh/boot/uImage.gz $(UFSINSTALLER_DIR)/uImage.gz.org
+	$(SILENT)cp $(KERNEL_DIR)/arch/sh/boot/uImage.gz $(UFS922INSTALLER_DIR)/uImage.gz.org
 	$(SILENT)if [ -e $(KERNEL_DIR)/arch/sh/boot/uImage ]; then \
 		rm $(KERNEL_DIR)/arch/sh/boot/uImage; \
 	fi
-	$(SILENT)if [ -e $(UFSINSTALLER_DIR)/uImage ]; then \
-		rm $(UFSINSTALLER_DIR)/uImage; \
+	$(SILENT)if [ -e $(UFS922INSTALLER_DIR)/uImage ]; then \
+		rm $(UFS922INSTALLER_DIR)/uImage; \
 	fi
-	$(SILENT)cp $(KERNEL_DIR)/.config $(UFSINSTALLER_DIR)/.config.org
+	$(SILENT)cp $(KERNEL_DIR)/.config $(UFS922INSTALLER_DIR)/.config.org
 ifeq ($(BS_GCC_VER), $(filter $(BS_GCC_VER), 4.6.3 4.8.4))
-	$(SILENT)cp $(UFSINSTALLER_DIR)/$(BOXTYPE)_initramfs_list $(KERNEL_DIR)/initramfs_list
+	$(SILENT)cp $(UFS922INSTALLER_DIR)/$(BOXTYPE)_initramfs_list $(KERNEL_DIR)/initramfs_list
 else
-	$(SILENT)cp $(UFSINSTALLER_DIR)/$(BOXTYPE)_initramfs_list_gcc-4.9.4 $(KERNEL_DIR)/initramfs_list
+	$(SILENT)cp $(UFS922INSTALLER_DIR)/$(BOXTYPE)_initramfs_list_gcc-4.9.4 $(KERNEL_DIR)/initramfs_list
 endif
 	$(SILENT)sed -i 's/# CONFIG_INITRAMFS_SOURCE is not set/CONFIG_INITRAMFS_SOURCE="initramfs_list"/g' $(KERNEL_DIR)/.config
 	$(SILENT)sed -i 's/CONFIG_INITRAMFS_SOURCE=""/CONFIG_INITRAMFS_SOURCE="initramfs_list"/g' $(KERNEL_DIR)/.config
@@ -64,14 +64,14 @@ endif
 	$(SILENT)if [ `grep -x -c "# CONFIG_INITRAMFS_COMPRESSION_LZMA is not set" $(KERNEL_DIR)/.config` == 0 ]; then \
 		echo "# CONFIG_INITRAMFS_COMPRESSION_LZMA is not set" >> $(KERNEL_DIR)/.config; \
 	fi
-	@export PATH=$(HOST_DIR)/bin:$(PATH) && \
-	$(MAKE) -C $(BASE_DIR) ufskernel
+	@export PATH=$(HOST_DIR)/bin:$(PATH); \
+	$(MAKE) -C $(BASE_DIR) ufs922kernel
 	$(SILENT)rm $(KERNEL_DIR)/initramfs_list
-	$(SILENT)cp $(KERNEL_DIR)/.config $(UFSINSTALLER_DIR)/.config.inst
+	$(SILENT)cp $(KERNEL_DIR)/.config $(UFS922INSTALLER_DIR)/.config.inst
 	$(SILENT)rm $(KERNEL_DIR)/.config
-	$(SILENT)mv $(UFSINSTALLER_DIR)/.config.org $(KERNEL_DIR)/.config
-	$(SILENT)mv $(KERNEL_DIR)/arch/sh/boot/uImage.gz $(UFSINSTALLER_DIR)/uImage
-	$(SILENT)mv $(UFSINSTALLER_DIR)/uImage.gz.org $(KERNEL_DIR)/arch/sh/boot/uImage.gz
+	$(SILENT)mv $(UFS922INSTALLER_DIR)/.config.org $(KERNEL_DIR)/.config
+	$(SILENT)mv $(KERNEL_DIR)/arch/sh/boot/uImage.gz $(UFS922INSTALLER_DIR)/uImage
+	$(SILENT)mv $(UFS922INSTALLER_DIR)/uImage.gz.org $(KERNEL_DIR)/arch/sh/boot/uImage.gz
 
 clean:
 	$(SILENT)rm -f uImage
@@ -79,5 +79,4 @@ clean:
 
 .c.o:
 	gcc -c $< -Wall
-
 
