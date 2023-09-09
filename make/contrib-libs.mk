@@ -1035,7 +1035,7 @@ $(D)/ca-bundle: $(ARCHIVE)/cacert.pem
 #
 # libcurl
 #
-LIBCURL_VER = 8.1.2
+LIBCURL_VER = 8.2.0
 LIBCURL_SOURCE = curl-$(LIBCURL_VER).tar.bz2
 LIBCURL_PATCH = libcurl-$(LIBCURL_VER).patch
 
@@ -2264,6 +2264,28 @@ $(D)/libdvbsi: $(D)/bootstrap $(ARCHIVE)/$(LIBDVBSI_SOURCE)
 	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/libdvbsi++.pc
 	$(REWRITE_LIBTOOL)/libdvbsi++.la
 	$(REMOVE)/libdvbsi-git-$(LIBDVBSI_VER)
+	$(TOUCH)
+
+#
+# libdvbcsa
+#
+$(D)/libdvbcsa: $(D)/bootstrap $(ARCHIVE)/$(LIBDVBCSA_SOURCE)
+	$(START_BUILD)
+	$(REMOVE)/libdvbcsa
+	$(SET) -e; if [ -d $(ARCHIVE)/libdvbcsa.git ]; \
+		then cd $(ARCHIVE)/libdvbcsa.git; git pull; \
+		else cd $(ARCHIVE); git clone https://code.videolan.org/videolan/libdvbcsa.git libdvbcsa.git; \
+		fi
+	$(SILENT)cp -ra $(ARCHIVE)/libdvbcsa.git $(BUILD_TMP)/libdvbcsa
+	$(CH_DIR)/libdvbcsa; \
+		autoreconf -fi $(SILENT_OPT); \
+		$(CONFIGURE) \
+			--prefix=/usr \
+		; \
+		$(MAKE); \
+		$(MAKE) install DESTDIR=$(TARGET_DIR)
+	$(REWRITE_LIBTOOL)/libdvbcsa.la
+	$(REMOVE)/libdvbcsa
 	$(TOUCH)
 
 #
