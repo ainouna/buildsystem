@@ -1883,7 +1883,7 @@ $(D)/libroxml: $(D)/bootstrap $(ARCHIVE)/$(LIBROXML_SOURCE)
 #
 # pugixml
 #
-PUGIXML_VER = 521b2cd
+PUGIXML_VER = 1a9a41b
 PUGIXML_URL = https://github.com/zeux/pugixml.git
 PUGIXML_PATCH = pugixml-$(PUGIXML_VER)-config.patch
 
