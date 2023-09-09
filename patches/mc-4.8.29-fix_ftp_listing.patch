@@ -1,0 +1,11 @@
+--- a/src/vfs/ftpfs/ftpfs_parse_ls.c
++++ b/src/vfs/ftpfs/ftpfs_parse_ls.c
+@@ -425,8 +425,6 @@
+
+     if (strncasecmp (line, "Status of ", 10) == 0)
+         return FALSE;           /* STAT output. */
+-    if (strchr ("bcpsD", line[0]) != NULL)      /* block, char, pipe, socket, Door. */
+-        return FALSE;
+
+     ret = parse_ls_line (line, s, filename, linkname);
+     if (!ret)
