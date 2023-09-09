@@ -1721,12 +1721,14 @@ $(D)/flac: $(D)/bootstrap $(ARCHIVE)/$(FLAC_SOURCE)
 #
 # libxml2
 #
-LIBXML2_VER = 2.9.12
-LIBXML2_SOURCE = libxml2-$(LIBXML2_VER).tar.gz
+LIBXML2_MAJOR = 2.11
+LIBXML2_MINOR = 4
+LIBXML2_VER = $(LIBXML2_MAJOR).$(LIBXML2_MINOR)
+LIBXML2_SOURCE = libxml2-$(LIBXML2_VER).tar.xz
 LIBXML2_PATCH = libxml2-$(LIBXML2_VER).patch
 
 $(ARCHIVE)/$(LIBXML2_SOURCE):
-	$(WGET) ftp://xmlsoft.org/libxml2/$(LIBXML2_SOURCE)
+	$(WGET) https://download.gnome.org/sources/libxml2/$(LIBXML2_MAJOR)/$(LIBXML2_SOURCE)
 
 ifeq ($(IMAGE), $(filter $(IMAGE), enigma2 enigma2-wlandriver))
 LIBXML2_CONF_OPTS  = --with-python=$(HOST_DIR)
@@ -1752,7 +1754,6 @@ $(D)/libxml2: $(D)/bootstrap $(D)/zlib $(ARCHIVE)/$(LIBXML2_SOURCE)
 	$(REMOVE)/libxml2-$(LIBXML2_VER).tar.gz
 	$(UNTAR)/$(LIBXML2_SOURCE)
 	$(CH_DIR)/libxml2-$(LIBXML2_VER); \
-		autoreconf -fi $(SILENT_OPT); \
 		$(call apply_patches, $(LIBXML2_PATCH)); \
 		autoreconf -fi $(SILENT_OPT); \
 		$(CONFIGURE) \
@@ -1765,7 +1766,6 @@ $(D)/libxml2: $(D)/bootstrap $(D)/zlib $(ARCHIVE)/$(LIBXML2_SOURCE)
 			--without-catalog \
 			--without-debug \
 			--without-legacy \
-			--without-docbook \
 			--without-mem-debug \
 			--without-lzma \
 			--with-zlib \
