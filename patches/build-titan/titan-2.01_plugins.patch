@@ -325,7 +325,7 @@
  		return ret;
 --- a/player/tithek/tithek.h.orig
 +++ b/player/tithek/tithek.h
-@@ -809,6 +809,7 @@
+@@ -808,6 +808,7 @@
  	char* tithekfile = NULL;
  	char* tithekpic = NULL;
  	int localfile = 0;
@@ -333,7 +333,7 @@
  
  //	tithekfile = tithekdownload(titheklink);
  	if(!ostrncmp("http://", titheklink, 7))
-@@ -824,7 +825,7 @@
+@@ -823,7 +824,7 @@
  	freetithek();
  
  //	if(readtithek(tithekfile) != 0) return 1;
@@ -342,7 +342,7 @@
  
  	struct tithek* titheknode = tithek;
  
-@@ -2284,6 +2285,9 @@
+@@ -2301,6 +2302,9 @@
  void screentithekplay(char* titheklink, char* title, int first)
  {
  	int savevol = 0;
@@ -352,7 +352,7 @@
  	if(!file_exist("/mnt/swapextensions/player"))
  		mkdir("/mnt/swapextensions/player", 0777);
  
-@@ -3288,8 +3292,8 @@
+@@ -3261,8 +3265,8 @@
  //				if(showinfo(listbox, ((struct tithek*)listbox->select->handle)->title, ((struct tithek*)listbox->select->handle)->link, ((struct tithek*)listbox->select->handle)->pic, ((struct tithek*)listbox->select->handle)->localname, ((struct tithek*)listbox->select->handle)->menutitle, ((struct tithek*)listbox->select->handle)->description, ((struct tithek*)listbox->select->handle)->flag) == 0)
  //					if(screenlistbox(grid, listbox, countlabel, title, titheklink, &pagecount, &tithekexit, &oaktpage, &oaktline, &ogridcol, 0, 0) == 0) break;
  
@@ -365,9 +365,9 @@
  				addconfiginttmp("tithek_description", 1);
 --- a/player/tithek/tithek_global.h.orig
 +++ b/player/tithek/tithek_global.h
-@@ -1553,7 +1553,7 @@
+@@ -1760,7 +1760,7 @@
  
- int localparser_search_file(char* localparser, char* filename)
+ char* localparser_search_file(char* localparser, char* filename)
  {
 -	char* tmpstr = NULL, *menu = NULL, *search = NULL, *cmd = NULL, *link = NULL;
 +	char* tmpstr = NULL, *search = NULL, *cmd = NULL, *link = NULL;

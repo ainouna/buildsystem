@@ -1,6 +1,8 @@
 #
 # titan
 #
+TITAN_VER = 2.01
+
 TITAN_DEPS     = $(D)/bootstrap
 TITAN_DEPS    += $(KERNEL)
 TITAN_DEPS    += $(D)/libopenthreads
@@ -60,6 +62,7 @@ T_CONFIG_OPTS +=$(LOCAL_TITAN_BUILD_OPTIONS)
 
 T_CPPFLAGS    += -DSH4
 T_CPPFLAGS    += -DSH4NEW
+T_CPPFLAGS    += -DDDTBUILD
 T_CPPFLAGS    += -DDVDPLAYER 
 T_CPPFLAGS    += -Wno-unused-but-set-variable
 T_CPPFLAGS    += -I$(DRIVER_DIR)/include
@@ -68,6 +71,7 @@ T_CPPFLAGS    += -I$(TARGET_DIR)/usr/include/freetype2
 T_CPPFLAGS    += -I$(TARGET_DIR)/usr/include/openssl
 T_CPPFLAGS    += -I$(TARGET_DIR)/usr/include/libpng16
 T_CPPFLAGS    += -I$(TARGET_DIR)/usr/include/dreamdvd
+T_CPPFLAGS    += -I$(TARGET_DIR)/usr/include/libipkg
 T_CPPFLAGS    += -I$(KERNEL_DIR)/include
 T_CPPFLAGS    += -I$(DRIVER_DIR)/bpamem
 T_CPPFLAGS    += -I$(TOOLS_DIR)
@@ -145,11 +149,11 @@ yaud-titan-plugins: yaud-none $(D)/titan $(D)/titan-plugins $(D)/titan_release
 # titan
 #
 REPO_TITAN=http://sbnc.dyndns.tv/svn/titan/
-TITAN_PATCH  = build-titan/titan.patch
-TITAN_PATCH += build-titan/titan_model.patch
-TITAN_PATCH += build-titan/titan_icon.patch
+TITAN_PATCH  = build-titan/titan-$(TITAN_VER).patch
+TITAN_PATCH += build-titan/titan-$(TITAN_VER)_model.patch
+TITAN_PATCH += build-titan/titan-$(TITAN_VER)_icon.patch
 #ifeq ($(MEDIAFW), $(filter $(MEDIAFW), eplayer3 gst-explayer3))
-#TITAN_PATCH += build-titan/titan_exteplayer3.patch
+#TITAN_PATCH += build-titan/titan-$(TITAN_VER)_exteplayer3.patch
 #endif
 
 $(D)/titan.do_prepare: $(TITAN_DEPS)
@@ -224,7 +228,7 @@ $(D)/titan:  $(D)/titan-libipkg $(D)/titan-libdreamdvd $(D)/titan.do_compile
 #
 # titan-plugins
 #
-TITAN_PLUGINS_PATCH = build-titan/titan_plugins.patch
+TITAN_PLUGINS_PATCH = build-titan/titan-$(TITAN_VER)_plugins.patch
 $(SOURCE_DIR)/titan/plugins/config.status: $(D)/titan.do_prepare
 	$(SILENT)cd $(SOURCE_DIR)/titan/plugins; \
 		echo "Configuring titan-plugins..."; \

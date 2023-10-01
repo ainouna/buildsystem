@@ -5,7 +5,7 @@
  	musicdat.act = 0;
  	
 -	if(checkbox("ATEMIO7600") == 1) delconfig("fastzap");
-+	if(checkbox("HS8200") == 1) delconfig("fastzap");
++	if (checkbox("HS8200") == 1) delconfig("fastzap");
  	if(status.filelistselectcol == 0) status.filelistselectcol = status.listboxselectcol;
  	
  	status.bgpic = getskinconfig("bgpic", NULL);
@@ -64,7 +64,7 @@
  	int aktplayerbuffersize = getconfigint("playerbuffersize", NULL);
 --- a/titan/adjust.h.org
 +++ b/titan/adjust.h
-@@ -89,7 +89,7 @@
+@@ -96,7 +96,7 @@
  	addchoicebox(nozapclear, "1", _("yes"));
  	setchoiceboxselection(nozapclear, getconfig("nozapclear", NULL));
  
@@ -73,7 +73,7 @@
  		fastzap->hidden = YES;
  	else
  		fastzap->hidden = NO;
-@@ -466,12 +466,12 @@
+@@ -497,12 +497,12 @@
  		emucontrol->hidden = YES;
  	else
  		emucontrol->hidden = NO;
@@ -88,19 +88,19 @@
  	{
  		sataswitch->hidden = NO;
  		addchoicebox(sataswitch, "0", _("extern"));
-@@ -590,7 +590,7 @@
- 			status.crosscontrol = getconfigint("crosscontrol", NULL);
- 			addconfigscreencheck("emucontrol", emucontrol, "0");
+@@ -630,7 +630,7 @@
+ 			addconfigscreencheck("extplayer_subtitle_use_bgcol", extplayer_subtitle_use_bgcol, "0");
+ 			addconfigscreencheck("extplayer_subtitle_clear", extplayer_subtitle_clear, "0");
  
 -			if(checkbox("ATEMIO510") == 1 || checkbox("ATEMIO520") == 1 || checkbox("ATEMIO530") == 1 || checkbox("ATEMIO7600") == 1 || checkbox("UFS912") == 1 || checkbox("UFS913") == 1 || checkbox("SPARK") == 1 || checkbox("SPARK7162") == 1)
 +			if(checkbox("HS7110") == 1 || checkbox("ATEMIO520") == 1 || checkbox("ATEMIO530") == 1 || checkbox("HS8200") == 1 || checkbox("UFS912") == 1 || checkbox("UFS913") == 1 || checkbox("SPARK") == 1 || checkbox("SPARK7162") == 1)
  				addconfigscreencheck("usecec", usecec, "0");
+ /*
  #if defined(OVBUILD) || defined (OEBUILD)
- 			addconfigscreencheck("extensions_type", extensions_type, "0");
-@@ -603,7 +603,7 @@
- 		            setskinnodeslocked(0);
+@@ -645,7 +645,7 @@
  			}
  #endif
+ */
 -			if(checkbox("ATEMIO7600") == 1)
 +			if(checkbox("HS8200") == 1)
  			{
@@ -298,7 +298,7 @@
  			{
  				if(ostrcmp("restart", child->name) == 0) child->locked = 1;
  			}
-@@ -1629,13 +1629,13 @@
+@@ -1675,13 +1675,13 @@
  		boxpath = ostrcat("/forum/forumdisplay.php?394", NULL, 0, 0);
  	else if(checkbox("ATEMIO520") == 1)
  		boxpath = ostrcat("/forum/forumdisplay.php?395", NULL, 0, 0);
@@ -323,11 +323,11 @@
  
  ///////////////////
 -	if(checkbox("ATEMIO7600") != 1)
-+	if(checkbox("HS8200") != 1)
++	if (checkbox("HS8200") != 1)
  	{
  		ostrcatbig(&buf, "<tr><td><font class=\"label\">", &maxlen, &pos);
  		ostrcatbig(&buf, _("Don't clear TV on zap (only with fastzap)"), &maxlen, &pos);
-@@ -4828,7 +4828,7 @@
+@@ -4895,7 +4895,7 @@
  	sendstr = ostrcat(sendstr, ", choiceminitv.value", 1 , 0);
  
  ///////////////////
@@ -336,7 +336,7 @@
  	{
  		ostrcatbig(&buf, "<tr><td><font class=\"label\">", &maxlen, &pos);
  		ostrcatbig(&buf, _("Activate CEC"), &maxlen, &pos);
-@@ -4853,7 +4853,7 @@
+@@ -4920,7 +4920,7 @@
  	}
  
  ///////////////////
