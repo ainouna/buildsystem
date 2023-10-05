@@ -614,13 +614,12 @@ $(D)/boost: $(D)/bootstrap $(ARCHIVE)/$(BOOST_SOURCE)
 #
 # zlib
 #
-ZLIB_VER = 1.2.13
+ZLIB_VER = 1.3
 ZLIB_SOURCE = zlib-$(ZLIB_VER).tar.xz
 ZLIB_Patch = zlib-$(ZLIB_VER).patch
 
 $(ARCHIVE)/$(ZLIB_SOURCE):
-#	$(WGET) https://sourceforge.net/projects/libpng/files/zlib/$(ZLIB_VER)/$(ZLIB_SOURCE)
-	$(WGET) https://www.zlib.net/$(ZLIB_SOURCE)
+	$(WGET) https://zlib.net/$(ZLIB_SOURCE)
 
 $(D)/zlib: $(D)/bootstrap $(ARCHIVE)/$(ZLIB_SOURCE)
 	$(START_BUILD)
