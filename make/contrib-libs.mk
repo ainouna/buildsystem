@@ -1721,7 +1721,7 @@ $(D)/flac: $(D)/bootstrap $(ARCHIVE)/$(FLAC_SOURCE)
 # libxml2
 #
 LIBXML2_MAJOR = 2.11
-LIBXML2_MINOR = 4
+LIBXML2_MINOR = 5
 LIBXML2_VER = $(LIBXML2_MAJOR).$(LIBXML2_MINOR)
 LIBXML2_SOURCE = libxml2-$(LIBXML2_VER).tar.xz
 LIBXML2_PATCH = libxml2-$(LIBXML2_VER).patch
@@ -1730,15 +1730,14 @@ $(ARCHIVE)/$(LIBXML2_SOURCE):
 	$(WGET) https://download.gnome.org/sources/libxml2/$(LIBXML2_MAJOR)/$(LIBXML2_SOURCE)
 
 ifeq ($(IMAGE), $(filter $(IMAGE), enigma2 enigma2-wlandriver))
-LIBXML2_CONF_OPTS  = --with-python=$(HOST_DIR)
-LIBXML2_CONF_OPTS += --with-python-install-dir=/$(PYTHON_DIR)/site-packages
-LIBXML2_DEPS  = $(D)/python
+#LIBXML2_CONF_OPTS  = --with-python=$(HOST_DIR)
+LIBXML2_CONF_OPTS  = --without-python
+#LIBXML2_CONF_OPTS += --with-python-install-dir=/$(PYTHON_DIR)/site-packages
+#LIBXML2_DEPS  = $(D)/python
 endif
 
 ifeq ($(IMAGE), $(filter $(IMAGE), neutrino neutrino-wlandriver titan titan-wlandriver))
 LIBXML2_CONF_OPTS  = --without-python
-LIBXML2_CONF_OPTS += --without-catalog
-LIBXML2_CONF_OPTS += --without-legacy
 ifeq ($(MEDIAFW), gstreamer)
 LIBXML2_CONF_OPTS += --with-tree
 LIBXML2_CONF_OPTS += --with-output
@@ -1762,7 +1761,6 @@ $(D)/libxml2: $(D)/bootstrap $(D)/zlib $(LIBXML2_DEPS) $(ARCHIVE)/$(LIBXML2_SOUR
 			--datarootdir=/.remove \
 			--enable-shared \
 			--disable-static \
-			--without-python \
 			--without-catalog \
 			--without-debug \
 			--without-legacy \
@@ -1783,7 +1781,7 @@ $(D)/libxml2: $(D)/bootstrap $(D)/zlib $(LIBXML2_DEPS) $(ARCHIVE)/$(LIBXML2_SOUR
 	$(SILENT)rm -f $(addprefix $(TARGET_DIR)/usr/bin/,xmlcatalog xmllint)
 	$(SILENT)rm -rf $(TARGET_LIB_DIR)/xml2Conf.sh
 	$(SILENT)rm -rf $(TARGET_LIB_DIR)/cmake
-	$(REMOVE)/libxml2-$(LIBXML2_VER)
+#	$(REMOVE)/libxml2-$(LIBXML2_VER)
 	$(TOUCH)
 
 #
