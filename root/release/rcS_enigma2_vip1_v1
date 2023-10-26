@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 220711.1
+#Version 230514.1
 
 echo "[rcS] Start"
 echo "Edision argus VIP (fixed tuner) Enigma2"
@@ -95,7 +95,7 @@ echo "[rcS] Init frontend and CI"
 #tuner type: stb6100(default) stv6110x, sharp7306
 insmod $MODDIR/fe-core.ko demod=stv090x tuner=stv6110x #paramDebug=50
 
-insmod $MODDIR/cimax.ko #paramDebug=20
+insmod $MODDIR/cimax.ko paramDebug=20
 insmod $MODDIR/pti.ko waitMS=20 videoMem=4096
 if [ $? -ne 0 ]; then
    insmod $MODDIR/pti.ko
@@ -118,9 +118,6 @@ insmod $MODDIR/smartcard.ko
 
 if [ -e $MODDIR/usbserial.ko ]; then
    insmod $MODDIR/usbserial.ko
-   if [ -e $MODDIR/ch341.ko ]; then
-      insmod $MODDIR/ch341.ko
-   fi
    if [ -e $MODDIR/ftdi.ko ]; then
       insmod $MODDIR/ftdi.ko
    fi
@@ -155,8 +152,8 @@ mknod /dev/rc c 147 1 #VFD
 /bin/evremote2 10 120 &
 
 echo "[rcS] Init smartcard cardreader"
-mknod /dev/sci0 c 169 0
-mknod /dev/sci1 c 169 1
+#mknod /dev/sci0 c 169 0
+#mknod /dev/sci1 c 169 1
 
 stfbcontrol a 255
 
@@ -179,10 +176,6 @@ if [ -e $MODDIR/cifs.ko ]; then
    insmod $MODDIR/cifs.ko
 fi
 
-echo "[rcS] Init FTP & network"
-/etc/init.d/vsftpd start
-/usr/sbin/inetd
-
 NFS=`grep -c nfs /proc/cmdline`
 if [ "$NFS" -eq "1" ]; then
    echo "[rcS] Booting from NFS, do not set network"
@@ -198,24 +191,12 @@ else
       /etc/init.d/networking start &
    fi
 fi
-#Allow network to wake up and initialize
+# Allow network to wake up and initialize
 sleep 2
-#Show IP address on frontpanel
+# Show IP address on frontpanel
 #ip=`ifconfig eth0 | sed -n '/inet addr/s/.*addr.\([^ ]*\) .*/\1/p'`
 #echo "IP $ip" > /dev/vfd
 #sleep 3
-
-echo "[rcS] Do extras (LOAD 1)"
-echo "Load 1" > /dev/vfd
-# Start automount
-if [ -e /etc/init.d/automount ]; then
-   python /etc/init.d/automount &
-fi
-
-# Do own extras
-if [ -e /etc/ownscript.sh ]; then
-   /etc/ownscript.sh &
-fi
 
 # Try and synchronise time
 #inettime=`cat /etc/enigma2/settings | grep systemoptions.inettime | cut -d "=" -f2`
@@ -228,6 +209,22 @@ else
       echo "[rcS] Use transponder time"
       /usr/sbin/time.sh &
    fi
+fi
+
+echo "[rcS] Init FTP & network (LOAD 1)"
+echo "Load 1" > /dev/vfd
+/etc/init.d/vsftpd start
+/usr/sbin/inetd
+
+echo "[rcS] Do extras"
+# Start automount
+if [ -e /etc/init.d/automount ]; then
+   python /etc/init.d/automount &
+fi
+
+# Do own extras
+if [ -e /etc/ownscript.sh ]; then
+   /etc/ownscript.sh &
 fi
 
 echo "[rcS] Start Enigma2"
