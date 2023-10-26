@@ -37,24 +37,54 @@
  	*cmdline_p = command_line;
 --- a/arch/sh/boards/mach-mb680/setup.c.orig
 +++ b/arch/sh/boards/mach-mb680/setup.c
-@@ -26,11 +26,12 @@
- #include <linux/mtd/mtd.h>
+@@ -1,13 +1,16 @@
+ /*
+  * arch/sh/boards/st/mb680/setup.c
++*
++ * Modified for use on Fortis HS8200 by TDT, enhanced by Audioniek.
+  *
++ * Original code by:
+  * Copyright (C) 2008 STMicroelectronics Limited
+  * Author: Stuart Menefy (stuart.menefy@st.com)
+  *
+  * May be copied or modified under the terms of the GNU General Public
+  * License.  See linux/COPYING for more information.
+  *
+- * STMicroelectronics STx7105 Mboard support.
++ * Fortis HS8200 main board support.
+  */
+ 
+ #include <linux/init.h>
+@@ -27,288 +30,327 @@
  #include <linux/mtd/physmap.h>
  #include <linux/mtd/partitions.h>
-+#include <linux/bpa2.h>
  #include <linux/spi/spi_gpio.h>
++#include <linux/bpa2.h>
  #include <asm/irq-ilc.h>
  #include <mach/common.h>
- #include "../mach-st/mb705-epld.h"
+-#include "../mach-st/mb705-epld.h"
 -
+-
+-
+-#define MB680_PIO_PHY_RESET stm_gpio(5, 5)
+-#define MB680_PIO_PCI_SERR stm_gpio(6, 4)
+-#define MB680_PIO_PCI_RESET stm_gpio(15, 6)
+-#define MB680_PIO_MII_BUS_SWITCH stm_gpio(11, 2)
+-
+-
+-
+-static void __init mb680_setup(char** cmdline_p)
+-{
+-	printk(KERN_INFO "STMicroelectronics STx7105 Mboard initialisation\n");
 +#include <linux/stm/pio.h>
- 
- 
- #define MB680_PIO_PHY_RESET stm_gpio(5, 5)
-@@ -38,6 +38,32 @@
- #define MB680_PIO_PCI_RESET stm_gpio(15, 6)
- #define MB680_PIO_MII_BUS_SWITCH stm_gpio(11, 2)
- 
++
++
++
++#define HS8200_PIO_PHY_RESET stm_gpio(5, 5)
++//#define MB680_PIO_PCI_SERR stm_gpio(6, 4)
++//#define MB680_PIO_PCI_RESET stm_gpio(15, 6)
++//#define MB680_PIO_MII_BUS_SWITCH stm_gpio(11, 2)
++
 +const char *LMI_IO_partalias[] = { "v4l2-coded-video-buffers", "BPA2_Region1", "v4l2-video-buffers" ,
 +                                    "coredisplay-video", "gfx-memory", "BPA2_Region0", "LMI_VID", NULL };
 +
@@ -64,40 +94,41 @@
 +0x40800000 - 0x49FFFFFF - linux   (159mb)
 +0x4A000000 - 0x4B1FFFFF - bigphys ( 18mb)
 +0x4B200000 - 0x4FFFFFFF - lmi_io  ( 78mb)
-+*/
-+static struct bpa2_partition_desc bpa2_parts_table[] = {
++ */
++static struct bpa2_partition_desc bpa2_parts_table[] =
++{
 +	{
 +		.name  = "bigphysarea",
 +		.start = 0x4A000000,
-+		.size  = 0x01200000, /* 18 Mb */
++		.size  = 0x01200000,  // 18 Mb
 +		.flags = 0,
 +		.aka   = NULL
 +	},
 +	{
 +		.name  = "LMI_IO",
 +		.start = 0x4B200000,
-+		.size  = 0x04E00000, /* 78 Mb */
++		.size  = 0x04E00000,  // 78 Mb
 +		.flags = 0,
 +		.aka   = LMI_IO_partalias
 +	}
 +};
++
++static void __init hs8200_setup(char **cmdline_p)
++{
++	printk(KERN_INFO "Fortis HS8200 main board initialisation\n");
  
+ 	stx7105_early_device_init();
  
- static void __init mb680_setup(char** cmdline_p)
-@@ -48,70 +74,17 @@
- 
- 	stx7105_configure_asc(2, &(struct stx7105_asc_config) {
- 			.routing.asc2 = stx7105_asc2_pio4,
+-	stx7105_configure_asc(2, &(struct stx7105_asc_config) {
+-			.routing.asc2 = stx7105_asc2_pio4,
 -			.hw_flow_control = 1,
-+			.hw_flow_control = 0,
- 			.is_console = 1, });
+-			.is_console = 1, });
 -	stx7105_configure_asc(3, &(struct stx7105_asc_config) {
 -			.hw_flow_control = 1,
 -			.is_console = 0, });
 -}
 -
-+	bpa2_init(bpa2_parts_table, ARRAY_SIZE(bpa2_parts_table));
- 
+-
 -
 -static struct platform_device mb680_leds = {
 -	.name = "leds-gpio",
@@ -105,7 +136,163 @@
 -	.dev.platform_data = &(struct gpio_led_platform_data) {
 -		.num_leds = 2,
 -		.leds = (struct gpio_led[]) {
--			{
++	stx7105_configure_asc(2, &(struct stx7105_asc_config)
++	{  // console ASC
++		.routing.asc2 = stx7105_asc2_pio4,
++		.hw_flow_control = 1,
++		.is_console = 1,
++	});
++	stx7105_configure_asc(3, &(struct stx7105_asc_config)
++	{  // front controller ASC
++		.hw_flow_control = 1,
++		.is_console = 0,
++	});
++	bpa2_init(bpa2_parts_table, ARRAY_SIZE(bpa2_parts_table));
++}
++
++static int hs8200_phy_reset(void *bus)
++{
++	gpio_set_value(HS8200_PIO_PHY_RESET, 0);
++	udelay(100);
++	gpio_set_value(HS8200_PIO_PHY_RESET, 1);
++	return 0;
++}
++
++static struct stmmac_mdio_bus_data stmmac_mdio_bus =
++{
++	.bus_id = 0,
++	.phy_reset = hs8200_phy_reset,
++	.phy_mask = 0,
++};
++
++static struct mtd_partition hs8200_physmap_flash_partitions[] =
++{
++	{
++		.name   = "Boot_firmware",  // mtd0
++		.size   = 0x00060000,       // 384k
++		.offset = 0x00000000,
++	},
++	{
++		.name   = "kernel",         // mtd1
++		.size   = 0x00320000,       // 3,125M
++		.offset = 0x00060000,       // 384k (0.375M)
++	},
++	{
++		.name   = "ROOT_FS",        // mtd2
++		.size   = 0x00020000,       // 128k (dummy)
++		.offset = 0x00380000,       // 3.5M
++	},
++	{
++		.name   = "Device",         // mtd3
++		.size   = 0x00020000,       // 128k (dummy)
++		.offset = 0x003A0000,       // 3.625M
++	},
++	{
++		.name   = "APP",            // mtd4
++		.size   = 0x00020000,       // 128k (dummy)
++		.offset = 0x003C0000,       // 3.75M
++	},
++	{
++		.name   = "Real_ROOT",      // mtd5
++		.size   = 0x01D00000,       // 29M, 128k hole at 0x20FE0000 is used for force flash
++		.offset = 0x003E0000,       // 3.875M
++	},
++	{
++		.name   = "Config",         // mtd6
++		.size   = 0x00100000,       // 1M
++		.offset = 0x02100000,
++	},
++	{
++		.name   = "User",           // mtd7
++		.size   = 0x01E00000,       // 30M
++		.offset = 0x02200000,
++	}
++};
++
++static struct physmap_flash_data hs8200_physmap_flash_data =
++{
++	.width		= 2,
++	.set_vpp	= NULL,
++	.nr_parts	= ARRAY_SIZE(hs8200_physmap_flash_partitions),
++	.parts		= hs8200_physmap_flash_partitions
++};
++
++static struct platform_device hs8200_physmap_flash =
++{
++	.name          = "physmap-flash",
++	.id            = -1,
++	.num_resources = 1,
++	.resource      = (struct resource[])
++	{
++		{
++			.start = 0x00000000,
++			.end   = 64 * 1024 * 1024 - 1,  // 64MB
++			.flags = IORESOURCE_MEM,
++		}
++	},
++	.dev =
++	{
++		.platform_data = &hs8200_physmap_flash_data,
++	},
++};
++
++static struct platform_device *hs8200_devices[] __initdata =
++{
++	&hs8200_physmap_flash,
++};
++
++static int __init hs8200_devices_init(void)
++{
++#if 0
++	/* Temporary: try and find the PIO's */
++	int i;
++	int j;
++#define SLEEP 300
++
++	for (i = 0; i < 17; i++)
++	{
++		for (j = 0; j < 8; j++)
++		{
++			if ((i == 4 && j == 2)   // console asc TxD OK
++			||  (i == 4 && j == 3)   // console asc RxD OK
++			||  (i == 4 && j == 4)   // console asc CTS OK
++			||  (i == 4 && j == 5)   // console asc RTS OK
++			||  (i == 5 && j == 0)   // FP asc OK
++			||  (i == 5 && j == 1)   // FP asc OK
++			||  (i == 2 && j == 2)   // i2c0 OK
++			||  (i == 2 && j == 3)   // i2c0 OK
++			||  (i == 3 && j == 4)   // i2c1 OK
++			||  (i == 3 && j == 5)   // i2c1 OK
++			||  (i == 3 && j == 6)   // i2c2 OK
++			||  (i == 3 && j == 7)   // i2c2 OK
++			||  (i == 4 && j == 4)   // rear USB overcurrent
++			||  (i == 4 && j == 5)   // rear USB power control
++			||  (i == 4 && j == 6)   // front USB overcurrent
++			||  (i == 4 && j == 7)   // front USB power control
++			||  (i == 15 && j == 1)  // StarCI2Win reset
++//			||  (i == 15 && j == 4)  // StarCI2Win INT pin
++			||  (i == 11 && j == 0)  // CI module power control, top slot
++			||  (i == 11 && j == 1)  // CI module power control, top slot
++//			||  (i == 3 && j == 6)   // i2c3 OK
++//			||  (i == 3 && j == 7)   // i2c3 OK
++			||  (i == 4 && j == 0)   // power control?
++			||  (i == 5 && j == 5)   // PHY_RESET 
++			||  (i == 17 && j == 4) 
++			||  (i == 17 && j == 4) 
++			||  (i == 17 && j == 4) 
++			||  (i == 0)             // skip card reader 0 interface
++			||  (i == 1)             // skip card reader 1 interface
++			||  (i == 7 && j == 4)   // MII interface 
++			||  (i == 7 && j == 5)   // MII interface 
++			||  (i == 7 && j == 6)   // MII interface 
++			||  (i == 7 && j == 7)   // MII interface
++			||  (i == 8)             // MII interface
++			||  (i == 9))            // MII interface
++ 			{
++				printk("Skip GPIO(%1d.%1d)\n", i, j);
++			}
++			else
+ 			{
 -				.name = "LD5",
 -				.default_trigger = "heartbeat",
 -				.gpio = stm_gpio(2, 4),
@@ -138,7 +325,7 @@
 -static void ll_phy_reset(void)
 -{
 -	mb705_reset(EPLD_EMI_RESET_SW0, 150);
- }
+-}
 -#else
 -static void ll_phy_reset(void)
 -{
@@ -146,69 +333,53 @@
 -	udelay(150);
 -	gpio_set_value(MB680_PIO_PHY_RESET, 1);
 -}
--#endif
- 
- static int mb680_phy_reset(void *bus)
- {
++				stm_gpio_direction(stm_gpio(i, j), STM_GPIO_DIRECTION_OUT);
++				gpio_set_value(stm_gpio(i, j), 0);
++				printk("GPIO(%1d.%1d): ", i, j);
++				printk("off ");
++				mdelay(SLEEP);
++				gpio_set_value(stm_gpio(i, j), 1);
++				printk("on ");
++				mdelay(SLEEP);
++				gpio_set_value(stm_gpio(i, j), 0);
++				printk("off ");
++				mdelay(SLEEP);
++				gpio_set_value(stm_gpio(i, j), 1);
++				printk("on ");
++				mdelay(SLEEP);
++				stm_gpio_direction(stm_gpio(i, j), STM_GPIO_DIRECTION_IN);
++				printk("set to input\n");
++				mdelay(SLEEP);
++				mdelay(SLEEP);
++				mdelay(SLEEP);
++				mdelay(SLEEP);
++				mdelay(SLEEP);
++				mdelay(SLEEP);
++			}
++		}
++	}
+ #endif
+-
+-static int mb680_phy_reset(void *bus)
+-{
 -	gpio_set_value(MB680_PIO_MII_BUS_SWITCH, 1);
 -	ll_phy_reset();
 -	gpio_set_value(MB680_PIO_MII_BUS_SWITCH, 0);
 -	mdelay(20);
-+	gpio_set_value(MB680_PIO_PHY_RESET, 0);
-+	udelay(100);
-+	gpio_set_value(MB680_PIO_PHY_RESET, 1);
- 
- 	return 0;
- }
-@@ -122,127 +95,83 @@
- 	.phy_mask = 0,
- };
- 
+-
+-	return 0;
+-}
+-
+-static struct stmmac_mdio_bus_data stmmac_mdio_bus = {
+-	.bus_id = 0,
+-	.phy_reset = mb680_phy_reset,
+-	.phy_mask = 0,
+-};
+-
 -static struct platform_device *mb680_devices[] __initdata = {
 -	&mb680_leds,
-+static struct mtd_partition mb680_physmap_flash_partitions[] = {
-+	{
-+		.name   = "Boot_firmware", //mtd0
-+		.size   = 0x00060000,  //384k
-+		.offset = 0x00000000,
-+	},
-+	{
-+		.name   = "kernel",    //mtd1
-+		.size   = 0x00320000,  //3,125M
-+		.offset = 0x00060000,  //384k (0.375M)
-+	},
-+	{
-+		.name   = "ROOT_FS",   //mtd2
-+		.size   = 0x00020000,  //128k (dummy)
-+		.offset = 0x00380000,  //3.5M
-+	},
-+	{
-+		.name   = "Device",    //mtd3
-+		.size   = 0x00020000,  //128k (dummy)
-+		.offset = 0x003A0000,  //3.625M
-+	},
-+	{
-+		.name   = "APP",       //mtd4
-+		.size   = 0x00020000,  //128k (dummy)
-+		.offset = 0x003C0000,  //3.75M
-+	},
-+	{
-+		.name   = "Real_ROOT", //mtd5
-+		.size   = 0x01D00000,  //29M, 128k hole at 0x20FE0000 is used for force flash
-+		.offset = 0x003E0000,  //3.875M
-+	},
-+	{
-+		.name   = "Config",    //mtd6
-+		.size   = 0x00100000,  //1M
-+		.offset = 0x02100000,
-+	},
-+	{
-+		.name   = "User",      //mtd7
-+		.size   = 0x01E00000,  //30M
-+		.offset = 0x02200000,
-+	}
- };
- 
+-};
+-
 -/* PCI configuration */
 -
 -#ifdef CONFIG_SH_ST_MB705
@@ -220,13 +391,7 @@
 -	mdelay(10);
 -}
 -#endif
-+static struct physmap_flash_data mb680_physmap_flash_data = {
-+	.width		= 2,
-+	.set_vpp	= NULL,
-+	.nr_parts	= ARRAY_SIZE(mb680_physmap_flash_partitions),
-+	.parts		= mb680_physmap_flash_partitions
-+};
- 
+-
 -/*
 - * J22-A must be removed, J22-B must be 2-3.
 - */
@@ -236,17 +401,7 @@
 -		[1] = PCI_PIN_DEFAULT,
 -		[2] = PCI_PIN_DEFAULT,
 -		[3] = PCI_PIN_UNUSED
-+static struct platform_device mb680_physmap_flash = {
-+	.name		= "physmap-flash",
-+	.id		= -1,
-+	.num_resources	= 1,
-+	.resource	= (struct resource[]) {
-+		{
-+			.start		= 0x00000000,
-+			.end		= 64*1024*1024 - 1, //64MB
-+			.flags		= IORESOURCE_MEM,
-+		}
- 	},
+-	},
 -	.serr_irq = PCI_PIN_UNUSED, /* Modified in mb680_device_init() below */
 -	.idsel_lo = 30,
 -	.idsel_hi = 30,
@@ -255,9 +410,7 @@
 -		[1] = PCI_PIN_UNUSED,
 -		[2] = PCI_PIN_UNUSED,
 -		[3] = PCI_PIN_UNUSED
-+	.dev = {
-+		.platform_data = &mb680_physmap_flash_data,
- 	},
+-	},
 -	.pci_clk = 33333333,
 -	/* When connected to the mb705, PCI reset is controlled by an EPLD
 -	 * register on the mb705. When used standalone a PIO pin is used,
@@ -267,8 +420,8 @@
 -#else
 -	.pci_reset_gpio = MB680_PIO_PCI_RESET,
 -#endif
- };
- 
+-};
+-
 -int pcibios_map_platform_irq(struct pci_dev *dev, u8 slot, u8 pin)
 -{
 -       /* We can use the standard function on this board */
@@ -304,10 +457,8 @@
 -		.miso = stm_gpio(15, 3),
 -		.num_chipselect = 1,
 -	},
-+static struct platform_device *mb680_devices[] __initdata = {
-+	&mb680_physmap_flash,
- };
- 
+-};
+-
 -void __init mbxxx_configure_serial_flash(struct spi_board_info *serial_flash)
 -{
 -	/* Specify CSn and SPI bus */
@@ -320,8 +471,8 @@
 -}
 -#endif
 -
- static int __init mb680_devices_init(void)
- {
+-static int __init mb680_devices_init(void)
+-{
 -	/* Setup the PCI_SERR# PIO
 -	 * J20-A - open, J27-E - closed */
 -	if (gpio_request(MB680_PIO_PCI_SERR, "PCI_SERR#") == 0) {
@@ -346,34 +497,50 @@
 -	stx7105_configure_ssc_i2c(1, &(struct stx7105_ssc_config) {
 -			.routing.ssc1.sclk = stx7105_ssc1_sclk_pio2_5,
 -			.routing.ssc1.mtsr = stx7105_ssc1_mtsr_pio2_6, });
-+	stx7105_configure_ssc_i2c(0, &(struct stx7105_ssc_config) {
-+			.routing.ssc1.sclk = stx7105_ssc0_sclk_pio2_2,
-+			.routing.ssc1.mtsr = stx7105_ssc0_mtsr_pio2_3, });
- 	/* NIM AB/STRecord I2C bus*/
- 	stx7105_configure_ssc_i2c(2, &(struct stx7105_ssc_config) {
- 			.routing.ssc2.sclk = stx7105_ssc2_sclk_pio3_4,
-@@ -264,7 +193,7 @@
- 	 * alt	| 12[6]	J5B:1-2  J6G:open	14[7]	J10B:1-2  J11H:open
- 	 */
- 	stx7105_configure_usb(0, &(struct stx7105_usb_config) {
+-	/* NIM AB/STRecord I2C bus*/
+-	stx7105_configure_ssc_i2c(2, &(struct stx7105_ssc_config) {
+-			.routing.ssc2.sclk = stx7105_ssc2_sclk_pio3_4,
+-			.routing.ssc2.mtsr = stx7105_ssc2_mtsr_pio3_5, });
+-	/* HDMI I2C bus */
+-	stx7105_configure_ssc_i2c(3, &(struct stx7105_ssc_config) {
+-			.routing.ssc3.sclk = stx7105_ssc3_sclk_pio3_6,
+-			.routing.ssc3.mtsr = stx7105_ssc3_mtsr_pio3_7, });
+-
+-	/*
+-	 * Note that USB port configuration depends on jumper
+-	 * settings:
+-	 *
+-	 *	  PORT 0	       		PORT 1
+-	 *	+-----------------------------------------------------------
+-	 * norm	|  4[4]	J5A:2-3			 4[6]	J10A:2-3
+-	 * alt	| 12[5]	J5A:1-2  J6F:open	14[6]	J10A:1-2  J11G:open
+-	 * norm	|  4[5]	J5B:2-3			 4[7]	J10B:2-3
+-	 * alt	| 12[6]	J5B:1-2  J6G:open	14[7]	J10B:1-2  J11H:open
+-	 */
+-	stx7105_configure_usb(0, &(struct stx7105_usb_config) {
 -			.ovrcur_mode = stx7105_usb_ovrcur_active_low,
-+			.ovrcur_mode = stx7105_usb_ovrcur_disabled,
- 			.pwr_enabled = 1,
- 			.routing.usb0.ovrcur = stx7105_usb0_ovrcur_pio4_4,
- 			.routing.usb0.pwr = stx7105_usb0_pwr_pio4_5, });
-@@ -276,8 +205,6 @@
- 
- 	gpio_request(MB680_PIO_PHY_RESET, "notPioResetMII");
- 	gpio_direction_output(MB680_PIO_PHY_RESET, 1);
+-			.pwr_enabled = 1,
+-			.routing.usb0.ovrcur = stx7105_usb0_ovrcur_pio4_4,
+-			.routing.usb0.pwr = stx7105_usb0_pwr_pio4_5, });
+-	stx7105_configure_usb(1, &(struct stx7105_usb_config) {
+-			.ovrcur_mode = stx7105_usb_ovrcur_active_low,
+-			.pwr_enabled = 1,
+-			.routing.usb1.ovrcur = stx7105_usb1_ovrcur_pio4_6,
+-			.routing.usb1.pwr = stx7105_usb1_pwr_pio4_7, });
+-
+-	gpio_request(MB680_PIO_PHY_RESET, "notPioResetMII");
+-	gpio_direction_output(MB680_PIO_PHY_RESET, 1);
 -	gpio_request(MB680_PIO_MII_BUS_SWITCH, "MIIBusSwitchnotOE");
 -	gpio_direction_output(MB680_PIO_MII_BUS_SWITCH, 1);
- 
- 	stx7105_configure_ethernet(0, &(struct stx7105_ethernet_config) {
- 			.mode = stx7105_ethernet_mode_mii,
-@@ -287,22 +214,8 @@
- 			.mdio_bus_data = &stmmac_mdio_bus,
- 		});
- 
+-
+-	stx7105_configure_ethernet(0, &(struct stx7105_ethernet_config) {
+-			.mode = stx7105_ethernet_mode_mii,
+-			.ext_clk = 1,
+-			.phy_bus = 0,
+-			.phy_addr = -1,
+-			.mdio_bus_data = &stmmac_mdio_bus,
+-		});
+-
 -	/*
 -	 * Check jumpers before using IR:
 -	 * On the mb705:
@@ -390,8 +557,132 @@
 -#endif
 -			.tx_enabled = 1,
 -			.tx_od_enabled = 1, });
-+	/* enable optical out */
+-
+-	return platform_add_devices(mb680_devices, ARRAY_SIZE(mb680_devices));
+-}
+-arch_initcall(mb680_devices_init);
+-
+-static void __iomem *mb680_ioport_map(unsigned long port, unsigned int size)
++	// I2C bus 0: frontend 0
++	//      0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
++	// 00:          -- -- -- -- -- -- -- -- -- 0c -- -- --
++	// 10: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
++	// 20: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
++	// 30: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
++	// 40: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
++	// 50: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
++	// 60: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
++	// 70: -- -- -- -- -- -- -- --
++	stx7105_configure_ssc_i2c(0, &(struct stx7105_ssc_config)
++	{
++		.routing.ssc1.sclk = stx7105_ssc0_sclk_pio2_2,
++		.routing.ssc1.mtsr = stx7105_ssc0_mtsr_pio2_3,
++	});
++	// I2C bus 1: frontend 1
++	//      0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
++	// 00:          -- -- -- -- -- -- -- -- -- 0c -- -- --
++	// 10: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
++	// 20: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
++	// 30: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
++	// 40: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
++	// 50: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
++	// 60: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
++	// 70: -- -- -- -- -- -- -- --
++	stx7105_configure_ssc_i2c(2, &(struct stx7105_ssc_config)
++	{
++		.routing.ssc2.sclk = stx7105_ssc2_sclk_pio3_4,
++		.routing.ssc2.mtsr = stx7105_ssc2_mtsr_pio3_5,
++	});
++	// I2C bus 2: all the rest...
++	//      0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
++	// 00:          -- -- -- -- -- -- -- -- -- -- -- -- --
++	// 10: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
++	// 20: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
++	// 30: UU -- -- -- -- -- -- -- -- -- 3a -- -- 3d -- --
++	// 40: 40 -- -- -- -- -- -- -- -- -- -- UU -- -- -- --
++	// 50: UU 51 52 53 54 55 56 57 -- -- -- -- -- -- -- --
++	// 60: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
++	// 70: -- -- -- -- -- -- -- --
++	//
++	// 30:
++	// 3a:
++	// 3d: HDMI
++	// 40: CI controller
++	// 4b: stv6418
++	// 50-57: EEPROM
++	stx7105_configure_ssc_i2c(3, &(struct stx7105_ssc_config)
++	{
++		.routing.ssc3.sclk = stx7105_ssc3_sclk_pio3_6,
++		.routing.ssc3.mtsr = stx7105_ssc3_mtsr_pio3_7,
++	});
++
++	// USB
++	stx7105_configure_usb(0, &(struct stx7105_usb_config)
++	{
++		.ovrcur_mode = stx7105_usb_ovrcur_disabled,
++		.pwr_enabled = 1,
++		.routing.usb0.ovrcur = stx7105_usb0_ovrcur_pio4_4,
++		.routing.usb0.pwr = stx7105_usb0_pwr_pio4_5,
++	});
++	stx7105_configure_usb(1, &(struct stx7105_usb_config)
++	{
++		.ovrcur_mode = stx7105_usb_ovrcur_active_low,
++		.pwr_enabled = 1,
++		.routing.usb1.ovrcur = stx7105_usb1_ovrcur_pio4_6,
++		.routing.usb1.pwr = stx7105_usb1_pwr_pio4_7,
++	});
++
++	// Network
++	gpio_request(HS8200_PIO_PHY_RESET, "notPioResetMII");
++	gpio_direction_output(HS8200_PIO_PHY_RESET, 1);
++
++	stx7105_configure_ethernet(0, &(struct stx7105_ethernet_config)
++	{
++		.mode = stx7105_ethernet_mode_mii,
++		.ext_clk = 1,
++		.phy_bus = 0,
++		.phy_addr = -1,
++		.mdio_bus_data = &stmmac_mdio_bus,
++	});
++
++	// enable optical out
 +	stpio_request_pin(10, 6, "opt_out", STPIO_ALT_OUT);
- 
- 	return platform_add_devices(mb680_devices, ARRAY_SIZE(mb680_devices));
++
++	return platform_add_devices(hs8200_devices, ARRAY_SIZE(hs8200_devices));
++}
++arch_initcall(hs8200_devices_init);
++
++static void __iomem *hs8200_ioport_map(unsigned long port, unsigned int size)
+ {
+ 	/*
+ 	 * If we have PCI then this should never be called because we
+@@ -320,7 +362,7 @@
+ 	return (void __iomem *)CCN_PVR;
  }
+ 
+-static void __init mb680_init_irq(void)
++static void __init hs8200_init_irq(void)
+ {
+ #ifndef CONFIG_SH_ST_MB705
+ 	/* Configure STEM interrupts as active low. */
+@@ -329,11 +371,13 @@
+ #endif
+ }
+ 
+-struct sh_machine_vector mv_mb680 __initmv = {
+-	.mv_name		= "STx7105 Mboard",
+-	.mv_setup		= mb680_setup,
+-	.mv_nr_irqs		= NR_IRQS,
+-	.mv_init_irq		= mb680_init_irq,
+-	.mv_ioport_map		= mb680_ioport_map,
++struct sh_machine_vector mv_mb680 __initmv =
++{
++	.mv_name       = "Fortis HS8200",
++	.mv_setup      = hs8200_setup,
++	.mv_nr_irqs    = NR_IRQS,
++	.mv_init_irq   = hs8200_init_irq,
++	.mv_ioport_map = hs8200_ioport_map,
+ 	STM_PCI_IO_MACHINE_VEC
+ };
++//vim:ts=4
+
