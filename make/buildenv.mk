@@ -24,7 +24,7 @@ MAKEFLAGS            += --no-print-directory
 
 # -----------------------------------------------------------------------------
 
-# default platform...
+# default directories...
 BASE_DIR             := $(shell pwd)
 ARCHIVE              ?= $(HOME)/Archive
 TOOLS_DIR             = $(BASE_DIR)/tools

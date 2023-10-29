@@ -1781,7 +1781,7 @@ $(D)/libxml2: $(D)/bootstrap $(D)/zlib $(LIBXML2_DEPS) $(ARCHIVE)/$(LIBXML2_SOUR
 	$(SILENT)rm -f $(addprefix $(TARGET_DIR)/usr/bin/,xmlcatalog xmllint)
 	$(SILENT)rm -rf $(TARGET_LIB_DIR)/xml2Conf.sh
 	$(SILENT)rm -rf $(TARGET_LIB_DIR)/cmake
-#	$(REMOVE)/libxml2-$(LIBXML2_VER)
+	$(REMOVE)/libxml2-$(LIBXML2_VER)
 	$(TOUCH)
 
 #
@@ -2983,4 +2983,27 @@ $(D)/libwrap: $(D)/bootstrap $(ARCHIVE)/$(LIBWRAP_SOURCE)
 	$(REMOVE)/libwrap-$(LIBWRAP_VER)
 	$(TOUCH)
 
+#
+# libxmlccwrap
+#
+LIBXMLCCWRAP_VER = 0.0.12
+LIBXMLCCWRAP_SOURCE = libxmlccwrap-$(LIBXMLCCWRAP_VER).tar.gz
+
+$(ARCHIVE)/$(LIBXMLCCWRAP_SOURCE):
+	$(WGET) http://www.ant.uni-bremen.de/whomes/rinas/libxmlccwrap/download/$(LIBXMLCCWRAP_SOURCE)
+
+$(D)/libxmlccwrap: $(D)/bootstrap $(D)/libxml2 $(D)/libxslt $(ARCHIVE)/$(LIBXMLCCWRAP_SOURCE)
+	$(START_BUILD)
+	$(REMOVE)/libxmlccwrap-$(LIBXMLCCWRAP_VER)
+	$(UNTAR)/$(LIBXMLCCWRAP_SOURCE)
+	$(CH_DIR)/libxmlccwrap-$(LIBXMLCCWRAP_VER); \
+		$(CONFIGURE) \
+			--target=$(TARGET) \
+			--prefix=/usr \
+		; \
+		$(MAKE) all; \
+		$(MAKE) install DESTDIR=$(TARGET_DIR)
+	$(REWRITE_LIBTOOL)/libxmlccwrap.la
+	$(REMOVE)/libxmlccwrap-$(LIBXMLCCWRAP_VER)
+	$(TOUCH)
 

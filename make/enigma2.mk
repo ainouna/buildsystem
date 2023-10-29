@@ -101,6 +101,8 @@ E_CPPFLAGS   += -I$(TOOLS_DIR)/libeplayer3/include
 endif
 E_CPPFLAGS   += $(LOCAL_ENIGMA2_CPPFLAGS)
 E_CPPFLAGS   += $(PLATFORM_CPPFLAGS)
+E_CPPFLAGS   += -Wno-missing-field-initializers
+E_CPPFLAGS   += -Wno-unused-parameter
 
 #
 # yaud-enigma2
@@ -144,7 +146,7 @@ $(D)/enigma2.do_prepare: | $(ENIGMA2_DEPS)
 		(echo -n "Cloning remote OpenPLi git..."; git clone -q -b $$HEAD_0 $$REPO_0 $(ARCHIVE)/enigma2-pli-nightly.git; echo " done."); \
 		echo -n "Copying local git content to build environment..."; cp -ra $(ARCHIVE)/enigma2-pli-nightly.git $(SOURCE_DIR)/enigma2; echo " done."; \
 		if [ "$$REVISION" != "newest" ]; then \
-			cd $(SOURCE_DIR)/enigma2; echo -n "Checking out revision $$REVISION..."; git checkout -q "$$REVISION"; echo " done."; \
+			cd $(SOURCE_DIR)/enigma2; echo -n "Checking out revision $$REVISION..."; git checkout -q "$$REVISION"; echo " done."; echo; \
 		fi; \
 		cp -ra $(SOURCE_DIR)/enigma2 $(SOURCE_DIR)/enigma2.org; \
 		echo "Applying diff-$$DIFF patch..."; \

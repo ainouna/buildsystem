@@ -659,7 +659,6 @@ $(D)/ntfs_3g: $(D)/bootstrap $(ARCHIVE)/$(NTFS_3G_SOURCE)
 MC_VER = 4.8.30
 MC_SOURCE = mc-$(MC_VER).tar.xz
 MC_PATCH  = mc-$(MC_VER).patch
-#MC_PATCH += mc-$(MC_VER)-fix_ftp_listing.patch
 
 $(ARCHIVE)/$(MC_SOURCE):
 	$(WGET) ftp.midnight-commander.org/$(MC_SOURCE)
@@ -695,8 +694,8 @@ $(D)/mc: $(D)/bootstrap $(D)/ncurses $(D)/libglib2 $(ARCHIVE)/$(MC_SOURCE)
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
 	rm -rf $(TARGET_DIR)/usr/share/mc/examples
 	find $(TARGET_DIR)/usr/share/mc/skins -type f ! -name default.ini | xargs --no-run-if-empty rm
-#	$(REMOVE)/mc-$(MC_VER)
-#	$(TOUCH)
+	$(REMOVE)/mc-$(MC_VER)
+	$(TOUCH)
 
 #
 # nano

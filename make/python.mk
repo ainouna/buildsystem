@@ -154,30 +154,6 @@ $(D)/python_setuptools: $(D)/bootstrap $(D)/python $(ARCHIVE)/$(PYTHON_SETUPTOOL
 	$(TOUCH)
 
 #
-# libxmlccwrap
-#
-LIBXMLCCWRAP_VER = 0.0.12
-LIBXMLCCWRAP_SOURCE = libxmlccwrap-$(LIBXMLCCWRAP_VER).tar.gz
-
-$(ARCHIVE)/$(LIBXMLCCWRAP_SOURCE):
-	$(WGET) http://www.ant.uni-bremen.de/whomes/rinas/libxmlccwrap/download/$(LIBXMLCCWRAP_SOURCE)
-
-$(D)/libxmlccwrap: $(D)/bootstrap $(D)/libxml2 $(D)/libxslt $(ARCHIVE)/$(LIBXMLCCWRAP_SOURCE)
-	$(START_BUILD)
-	$(REMOVE)/libxmlccwrap-$(LIBXMLCCWRAP_VER)
-	$(UNTAR)/$(LIBXMLCCWRAP_SOURCE)
-	$(CH_DIR)/libxmlccwrap-$(LIBXMLCCWRAP_VER); \
-		$(CONFIGURE) \
-			--target=$(TARGET) \
-			--prefix=/usr \
-		; \
-		$(MAKE) all; \
-		$(MAKE) install DESTDIR=$(TARGET_DIR)
-	$(REWRITE_LIBTOOL)/libxmlccwrap.la
-	$(REMOVE)/libxmlccwrap-$(LIBXMLCCWRAP_VER)
-	$(TOUCH)
-
-#
 # python_lxml
 #
 PYTHON_LXML_MAJOR = 2.2
@@ -361,13 +337,13 @@ $(D)/python_cffi: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(D)/libffi 
 #
 # python_sqlite3
 #
-PYTHON_SQLITE3 = 1.0.5
+PYTHON_SQLITE3_VER = 1.0.5
 PYTHON_SQLITE3_SOURCE = sqlite3-$(PYTHON_SQLITE3_VER).tar.gz
 
 $(ARCHIVE)/$(PYTHON_SQLITE3_SOURCE):
 	$(WGET) https://pypi.python.org/packages/source/c/sqlite3/$(PYTHON_SQLITE3_SOURCE)
 
-$(D)/python_sqlite3: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(D)/libffi $(D)/python_pycparser $(ARCHIVE)/$(PYTHON_CFFI_SOURCE)
+$(D)/python_sqlite3: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(ARCHIVE)/$(PYTHON_SQLITE3_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/sqlite3-$(PYTHON_SQLITE3_VER)
 	$(UNTAR)/$(PYTHON_SQLITE3_SOURCE)

@@ -572,8 +572,6 @@ enigma2_release_adb_box:
 		cp -rf $(TARGET_DIR)/usr/lib/enigma2/python/Plugins/Extensions/adb_5800VFD/* $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/SystemPlugins/VFD-Icons; \
 		rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/adb_5800VFD; \
 	fi
-#	$(SILENT)mv -f $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/public/images/boxes/nbox.png 
-#		$(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/public/images/boxes/adb_box.png
 	$(SILENT)cp -f $(SKEL_ROOT)/root_enigma2/usr/local/share/enigma2/keymap_adb_box.xml $(RELEASE_DIR)/usr/local/share/enigma2/keymap.xml
 
 #
@@ -614,11 +612,8 @@ enigma2_release_tf7700:
 	$(SILENT)cp -f $(SKEL_ROOT)/release/fstab_tf7700 $(RELEASE_DIR)/etc/fstab
 	$(SILENT)rm -f $(RELEASE_DIR)/bin/vdstandby
 	$(SILENT)cp -f $(SKEL_ROOT)/root_enigma2/usr/local/share/enigma2/keymap_tf7700.xml $(RELEASE_DIR)/usr/local/share/enigma2/keymap.xml
-	$(SILENT)mv -f $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/public/images/boxes/topf.png \
-		$(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/public/images/boxes/tf7700.png
 ifeq ($(DESTINATION), flash)
 	$(MAKE) $(D)/tfinstaller
-	echo "release!"
 endif
 
 #
@@ -1242,6 +1237,10 @@ endif
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/public/images/boxes/ultra.png
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/public/images/boxes/xcombo.png
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/public/images/boxes/xpeedlx3.png
+	$(SILENT)mv -f $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/public/images/boxes/nbox.png \
+		$(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/public/images/boxes/adb_box.png
+	$(SILENT)mv -f $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/public/images/boxes/topf.png \
+		$(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/public/images/boxes/tf7700.png
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/public/images/remotes/alphatriplehd.png
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/public/images/remotes/amiko1.png
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/public/images/remotes/amiko.png
