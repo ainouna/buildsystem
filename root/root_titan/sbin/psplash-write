@@ -1,0 +1,15 @@
+#!/bin/sh
+#
+
+progress=$(echo $1 | awk '{ print $2 }') 
+echo progress=$progress
+
+if [ $progress -gt 0 -a -e /proc/progress ]; then
+    echo $(($progress / 2)) > /proc/progress
+elif [ $progress -gt 0 -a -e /proc/vfd ]; then
+    echo Loading $(($progress / 2)) % > /proc/vfd
+elif [ $progress -gt 0 -a -e /usr/bin/displayvfd ]; then
+    displayvfd -s 18 -t "Booting $progress"
+elif [ $progress -gt 0 -a -e /dev/mcu ]; then
+    echo $(($progress / 2)) > /dev/mcu
+fi

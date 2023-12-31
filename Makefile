@@ -16,7 +16,6 @@ include make/buildenv.mk
 PARALLEL_JOBS := $(shell echo $$((1 + `getconf _NPROCESSORS_ONLN 2>/dev/null || echo 1`)))
 override MAKE = make $(if $(findstring j,$(filter-out --%,$(MAKEFLAGS))),,-j$(PARALLEL_JOBS)) $(SILENT_OPT)
 
-
 ############################################################################
 #  A print out of environment variables
 #
@@ -30,39 +29,47 @@ printenv:
 	@echo "ARCHIVE_DIR      : $(ARCHIVE)"
 	@echo "BASE_DIR         : $(BASE_DIR)"
 	@echo "CUSTOM_DIR       : $(CUSTOM_DIR)"
-	@echo "APPS_DIR         : $(APPS_DIR)"
+	@echo "TOOLS_DIR        : $(TOOLS_DIR)"
 	@echo "DRIVER_DIR       : $(DRIVER_DIR)"
 	@echo "FLASH_DIR        : $(FLASH_DIR)"
 	@echo "CROSS_DIR        : $(CROSS_DIR)"
-	@echo "CROSS_BASE       : $(CROSS_BASE)"
 	@echo "RELEASE_DIR      : $(RELEASE_DIR)"
 	@echo "HOST_DIR         : $(HOST_DIR)"
 	@echo "TARGET_DIR       : $(TARGET_DIR)"
 	@echo "KERNEL_DIR       : $(KERNEL_DIR)"
 	@echo "MAINTAINER       : $(MAINTAINER)"
-	@echo "BOXARCH          : $(BOXARCH)"
 	@echo "BUILD            : $(BUILD)"
 	@echo "TARGET           : $(TARGET)"
 	@echo "BOXTYPE          : $(BOXTYPE)"
 	@echo "KERNEL_VERSION   : $(KERNEL_VER)"
-	@echo "EXTERNAL_LCD     : $(EXTERNAL_LCD)"
 	@echo "MEDIAFW          : $(MEDIAFW)"
-	@echo -e "FLAVOUR          : $(TERM_YELLOW)$(FLAVOUR)$(TERM_NORMAL)"
+	@echo "OPTIMIZATIONS    : $(OPTIMIZATIONS)"
 	@echo "PARALLEL_JOBS    : $(PARALLEL_JOBS)"
-ifeq ($(KBUILD_VERBOSE), 1)
-	@echo "VERBOSE_BUILD    : yes"
-else
-	@echo "VERBOSE_BUILD    : no"
-endif
+	@echo "KBUILD_VERBOSE   : $(KBUILD_VERBOSE)"
+	@echo "DESTINATION      : $(DESTINATION)"
 	@echo "IMAGE            : $(IMAGE)"
 	@echo '================================================================================'
 ifeq ($(IMAGE), $(filter $(IMAGE), neutrino neutrino-wlandriver))
-	@echo -e "LOCAL_NEUTRINO_BUILD_OPTIONS : $(TERM_GREEN)$(LOCAL_NEUTRINO_BUILD_OPTIONS)$(TERM_NORMAL)"
-	@echo -e "LOCAL_NEUTRINO_CFLAGS        : $(TERM_GREEN)$(LOCAL_NEUTRINO_CFLAGS)$(TERM_NORMAL)"
-	@echo -e "LOCAL_NEUTRINO_DEPS          : $(TERM_GREEN)$(LOCAL_NEUTRINO_DEPS)$(TERM_NORMAL)"
+	@echo "FLAVOUR                      : $(FLAVOUR)"
+	@echo "PLUGINS_NEUTRINO             : $(PLUGINS_NEUTRINO)"
+	@echo "LOCAL_NEUTRINO_BUILD_OPTIONS : $(LOCAL_NEUTRINO_BUILD_OPTIONS)"
+	@echo "LOCAL_NEUTRINO_CFLAGS        : $(LOCAL_NEUTRINO_CFLAGS)"
+	@echo "LOCAL_NEUTRINO_DEPS          : $(LOCAL_NEUTRINO_DEPS)"
+else ifeq ($(IMAGE), $(filter $(IMAGE), enigma2 enigma2-wlandriver))
+	@echo "E2_DIFF                     : $(E2_DIFF)"
+	@echo "E2_REVISION                 : $(E2_REVISION)"
+	@echo "LOCAL_ENIGMA2_BUILD_OPTIONS : $(LOCAL_ENIGMA2_BUILD_OPTIONS)"
+	@echo "LOCAL_ENIGMA2_CPPFLAGS      : $(LOCAL_ENIGMA2_CPPFLAGS)"
+	@echo "LOCAL_ENIGMA2_DEPS          : $(LOCAL_ENIGMA2_DEPS)"
+else ifeq ($(IMAGE), $(filter $(IMAGE), titan titan-wlandriver))
+	@echo "PLUGINS_TITAN             : $(PLUGINS_TITAN)"
+	@echo "LOCAL_TITAN_BUILD_OPTIONS : $(LOCAL_TITAN_BUILD_OPTIONS)"
+	@echo "LOCAL_TITAN_CPPFLAGS      : $(LOCAL_TITAN_CPPFLAGS)"
+	@echo "LOCAL_TITAN_DEPS          : $(LOCAL_TITAN_DEPS)"
 endif
 	@echo '================================================================================'
-	@make --no-print-directory toolcheck
+	@echo ""
+	@$(MAKE) --no-print-directory toolcheck
 ifeq ($(MAINTAINER),)
 	@echo "##########################################################################"
 	@echo "# The MAINTAINER variable is not set. It defaults to your name from the  #"
@@ -82,7 +89,7 @@ help:
 	@echo ""
 	@echo "later, you might find these useful:"
 	@echo "* make update-self         - update the build system"
-	@echo "* make update              - update the build system, apps, driver and flash"
+	@echo "* make update              - update the build system, tools, driver and flash"
 	@echo ""
 	@echo "cleantargets:"
 	@echo "make clean                 - Clears everything except kernel."
@@ -92,27 +99,24 @@ help:
 # define package versions first...
 include make/contrib-libs.mk
 include make/contrib-apps.mk
+include make/linux-kernel.mk
+include make/crosstool.mk
+include make/driver.mk
 include make/ffmpeg.mk
-ifeq ($(BOXARCH), sh4)
-include make/linux-kernel-sh4.mk
-include make/crosstool-sh4.mk
-include make/driver-sh4.mk
-else
-include make/linux-kernel-arm.mk
-include make/crosstool-arm.mk
-include make/driver-arm.mk
-endif
 include make/gstreamer.mk
 include make/root-etc.mk
 include make/python.mk
 include make/tools.mk
+include make/enigma2.mk
+include make/enigma2-plugins.mk
+include make/enigma2-release.mk
 include make/neutrino.mk
 include make/neutrino-plugins.mk
 include make/neutrino-release.mk
-include make/flashimage.mk
+include make/neutrino-patches.mk
+include make/titan.mk
+include make/titan-release.mk
 include make/cleantargets.mk
-include make/patches.mk
-include make/oscam.mk
 include make/bootstrap.mk
 
 update-self:
@@ -144,16 +148,22 @@ update:
 		else \
 			git pull; \
 		fi; \
+		if [ -d ~/pti_np ] && [ ! -d ./pti_np ]; then \
+			echo "Installing pti_np"; \
+			mkdir pti_np; \
+			cp -rf ~/pti_np/* ./pti_np; \
+			cd ..; \
+		fi; \
 	fi
 	@echo;
-	@if test -d $(APPS_DIR); then \
-		cd $(APPS_DIR)/; \
+	@if test -d $(TOOLS_DIR); then \
+		cd $(TOOLS_DIR)/; \
 		echo '==================================================================='; \
-		echo '      updating $(GIT_NAME_APPS)-apps git repository'; \
+		echo '      updating $(GIT_NAME_TOOLS)-tools git repository'; \
 		echo '==================================================================='; \
 		echo; \
 		if [ "$(GIT_STASH_PULL)" = "stashpull" ]; then \
-			git stash && git stash show -p > ./pull-stash-apps.patch || true && git pull && git stash pop || true; \
+			git stash && git stash show -p > ./pull-stash-tools.patch || true && git pull && git stash pop || true; \
 		else \
 			git pull; \
 		fi; \
@@ -174,7 +184,7 @@ update:
 	@echo;
 
 all:
-	@echo "'make all' is not a valid target. Please read the documentation."
+	@echo "'make all' is not a valid target. Please execute 'make print-targets' to display the alternatives."
 
 # target for testing only. not useful otherwise
 everything: $(shell sed -n 's/^\$$.D.\/\(.*\):.*/\1/p' make/*.mk)
@@ -182,7 +192,7 @@ everything: $(shell sed -n 's/^\$$.D.\/\(.*\):.*/\1/p' make/*.mk)
 # print all present targets...
 print-targets:
 	@sed -n 's/^\$$.D.\/\(.*\):.*/\1/p; s/^\([a-z].*\):\( \|$$\).*/\1/p;' \
-		`ls -1 make/*.mk|grep -v make/buildenv.mk|grep -v make/neutrino-release.mk` | \
+		`ls -1 make/*.mk|grep -v make/buildenv.mk|grep -v make/neutrino-release.mk|grep -v make/enigma2-release.mk|grep -v make/tvheadend-release.mk` | \
 		sort -u | fold -s -w 65
 
 # for local extensions, e.g. special plugins or similar...
@@ -206,3 +216,4 @@ PHONY += update update-self
 .NOTPARALLEL:
 
 endif
+

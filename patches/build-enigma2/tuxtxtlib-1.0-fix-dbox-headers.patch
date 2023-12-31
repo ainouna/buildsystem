@@ -1,0 +1,560 @@
+--- a/tuxtxt_common.h
++++ b/tuxtxt_common.h
+@@ -24,6 +24,68 @@
+ #include <linux/input.h>
+ 
+ void writeproc(const char* dest, const char *value);
++
++#ifdef __sh__
++#include <linux/stmfb.h>
++
++void blit(tstRenderInfo* renderinfo)
++{
++	STMFBIO_BLT_DATA  bltData;
++	memset(&bltData, 0, sizeof(STMFBIO_BLT_DATA));
++
++	bltData.operation  = BLT_OP_COPY;
++	bltData.srcOffset  = 1920*1080*4;
++
++	if (!renderinfo->var_screeninfo.yoffset) // First Buffer
++		;
++	else // Second Buffer
++		bltData.srcOffset += renderinfo->var_screeninfo.xres * renderinfo->var_screeninfo.yres * 4;
++
++	bltData.srcPitch   = 720 * 4;
++	bltData.srcFormat  = SURF_BGRA8888;
++	bltData.dstFormat  = SURF_BGRA8888;
++	bltData.dstOffset  = 0;
++	bltData.dstPitch   = renderinfo->strideSc;
++	bltData.dst_top    = 0;
++	bltData.dst_left   = 0;
++	bltData.dst_right  = renderinfo->xResSc;
++	bltData.dst_bottom = renderinfo->yResSc;
++
++	if (renderinfo->zoommode == 0)
++	{
++		bltData.src_top    = 0;
++		bltData.src_left   = 0;
++		bltData.src_right  = 720;
++		bltData.src_bottom = 576;
++	}
++	else if (renderinfo->zoommode == 1)
++	{
++		bltData.src_top    = 0;
++		bltData.src_left   = 0;
++		bltData.src_right  = 720;
++		bltData.src_bottom = 576 / 2;
++	}
++	else if (renderinfo->zoommode == 2)
++	{
++		bltData.src_top    = 576 / 2;
++		bltData.src_left   = 0;
++		bltData.src_right  = 720;
++		bltData.src_bottom = 576;
++	}
++	else
++		return;
++
++	if ( ioctl(renderinfo->fb, STMFBIO_BLT, &bltData ) < 0)
++	{
++		perror("ioctl STMFBIO_BLT");
++	}
++
++	if(ioctl(renderinfo->fb, STMFBIO_SYNC_BLITTER) < 0)
++	{
++		perror("ioctl STMFBIO_SYNC_BLITTER");
++	}
++}
++#endif
+ 
+ const char *ObjectSource[] =
+ {
+@@ -800,7 +862,7 @@
+ }
+ #define number2char(c) ((c) + (((c) <= 9) ? '0' : ('A' - 10)))
+ /* print hex-number into string, s points to last digit, caller has to provide enough space, no termination */
+-void tuxtxt_hex2str(char *s, unsigned int n)
++void tuxtxt_hex2str(unsigned char *s, unsigned int n)
+ {
+ 	do {
+ 		char c = (n & 0xF);
+@@ -1468,7 +1530,7 @@
+ 								if (pageinfo_thread->p24) /* packet 24 received */
+ 								{
+ 									int a, a1, e=39, l=3;
+-									char *p = pageinfo_thread->p24;
++									unsigned char *p = pageinfo_thread->p24;
+ 									do
+ 									{
+ 										for (;
+@@ -1486,8 +1548,8 @@
+ 											a1 = a; /* first non-space */
+ 										if (a >= 0 && l >= 2)
+ 										{
+-											strncpy(tuxtxt_cache.adip[tuxtxt_cache.flofpages[tuxtxt_cache.current_page[magazine]][l]],
+-													  &p[a1],
++											strncpy((char *)tuxtxt_cache.adip[tuxtxt_cache.flofpages[tuxtxt_cache.current_page[magazine]][l]],
++													  (char *)&p[a1],
+ 													  12);
+ 											if (e-a1 < 11)
+ 												tuxtxt_cache.adip[tuxtxt_cache.flofpages[tuxtxt_cache.current_page[magazine]][l]][e-a1+1] = '\0';
+@@ -4282,7 +4344,7 @@
+ 
+ 	/* render char */
+ 	sbitbuffer = renderinfo->sbit->buffer;
+-	char localbuffer[1000]; // should be enough to store one character-bitmap...
++	unsigned char localbuffer[1000]; // should be enough to store one character-bitmap...
+ 	// add diacritical marks
+ 	if (Attribute->diacrit)
+ 	{
+@@ -4292,10 +4354,10 @@
+ 			Char = G2table[1][0x20+ Attribute->diacrit];
+ 		else if (national_subset_local == NAT_GR)
+ 			Char = G2table[2][0x20+ Attribute->diacrit];
+-		else if (national_subset_local == NAT_HB)
++//		else if (national_subset_local == NAT_HB)  // !! Hebrew table not initialized, array too small
++//			Char = G2table[3][0x20+ Attribute->diacrit];
++		else if (national_subset_local == NAT_AR)
+ 			Char = G2table[3][0x20+ Attribute->diacrit];
+-		else if (national_subset_local == NAT_AR)
+-			Char = G2table[4][0x20+ Attribute->diacrit];
+ 		else
+ 			Char = G2table[0][0x20+ Attribute->diacrit];
+ 		if ((glyph = FT_Get_Char_Index(renderinfo->face, Char)))
+@@ -4306,158 +4368,157 @@
+ 			if ((error = FTC_SBit_Cache_Lookup(renderinfo->cache, &renderinfo->typettf, glyph, &sbit_diacrit)) == 0)
+ #endif
+ 			{
+-					sbitbuffer = localbuffer;
+-					memcpy(sbitbuffer,renderinfo->sbit->buffer,renderinfo->sbit->pitch*renderinfo->sbit->height);
+-
+-					for (Row = 0; Row < renderinfo->sbit->height; Row++)
++				sbitbuffer = localbuffer;
++				memcpy(sbitbuffer,renderinfo->sbit->buffer,renderinfo->sbit->pitch*renderinfo->sbit->height);
++
++				for (Row = 0; Row < renderinfo->sbit->height; Row++)
++				{
++					for (Pitch = 0; Pitch < renderinfo->sbit->pitch; Pitch++)
+ 					{
+-						for (Pitch = 0; Pitch < renderinfo->sbit->pitch; Pitch++)
+-						{
+-							if (sbit_diacrit->pitch > Pitch && sbit_diacrit->height > Row)
+-								sbitbuffer[Row*renderinfo->sbit->pitch+Pitch] |= sbit_diacrit->buffer[Row*renderinfo->sbit->pitch+Pitch];
+-						}
++						if (sbit_diacrit->pitch > Pitch && sbit_diacrit->height > Row)
++							sbitbuffer[Row*renderinfo->sbit->pitch+Pitch] |= sbit_diacrit->buffer[Row*renderinfo->sbit->pitch+Pitch];
+ 					}
+ 				}
+ 			}
+ 		}
++	}
+ 
+     int backupTTFshiftY = renderinfo->TTFShiftY;
+     if (national_subset_local == NAT_AR) 
+         renderinfo->TTFShiftY = backupTTFshiftY - 2; // for arabic TTF font should be shifted up slightly
+ 
+-		unsigned char *p;
+-		int f; /* running counter for zoom factor */
+-		int he = renderinfo->sbit->height; // sbit->height should not be altered, I guess
+-		Row = factor * (renderinfo->ascender - renderinfo->sbit->top + renderinfo->TTFShiftY);
+-		if (Row < 0)
+-		{
+-		    sbitbuffer  -= renderinfo->sbit->pitch*Row;
+-		    he += Row;
+-		    Row = 0;
+-		}
+-		else		
+-				tuxtxt_FillRect(renderinfo->lfb,renderinfo->fix_screeninfo.line_length,renderinfo->PosX, renderinfo->PosY + yoffset, curfontwidth, Row, bgcolor); /* fill upper margin */
+-
+-		if (renderinfo->ascender - renderinfo->sbit->top + renderinfo->TTFShiftY + he > renderinfo->fontheight)
+-			he = renderinfo->fontheight - renderinfo->ascender + renderinfo->sbit->top - renderinfo->TTFShiftY; /* limit char height to defined/calculated fontheight */
+-		if (he < 0) he = renderinfo->fontheight;
+-
+-		p = renderinfo->lfb + renderinfo->PosX*4 + (yoffset + renderinfo->PosY + Row) * renderinfo->fix_screeninfo.line_length; /* running pointer into framebuffer */
+-		for (Row = he; Row; Row--) /* row counts up, but down may be a little faster :) */
+-		{
+-			int pixtodo = (renderinfo->usettf ? renderinfo->sbit->width : curfontwidth);
+-			unsigned char *pstart = p;
+-
+-			for (Bit = xfactor * (renderinfo->sbit->left + renderinfo->TTFShiftX); Bit > 0; Bit--) /* fill left margin */
+-			{
++	unsigned char *p;
++	int f; /* running counter for zoom factor */
++	int he = renderinfo->sbit->height; // sbit->height should not be altered, I guess
++	Row = factor * (renderinfo->ascender - renderinfo->sbit->top + renderinfo->TTFShiftY);
++	if (Row < 0)
++	{
++	    sbitbuffer  -= renderinfo->sbit->pitch*Row;
++	    he += Row;
++	    Row = 0;
++	}
++	else		
++		tuxtxt_FillRect(renderinfo->lfb,renderinfo->fix_screeninfo.line_length,renderinfo->PosX, renderinfo->PosY + yoffset, curfontwidth, Row, bgcolor); /* fill upper margin */
++	if (renderinfo->ascender - renderinfo->sbit->top + renderinfo->TTFShiftY + he > renderinfo->fontheight)
++		he = renderinfo->fontheight - renderinfo->ascender + renderinfo->sbit->top - renderinfo->TTFShiftY; /* limit char height to defined/calculated fontheight */
++	if (he < 0)
++			he = renderinfo->fontheight;
++
++	p = renderinfo->lfb + renderinfo->PosX*4 + (yoffset + renderinfo->PosY + Row) * renderinfo->fix_screeninfo.line_length; /* running pointer into framebuffer */
++	for (Row = he; Row; Row--) /* row counts up, but down may be a little faster :) */
++	{
++		int pixtodo = (renderinfo->usettf ? renderinfo->sbit->width : curfontwidth);
++
++		unsigned char *pstart = p;
++		for (Bit = xfactor * (renderinfo->sbit->left + renderinfo->TTFShiftX); Bit > 0; Bit--) /* fill left margin */
++		{
++			for (f = factor-1; f >= 0; f--)
++				memcpy((p + f*renderinfo->fix_screeninfo.line_length),bgra[bgcolor],4);/*bgcolor*/
++			p+=4;
++			if (!renderinfo->usettf)
++				pixtodo--;
++		}
++
++		for (Pitch = renderinfo->sbit->pitch; Pitch; Pitch--)
++		{
++			for (Bit = 0x80; Bit; Bit >>= 1)
++			{
++				int color;
++
++				if (--pixtodo < 0)
++					break;
++
++				/* render around the char a one pixel wide border to enhance visibility in case of transparency */
++				if (*sbitbuffer & Bit) /* bit set -> foreground */
++				{
++					color = fgcolor;
++					// render border on the left of the char when transparency enabled
++					if ((p > pstart) && (memcmp(p-4,bgra[bgcolor],4)==0))
++					{
++						for (f = factor-1; f >= 0; f--)
++							memcpy(p-4 + f*renderinfo->fix_screeninfo.line_length,bgra[Attribute->bg],4);
++					}
++					// render border on the top of the char when transparency enabled
++					if ((p-factor*renderinfo->fix_screeninfo.line_length >= renderinfo->lfb + renderinfo->PosX*4 + (yoffset + renderinfo->PosY) * renderinfo->fix_screeninfo.line_length) && (memcmp(p-renderinfo->fix_screeninfo.line_length,bgra[bgcolor],4)==0))
++					{
++						memcpy((p-renderinfo->fix_screeninfo.line_length),bgra[Attribute->bg],4);
++					}
++				}
++				else /* bit not set -> background */
++				{
++					color = bgcolor;
++					// render border on the right of the char when transparency enabled
++					if ((p > pstart) && (memcmp(p-4,bgra[fgcolor],4)==0))
++						color = Attribute->bg;
++					// render border on the bottom of the char when transparency enabled
++					if ((p-factor*renderinfo->fix_screeninfo.line_length >= renderinfo->lfb + renderinfo->PosX*4 + (yoffset + renderinfo->PosY) * renderinfo->fix_screeninfo.line_length) && (memcmp(p-renderinfo->fix_screeninfo.line_length,bgra[fgcolor],4)==0))
++						color = Attribute->bg;
++				}
+ 				for (f = factor-1; f >= 0; f--)
+-					memcpy((p + f*renderinfo->fix_screeninfo.line_length),bgra[bgcolor],4);/*bgcolor*/
++					memcpy((p + f*renderinfo->fix_screeninfo.line_length),bgra[color],4);
+ 				p+=4;
+-				if (!renderinfo->usettf)
+-					pixtodo--;
+-			}
+-
+-			for (Pitch = renderinfo->sbit->pitch; Pitch; Pitch--)
+-			{
+-				for (Bit = 0x80; Bit; Bit >>= 1)
++
++				if (xfactor > 1) /* double width */
+ 				{
+-					int color;
+-
+-					if (--pixtodo < 0)
+-						break;
+-
+-					/* render around the char a one pixel wide border to enhance visibility in case of transparency */
+-					if (*sbitbuffer & Bit) /* bit set -> foreground */
+-					{
+-						color = fgcolor;
+-						// render border on the left of the char when transparency enabled
+-						if ((p > pstart) && (memcmp(p-4,bgra[bgcolor],4)==0))
+-						{
+-							for (f = factor-1; f >= 0; f--)
+-								memcpy(p-4 + f*renderinfo->fix_screeninfo.line_length,bgra[Attribute->bg],4);
+-						}
+-						// render border on the top of the char when transparency enabled
+-						if ((p-factor*renderinfo->fix_screeninfo.line_length >= renderinfo->lfb + renderinfo->PosX*4 + (yoffset + renderinfo->PosY) * renderinfo->fix_screeninfo.line_length) && (memcmp(p-renderinfo->fix_screeninfo.line_length,bgra[bgcolor],4)==0))
+-						{
+-							memcpy((p-renderinfo->fix_screeninfo.line_length),bgra[Attribute->bg],4);
+-						}
+-					}
+-					else /* bit not set -> background */
+-					{
+-						color = bgcolor;
+-						// render border on the right of the char when transparency enabled
+-						if ((p > pstart) && (memcmp(p-4,bgra[fgcolor],4)==0))
+-							color = Attribute->bg;
+-						// render border on the bottom of the char when transparency enabled
+-						if ((p-factor*renderinfo->fix_screeninfo.line_length >= renderinfo->lfb + renderinfo->PosX*4 + (yoffset + renderinfo->PosY) * renderinfo->fix_screeninfo.line_length) && (memcmp(p-renderinfo->fix_screeninfo.line_length,bgra[fgcolor],4)==0))
+-							color = Attribute->bg;
+-					}
+ 					for (f = factor-1; f >= 0; f--)
+ 						memcpy((p + f*renderinfo->fix_screeninfo.line_length),bgra[color],4);
+ 					p+=4;
+-
+-					if (xfactor > 1) /* double width */
+-					{
+-						for (f = factor-1; f >= 0; f--)
+-							memcpy((p + f*renderinfo->fix_screeninfo.line_length),bgra[color],4);
+-						p+=4;
+-						if (!renderinfo->usettf)
+-							pixtodo--;
+-					}
++					if (!renderinfo->usettf)
++						pixtodo--;
+ 				}
+-				sbitbuffer++;
+-			}
+-			/* fill rest of char width */
+-			if (renderinfo->usettf)
+-			{
+-				Bit = curfontwidth - xfactor*(renderinfo->sbit->width + renderinfo->sbit->left + renderinfo->TTFShiftX);
+-				/* if transparency and pixel left from current position has fgcolor then render border */
+-				if (renderinfo->transpmode == 1)
++			}
++			sbitbuffer++;
++		}
++		/* fill rest of char width */
++		if (renderinfo->usettf)
++		{
++			Bit = curfontwidth - xfactor*(renderinfo->sbit->width + renderinfo->sbit->left + renderinfo->TTFShiftX);
++			/* if transparency and pixel left from current position has fgcolor then render border */
++			if (renderinfo->transpmode == 1)
++			{
++				if ((p > pstart) && (memcmp(p-4,bgra[fgcolor],4)==0))
+ 				{
+-					if ((p > pstart) && (memcmp(p-4,bgra[fgcolor],4)==0))
+-					{
+-						Bit--;
+-						for (f = factor-1; f >= 0; f--)
+-							memcpy((p + f*renderinfo->fix_screeninfo.line_length),bgra[Attribute->bg],4);
+-						p+=4;
+-					}
++					Bit--;
++					for (f = factor-1; f >= 0; f--)
++						memcpy((p + f*renderinfo->fix_screeninfo.line_length),bgra[Attribute->bg],4);
++					p+=4;
+ 				}
+ 			}
++		}
++		else
++			Bit = pixtodo;
++		for (; Bit > 0; Bit--)
++		{
++			for (f = factor-1; f >= 0; f--)
++				memcpy((p + f*renderinfo->fix_screeninfo.line_length),bgra[bgcolor],4);
++			p+=4;
++		}
++		p = pstart + factor*renderinfo->fix_screeninfo.line_length;
++	}
++
++	Row = renderinfo->ascender - renderinfo->sbit->top + he + renderinfo->TTFShiftY;
++	/* if transparency and pixel up from current position has fgcolor then render border */
++	if (renderinfo->transpmode == 1)
++	{
++		int pixel;
++		for (pixel = 0; pixel < curfontwidth; pixel++)
++		{
++			if ((p-factor*renderinfo->fix_screeninfo.line_length >= renderinfo->lfb + renderinfo->PosX*4 + (yoffset + renderinfo->PosY) * renderinfo->fix_screeninfo.line_length) && (memcmp(p-renderinfo->fix_screeninfo.line_length,bgra[fgcolor],4)==0))
++				for (f = factor-1; f >= 0; f--)
++					memcpy(p + f*renderinfo->fix_screeninfo.line_length,bgra[Attribute->bg],4);
+ 			else
+-				Bit = pixtodo;
+-			for (; Bit > 0; Bit--)
+-			{
+ 				for (f = factor-1; f >= 0; f--)
+-					memcpy((p + f*renderinfo->fix_screeninfo.line_length),bgra[bgcolor],4);
+-				p+=4;
+-			}
+-
+-			p = pstart + factor*renderinfo->fix_screeninfo.line_length;
+-		}
+-
+-		Row = renderinfo->ascender - renderinfo->sbit->top + he + renderinfo->TTFShiftY;
+-		/* if transparency and pixel up from current position has fgcolor then render border */
+-		if (renderinfo->transpmode == 1)
+-		{
+-			int pixel;
+-			for (pixel = 0; pixel < curfontwidth; pixel++)
+-			{
+-				if ((p-factor*renderinfo->fix_screeninfo.line_length >= renderinfo->lfb + renderinfo->PosX*4 + (yoffset + renderinfo->PosY) * renderinfo->fix_screeninfo.line_length) && (memcmp(p-renderinfo->fix_screeninfo.line_length,bgra[fgcolor],4)==0))
+-					for (f = factor-1; f >= 0; f--)
+-						memcpy(p + f*renderinfo->fix_screeninfo.line_length,bgra[Attribute->bg],4);
+-				else
+-					for (f = factor-1; f >= 0; f--)
+-						memcpy(p + f*renderinfo->fix_screeninfo.line_length,bgra[bgcolor],4);
+-				p+=4;
+-			}
+-			Row++;
+-		}
+-		tuxtxt_FillRect(renderinfo->lfb,renderinfo->fix_screeninfo.line_length,renderinfo->PosX, renderinfo->PosY + yoffset + Row*factor, curfontwidth, (renderinfo->fontheight - Row) * factor, bgcolor); /* fill lower margin */
+-		if (Attribute->underline)
+-			tuxtxt_FillRect(renderinfo->lfb,renderinfo->fix_screeninfo.line_length,renderinfo->PosX, renderinfo->PosY + yoffset + (renderinfo->fontheight-2)* factor, curfontwidth,2*factor, fgcolor); /* underline char */
+-
+-		renderinfo->PosX += curfontwidth;
+-		renderinfo->TTFShiftY = backupTTFshiftY; // restore TTFShiftY
++					memcpy(p + f*renderinfo->fix_screeninfo.line_length,bgra[bgcolor],4);
++			p+=4;
++		}
++		Row++;
++	}
++	tuxtxt_FillRect(renderinfo->lfb,renderinfo->fix_screeninfo.line_length,renderinfo->PosX, renderinfo->PosY + yoffset + Row*factor, curfontwidth, (renderinfo->fontheight - Row) * factor, bgcolor); /* fill lower margin */
++	if (Attribute->underline)
++		tuxtxt_FillRect(renderinfo->lfb,renderinfo->fix_screeninfo.line_length,renderinfo->PosX, renderinfo->PosY + yoffset + (renderinfo->fontheight-2)* factor, curfontwidth,2*factor, fgcolor); /* underline char */
++
++	renderinfo->PosX += curfontwidth;
++	renderinfo->TTFShiftY = backupTTFshiftY; // restore TTFShiftY
+ }
+ 
+ /******************************************************************************
+@@ -4478,7 +4539,7 @@
+ 	tuxtxt_RenderCharIntern(renderinfo, Char, Attribute, 0, renderinfo->var_screeninfo.yres-renderinfo->var_screeninfo.yoffset);
+ }
+ 
+-void tuxtxt_RenderClearMenuLineBB(tstRenderInfo* renderinfo,char *p, tstPageAttr *attrcol, tstPageAttr *attr)
++void tuxtxt_RenderClearMenuLineBB(tstRenderInfo* renderinfo, unsigned char *p, tstPageAttr *attrcol, tstPageAttr *attr)
+ {
+ 	int col;
+ 
+@@ -4535,12 +4596,13 @@
+ 	{
+ 		tuxtxt_ClearFB(renderinfo,renderinfo->clearbbcolor);
+ 
+-		int fw, fh, tx, ty, tw, th;
++//		int fw, fh, tx, ty, tw, th;
++		int fw, tx, ty, tw, th;
+ 
+ 		if (renderinfo->screenmode==1) /* split with topmenu */
+ 		{
+ 			fw = renderinfo->fontwidth_topmenumain;
+-			fh = renderinfo->fontheight;
++//			fh = renderinfo->fontheight;
+ 			tw = TV43WIDTH;
+ 			renderinfo->displaywidth= (TV43STARTX     -renderinfo->sx);
+ 			renderinfo->StartX = renderinfo->sx; //+ (((ex-sx) - (40*fw+2+tw)) / 2); /* center screen */
+@@ -4555,7 +4617,7 @@
+ 		else /* 2: split with full height tv picture */
+ 		{
+ 			fw = renderinfo->fontwidth_small;
+-			fh = renderinfo->fontheight;
++//			fh = renderinfo->fontheight;
+ 			tx = TV169FULLSTARTX;
+ 			ty = TV169FULLSTARTY;
+ 			tw = TV169FULLWIDTH;
+@@ -4648,7 +4710,7 @@
+ 	if (tuxtxt_cache.adip[linkpage][0])
+ 	{
+ 		renderinfo->PosX = renderinfo->StartX + column*width;
+-		int l = strlen(tuxtxt_cache.adip[linkpage]);
++		int l = strlen((char *)tuxtxt_cache.adip[linkpage]);
+ 
+ 		if (l > 9) /* smaller font, if no space for one half space at front and end */
+ 			tuxtxt_setfontwidth(renderinfo,oldfontwidth * 10 / (l+1));
+@@ -4725,7 +4787,7 @@
+ 	if (//tuxtxt_cache.bttok &&
+ 		 renderinfo->screenmode == 1) /* TOP-Info present, divided screen -> create TOP overview */
+ 	{
+-		char line[TOPMENUCHARS];
++		unsigned char line[TOPMENUCHARS];
+ 		int current;
+ 		int prev10done, next10done, next100done, indent;
+ 		tstPageAttr *attrcol, *attr; /* color attribute for navigation keys and text */
+@@ -4865,8 +4927,10 @@
+ 			renderinfo->var_screeninfo.yoffset = 0;
+ 		else
+ 			renderinfo->var_screeninfo.yoffset = renderinfo->var_screeninfo.yres;
++#ifndef __sh__
+ 		if (ioctl(renderinfo->fb, FBIOPAN_DISPLAY, &renderinfo->var_screeninfo) == -1)
+ 			perror("TuxTxt <FBIOPAN_DISPLAY>");
++#endif
+ #ifdef HAVE_TRIPLEDRAGON
+ 		tdfb_attr();
+ #endif
+@@ -5389,7 +5453,7 @@
+ 		// display pagenr. when page has been updated while in transparency mode
+ 		renderinfo->PosY = renderinfo->StartY;
+ 
+-		char ns[3];
++		unsigned char ns[3];
+ 		tuxtxt_SetPosX(renderinfo,1);
+ 		tuxtxt_hex2str(ns+2,tuxtxt_cache.page);
+ 
+@@ -5399,6 +5463,9 @@
+ 
+ 		tuxtxt_cache.pageupdate=0;
+ 	}
++#ifdef __sh__
++	blit(renderinfo);
++#endif
+ }
+ /******************************************************************************
+  * MyFaceRequester
+@@ -5568,6 +5635,15 @@
+ 		return 0;
+ 	}
+ 
++#ifdef __sh__
++printf("%s::%d\n", __FILE__, __LINE__);
++	renderinfo->xResSc = renderinfo->var_screeninfo.xres;
++	renderinfo->yResSc = renderinfo->var_screeninfo.yres;
++	renderinfo->var_screeninfo.xres = 720;
++	renderinfo->var_screeninfo.yres = 576;
++	renderinfo->var_screeninfo.xoffset = 0;
++	renderinfo->var_screeninfo.yoffset = 0;
++#else
+ 	/* change to PAL resolution */
+ 	if (renderinfo->var_screeninfo.xres != 720) 
+ 	{
+@@ -5587,6 +5663,7 @@
+ 		FT_Done_FreeType(renderinfo->library);
+ 		return 0;
+ 	}
++#endif
+ 
+ 	/* get fixed screeninfo */
+ 	if (ioctl(renderinfo->fb, FBIOGET_FSCREENINFO, &renderinfo->fix_screeninfo) == -1)
+@@ -5612,8 +5689,17 @@
+ 	renderinfo->var_screeninfo.yoffset);
+ #endif
+ 		/* map framebuffer into memory */
++#ifndef __sh__
+ 	renderinfo->lfb = (unsigned char*)mmap(0, renderinfo->fix_screeninfo.smem_len, PROT_READ | PROT_WRITE, MAP_SHARED, renderinfo->fb, 0);
+ 
++#else
++	// The first 1920x1080x4 bytes are reserved
++	// After that we can take 1280x720x4 bytes for our virtual framebuffer
++	renderinfo->fix_screeninfo.smem_len -= 1920*1080*4;
++	renderinfo->lfb = (unsigned char*)mmap(0, renderinfo->fix_screeninfo.smem_len, PROT_READ | PROT_WRITE, MAP_SHARED, renderinfo->fb, 1920*1080*4);
++	renderinfo->strideSc = renderinfo->fix_screeninfo.line_length;
++	renderinfo->fix_screeninfo.line_length = 720*4; 
++#endif
+ 	/* set new colormap */
+ 	tuxtxt_setcolors(renderinfo,(unsigned short *)tuxtxt_defaultcolors, 0, tuxtxt_color_SIZECOLTABLE);
+ 
+@@ -5656,8 +5742,10 @@
+ 	{
+ 		renderinfo->var_screeninfo.yoffset = 0;
+ 
++#ifndef __sh__
+ 		if (ioctl(renderinfo->fb, FBIOPAN_DISPLAY, &renderinfo->var_screeninfo) == -1)
+ 			perror("TuxTxt <FBIOPAN_DISPLAY>");
++#endif
+ 	}
+ 	 /* close avs */
+ 	if (renderinfo->avs >= 0)
+--- a/tuxtxt_def.h
++++ b/tuxtxt_def.h
+@@ -301,6 +301,11 @@
+ 	unsigned char axdrcs[12+1+10+1];
+ 	struct fb_var_screeninfo var_screeninfo;
+ 	struct fb_fix_screeninfo fix_screeninfo;
++#ifdef __sh__
++	int xResSc;
++	int yResSc;
++	int strideSc;
++#endif
+ 	int TTFWidthFactor16, TTFHeightFactor16, TTFShiftX, TTFShiftY; /* parameters for adapting to various TTF fonts */
+ 	int fontheight, fontwidth, fontwidth_normal, fontwidth_small, fontwidth_topmenumain, fontwidth_topmenusmall, ascender;
+ 	int displaywidth;

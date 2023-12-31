@@ -1,0 +1,292 @@
+*** linux-sh4_orig/drivers/mtd/maps/physmap.c
+--- linux-sh4/drivers/mtd/maps/physmap.c
+@@ -83,6 +83,166 @@
+ static const char *part_probe_types[] = { "cmdlinepart", "RedBoot", NULL };
+ #endif
+ 
++#define FLASH_32MB
++//#define FLASH_16MB
++
++#if defined(FLASH_32MB)
++// 32MB flash
++#define WINDOW_ADDR     0xA0000000
++#define WINDOW_SIZE     0x02000000
++
++#define BOOT_SIZE       0x040000	// boot loader
++#define WELCOME_SIZE    0x020000	// bootargs (welcomeboot config)
++#define KERNEL_SIZE     0x220000	// kernel size
++#define DUMMY_SIZE      0x020000	// dummy squashfs size
++#define ROOT_SIZE       (WINDOW_SIZE - WELCOME_SIZE - KERNEL_SIZE - DB_SIZE - BOOT_SIZE)
++#define DB_SIZE         0xa00000
++
++#elif defined(FLASH_16MB) 
++// 16MB flash
++#define WINDOW_ADDR     0xA0000000
++#define WINDOW_SIZE     0x01000000
++
++#define BOOT_SIZE       0x040000	// boot loader
++#define WELCOME_SIZE    0x020000	// bootargs (welcomeboot config)
++#define KERNEL_SIZE     0x1A0000	// kernel size
++#define DUMMY_SIZE      0x020000	// dummy squashfs size
++#define ROOT_SIZE       (WINDOW_SIZE - WELCOME_SIZE - KERNEL_SIZE - DB_SIZE - BOOT_SIZE)
++#define DB_SIZE	 0x600000
++
++#else
++// 8MB flash
++#define WINDOW_ADDR     0xA0000000 	 
++#define WINDOW_SIZE     0x00800000 	 
++
++#define BOOT_SIZE       0x030000	// boot loader 	 
++#define WELCOME_SIZE    0x010000	// bootargs (welcomeboot config) 	 
++#define KERNEL_SIZE     0x180000	// kernel size 	 
++#define DUMMY_SIZE      0x020000	// dummy squashfs size
++#define ROOT_SIZE       (WINDOW_SIZE - WELCOME_SIZE - KERNEL_SIZE - DB_SIZE - BOOT_SIZE) 	 
++#define DB_SIZE         0x230000
++
++#endif
++
++#define ONBOARD_ADDR    0x00000000
++
++#define ONBOARD_SIZE    WINDOW_SIZE
++#define ONBOARD_BANKWIDTH 2
++
++static struct mtd_partition partition_info[]=
++{
++	{
++		.name       = "nor.boot",           // mtd0, boot loader
++		.offset     = ONBOARD_ADDR,
++		.size       = BOOT_SIZE,            // 0x00040000 (256k)
++		.mask_flags = MTD_WRITEABLE,        // force read-only
++	},
++	{
++		.name       = "nor.config_welcome", // mtd1, bootargs
++		.offset     = BOOT_SIZE,            // 0x00040000 (256k)
++		.size       = WELCOME_SIZE,         // 0x00020000 (128k)
++	},
++	{
++		.name       = "nor.kernel",         // mtd2
++		.offset     = BOOT_SIZE + WELCOME_SIZE, // 0x060000 (384k or 0.375M)
++		.size       = KERNEL_SIZE,          // 0x220000 (2.125M)
++	},
++	{
++		.name       = "nor.root",           // mtd3, squashfs
++		.offset     = BOOT_SIZE + WELCOME_SIZE + KERNEL_SIZE, // 0x00280000 (2.5M)
++		.size       = ROOT_SIZE,
++//		ROOT_SIZE = WINDOW_SIZE - WELCOME_SIZE - KERNEL_SIZE - DB_SIZE  - BOOT_SIZE
++//		            0x02000000  - 0x00020000     - 0x00220000    - 0x00a00000 - 0x040000 =  0x1380000 (19.5M)
++	},
++	{
++		.name       = "nor.var",            // mtd4, jffs
++		.offset     = BOOT_SIZE + WELCOME_SIZE + KERNEL_SIZE + ROOT_SIZE, // 0x1600000 (22M)
++		.size       = DB_SIZE,              // 0x00a00000 (10M)
++	},
++	/* partitions for upgrade */
++	{
++		.name       = "nor.mtd2_mtd3",      // mtd5 kernel + root
++		.offset     = BOOT_SIZE + WELCOME_SIZE, // 0x00060000 (384k)
++		.size       = KERNEL_SIZE + ROOT_SIZE,
++	},
++	{
++		.name       = "nor.mtd2_mtd3_mtd4", // mtd6 kernel + root + var
++		.offset     = BOOT_SIZE + WELCOME_SIZE, // 0x00060000 (384k)
++		.size       = KERNEL_SIZE + ROOT_SIZE + DB_SIZE,
++	},
++	{
++		.name       = "nor.full",           // mtd7 "all_noboot"
++		.offset     = BOOT_SIZE,            // 0x00040000 (256k)
++		.size       = (WINDOW_SIZE - BOOT_SIZE),
++	},
++//	{
++//		.name       = "nor.all",            // mtd8 everything
++//		.offset     = 0,
++//		.size       = WINDOW_SIZE,          // 0x02000000 (32M)
++//		.mask_flags = MTD_WRITEABLE,        // force read-only
++//	},
++};
++
++static struct mtd_partition higlvl_partition_info[]=
++{
++	{
++		.name       = "nor.boot",           // mtd0, boot loader
++		.offset     = 0x00000000,
++		.size       = BOOT_SIZE,            // 0x00040000 (256k)
++//		.mask_flags = MTD_WRITEABLE,        // force read-only
++	},
++	{
++		.name       = "nor.config_welcome", // mtd1, bootargs
++		.offset     = BOOT_SIZE,            // 0x00040000 (256k)
++		.size       = WELCOME_SIZE,         // 0x00020000 (128k)
++	},
++	{
++		.name       = "nor.kernel",         // mtd2
++		.offset     = BOOT_SIZE + WELCOME_SIZE, // 0x00060000 (384k or 0.375M)
++		.size       = KERNEL_SIZE,          // 0x00220000 (2.125M)
++	},
++	{
++		.name       = "nor.dummy_root",     // mtd3, dummy squashfs
++		.offset     = BOOT_SIZE + WELCOME_SIZE + KERNEL_SIZE, // 0x00280000 (2.5M)
++		.size       = DUMMY_SIZE,            // 0x00020000, 1 sector (128k)
++//		.mask_flags = MTD_WRITEABLE,
++	},
++	{
++		.name       = "nor.real_root",      // mtd4, jffs
++		.offset     = BOOT_SIZE + WELCOME_SIZE + KERNEL_SIZE + DUMMY_SIZE, // 0x002a0000 (2.625M)
++		.size       = WINDOW_SIZE - BOOT_SIZE - WELCOME_SIZE - KERNEL_SIZE - DUMMY_SIZE, // 0x01D60000 (29,375M)
++	},
++	/* partitions for upgrade */
++	{
++		.name       = "nor.mtd2_mtd3",      // mtd5, kernel + dummy root (kernel only)
++		.offset     = BOOT_SIZE + WELCOME_SIZE, // 0x00060000 (384k)
++		.size       = KERNEL_SIZE + ROOT_SIZE,
++	},
++	{
++		.name       = "nor.mtd2_mtd3_mtd4", // mtd6, kernel + dummy root + root
++		.offset     = BOOT_SIZE + WELCOME_SIZE, // 0x00060000 (384k)
++		.size       = KERNEL_SIZE + ROOT_SIZE + DB_SIZE,
++	},
++	{
++		.name       = "nor.full",           // mtd7  all but bootloader ("all_noboot")
++		.offset     = BOOT_SIZE,            // 0x00040000 (256k)
++		.size       = (WINDOW_SIZE - BOOT_SIZE),
++	},
++//	{
++//		.name       = "nor.all",            // mtd8 everything
++//		.offset     = 0,
++//		.size       = WINDOW_SIZE,          // 0x02000000 (32M)
++////		.mask_flags = MTD_WRITEABLE,        // force read-only
++//	},
++};
++
++#define NUM_PARTITIONS ARRAY_SIZE(partition_info)
++#define NUM_HIGHLVL_PARTITIONS ARRAY_SIZE(higlvl_partition_info)
++
++static struct mtd_info *lowlvl_parts[NUM_PARTITIONS];
++static struct mtd_info *merged_mtd;
++
++
+ static int physmap_flash_probe(struct platform_device *dev)
+ {
+ 	struct physmap_flash_data *physmap_data;
+@@ -106,7 +266,7 @@
+ 	platform_set_drvdata(dev, info);
+ 
+ 	for (i = 0; i < dev->num_resources; i++) {
+-		printk(KERN_NOTICE "physmap platform flash device: %.8llx at %.8llx\n",
++		printk("physmap platform flash device: %.8llx at %.8llx\n",
+ 		       (unsigned long long)(dev->resource[i].end - dev->resource[i].start + 1),
+ 		       (unsigned long long)dev->resource[i].start);
+ 
+@@ -126,6 +286,8 @@
+ 		info->map[i].set_vpp = physmap_data->set_vpp;
+ 		info->map[i].pfow_base = physmap_data->pfow_base;
+ 
++		printk("MAP[%d]: %s %p %lu %d %p\n", i, info->map[i].name, info->map[i].phys, info->map[i].size, info->map[i].bankwidth, info->map[i].set_vpp);
++
+ 		info->map[i].virt = devm_ioremap(&dev->dev, info->map[i].phys,
+ 						 info->map[i].size);
+ 		if (info->map[i].virt == NULL) {
+@@ -135,6 +297,8 @@
+ 		else
+ #endif
+ 		simple_map_init(&info->map[i]);
++
++		printk("MAP[%d]: virtual address: 0x%p\n", i, info->map[i].virt);
+ 
+ 		probe_type = rom_probe_types;
+ 		for (; info->mtd[i] == NULL && *probe_type != NULL; probe_type++)
+@@ -169,6 +333,26 @@
+ 	if (err)
+ 		goto err_out;
+ 
++	partition_info[0].mtdp = &lowlvl_parts[0]; // nor.boot
++	partition_info[1].mtdp = &lowlvl_parts[1]; // nor.config_welcome
++	partition_info[2].mtdp = &lowlvl_parts[2]; // nor.kernel
++	partition_info[3].mtdp = &lowlvl_parts[3]; // nor.root
++	partition_info[4].mtdp = &lowlvl_parts[4]; // nor.var
++	partition_info[5].mtdp = &lowlvl_parts[5]; // nor.mtd2_mtd3
++	partition_info[6].mtdp = &lowlvl_parts[6]; // nor.mtd2_mtd3_mtd4
++	partition_info[7].mtdp = &lowlvl_parts[7]; // nor.full
++//	partition_info[8].mtdp = &lowlvl_parts[8]; // nor.all
++
++	add_mtd_partitions(info->cmtd, partition_info, NUM_PARTITIONS);
++
++	merged_mtd = mtd_concat_create(lowlvl_parts, NUM_PARTITIONS, "NOR Flash Concatenated");
++	if (merged_mtd)
++	{
++		add_mtd_partitions(merged_mtd, higlvl_partition_info, NUM_HIGHLVL_PARTITIONS);
++	}
++
++
++#if 0
+ #ifdef CONFIG_MTD_PARTITIONS
+ 	err = parse_mtd_partitions(info->cmtd, part_probe_types,
+ 				&info->parts, 0);
+@@ -187,6 +374,7 @@
+ #endif
+ 
+ 	add_mtd_device(info->cmtd);
++#endif
+ 	return 0;
+ 
+ err_out:
+*** linux-sh4_orig/drivers/mtd/mtdpart.c
+--- linux-sh4/drivers/mtd/mtdpart.c
+@@ -27,7 +27,9 @@
+ 	struct mtd_info mtd;
+ 	struct mtd_info *master;
+ 	uint64_t offset;
++	int index;
+ 	struct list_head list;
++	int registered;
+ };
+ 
+ /*
+@@ -319,7 +321,8 @@
+ 	list_for_each_entry_safe(slave, next, &mtd_partitions, list)
+ 		if (slave->master == master) {
+ 			list_del(&slave->list);
++			if (slave->registered)
++				del_mtd_device(&slave->mtd);
+-			del_mtd_device(&slave->mtd);
+ 			kfree(slave);
+ 		}
+ 
+@@ -409,6 +412,7 @@
+ 	slave->mtd.erase = part_erase;
+ 	slave->master = master;
+ 	slave->offset = part->offset;
++	slave->index = partno;
+ 
+ 	if (slave->offset == MTDPART_OFS_APPEND)
+ 		slave->offset = cur_offset;
+@@ -497,9 +501,17 @@
+ 		slave->mtd.flags |= MTD_SPANS_MASTER;
+ 
+ out_register:
++	if (part->mtdp) {
++		/* store the object pointer (caller may or may not register it*/
++		*part->mtdp = &slave->mtd;
++		slave->registered = 0;
++	}
++	else
++	{
++		/* register our partition */
++		add_mtd_device(&slave->mtd);
++		slave->registered = 1;
++	}
+-	/* register our partition */
+-	add_mtd_device(&slave->mtd);
+-
+ 	return slave;
+ }
+ 
+*** linux-sh4_orig/include/linux/mtd/partitions.h
+--- linux-sh4/include/linux/mtd/partitions.h
+@@ -40,6 +40,7 @@
+ 	uint64_t offset;		/* offset within the master MTD space */
+ 	uint32_t mask_flags;		/* master MTD flags to mask out for this partition */
+ 	struct nand_ecclayout *ecclayout;	/* out of band layout for this partition (NAND only)*/
++	struct mtd_info **mtdp;		/* pointer to store the MTD object */
+ };
+ 
+ #define MTDPART_OFS_NXTBLK	(-2)

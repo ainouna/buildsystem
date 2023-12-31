@@ -1,0 +1,36 @@
+--- enigma2-serviceapp-0.1/Makefile.am
++++ enigma2-serviceapp-0.1/Makefile.am
+@@ -1 +1,3 @@
+ SUBDIRS = src
++
++ACLOCAL_AMFLAGS = -I m4
+--- enigma2-serviceapp-0.1/src/serviceapp/m3u8.cpp
++++ enigma2-serviceapp-0.1/src/serviceapp/m3u8.cpp
+@@ -146,7 +146,7 @@
+     request.append("Host: ").append(purl.host());
+     if (purl.port() > 0)
+     {
+-        request.append(":").append(std::to_string(purl.port()));
++        request.append(":").append(to_string(purl.port()));
+     }
+     request.append("\r\n");
+     request.append("User-Agent: ").append(userAgent).append("\r\n");
+--- enigma2-serviceapp-0.1/src/serviceapp/m3u8.h
++++ enigma2-serviceapp-0.1/src/serviceapp/m3u8.h
+@@ -7,6 +7,15 @@
+ 
+ #include "wrappers.h"
+ #include "common.h"
++
++//to_string replacement
++template <typename T>
++std::string to_string(const T& value)
++{
++    std::stringstream ss;
++    ss << value;
++    return ss.str();
++}
+ 
+ struct M3U8StreamInfo
+ {
+

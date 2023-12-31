@@ -1,0 +1,355 @@
+--- a/drivers/stm/stx7100_comms.c.org
++++ b/drivers/stm/stx7100_comms.c
+@@ -240,12 +240,12 @@
+ 			STM_PAD_PIO_BIDIR_NAMED(3, 0, 1, "SCL"),
+ 			STM_PAD_PIO_BIDIR_NAMED(3, 1, 1, "SDA"),
+ 		},
+-		.sysconfs_num = 2,
++		.sysconfs_num = 1,
+ 		.sysconfs = (struct stm_pad_sysconf []) {
+ 			/* SSC1_MUX_SEL = 0 (default assignment) */
+ 			STM_PAD_SYS_CFG(7, 2, 2, 0),
+-			/* DVO_OUT_ON = 0 (SSC not DVO) */
+-			STM_PAD_SYS_CFG(7, 10, 10, 0),
++			/* DVO_OUT_ON = 0 (SSC not DVO) 
++			STM_PAD_SYS_CFG(7, 10, 10, 0),*/
+ 		},
+ 	},
+ 	[2] = {
+--- a/arch/sh/boards/mach-mb448/setup.c.org
++++ b/arch/sh/boards/mach-mb448/setup.c
+@@ -1,6 +1,9 @@
+ /*
+  * arch/sh/boards/st/mb448/setup.c
+  *
++ * Modified from code for mb448 for Kathrein UFS922
++ *
++ * Original code:
+  * Copyright (C) 2005 STMicroelectronics Limited
+  * Author: Stuart Menefy (stuart.menefy@st.com)
+  *
+@@ -19,85 +22,123 @@
+ #include <linux/mtd/physmap.h>
+ #include <linux/stm/platform.h>
+ #include <linux/stm/stx7100.h>
++#include <linux/bpa2.h>
+ #include <asm/irl.h>
+ 
+-
+-
+-#define MB448_PIO_SMC91X_RESET stm_gpio(2, 6)
+ #define MB448_PIO_FLASH_VPP stm_gpio(2, 7)
+ 
+-
++const char *LMI_VID_partalias[] = { "BPA2_Region1", "coredisplay-video", "gfx-memory", "v4l2-video-buffers", NULL };
++const char *LMI_SYS_partalias[] = { "BPA2_Region0", "bigphysarea", "v4l2-coded-video-buffers", NULL };
++
++static struct bpa2_partition_desc bpa2_parts_table[] =
++{
++	{
++		.name  = "LMI_VID",
++		.start = 0x10800000,
++		.size  = 0x02E00000,  // 46 Mbyte
++		.flags = 0,
++		.aka   = LMI_VID_partalias
++	},
++	{
++		.name  = "LMI_SYS",
++		.start = 0,
++		.size  = 0x01C00000,  // 28 Mbyte
++		.flags = 0,
++		.aka   = LMI_SYS_partalias
++      }
++};
+ 
+ void __init mb448_setup(char **cmdline_p)
+ {
+-	printk("STMicroelectronics STb7109E Reference board initialisation\n");
++	printk("Kathrein UFS922 main board initialisation\n");
+ 
+ 	stx7100_early_device_init();
+ 
+-	stx7100_configure_asc(2, &(struct stx7100_asc_config) {
+-			.hw_flow_control = 0,
+-			.is_console = 1, });
+-	stx7100_configure_asc(3, &(struct stx7100_asc_config) {
+-			.hw_flow_control = 0,
+-			.is_console = 0, });
++	// console ASC
++	stx7100_configure_asc(2, &(struct stx7100_asc_config)
++	{
++		.hw_flow_control = 0,
++		.is_console = 1,
++	});
++  	bpa2_init(bpa2_parts_table, ARRAY_SIZE(bpa2_parts_table));
+ }
+ 
+-
+-
+-static struct resource mb448_smc91x_resources[] = {
+-	[0] = {
+-		.start	= 0xa2000300,
+-		.end	= 0xa2000300 + 0xff,
+-		.flags	= IORESOURCE_MEM,
+-	},
+-	[1] = {
+-		.start	= IRL3_IRQ,
+-		.end	= IRL3_IRQ,
+-		.flags	= IORESOURCE_IRQ,
+-	},
+-};
+-
+-static struct platform_device mb448_smc91x_device = {
+-	.name		= "smc91x",
+-	.id		= 0,
+-	.num_resources	= ARRAY_SIZE(mb448_smc91x_resources),
+-	.resource	= mb448_smc91x_resources,
+-};
+-
+-
+-
+ static void mb448_set_vpp(struct map_info *info, int enable)
+ {
+-	gpio_set_value(MB448_PIO_FLASH_VPP, enable);
++//	gpio_set_value(MB448_PIO_FLASH_VPP, enable);
+ }
+ 
+-static struct platform_device mb448_physmap_flash = {
+-	.name		= "physmap-flash",
+-	.id		= -1,
+-	.num_resources	= 1,
+-	.resource	= (struct resource[]) {
+-		STM_PLAT_RESOURCE_MEM(0, 8*1024*1024),
+-	},
+-	.dev.platform_data = &(struct physmap_flash_data) {
+-		.width		= 2,
+-		.set_vpp	= mb448_set_vpp,
+-	},
+-};
+-
+-
++static struct resource physmap_flash_resource =
++{
++	.start		= 0x00000000,
++	.end		= 0x01000000 - 1,  // Size: 16 Mbyte
++	.flags		= IORESOURCE_MEM,
++};
++
++static struct mtd_partition mtd_parts_table[6] =
++{
++	{
++		.name   = "Boot firmware",    // mtd0, boot loader
++		.size   = 0x00040000,         // 256 kbyte  (0.25 Mbyte)
++		.offset = 0x00000000,         // 0
++	},
++	{
++		.name   = "UFS Kernel",       // mtd1, real kernel
++		.size   = 0x002c0000,         // 2.75 Mbyte
++		.offset = 0x00040000,         // 256 kbyte (0.25 Mbyte)
++	},
++	{
++		.name   = "Update kernel",    // mtd2
++		.size   = 0x00980000,         // 9.5 Mbyte
++		.offset = 0x00300000,         // 3 Mbyte
++	},
++	{
++		.name   = "Var",              // mtd3
++		.size   = 0x00280000,         // 2.5 Mbyte
++		.offset = 0x00c80000,         // 12.5 Mbyte
++	},
++	{
++		.name   = "Swap",             // mtd4
++		.size   = 0x00100000,         // 1.0 Mbyte
++		.offset = 0x00f00000,         // 15 Mbyte
++	},
++	{	
++		.name   = "Full",             // mtd5
++		.size   = 0x00fc0000,         // 15,75 Mbyte
++		.offset = 0x00040000,         // 256 kbyte (0,25 Mbyte)
++	}
++};
++
++static struct platform_device mb448_physmap_flash =
++{
++	.name		       = "physmap-flash",
++	.id		           = -1,
++	.num_resources	   = 1,
++	.resource	       = &physmap_flash_resource,
++	.dev.platform_data = &(struct physmap_flash_data)
++	{
++		.width    = 2,
++		.set_vpp  = mb448_set_vpp,
++		.nr_parts = ARRAY_SIZE(mtd_parts_table),
++		.parts    = mtd_parts_table
++	},
++};
+ 
+ #define STMMAC_PHY_ADDR 14
+-static int stmmac_phy_irqs[PHY_MAX_ADDR] = {
++static int stmmac_phy_irqs[PHY_MAX_ADDR] =
++{
+ 	[STMMAC_PHY_ADDR] = IRL0_IRQ,
+ };
+-static struct stmmac_mdio_bus_data stmmac_mdio_bus = {
+-	.bus_id = 0,
++
++static struct stmmac_mdio_bus_data stmmac_mdio_bus =
++{
++	.bus_id   = 0,
+ 	.phy_mask = 1,
+-	.irqs = stmmac_phy_irqs,
+-};
+-
+-static struct platform_device *mb448_devices[] __initdata = {
+-	&mb448_smc91x_device,
++	.irqs     = stmmac_phy_irqs,
++};
++
++static struct platform_device *mb448_devices[] __initdata =
++{
+ 	&mb448_physmap_flash,
+ };
+ 
+@@ -105,33 +146,79 @@
+ {
+ 	stx7100_configure_sata();
+ 
++/*
++     0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
++00:          -- -- -- -- -- 08 -- 0a -- 0c -- -- -- 
++10: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++20: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++30: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++40: -- -- -- -- -- -- -- -- -- -- UU -- -- -- -- -- 
++50: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++60: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++70: -- -- -- -- -- -- -- --
++ 08: ?
++ 0a: LNBH23 LNB power controller (frontend 0)
++ 0c: AVL2108A demodulator (frontend 0)
++ 4a: STV6412A AVS
++ */
+ 	stx7100_configure_ssc_i2c(0, NULL);
+-	stx7100_configure_ssc_spi(1, NULL);
++/*
++     0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
++00:          -- -- -- -- -- 08 -- 0a -- 0c -- -- -- 
++10: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++20: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++30: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++40: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++50: 50 51 52 53 54 55 56 57 -- -- -- -- -- -- -- -- 
++60: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++70: -- -- -- -- -- -- -- --                         
++ 08: ?
++ 0a: LNBH23 LNB power controller (frontend 1)
++ 0c: AVL2108A (frontend 1)
++ 50-57: 24C16 EEPROM
++ */
++	stx7100_configure_ssc_i2c(1, NULL);
++/*
++     0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
++00:          -- -- -- -- -- -- -- -- -- -- -- -- -- 
++10: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++20: -- -- -- 23 -- -- -- -- -- -- -- -- -- -- -- -- 
++30: UU -- -- -- -- -- -- -- -- -- 3a -- -- -- -- -- 
++40: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++50: UU 51 52 53 54 55 56 57 -- -- -- -- -- -- -- -- 
++60: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
++70: -- -- -- -- -- -- -- --                         
++ 23: CI controller
++ 30:
++ 3a:
++ 50-57: HDMI I2C
++ */
+ 	stx7100_configure_ssc_i2c(2, NULL);
+ 
+ 	stx7100_configure_usb();
+ 
+-	stx7100_configure_ethernet(&(struct stx7100_ethernet_config) {
+-			.mode = stx7100_ethernet_mode_mii,
+-			.ext_clk = 0,
+-			.phy_bus = 0,
+-			.phy_addr = STMMAC_PHY_ADDR,
+-			.mdio_bus_data = &stmmac_mdio_bus,
+-		});
+-
+-	gpio_request(MB448_PIO_FLASH_VPP, "Flash VPP");
++	stx7100_configure_ethernet(&(struct stx7100_ethernet_config)
++	{
++		.mode = stx7100_ethernet_mode_mii,
++		.ext_clk = 0,
++		.phy_bus = 0,
++		.phy_addr = STMMAC_PHY_ADDR,
++		.mdio_bus_data = &stmmac_mdio_bus,
++	});
++
++/*	gpio_request(MB448_PIO_FLASH_VPP, "Flash VPP");
+ 	gpio_direction_output(MB448_PIO_FLASH_VPP, 0);
+-
+-	/* Reset the SMSC 91C111 Ethernet chip */
++*/
++
++	/* Reset the SMSC 91C111 Ethernet chip 
+ 	gpio_request(MB448_PIO_SMC91X_RESET, "SMC91x reset");
+ 	gpio_direction_output(MB448_PIO_SMC91X_RESET, 0);
+ 	udelay(1);
+ 	gpio_set_value(MB448_PIO_SMC91X_RESET, 1);
+ 	udelay(1);
+ 	gpio_set_value(MB448_PIO_SMC91X_RESET, 0);
+-
+-	return platform_add_devices(mb448_devices,
+-			ARRAY_SIZE(mb448_devices));
++*/
++	return platform_add_devices(mb448_devices, ARRAY_SIZE(mb448_devices));
+ }
+-
+ device_initcall(mb448_device_init);
++// vim:ts=4
+--- a/drivers/stm/stx7100_hispeed.c.org
++++ b/drivers/stm/stx7100_hispeed.c
+@@ -193,6 +193,14 @@
+ 	stx7100_usb_pwr_gpio = stm_pad_gpio_request_output(state, "PWR", 1);
+ 	BUG_ON(stx7100_usb_pwr_gpio == STM_GPIO_INVALID);
+ 
++	// reset usb on boot
++//	printk("[hispeed] USB power off\n");
++//	gpio_set_value(stx7100_usb_pwr_gpio, 0);
++//	mdelay(2000);
++//	printk("[hispeed] USB power on\n");
++//	gpio_set_value(stx7100_usb_pwr_gpio, 1);
++//	mdelay(600);
++
+ 	return 0;
+ }
+ 
+@@ -220,9 +228,9 @@
+ 			STM_PLAT_USB_FLAGS_OPC_MSGSIZE_CHUNKSIZE,
+ 	.device_config = &(struct stm_device_config){
+ 		.pad_config = &(struct stm_pad_config) {
+-			.gpios_num = 2,
++			.gpios_num = 1,
+ 			.gpios = (struct stm_pad_gpio []) {
+-				STM_PAD_PIO_IN_NAMED(5, 6, -1, "OC"),
++//				STM_PAD_PIO_IN_NAMED(5, 6, -1, "OC"),
+ 				STM_PAD_PIO_OUT_NAMED(5, 7, 1, "PWR"),
+ 			},
+ 			.custom_claim = stx7100_usb_pad_claim,
+@@ -269,7 +277,16 @@
+ 	BUG_ON(configured);
+ 	configured = 1;
+ 
++	printk("[hispeed] USB register device\n");
+ 	platform_device_register(&stx7100_usb_device);
++
++	// reset usb on boot
++//	printk("[hispeed] USB power off\n");
++//	gpio_set_value(stx7100_usb_pwr_gpio, 0);
++//	mdelay(2000);
++//	printk("[hispeed] USB power on\n");
++//	gpio_set_value(stx7100_usb_pwr_gpio, 1);
++//	mdelay(600);
+ }
+ 
+ 
+

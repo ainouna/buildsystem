@@ -23,7 +23,7 @@ if `which lsb_release > /dev/null 2>&1`; then
 		CentOS*) FEDORA=1; INSTALL="yum install -y";;
 		SUSE*)   SUSE=1;   INSTALL="zypper install -y";;
 		Ubuntu*) UBUNTU=1; INSTALL="apt-get -y install";;
-		LinuxM*) UBUNTU=2; INSTALL="apt-get --force-yes install";;
+		LinuxM*) UBUNTU=2; INSTALL="apt-get -y install";;
 		Gentoo)  GENTOO=1; INSTALL="emerge -uN";;
 	esac
 fi
@@ -34,7 +34,7 @@ if [ -z "$FEDORA$GENTOO$SUSE$UBUNTU" ]; then
 	elif [ -f /etc/fedora-release ]; then FEDORA=1; INSTALL="yum install -y"; 
 	elif [ -f /etc/centos-release ]; then FEDORA=1; INSTALL="yum install -y"; 
 	elif [ -f /etc/SuSE-release ];   then SUSE=1;   INSTALL="zypper install -n";
-	elif [ -f /etc/debian_version ]; then UBUNTU=1; INSTALL="apt-get --force-yes install";
+	elif [ -f /etc/debian_version ]; then UBUNTU=1; INSTALL="apt-get -y install";
 	elif [ -f /etc/gentoo-release ]; then GENTOO=1; INSTALL="emerge -uN"
 	fi
 fi
@@ -99,7 +99,6 @@ PACKAGES="\
 	${UBUNTU:+pkg-config}           ${SUSE:+pkg-config}                                    ${GENTOO:+pkg-config}  \
 	${UBUNTU:+patch}                ${SUSE:+patch}                                         ${GENTOO:+patch}       \
 	${UBUNTU:+autopoint}                                                                                          \
-	${UBUNTU:+cfv}                                                                         ${GENTOO:+cfv}         \
 	${UBUNTU:+fakeroot}                                                                    ${GENTOO:+fakeroot}    \
 	${UBUNTU:+gawk}                                                                        ${GENTOO:+gawk}        \
 	${UBUNTU:+libglib2.0-bin}       ${SUSE:+glib2-devel}         ${FEDORA:+glib2-devel}    ${GENTOO:+glib:2}      \
@@ -113,18 +112,35 @@ PACKAGES="\
 	${UBUNTU:+libltdl-dev}                                       ${FEDORA:+libtool-ltdl-devel}                    \
 	                                                             ${FEDORA:+byacc}                                 \
 	${UBUNTU:+libssl-dev}           ${SUSE:+libopenssl-devel}    ${FEDORA:+openssl-devel}                         \
-	${UBUNTU:+libmount-dev}                                                                                       \
-	${UBUNTU:+mtools}                                                                                             \
+	${UBUNTU:+libmount-dev}                                      ${FEDORA:+help2man}                              \
+	${UBUNTU:+mtools}                                            ${FEDORA:+rpcgen}                                \
+	${UBUNTU:+u-boot-tools}                                                                                       \
+	${UBUNTU:+curl}                                                                                               \
+	${UBUNTU:+mm-common}            ${SUSE:+mm-common}           ${FEDORA:+mm-common}     ${GENTOO:+mm-common}    \
+	${UBUNTU:+autoconf-archive}                                                                                   \
+	${UBUNTU:+cpio}                                                                                               \
+	${UBUNTU:+bc}                                                                                                 \
 ";
 
 if [ "$UBUNTU" == 1 ]; then
-	UBUNTU_VERSION=`lsb_release -r | grep "Release" | cut -f2 | cut -d . -f1`
+	if `which lsb_release > /dev/null 2>&1`; then 
+		UBUNTU_VERSION=`lsb_release -r | grep "Release" | cut -f2 | cut -d . -f1`
+	else
+		UBUNTU_VERSION=`grep VERSION_ID= /etc/os-release | sed 's/VERSION_ID="\([0-9]*\).*/\1/g'`
+	fi
 elif [ "$UBUNTU" == 2 ]; then
 	MINT_VERSION=`lsb_release -r | grep "Release" | cut -f2 | cut -d . -f1`
 fi
-if ([ "$UBUNTU" == 1  ] &&  [ "$UBUNTU_VERSION" -ge "16" ]) || ([ "$UBUNTU" == 2 ] && [ "$MINT_VERSION" -ge "18" ]); then
+
+if ([ "$UBUNTU" == 1 ] && [ "$UBUNTU_VERSION" -ge "16" ]) || ([ "$UBUNTU" == 2 ] && [ "$MINT_VERSION" -ge "18" ]); then
 	PACKAGES="$PACKAGES \
 	${UBUNTU:+libtool-bin} \
+	";
+fi
+
+if ([ "$UBUNTU" == 1 ] && [ "$UBUNTU_VERSION" -ge "22" ]) || ([ "$UBUNTU" == 2 ] && [ "$MINT_VERSION" -ge "21" ]); then
+	PACKAGES="$PACKAGES \
+	${UBUNTU:+gtk-doc-tools} \
 	";
 fi
 

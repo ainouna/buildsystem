@@ -1,0 +1,52 @@
+--- a/configure.ac
++++ b/configure.ac
+@@ -39,7 +39,7 @@
+ 
+ VERSION=${LIBXML_VERSION}
+ 
+-AM_INIT_AUTOMAKE([1.16.3 foreign no-dist-gzip dist-xz])
++AM_INIT_AUTOMAKE([1.15.1 foreign no-dist-gzip dist-xz])
+ AM_MAINTAINER_MODE([enable])
+ AM_SILENT_RULES([yes])
+ 
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -2,7 +2,7 @@
+ 
+ ACLOCAL_AMFLAGS = -I m4
+ 
+-SUBDIRS = include . doc example xstc
++SUBDIRS = include .
+ if WITH_PYTHON
+ SUBDIRS += python
+ endif
+@@ -10,7 +10,7 @@
+ SUBDIRS += fuzz
+ endif
+ 
+-DIST_SUBDIRS = include . doc example fuzz python xstc
++DIST_SUBDIRS = include . python
+ 
+ AM_CPPFLAGS = -I$(top_builddir)/include -I$(srcdir)/include -DSYSCONFDIR='"$(sysconfdir)"'
+ 
+--- a/xpath.c.org
++++ b/xpath.c
+@@ -4828,7 +4828,7 @@
+ 	return(-1);
+     if (f == NULL)
+         return(xmlHashRemoveEntry2(ctxt->funcHash, name, ns_uri, NULL));
+-XML_IGNORE_FPTR_CAST_WARNINGS
++/*XML_IGNORE_FPTR_CAST_WARNINGS*/
+     return(xmlHashAddEntry2(ctxt->funcHash, name, ns_uri, (void *) f));
+ XML_POP_WARNINGS
+ }
+@@ -4911,7 +4911,7 @@
+     if (ctxt->funcHash == NULL)
+ 	return(NULL);
+ 
+-XML_IGNORE_FPTR_CAST_WARNINGS
++/*XML_IGNORE_FPTR_CAST_WARNINGS*/
+     ret = (xmlXPathFunction) xmlHashLookup2(ctxt->funcHash, name, ns_uri);
+ XML_POP_WARNINGS
+     return(ret);
+

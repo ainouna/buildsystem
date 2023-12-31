@@ -1,4 +1,7 @@
 #!/bin/sh
+#Version 220711.1
+
+echo "Topfield TF77X0HDPVR Neutrino"
 
 MODDIR=/lib/modules
 
@@ -12,17 +15,23 @@ mknod -m 0666 /dev/rc      c 62 1 2>/dev/null
 mknod -m 0666 /dev/fplarge c 62 2 2>/dev/null
 mknod -m 0666 /dev/fpsmall c 62 3 2>/dev/null
 
+echo "Init frontpanel"
 insmod $MODDIR/e2_proc.ko
 insmod $MODDIR/tffp.ko
+
+insmod $MODDIR/simu_button.ko
+tffpctl --keyemulationmode 2
 
 if [ -e /var/etc/.firstboot ]; then
    echo "WAIT" > /dev/fpsmall
    echo "3 min" > /dev/fplarge
    rm /var/etc/.firstboot
    touch /dev/.devfsd
+else
+   echo "LOAD" > /dev/fplarge
+   echo "  10" > /dev/fpsmall
+   echo "LOAD 10"
 fi
-
-/etc/init.d/mountvirtfs start
 
 # remove /dev/ttyAS1 to avoid interference with the FP driver
 if [ -e /dev/ttyAS1 ]; then
@@ -32,124 +41,215 @@ fi
 # Update the GMT offset in case it changed during the standby
 /bin/tffpctl --setgmtoffset
 
+/etc/init.d/mountvirtfs start
 /etc/init.d/portmap start
-/etc/init.d/autofs start
-if [ ! -e /var/etc/.firstboot ]; then
-   echo "LOAD" > /dev/fpsmall
-   echo "MODULES" > /dev/fplarge
-   echo "LOADING MODULES"
 
-   echo "init stmfb"
-   insmod $MODDIR/stmcore-display-stx7109c3.ko
-   insmod $MODDIR/stmfb.ko display0=1280x720-32@50:12m:pal:yuv:yuv
+#/etc/init.d/autofs start
 
-   echo "load video firmware"
-   /bin/dd if=/dev/zero of=/dev/st231-0 bs=1024 count=4096
-#   /bin/stslave -t st231.0 -R /lib/firmware/video.elf
-   /bin/ustslave /dev/st231-0 /lib/firmware/video.elf
+echo -n "Starting telnetd "
+/usr/sbin/telnetd -l /bin/autologin
+echo "with autologin"
 
-   echo "load audio firmware"
-   /bin/dd if=/dev/zero of=/dev/st231-1 bs=1024 count=4096
-#   /bin/stslave -t st231.1 -R /lib/firmware/audio.elf
-   /bin/ustslave /dev/st231-1 /lib/firmware/audio.elf
+echo "Loading modules"
 
-   echo "init embx"
-   insmod $MODDIR/embxshell.ko
-   insmod $MODDIR/embxmailbox.ko mailbox0=0xb9211000:136:set2 mailbox1=0xb9212000:0
-   insmod $MODDIR/embxshm.ko mailbox0=shm:0:7:0x60000000:0:256:256:0:1024:0xa4000000:0x10000000
-   insmod $MODDIR/mme_host.ko transport0=shm
+echo "LOAD" > /dev/fplarge
+echo "   9" > /dev/fpsmall
+echo "Init stmfb (LOAD 9)"
+insmod $MODDIR/stmcore-display-stx7109c3.ko
+insmod $MODDIR/stmfb.ko display0=1280x720-32@50:12m:pal:yuv:yuv
 
-   echo "init AVS"
-   insmod $MODDIR/avs.ko type=stv6412
+ if [ ! -e /lib/firmware/audio.elf ] || [ ! -e /lib/firmware/video.elf ]; then
+   echo "FIRMWARE MISSING!"
+   echo "  FW" > /dev/fpsmall
+   echo "MISSING!" > /dev/fplarge
+fi
 
-   echo "init player"
-   insmod $MODDIR/mmelog.ko
-   insmod $MODDIR/mpeg2hw.ko mmeName=MPEG2_TRANSFORMER0
-   insmod $MODDIR/ksound.ko
-   insmod $MODDIR/p2div64.ko
-   insmod $MODDIR/stm_v4l2.ko
-   insmod $MODDIR/pseudocard.ko
+echo "Load audio firmware (LOAD 8)"
+echo "   8"  > /dev/fpsmall
+/bin/dd if=/dev/zero of=/dev/st231-0 bs=1024 count=4096
+if [ -e /lib/firmware/audio_dts.elf ]; then
+   /bin/ustslave /dev/st231-1 //lib/firmware/audio_dts.elf > /dev/null
+else
+   /bin/ustslave /dev/st231-1 /lib/firmware/audio.elf > /dev/null
+fi
 
-   insmod $MODDIR/cx24116.ko
+echo "Load video firmware (LOAD 7)"
+/bin/dd if=/dev/zero of=/dev/st231-0 bs=1024 count=4096
+echo "   7"  > /dev/fpsmall
+bin/ustslave /dev/st231-0 /lib/firmware/video.elf > /dev/null
 
-   insmod $MODDIR/starci.ko
+echo "Init embx (LOAD 6)"
+echo "   6"  > /dev/fpsmall
+insmod $MODDIR/embxshell.ko
+insmod $MODDIR/embxmailbox.ko mailbox0=0xb9211000:136:set2 mailbox1=0xb9212000:0
+insmod $MODDIR/embxshm.ko mailbox0=shm:0:7:0x60000000:0:256:256:0:1024:0xa4000000:0x10000000
+insmod $MODDIR/mme_host.ko transport0=shm
+
+echo "Init AVS (LOAD 5)" 
+echo "   5"  > /dev/fpsmall
+insmod $MODDIR/avs.ko type=stv6412
+
+player=`cat /proc/stb/player/version | awk '{ print substr( $0, length($0) - 2, length($0) ) }'`
+echo "Init player $player (LOAD 4)"
+echo "   4"  > /dev/fpsmall
+insmod $MODDIR/mmelog.ko
+insmod $MODDIR/mpeg2hw.ko mmeName=MPEG2_TRANSFORMER0
+insmod $MODDIR/ksound.ko
+insmod $MODDIR/p2div64.ko
+insmod $MODDIR/stm_v4l2.ko
+insmod $MODDIR/stmvout.ko
+insmod $MODDIR/stmvbi.ko
+insmod $MODDIR/pseudocard.ko
+
+insmod $MODDIR/cx24116.ko
+
+echo "[rcS] Init CI & cardreader"
+insmod $MODDIR/starci.ko
+insmod $MODDIR/pti.ko waitMS=20 videoMem=4096
+if [ $? -ne 0 ]; then
    insmod $MODDIR/pti.ko
+   echo "[rcS] Simple pti"
+else
+   echo "[rcS] Full feature pti"
+fi
+if [ $player=='player191' ]; then
    insmod $MODDIR/stm_monitor.ko
    insmod $MODDIR/stmsysfs.ko
-
    insmod $MODDIR/stmdvb.ko
-   insmod $MODDIR/player2.ko discardlateframe=0
-   insmod $MODDIR/sth264pp.ko
-   insmod $MODDIR/stmalloc.ko
-   insmod $MODDIR/platform.ko
-   insmod $MODDIR/silencegen.ko
-   insmod $MODDIR/bpamem.ko
-
-   echo "init frontpanel"
-   insmod $MODDIR/boxtype.ko
-   insmod $MODDIR/simu_button.ko
-   tffpctl --keyemulationmode 2
-   /bin/evremote2 110 10 &
-
-   #showiframe -p /var/boot/bootlogo.mvi &
-   stfbcontrol a 0
-
-   # Workaround why is jfs always not mountable?
-   # fsck.ext3 /dev/sda3 -a
-   fsck.jfs /dev/sda3 -a
-
-   /etc/init.d/mountall start
-   /etc/init.d/hostname start
-
-#   echo "starting telnetd"
-#   /usr/sbin/telnetd -l /bin/autologin
-#   /etc/init.d/vsftpd start
-   /usr/sbin/inetd
-
-   NFS=`grep -c nfs /proc/cmdline`
-   if [ "$NFS" -eq "1" ]; then
-      echo "Booting from nfs, don't set network"
-   else
-      if [ -e /etc/network/interfaces ]; then
-         ip addr flush eth0
-         /etc/init.d/networking stop
-         DHCP=`grep -c dhcp /etc/network/interfaces`
-         if [ "$DHCP" -eq "1" ]; then
-            echo "Starting dhcp"
-            /etc/init.d/udhcpc start
-         fi
-         /etc/init.d/networking start
-      fi
-   fi
-
-   echo "    " > /dev/fpsmall
-   echo "NEUTRINO" > /dev/fplarge
-   echo "LOADING Neutrino"
-
-   stfbcontrol a 255
-   until false
-   do
-      echo "starting neutrino ->"
-      /usr/local/bin/neutrino
-      rtv=$?
-      # update the GMT offset in case it changed while being turned on
-      /bin/tffpctl --setgmtoffset
-      echo "neutrino ended <- RTV: " $rtv
-      case "$rtv" in
-		0) echo "0"
-		   echo "SHUTDOWN"
-		   init 0;;
-		1) echo "1"
-		   echo "REBOOT"
-		   init 6;;
-		*) echo "*"
-		   echo "ERROR"
-		   init 6;;
-      esac
-   done
+elif [ $player=='player179' ]; then
+   insmod $MODDIR/stm_monitor.ko
+   insmod $MODDIR/stmsysfs.ko
+    insmod $MODDIR/stmdvb.ko
+else
+   insmod $MODDIR/stmdvb.ko
+   insmod $MODDIR/stm_monitor.ko
 fi
+
+echo "Init eplayer2 (LOAD 3)"
+echo "   3" > /dev/fpsmall
+insmod $MODDIR/player2.ko discardlateframe=0
+insmod $MODDIR/sth264pp.ko
+insmod $MODDIR/stmalloc.ko
+insmod $MODDIR/platform.ko
+insmod $MODDIR/silencegen.ko
+
+insmod $MODDIR/bpamem.ko
+
+stfbcontrol a 0
+
+# Workaround why is jfs always not mountable?
+#fsck.ext3 /dev/sda3 -a
+#fsck.jfs /dev/sda3 -a
+
+echo "Init remote control (LOAD 2)"
+echo "   2" > /dev/fpsmall
+insmod $MODDIR/boxtype.ko
+insmod $MODDIR/tfswitch.ko
+/bin/evremote2 110 10 &
+
+stfbcontrol a 255
+
+wlan=``
+if [ ! $wlan ] || [ ! -e $MODDIR/$wlan.ko ]; then
+   echo "No WLAN"
+else
+   insmod $MODDIR/$wlan.ko
+   echo "$wlan WLAN"
+#   echo "$wlan WLAN" > /dev/vfd
+#   sleep 3
+fi
+
+#/etc/init.d/mountall start
+
+/etc/init.d/hostname start
+
+if [ -e $MODDIR/ntfs.ko ]; then
+   insmod $MODDIR/ntfs.ko
+fi
+
+if [ -e $MODDIR/cifs.ko ]; then
+   insmod $MODDIR/cifs.ko
+fi
+
+echo "Init FTP & network (LOAD 1)"
+echo "   1" > /dev/fpsmall
+/etc/init.d/vsftpd start
+/usr/sbin/inetd
+
+NFS=`grep -c nfs /proc/cmdline`
+if [ "$NFS" -eq "1" ]; then
+   echo "Booting from nfs, don't set network"
+else
+   if [ -e /etc/network/interfaces ]; then
+      ip addr flush eth0
+      /etc/init.d/networking stop
+      DHCP=`grep -c 'iface eth0 inet dhcp' /etc/network/interfaces`
+      if [ "$DHCP" -eq "1" ]; then
+         echo "Starting DHCP on eth0"
+         /etc/init.d/udhcpc start
+      fi
+      /etc/init.d/networking start &
+   fi
+fi
+#Allow network to wake up and initialize
+sleep 2
+#Show IP address on frontpanel
+#ip=`ifconfig eth0 | sed -n '/inet addr/s/.*addr.\([^ ]*\) .*/\1/p'`
+#echo "IP $ip" > /dev/vfd
+#sleep 3
+
+# Start automount
+if [ -e /etc/init.d/automount ]; then
+   python /etc/init.d/automount &
+fi
+
+# Do own extras
+if [ -e /etc/ownscript.sh ]; then
+   /etc/ownscript.sh &
+fi
+
+# Try and synchronise time
+if [ -x /usr/sbin/ntpd ]; then
+   echo "[rcS]Set internet time"
+   (ntpd -n -p 0.europe.pool.ntp.org -q; /bin/fp_control -sst) &
+else
+  /bin/tffpctl --syncsystime &
+fi
+
+echo "Start Neutrino"
+echo "    " > /dev/fpsmall
+echo "START NEUTRINO" > /dev/fplarge
+
+until false
+do
+   echo "Starting Neutrino ->"
+   /usr/bin/neutrino
+   rtv=$?
+   # update the GMT offset in case it changed while being turned on
+   /bin/tffpctl --setgmtoffset
+   /bin/tffpctl --cleardisplay
+   echo "neutrino ended <- RTV: " $rtv
+   case "$rtv" in
+      0) echo "0"
+         echo "SHUTDOWN"
+         echo "SHUTDOWN" > /dev/fplarge
+         init 0;;
+      1) echo "1"
+         echo "REBOOT"
+         echo "REBOOT" > /dev/fplarge
+         init 6;;
+      3) echo "3"
+         echo "RESTART"
+         echo "RESTART" > /dev/fplarge
+         ;;
+      *) echo "*"
+         echo "ERROR"
+         echo "ERROR" > /dev/fplarge
+         init 6;;
+   esac
+done
 
 #never reached
 echo "REBOOT" > /dev/fplarge
-echo "REBOOT"
-init 6
+echo "REBOOT TF77X0"
+reboot -f

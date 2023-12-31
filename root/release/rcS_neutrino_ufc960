@@ -2,7 +2,8 @@
 
 MODDIR=/lib/modules
 
-insmod $MODDIR/micom.ko
+insmod $MODDIR/e2_proc.ko
+insmod $MODDIR/kathrein_micom.ko
 
 if [ -e /var/etc/.firstboot ]; then
    #fp_control does not work here
@@ -14,7 +15,6 @@ fi
 
 /etc/init.d/mountvirtfs start
 
-insmod $MODDIR/e2_proc.ko
 #insmod $MODDIR/fan_ctrl.ko
 
 if [ ! -e /var/etc/.firstboot ]; then
@@ -36,16 +36,18 @@ if [ ! -e /var/etc/.firstboot ]; then
 
    echo "load video firmware"
    /bin/dd if=/dev/zero of=/dev/st231-0 bs=1024 count=4096
+#   /bin/stslave -t st231.0 -R /lib/firmware/video.elf
    /bin/ustslave /dev/st231-0 /lib/firmware/video.elf
 
    echo "load audio firmware"
    /bin/dd if=/dev/zero of=/dev/st231-1 bs=1024 count=4096
+#   /bin/stslave -t st231.1 -R /lib/firmware/audio.elf
    /bin/ustslave /dev/st231-1 /lib/firmware/audio.elf
 
    echo "init embx"
    insmod $MODDIR/embxshell.ko
-   insmod $MODDIR/embxmailbox.ko mailbox0=0xb9211000:136:set2 mailbox1=0xb9212000:0 ;
-   insmod $MODDIR/embxshm.ko mailbox0=shm:0:7:0x60000000:0:256:256:0:512:0xa4000000:0x10000000 ;
+   insmod $MODDIR/embxmailbox.ko mailbox0=0xb9211000:136:set2 mailbox1=0xb9212000:0
+   insmod $MODDIR/embxshm.ko mailbox0=shm:0:7:0x60000000:0:256:256:0:512:0xa4000000:0x10000000
    insmod $MODDIR/mme_host.ko transport0=shm
 
    echo "init AVS"
@@ -95,8 +97,16 @@ if [ ! -e /var/etc/.firstboot ]; then
 #   /etc/init.d/vsftpd start
    /usr/sbin/inetd
 
-   #timefix e2
-   date -s "121220001970"
+#   Try and synchronise time
+   if [ -x /usr/sbin/ntpd ]; then
+      echo "Set internet time"
+      (ntpd -n -p 0.europe.pool.ntp.org -q; /bin/fp_control -sst) &
+   else
+     if [ -e /usr/sbin/time.sh ]; then
+        echo "Use transponder time"
+        /usr/sbin/time.sh &
+     fi
+   fi
 
    #stfbcontrol a 255
 
@@ -106,7 +116,7 @@ if [ ! -e /var/etc/.firstboot ]; then
    until false
    do
       echo "starting neutrino ->"
-      /usr/local/bin/neutrino
+      /usr/bin/neutrino
       rtv=$?
       echo "neutrino ended <- RTV: " $rtv
       case "$rtv" in
@@ -116,6 +126,9 @@ if [ ! -e /var/etc/.firstboot ]; then
 		1) echo "1"
 		   echo "REBOOT"
 		   init 6;;
+		3) echo "3"
+		   echo "RESTART"
+		   ;;
 		*) echo "*"
 		   echo "ERROR"
 		   init 6;;

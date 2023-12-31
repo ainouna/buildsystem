@@ -1,0 +1,44 @@
+--- a/titan/struct.h.org
++++ b/titan/struct.h
+@@ -246,7 +246,29 @@
+ #define ALARMSTOPTIME if(ALARMTIMEOUT == 1) {alarm(0);}
+ 
+ // VFD icons supported (more or less) on all boxes:
++#if defined(BOXMODEL_HS8200)
++typedef enum
++{
++	VFD_USB = 0x06,
++	VFD_HD = 0x05,
++	VFD_HDD = 0x00,
++	VFD_LOCK = 0x07,
++	VFD_BT = 0x00,
++	VFD_MP3 = 0x12,
++	VFD_MUSIC = 0x16,
++	VFD_DD = 0x08,
++	VFD_MAIL = 0x00,
++	VFD_MUTE = 0x09,
++	VFD_PLAY = 0x0E,
++	VFD_PAUSE = 0x10,
++	VFD_FF = 0x12,
++	VFD_FR = 0x11,
++	VFD_REC = 0x02,
++	VFD_CLOCK = 0x04
++} vfdicons;
++#else
+ typedef enum { VFD_USB = 0x10, VFD_HD, VFD_HDD, VFD_LOCK, VFD_BT, VFD_MP3, VFD_MUSIC, VFD_DD, VFD_MAIL, VFD_MUTE, VFD_PLAY, VFD_PAUSE, VFD_FF, VFD_FR, VFD_REC, VFD_CLOCK } vfdicons;
++#endif
+ 
+ #define OMIN(a,b) (a < b ? a : b)
+ #define OMAX(a,b) (a > b ? a : b)
+--- a/titan/titan/vfd.h.org
++++ b/titan/vfd.h
+@@ -385,7 +385,7 @@
+ 	memset(&data, 0, sizeof(struct vfdioctl));
+ 
+ 	data.start = 0x00;
+-	data.data[0] = id & 0x0f;
++//	data.data[0] = id & 0x0f;
+ 	data.data[4] = onoff;
+ 	data.length = 5;
+ 
+

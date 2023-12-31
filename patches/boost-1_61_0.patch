@@ -1,0 +1,13 @@
+--- include/boost/smart_ptr/detail/sp_has_sync.hpp.org
++++ include/boost/smart_ptr/detail/sp_has_sync.hpp
+@@ -50,6 +50,10 @@
+ #undef BOOST_SP_HAS_SYNC
+ #endif
+ 
++#if defined( __sh__ )
++#undef BOOST_SP_HAS_SYNC
++#endif
++
+ #if defined( __sparc__ )
+ #undef BOOST_SP_HAS_SYNC
+ #endif

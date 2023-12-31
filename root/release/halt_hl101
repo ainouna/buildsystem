@@ -46,7 +46,8 @@ if [ "$INIT_HALT" = "HALT" ]
 then
 	poweroff=""
 fi
-
+fp_control -l 1 1
+echo "OFF" > /dev/vfd
 halt -d -f -n -i $poweroff $hddown
 
 : exit 0

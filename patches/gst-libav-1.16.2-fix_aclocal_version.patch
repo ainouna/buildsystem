@@ -1,0 +1,94 @@
+--- a/configure.ac.org
++++ b/configure.ac
+@@ -95,10 +95,6 @@
+ 
+ AC_PATH_PROG(VALGRIND_PATH, valgrind, no)
+ AM_CONDITIONAL(HAVE_VALGRIND, test ! "x$VALGRIND_PATH" = "xno")
+-
+-dnl check for documentation tools
+-GTK_DOC_CHECK([1.12])
+-AG_GST_PLUGIN_DOCS([1.12])
+ 
+ dnl *** checks for libraries ***
+ 
+#@@ -340,16 +336,17 @@
+# 
+#   # Enable pic and static so that we get .a files, but with PIC code.
+#   emblibav_configure_args="$emblibav_configure_args \
+#-        --enable-static --enable-pic \
+#-        --disable-avdevice --disable-postproc --disable-swscale \
+#-        --disable-programs --disable-ffplay --disable-ffprobe --disable-ffmpeg \
+#-        --disable-encoder=flac --disable-protocols --disable-devices \
+#-        --disable-network --disable-hwaccels --disable-dxva2 --disable-vdpau \
+#-        --disable-filters --enable-filter=yadif --disable-doc --disable-d3d11va \
+#-        --disable-audiotoolbox --disable-videotoolbox --disable-vaapi --disable-crystalhd \
+#-        --disable-mediacodec --disable-nvenc --disable-mmal --disable-omx \
+#-        --disable-omx-rpi --disable-cuda --disable-cuvid --disable-libmfx \
+#-        --disable-libnpp --disable-iconv --disable-jni --disable-v4l2_m2m --enable-optimizations"
+#+	 --enable-gpl --enable-static --enable-pic \
+#+	 --disable-protocols --disable-devices --disable-network
+#+	 --disable-hwaccels --disable-filters --disable-doc \
+#+	 --disable-gtk-doc --disable-gtk-doc-html --disable-gtk-doc-pdf \
+#+	 --enable-optimizations --enable-cross-compile --target-os=linux \
+#+	 --disable-x86asm --arch=sh4 --cross-prefix=sh4-linux- \
+#+	 --disable-muxers --disable-encoders --disable-decoders \
+#+	 --enable-decoder=ogg --enable-decoder=vorbis --enable-decoder=flac \
+#+	 --disable-demuxers --enable-demuxer=ogg --enable-demuxer=vorbis \
+#+	 --enable-demuxer=flac --enable-demuxer=mpegts --disable-debug \
+#+	 --disable-bsfs --enable-pthreads --enable-bzlib"
+# 
+#   if test "x$enable_gpl" == "xyes"; then
+#     emblibav_configure_args="$emblibav_configure_args --enable-gpl"
+--- a/Makefile.am.org
++++ b/Makefile.am
+@@ -1,6 +1,6 @@
+ DISTCHECK_CONFIGURE_FLAGS=--enable-gtk-doc
+ 
+-COMMON_SUBDIRS = ext docs common tests
++COMMON_SUBDIRS = ext common tests
+ SUBDIRS = $(LIBAV_SUBDIRS) $(COMMON_SUBDIRS) pkgconfig
+ DIST_SUBDIRS = $(COMMON_SUBDIRS) gst-libs pkgconfig
+ 
+--- a/docs/Makefile.am.org
++++ b/docs/Makefile.am
+@@ -1,12 +1,4 @@
+-if ENABLE_GTK_DOC
+-if ENABLE_PLUGIN_DOCS
+-PLUGIN_DOCS_DIRS = plugins
+-else
+ PLUGIN_DOCS_DIRS =
+-endif
+-else
+-PLUGIN_DOCS_DIRS = plugins
+-endif
+ 
+ SUBDIRS = $(PLUGIN_DOCS_DIRS)
+ DIST_SUBDIRS = plugins
+--- a/common/Makefile.am.org
++++ b/common/Makefile.am
+@@ -3,14 +3,13 @@
+ EXTRA_DIST = \
+ 	ChangeLog \
+ 	gettext.patch \
+-	glib-gen.mak gtk-doc.mak upload-doc.mak \
++	glib-gen.mak \
+ 	cruft.mak release.mak win32.mak po.mak \
+ 	parallel-subdirs.mak \
+ 	gst-autogen.sh \
+ 	check-exports \
+ 	c-to-xml.py mangle-db.py scangobj-merge.py \
+-	gtk-doc-plugins.mak \
+-	plugins.xsl gstdoc-scangobj \
++	plugins.xsl \
+ 	gst.supp check.mak \
+ 	coverage/lcov.mak \
+ 	coverage/coverage-report.pl \
+--- a/docs/plugins/Makefile.am.org
++++ b/docs/plugins/Makefile.am
+@@ -67,4 +67,4 @@
+ #DOC_OVERRIDES = $(DOC_MODULE)-overrides.txt
+ DOC_OVERRIDES =
+ 
+-include $(top_srcdir)/common/gtk-doc-plugins.mak
++#include $(top_srcdir)/common/gtk-doc-plugins.mak
+

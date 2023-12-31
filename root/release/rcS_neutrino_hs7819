@@ -1,37 +1,39 @@
 #!/bin/sh
-#Version 140915.1
+#Version 230517.1
 
-echo "[rcS] Start"
 echo "Fortis HS7819 Neutrino"
 
 MODDIR=/lib/modules
+
+insmod $MODDIR/e2_proc.ko
 
 echo "[rcS] Init frontpanel"
 if [ ! -e /dev/vfd ]; then
    mknod -m 0660 /dev/vfd c 147 0
 fi
-insmod $MODDIR/nuvoton.ko paramDebug=0
+insmod $MODDIR/nuvoton.ko
 insmod $MODDIR/simu_button.ko
 
 if [ -e /var/etc/.firstboot ]; then
-   echo "1min" > /dev/vfd
+   echo "1min." > /dev/vfd
    echo "[rcS] WAIT 1 minute"
    rm /var/etc/.firstboot
    sleep 1
    touch /dev/.devfsd
 else
+   echo "[rcS] Start (LOAD 10)"
    echo "LD10" > /dev/vfd
 fi
 
 /etc/init.d/mountvirtfs start
 
-insmod $MODDIR/e2_proc.ko
-
 # Start automounter with umount timeout of 5 seconds
 if [ -e $MODDIR/autofs4.ko ]; then
    insmod $MODDIR/autofs4.ko
 fi
-/usr/sbin/automount --timeout=5 /autofs file /etc/auto.usb
+if [ -e /etc/init.d/automount ]; then
+   /usr/sbin/automount --timeout=5 /autofs file /etc/auto.usb
+fi
 
 echo "[rcS] Starting DEBUG Interface"
 /etc/init.d/mountall start
@@ -43,7 +45,7 @@ echo "[rcS] Starting telnetd"
 echo "[rcS] Init stmfb (LOAD 9)"
 echo "LD 9" > /dev/vfd
 insmod $MODDIR/stmcore-display-sti7111.ko
-insmod $MODDIR/stmfb.ko display0=1280x720-32@50:12m:pal:yuv:yuv;# display1=720x576-16@50:1m:pal:cvbs;
+insmod $MODDIR/stmfb.ko display0=1280x720-32@50:12M::pal:cvbs:rgb display1=720x576-16@50i:1M::pal:cvbs;
 
 echo "[rcS] Loading modules"
 
@@ -56,12 +58,12 @@ fi
 echo "[rcS] Load video firmware (LOAD 8)"
 echo "LD 8" > /dev/vfd
 /bin/dd if=/dev/zero of=/dev/st231-0 bs=1024 count=4096 2> /dev/null
-/bin/ustslave /dev/st231-0 /lib/firmware/video.elf
+/bin/ustslave /dev/st231-0 /lib/firmware/video.elf > /dev/null
 
 echo "[rcS] Load audio firmware (LOAD 7)"
 echo "LD 7" > /dev/vfd
 /bin/dd if=/dev/zero of=/dev/st231-1 bs=1024 count=4096 2> /dev/null
-/bin/ustslave /dev/st231-1 /lib/firmware/audio.elf
+/bin/ustslave /dev/st231-1 /lib/firmware/audio.elf > /dev/null
 
 echo "[rcS] Init embx (LOAD 6)"
 echo "LD 6" > /dev/vfd
@@ -86,11 +88,18 @@ insmod $MODDIR/pseudocard.ko
 echo "[rcS] Init frontend"
 insmod $MODDIR/lnb.ko type=a8293
 insmod $MODDIR/stv090x.ko paramDebug=0
-insmod $MODDIR/starci.ko
-insmod $MODDIR/smartcard.ko
 mknod /dev/lnb c 149 0
 
-insmod $MODDIR/pti.ko
+echo "[rcS] Init CI & cardreader"
+insmod $MODDIR/cimax.ko #paramDebug=20
+insmod $MODDIR/smartcard.ko
+insmod $MODDIR/pti.ko waitMS=20 videoMem=4096
+if [ $?=='2' ]; then
+   insmod $MODDIR/pti.ko
+   echo "[rcS] Simple pti"
+else
+   echo "[rcS] Full feature pti"
+fi
 insmod $MODDIR/stm_monitor.ko
 insmod $MODDIR/stmsysfs.ko
 insmod $MODDIR/stmdvb.ko
@@ -107,35 +116,54 @@ insmod $MODDIR/bpamem.ko
 mknod /dev/bpamem c 153 0
 
 if [ -e $MODDIR/cec.ko ]; then
+   echo "[rcS] Init HDMI-CEC"
    insmod $MODDIR/cec.ko activemode=1
 fi
-if [ -e $MODDIR/exportfs.ko ]; then
-   insmod $MODDIR/exportfs.ko
-fi
-if [ -e $MODDIR/cifs.ko ]; then
-   insmod $MODDIR/cifs.ko
-fi
-if [ -e $MODDIR/ntfs.ko ]; then
-   insmod $MODDIR/ntfs.ko
-fi
-if [ -e $MODDIR/tun.ko ]; then
-   insmod $MODDIR/tun.ko
-fi
-if [ -e $MODDIR/usbserial.ko ]; then
-   insmod $MODDIR/usbserial.ko
-fi
-if [ -e $MODDIR/ftdi.ko ]; then
-   insmod $MODDIR/ftdi.ko
-fi
-if [ -e $MODDIR/pl2303.ko ]; then
-   insmod $MODDIR/pl2303.ko
+
+if [ -e /boot/neutrinologo.mvi ]; then
+   showiframe -p /boot/neutrinologo.mvi &
 fi
 
 stfbcontrol a 0
 
+if [ -e $MODDIR/exportfs.ko ]; then
+   echo "[rcS] Init exportfs"
+   insmod $MODDIR/exportfs.ko
+fi
+
+if [ -e $MODDIR/cifs.ko ]; then
+   echo "[rcS] Init CIFS support"
+   insmod $MODDIR/cifs.ko
+fi
+
+if [ -e $MODDIR/ntfs.ko ]; then
+   echo "[rcS] Init NTFS support"
+   insmod $MODDIR/ntfs.ko
+fi
+
+if [ -e $MODDIR/tun.ko ]; then
+   echo "[rcS] Init tun support"
+   insmod $MODDIR/tun.ko
+fi
+
+if [ -e $MODDIR/usbserial.ko ]; then
+   insmod $MODDIR/usbserial.ko
+   if [ -e $MODDIR/ftdi.ko ]; then
+      echo "[rcS] Init FTDI USB serial support"
+      insmod $MODDIR/ftdi.ko
+   fi
+   if [ -e $MODDIR/pl2303.ko ]; then
+      echo "[rcS] Init PL2303 USB serial support"
+      insmod $MODDIR/pl2303.ko
+   fi
+fi
+
 echo "[rcS] Init remote control (LOAD 2)"
 echo "LD 2" > /dev/vfd
 /bin/evremote2 10 140 &
+
+# Load modules from /var/etc/modules.extra
+[ -f /var/etc/modules.extra ] && eval `sed -e 's/#.*//' -e '/^\s*$/d' -e 's/^\(.*\)/insmod \0;/' < /var/etc/modules.extra`
 
 stfbcontrol a 255
 
@@ -145,12 +173,9 @@ echo "LD 1" >/dev/vfd
 /etc/init.d/vsftpd start
 /usr/sbin/inetd
 
-#timefix
-date -s "201409011200"
-
 NFS=`grep -c nfs /proc/cmdline`
 if [ "$NFS" -eq "1" ]; then
-   echo "[rcS] Booting from nfs, don't set network"
+   echo "[rcS] Booting from NFS, don't set network"
 else
    if [ -e /etc/network/interfaces ]; then
       ip addr flush eth0
@@ -159,9 +184,39 @@ else
       if [ "$DHCP" -eq "1" ]; then
          echo "[rcS] Starting DHCP"
          /etc/init.d/udhcpc start
+      else
+         ip=$(echo `grep address /etc/network/interfaces` | sed 's/address //g')
+         echo "[rcS] Using fixed IP $ip"
       fi
       /etc/init.d/networking start
    fi
+fi
+#Allow network to wake up and initialize
+sleep 2
+#Show IP address on frontpanel
+#ip=`ifconfig eth0 | sed -n '/inet addr/s/.*addr.\([^ ]*\) .*/\1/p'`
+#echo "IP $ip" > /dev/vfd
+#sleep 3
+
+#wlan=rtl8188cu
+if [ ! $wlan ] || [ ! -e $MODDIR/$wlan.ko ]; then
+   echo "No WLAN"
+else
+   insmod $MODDIR/$wlan.ko
+   echo "$wlan WLAN"
+#   echo "$wlan WLAN" > /dev/vfd
+#   sleep 3
+fi
+
+# Handle SWAPPART and RECORD labels and USB devices
+if [ -e /usr/sbin/amount.sh ]; then
+   (sleep 20; /usr/sbin/amount.sh) &
+fi
+
+# Try and synchronise time
+if [ -x /usr/sbin/ntpd ]; then
+   echo "Set internet time"
+   (ntpd -n -p 0.europe.pool.ntp.org -q; /bin/fp_control -sst) &
 fi
 
 echo "[rcS] LOADING neutrino"
@@ -169,8 +224,9 @@ echo "NEU " > /dev/vfd
 
 until false
 do
+   killall -9 showiframe
    echo "[rcS] Starting neutrino ->"
-   /usr/local/bin/neutrino
+   /usr/bin/neutrino
    rtv=$?
    echo "[rcS] Neutrino ended <- return value: " $rtv
    case "$rtv" in
@@ -180,6 +236,9 @@ do
       1) echo "REBOOT"
          echo "rebt" > /dev/vfd
          init 6;;
+      3) echo "RESTART"
+         echo "reSt" > /dev/vfd
+         ;;
       *) echo "ERROR"
          echo "Err " > /dev/vfd
          init 6;;
@@ -187,6 +246,6 @@ do
 done
 
 #never reached
+echo "rebt" > /dev/vfd
 echo "REBOOT Fortis HS7819"
-echo "REBOOT Fortis HS7819" > /dev/vfd
 init 6

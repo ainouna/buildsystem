@@ -11,7 +11,7 @@ PYTHON_BUILD = \
 	LDSHARED="$(TARGET)-gcc -shared" \
 	PYTHONPATH=$(TARGET_DIR)/$(PYTHON_DIR)/site-packages \
 	CPPFLAGS="$(TARGET_CPPFLAGS) -I$(TARGET_DIR)/$(PYTHON_INCLUDE_DIR)" \
-	$(HOST_DIR)/bin/python ./setup.py -q build --executable=/usr/bin/python
+	$(HOST_DIR)/bin/python ./setup.py $(MINUS_Q) build --executable=/usr/bin/python
 
 PYTHON_INSTALL = \
 	CC="$(TARGET)-gcc" \
@@ -20,30 +20,32 @@ PYTHON_INSTALL = \
 	LDSHARED="$(TARGET)-gcc -shared" \
 	PYTHONPATH=$(TARGET_DIR)/$(PYTHON_DIR)/site-packages \
 	CPPFLAGS="$(TARGET_CPPFLAGS) -I$(TARGET_DIR)/$(PYTHON_INCLUDE_DIR)" \
-	$(HOST_DIR)/bin/python ./setup.py -q install --root=$(TARGET_DIR) --prefix=/usr
+	$(HOST_DIR)/bin/python ./setup.py $(MINUS_Q) install --root=$(TARGET_DIR) --prefix=/usr
 
 #
 # host_python
 #
 PYTHON_VER_MAJOR = 2.7
-PYTHON_VER_MINOR = 13
+PYTHON_VER_MINOR = 18
 PYTHON_VER = $(PYTHON_VER_MAJOR).$(PYTHON_VER_MINOR)
 PYTHON_SOURCE = Python-$(PYTHON_VER).tar.xz
-HOST_PYTHON_PATCH = python-$(PYTHON_VER).patch
+HOST_PYTHON_PATCH  = python-$(PYTHON_VER).patch
+HOST_PYTHON_PATCH += python-$(PYTHON_VER)-support_64bit.patch
 
 $(ARCHIVE)/$(PYTHON_SOURCE):
 	$(WGET) https://www.python.org/ftp/python/$(PYTHON_VER)/$(PYTHON_SOURCE)
 
 $(D)/host_python: $(ARCHIVE)/$(PYTHON_SOURCE)
 	$(START_BUILD)
+	$(SILENT)if [ ! -d $(BUILD_TMP) ]; then mkdir $(BUILD_TMP); fi;
 	$(REMOVE)/Python-$(PYTHON_VER)
 	$(UNTAR)/$(PYTHON_SOURCE)
-	set -e; cd $(BUILD_TMP)/Python-$(PYTHON_VER); \
-		$(call apply_patches,$(HOST_PYTHON_PATCH)); \
+	$(CH_DIR)/Python-$(PYTHON_VER); \
+		$(call apply_patches, $(HOST_PYTHON_PATCH)); \
 		autoconf; \
 		CONFIG_SITE= \
 		OPT="$(HOST_CFLAGS)" \
-		./configure $(SILENT_OPT) \
+		./configure $(SILENT_CONFIGURE) \
 			--without-cxx-main \
 			--with-threads \
 		; \
@@ -52,7 +54,7 @@ $(D)/host_python: $(ARCHIVE)/$(PYTHON_SOURCE)
 		mv Parser/pgen ./hostpgen; \
 		\
 		$(MAKE) distclean; \
-		./configure $(SILENT_OPT) \
+		./configure $(SILENT_CONFIGURE) \
 			--prefix=$(HOST_DIR) \
 			--sysconfdir=$(HOST_DIR)/etc \
 			--without-cxx-main \
@@ -75,13 +77,13 @@ $(D)/python: $(D)/bootstrap $(D)/host_python $(D)/ncurses $(D)/zlib $(D)/openssl
 	$(START_BUILD)
 	$(REMOVE)/Python-$(PYTHON_VER)
 	$(UNTAR)/$(PYTHON_SOURCE)
-	set -e; cd $(BUILD_TMP)/Python-$(PYTHON_VER); \
-		$(call apply_patches,$(PYTHON_PATCH)); \
+	$(CH_DIR)/Python-$(PYTHON_VER); \
+		$(call apply_patches, $(PYTHON_PATCH)); \
 		CONFIG_SITE= \
 		$(BUILDENV) \
-		autoreconf --verbose --install --force Modules/_ctypes/libffi; \
+		autoreconf -vif Modules/_ctypes/libffi $(SILENT_OPT); \
 		autoconf $(SILENT_OPT); \
-		./configure $(SILENT_OPT) \
+		./configure $(SILENT_CONFIGURE) \
 			--build=$(BUILD) \
 			--host=$(TARGET) \
 			--target=$(TARGET) \
@@ -128,14 +130,14 @@ $(D)/python: $(D)/bootstrap $(D)/host_python $(D)/ncurses $(D)/zlib $(D)/openssl
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
 	ln -sf ../../libpython$(PYTHON_VER_MAJOR).so.1.0 $(TARGET_DIR)/$(PYTHON_DIR)/config/libpython$(PYTHON_VER_MAJOR).so; \
 	ln -sf $(TARGET_DIR)/$(PYTHON_INCLUDE_DIR) $(TARGET_DIR)/usr/include/python
-	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/python-2.7.pc
+	$(REWRITE_PKGCONF) $(PKG_CONFIG_PATH)/python-$(PYTHON_VER_MAJOR).pc
 	$(REMOVE)/Python-$(PYTHON_VER)
 	$(TOUCH)
 
 #
 # python_setuptools
 #
-PYTHON_SETUPTOOLS_VER = 5.2
+PYTHON_SETUPTOOLS_VER = 18.5
 PYTHON_SETUPTOOLS_SOURCE = setuptools-$(PYTHON_SETUPTOOLS_VER).tar.gz
 
 $(ARCHIVE)/$(PYTHON_SETUPTOOLS_SOURCE):
@@ -145,34 +147,10 @@ $(D)/python_setuptools: $(D)/bootstrap $(D)/python $(ARCHIVE)/$(PYTHON_SETUPTOOL
 	$(START_BUILD)
 	$(REMOVE)/setuptools-$(PYTHON_SETUPTOOLS_VER)
 	$(UNTAR)/$(PYTHON_SETUPTOOLS_SOURCE)
-	set -e; cd $(BUILD_TMP)/setuptools-$(PYTHON_SETUPTOOLS_VER); \
+	$(CH_DIR)/setuptools-$(PYTHON_SETUPTOOLS_VER); \
 		$(PYTHON_BUILD); \
 		$(PYTHON_INSTALL)
 	$(REMOVE)/setuptools-$(PYTHON_SETUPTOOLS_VER)
-	$(TOUCH)
-
-#
-# libxmlccwrap
-#
-LIBXMLCCWRAP_VER = 0.0.12
-LIBXMLCCWRAP_SOURCE = libxmlccwrap-$(LIBXMLCCWRAP_VER).tar.gz
-
-$(ARCHIVE)/$(LIBXMLCCWRAP_SOURCE):
-	$(WGET) http://www.ant.uni-bremen.de/whomes/rinas/libxmlccwrap/download/$(LIBXMLCCWRAP_SOURCE)
-
-$(D)/libxmlccwrap: $(D)/bootstrap $(D)/libxml2 $(D)/libxslt $(ARCHIVE)/$(LIBXMLCCWRAP_SOURCE)
-	$(START_BUILD)
-	$(REMOVE)/libxmlccwrap-$(LIBXMLCCWRAP_VER)
-	$(UNTAR)/$(LIBXMLCCWRAP_SOURCE)
-	set -e; cd $(BUILD_TMP)/libxmlccwrap-$(LIBXMLCCWRAP_VER); \
-		$(CONFIGURE) \
-			--target=$(TARGET) \
-			--prefix=/usr \
-		; \
-		$(MAKE) all; \
-		$(MAKE) install DESTDIR=$(TARGET_DIR)
-	$(REWRITE_LIBTOOL)/libxmlccwrap.la
-	$(REMOVE)/libxmlccwrap-$(LIBXMLCCWRAP_VER)
 	$(TOUCH)
 
 #
@@ -181,16 +159,17 @@ $(D)/libxmlccwrap: $(D)/bootstrap $(D)/libxml2 $(D)/libxslt $(ARCHIVE)/$(LIBXMLC
 PYTHON_LXML_MAJOR = 2.2
 PYTHON_LXML_MINOR = 8
 PYTHON_LXML_VER = $(PYTHON_LXML_MAJOR).$(PYTHON_LXML_MINOR)
-PYTHON_LXML_SOURCE = lxml-$(PYTHON_LXML_VER).tgz
+PYTHON_LXML_SOURCE = lxml-$(PYTHON_LXML_VER).tar.gz
 
 $(ARCHIVE)/$(PYTHON_LXML_SOURCE):
-	$(WGET) http://launchpad.net/lxml/$(PYTHON_LXML_MAJOR)/$(PYTHON_LXML_VER)/+download/$(PYTHON_LXML_SOURCE)
+#	$(WGET) http://launchpad.net/lxml/$(PYTHON_LXML_MAJOR)/$(PYTHON_LXML_VER)/+download/$(PYTHON_LXML_SOURCE)
+	$(WGET) https://files.pythonhosted.org/packages/48/71/397947beaadda1b2ad589a685160b8848888364af387b6c6707bb2769a23/$(PYTHON_LXML_SOURCE)
 
-$(D)/python_lxml: $(D)/bootstrap $(D)/python $(D)/libxslt $(D)/python_setuptools $(ARCHIVE)/$(PYTHON_LXML_SOURCE)
+$(D)/python_lxml: $(D)/bootstrap $(D)/python $(D)/libxml2 $(D)/libxslt $(D)/python_setuptools $(ARCHIVE)/$(PYTHON_LXML_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/lxml-$(PYTHON_LXML_VER)
 	$(UNTAR)/$(PYTHON_LXML_SOURCE)
-	set -e; cd $(BUILD_TMP)/lxml-$(PYTHON_LXML_VER); \
+	$(CH_DIR)/lxml-$(PYTHON_LXML_VER); \
 		$(PYTHON_BUILD) \
 			--with-xml2-config=$(HOST_DIR)/bin/xml2-config \
 			--with-xslt-config=$(HOST_DIR)/bin/xslt-config; \
@@ -201,17 +180,19 @@ $(D)/python_lxml: $(D)/bootstrap $(D)/python $(D)/libxslt $(D)/python_setuptools
 #
 # python_twisted
 #
-PYTHON_TWISTED_VER = 16.4.0
+PYTHON_TWISTED_VER = 16.4.1
 PYTHON_TWISTED_SOURCE = Twisted-$(PYTHON_TWISTED_VER).tar.bz2
 
 $(ARCHIVE)/$(PYTHON_TWISTED_SOURCE):
-	$(WGET) https://pypi.python.org/packages/source/T/Twisted/$(PYTHON_TWISTED_SOURCE)
+#	$(WGET) https://pypi.python.org/packages/source/T/Twisted/$(PYTHON_TWISTED_SOURCE)
+#	$(WGET) https://twistedmatrix.com/Releases/Twisted/16.4/$(PYTHON_TWISTED_SOURCE)
+	$(WGET) https://files.pythonhosted.org/packages/6b/23/8dbe86fc83215015e221fbd861a545c6ec5c9e9cd7514af114d1f64084ab/$(PYTHON_TWISTED_SOURCE)
 
-$(D)/python_twisted: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(D)/python_zope_interface $(D)/python_pyopenssl $(D)/python_service_identity $(ARCHIVE)/$(PYTHON_TWISTED_SOURCE)
+$(D)/python_twisted: $(D)/bootstrap $(D)/python $(D)/python_zope_interface $(D)/python_setuptools $(ARCHIVE)/$(PYTHON_TWISTED_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/Twisted-$(PYTHON_TWISTED_VER)
 	$(UNTAR)/$(PYTHON_TWISTED_SOURCE)
-	set -e; cd $(BUILD_TMP)/Twisted-$(PYTHON_TWISTED_VER); \
+	$(CH_DIR)/Twisted-$(PYTHON_TWISTED_VER); \
 		$(PYTHON_BUILD); \
 		$(PYTHON_INSTALL)
 	$(REMOVE)/Twisted-$(PYTHON_TWISTED_VER)
@@ -225,14 +206,14 @@ PYTHON_IMAGING_SOURCE = Imaging-$(PYTHON_IMAGING_VER).tar.gz
 PYTHON_IMAGING_PATCH = python-imaging-$(PYTHON_IMAGING_VER).patch
 
 $(ARCHIVE)/$(PYTHON_IMAGING_SOURCE):
-	$(WGET) http://effbot.org/downloads/$(PYTHON_IMAGING_SOURCE)
+	$(WGET) https://src.fedoraproject.org/repo/pkgs/python-imaging/$(PYTHON_IMAGING_SOURCE)/fc14a54e1ce02a0225be8854bfba478e/$(PYTHON_IMAGING_SOURCE)
 
-$(D)/python_imaging: $(D)/bootstrap $(D)/libjpeg $(D)/freetype $(D)/python $(D)/python_setuptools $(ARCHIVE)/$(PYTHON_IMAGING_SOURCE)
+$(D)/python_imaging: $(D)/bootstrap $(D)/libjpeg $(D)/freetype $(D)/zlib $(D)/python $(D)/python_setuptools $(ARCHIVE)/$(PYTHON_IMAGING_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/Imaging-$(PYTHON_IMAGING_VER)
 	$(UNTAR)/$(PYTHON_IMAGING_SOURCE)
-	set -e; cd $(BUILD_TMP)/Imaging-$(PYTHON_IMAGING_VER); \
-		$(call apply_patches,$(PYTHON_IMAGING_PATCH)); \
+	$(CH_DIR)/Imaging-$(PYTHON_IMAGING_VER); \
+		$(call apply_patches, $(PYTHON_IMAGING_PATCH)); \
 		sed -ie "s|"darwin"|"darwinNot"|g" "setup.py"; \
 		sed -ie "s|ZLIB_ROOT = None|ZLIB_ROOT = libinclude(\"${TARGET_DIR}/usr\")|" "setup.py"; \
 		$(PYTHON_BUILD); \
@@ -250,12 +231,12 @@ PYTHON_PYCRYPTO_PATCH = python-pycrypto-$(PYTHON_PYCRYPTO_VER).patch
 $(ARCHIVE)/$(PYTHON_PYCRYPTO_SOURCE):
 	$(WGET) https://pypi.python.org/packages/source/p/pycrypto/$(PYTHON_PYCRYPTO_SOURCE)
 
-$(D)/python_pycrypto: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(ARCHIVE)/$(PYTHON_PYCRYPTO_SOURCE)
+$(D)/python_pycrypto: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(D)/gmp $(ARCHIVE)/$(PYTHON_PYCRYPTO_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/pycrypto-$(PYTHON_PYCRYPTO_VER)
 	$(UNTAR)/$(PYTHON_PYCRYPTO_SOURCE)
-	set -e; cd $(BUILD_TMP)/pycrypto-$(PYTHON_PYCRYPTO_VER); \
-		$(call apply_patches,$(PYTHON_PYCRYPTO_PATCH)); \
+	$(CH_DIR)/pycrypto-$(PYTHON_PYCRYPTO_VER); \
+		$(call apply_patches, $(PYTHON_PYCRYPTO_PATCH)); \
 		export ac_cv_func_malloc_0_nonnull=yes; \
 		$(CONFIGURE) \
 			--prefix=/usr \
@@ -278,7 +259,7 @@ $(D)/python_pyusb: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(ARCHIVE)/
 	$(START_BUILD)
 	$(REMOVE)/pyusb-$(PYTHON_PYUSB_VER)
 	$(UNTAR)/$(PYTHON_PYUSB_SOURCE)
-	set -e; cd $(BUILD_TMP)/pyusb-$(PYTHON_PYUSB_VER); \
+	$(CH_DIR)/pyusb-$(PYTHON_PYUSB_VER); \
 		$(PYTHON_BUILD); \
 		$(PYTHON_INSTALL)
 	$(REMOVE)/pyusb-$(PYTHON_PYUSB_VER)
@@ -291,13 +272,14 @@ PYTHON_IPADDRESS_VER = 1.0.18
 PYTHON_IPADDRESS_SOURCE = ipaddress-$(PYTHON_IPADDRESS_VER).tar.gz
 
 $(ARCHIVE)/$(PYTHON_IPADDRESS_SOURCE):
-	$(WGET) https://distfiles.macports.org/py-ipaddress/$(PYTHON_IPADDRESS_SOURCE)
+#	$(WGET) https://distfiles.macports.org/py-ipaddress/$(PYTHON_IPADDRESS_SOURCE)
+	$(WGET) https://files.pythonhosted.org/packages/source/i/ipaddress/$(PYTHON_IPADDRESS_SOURCE)
 
 $(D)/python_ipaddress: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(ARCHIVE)/$(PYTHON_IPADDRESS_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/ipaddress-$(PYTHON_IPADDRESS_VER)
 	$(UNTAR)/$(PYTHON_IPADDRESS_SOURCE)
-	set -e; cd $(BUILD_TMP)/ipaddress-$(PYTHON_IPADDRESS_VER); \
+	$(CH_DIR)/ipaddress-$(PYTHON_IPADDRESS_VER); \
 		$(PYTHON_BUILD); \
 		$(PYTHON_INSTALL)
 	$(REMOVE)/ipaddress-$(PYTHON_IPADDRESS_VER)
@@ -306,7 +288,7 @@ $(D)/python_ipaddress: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(ARCHI
 #
 # python_six
 #
-PYTHON_SIX_VER = 1.9.0
+PYTHON_SIX_VER = 1.15.0
 PYTHON_SIX_SOURCE = six-$(PYTHON_SIX_VER).tar.gz
 
 $(ARCHIVE)/$(PYTHON_SIX_SOURCE):
@@ -316,7 +298,7 @@ $(D)/python_six: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(ARCHIVE)/$(
 	$(START_BUILD)
 	$(REMOVE)/six-$(PYTHON_SIX_VER)
 	$(UNTAR)/$(PYTHON_SIX_SOURCE)
-	set -e; cd $(BUILD_TMP)/six-$(PYTHON_SIX_VER); \
+	$(CH_DIR)/six-$(PYTHON_SIX_VER); \
 		$(PYTHON_BUILD); \
 		$(PYTHON_INSTALL)
 	$(REMOVE)/six-$(PYTHON_SIX_VER)
@@ -325,20 +307,50 @@ $(D)/python_six: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(ARCHIVE)/$(
 #
 # python_cffi
 #
-PYTHON_CFFI_VER = 1.2.1
+PYTHON_CFFI_VER = 1.14.6
 PYTHON_CFFI_SOURCE = cffi-$(PYTHON_CFFI_VER).tar.gz
 
 $(ARCHIVE)/$(PYTHON_CFFI_SOURCE):
 	$(WGET) https://pypi.python.org/packages/source/c/cffi/$(PYTHON_CFFI_SOURCE)
 
-$(D)/python_cffi: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(ARCHIVE)/$(PYTHON_CFFI_SOURCE)
+$(D)/python_cffi: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(D)/libffi $(D)/python_pycparser $(ARCHIVE)/$(PYTHON_CFFI_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/cffi-$(PYTHON_CFFI_VER)
 	$(UNTAR)/$(PYTHON_CFFI_SOURCE)
-	set -e; cd $(BUILD_TMP)/cffi-$(PYTHON_CFFI_VER); \
+	$(CH_DIR)/cffi-$(PYTHON_CFFI_VER); \
+		PYTHONPATH=$(TARGET_DIR)/$(PYTHON_DIR)/site-packages \
+		CPPFLAGS="$(TARGET_CPPFLAGS) -I$(TARGET_DIR)/$(PYTHON_INCLUDE_DIR)" \
+		$(HOST_DIR)/bin/python ./setup.py $(MINUS_Q) build_ext -f -i; \
+		$(PYTHON_INSTALL)
+		$(SILENT)cd $(BUILD_TMP)/cffi-$(PYTHON_CFFI_VER); \
+		CC="$(TARGET)-gcc" \
+		CFLAGS="$(TARGET_CFLAGS)" \
+		LDFLAGS="$(TARGET_LDFLAGS)" \
+		LDSHARED="$(TARGET)-gcc -shared" \
+		PYTHONPATH=$(TARGET_DIR)/$(PYTHON_DIR)/site-packages \
+		CPPFLAGS="$(TARGET_CPPFLAGS) -I$(TARGET_DIR)/$(PYTHON_INCLUDE_DIR)" \
+		$(HOST_DIR)/bin/python ./setup.py $(MINUS_Q) build_ext -f -i; \
+		cp ./_cffi_backend.so $(TARGET_DIR)/$(PYTHON_DIR)/site-packages/_cffi_backend.so.sh4
+	$(REMOVE)/cffi-$(PYTHON_CFFI_VER)
+	$(TOUCH)
+
+#
+# python_sqlite3
+#
+PYTHON_SQLITE3_VER = 1.0.5
+PYTHON_SQLITE3_SOURCE = sqlite3-$(PYTHON_SQLITE3_VER).tar.gz
+
+$(ARCHIVE)/$(PYTHON_SQLITE3_SOURCE):
+	$(WGET) https://pypi.python.org/packages/source/c/sqlite3/$(PYTHON_SQLITE3_SOURCE)
+
+$(D)/python_sqlite3: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(ARCHIVE)/$(PYTHON_SQLITE3_SOURCE)
+	$(START_BUILD)
+	$(REMOVE)/sqlite3-$(PYTHON_SQLITE3_VER)
+	$(UNTAR)/$(PYTHON_SQLITE3_SOURCE)
+	$(CH_DIR)/sqlite3-$(PYTHON_SQLITE3_VER); \
 		$(PYTHON_BUILD); \
 		$(PYTHON_INSTALL)
-	$(REMOVE)/cffi-$(PYTHON_CFFI_VER)
+	$(REMOVE)/sqlite3-$(PYTHON_SQLITE3_VER)
 	$(TOUCH)
 
 #
@@ -354,7 +366,7 @@ $(D)/python_enum34: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(ARCHIVE)
 	$(START_BUILD)
 	$(REMOVE)/enum34-$(PYTHON_ENUM34_VER)
 	$(UNTAR)/$(PYTHON_ENUM34_SOURCE)
-	set -e; cd $(BUILD_TMP)/enum34-$(PYTHON_ENUM34_VER); \
+	$(CH_DIR)/enum34-$(PYTHON_ENUM34_VER); \
 		$(PYTHON_BUILD); \
 		$(PYTHON_INSTALL)
 	$(REMOVE)/enum34-$(PYTHON_ENUM34_VER)
@@ -373,7 +385,7 @@ $(D)/python_pyasn1_modules: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(
 	$(START_BUILD)
 	$(REMOVE)/pyasn1-modules-$(PYTHON_PYASN1_MODULES_VER)
 	$(UNTAR)/$(PYTHON_PYASN1_MODULES_SOURCE)
-	set -e; cd $(BUILD_TMP)/pyasn1-modules-$(PYTHON_PYASN1_MODULES_VER); \
+	$(CH_DIR)/pyasn1-modules-$(PYTHON_PYASN1_MODULES_VER); \
 		$(PYTHON_BUILD); \
 		$(PYTHON_INSTALL)
 	$(REMOVE)/pyasn1-modules-$(PYTHON_PYASN1_MODULES_VER)
@@ -392,7 +404,7 @@ $(D)/python_pyasn1: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(D)/pytho
 	$(START_BUILD)
 	$(REMOVE)/pyasn1-$(PYTHON_PYASN1_VER)
 	$(UNTAR)/$(PYTHON_PYASN1_SOURCE)
-	set -e; cd $(BUILD_TMP)/pyasn1-$(PYTHON_PYASN1_VER); \
+	$(CH_DIR)/pyasn1-$(PYTHON_PYASN1_VER); \
 		$(PYTHON_BUILD); \
 		$(PYTHON_INSTALL)
 	$(REMOVE)/pyasn1-$(PYTHON_PYASN1_VER)
@@ -407,11 +419,11 @@ PYTHON_PYCPARSER_SOURCE = pycparser-$(PYTHON_PYCPARSER_VER).tar.gz
 $(ARCHIVE)/$(PYTHON_PYCPARSER_SOURCE):
 	$(WGET) https://pypi.python.org/packages/source/p/pycparser/$(PYTHON_PYCPARSER_SOURCE)
 
-$(D)/python_pycparser: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(D)/python_pyasn1 $(ARCHIVE)/$(PYTHON_PYCPARSER_SOURCE)
+$(D)/python_pycparser: $(D)/bootstrap $(D)/python $(ARCHIVE)/$(PYTHON_PYCPARSER_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/pycparser-$(PYTHON_PYCPARSER_VER)
 	$(UNTAR)/$(PYTHON_PYCPARSER_SOURCE)
-	set -e; cd $(BUILD_TMP)/pycparser-$(PYTHON_PYCPARSER_VER); \
+	$(CH_DIR)/pycparser-$(PYTHON_PYCPARSER_VER); \
 		$(PYTHON_BUILD); \
 		$(PYTHON_INSTALL)
 	$(REMOVE)/pycparser-$(PYTHON_PYCPARSER_VER)
@@ -420,17 +432,17 @@ $(D)/python_pycparser: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(D)/py
 #
 # python_cryptography
 #
-PYTHON_CRYPTOGRAPHY_VER = 0.8.1
+PYTHON_CRYPTOGRAPHY_VER = 3.3.1
 PYTHON_CRYPTOGRAPHY_SOURCE = cryptography-$(PYTHON_CRYPTOGRAPHY_VER).tar.gz
 
 $(ARCHIVE)/$(PYTHON_CRYPTOGRAPHY_SOURCE):
 	$(WGET) https://pypi.python.org/packages/source/c/cryptography/$(PYTHON_CRYPTOGRAPHY_SOURCE)
 
-$(D)/python_cryptography: $(D)/bootstrap $(D)/libffi $(D)/python $(D)/python_setuptools $(D)/python_pyopenssl $(D)/python_six $(D)/python_pycparser $(ARCHIVE)/$(PYTHON_CRYPTOGRAPHY_SOURCE)
+$(D)/python_cryptography: $(D)/bootstrap $(D)/python_cffi $(D)/python_pyasn1 $(D)/python_enum34 $(D)/python $(D)/python_setuptools $(D)/python_six $(ARCHIVE)/$(PYTHON_CRYPTOGRAPHY_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/cryptography-$(PYTHON_CRYPTOGRAPHY_VER)
 	$(UNTAR)/$(PYTHON_CRYPTOGRAPHY_SOURCE)
-	set -e; cd $(BUILD_TMP)/cryptography-$(PYTHON_CRYPTOGRAPHY_VER); \
+	$(CH_DIR)/cryptography-$(PYTHON_CRYPTOGRAPHY_VER); \
 		$(PYTHON_BUILD); \
 		$(PYTHON_INSTALL)
 	$(REMOVE)/cryptography-$(PYTHON_CRYPTOGRAPHY_VER)
@@ -439,19 +451,19 @@ $(D)/python_cryptography: $(D)/bootstrap $(D)/libffi $(D)/python $(D)/python_set
 #
 # python_pyopenssl
 #
-PYTHON_PYOPENSSL_VER = 0.13.1
+PYTHON_PYOPENSSL_VER = 20.0.1
 PYTHON_PYOPENSSL_SOURCE = pyOpenSSL-$(PYTHON_PYOPENSSL_VER).tar.gz
-PYTHON_PYOPENSSL_PATCH = python-pyopenssl-$(PYTHON_PYOPENSSL_VER).patch
+PYTHON_PYOPENSSL_PATCH =
 
 $(ARCHIVE)/$(PYTHON_PYOPENSSL_SOURCE):
 	$(WGET) https://pypi.python.org/packages/source/p/pyOpenSSL/$(PYTHON_PYOPENSSL_SOURCE)
 
-$(D)/python_pyopenssl: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(ARCHIVE)/$(PYTHON_PYOPENSSL_SOURCE)
+$(D)/python_pyopenssl: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(D)/openssl $(D)/python_cryptography $(ARCHIVE)/$(PYTHON_PYOPENSSL_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/pyOpenSSL-$(PYTHON_PYOPENSSL_VER)
 	$(UNTAR)/$(PYTHON_PYOPENSSL_SOURCE)
-	set -e; cd $(BUILD_TMP)/pyOpenSSL-$(PYTHON_PYOPENSSL_VER); \
-		$(call apply_patches,$(PYTHON_PYOPENSSL_PATCH)); \
+	$(CH_DIR)/pyOpenSSL-$(PYTHON_PYOPENSSL_VER); \
+		$(call apply_patches, $(PYTHON_PYOPENSSL_PATCH)); \
 		$(PYTHON_BUILD); \
 		$(PYTHON_INSTALL)
 	$(REMOVE)/pyOpenSSL-$(PYTHON_PYOPENSSL_VER)
@@ -467,12 +479,12 @@ PYTHON_SERVICE_IDENTITY_PATCH =
 $(ARCHIVE)/$(PYTHON_SERVICE_IDENTITY_SOURCE):
 	$(WGET) https://pypi.python.org/packages/source/s/service_identity/$(PYTHON_SERVICE_IDENTITY_SOURCE)
 
-$(D)/python_service_identity: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(D)/python_attr $(D)/python_attrs $(D)/python_pyasn1 $(ARCHIVE)/$(PYTHON_SERVICE_IDENTITY_SOURCE)
+$(D)/python_service_identity: $(D)/bootstrap $(D)/python_pyasn1 $(D)/python_attr $(D)/python_attrs $(D)/python_ipaddress $(D)/python $(D)/python_setuptools $(ARCHIVE)/$(PYTHON_SERVICE_IDENTITY_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/service_identity-$(PYTHON_SERVICE_IDENTITY_VER)
 	$(UNTAR)/$(PYTHON_SERVICE_IDENTITY_SOURCE)
-	set -e; cd $(BUILD_TMP)/service_identity-$(PYTHON_SERVICE_IDENTITY_VER); \
-		$(call apply_patches,$(PYTHON_SERVICE_IDENTITY_PATCH)); \
+	$(CH_DIR)/service_identity-$(PYTHON_SERVICE_IDENTITY_VER); \
+		$(call apply_patches, $(PYTHON_SERVICE_IDENTITY_PATCH)); \
 		$(PYTHON_BUILD); \
 		$(PYTHON_INSTALL)
 	$(REMOVE)/service_identity-$(PYTHON_SERVICE_IDENTITY_VER)
@@ -481,18 +493,18 @@ $(D)/python_service_identity: $(D)/bootstrap $(D)/python $(D)/python_setuptools 
 #
 # python_attr
 #
-PYTHON_ATTR_VER = 0.1.0
+PYTHON_ATTR_VER = 0.3.1
 PYTHON_ATTR_SOURCE = attr-$(PYTHON_ATTR_VER).tar.gz
 PYTHON_ATTR_PATCH =
 
 $(ARCHIVE)/$(PYTHON_ATTR_SOURCE):
 	$(WGET) https://pypi.python.org/packages/source/a/attr/$(PYTHON_ATTR_SOURCE)
 
-$(D)/python_attr: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(ARCHIVE)/$(PYTHON_ATTR_SOURCE)
+$(D)/python_attr: $(D)/bootstrap $(D)/python $(ARCHIVE)/$(PYTHON_ATTR_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/attr-$(PYTHON_ATTR_VER)
 	$(UNTAR)/$(PYTHON_ATTR_SOURCE)
-	set -e; cd $(BUILD_TMP)/attr-$(PYTHON_ATTR_VER); \
+	$(CH_DIR)/attr-$(PYTHON_ATTR_VER); \
 		$(PYTHON_BUILD); \
 		$(PYTHON_INSTALL)
 	$(REMOVE)/attr-$(PYTHON_ATTR_VER)
@@ -501,9 +513,9 @@ $(D)/python_attr: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(ARCHIVE)/$
 #
 # python_attrs
 #
-PYTHON_ATTRS_VER = 16.3.0
+PYTHON_ATTRS_VER = 19.1.0
 PYTHON_ATTRS_SOURCE = attrs-$(PYTHON_ATTRS_VER).tar.gz
-PYTHON_ATTRS_PARCH =
+PYTHON_ATTRS_PATCH =
 
 $(ARCHIVE)/$(PYTHON_ATTRS_SOURCE):
 	$(WGET) https://pypi.io/packages/source/a/attrs/$(PYTHON_ATTRS_SOURCE)
@@ -512,7 +524,7 @@ $(D)/python_attrs: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(ARCHIVE)/
 	$(START_BUILD)
 	$(REMOVE)/attrs-$(PYTHON_ATTRS_VER)
 	$(UNTAR)/$(PYTHON_ATTRS_SOURCE)
-	set -e; cd $(BUILD_TMP)/attrs-$(PYTHON_ATTRS_VER); \
+	$(CH_DIR)/attrs-$(PYTHON_ATTRS_VER); \
 		$(PYTHON_BUILD); \
 		$(PYTHON_INSTALL)
 	$(REMOVE)/attrs-$(PYTHON_ATTRS_VER)
@@ -525,13 +537,14 @@ PYTHON_ELEMENTTREE_VER = 1.2.6-20050316
 PYTHON_ELEMENTTREE_SOURCE = elementtree-$(PYTHON_ELEMENTTREE_VER).tar.gz
 
 $(ARCHIVE)/$(PYTHON_ELEMENTTREE_SOURCE):
-	$(WGET) http://effbot.org/media/downloads/$(PYTHON_ELEMENTTREE_SOURCE)
+#	$(WGET) http://effbot.org/media/downloads/$(PYTHON_ELEMENTTREE_SOURCE)
+	$(WGET) https://sourceforge.net/projects/rlsuite/files/rlsuite/support-files/$(PYTHON_ELEMENTTREE_SOURCE)
 
-$(D)/python_elementtree: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(ARCHIVE)/$(PYTHON_ELEMENTTREE_SOURCE)
+$(D)/python_elementtree: $(D)/bootstrap $(D)/python $(ARCHIVE)/$(PYTHON_ELEMENTTREE_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/elementtree-$(PYTHON_ELEMENTTREE_VER)
 	$(UNTAR)/$(PYTHON_ELEMENTTREE_SOURCE)
-	set -e; cd $(BUILD_TMP)/elementtree-$(PYTHON_ELEMENTTREE_VER); \
+	$(CH_DIR)/elementtree-$(PYTHON_ELEMENTTREE_VER); \
 		$(PYTHON_BUILD); \
 		$(PYTHON_INSTALL)
 	$(REMOVE)/elementtree-$(PYTHON_ELEMENTTREE_VER)
@@ -550,7 +563,7 @@ $(D)/python_wifi: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(ARCHIVE)/$
 	$(START_BUILD)
 	$(REMOVE)/pythonwifi-$(PYTHON_WIFI_VER)
 	$(UNTAR)/$(PYTHON_WIFI_SOURCE)
-	set -e; cd $(BUILD_TMP)/pythonwifi-$(PYTHON_WIFI_VER); \
+	$(CH_DIR)/pythonwifi-$(PYTHON_WIFI_VER); \
 		$(PYTHON_BUILD); \
 		$(PYTHON_INSTALL) --install-data=/.remove
 	$(REMOVE)/pythonwifi-$(PYTHON_WIFI_VER)
@@ -569,7 +582,7 @@ $(D)/python_cheetah: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(ARCHIVE
 	$(START_BUILD)
 	$(REMOVE)/Cheetah-$(PYTHON_CHEETAH_VER)
 	$(UNTAR)/$(PYTHON_CHEETAH_SOURCE)
-	set -e; cd $(BUILD_TMP)/Cheetah-$(PYTHON_CHEETAH_VER); \
+	$(CH_DIR)/Cheetah-$(PYTHON_CHEETAH_VER); \
 		$(PYTHON_BUILD); \
 		$(PYTHON_INSTALL)
 	$(REMOVE)/Cheetah-$(PYTHON_CHEETAH_VER)
@@ -578,7 +591,7 @@ $(D)/python_cheetah: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(ARCHIVE
 #
 # python_mechanize
 #
-PYTHON_MECHANIZE_VER = 0.2.5
+PYTHON_MECHANIZE_VER = 0.4.2
 PYTHON_MECHANIZE_SOURCE = mechanize-$(PYTHON_MECHANIZE_VER).tar.gz
 
 $(ARCHIVE)/$(PYTHON_MECHANIZE_SOURCE):
@@ -588,7 +601,7 @@ $(D)/python_mechanize: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(ARCHI
 	$(START_BUILD)
 	$(REMOVE)/mechanize-$(PYTHON_MECHANIZE_VER)
 	$(UNTAR)/$(PYTHON_MECHANIZE_SOURCE)
-	set -e; cd $(BUILD_TMP)/mechanize-$(PYTHON_MECHANIZE_VER); \
+	$(CH_DIR)/mechanize-$(PYTHON_MECHANIZE_VER); \
 		$(PYTHON_BUILD); \
 		$(PYTHON_INSTALL)
 	$(REMOVE)/mechanize-$(PYTHON_MECHANIZE_VER)
@@ -601,13 +614,13 @@ PYTHON_GDATA_VER = 2.0.18
 PYTHON_GDATA_SOURCE = gdata-$(PYTHON_GDATA_VER).tar.gz
 
 $(ARCHIVE)/$(PYTHON_GDATA_SOURCE):
-	$(WGET) https://gdata-python-client.googlecode.com/files/$(PYTHON_GDATA_SOURCE)
+	$(WGET) https://pypi.python.org/packages/source/g/gdata/$(PYTHON_GDATA_SOURCE)
 
-$(D)/python_gdata: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(ARCHIVE)/$(PYTHON_GDATA_SOURCE)
+$(D)/python_gdata: $(D)/bootstrap $(D)/python $(ARCHIVE)/$(PYTHON_GDATA_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/gdata-$(PYTHON_GDATA_VER)
 	$(UNTAR)/$(PYTHON_GDATA_SOURCE)
-	set -e; cd $(BUILD_TMP)/gdata-$(PYTHON_GDATA_VER); \
+	$(CH_DIR)/gdata-$(PYTHON_GDATA_VER); \
 		$(PYTHON_BUILD); \
 		$(PYTHON_INSTALL)
 	$(REMOVE)/gdata-$(PYTHON_GDATA_VER)
@@ -616,7 +629,7 @@ $(D)/python_gdata: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(ARCHIVE)/
 #
 # python_zope_interface
 #
-PYTHON_ZOPE_INTERFACE_VER = 4.1.1
+PYTHON_ZOPE_INTERFACE_VER = 4.6.0
 PYTHON_ZOPE_INTERFACE_SOURCE = zope.interface-$(PYTHON_ZOPE_INTERFACE_VER).tar.gz
 
 $(ARCHIVE)/$(PYTHON_ZOPE_INTERFACE_SOURCE):
@@ -626,7 +639,7 @@ $(D)/python_zope_interface: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(
 	$(START_BUILD)
 	$(REMOVE)/zope.interface-$(PYTHON_ZOPE_INTERFACE_VER)
 	$(UNTAR)/$(PYTHON_ZOPE_INTERFACE_SOURCE)
-	set -e; cd $(BUILD_TMP)/zope.interface-$(PYTHON_ZOPE_INTERFACE_VER); \
+	$(CH_DIR)/zope.interface-$(PYTHON_ZOPE_INTERFACE_VER); \
 		$(PYTHON_BUILD); \
 		$(PYTHON_INSTALL)
 	$(REMOVE)/zope.interface-$(PYTHON_ZOPE_INTERFACE_VER)
@@ -635,7 +648,7 @@ $(D)/python_zope_interface: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(
 #
 # python_requests
 #
-PYTHON_REQUESTS_VER = 2.7.0
+PYTHON_REQUESTS_VER = 2.22.0
 PYTHON_REQUESTS_SOURCE = requests-$(PYTHON_REQUESTS_VER).tar.gz
 
 $(ARCHIVE)/$(PYTHON_REQUESTS_SOURCE):
@@ -645,7 +658,7 @@ $(D)/python_requests: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(ARCHIV
 	$(START_BUILD)
 	$(REMOVE)/requests-$(PYTHON_REQUESTS_VER)
 	$(UNTAR)/$(PYTHON_REQUESTS_SOURCE)
-	set -e; cd $(BUILD_TMP)/requests-$(PYTHON_REQUESTS_VER); \
+	$(CH_DIR)/requests-$(PYTHON_REQUESTS_VER); \
 		$(PYTHON_BUILD); \
 		$(PYTHON_INSTALL)
 	$(REMOVE)/requests-$(PYTHON_REQUESTS_VER)
@@ -654,7 +667,7 @@ $(D)/python_requests: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(ARCHIV
 #
 # python_futures
 #
-PYTHON_FUTURES_VER = 2.1.6
+PYTHON_FUTURES_VER = 3.2.0
 PYTHON_FUTURES_SOURCE = futures-$(PYTHON_FUTURES_VER).tar.gz
 
 $(ARCHIVE)/$(PYTHON_FUTURES_SOURCE):
@@ -664,7 +677,7 @@ $(D)/python_futures: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(ARCHIVE
 	$(START_BUILD)
 	$(REMOVE)/futures-$(PYTHON_FUTURES_VER)
 	$(UNTAR)/$(PYTHON_FUTURES_SOURCE)
-	set -e; cd $(BUILD_TMP)/futures-$(PYTHON_FUTURES_VER); \
+	$(CH_DIR)/futures-$(PYTHON_FUTURES_VER); \
 		$(PYTHON_BUILD); \
 		$(PYTHON_INSTALL)
 	$(REMOVE)/futures-$(PYTHON_FUTURES_VER)
@@ -683,7 +696,7 @@ $(D)/python_singledispatch: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(
 	$(START_BUILD)
 	$(REMOVE)/singledispatch-$(PYTHON_SINGLEDISPATCH_VER)
 	$(UNTAR)/$(PYTHON_SINGLEDISPATCH_SOURCE)
-	set -e; cd $(BUILD_TMP)/singledispatch-$(PYTHON_SINGLEDISPATCH_VER); \
+	$(CH_DIR)/singledispatch-$(PYTHON_SINGLEDISPATCH_VER); \
 		$(PYTHON_BUILD); \
 		$(PYTHON_INSTALL)
 	$(REMOVE)/singledispatch-$(PYTHON_SINGLEDISPATCH_VER)
@@ -695,12 +708,13 @@ $(D)/python_singledispatch: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(
 $(D)/python_livestreamer: $(D)/bootstrap $(D)/python $(D)/python_setuptools
 	$(START_BUILD)
 	$(REMOVE)/livestreamer
-	set -e; if [ -d $(ARCHIVE)/livestreamer.git ]; \
-		then cd $(ARCHIVE)/livestreamer.git; git pull; \
-		else cd $(ARCHIVE); git clone https://github.com/chrippa/livestreamer.git livestreamer.git; \
+	$(SET) -e; if [ -d $(ARCHIVE)/livestreamer.git ]; \
+		then cd $(ARCHIVE)/livestreamer.git; git pull $(MINUS_Q); \
+		else cd $(ARCHIVE); git clone $(MINUS_Q) https://github.com/chrippa/livestreamer.git livestreamer.git; \
 		fi
-	cp -ra $(ARCHIVE)/livestreamer.git $(BUILD_TMP)/livestreamer
-	set -e; cd $(BUILD_TMP)/livestreamer; \
+	$(SILENT)cp -ra $(ARCHIVE)/livestreamer.git $(BUILD_TMP)/livestreamer
+	$(CH_DIR)/livestreamer; \
+		touch AUTHORS; \
 		$(PYTHON_BUILD); \
 		$(PYTHON_INSTALL)
 	$(REMOVE)/livestreamer
@@ -712,37 +726,60 @@ $(D)/python_livestreamer: $(D)/bootstrap $(D)/python $(D)/python_setuptools
 $(D)/python_livestreamersrv: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(D)/python_livestreamer
 	$(START_BUILD)
 	$(REMOVE)/livestreamersrv
-	set -e; if [ -d $(ARCHIVE)/livestreamersrv.git ]; \
-		then cd $(ARCHIVE)/livestreamersrv.git; git pull; \
-		else cd $(ARCHIVE); git clone https://github.com/athoik/livestreamersrv.git livestreamersrv.git; \
+	$(SET) -e; if [ -d $(ARCHIVE)/livestreamersrv.git ]; \
+		then cd $(ARCHIVE)/livestreamersrv.git; git pull $(MINUS_Q); \
+		else cd $(ARCHIVE); git clone $(MINUS_Q) https://github.com/athoik/livestreamersrv.git livestreamersrv.git; \
 		fi
-	cp -ra $(ARCHIVE)/livestreamersrv.git $(BUILD_TMP)/livestreamersrv
-	set -e; cd $(BUILD_TMP)/livestreamersrv; \
+	$(SILENT)cp -ra $(ARCHIVE)/livestreamersrv.git $(BUILD_TMP)/livestreamersrv
+	$(CH_DIR)/livestreamersrv; \
 		cp -rd livestreamersrv $(TARGET_DIR)/usr/sbin; \
 		cp -rd offline.mp4 $(TARGET_DIR)/usr/share
 	$(REMOVE)/livestreamersrv
 	$(TOUCH)
 
+#
+# python_netifaces
+#
+PYTHON_NETIFACES_VER = w38-0.10.9
+PYTHON_NETIFACES_SOURCE = netifaces-$(PYTHON_NETIFACES_VER).tar.gz
+
+$(ARCHIVE)/$(PYTHON_NETIFACES_SOURCE):
+#	$(WGET) http://qpypi.qpython.org/repository/15020/$(PYTHON_NETIFACES_SOURCE)
+	$(WGET) https://files.pythonhosted.org/packages/04/06/2b337652548387021f33c936dc5bd3008e7527affee2bed7b36bbc6d2211/$(PYTHON_NETIFACES_SOURCE)
+
+$(D)/python_netifaces: $(D)/bootstrap $(D)/python $(D)/python_setuptools $(ARCHIVE)/$(PYTHON_NETIFACES_SOURCE)
+	$(START_BUILD)
+	$(REMOVE)/netifaces-$(PYTHON_NETIFACES_VER)
+	$(UNTAR)/$(PYTHON_NETIFACES_SOURCE)
+	$(CH_DIR)/netifaces-$(PYTHON_NETIFACES_VER); \
+		$(PYTHON_INSTALL)
+	$(REMOVE)/netifaces-$(PYTHON_NETIFACES_VER)
+	$(TOUCH)
+
 PYTHON_DEPS  = $(D)/host_python
 PYTHON_DEPS += $(D)/python
-PYTHON_DEPS += $(D)/python_elementtree
-PYTHON_DEPS += $(D)/python_lxml
-PYTHON_DEPS += $(D)/python_zope_interface
-PYTHON_DEPS += $(D)/python_pyopenssl
 PYTHON_DEPS += $(D)/python_twisted
+PYTHON_DEPS += $(D)/python_lxml
+PYTHON_DEPS += $(D)/python_service_identity
+PYTHON_DEPS += $(D)/python_netifaces
+PYTHON_DEPS += $(D)/python_six
+ifeq ($(IMAGE), $(filter $(IMAGE), enigma2-wlandriver))
 PYTHON_DEPS += $(D)/python_wifi
+endif
+ifneq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), small))
+# TODO: are these necessary?
+PYTHON_DEPS += $(D)/python_elementtree
 PYTHON_DEPS += $(D)/python_imaging
 PYTHON_DEPS += $(D)/python_pyusb
 PYTHON_DEPS += $(D)/python_pycrypto
-PYTHON_DEPS += $(D)/python_pyasn1
 PYTHON_DEPS += $(D)/python_mechanize
-PYTHON_DEPS += $(D)/python_six
 PYTHON_DEPS += $(D)/python_requests
 PYTHON_DEPS += $(D)/python_futures
 PYTHON_DEPS += $(D)/python_singledispatch
-PYTHON_DEPS += $(D)/python_ipaddress
+#----
 PYTHON_DEPS += $(D)/python_livestreamer
 PYTHON_DEPS += $(D)/python_livestreamersrv
+endif
 
 python-all: $(PYTHON_DEPS)
 

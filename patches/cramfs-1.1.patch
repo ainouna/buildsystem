@@ -1,0 +1,137 @@
+--- a/cramfsck.c.org
++++ b/cramfsck.c
+@@ -205,6 +205,7 @@
+ {
+ 	void *buf;
+ 	u32 crc;
++	int res;
+ 
+ 	if (!(super.flags & CRAMFS_FLAG_FSID_VERSION_2)) {
+ #ifdef INCLUDE_FS_TESTS
+@@ -221,7 +222,10 @@
+ 		buf = mmap(NULL, super.size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+ 		if (buf != MAP_FAILED) {
+ 			lseek(fd, 0, SEEK_SET);
+-			read(fd, buf, super.size);
++			res = read(fd, buf, super.size);
++			if (res) {
++				res++;
++			}
+ 		}
+ 	}
+ 	if (buf != MAP_FAILED) {
+@@ -287,11 +291,16 @@
+  */
+ static void *romfs_read(unsigned long offset)
+ {
++	int res;
+ 	unsigned int block = offset >> ROMBUFFER_BITS;
++
+ 	if (block != read_buffer_block) {
+ 		read_buffer_block = block;
+ 		lseek(fd, block << ROMBUFFER_BITS, SEEK_SET);
+-		read(fd, read_buffer, ROMBUFFERSIZE * 2);
++		res = read(fd, read_buffer, ROMBUFFERSIZE * 2);
++		if (res) {
++			res++;
++		}
+ 	}
+ 	return read_buffer + (offset & ROMBUFFERMASK);
+ }
+@@ -527,6 +536,7 @@
+ 	unsigned long curr = offset + 4;
+ 	unsigned long next = *(u32 *) romfs_read(offset);
+ 	unsigned long size;
++	int res;
+ 
+ 	if (offset == 0) {
+ 		die(FSCK_UNCORRECTED, 0, "symbolic link has zero offset");
+@@ -550,7 +560,10 @@
+ 	if (opt_verbose) {
+ 		char *str;
+ 
+-		asprintf(&str, "%s -> %s", path, outbuffer);
++		res = asprintf(&str, "%s -> %s", path, outbuffer);
++		if (res) {
++			res++;
++		}
+ 		print_node('l', i, str);
+ 		if (opt_verbose > 1) {
+ 			printf("  uncompressing block at %ld to %ld (%ld)\n", curr, next, next - curr);
+--- a/mkcramfs.c.org
++++ b/mkcramfs.c
+@@ -35,6 +35,7 @@
+ #include <stdarg.h>
+ #include <linux/cramfs_fs.h>
+ #include <zlib.h>
++#include <sys/sysmacros.h>
+ 
+ /* Exit codes used by mkfs-type programs */
+ #define MKFS_OK          0	/* No errors */
+@@ -242,7 +243,7 @@
+ 	endpath++;
+ 
+ 	/* read in the directory and sort */
+-	dircount = scandir(name, &dirlist, 0, cramsort);
++	dircount = scandir(name, &dirlist, 0, (int (*)(const struct dirent **, const struct dirent **))cramsort);
+ 
+ 	if (dircount < 0) {
+ 		die(MKFS_ERROR, 1, "scandir failed: %s", name);
+@@ -284,7 +285,7 @@
+ 		if (!entry) {
+ 			die(MKFS_ERROR, 1, "calloc failed");
+ 		}
+-		entry->name = strdup(dirent->d_name);
++		entry->name = (unsigned char *)strdup(dirent->d_name);
+ 		if (!entry->name) {
+ 			die(MKFS_ERROR, 1, "strdup failed");
+ 		}
+@@ -396,9 +397,9 @@
+ 
+ 	memset(super->name, 0x00, sizeof(super->name));
+ 	if (opt_name)
+-		strncpy(super->name, opt_name, sizeof(super->name));
++		strncpy((char *)super->name, opt_name, sizeof(super->name));
+ 	else
+-		strncpy(super->name, "Compressed", sizeof(super->name));
++		strncpy((char *)super->name, "Compressed", sizeof(super->name));
+ 
+ 	super->root.mode = root->mode;
+ 	super->root.uid = root->uid;
+@@ -477,7 +478,7 @@
+ 		int dir_start = stack_entries;
+ 		while (entry) {
+ 			struct cramfs_inode *inode = (struct cramfs_inode *) (base + offset);
+-			size_t len = strlen(entry->name);
++			size_t len = strlen((const char *)entry->name);
+ 
+ 			entry->dir_offset = offset;
+ 
+@@ -595,7 +596,7 @@
+ 			input = blksize;
+ 		size -= input;
+ 		if (!(opt_holes && is_zero (uncompressed, input))) {
+-			err = compress2(base + curr, &len, uncompressed, input, Z_BEST_COMPRESSION);
++			err = compress2((unsigned char *)base + curr, &len, (const unsigned char *)uncompressed, input, Z_BEST_COMPRESSION);
+ 			if (err != Z_OK) {
+ 				die(MKFS_ERROR, 0, "compression error: %s", zError(err));
+ 			}
+@@ -644,7 +645,7 @@
+ 				set_data_offset(entry, base, offset);
+ 				entry->offset = offset;
+ 				map_entry(entry);
+-				offset = do_compress(base, offset, entry->name, entry->uncompressed, entry->size);
++				offset = do_compress(base, offset, (const char *)entry->name, entry->uncompressed, entry->size);
+ 				unmap_entry(entry);
+ 			}
+ 		}
+@@ -822,7 +823,7 @@
+ 
+ 	/* Put the checksum in. */
+ 	crc = crc32(0L, Z_NULL, 0);
+-	crc = crc32(crc, (rom_image+opt_pad), (offset-opt_pad));
++	crc = crc32(crc, (const unsigned char *)(rom_image+opt_pad), (unsigned int)(offset-opt_pad));
+ 	((struct cramfs_super *) (rom_image+opt_pad))->fsid.crc = crc;
+ 	printf("CRC: %x\n", crc);
+ 
+

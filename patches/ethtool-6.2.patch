@@ -1,0 +1,43 @@
+--- a/uapi/linux/netlink.h_org
++++ b/uapi/linux/netlink.h
+@@ -3,7 +3,7 @@
+ #define __LINUX_NETLINK_H
+ 
+ #include <linux/const.h>
+-#include <linux/socket.h> /* for __kernel_sa_family_t */
++#include <linux/socket.h> /* for sa_family_t */
+ #include <linux/types.h>
+ 
+ #define NETLINK_ROUTE		0	/* Routing/device hook				*/
+@@ -35,7 +35,7 @@
+ #define MAX_LINKS 32		
+ 
+ struct sockaddr_nl {
+-	__kernel_sa_family_t	nl_family;	/* AF_NETLINK	*/
++	sa_family_t	nl_family;	/* AF_NETLINK	*/
+ 	unsigned short	nl_pad;		/* zero		*/
+ 	__u32		nl_pid;		/* port ID	*/
+        	__u32		nl_groups;	/* multicast groups mask */
+--- a/uapi/linux/rtnetlink.h_org
++++ b/uapi/linux/rtnetlink.h
+@@ -439,7 +439,7 @@
+ 
+ /* RTA_VIA */
+ struct rtvia {
+-	__kernel_sa_family_t	rtvia_family;
++	sa_family_t		rtvia_family;
+ 	__u8			rtvia_addr[];
+ };
+ 
+--- a/uapi/linux/if.h_org
++++ b/uapi/linux/if.h
+@@ -20,7 +20,7 @@
+ #ifndef _LINUX_IF_H
+ #define _LINUX_IF_H
+ 
+-#include <linux/libc-compat.h>          /* for compatibility with glibc */
++//#include <linux/libc-compat.h>          /* for compatibility with glibc */
+ #include <linux/types.h>		/* for "__kernel_caddr_t" et al	*/
+ #include <linux/socket.h>		/* for "struct sockaddr" et al	*/
+ 		/* for "__user" et al           */
+

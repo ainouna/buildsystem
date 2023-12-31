@@ -48,9 +48,8 @@ then
 fi
 
 #halt -d -f -n -i $poweroff $hddown
-/bin/cubefpctl --poweroff
+/bin/fp_control -l 0 0
 /bin/fp_control -dt 1
-[ -e /bin/cubefpctl ] && /bin/cubefpctl --poweroff
 /bin/fp_control -e
 echo "0" > /proc/progress
 : exit 0

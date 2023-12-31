@@ -1,0 +1,37 @@
+--- enigma2-nightly.org/lib/python/Screens/InfoBar.py
++++ enigma2-nightly/lib/python/Screens/InfoBar.py
+@@ -191,19 +191,21 @@
+ 
+ 	def toggleTvRadio(self): 
+ 		service = self.session.nav.getCurrentService()
+-		info = service.info()
+-		AudioPID = info.getInfo(iServiceInformation.sAudioPID)
+-		VideoPID = info.getInfo(iServiceInformation.sVideoPID)
+-
+-		print "sAudioPID", AudioPID
+-		print "sVideoPID", VideoPID
+-
+-		if VideoPID == -1:
+-			print "Radio->TV"
+-			self.showTv2()
+-		else:
+-			print "TV->Radio"
+-			self.showRadio2()
++		if service:
++			info = service.info()
++			if info:
++				AudioPID = info.getInfo(iServiceInformation.sAudioPID)
++				VideoPID = info.getInfo(iServiceInformation.sVideoPID)
++
++				print "sAudioPID", AudioPID
++				print "sVideoPID", VideoPID
++
++				if VideoPID == -1:
++					print "Radio->TV"
++					self.showTv2()
++				else:
++					print "TV->Radio"
++					self.showRadio2()
+ 
+ 	def serviceStarted(self):  #override from InfoBarShowHide
+ 		new = self.servicelist.newServicePlayed()

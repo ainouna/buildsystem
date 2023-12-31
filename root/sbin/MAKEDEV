@@ -45,6 +45,7 @@ sci_fortis="  root root   0644"
  tundev="  root root   0644"
  ttyusb="  root root   0644"
  rfkill="  root root   0644"
+  rfmod="  root root   0644"
 
 MAXVT=63
 
@@ -305,6 +306,7 @@ cvt () {
 			ramzswap) echo ramzswap ;;
 			ttyusb) echo ttyusb ;;
 			rfkill) echo rfkill ;;
+			rfmod) echo rfmod ;;
 			tundev) echo tundev ;;
 			rc) echo rc ;;
 			vfd) echo vfd ;;
@@ -546,6 +548,7 @@ do
 		$0 $opts sci_fortis
 		$0 $opts ttyusb
 		$0 $opts rfkill
+		$0 $opts rfmod
 		$0 $opts tundev
 		$0 $opts alsasnd
 		;;
@@ -1998,9 +2001,6 @@ do
 	stpio)
 		makedev stpio c 60 0 $readable
 		;;
-	fuse)
-		makedev fuse c 10 229 $system
-		;;
 	comedi)
 		major=98
 		for minor in 0 1 2 3
@@ -2149,6 +2149,9 @@ do
 		;;
 	rfkill)
 		makedev rfkill c 10 62 $rfkill
+		;;
+	rfmod)
+		makedev rfmod0 c 150 0 $rfmod
 		;;
 	tundev)
 		mkdir -p net

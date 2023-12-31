@@ -1,0 +1,3656 @@
+# commit 066a0703b51588c500977763b8145df82f4270ce # 10/06/2020
+--- neutrino-tangos.org/acinclude.m4
++++ neutrino-tangos/acinclude.m4
+@@ -313,45 +313,13 @@
+ AC_ARG_WITH(boxtype,
+ 	AS_HELP_STRING([--with-boxtype], [valid values: tripledragon, coolstream, spark, azbox, generic, armbox, duckbox, spark7162, mipsbox]),
+ 	[case "${withval}" in
+-		tripledragon|coolstream|azbox|generic|armbox)
++		tripledragon|coolstream|azbox|generic|armbox|duckbox)
+ 			BOXTYPE="$withval"
+ 		;;
+ 		spark|spark7162)
+ 			BOXTYPE="spark"
+ 			BOXMODEL="$withval"
+ 		;;
+-		ufs*)
+-			BOXTYPE="duckbox"
+-			BOXMODEL="$withval"
+-		;;
+-		atevio*)
+-			BOXTYPE="duckbox"
+-			BOXMODEL="$withval"
+-		;;
+-		fortis*)
+-			BOXTYPE="duckbox"
+-			BOXMODEL="$withval"
+-		;;
+-		octagon*)
+-			BOXTYPE="duckbox"
+-			BOXMODEL="$withval"
+-		;;
+-		hs7*)
+-			BOXTYPE="duckbox"
+-			BOXMODEL="$withval"
+-		;;
+-		cuberevo*)
+-			BOXTYPE="duckbox"
+-			BOXMODEL="$withval"
+-		;;
+-		ipbox*)
+-			BOXTYPE="duckbox"
+-			BOXMODEL="$withval"
+-		;;
+-		tf*)
+-			BOXTYPE="duckbox"
+-			BOXMODEL="$withval"
+-		;;
+ 		hd51|hd60|hd61|bre2ze4k|vusolo4k|vuduo4k|vuultimo4k|vuzero4k|vuuno4kse|vuuno4k|h7|osmio4k|osmio4kplus)
+ 			BOXTYPE="armbox"
+ 			BOXMODEL="$withval"
+@@ -368,7 +336,7 @@
+ 
+ AC_ARG_WITH(boxmodel,
+ 	AS_HELP_STRING([--with-boxmodel], [valid for coolstream: hd1, hd2])
+-AS_HELP_STRING([], [valid for duckbox: ufs910, ufs912, ufs913, ufs922, atevio7500, fortis_hdbox, octagon1008, cuberevo, cuberevo_mini, cuberevo_mini2, cuberevo_250hd, cuberevo_2000hd, cuberevo_3000hd, ipbox9900, ipbox99, ipbox55, tf7700])
++AS_HELP_STRING([], [valid for duckbox: ufs910, ufs912, ufs913, ufs922, fs9000, hs7110, hs7420, hs7810a, hs7119, hs7429, hs7819, hs8200, hs9510, dp7000, cuberevo, cuberevo_mini, cuberevo_mini2, cuberevo_250hd, cuberevo_2000hd, cuberevo_3000hd, hchs8100, ipbox9900, ipbox99, ipbox55, arivalink200, tf7700, hl101, adb_box, vip1_v1, vip1_v2, vip2, vitamin_hd5000, pace7241, opt9600, atemio520])
+ AS_HELP_STRING([], [valid for spark: spark, spark7162])
+ AS_HELP_STRING([], [valid for armbox: bre2ze4k, hd51, vusolo4k, vuduo4k, vuultimo4k, vuzero4k, vuuno4kse, vuuno4k, h7])
+ AS_HELP_STRING([], [valid for mipsbox: vuduo])
+@@ -393,7 +361,7 @@
+ 				AC_MSG_ERROR([unknown model $withval for boxtype $BOXTYPE])
+ 			fi
+ 		;;
+-		ufs910|ufs912|ufs913|ufs922|atevio7500|fortis_hdbox|octagon1008|cuberevo|cuberevo_mini|cuberevo_mini2|cuberevo_250hd|cuberevo_2000hd|cuberevo_3000hd|ipbox9900|ipbox99|ipbox55|tf7700)
++		ufs910|ufs912|ufs913|ufs922|fs9000|hs7110|hs7420|hs7810a|hs7119|hs7429|hs7819|hs8200|hs9510|dp7000|cuberevo|cuberevo_mini|cuberevo_mini2|cuberevo_250hd|cuberevo_2000hd|cuberevo_3000hd|hchs8100|ipbox9900|ipbox99|ipbox55|arivalink200|tf7700|hl101|adb_box|vip1_v1|vip1_v2|vip2|vitamin_hd5000|pace7241|opt9600|atemio520)
+ 			if test "$BOXTYPE" = "duckbox"; then
+ 				BOXMODEL="$withval"
+ 			else
+@@ -454,9 +422,16 @@
+ AM_CONDITIONAL(BOXMODEL_UFS922, test "$BOXMODEL" = "ufs922")
+ AM_CONDITIONAL(BOXMODEL_SPARK, test "$BOXMODEL" = "spark")
+ AM_CONDITIONAL(BOXMODEL_SPARK7162, test "$BOXMODEL" = "spark7162")
+-AM_CONDITIONAL(BOXMODEL_ATEVIO7500, test "$BOXMODEL" = "atevio7500")
+-AM_CONDITIONAL(BOXMODEL_FORTIS_HDBOX, test "$BOXMODEL" = "fortis_hdbox")
+-AM_CONDITIONAL(BOXMODEL_OCTAGON1008, test "$BOXMODEL" = "octagon1008")
++AM_CONDITIONAL(BOXMODEL_HS8200, test "$BOXMODEL" = "hs88200")
++AM_CONDITIONAL(BOXMODEL_FS9000, test "$BOXMODEL" = "fs9000")
++AM_CONDITIONAL(BOXMODEL_HS9510, test "$BOXMODEL" = "hs9510")
++AM_CONDITIONAL(BOXMODEL_HS7110, test "$BOXMODEL" = "hs7110")
++AM_CONDITIONAL(BOXMODEL_HS7420,test "$BOXMODEL" = "hs7420")
++AM_CONDITIONAL(BOXMODEL_HS7810A, test "$BOXMODEL" = "hs7810a")
++AM_CONDITIONAL(BOXMODEL_HS7119, test "$BOXMODEL" = "hs7119")
++AM_CONDITIONAL(BOXMODEL_HS7429,test "$BOXMODEL" = "hs7429")
++AM_CONDITIONAL(BOXMODEL_HS7819, test "$BOXMODEL" = "hs7819")
++AM_CONDITIONAL(BOXMODEL_DP7000, test "$BOXMODEL" = "dp7000")
+ 
+ AM_CONDITIONAL(BOXMODEL_CUBEREVO, test "$BOXMODEL" = "cuberevo")
+ AM_CONDITIONAL(BOXMODEL_CUBEREVO_MINI, test "$BOXMODEL" = "cuberevo_mini")
+@@ -467,7 +442,19 @@
+ AM_CONDITIONAL(BOXMODEL_IPBOX9900, test "$BOXMODEL" = "ipbox9900")
+ AM_CONDITIONAL(BOXMODEL_IPBOX99, test "$BOXMODEL" = "ipbox99")
+ AM_CONDITIONAL(BOXMODEL_IPBOX55, test "$BOXMODEL" = "ipbox55")
++AM_CONDITIONAL(BOXMODEL_ARIVALINK200, test "$BOXMODEL" = "arivalink200")
+ AM_CONDITIONAL(BOXMODEL_TF7700, test "$BOXMODEL" = "tf7700")
++AM_CONDITIONAL(BOXMODEL_HL101, test "$BOXMODEL" = "hl101")
++AM_CONDITIONAL(BOXMODEL_ADB_BOX, test "$BOXMODEL" = "adb_box")
++AM_CONDITIONAL(BOXMODEL_ADB_2850, test "$BOXMODEL" = "adb_2850")
++AM_CONDITIONAL(BOXMODEL_VIP1_V1, test "$BOXMODEL" = "vip1_v1")
++AM_CONDITIONAL(BOXMODEL_VIP1_V2, test "$BOXMODEL" = "vip1_v2")
++AM_CONDITIONAL(BOXMODEL_VIP2, test "$BOXMODEL" = "vip2")
++AM_CONDITIONAL(BOXMODEL_VITAMIN_HD5000, test "$BOXMODEL" = "vitamin_hd5000")
++AM_CONDITIONAL(BOXMODEL_PACE7241, test "$BOXMODEL" = "pace7241")
++AM_CONDITIONAL(BOXMODEL_OPT9600, test "$BOXMODEL" = "opt9600")
++AM_CONDITIONAL(BOXMODEL_ATEMIO520, test "$BOXMODEL" = "atemio520")
++AM_CONDITIONAL(BOXMODEL_HCHS8100, test "$BOXMODEL" = "hchs8100")
+ 
+ AM_CONDITIONAL(BOXMODEL_HD51, test "$BOXMODEL" = "hd51")
+ AM_CONDITIONAL(BOXMODEL_HD60, test "$BOXMODEL" = "hd60")
+@@ -528,12 +515,12 @@
+ 	AC_DEFINE(BOXMODEL_SPARK, 1, [spark])
+ elif test "$BOXMODEL" = "spark7162"; then
+ 	AC_DEFINE(BOXMODEL_SPARK7162, 1, [spark7162])
+-elif test "$BOXMODEL" = "atevio7500"; then
+-	AC_DEFINE(BOXMODEL_ATEVIO7500, 1, [atevio7500])
+-elif test "$BOXMODEL" = "fortis_hdbox"; then
+-	AC_DEFINE(BOXMODEL_FORTIS_HDBOX, 1, [fortis_hdbox])
+-elif test "$BOXMODEL" = "octagon1008"; then
+-	AC_DEFINE(BOXMODEL_OCTAGON1008, 1, [octagon1008])
++elif test "$BOXMODEL" = "hs8200"; then
++	AC_DEFINE(BOXMODEL_HS8200, 1, [hs8200])
++elif test "$BOXMODEL" = "fs9000"; then
++	AC_DEFINE(BOXMODEL_FS9000, 1, [fs9000])
++elif test "$BOXMODEL" = "hs9510"; then
++	AC_DEFINE(BOXMODEL_HS9510, 1, [hs9510])
+ elif test "$BOXMODEL" = "cuberevo"; then
+ 	AC_DEFINE(BOXMODEL_CUBEREVO, 1, [cuberevo])
+ elif test "$BOXMODEL" = "cuberevo_mini"; then
+@@ -552,8 +539,32 @@
+ 	AC_DEFINE(BOXMODEL_IPBOX99, 1, [ipbox99])
+ elif test "$BOXMODEL" = "ipbox55"; then
+ 	AC_DEFINE(BOXMODEL_IPBOX55, 1, [ipbox55])
++elif test "$BOXMODEL" = "arivalink200"; then
++	AC_DEFINE(BOXMODEL_ARIVALINK200, 1, [arivalink200])
+ elif test "$BOXMODEL" = "tf7700"; then
+ 	AC_DEFINE(BOXMODEL_TF7700, 1, [tf7700])
++elif test "$BOXMODEL" = "hl101"; then
++	AC_DEFINE(BOXMODEL_HL101, 1, [hl101])
++elif test "$BOXMODEL" = "adb_box"; then
++	AC_DEFINE(BOXMODEL_ADB_BOX, 1, [adb_box])
++elif test "$BOXMODEL" = "adb_2850"; then
++	AC_DEFINE(BOXMODEL_ADB_2850, 1, [adb_2850])
++elif test "$BOXMODEL" = "vip1_v1"; then
++	AC_DEFINE(BOXMODEL_VIP1_V1, 1, [vip1_v1])
++elif test "$BOXMODEL" = "vip1_v2"; then
++	AC_DEFINE(BOXMODEL_VIP1_V2, 1, [vip1_v2])
++elif test "$BOXMODEL" = "vip2"; then
++	AC_DEFINE(BOXMODEL_VIP2, 1, [vip2])
++elif test "$BOXMODEL" = "vitamin_hd5000"; then
++	AC_DEFINE(BOXMODEL_VITAMIN_HD5000, 1, [vitamin_hd5000])
++elif test "$BOXMODEL" = "pace7241"; then
++	AC_DEFINE(BOXMODEL_PACE7241, 1, [pace7241])
++elif test "$BOXMODEL" = "opt9600"; then
++	AC_DEFINE(BOXMODEL_OPT9600, 1, [opt9600])
++elif test "$BOXMODEL" = "atemio520"; then
++	AC_DEFINE(BOXMODEL_ATEMIO520, 1, [atemio520])
++elif test "$BOXMODEL" = "hchs8100"; then
++	AC_DEFINE(BOXMODEL_HCHS8100, 1, [hchs8100])
+ elif test "$BOXMODEL" = "bre2ze4k"; then
+ 	AC_DEFINE(BOXMODEL_BRE2ZE4K, 1, [bre2ze4k])
+ elif test "$BOXMODEL" = "hd51"; then
+--- neutrino-tangos.org/src/Makefile.am
++++ neutrino-tangos/src/Makefile.am
+@@ -3,7 +3,7 @@
+ rcsim.h: $(srcdir)/driver/rcinput.h $(srcdir)/create_rcsim_h.sh
+ 	pushd $(srcdir) && sh ./create_rcsim_h.sh > $@
+ 
+-AM_CXXFLAGS = -fno-rtti -fno-exceptions -D__STDC_FORMAT_MACROS
++AM_CXXFLAGS = -fno-rtti -fno-exceptions -D__STDC_FORMAT_MACROS -D_GLIBCXX_USE_C99 -std=c++11
+ 
+ SUBDIRS = zapit gui daemonc driver system eitd timerd nhttpd
+ 
+--- neutrino-tangos.org/src/neutrino.cpp
++++ neutrino-tangos/src/neutrino.cpp
+@@ -3262,9 +3262,11 @@
+ 				g_RemoteControl->setSubChannel(CRCInput::getNumericValue(msg));
+ 				g_InfoViewer->showSubchan();
+ 			}
++#if !defined(BOXMODEL_TF7700)  // skip KEY_LEFT & KEY_RIGHT on TF7700
+ 			else if( msg == CRCInput::RC_page_up || msg == CRCInput::RC_page_down) {
+ 				quickZap(msg == CRCInput::RC_page_up ? CRCInput::RC_right : CRCInput::RC_left);
+ 			}
++#endif
+ 			else if(msg == CRCInput::RC_rewind /* && (mode != NeutrinoModes::mode_webtv) */) {
+ 				if(g_RemoteControl->is_video_started) {
+ 					t_channel_id live_channel_id = CZapit::getInstance()->GetCurrentChannelID();
+@@ -3812,8 +3814,23 @@
+ 			}
+ #endif
+ 	}
++#if !defined(BOXMODEL_TF7700)
+ 	else if ((msg == CRCInput::RC_plus) || (msg == CRCInput::RC_minus))
+ 	{
++#else
++	else if ((msg == CRCInput::RC_left) || (msg == CRCInput::RC_right) || (msg == CRCInput::RC_plus) || (msg == CRCInput::RC_minus))
++	{
++		if ((msg == CRCInput::RC_left))  // Replace KEY_LEFT by KEY_VOLUMEDOWN on TF7700
++		{
++			printf("CNeutrinoApp::handleMsg: volume down! (key = %d, replacement = %d)\n", CRCInput::RC_left, CRCInput::RC_minus);
++			msg = CRCInput::RC_minus;
++		}
++		if ((msg == CRCInput::RC_right))  // Replace KEY_RIGHT by KEY_VOLUMEUP on TF7700
++		{
++			printf("CNeutrinoApp::handleMsg: volume up! (key = %d, replacement = %d)\n", CRCInput::RC_right, CRCInput::RC_plus);
++			msg = CRCInput::RC_plus;
++		}
++#endif
+ 		g_volume->setVolume(msg);
+ #if HAVE_DUCKBOX_HARDWARE
+ 		if((mode == NeutrinoModes::mode_tv) || (mode == NeutrinoModes::mode_radio)) {
+@@ -4670,7 +4687,7 @@
+ #ifdef ENABLE_GRAPHLCD
+ 		nGLCD::StandbyMode(true);
+ #endif
+-		CVFD::getInstance()->ShowText("standby...");
++		CVFD::getInstance()->ShowText("Standby...");
+ 		if( mode == NeutrinoModes::mode_scart ) {
+ 			//g_Controld->setScartMode( 0 );
+ 		}
+@@ -4720,6 +4737,10 @@
+ 			CVFD::getInstance()->Clear();
+ 			CVFD::getInstance()->setMode(CVFD::MODE_STANDBY);
+ 		}
++#if defined (BOXMODEL_FS9000) \
++ || defined (BOXMODEL_TF7700)
++		CVFD::getInstance()->setlcdparameter(g_settings.lcd_setting[SNeutrinoSettings::LCD_STANDBY_BRIGHTNESS], 0);
++#endif
+ 		CVFD::getInstance()->setBacklight(g_settings.backlight_standby);
+ 
+ 		InfoClock->enableInfoClock(false);
+@@ -4751,7 +4772,14 @@
+ 		// Active standby off
+ 		powerManager->SetStandby(false, false);
+ 		CVFD::getInstance()->setMode(CVFD::MODE_TVRADIO);
+-		CVFD::getInstance()->ShowText("resume");
++#if defined (BOXMODEL_FS9000) \
++ || defined (BOXMODEL_TF7700)
++		CVFD::getInstance()->setlcdparameter(g_settings.lcd_setting[SNeutrinoSettings::LCD_BRIGHTNESS], 1);
++#endif
++#ifdef HAVE_DUCKBOX_HARDWARE
++		CVFD::getInstance()->ClearIcons();
++#endif
++		CVFD::getInstance()->ShowText("Resume");
+ 		cpuFreq->SetCpuFreq(g_settings.cpufreq * 1000 * 1000);
+ 		videoDecoder->Standby(false);
+ 		CEpgScan::getInstance()->Stop();
+--- neutrino-tangos.org/lib/jsoncpp/jsoncpp.cpp
++++ neutrino-tangos/lib/jsoncpp/jsoncpp.cpp
+@@ -101,6 +101,8 @@
+ #ifndef JSONCPP_NO_LOCALE_SUPPORT
+ #include <clocale>
+ #endif
++
++#include <stdio.h>
+ 
+ /* This header provides common string manipulation support, such as UTF-8,
+  * portable conversion from/to string...
+--- neutrino-tangos.org/src/daemonc/Makefile.am
++++ neutrino-tangos/src/daemonc/Makefile.am
+@@ -1,4 +1,4 @@
+-AM_CPPFLAGS = -fno-rtti -fno-exceptions -D__STDC_FORMAT_MACROS
++AM_CPPFLAGS = -fno-rtti -fno-exceptions -D__STDC_FORMAT_MACROS -D_GLIBCXX_USE_C99 -std=c++11
+ 
+ AM_CPPFLAGS += \
+ 	-I$(top_builddir) \
+--- neutrino-tangos.org/src/driver/Makefile.am
++++ neutrino-tangos/src/driver/Makefile.am
+@@ -1,4 +1,4 @@
+-AM_CXXFLAGS = -fno-rtti -fno-exceptions -D__STDC_FORMAT_MACROS
++AM_CXXFLAGS = -fno-rtti -fno-exceptions -D__STDC_FORMAT_MACROS -D_GLIBCXX_USE_C99 -std=c++11
+ 
+ SUBDIRS = pictureviewer audiodec
+ 
+--- neutrino-tangos.org/src/driver/fbaccel.cpp
++++ neutrino-tangos/src/driver/fbaccel.cpp
+@@ -210,7 +210,7 @@
+ 	}
+ 	backbuf_sz = 1280 * 720 * sizeof(fb_pixel_t);
+ 	BPAMemAllocMemData bpa_data;
+-#if BOXMODEL_OCTAGON1008 || BOXMODEL_FORTIS_HDBOX || BOXMODEL_CUBEREVO || BOXMODEL_CUBEREVO_MINI || BOXMODEL_CUBEREVO_MINI2 || BOXMODEL_CUBEREVO_250HD || BOXMODEL_CUBEREVO_2000HD || BOXMODEL_CUBEREVO_3000HD || BOXMODEL_IPBOX9900 || BOXMODEL_IPBOX99 || BOXMODEL_IPBOX55 || BOXMODEL_TF7700
++#if BOXMODEL_HS9510 || BOXMODEL_FS9000 || BOXMODEL_CUBEREVO || BOXMODEL_CUBEREVO_MINI || BOXMODEL_CUBEREVO_MINI2 || BOXMODEL_CUBEREVO_250HD || BOXMODEL_CUBEREVO_2000HD || BOXMODEL_CUBEREVO_3000HD || BOXMODEL_IPBOX9900 || BOXMODEL_IPBOX99 || BOXMODEL_IPBOX55 || BOXMODEL_TF7700
+ 	bpa_data.bpa_part = (char *)"LMI_SYS";
+ #else
+ 	bpa_data.bpa_part = (char *)"LMI_VID";
+--- neutrino-tangos.org/src/driver/fb_accel_sti_ddt.cpp
++++ neutrino-tangos/src/driver/fb_accel_sti_ddt.cpp
+@@ -95,7 +95,7 @@
+ 	}
+ 	backbuf_sz = DEFAULT_XRES * DEFAULT_YRES * sizeof(fb_pixel_t);
+ 	BPAMemAllocMemData bpa_data;
+-#if BOXMODEL_OCTAGON1008 || BOXMODEL_FORTIS_HDBOX || BOXMODEL_CUBEREVO || BOXMODEL_CUBEREVO_MINI || BOXMODEL_CUBEREVO_MINI2 || BOXMODEL_CUBEREVO_250HD || BOXMODEL_CUBEREVO_2000HD || BOXMODEL_CUBEREVO_3000HD || BOXMODEL_IPBOX9900 || BOXMODEL_IPBOX99 || BOXMODEL_IPBOX55 || BOXMODEL_TF7700
++#if BOXMODEL_HS9510 || BOXMODEL_FS9000 || BOXMODEL_CUBEREVO || BOXMODEL_CUBEREVO_MINI || BOXMODEL_CUBEREVO_MINI2 || BOXMODEL_CUBEREVO_250HD || BOXMODEL_CUBEREVO_2000HD || BOXMODEL_CUBEREVO_3000HD || BOXMODEL_IPBOX9900 || BOXMODEL_IPBOX99 || BOXMODEL_IPBOX55 || BOXMODEL_TF7700
+ 	bpa_data.bpa_part = (char *)"LMI_SYS";
+ #else
+ 	bpa_data.bpa_part = (char *)"LMI_VID";
+--- neutrino-tangos.org/src/driver/fb_generic.cpp
++++ neutrino-tangos/src/driver/fb_generic.cpp
+@@ -53,6 +53,12 @@
+ #include <hardware/video.h>
+ #include <cs_api.h>
+ 
++#if defined HAVE_SH4_HARDWARE
++#include <linux/stmfb.h>
++#include <png.h>
++#include <system/set_threadname.h>
++#endif
++
+ #ifdef ENABLE_GRAPHLCD
+ #include <driver/nglcd.h>
+ #endif
+@@ -63,13 +69,25 @@
+ #define ICON_CACHE_SIZE 1024*1024*2 // 2mb
+ 
+ #define BACKGROUNDIMAGEWIDTH 720
++#if defined HAVE_SH4_HARDWARE
++/* note that it is *not* enough to just change those values */
++#define DEFAULT_XRES 1280
++#define DEFAULT_YRES 720
++#define DEFAULT_BPP  32
++#endif
++
++#define LOGTAG "[fb_generic] "
+ 
+ void CFrameBuffer::waitForIdle(const char *)
+ {
++#if defined HAVE_SH4_HARDWARE
++	accel_sti_ddt->waitForIdle();
++#endif
+ }
+ 
+ /*******************************************************************************/
+ 
++#if defined HAVE_SH4_HARDWARE
+ static uint8_t * virtual_fb = NULL;
+ inline unsigned int make16color(uint16_t r, uint16_t g, uint16_t b, uint16_t t,
+ 				  uint32_t  /*rl*/ = 0, uint32_t  /*ro*/ = 0,
+@@ -80,13 +98,83 @@
+ 	return ((t << 24) & 0xFF000000) | ((r << 8) & 0xFF0000) | ((g << 0) & 0xFF00) | (b >> 8 & 0xFF);
+ }
+ 
++#if defined HAVE_SH4_HARDWARE
++static int *getQuarterCircle(int radius)
++{
++	static std::map<int,int *> qc_map;
++	std::map<int, int *>::iterator it = qc_map.find(radius);
++	if (it != qc_map.end())
++		return (*it).second;
++
++	int *qc = (int *) malloc((radius * 2 + 2) * sizeof(int));
++	if (!qc)
++		return NULL;
++	int *res = qc_map[radius] = qc;
++
++	float r = (radius + .5) * (radius + .5);
++	radius++;
++	for (int x = 0; x < radius; x++)
++	{
++		float y = sqrt(r - x*x);
++		*qc++ = (int) floor(y); //rint?
++		int a = (int)(256.0 * (y - floor(y)));
++		*qc++ = a ? a : 255;
++	}
++	return res;
++}
++
++static inline bool calcCorners(int *ofs, int *ofl, int *ofr, const int& dy, const int& line, const int& radius,
++                               const bool& tl, const bool& tr, const bool& bl, const bool& br, int &alpha)
++{
++	/* just a multiplicator for all math to reduce rounding errors */
++	int scl, _ofs = 0;
++	bool ret = false;
++	if (ofl) *ofl = 0;
++	if (ofr) *ofr = 0;
++	int *q_circle = getQuarterCircle(radius);
++	/* one of the top corners */
++	if (line < radius && (tl || tr))
++	{
++		/* upper round corners */
++		scl = radius - line;
++		_ofs =  radius - q_circle[2 * scl];
++		if (ofl && tl) *ofl = _ofs;
++		if (ofr && tr) *ofr = _ofs;
++		alpha = q_circle[2 * scl + 1];
++	}
++	/* one of the bottom corners */
++	else if ((line >= dy - radius) && (bl || br))
++	{
++		/* lower round corners */
++		scl = radius - (dy - (line + 1));
++		_ofs = radius - q_circle[2 * scl];
++		if (ofl && bl) *ofl = _ofs;
++		if (ofr && br) *ofr = _ofs;
++		alpha = q_circle[2 * scl + 1];
++	}
++	else
++		ret = true;
++	if (ofs)
++		*ofs = _ofs;
++	return ret;
++}
++
++static inline int limitRadius(const int& dx, const int& dy, const int& radius)
++{
++	int m = std::min(dx, dy);
++	return std::min(m, radius);
++}
++#endif
++
+ CFrameBuffer::CFrameBuffer()
+ : active ( true )
+ {
+ 	fb_name = "generic framebuffer";
+ 	iconBasePath = "";
+ 	available  = 0;
++#if !defined HAVE_SH4_HARDWARE
+ 	cache_size = 0;
++#endif
+ 	cmap.start = 0;
+ 	cmap.len = 256;
+ 	cmap.red = red;
+@@ -98,9 +186,18 @@
+ 	background = NULL;
+ 	backupBackground = NULL;
+ 	backgroundFilename = "";
++#if !defined HAVE_SH4_HARDWARE
+ 	locked = false;
++#else
++	fbAreaActiv = false;
++	fb_no_check = false;
++#endif
+ 	fd  = 0;
+ 	tty = 0;
++#if defined HAVE_SH4_HARDWARE
++	bpp = 0;
++	locked = false;
++#endif
+ 	m_transparent_default = CFrameBuffer::TM_BLACK; // TM_BLACK: Transparency when black content ('pseudo' transparency)
+ 							// TM_NONE:  No 'pseudo' transparency
+ 							// TM_INI:   Transparency depends on g_settings.infobar_alpha ???
+@@ -116,9 +213,14 @@
+ 	memset(green, 0, 256*sizeof(__u16));
+ 	memset(blue, 0, 256*sizeof(__u16));
+ 	memset(trans, 0, 256*sizeof(__u16));
++#if !defined HAVE_SH4_HARDWARE
+ 	fbAreaActiv = false;
+ 	fb_no_check = false;
+ 	do_paint_mute_icon = true;
++#else
++	autoBlitStatus = false;
++	autoBlitThreadId = 0;
++#endif
+ }
+ 
+ CFrameBuffer* CFrameBuffer::getInstance()
+@@ -126,6 +228,10 @@
+ 	static CFrameBuffer* frameBuffer = NULL;
+ 
+ 	if (!frameBuffer) {
++#if defined HAVE_SH4_HARDWARE
++		frameBuffer = new CFrameBuffer();
++		printf("[neutrino] frameBuffer Instance created\n");
++#endif
+ #if HAVE_SPARK_HARDWARE
+ 		frameBuffer = new CFbAccelSTi();
+ #endif
+@@ -159,7 +265,7 @@
+ void CFrameBuffer::init(const char * const fbDevice)
+ {
+ 	int tr = 0xFF;
+-
++#if !defined HAVE_SH4_HARDWARE
+ 	fd = open(fbDevice, O_RDWR|O_CLOEXEC);
+ 
+ 	if (fd<0) {
+@@ -184,6 +290,9 @@
+ 		perror("mmap");
+ 		goto nolfb;
+ 	}
++#else
++	cache_size = 0;
++#endif
+ 
+ 	/* Windows Colors */
+ 	paletteSetColor(0x1, 0x010101, tr);
+@@ -209,6 +318,10 @@
+ 
+ 	useBackground(false);
+ 	m_transparent = m_transparent_default;
++#if defined HAVE_SH4_HARDWARE
++	accel_sti_ddt = new CFbAccel(this);
++	setMixerColor(g_settings.video_mixer_color);
++#endif
+ 
+ 	return;
+ 
+@@ -219,6 +332,7 @@
+ 
+ CFrameBuffer::~CFrameBuffer()
+ {
++#if !defined HAVE_SH4_HARDWARE
+ 	clearIconCache();
+ 
+ 	if (background) {
+@@ -248,10 +362,44 @@
+ 	fd = -1;
+ 
+ 	v_fbarea.clear();
++#else
++	autoBlit(false);
++	active = false; /* keep people/infoclocks from accessing */
++	std::map<std::string, rawIcon>::iterator it;
++
++	for(it = icon_cache.begin(); it != icon_cache.end(); ++it)
++	{
++		/* printf("FB: delete cached icon %s: %x\n", it->first.c_str(), (int) it->second.data); */
++		cs_free_uncached(it->second.data);
++	}
++	icon_cache.clear();
++
++	if (background)
++	{
++		delete[] background;
++		background = NULL;
++	}
++
++	if (backupBackground)
++	{
++		delete[] backupBackground;
++		backupBackground = NULL;
++	}
++
++	if (virtual_fb)
++	{
++		delete[] virtual_fb;
++		virtual_fb = NULL;
++	}
++	delete accel_sti_ddt;
++#endif
+ }
+ 
+ int CFrameBuffer::getFileHandle() const
+ {
++#if defined HAVE_SH4_HARDWARE
++	fprintf(stderr, "[fb]::%s: WARNING, this should never be used, please report!\n", __func__);
++#endif
+ 	return fd;
+ }
+ 
+@@ -263,7 +411,11 @@
+ unsigned int CFrameBuffer::getScreenWidth(bool real)
+ {
+ 	if(real)
++#if !defined HAVE_SH4_HARDWARE
+ 		return xRes;
++#else
++		return DEFAULT_XRES;
++#endif
+ 	else
+ 		return g_settings.screen_EndX - g_settings.screen_StartX;
+ }
+@@ -271,7 +423,11 @@
+ unsigned int CFrameBuffer::getScreenHeight(bool real)
+ {
+ 	if(real)
++#if !defined HAVE_SH4_HARDWARE
+ 		return yRes;
++#else
++		return DEFAULT_YRES;
++#endif
+ 	else
+ 		return g_settings.screen_EndY - g_settings.screen_StartY;
+ }
+@@ -280,7 +436,11 @@
+ {
+ 	int percent = force_small ? WINDOW_SIZE_MIN_FORCED : g_settings.window_width;
+ 	// always reduce a possible detailsline
++#if !defined HAVE_SH4_HARDWARE
+ 	return (g_settings.screen_EndX - g_settings.screen_StartX - 2*DETAILSLINE_WIDTH) * percent / 100;
++#else
++	return (g_settings.screen_EndX - g_settings.screen_StartX - 2 * ConnectLineBox_Width) * percent / 100;
++#endif
+ }
+ 
+ unsigned int CFrameBuffer::getScreenHeightRel(bool force_small)
+@@ -299,6 +459,7 @@
+ 	return g_settings.screen_StartY;
+ }
+ 
++#if !defined HAVE_SH4_HARDWARE
+ fb_pixel_t * CFrameBuffer::getFrameBufferPointer() const
+ {
+ 	if (active || (virtual_fb == NULL))
+@@ -306,16 +467,35 @@
+ 	else
+ 		return (fb_pixel_t *) virtual_fb;
+ }
++#else
++fb_pixel_t * CFrameBuffer::getFrameBufferPointer(bool real)
++{
++	if (real)
++		return lfb;
++	if (active || (virtual_fb == NULL))
++		return accel_sti_ddt->lbb;
++	else
++		return (fb_pixel_t *)virtual_fb;
++}
++#endif
+ 
+ /* dummy if not implemented in CFbAccel */
+ fb_pixel_t * CFrameBuffer::getBackBufferPointer() const
+ {
++#if !defined HAVE_SH4_HARDWARE
+ 	return getFrameBufferPointer();
++#else
++	return accel_sti_ddt->backbuffer;
++#endif
+ }
+ 
+ bool CFrameBuffer::getActive() const
+ {
++#if !defined HAVE_SH4_HARDWARE
+ 	return (active || (virtual_fb != NULL));
++#else
++	return (active || (virtual_fb != NULL));
++#endif
+ }
+ 
+ void CFrameBuffer::setActive(bool enable)
+@@ -333,9 +513,13 @@
+ 	if (!available&&!active)
+ 		return -1;
+ 
++#if !defined HAVE_SH4_HARDWARE
++	int ret = accel_sti_ddt->setMode();
++#endif
+ 	xRes = screeninfo.xres;
+ 	yRes = screeninfo.yres;
+ 	bpp  = screeninfo.bits_per_pixel;
++#if !defined HAVE_SH4_HARDWARE
+ 	fb_fix_screeninfo _fix;
+ 
+ 	if (ioctl(fd, FBIOGET_FSCREENINFO, &_fix)<0) {
+@@ -350,14 +534,20 @@
+ 	);
+ 
+ 	//memset(getFrameBufferPointer(), 0, stride * yRes);
++#endif
+ 	paintBackground();
++#if !defined HAVE_SH4_HARDWARE
+ 	if (ioctl(fd, FBIOBLANK, FB_BLANK_UNBLANK) < 0) {
+ 		printf("screen unblanking failed\n");
+ 	}
+ 
+ 	return 0;
+-}
+-
++#else
++	return ret;
++#endif
++}
++
++#if !defined HAVE_SH4_HARDWARE
+ void CFrameBuffer::setOsdResolutions()
+ {
+ 	/* FIXME: Infos available in driver? */
+@@ -381,6 +571,7 @@
+ 	}
+ 	return 0;
+ }
++#endif
+ 
+ #if 0
+ //never used
+@@ -388,13 +579,39 @@
+ {
+ }
+ #endif
++#if !defined HAVE_SH4_HARDWARE
+ void CFrameBuffer::setBlendMode(uint8_t /*mode*/)
+ {
+ }
+-
++#else
++void CFrameBuffer::setBlendMode(uint8_t mode)
++{
++	/* mode = 1 => reset to no extra transparency */
++	if (mode == 1)
++		setBlendLevel(0);
++}
++#endif
++
++#if !defined HAVE_SH4_HARDWARE
+ void CFrameBuffer::setBlendLevel(int /*level*/)
+ {
+ }
++#else
++void CFrameBuffer::setBlendLevel(int level)
++{
++	struct stmfbio_var_screeninfo_ex v;
++	memset(&v, 0, sizeof(v));
++	/* set to 0 already...
++	 v.layerid = 0;
++	 v.activate = STMFBIO_ACTIVATE_IMMEDIATE; // == 0
++	 v.premultiplied_alpha = 0;
++	*/
++	v.caps = STMFBIO_VAR_CAPS_OPACITY | STMFBIO_VAR_CAPS_PREMULTIPLIED;
++	v.opacity = 0xff - (level * 0xff / 100);
++	if (ioctl(fd, STMFBIO_SET_VAR_SCREENINFO_EX, &v) < 0)
++		perror("[fb:setBlendLevel] STMFBIO");
++}
++#endif
+ 
+ #if 0
+ //never used
+@@ -464,11 +681,28 @@
+ 					   rl, ro, gl, go, bl, bo, tl, to);
+ 	}
+ 	OnAfterSetPallette();
+-}
++#if defined HAVE_SH4_HARDWARE
++	realcolor[(COL_BACKGROUND + 0)] = 0; // background, no alpha
++#endif
++}
++
++#if defined HAVE_SH4_HARDWARE
++inline fb_pixel_t mergeColor(fb_pixel_t oc, int ol, fb_pixel_t ic, int il)
++{
++	return   (((  (oc >> 24)         * ol) + ( (ic >> 24)         * il)) >> 8) << 24
++	         |(((((oc >> 16) & 0xff) * ol) + (((ic >> 16) & 0xff) * il)) >> 8) << 16
++	         |(((((oc >> 8)  & 0xff) * ol) + (((ic >>  8) & 0xff) * il)) >> 8) << 8
++	         |(((( oc        & 0xff) * ol) + (( ic        & 0xff) * il)) >> 8);
++}
++#endif
+ 
+ void CFrameBuffer::paintHLineRelInternal2Buf(const int& x, const int& dx, const int& y, const int& box_dx, const fb_pixel_t& col, fb_pixel_t* buf)
+ {
++#if !defined HAVE_SH4_HARDWARE
+ 	fb_pixel_t * pos = buf + x + box_dx * y;
++#else
++	uint8_t * pos = ((uint8_t *)buf) + x * sizeof(fb_pixel_t) + box_dx * sizeof(fb_pixel_t) * y;
++#endif
+ 	fb_pixel_t * dest = (fb_pixel_t *)pos;
+ 	for (int i = 0; i < dx; i++)
+ 		*(dest++) = col;
+@@ -478,36 +712,62 @@
+ {
+ 	if (!getActive())
+ 		return buf;
++#if !defined HAVE_SH4_HARDWARE
+ 	if (dx < 1 || dy < 1) {
++#else
++	if (dx == 0 || dy == 0)
++	{
++#endif
+ 		dprintf(DEBUG_INFO, "[CFrameBuffer] [%s - %d]: radius %d, dx %d dy %d\n", __func__, __LINE__, radius, dx, dy);
+ 		return buf;
+ 	}
+ 
+ 	fb_pixel_t* pixBuf = buf;
+-	if (pixBuf == NULL) {
++	if (pixBuf == NULL)
++	{
+ 		pixBuf = (fb_pixel_t*) cs_malloc_uncached(w_align*dy*sizeof(fb_pixel_t));
+-		if (pixBuf == NULL) {
++		if (pixBuf == NULL)
++		{
+ 			dprintf(DEBUG_NORMAL, "[%s #%d] Error cs_malloc_uncached\n", __func__, __LINE__);
+ 			return NULL;
+ 		}
+ 	}
+ 	memset((void*)pixBuf, '\0', w_align*dy*sizeof(fb_pixel_t));
+ 
+-	if (type && radius) {
++	if (type && radius)
++	{
++#if !defined HAVE_SH4_HARDWARE
+ 		setCornerFlags(type);
++#endif
+ 		radius = limitRadius(dx, dy, radius);
+ 
++#if !defined HAVE_SH4_HARDWARE
++		bool corner_tl = !!(type & CORNER_TOP_LEFT);
++		bool corner_tr = !!(type & CORNER_TOP_RIGHT);
++		bool corner_bl = !!(type & CORNER_BOTTOM_LEFT);
++		bool corner_br = !!(type & CORNER_BOTTOM_RIGHT);
++#endif
++
+ 		int line = 0;
+-		while (line < dy) {
++		while (line < dy)
++		{
++#if !defined HAVE_SH4_HARDWARE
+ 			int ofl, ofr;
+ 			calcCorners(NULL, &ofl, &ofr, dy, line, radius, type);
+-			if (dx-ofr-ofl < 1) {
+-				if (dx-ofr-ofl == 0) {
++#else
++			int ofl, ofr, olevel;
++			calcCorners(NULL, &ofl, &ofr, dy, line, radius, corner_tl, corner_tr, corner_bl, corner_br, olevel);
++#endif
++			if (dx-ofr-ofl < 1)
++			{
++				if (dx-ofr-ofl == 0)
++				{
+ 					dprintf(DEBUG_INFO, "[%s - %d]: radius %d, end x %d y %d\n", __func__, __LINE__, radius, dx-ofr-ofl, line);
+ 				}
+-				else {
++				else
++				{
+ 					dprintf(DEBUG_INFO, "[%s - %04d]: Calculated width: %d\n		      (radius %d, dx %d, offsetLeft %d, offsetRight %d).\n		      Width can not be less than 0, abort.\n",
+-					       __func__, __LINE__, dx-ofr-ofl, radius, dx, ofl, ofr);
++					        __func__, __LINE__, dx-ofr-ofl, radius, dx, ofl, ofr);
+ 				}
+ 				line++;
+ 				continue;
+@@ -515,10 +775,13 @@
+ 			paintHLineRelInternal2Buf(ofl+offs_align, dx-ofl-ofr, line, w_align, col, pixBuf);
+ 			line++;
+ 		}
+-	} else {
++	}
++	else
++	{
+ 		fb_pixel_t *bp = pixBuf;
+ 		int line = 0;
+-		while (line < dy) {
++		while (line < dy)
++		{
+ 			for (int pos = offs_align; pos < dx+offs_align; pos++)
+ 				*(bp + pos) = col;
+ 			bp += w_align;
+@@ -532,9 +795,10 @@
+ 				      const fb_pixel_t /*col*/, gradientData_t *gradientData,
+ 				      int radius, int type)
+ {
++#if !defined HAVE_SH4_HARDWARE
+ 	if (!getActive())
+ 		return NULL;
+-
++#endif
+ 	checkFbArea(x, y, dx, dy, true);
+ 
+ 	fb_pixel_t MASK = 0xFFFFFFFF;
+@@ -561,8 +825,11 @@
+ #endif
+ 
+ 	fb_pixel_t* boxBuf    = paintBoxRel2Buf(_dx, dy, w_align, offs_align, MASK, NULL, radius, type);
+-	if (boxBuf == NULL) {
++	if (boxBuf == NULL)
++	{
++#if !defined HAVE_SH4_HARDWARE
+ 		checkFbArea(x, y, dx, dy, false);
++#endif
+ 		return NULL;
+ 	}
+ 	fb_pixel_t *bp        = boxBuf;
+@@ -571,22 +838,30 @@
+ 	gradientData->x       = x - offs_align;
+ 	gradientData->dx      = w_align;
+ 
+-	if (gradientData->direction == gradientVertical) {
++	if (gradientData->direction == gradientVertical)
++	{
+ 		// vertical
+-		for (int pos = offs_align; pos < _dx+offs_align; pos++) {
+-			for(int count = 0; count < dy; count++) {
++		for (int pos = offs_align; pos < _dx+offs_align; pos++)
++		{
++			for(int count = 0; count < dy; count++)
++			{
+ 				if (*(bp + pos) == MASK)
+ 					*(bp + pos) = (fb_pixel_t)(*(gra + count));
+ 				bp += w_align;
+ 			}
+ 			bp = boxBuf;
+ 		}
+-	} else {
++	}
++	else
++	{
+ 		// horizontal
+-		for (int line = 0; line < dy; line++) {
++		for (int line = 0; line < dy; line++)
++		{
+ 			int gra_pos = 0;
+-			for (int pos = 0; pos < w_align; pos++) {
+-				if ((*(bp + pos) == MASK) && (pos >= offs_align) && (gra_pos < _dx)) {
++			for (int pos = 0; pos < w_align; pos++)
++			{
++				if ((*(bp + pos) == MASK) && (pos >= offs_align) && (gra_pos < _dx))
++				{
+ 					*(bp + pos) = (fb_pixel_t)(*(gra + gra_pos));
+ 					gra_pos++;
+ 				}
+@@ -595,21 +870,29 @@
+ 		}
+ 	}
+ 
+-	if ((gradientData->mode & pbrg_noPaint) == pbrg_noPaint) {
++	if ((gradientData->mode & pbrg_noPaint) == pbrg_noPaint)
++	{
++#if !defined HAVE_SH4_HARDWARE
+ 		checkFbArea(x, y, dx, dy, false);
++#endif
+ 		return boxBuf;
+ 	}
+ 
+ 	blitBox2FB(boxBuf, w_align, dy, x-offs_align, y);
+ 
+-	if ((gradientData->mode & pbrg_noFree) == pbrg_noFree) {
++	if ((gradientData->mode & pbrg_noFree) == pbrg_noFree)
++	{
++#if !defined HAVE_SH4_HARDWARE
+ 		checkFbArea(x, y, dx, dy, false);
++#endif
+ 		return boxBuf;
+ 	}
+ 
+ 	cs_free_uncached(boxBuf);
+ 
++#if !defined HAVE_SH4_HARDWARE
+ 	checkFbArea(x, y, dx, dy, false);
++#endif
+ 	return NULL;
+ }
+ 
+@@ -620,7 +903,15 @@
+ 	if (!getActive())
+ 		return;
+ 
+-	if (dx == 0 || dy == 0) {
++#if defined HAVE_SH4_HARDWARE
++	bool corner_tl = !!(type & CORNER_TOP_LEFT);
++	bool corner_tr = !!(type & CORNER_TOP_RIGHT);
++	bool corner_bl = !!(type & CORNER_BOTTOM_LEFT);
++	bool corner_br = !!(type & CORNER_BOTTOM_RIGHT);
++#endif
++
++	if (dx == 0 || dy == 0)
++	{
+ 		dprintf(DEBUG_DEBUG, "[CFrameBuffer] [%s - %d]: radius %d, start x %d y %d end x %d y %d\n", __func__, __LINE__, radius, x, y, x+dx, y+dy);
+ 		return;
+ 	}
+@@ -629,7 +920,59 @@
+ 
+ 	checkFbArea(x, y, dx, dy, true);
+ 
+-	if (type && radius) {
++	if (radius > 0)   // if radius = 0 there is no round corner --tango
++	{
++		// hack: don't paint round corners unless these are actually visible --martii
++		fb_pixel_t *f = accel_sti_ddt->lbb + y * stride/sizeof(fb_pixel_t) + x;
++		if ((col == *f)
++		        && (col == *(f + dx - 1))
++		        && (col == *(f + (dy - 1) * stride/sizeof(fb_pixel_t)))
++		        && (col == *(f + (dy - 1) * stride/sizeof(fb_pixel_t) + dx - 1)))
++			type = 0;
++	}
++
++	if (!type || !radius)
++	{
++		accel_sti_ddt->paintRect(x, y, dx, dy, col);
++		checkFbArea(x, y, dx, dy, false);
++		return;
++	}
++
++	/* limit the radius */
++	radius = limitRadius(dx, dy, radius);
++	if (radius < 1)		/* dx or dy = 0... */
++		radius = 1;	/* avoid div by zero below */
++
++	int line = 0;
++	while (line < dy)
++	{
++		int ofl, ofr;
++		int level;
++		if (calcCorners(NULL, &ofl, &ofr, dy, line, radius,
++		                corner_tl, corner_tr, corner_bl, corner_br, level))
++		{
++			int height = dy - ((corner_tl || corner_tr)?radius: 0 ) - ((corner_bl || corner_br) ? radius : 0);
++			accel_sti_ddt->paintRect(x, y + line, dx, height, col);
++			line += height;
++			continue;
++		}
++		if (dx - ofr - ofl < 1)
++		{
++			//printf("FB-NG::%s:%d x %d y %d dx %d dy %d l %d r %d\n", __func__, __LINE__, x,y,dx,dy, ofl, ofr);
++			line++;
++			continue;
++		}
++
++		fb_pixel_t *p = accel_sti_ddt->lbb + (y + line) * stride/sizeof(fb_pixel_t) + x + ofl;
++		*p = mergeColor(*p, 255 - level, col, level);
++
++		p = accel_sti_ddt->lbb + (y + line) * stride/sizeof(fb_pixel_t) + x + dx - ofr - 1;
++		*p = mergeColor(*p, 255 - level, col, level);
++
++		accel_sti_ddt->paintLine(x + ofl, y + line, x + dx - ofr, y + line, col);
++		line++;
++	if (type && radius)
++	{
+ 		setCornerFlags(type);
+ 		radius = limitRadius(dx, dy, radius);
+ 
+@@ -663,10 +1006,64 @@
+ 			fbp += swidth;
+ 			line++;
+ 		}
++#else
++	if (radius > 0)   // if radius = 0 there is no round corner --tango
++	{
++		// hack: don't paint round corners unless these are actually visible --martii
++		fb_pixel_t *f = accel_sti_ddt->lbb + y * stride/sizeof(fb_pixel_t) + x;
++		if ((col == *f)
++		        && (col == *(f + dx - 1))
++		        && (col == *(f + (dy - 1) * stride/sizeof(fb_pixel_t)))
++		        && (col == *(f + (dy - 1) * stride/sizeof(fb_pixel_t) + dx - 1)))
++			type = 0;
++	}
++
++	if (!type || !radius)
++	{
++		accel_sti_ddt->paintRect(x, y, dx, dy, col);
++		checkFbArea(x, y, dx, dy, false);
++		return;
++	}
++
++	/* limit the radius */
++	radius = limitRadius(dx, dy, radius);
++	if (radius < 1)		/* dx or dy = 0... */
++		radius = 1;	/* avoid div by zero below */
++
++	int line = 0;
++	while (line < dy)
++	{
++		int ofl, ofr;
++		int level;
++		if (calcCorners(NULL, &ofl, &ofr, dy, line, radius,
++		                corner_tl, corner_tr, corner_bl, corner_br, level))
++		{
++			int height = dy - ((corner_tl || corner_tr)?radius: 0 ) - ((corner_bl || corner_br) ? radius : 0);
++			accel_sti_ddt->paintRect(x, y + line, dx, height, col);
++			line += height;
++			continue;
++		}
++		if (dx - ofr - ofl < 1)
++		{
++			//printf("FB-NG::%s:%d x %d y %d dx %d dy %d l %d r %d\n", __func__, __LINE__, x,y,dx,dy, ofl, ofr);
++			line++;
++			continue;
++		}
++
++		fb_pixel_t *p = accel_sti_ddt->lbb + (y + line) * stride/sizeof(fb_pixel_t) + x + ofl;
++		*p = mergeColor(*p, 255 - level, col, level);
++
++		p = accel_sti_ddt->lbb + (y + line) * stride/sizeof(fb_pixel_t) + x + dx - ofr - 1;
++		*p = mergeColor(*p, 255 - level, col, level);
++
++		accel_sti_ddt->paintLine(x + ofl, y + line, x + dx - ofr, y + line, col);
++		line++;
++#endif
+ 	}
+ 	checkFbArea(x, y, dx, dy, false);
+ }
+ 
++#if !defined HAVE_SH4_HARDWARE
+ void CFrameBuffer::paintVLineRelInternal(int x, int y, int dy, const fb_pixel_t col)
+ {
+ 	fb_pixel_t *pos = getFrameBufferPointer() + x + swidth * y;
+@@ -701,6 +1098,45 @@
+ 	paintHLineRelInternal(x, dx, y, col);
+ 	mark(x, y, x + dx, y);
+ }
++#else
++void CFrameBuffer::paintPixel(const int x, const int y, const fb_pixel_t col)
++{
++	if (!getActive())
++		return;
++	if (x > (int)xRes || y > (int)yRes || x < 0 || y < 0)
++		return;
++
++	accel_sti_ddt->paintPixel(x, y, col);
++}
++
++void CFrameBuffer::paintLine(int xa, int ya, int xb, int yb, const fb_pixel_t col)
++{
++	if (!getActive())
++		return;
++
++	accel_sti_ddt->paintLine(xa, ya, xb, yb, col);
++}
++
++void CFrameBuffer::paintVLine(int x, int ya, int yb, const fb_pixel_t col)
++{
++	paintLine(x, ya, x, yb, col);
++}
++
++void CFrameBuffer::paintVLineRel(int x, int y, int dy, const fb_pixel_t col)
++{
++	paintLine(x, y, x, y + dy, col);
++}
++
++void CFrameBuffer::paintHLine(int xa, int xb, int y, const fb_pixel_t col)
++{
++	paintLine(xa, y, xb, y, col);
++}
++
++void CFrameBuffer::paintHLineRel(int x, int dx, int y, const fb_pixel_t col)
++{
++	paintLine(x, y, x + dx, y, col);
++}
++#endif
+ 
+ void CFrameBuffer::setIconBasePath(const std::string & iconPath)
+ {
+@@ -709,11 +1145,30 @@
+ 
+ std::string CFrameBuffer::getIconPath(std::string icon_name, std::string file_type)
+ {
++#if !defined HAVE_SH4_HARDWARE
++	std::string path, filetype = "";
++	if (!file_type.empty())
++		filetype = "." + file_type;
++
++	std::string dir[] = {	THEMESDIR_VAR "/" + g_settings.theme_name + "/icons",
++				THEMESDIR "/" + g_settings.theme_name + "/icons",
++				ICONSDIR_VAR,
++				iconBasePath
++	};
++
++	for(int i=0; i<4 ; i++){
++		path = std::string(dir[i]) + "/" + icon_name + filetype;
++		if (access(path.c_str(), F_OK) == 0){
++			return path;
++		}
++	}
++#else
+ 	std::string path, filetype;
+ 	filetype = "." + file_type;
+ 	path = std::string(ICONSDIR_VAR) + "/" + icon_name + filetype;
+ 	if (access(path.c_str(), F_OK))
+ 		path = iconBasePath + "/" + icon_name + filetype;
++#endif
+ 	if (icon_name.find("/", 0) != std::string::npos)
+ 		path = icon_name;
+ 	return path;
+@@ -726,10 +1181,12 @@
+ 
+ 	if(filename == NULL)
+ 		return;
++#if !defined HAVE_SH4_HARDWARE
+ 	//check for full path, icon don't have full path, or ?
+ 	if (filename[0]== '/'){
+ 		return;
+ 	}
++#endif
+ 
+ 	std::map<std::string, rawIcon>::iterator it;
+ 
+@@ -738,12 +1195,15 @@
+ 	/* FIXME offset seems never used in code, always default = 1 ? */
+ 
+ 	it = icon_cache.find(filename);
+-	if(it == icon_cache.end()) {
+-		if(paintIcon(filename, 0, 0, 0, 1, false)) {
++	if(it == icon_cache.end())
++	{
++		if(paintIcon(filename, 0, 0, 0, 1, false))
++		{
+ 			it = icon_cache.find(filename);
+ 		}
+ 	}
+-	if(it != icon_cache.end()) {
++	if(it != icon_cache.end())
++	{
+ 		*width = it->second.width;
+ 		*height = it->second.height;
+ 	}
+@@ -762,7 +1222,8 @@
+ 
+ 	lfd = open((iconBasePath + "/" + filename).c_str(), O_RDONLY);
+ 
+-	if (lfd == -1) {
++	if (lfd == -1)
++	{
+ 		printf("paintIcon8: error while loading icon: %s/%s\n", iconBasePath.c_str(), filename.c_str());
+ 		return false;
+ 	}
+@@ -777,7 +1238,8 @@
+ 	width  = (header.width_hi  << 8) | header.width_lo;
+ 	height = (header.height_hi << 8) | header.height_lo;
+ 
+-	if (width > 768) {
++	if (width > 768)
++	{
+ 		/* this is not going to happen, but check anyway */
+ 		printf("%s: icon %s too wide (%d)\n", __func__, filename.c_str(), (int)width);
+ 		close(lfd);
+@@ -807,7 +1269,11 @@
+ 		d += swidth;
+ 	}
+ 	close(lfd);
++#if !defined HAVE_SH4_HARDWARE
+ 	mark(x, y, x + width, y + height);
++#else
++	accel_sti_ddt->blit();
++#endif
+ 	return true;
+ }
+ 
+@@ -832,7 +1298,8 @@
+ 
+ 	/* we cache and check original name */
+ 	it = icon_cache.find(filename);
+-	if(it == icon_cache.end()) {
++	if(it == icon_cache.end())
++	{
+ 		std::string newname = getIconPath(filename);
+ 		//printf("CFrameBuffer::paintIcon: check for %s\n", newname.c_str());fflush(stdout);
+ 
+@@ -841,10 +1308,12 @@
+ 			return false;
+ 		}
+ 
+-		if(data) { //TODO: intercepting of possible full icon cache, that could cause strange behavior while painting of uncached icons
++		if(data)   //TODO: intercepting of possible full icon cache, that could cause strange behaviour while painting of uncached icons
++		{
+ 			int dsize = width*height*sizeof(fb_pixel_t);
+ 			//printf("CFrameBuffer::paintIcon: %s found, data %x size %d x %d\n", newname.c_str(), data, width, height);fflush(stdout);
+-			if(cache_size+dsize < ICON_CACHE_SIZE) {
++			if(cache_size+dsize < ICON_CACHE_SIZE)
++			{
+ 				cache_size += dsize;
+ 				tmpIcon.width = width;
+ 				tmpIcon.height = height;
+@@ -859,18 +1328,21 @@
+ 
+ 		int lfd = open(newname.c_str(), O_RDONLY);
+ 
+-		if (lfd == -1) {
++		if (lfd == -1)
++		{
+ 			//printf("paintIcon: error while loading icon: %s\n", newname.c_str());
+ 			return false;
+ 		}
+ 
+ 		ssize_t s = read(lfd, &header, sizeof(struct rawHeader));
+-		if (s < 0) {
++		if (s < 0)
++		{
+ 			perror("read");
+ 			return false;
+ 		}
+ 
+-		if (s < (ssize_t) sizeof(rawHeader)){
++		if (s < (ssize_t) sizeof(rawHeader))
++		{
+ 			printf("paintIcon: error while loading icon: %s, header too small\n", newname.c_str());
+ 			return false;
+ 		}
+@@ -915,22 +1387,31 @@
+ 
+ 		data = tmpIcon.data;
+ 
+-		if(cache_size+dsize < ICON_CACHE_SIZE) {
++		if (cache_size+dsize < ICON_CACHE_SIZE)
++		{
+ 			cache_size += dsize;
+ 			icon_cache.insert(std::pair <std::string, rawIcon> (filename, tmpIcon));
+ 			//printf("Cached %s, cache size %d\n", newname.c_str(), cache_size);
+-		}else{
++		}
++#if !defined HAVE_SH4_HARDWARE
++		else
++		{
+ 			freeicondata = true;
+ 		}
+-	} else {
++#endif
++	}
++	else
++	{
+ 		data = it->second.data;
+ 		width = it->second.width;
+ 		height = it->second.height;
+ 		//printf("paintIcon: already cached %s %d x %d\n", newname.c_str(), width, height);
+ 	}
+ _display:
+-	if(!paint){
+-		if(freeicondata){
++	if(!paint)
++	{
++		if(freeicondata)
++		{
+ 			free(data);
+ 			data = NULL;
+ 		}
+@@ -970,14 +1451,16 @@
+ 
+ 	lfd = open((iconBasePath + "/" + filename).c_str(), O_RDONLY);
+ 
+-	if (lfd == -1) {
++	if (lfd == -1)
++	{
+ 		printf("error while loading palette: %s/%s\n", iconBasePath.c_str(), filename.c_str());
+ 		return;
+ 	}
+ 
+ 	int pos = 0;
+ 	int readb = read(lfd, &rgbdata,  sizeof(rgbdata) );
+-	while(readb) {
++	while(readb)
++	{
+ 		__u32 rgb = (rgbdata.r<<16) | (rgbdata.g<<8) | (rgbdata.b);
+ 		int colpos = offset+pos;
+ 		if( colpos>endidx)
+@@ -991,6 +1474,7 @@
+ 	close(lfd);
+ }
+ 
++#if !defined HAVE_SH4_HARDWARE
+ void CFrameBuffer::paintPixel(const int x, const int y, const fb_pixel_t col)
+ {
+ 	if (!getActive())
+@@ -1102,34 +1586,46 @@
+ 	if (ofs != NULL) *ofs = _ofs;
+ 	return ret;
+ }
++#endif
+ 
+ void CFrameBuffer::paintBoxFrame(const int x, const int y, const int dx, const int dy, const int px, const fb_pixel_t col, int radius, int type)
+ {
+ 	if (!getActive())
+ 		return;
+ 
+-	if (dx == 0 || dy == 0) {
++	if (dx == 0 || dy == 0)
++	{
+ 		dprintf(DEBUG_NORMAL, "[CFrameBuffer] [%s - %d]: radius %d, start x %d y %d end x %d y %d\n",  __func__, __LINE__, radius, x, y, x+dx, y+dy);
+ 		return;
+ 	}
+ 	if (radius < 0)
+ 		dprintf(DEBUG_NORMAL, "[CFrameBuffer] [%s - %d]: WARNING! radius < 0 [%d] FIXIT\n", __func__, __LINE__, radius);
+ 
++#if !defined HAVE_SH4_HARDWARE
+ 	setCornerFlags(type);
++#else
++	int radius = rad;
++	bool corner_tl = !!(type & CORNER_TOP_LEFT);
++	bool corner_tr = !!(type & CORNER_TOP_RIGHT);
++	bool corner_bl = !!(type & CORNER_BOTTOM_LEFT);
++	bool corner_br = !!(type & CORNER_BOTTOM_RIGHT);
++#endif
+ 	int rad_tl = 0, rad_tr = 0, rad_bl = 0, rad_br = 0;
+-	if (type && radius) {
++	if (type && radius)
++	{
+ 		int x_rad = radius - 1;
+ 		if (corner_tl) rad_tl = x_rad;
+ 		if (corner_tr) rad_tr = x_rad;
+ 		if (corner_bl) rad_bl = x_rad;
+ 		if (corner_br) rad_br = x_rad;
+ 	}
+-	paintBoxRel(x + rad_tl , y          , dx - rad_tl - rad_tr, px                  , col); // top horizontal
+-	paintBoxRel(x + rad_bl , y + dy - px, dx - rad_bl - rad_br, px                  , col); // bottom horizontal
+-	paintBoxRel(x          , y + rad_tl , px                  , dy - rad_tl - rad_bl, col); // left vertical
++	paintBoxRel(x + rad_tl, y          , dx - rad_tl - rad_tr, px                  , col); // top horizontal
++	paintBoxRel(x + rad_bl, y + dy - px, dx - rad_bl - rad_br, px                  , col); // bottom horizontal
++	paintBoxRel(x         , y + rad_tl , px                  , dy - rad_tl - rad_bl, col); // left vertical
+ 	paintBoxRel(x + dx - px, y + rad_tr , px                  , dy - rad_tr - rad_br, col); // right vertical
+ 
+-	if (type && radius) {
++	if (type && radius)
++	{
+ 		radius = limitRadius(dx, dy, radius);
+ 		int line = 0;
+ 		waitForIdle("CFrameBuffer::paintBoxFrame");
+@@ -1410,10 +1906,12 @@
+ 	return true;
+ }
+ #endif
++
+ void CFrameBuffer::useBackground(bool ub)
+ {
+ 	useBackgroundPaint = ub;
+-	if(!useBackgroundPaint) {
++	if(!useBackgroundPaint)
++	{
+ 		delete[] background;
+ 		background=NULL;
+ 	}
+@@ -1426,7 +1924,8 @@
+ 
+ void CFrameBuffer::saveBackgroundImage(void)
+ {
+-	if (backupBackground != NULL){
++	if (backupBackground != NULL)
++	{
+ 		delete[] backupBackground;
+ 		backupBackground = NULL;
+ 	}
+@@ -1449,7 +1948,8 @@
+ 	else
+ 		useBackground(false); // <- necessary since no background is available
+ 
+-	if (tmp != NULL){
++	if (tmp != NULL)
++	{
+ 		delete[] tmp;
+ 		tmp = NULL;
+ 	}
+@@ -1495,17 +1995,25 @@
+ 		paintBoxRel(0, 0, xRes, yRes, backgroundColor);
+ 	}
+ 	checkFbArea(0, 0, xRes, yRes, false);
++#if defined HAVE_SH4_HARDWARE
++	accel_sti_ddt->blit();
++#endif
+ }
+ 
+ void CFrameBuffer::SaveScreen(int x, int y, int dx, int dy, fb_pixel_t * const memp)
+ {
++#if !defined HAVE_SH4_HARDWARE
+ 	if (!getActive())
++#else
++	if (!getActive() || memp == NULL)
++#endif
+ 		return;
+ 
+ 	checkFbArea(x, y, dx, dy, true);
+ 	fb_pixel_t * pos = getFrameBufferPointer() + x + swidth * y;
+ 	fb_pixel_t * bkpos = memp;
+-	for (int count = 0; count < dy; count++) {
++	for (int count = 0; count < dy; count++)
++	{
+ 		fb_pixel_t * dest = (fb_pixel_t *)pos;
+ 		for (int i = 0; i < dx; i++)
+ 			//*(dest++) = col;
+@@ -1589,7 +2097,8 @@
+ 	unsigned int *fbbuff;
+ 	unsigned long count;
+ 
+-	if (!x || !y) {
++	if (!x || !y)
++	{
+ 		printf("convertRGB2FB%s: Error: invalid dimensions (%luX x %luY)\n",
+ 		       ((alpha) ? " (Alpha)" : ""), x, y);
+ 		return NULL;
+@@ -1598,21 +2107,27 @@
+ 	count = x * y;
+ 
+ 	fbbuff = (unsigned int *) cs_malloc_uncached(count * sizeof(unsigned int));
+-	if(fbbuff == NULL) {
++	if(fbbuff == NULL)
++	{
+ 		printf("convertRGB2FB%s: Error: cs_malloc_uncached\n", ((alpha) ? " (Alpha)" : ""));
+ 		return NULL;
+ 	}
+ 
+-	if (alpha) {
++	if (alpha)
++	{
+ 		for(i = 0; i < count ; i++)
+ 			fbbuff[i] = ((rgbbuff[i*4+3] << 24) & 0xFF000000) |
+ 				    ((rgbbuff[i*4]   << 16) & 0x00FF0000) |
+ 				    ((rgbbuff[i*4+1] <<  8) & 0x0000FF00) |
+ 				    ((rgbbuff[i*4+2])       & 0x000000FF);
+-	} else {
+-		switch (m_transparent) {
++	}
++	else
++	{
++		switch (m_transparent)
++		{
+ 			case CFrameBuffer::TM_BLACK:
+-				for(i = 0; i < count ; i++) {
++				for(i = 0; i < count ; i++)
++				{
+ 					transp = 0;
+ 					if(rgbbuff[i*3] || rgbbuff[i*3+1] || rgbbuff[i*3+2])
+ 						transp = 0xFF;
+@@ -1747,9 +2262,11 @@
+ 	fb_pixel_t* data = (fb_pixel_t*)boxBuf;
+ 
+ 	uint32_t line = 0;
+-	while (line < yc) {
++	while (line < yc)
++	{
+ 		fb_pixel_t *pixpos = &data[line * xc];
+-		for (uint32_t pos = xoff; pos < xoff + xc; pos++) {
++		for (uint32_t pos = xoff; pos < xoff + xc; pos++)
++		{
+ 			//don't paint backgroundcolor (*pixpos = 0x00000000)
+ 			if (*pixpos)
+ 				*(fbp + pos) = *pixpos;
+@@ -1758,6 +2275,9 @@
+ 		fbp += swidth;
+ 		line++;
+ 	}
++#if defined HAVE_SH4_HARDWARE
++	checkFbArea(xoff, yoff, width, height, false);
++#endif
+ }
+ 
+ void CFrameBuffer::displayRGB(unsigned char *rgbbuff, int x_size, int y_size, int x_pan, int y_pan, int x_offs, int y_offs, bool clearfb, int transp)
+@@ -1788,6 +2308,9 @@
+ 	blit2FB(fbbuff, x_size, y_size, x_offs, y_offs, x_pan, y_pan);
+ 	cs_free_uncached(fbbuff);
+ }
++
++#if defined HAVE_SH4_HARDWARE
++#endif
+ 
+ // ## AudioMute / Clock ######################################
+ 
+@@ -1893,14 +2416,34 @@
+ 	return w;
+ }
+ 
++#if !defined HAVE_SH4_HARDWARE
+ CFrameBuffer::Mode3D CFrameBuffer::get3DMode()
+ {
+ 	return Mode3D_off;
+ }
+-
++#else
++CFrameBuffer::Mode3D CFrameBuffer::get3DMode()
++{
++	return mode3D;
++}
++#endif
++
++#if !defined HAVE_SH4_HARDWARE
+ void CFrameBuffer::set3DMode(Mode3D __attribute__ ((unused)) m)
+ {
+ }
++#else
++void CFrameBuffer::set3DMode(Mode3D m)
++{
++	if (mode3D != m)
++	{
++		accel_sti_ddt->ClearFB();
++		mode3D = m;
++		accel_sti_ddt->borderColorOld = 0x01010101;
++		accel_sti_ddt->blit();
++	}
++}
++#endif
+ 
+ void CFrameBuffer::blit()
+ {
+@@ -1908,3 +2451,135 @@
+ 	nGLCD::Blit();
+ #endif
+ }
++
++#if defined HAVE_SH4_HARDWARE
++void CFrameBuffer::blitArea(int src_width, int src_height, int fb_x, int fb_y, int width, int height)
++{
++	accel_sti_ddt->blitArea(src_width, src_height, fb_x, fb_y, width, height);
++}
++
++void CFrameBuffer::resChange(void)
++{
++	accel_sti_ddt->resChange();
++}
++
++void CFrameBuffer::setBorder(int sx, int sy, int ex, int ey)
++{
++	accel_sti_ddt->setBorder(sx, sy, ex, ey);
++}
++
++void CFrameBuffer::getBorder(int &sx, int &sy, int &ex, int &ey)
++{
++	accel_sti_ddt->getBorder(sx, sy, ex, ey);
++}
++
++void CFrameBuffer::setBorderColor(fb_pixel_t col)
++{
++	accel_sti_ddt->setBorderColor(col);
++}
++
++fb_pixel_t CFrameBuffer::getBorderColor(void)
++{
++	return accel_sti_ddt->getBorderColor();
++}
++
++void CFrameBuffer::ClearFB(void)
++{
++	accel_sti_ddt->ClearFB();
++}
++
++void CFrameBuffer::setMixerColor(uint32_t mixer_background)
++{
++	struct stmfbio_output_configuration outputConfig;
++	memset(&outputConfig, 0, sizeof(outputConfig));
++	outputConfig.outputid = STMFBIO_OUTPUTID_MAIN;
++	outputConfig.activate = STMFBIO_ACTIVATE_IMMEDIATE;
++	outputConfig.caps = STMFBIO_OUTPUT_CAPS_MIXER_BACKGROUND;
++	outputConfig.mixer_background = mixer_background;
++	if(ioctl(fd, STMFBIO_SET_OUTPUT_CONFIG, &outputConfig) < 0)
++		perror("setting output configuration failed");
++}
++
++void *CFrameBuffer::autoBlitThread(void *arg)
++{
++	set_threadname("autoblit");
++	CFrameBuffer *me = (CFrameBuffer *) arg;
++	me->autoBlitThread();
++	pthread_exit(NULL);
++}
++
++void CFrameBuffer::autoBlitThread(void)
++{
++	while (autoBlitStatus)
++	{
++		accel_sti_ddt->blit();
++		for (int i = 4; i && autoBlitStatus; i--)
++			usleep(50000);
++	}
++}
++
++void CFrameBuffer::autoBlit(bool b)
++{
++	if (b && !autoBlitThreadId)
++	{
++		autoBlitStatus = true;
++		pthread_create(&autoBlitThreadId, NULL, autoBlitThread, this);
++	}
++	else if (!b && autoBlitThreadId)
++	{
++		autoBlitStatus = false;
++		pthread_join(autoBlitThreadId, NULL);
++		autoBlitThreadId = 0;
++	}
++}
++
++void CFrameBuffer::setFbArea(int element, int _x, int _y, int _dx, int _dy)
++{
++	if (_x == 0 && _y == 0 && _dx == 0 && _dy == 0)
++	{
++		// delete area
++		for (fbarea_iterator_t it = v_fbarea.begin(); it != v_fbarea.end(); ++it)
++		{
++			if (it->element == element)
++			{
++				v_fbarea.erase(it);
++				break;
++			}
++		}
++		if (v_fbarea.empty())
++		{
++			fbAreaActiv = false;
++		}
++	}
++	else
++	{
++		// change area
++		bool found = false;
++		for (unsigned int i = 0; i < v_fbarea.size(); i++)
++		{
++			if (v_fbarea[i].element == element)
++			{
++				v_fbarea[i].x = _x;
++				v_fbarea[i].y = _y;
++				v_fbarea[i].dx = _dx;
++				v_fbarea[i].dy = _dy;
++				found = true;
++				break;
++			}
++		}
++		// set new area
++		if (!found)
++		{
++			fb_area_t area;
++			area.x = _x;
++			area.y = _y;
++			area.dx = _dx;
++			area.dy = _dy;
++			area.element = element;
++			v_fbarea.push_back(area);
++		}
++		fbAreaActiv = true;
++	}
++}
++#endif
++
+--- neutrino-tangos.org/src/driver/fb_generic.h.org
++++ neutrino-tangos/src/driver/fb_generic.h
+@@ -35,6 +35,11 @@
+ #include <OpenThreads/Mutex>
+ #include <OpenThreads/ScopedLock>
+ #include <sigc++/signal.h>
++#if defined HAVE_SH4_HARDWARE
++#include <pthread.h>
++#include <linux/stmfb.h>
++#include <bpamem.h>
++#endif
+ // #define fb_pixel_t uint32_t
+ 
+ typedef struct fb_var_screeninfo t_fb_var_screeninfo;
+@@ -68,7 +73,13 @@
+ #define CORNER_BOTTOM		0xC
+ #define CORNER_ALL		0xF
+ 
++#if !defined HAVE_SH4_HARDWARE
+ #define FADE_TIME 5000
++#else
++#define FADE_TIME 10000
++#define ConnectLineBox_Width	16 // px
++#endif
++
+ #define FADE_STEP 5
+ #define FADE_RESET 0xFFFF
+ 
+@@ -79,6 +90,7 @@
+ #define FB_DEVICE		"/dev/fb0"
+ 
+ /** Ausfuehrung als Singleton */
++#if !defined HAVE_SH4_HARDWARE
+ class CFrameBuffer : public sigc::trackable
+ {
+ 	protected:
+@@ -345,5 +357,320 @@
+ 		sigc::signal<void> OnAfterSetPallette;
+ 		const char *fb_name;
+ };
+-
++#else
++class CFbAccel;
++
++class CFrameBuffer : public sigc::trackable
++{
++	friend class CFbAccel;
++private:
++	CFrameBuffer();
++
++	struct rgbData
++	{
++		uint8_t r;
++		uint8_t g;
++		uint8_t b;
++	} __attribute__ ((packed));
++
++	struct rawHeader
++	{
++		uint8_t width_lo;
++		uint8_t width_hi;
++		uint8_t height_lo;
++		uint8_t height_hi;
++		uint8_t transp;
++	} __attribute__ ((packed));
++
++	struct rawIcon
++	{
++		uint16_t width;
++		uint16_t height;
++		uint8_t transp;
++		fb_pixel_t * data;
++	};
++
++	std::string     iconBasePath;
++
++	int             fd, tty;
++	fb_pixel_t      *lfb;
++	int		available;
++	fb_pixel_t      *background;
++	fb_pixel_t      *backupBackground;
++	fb_pixel_t      backgroundColor;
++	std::string     backgroundFilename;
++	bool            useBackgroundPaint;
++	unsigned int	xRes, yRes, stride, bpp;
++	t_fb_var_screeninfo screeninfo, oldscreen;
++	fb_cmap cmap;
++	__u16 red[256], green[256], blue[256], trans[256];
++
++	void paletteFade(int i, __u32 rgb1, __u32 rgb2, int level);
++
++	int 	kd_mode;
++	struct	vt_mode vt_mode;
++	bool	active;
++	static	void switch_signal (int);
++	fb_fix_screeninfo fix;
++	bool locked;
++	std::map<std::string, rawIcon> icon_cache;
++	int cache_size;
++	void *int_convertRGB2FB(unsigned char *rgbbuff, unsigned long x, unsigned long y, int transp, bool alpha);
++	int m_transparent_default, m_transparent;
++
++	inline void paintHLineRelInternal2Buf(const int& x, const int& dx, const int& y, const int& box_dx, const fb_pixel_t& col, fb_pixel_t* buf);
++
++	CFbAccel *accel_sti_ddt;
++
++public:
++	// gradient direction
++	enum
++	{
++		gradientHorizontal,
++		gradientVertical
++	};
++
++	enum
++	{
++		pbrg_noOption = 0x00,
++		pbrg_noPaint  = 0x01,
++		pbrg_noFree   = 0x02
++	};
++
++	fb_pixel_t realcolor[256];
++
++	~CFrameBuffer();
++
++	static CFrameBuffer *getInstance();
++
++	void init(const char *const fbDevice = "/dev/fb0");
++	int setMode(unsigned int xRes, unsigned int yRes, unsigned int bpp);
++
++
++	int getFileHandle() const;  // only used for plugins (games) !!
++	t_fb_var_screeninfo *getScreenInfo();
++
++	fb_pixel_t * getFrameBufferPointer(bool real = false);  // pointer to framebuffer
++	fb_pixel_t * getBackBufferPointer() const;  // pointer to backbuffer
++	unsigned int getStride() const;  // size of a single line in the framebuffer (in bytes)
++	unsigned int getScreenWidth(bool real = false);
++	unsigned int getScreenHeight(bool real = false);
++	unsigned int getWindowWidth(bool force_small = false);
++	unsigned int getWindowHeight(bool force_small = false);
++	unsigned int getScreenX();
++	unsigned int getScreenY();
++
++	bool getActive() const;  // is framebuffer active?
++	void setActive(bool enable);  // is framebuffer active?
++
++	void setTransparency( int tr = 0 );
++	void setBlendMode(uint8_t mode = 1);
++	void setBlendLevel(int level);
++
++	void setMixerColor(uint32_t mixer_background);
++
++	//Palette stuff
++	void setAlphaFade(int in, int num, int tr);
++	void paletteGenFade(int in, __u32 rgb1, __u32 rgb2, int num, int tr=0);
++	void paletteSetColor(int i, __u32 rgb, int tr);
++	void paletteSet(struct fb_cmap *map = NULL);
++
++	//paint functions
++	inline void paintPixel(fb_pixel_t * const dest, const uint8_t color) const
++	{
++		*dest = realcolor[color];
++	};
++	void paintPixel(int x, int y, const fb_pixel_t col);
++
++	fb_pixel_t* paintBoxRel2Buf(const int dx, const int dy, const int w_align, const int offs_align, const fb_pixel_t col, fb_pixel_t* buf = NULL, int radius = 0, int type = CORNER_ALL);
++	fb_pixel_t* paintBoxRel(const int x, const int y, const int dx, const int dy, const fb_pixel_t col, gradientData_t *gradientData, int radius = 0, int type = CORNER_ALL);
++
++	void paintBoxRel(const int x, const int y, const int dx, const int dy, const fb_pixel_t col, int radius = 0, int type = CORNER_ALL);
++	inline void paintBox(int xa, int ya, int xb, int yb, const fb_pixel_t col)
++	{
++		paintBoxRel(xa, ya, xb - xa, yb - ya, col);
++	}
++	inline void paintBox(int xa, int ya, int xb, int yb, const fb_pixel_t col, int radius, int type)
++	{
++		paintBoxRel(xa, ya, xb - xa, yb - ya, col, radius, type);
++	}
++
++	void paintBoxFrame(const int x, const int y, const int dx, const int dy, const int px, const fb_pixel_t col, const int rad = 0, int type = CORNER_ALL);
++	void paintLine(int xa, int ya, int xb, int yb, const fb_pixel_t col);
++
++	void paintVLine(int x, int ya, int yb, const fb_pixel_t col);
++	void paintVLineRel(int x, int y, int dy, const fb_pixel_t col);
++
++	void paintHLine(int xa, int xb, int y, const fb_pixel_t col);
++	void paintHLineRel(int x, int dx, int y, const fb_pixel_t col);
++
++	void setIconBasePath(const std::string & iconPath);
++	std::string getIconBasePath()
++	{
++		return iconBasePath;
++	}
++	std::string getIconPath(std::string icon_name, std::string file_type = "png");
++
++	void getIconSize(const char * const filename, int* width, int *height);
++	/* h is the height of the target "window", if != 0 the icon gets centered in that window */
++	bool paintIcon (const std::string & filename, const int x, const int y,
++	                const int h = 0, const unsigned char offset = 1, bool paint = true, bool paintBg = false, const fb_pixel_t colBg = 0);
++	bool paintIcon8(const std::string & filename, const int x, const int y, const unsigned char offset = 0);
++	void loadPal   (const std::string & filename, const unsigned char offset = 0, const unsigned char endidx = 255);
++
++	bool loadPicture2Mem        (const std::string & filename, fb_pixel_t * const memp);
++	bool loadPicture2FrameBuffer(const std::string & filename);
++	bool loadPictureToMem       (const std::string & filename, const uint16_t width, const uint16_t height, const uint16_t stride, fb_pixel_t * const memp);
++	bool savePictureFromMem     (const std::string & filename, const fb_pixel_t * const memp);
++
++	int getBackgroundColor()
++	{
++		return backgroundColor;
++	}
++	void setBackgroundColor(const fb_pixel_t color);
++	bool loadBackground(const std::string & filename, const unsigned char col = 0);
++	void useBackground(bool);
++	bool getuseBackground(void);
++
++	void saveBackgroundImage(void);  // <- implies useBackground(false);
++	void restoreBackgroundImage(void);
++
++	void paintBackgroundBoxRel(int x, int y, int dx, int dy);
++	inline void paintBackgroundBox(int xa, int ya, int xb, int yb)
++	{
++		paintBackgroundBoxRel(xa, ya, xb - xa, yb - ya);
++	}
++
++	void paintBackground();
++
++	void SaveScreen(int x, int y, int dx, int dy, fb_pixel_t * const memp);
++	void RestoreScreen(int x, int y, int dx, int dy, fb_pixel_t * const memp);
++
++	void Clear();
++	void showFrame(const std::string & filename);
++	void stopFrame();
++	bool loadBackgroundPic(const std::string & filename, bool show = true);
++	bool Lock(void);
++	void Unlock(void);
++	bool Locked(void)
++	{
++		return locked;
++	};
++	void waitForIdle(const char *func = NULL);
++	void* convertRGB2FB(unsigned char *rgbbuff, unsigned long x, unsigned long y, int transp = 0xFF);
++	void* convertRGBA2FB(unsigned char *rgbbuff, unsigned long x, unsigned long y);
++	void displayRGB(unsigned char *rgbbuff, int x_size, int y_size, int x_pan, int y_pan, int x_offs, int y_offs, bool clearfb = true, int transp = 0xFF);
++	void blit2FB(void *fbbuff, uint32_t width, uint32_t height, uint32_t xoff, uint32_t yoff, uint32_t xp = 0, uint32_t yp = 0, bool transp = false);
++	void blitBox2FB(const fb_pixel_t* boxBuf, uint32_t width, uint32_t height, uint32_t xoff, uint32_t yoff);
++
++	void mark(int x, int y, int dx, int dy);
++
++	int scale2Res(int size);
++	bool fullHdAvailable();
++	void setOsdResolutions();
++	std::vector<osd_resolution_t> osd_resolutions;
++	size_t getIndexOsdResolution(uint32_t mode);
++
++	void blit();
++
++	enum
++	{
++		TM_EMPTY  = 0,
++		TM_NONE   = 1,
++		TM_BLACK  = 2,
++		TM_INI    = 3
++	};
++	void SetTransparent(int t)
++	{
++		m_transparent = t;
++	}
++	void SetTransparentDefault()
++	{
++		m_transparent = m_transparent_default;
++	}
++	enum Mode3D { Mode3D_off = 0, Mode3D_SideBySide, Mode3D_TopAndBottom, Mode3D_Tile, Mode3D_SIZE };
++	void set3DMode(Mode3D);
++	Mode3D get3DMode(void);
++private:
++	enum Mode3D mode3D;
++
++public:
++	void blitArea(int src_width, int src_height, int fb_x, int fb_y, int width, int height);
++	void ClearFB(void);
++	void resChange(void);
++	void setBorder(int sx, int sy, int ex, int ey);
++	void getBorder(int &sx, int &sy, int &ex, int &ey);
++	void setBorderColor(fb_pixel_t col = 0);
++	fb_pixel_t getBorderColor(void);
++	void clearIconCache();
++
++private:
++	bool autoBlitStatus;
++	pthread_t autoBlitThreadId;
++	static void *autoBlitThread(void *arg);
++	void autoBlitThread();
++
++public:
++	void autoBlit(bool b = true);
++	void blitBPA2FB(unsigned char *mem, SURF_FMT fmt, int w, int h, int x = 0, int y = 0, int pan_x = -1, int pan_y = -1, int fb_x = -1, int fb_y = -1, int fb_w = -1, int fb_h = -1, int transp = false);
++	bool needAlign4Blit()
++	{
++		return false;
++	};
++	uint32_t getWidth4FB_HW_ACC(const uint32_t x, const uint32_t w, const bool max=true);
++
++
++// ## AudioMute / Clock ######################################
++private:
++	enum
++	{
++		FB_PAINTAREA_MATCH_NO,
++		FB_PAINTAREA_MATCH_OK
++	};
++
++	typedef struct fb_area_t
++	{
++		int x;
++		int y;
++		int dx;
++		int dy;
++		int element;
++	} fb_area_struct_t;
++
++	bool fbAreaActiv;
++	typedef std::vector<fb_area_t> v_fbarea_t;
++	typedef v_fbarea_t::iterator fbarea_iterator_t;
++	v_fbarea_t v_fbarea;
++	bool fb_no_check;
++	bool do_paint_mute_icon;
++
++	bool _checkFbArea(int _x, int _y, int _dx, int _dy, bool prev);
++	int checkFbAreaElement(int _x, int _y, int _dx, int _dy, fb_area_t *area);
++
++public:
++	enum
++	{
++		FB_PAINTAREA_INFOCLOCK,
++		FB_PAINTAREA_MUTEICON1,
++		FB_PAINTAREA_MUTEICON2,
++
++		FB_PAINTAREA_MAX
++	};
++
++	inline bool checkFbArea(int _x, int _y, int _dx, int _dy, bool prev)
++	{
++		return (fbAreaActiv && !fb_no_check) ? _checkFbArea(_x, _y, _dx, _dy, prev) : true;
++	}
++	void setFbArea(int element, int _x=0, int _y=0, int _dx=0, int _dy=0);
++	void fbNoCheck(bool noCheck)
++	{
++		fb_no_check = noCheck;
++	}
++	void doPaintMuteIcon(bool mode)
++	{
++		do_paint_mute_icon = mode;
++	}
++	sigc::signal<void> OnAfterSetPallette;
++};
++#endif // HAVE_SH4_HARDWARE
+ #endif
+--- neutrino-tangos.org/src/driver/rcinput.cpp
++++ neutrino-tangos/src/driver/rcinput.cpp
+@@ -1669,16 +1669,22 @@
+ #else
+ 				return "mode";
+ #endif
++//#if HAVE_DUCKBOX_HARDWARE
++//			case RC_switchvideomode:
++//				return "mode";
++//#endif
+ 			case RC_record:
+ 				return "record";
+ 			case RC_pause:
+ 				return "pause";
+ 			case RC_games:
+ 				return "games";
++#if !HAVE_DUCKBOX_HARDWARE
+ 			case RC_next:
+ 				return "next";
+ 			case RC_prev:
+ 				return "prev";
++#endif
+ 			case RC_nokey:
+ 				return "none";
+ 			case RC_power_on:
+@@ -1713,7 +1719,11 @@
+ 				return "play mode";
+ 			case RC_usb:
+ 				return "usb";
++#if !HAVE_DUCKBOX_HARDWARE
+ 			case RC_timer:
++#else
++			case RC_program:
++#endif
+ 				return "time";
+ 			case RC_f1:
+ 				return "f1";
+@@ -1748,13 +1758,21 @@
+ 			case RC_search:
+ 				return "search";
+ 			case RC_nextsong:
++#if HAVE_DUCKBOX_HARDWARE
++			case RC_next:
++#endif
+ 				return "next song";
+ 			case RC_previoussong:
++#if HAVE_DUCKBOX_HARDWARE
++			case RC_prev:
++#endif
+ 				return "previous song";
+ 			case RC_bookmarks:
+ 				return "bookmarks";
++#if !HAVE_DUCKBOX_HARDWARE
+ 			case RC_program:
+ 				return "program";
++#endif
+ 			case RC_playpause:
+ 				return "play / pause";
+ #if BOXMODEL_BRE2ZE4K || BOXMODEL_HD51 || BOXMODEL_H7
+--- neutrino-tangos.org/src/driver/rcinput.h
++++ neutrino-tangos/src/driver/rcinput.h
+@@ -225,8 +225,13 @@
+ 			RC_setup	= KEY_MENU,	    /* /include/linux/input.h: #define KEY_SETUP		141   */
+ 			RC_topleft	= KEY_TOPLEFT,	
+ 			RC_topright	= KEY_TOPRIGHT,	
++#if !HAVE_DUCKBOX_HARDWARE
+ 			RC_page_up	= KEY_PAGEUP,	    /* /include/linux/input.h: #define KEY_PAGEUP		104   */
+ 			RC_page_down	= KEY_PAGEDOWN,	    /* /include/linux/input.h: #define KEY_PAGEDOWN		109   */
++#else
++			RC_page_up	= KEY_CHANNELUP,
++			RC_page_down	= KEY_CHANNELDOWN,
++#endif
+ 			RC_ok		= KEY_OK,	    /* /include/linux/input.h: #define KEY_OK			0x160 */ /* in patched input.h */
+ 			RC_red		= KEY_RED,	    /* /include/linux/input.h: #define KEY_RED			0x18e */ /* in patched input.h */
+ 			RC_green	= KEY_GREEN,	    /* /include/linux/input.h: #define KEY_GREEN		0x18f */ /* in patched input.h */
+@@ -249,7 +254,11 @@
+ 			RC_info		= KEY_INFO,
+ 			RC_epg		= KEY_EPG,
+ #endif
++#if !HAVE_DUCKBOX_HARDWARE
+ 			RC_recall	= KEY_LAST,
++#else
++			RC_recall	= KEY_BACK,
++#endif
+ 			RC_favorites	= KEY_FAVORITES,
+ 			RC_sat		= KEY_SAT,
+ 			RC_sat2		= KEY_SAT2,
+@@ -259,7 +268,12 @@
+ 			RC_forward	= KEY_FORWARD,
+ 			RC_rewind	= KEY_REWIND,
+ 			RC_stop		= KEY_STOP,
++#if !HAVE_DUCKBOX_HARDWARE
+ 			RC_timeshift	= KEY_T,
++#else
++			RC_timeshift	= KEY_TIME,
++			RC_timer	= KEY_PROGRAM,
++#endif
+ 			RC_mode		= KEY_MODE,
+ 			RC_games	= KEY_GAMES,
+ 			RC_next		= KEY_NEXT,
+@@ -269,8 +283,13 @@
+ 			RC_pos		= KEY_MOVE,
+ 			RC_sleep	= KEY_SLEEP,
+ 			RC_find		= KEY_FIND,
++#if !HAVE_DUCKBOX_HARDWARE
+ 			RC_pip		= KEY_PRESENTATION,
+ 			RC_archive	= KEY_ARCHIVE,
++#else
++			RC_pip		= KEY_SCREEN,
++			RC_archive	= KEY_FILE,
++#endif
+ 			RC_fastforward	= KEY_FASTFORWARD,
+ 			RC_slow		= KEY_SLOW,
+ 			RC_playmode	= KEY_P,
+@@ -307,7 +326,9 @@
+ 			/* tripledragon keys */
+ 			RC_eject	= KEY_EJECTCD,
+ 			RC_aux		= KEY_AUX,          /* 0x186 */
++#if !HAVE_DUCKBOX_HARDWARE
+ 			RC_timer	= KEY_TIME,
++#endif
+ 			RC_tttv		= KEY_TTTV,
+ 			RC_ttzoom	= KEY_TTZOOM,
+ 			RC_ttreveal	= KEY_REVEAL,
+--- neutrino-tangos.org/src/driver/record.cpp
++++ neutrino-tangos/src/driver/record.cpp
+@@ -1250,7 +1250,7 @@
+ 		autoshift = false;
+ #ifdef HAVE_SPARK_HARDWARE
+ 		CVFD::getInstance()->SetIcons(SPARK_TIMESHIFT, false);
+-#elif defined(BOXMODEL_FORTIS_HDBOX)
++#elif defined(BOXMODEL_FS9000)
+ 		CVFD::getInstance()->ShowIcon(FP_ICON_TIMESHIFT, false);
+ #endif
+ 
+@@ -1400,7 +1400,7 @@
+ 		t_channel_id live_channel_id = CZapit::getInstance()->GetCurrentChannelID();
+ #ifdef HAVE_SPARK_HARDWARE
+ 		CVFD::getInstance()->SetIcons(SPARK_TIMESHIFT, true);
+-#elif defined(BOXMODEL_FORTIS_HDBOX)
++#elif defined(BOXMODEL_FS9000)
+ 		CVFD::getInstance()->ShowIcon(FP_ICON_TIMESHIFT, true);
+ #endif
+ 		bool tstarted = false;
+--- neutrino-tangos.org/src/driver/vfd.cpp
++++ neutrino-tangos/src/driver/vfd.cpp
+@@ -52,19 +52,38 @@
+ #include <stropts.h>
+ #define VFD_DEVICE "/dev/vfd"
+ 
+-#if defined (BOXMODEL_OCTAGON1008) || defined (BOXMODEL_TF7700)
++#if defined (BOXMODEL_HS9510) \
++ || defined (BOXMODEL_HS7420) \
++ || defined (BOXMODEL_HS7429) \
++ || defined (BOXMODEL_TF7700) \
++ || defined (BOXMODEL_HL101) \
++ || defined (BOXMODEL_VIP1_V1) \
++ || defined (BOXMODEL_VIP1_V2) \
++ || defined (BOXMODEL_VIP2)
+ #define VFDLENGTH 8
+-#elif defined (BOXMODEL_FORTIS_HDBOX) || defined (BOXMODEL_ATEVIO7500)
++#elif defined (BOXMODEL_FS9000) \
++ || defined (BOXMODEL_HS8200) \
++ || defined (BOXMODEL_HCHS8100) \
++ || defined (BOXMODEL_HCHS9000)
+ #define VFDLENGTH 12
+-#elif  defined (BOXMODEL_CUBEREVO_250HD) || defined (BOXMODEL_IPBOX55)
++#elif defined (BOXMODEL_HS7810A) \
++ || defined (BOXMODEL_HS7119) \
++ || defined (BOXMODEL_HS7819) \
++ || defined (BOXMODEL_CUBEREVO_250HD) \
++ || defined (BOXMODEL_IPBOX55)
+ #define VFDLENGTH 4
+-#elif defined (BOXMODEL_IPBOX9900) || defined (BOXMODEL_IPBOX99)
++#elif defined (BOXMODEL_HS7110)
++#define VFDLENGTH 0
++#elif defined (BOXMODEL_IPBOX9900) \
++ || defined (BOXMODEL_IPBOX99)
+ #define VFDLENGTH 14
++#elif defined (BOXMODEL_ADB_BOX)
++#define VFDLENGTH 15
+ #else
+ #define VFDLENGTH 16
+ #endif
+ 
+-#define SCROLL_TIME 100000
++#define SCROLL_TIME 500000
+ 
+ bool invert = false;
+ char g_str[64];
+@@ -73,6 +92,7 @@
+ int blocked_counter = 0;
+ int file_vfd = -1;
+ bool active_icon[16] = { false };
++int adb_led = -1;
+ 
+ pthread_t vfd_scrollText;
+ 
+@@ -81,6 +101,33 @@
+ 	unsigned char data[64];
+ 	unsigned char length;
+ };
++
++#if defined (BOXMODEL_ADB_BOX)
++int get_adb_variant()
++{
++	FILE *adb_file;
++	char adb_model[5] = { 0x00 };
++	int  ret;
++
++	adb_file = fopen("/proc/stb/info/adb_variant", "r");
++	if (adb_file != NULL)
++	{
++		fread(adb_model, 4, 1, adb_file);
++		printf("[CVFD] get_adb_variant: detected ADB model %s\n", adb_model);
++		if (strcmp(adb_model, "bska") == 0 || strcmp(adb_model, "bxzb") == 0)
++		{
++			printf("[CVFD] get_adb_variant: LED display assumed.\n");
++			ret = 1;
++		}
++		else
++		{
++			printf("[CVFD] get_adb_variant: VFD display assumed.\n");
++			ret = 0;
++		}
++	}
++	return ret;
++}
++#endif
+ 
+ static void write_to_vfd(unsigned int DevType, struct vfd_ioctl_data * data, bool force = false)
+ {
+@@ -119,7 +166,8 @@
+ 	}
+ }
+ 
+-#if defined (BOXMODEL_UFS910) || defined (BOXMODEL_UFS922)
++#if defined (BOXMODEL_UFS910) \
++ || defined (BOXMODEL_UFS922)
+ static void writeCG (unsigned char adress, unsigned char pixeldata[5])
+ {
+ 	struct vfd_ioctl_data data;
+@@ -137,7 +185,16 @@
+ 
+ static void ShowNormalText(char * str, bool fromScrollThread = false)
+ {
+-	if (blocked)
++	int colon_at_2 = 0;
++	int disp_len = 0;
++
++#if defined (BOXMODEL_HS7119) || defined (BOXMODEL_HS7810A) || defined (BOXMODEL_HS7819)
++	if (str[2] == 0x3a)
++	{
++		colon_at_2++;
++	}
++#endif
++ 	if (blocked)
+ 	{
+ 		printf("[CVFD] - blocked\n");
+ 		usleep(SCROLL_TIME);
+@@ -156,39 +213,53 @@
+ 			vfd_scrollText = 0;
+ 		}
+ 	}
+-	if ((strlen(str) > VFDLENGTH && !fromScrollThread) && (g_settings.lcd_vfd_scroll >= 1))
++#if defined (BOXMODEL_ADB_BOX)
++	disp_len = (adb_led == 1 ? 4 : VFDLENGTH);
++#else
++	disp_len = VFDLENGTH;
++#endif
++#if defined (BOXMODEL_HS7119) || defined (BOXMODEL_HS7810A) || defined (BOXMODEL_HS7819)
++	if ((strlen(str) > disp_len + colon_at_2 && !fromScrollThread) && (g_settings.lcd_vfd_scroll >= 1))
++#else
++	if ((strlen(str) > disp_len && !fromScrollThread) && (g_settings.lcd_vfd_scroll >= 1))
++#endif
+ 	{
+ 		CVFD::getInstance()->ShowScrollText(str);
+ 		return;
+ 	}
+-
+-	if (strlen(str) < VFDLENGTH && VFDLENGTH > 7) // do not center on small displays
+-		ws = (VFDLENGTH-strlen(str))/2;
++	if (strlen(str) < disp_len && disp_len > 7)  // do not center on small displays
++	{
++		ws = (disp_len - strlen(str)) / 2;
++	}
+ 	else
++	{
+ 		ws = 0;
++	}
+ 	memset(data.data, ' ', 63);
++	data.start = 0;
+ 	if (!fromScrollThread)
+ 	{
+-		memcpy (data.data+ws, str, VFDLENGTH-ws);
+-		data.start = 0;
+-		if ((strlen(str) % 2) == 1 && VFDLENGTH > 7) // do not center on small displays
+-			data.length = VFDLENGTH-ws-1;
+-		else
+-			data.length = VFDLENGTH-ws;
++		memcpy(data.data + ws, str, disp_len - ws + colon_at_2);
++//		if ((strlen(str) % 2) == 1 && disp_len > 7) // if text length odd
++//		{
++//			data.length = disp_len - ws - 1 + colon_at_2;
++//		}
++//		else
++//		{
++			data.length = disp_len - ws + colon_at_2;
++//		}
+ 	}
+ 	else
+ 	{
+-		memcpy ( data.data, str, VFDLENGTH);
+-		data.start = 0;
+-		data.length = VFDLENGTH;
+-	}
++		memcpy(data.data, str, disp_len + colon_at_2);
++		data.length = disp_len + colon_at_2;
++	}
++//	printf("CVFD::ShowNormalText: [%s]\n", str);
+ 	write_to_vfd(VFDDISPLAYCHARS, &data);
+ 	return;
+ }
+ void CVFD::ShowScrollText(char *str)
+ {
+-	printf("CVFD::ShowScrollText: [%s]\n", str);
+-
+ 	if (blocked)
+ 	{
+ 		printf("[CVFD] - blocked\n");
+@@ -217,17 +288,22 @@
+ 	int i;
+ 	char *str = (char *)arg;
+ 	int len = strlen(str);
+-	char out[VFDLENGTH+1];
+-	char buf[VFDLENGTH+65];
+-
+-	memset(out, 0, VFDLENGTH+1);
++	char out[17];
++	char buf[81];
++#if defined (BOXMODEL_ADB_BOX)
++	int disp_len = (adb_led == 1 ? 4 : VFDLENGTH);
++#else
++	int disp_len = VFDLENGTH;
++#endif
++
++	memset(out, 0, disp_len + 1);
+ 
+ 	int retries = g_settings.lcd_vfd_scroll;
+ 
+-	if (len > VFDLENGTH)
++	if (len > disp_len)
+ 	{
+ 		printf("CVFD::ThreadScrollText: [%s], length %d\n", str, len);
+-		memset(buf, ' ', (len + VFDLENGTH));
++		memset(buf, ' ', len + disp_len);
+ 		memcpy(buf, str, len);
+ 
+ 		while(retries--)
+@@ -237,13 +313,13 @@
+ 			for (i = 0; i <= (len-1); i++)
+ 			{
+ 				// scroll text until end
+-				memcpy(out, buf+i, VFDLENGTH);
++				memcpy(out, buf + i, disp_len);
+ 				ShowNormalText(out,true);
+ 				usleep(SCROLL_TIME);
+ 			}
+ 		}
+ 	}
+-	memcpy(out, str, VFDLENGTH); // display first VFDLENGTH chars after scrolling
++	memcpy(out, str, disp_len);  // display first VFDLENGTH chars after scrolling
+ 	ShowNormalText(out,true);
+ 
+ 	pthread_exit(0);
+@@ -378,7 +454,7 @@
+ 	if(g_settings.lcd_info_line){
+ 		switch_name_time_cnt = g_settings.timing[SNeutrinoSettings::TIMING_INFOBAR] + 10;
+ 	}
+-#if defined (BOXMODEL_OCTAGON1008)
++#if defined (BOXMODEL_HS9510)
+ 	ShowIcon(ICON_COLON2, false);
+ #endif
+ 
+@@ -389,17 +465,24 @@
+ 	while(1) {
+ 		sleep(1);
+ 		struct stat buf;
+-                if (stat("/tmp/vfd.locked", &buf) == -1) {
+-                        CVFD::getInstance()->showTime();
+-                        CVFD::getInstance()->count_down();
+-                } else
+-                        CVFD::getInstance()->wake_up();
++                if (stat("/tmp/vfd.locked", &buf) == -1)
++		{
++                	CVFD::getInstance()->showTime();
++                	CVFD::getInstance()->count_down();
++                }
++		else
++		{
++                	CVFD::getInstance()->wake_up();
++		}
+ 	}
+ 	return NULL;
+ }
+ 
+ void CVFD::init(const char * /*fontfile*/, const char * /*fontname*/)
+ {
++#if defined (BOXMODEL_ADB_BOX)
++	adb_led = get_adb_variant();
++#endif		
+ 	//InitNewClock(); /FIXME
+ 
+ 	brightness = -1;
+@@ -428,7 +511,7 @@
+ 
+ 	brightness = dimm;
+ 
+-printf("CVFD::setlcdparameter dimm %d power %d\n", dimm, power);
++	printf("CVFD::setlcdparameter dimm %d power %d\n", dimm, power);
+ #if !HAVE_DUCKBOX_HARDWARE
+ 	int ret = ioctl(fd, IOC_FP_SET_BRIGHT, dimm);
+ 	if(ret < 0)
+@@ -440,39 +523,77 @@
+ 	data.start = brightness & 0x07;
+ 	data.length = 0;
+ 	write_to_vfd(VFDBRIGHTNESS, &data);
+-#endif
+-#if defined (BOXMODEL_FORTIS_HDBOX) || defined (BOXMODEL_ATEVIO7500)
++#if defined (BOXMODEL_FS9000) \
++ || defined (BOXMODEL_HS8200)
+ 	usleep(100000);
+ 	memset(&data, 0, sizeof(struct vfd_ioctl_data));
+-	data.start = 0;
++	if (power) {
++		data.start = 0x01; // red led
++	}
++	else
++	{
++		data.start = 0xf2; // cross plus blue led
++	}
++	data.data[3] = 0; // off
++	data.data[0] = 0;
++	data.data[1] = 0;
++	data.data[4] = 0;
+ 	data.length = 5;
+-	if (power) {
+-		data.data[0] = 0x01; // red led
+-	}
+-	else
+-	{
+-		data.data[0] = 0xf2; // cross plus blue led
+-	}
+-	data.start = 0;
+-	data.data[4] = 0; // off
+-	data.length = 5;
+-	write_to_vfd(VFDPWRLED, &data);
++	write_to_vfd(VFDSETLED, &data);
+ 	usleep(100000);
+ 	memset(&data, 0, sizeof(struct vfd_ioctl_data));
+-	data.start = 0;
++	if (power) {
++		data.start = 0xf2; // cross plus blue led
++	}
++	else
++	{
++		data.start = 0x01; // red led
++	}
++	data.data[3] = brightness * 2;
++	data.data[0] = 0;
++	data.data[1] = 0;
++	data.data[4] = 0;
+ 	data.length = 5;
+-	if (power) {
+-		data.data[0] = 0xf2; // cross plus blue led
++	write_to_vfd(VFDSETLED, &data);
++#elif defined (BOXMODEL_HS7420) \
++ || defined (BOXMODEL_HS7810A) \
++ || defined (BOXMODEL_HS7429) \
++ || defined (BOXMODEL_HS7819)
++	memset(&data, 0, sizeof(struct vfd_ioctl_data));
++	data.start = 0x02; // logo
++	data.data[3] = (brightness & 0x07);
++	data.data[0] = 0;
++	data.data[1] = 0;
++	data.data[4] = 0;
++	data.length = 5;
++	write_to_vfd(VFDSETLED, &data);
++#elif defined (BOXMODEL_ADB_BOX)
++	if (adb_led)
++	{
++		memset(&data, 0, sizeof(struct vfd_ioctl_data));
++		data.start = brightness & 0x07;
++		data.length = 0;
++		write_to_vfd(VFDLEDBRIGHTNESS, &data);
++	}
++	memset(&data, 0, sizeof(struct vfd_ioctl_data));
++	data.start = 0x01; // power LED
++	data.data[0] = 0;
++	data.data[1] = 0;
++	data.data[4] = 0;
++	data.length = 5;
++	if (power)
++	{
++		data.data[3] = 2;  // green
+ 	}
+ 	else
+ 	{
+-		data.data[0] = 0x01; // red led
+-	}
+-	data.start = 0;
+-	data.data[4] = brightness*2;
+-	data.length = 5;
+-	write_to_vfd(VFDPWRLED, &data);
+-#elif !defined (BOXMODEL_UFS912) && !defined (BOXMODEL_UFS913) && !defined (BOXMODEL_OCTAGON1008)
++		data.data[3] = 1;  // red
++	}
++	write_to_vfd(VFDSETLED, &data);
++
++#elif !defined (BOXMODEL_UFS912) \
++ && !defined (BOXMODEL_UFS913) \
++ && !defined (BOXMODEL_HS9510)
+ // Power on/off
+ 	if (power) {
+ 		data.start = 0x01;
+@@ -482,6 +603,7 @@
+ 	data.length = 0;
+ 	write_to_vfd(VFDDISPLAYWRITEONOFF, &data, true);
+ #endif
++#endif
+ }
+ 
+ void CVFD::setlcdparameter(void)
+@@ -525,6 +647,10 @@
+ 		return;
+ 
+ 	int led1 = -1, led2 = -1;
++#if defined(BOXMODEL_ADB_BOX)
++	int led3 = -1, led4 = -1;
++#endif
++
+ 	if(on_off){//on
+ 		switch(g_settings.led_rec_mode) {
+ 			case 1:
+@@ -556,16 +682,18 @@
+ 				break;
+ 	      }
+ 	}
+-
+ 	setled(led1, led2);
+ }
+ 
+ void CVFD::setled(void)
+ {
++	int led1 = -1, led2 = -1;
++#if defined(BOXMODEL_ADB_BOX)
++	int led3 = -1, led4 = -1;
++#endif
++	int select = 0;
++
+ 	if(fd < 0) return;
+-
+-	int led1 = -1, led2 = -1;
+-	int select = 0;
+ 
+ 	if(mode == MODE_MENU_UTF8 || mode == MODE_TVRADIO  )
+ 		  select = g_settings.led_tv_mode;
+@@ -627,27 +755,61 @@
+ 			char timestr[21];
+ 			struct timeb tm;
+ 			struct tm * t;
+-			static int hour = 0, minute = 0;
++			static int hour = 0, minute = 0, second = 0;
+ 
+ 			ftime(&tm);
+ 			t = localtime(&tm.time);
+ 			if(force || ( switch_name_time_cnt == 0 && ((hour != t->tm_hour) || (minute != t->tm_min))) ) {
+ 				hour = t->tm_hour;
+ 				minute = t->tm_min;
+-#if defined (BOXMODEL_OCTAGON1008)
+-				ShowIcon(ICON_COLON2, true);
+-#elif defined (BOXMODEL_OCTAGON1008) || defined (BOXMODEL_CUBEREVO_250HD)
++				second = t->tm_sec;
++#if defined (BOXMODEL_HS9510)
++				ShowIcon(ICON_COLON2, second % 2 == 0 ? true : false);
+ 				strftime(timestr, 5, "%H%M", t);
++				ShowText(timestr);
++#elif defined (BOXMODEL_HS7420) \
++ || defined (BOXMODEL_HS7429)
++
++				ShowIcon(ICON_COLON2, second % 2 == 0 ? true : false);
++				strftime(timestr, 5, "%H%M", t);
++				ShowText(timestr);
++#elif defined (BOXMODEL_HS7119) \
++ || defined (BOXMODEL_HS7810A) \
++ || defined (BOXMODEL_HS7819)
++
++				strftime(timestr, 5, "%H%M", t);
++				ShowText(timestr);
++				ShowIcon(ICON_COLON, second % 2 == 0 ? true : false);
++#elif defined (BOXMODEL_FS9000)
++				ShowIcon(ICON_COLON3, second % 2 == 0 ? true : false);
++				strftime(timestr, 13, "        %H%M", t);
++				ShowText(timestr);
++#elif defined (BOXMODEL_ADB_BOX)
++				if (adb_led)
++				{
++					strftime(timestr, 5, "%H%M", t);
++				}
++				else
++				{
++					strftime(timestr, 6, (second % 2 == 0 ? "%H:%M" : "%H %M"), t);
++				}
++				ShowText(timestr);
++#elif defined (BOXMODEL_CUBEREVO_250HD)
++				strftime(timestr, 5, "%H%M", t);
++				ShowText(timestr);
++#elif defined (BOXMODEL_HCHS8100) \
++ ||   defined (BOXMODEL_HCHS9000)
++				strftime(timestr, 6, (second % 2 == 0 ? "%H:%M" : "%H %M"), t);
++				ShowText(timestr);
+ #else
+ 				strftime(timestr, 6, "%H:%M", t);
+-#endif
+-				ShowText(timestr);
+ 				if (support_text) {
+ 					strftime(timestr, 20, "%H:%M", t);
+ 					ShowText(timestr);
+ 				} else if (support_numbers && has_led_segment) {
+ 					ShowNumber((t->tm_hour*100) + t->tm_min);
+ 				}
++#endif
+ 			}
+ 		}
+ 	}
+@@ -691,7 +853,9 @@
+ 		ShowIcon(FP_ICON_HD,chan->isHD());
+ 		ShowIcon(FP_ICON_LOCK,!chan->camap.empty());
+ 		if (chan->getAudioChannel() != NULL)
++		{
+ 			ShowIcon(FP_ICON_DD, chan->getAudioChannel()->audioChannelType == CZapitAudioChannel::AC3);
++		}
+ 	}
+ }
+ #endif
+@@ -715,6 +879,10 @@
+ 	static int oldpp = 0;
+ 	if(!has_lcd) return;
+ 
++	if (vol)
++	{
++		muted = false;
++	}
+ 	ShowIcon(FP_ICON_MUTE, muted);
+ 
+ 	if(!force_update && vol == volume)
+@@ -731,7 +899,8 @@
+ 		int pp = (int) round((double) vol / (double) 2);
+ 		if(oldpp != pp)
+ 		{
+-#if defined (BOXMODEL_UFS910) || defined (BOXMODEL_UFS922)
++#if defined (BOXMODEL_UFS910) \
++ || defined (BOXMODEL_UFS922)
+ 			int i;
+ 			unsigned char speaker[5] = {0x1C, 0x1C, 0x1C, 0x3E, 0x7F}; // speaker symbol
+ 			writeCG(0, speaker);
+@@ -778,17 +947,43 @@
+ 			char vol_chr[64] = "";
+ 			snprintf(vol_chr, sizeof(vol_chr)-1, "VOL: %d%%", (int)vol);
+ 			ShowText(vol_chr);
+-#elif defined (BOXMODEL_OCTAGON1008)
++#elif defined (BOXMODEL_HS9510) \
++ ||   defined (BOXMODEL_HS7420) \
++ ||   defined (BOXMODEL_HS7429) \
++ ||   defined (BOXMODEL_HL101) \
++ ||   defined (BOXMODEL_VIP1_V1) \
++ ||   defined (BOXMODEL_VIP1_V2) \
++ ||   defined (BOXMODEL_VIP2)
+ 			char vol_chr[64] = "";
+-			snprintf(vol_chr, sizeof(vol_chr)-1, "VOL=%3d", (int)vol);
++			snprintf(vol_chr, sizeof(vol_chr)-1, "VOL=%3d%%", (int)vol);
+ 			ShowText(vol_chr);
+-#elif defined (BOXMODEL_CUBEREVO_250HD) || defined (BOXMODEL_IPBOX55)
++#elif defined (BOXMODEL_HS7119) \
++ ||   defined (BOXMODEL_HS7810A) \
++ ||   defined (BOXMODEL_HS7819) \
++ ||   defined (BOXMODEL_CUBEREVO_250HD) \
++ ||   defined (BOXMODEL_IPBOX55) \
++ ||   defined (BOXMODEL_ADB_BOX)
+ 			char vol_chr[64] = "";
+ 			snprintf(vol_chr, sizeof(vol_chr)-1, "v%3d", (int)vol);
+ 			ShowText(vol_chr);
+-#elif defined (BOXMODEL_FORTIS_HDBOX) || defined (BOXMODEL_ATEVIO7500) || defined (BOXMODEL_UFS912) || defined (BOXMODEL_UFS913) || defined (BOXMODEL_CUBEREVO) || defined (BOXMODEL_CUBEREVO_MINI) || defined (BOXMODEL_CUBEREVO_MINI2) || defined (BOXMODEL_CUBEREVO_2000HD) || defined (BOXMODEL_CUBEREVO_3000HD) || defined (BOXMODEL_IPBOX9900) || defined (BOXMODEL_IPBOX99)
++#elif defined (BOXMODEL_FS9000) \
++ ||   defined (BOXMODEL_HS8200) \
++ ||   defined (BOXMODEL_UFS912) \
++ ||   defined (BOXMODEL_UFS913) \
++ ||   defined (BOXMODEL_CUBEREVO) \
++ ||   defined (BOXMODEL_CUBEREVO_MINI) \
++ ||   defined (BOXMODEL_CUBEREVO_MINI2) \
++ ||   defined (BOXMODEL_CUBEREVO_2000HD) \
++ ||   defined (BOXMODEL_CUBEREVO_3000HD) \
++ ||   defined (BOXMODEL_IPBOX9900) \
++ ||   defined (BOXMODEL_IPBOX99)
+ 			char vol_chr[64] = "";
+ 			snprintf(vol_chr, sizeof(vol_chr)-1, "Volume: %d%%", (int)vol);
++			ShowText(vol_chr);
++#elif defined (BOXMODEL_HCHS8100) \
++ ||   defined (BOXMODEL_HCHS9000)
++			char vol_chr[64] = "";
++			snprintf(vol_chr, sizeof(vol_chr)-1, "Volume %d%%", (int)vol);
+ 			ShowText(vol_chr);
+ #endif
+ 			oldpp = pp;
+@@ -798,15 +993,18 @@
+ 		int pp = (int) round((double) vol * (double) 8 / (double) 100);
+ 		if(pp > 8) pp = 8;
+ 
+-		if(force_update || oldpp != pp) {
+-printf("CVFD::showVolume: %d, bar %d\n", (int) vol, pp);
++		if(force_update || oldpp != pp)
++		{
++			printf("CVFD::showVolume: %d, bar %d\n", (int) vol, pp);
+ 			int i;
+ 			int j = 0x00000200;
+-			for(i = 0; i < pp; i++) {
++			for (i = 0; i < pp; i++)
++			{
+ 				ShowIcon((fp_icon) j, true);
+ 				j /= 2;
+ 			}
+-			for(;i < 8; i++) {
++			for (;i < 8; i++)
++			{
+ 				ShowIcon((fp_icon) j, false);
+ 				j /= 2;
+ 			}
+@@ -844,7 +1042,7 @@
+ 		if(pp > 8) pp = 8;
+ 
+ 		if(pp != ppold) {
+-//printf("CVFD::showPercentOver: %d, bar %d\n", (int) perc, pp);
++//			printf("CVFD::showPercentOver: %d, bar %d\n", (int) perc, pp);
+ 			int i;
+ 			int j = 0x00000200;
+ 			for(i = 0; i < pp; i++) {
+@@ -876,7 +1074,7 @@
+ 	if(fd < 0) return;
+ 	if (mode != MODE_AUDIO)
+ 		return;
+-printf("CVFD::showAudioTrack: %s\n", title.c_str());
++	printf("CVFD::showAudioTrack: %s\n", title.c_str());
+ 	ShowText(title.c_str());
+ 	wake_up();
+ 
+@@ -945,6 +1143,10 @@
+ 
+ void CVFD::setMode(const MODES m, const char * const title)
+ {
++#if defined (BOXMODEL_ADB_BOX)
++	struct vfd_ioctl_data data;
++
++#endif
+ 	if(fd < 0) return;
+ 
+ 	// Clear colon in display if it is still there
+@@ -961,7 +1163,38 @@
+ 		ShowIcon(FP_ICON_COL2, false);
+ 	}
+ #endif
+-
++#if defined (BOXMODEL_HS9510) \
++ || defined (BOXMODEL_HS7420) \
++ || defined (BOXMODEL_HS7429)
++	else if (mode == MODE_STANDBY)
++	{
++		ShowIcon(ICON_COLON2, true);
++	}
++#elif defined (BOXMODEL_HS7119) \
++ ||   defined (BOXMODEL_HS7810A) \
++ ||   defined (BOXMODEL_HS7819)
++	else if (mode == MODE_STANDBY)
++	{
++		ShowIcon(ICON_COLON, true);
++	}
++#elif defined (BOXMODEL_FS9000)
++	else if (mode == MODE_STANDBY)
++	{
++		ShowIcon(ICON_COLON3, true);
++	}
++#elif defined (BOXMODEL_ADB_BOX)
++	else if (mode == MODE_STANDBY)
++	{
++		memset(&data, 0, sizeof(struct vfd_ioctl_data));
++		data.start = 0x01; // power LED
++		data.data[0] = 0;
++		data.data[1] = 0;
++		data.data[3] = 1;  // red
++		data.data[4] = 0;
++		data.length = 5;
++		write_to_vfd(VFDSETLED, &data);
++	}
++#endif
+ 	if(strlen(title))
+ 		ShowText(title);
+ 	mode = m;
+@@ -983,6 +1216,10 @@
+ 			showPercentOver(percentOver, false);
+ 			break;
+ #endif
++		}
++		if (servicename.size() < 1)
++		{
++			servicename = "                ";
+ 		}
+ 		showServicename(servicename);
+ 		showclock = true;
+@@ -1064,14 +1301,38 @@
+ int CVFD::getBrightness()
+ {
+ 	//FIXME for old neutrino.conf
+-#if defined (BOXMODEL_OCTAGON1008) || defined (BOXMODEL_FORTIS_HDBOX) || defined (BOXMODEL_ATEVIO7500)
+-	if(g_settings.lcd_setting[SNeutrinoSettings::LCD_BRIGHTNESS] > 7)
++#if defined (BOXMODEL_HS9510) \
++ || defined (BOXMODEL_FS9000) \
++ || defined (BOXMODEL_HS8200) \
++ || defined (BOXMODEL_HS7420) \
++ || defined (BOXMODEL_HS7810A) \
++ || defined (BOXMODEL_HS7420) \
++ || defined (BOXMODEL_HS7119) \
++ || defined (BOXMODEL_HS7429) \
++ || defined (BOXMODEL_HS7819) \
++ || defined (BOXMODEL_ADB_BOX) \
++ || defined (BOXMODEL_HL101) \
++ || defined (BOXMODEL_VIP1_V1) \
++ || defined (BOXMODEL_VIP1_V2) \
++ || defined (BOXMODEL_VIP2) \
++ || defined (BOXMODEL_HCHS8100) \
++ || defined (BOXMODEL_HCHS9000)
++	if (g_settings.lcd_setting[SNeutrinoSettings::LCD_BRIGHTNESS] > 7)
++	{
+ 		g_settings.lcd_setting[SNeutrinoSettings::LCD_BRIGHTNESS] = 7;
++	}
++#elif defined (BOXMODEL_TF7700)
++	if (g_settings.lcd_setting[SNeutrinoSettings::LCD_BRIGHTNESS] > 3)
++	{
++		g_settings.lcd_setting[SNeutrinoSettings::LCD_BRIGHTNESS] = 3;
++	}
++//	g_settings.lcd_setting[SNeutrinoSettings::LCD_BRIGHTNESS]++;  // TF7700 is 1..4
+ #else
+-	if(g_settings.lcd_setting[SNeutrinoSettings::LCD_BRIGHTNESS] > 15)
++	if (g_settings.lcd_setting[SNeutrinoSettings::LCD_BRIGHTNESS] > 15)
++	{
+ 		g_settings.lcd_setting[SNeutrinoSettings::LCD_BRIGHTNESS] = 15;
+-#endif
+-
++	}
++#endif
+ 	return g_settings.lcd_setting[SNeutrinoSettings::LCD_BRIGHTNESS];
+ }
+ 
+@@ -1086,12 +1347,37 @@
+ int CVFD::getBrightnessStandby()
+ {
+ 	//FIXME for old neutrino.conf
+-#if defined (BOXMODEL_OCTAGON1008) || defined (BOXMODEL_FORTIS_HDBOX) || defined (BOXMODEL_ATEVIO7500)
+-	if(g_settings.lcd_setting[SNeutrinoSettings::LCD_STANDBY_BRIGHTNESS] > 7)
++#if defined (BOXMODEL_HS9510) \
++ || defined (BOXMODEL_FS9000) \
++ || defined (BOXMODEL_HS8200) \
++ || defined (BOXMODEL_HS7420) \
++ || defined (BOXMODEL_HS7810A) \
++ || defined (BOXMODEL_HS7420) \
++ || defined (BOXMODEL_HS7119) \
++ || defined (BOXMODEL_HS7429) \
++ || defined (BOXMODEL_HS7819) \
++ || defined (BOXMODEL_ADB_BOX) \
++ || defined (BOXMODEL_HL101) \
++ || defined (BOXMODEL_VIP1_V1) \
++ || defined (BOXMODEL_VIP1_V2) \
++ || defined (BOXMODEL_VIP2) \
++ || defined (BOXMODEL_HCHS8100) \
++ || defined (BOXMODEL_HCHS9000)
++	if (g_settings.lcd_setting[SNeutrinoSettings::LCD_STANDBY_BRIGHTNESS] > 7)
++	{
+ 		g_settings.lcd_setting[SNeutrinoSettings::LCD_STANDBY_BRIGHTNESS] = 7;
++	}
++#elif defined (BOXMODEL_TF7700)
++	if (g_settings.lcd_setting[SNeutrinoSettings::LCD_STANDBY_BRIGHTNESS] > 3)
++	{
++		g_settings.lcd_setting[SNeutrinoSettings::LCD_STANDBY_BRIGHTNESS] = 3;
++	}
++	g_settings.lcd_setting[SNeutrinoSettings::LCD_BRIGHTNESS]++;  // TF7700 is 1..4
+ #else
+-	if(g_settings.lcd_setting[SNeutrinoSettings::LCD_STANDBY_BRIGHTNESS] > 15)
++	if (g_settings.lcd_setting[SNeutrinoSettings::LCD_STANDBY_BRIGHTNESS] > 15)
++	{
+ 		g_settings.lcd_setting[SNeutrinoSettings::LCD_STANDBY_BRIGHTNESS] = 15;
++	}
+ #endif
+ 	return g_settings.lcd_setting[SNeutrinoSettings::LCD_STANDBY_BRIGHTNESS];
+ }
+@@ -1107,7 +1393,22 @@
+ int CVFD::getBrightnessDeepStandby()
+ {
+ 	//FIXME for old neutrino.conf
+-#if defined (BOXMODEL_OCTAGON1008) || defined (BOXMODEL_FORTIS_HDBOX) || defined (BOXMODEL_ATEVIO7500)
++#if defined (BOXMODEL_HS9510) \
++ || defined (BOXMODEL_FS9000) \
++ || defined (BOXMODEL_HS8200) \
++ || defined (BOXMODEL_HS7420) \
++ || defined (BOXMODEL_HS7810A) \
++ || defined (BOXMODEL_HS7420) \
++ || defined (BOXMODEL_HS7119) \
++ || defined (BOXMODEL_HS7429) \
++ || defined (BOXMODEL_HS7819) \
++ || defined (BOXMODEL_ADB_BOX) \
++ || defined (BOXMODEL_HL101) \
++ || defined (BOXMODEL_VIP1_V1) \
++ || defined (BOXMODEL_VIP1_V2) \
++ || defined (BOXMODEL_VIP2) \
++ || defined (BOXMODEL_HCHS8100) \
++ || defined (BOXMODEL_HCHS9000)
+ 	if(g_settings.lcd_setting[SNeutrinoSettings::LCD_DEEPSTANDBY_BRIGHTNESS] > 7)
+ 		g_settings.lcd_setting[SNeutrinoSettings::LCD_DEEPSTANDBY_BRIGHTNESS] = 7;
+ #else
+@@ -1178,14 +1479,33 @@
+ 	else
+ 		text.clear();
+ #else
+-#if defined (BOXMODEL_CUBEREVO_250HD) || defined (BOXMODEL_IPBOX55)
++#if defined (BOXMODEL_HS7810A) \
++ || defined (BOXMODEL_HS7119) \
++ || defined (BOXMODEL_HS7819) \
++ || defined (BOXMODEL_CUBEREVO_250HD) \
++ || defined (BOXMODEL_IPBOX55)
+ 	ShowText("    ");
+-#elif defined (BOXMODEL_OCTAGON1008) || defined (BOXMODEL_TF7700)
++#elif defined (BOXMODEL_HS9510) \
++ || defined (BOXMODEL_HS7420) \
++ || defined (BOXMODEL_HS7429) \
++ || defined (BOXMODEL_TF7700) \
++ || defined (BOXMODEL_HL101) \
++ || defined (BOXMODEL_VIP1_V1) \
++ || defined (BOXMODEL_VIP1_V2) \
++ || defined (BOXMODEL_VIP2)
+ 	ShowText("        ");
+-#elif defined (BOXMODEL_FORTIS_HDBOX) || defined (BOXMODEL_ATEVIO7500)
++#elif defined (BOXMODEL_FS9000) \
++ || defined (BOXMODEL_HS8200) \
++ || defined (BOXMODEL_HCHS8100) \
++ || defined (BOXMODEL_HCHS9000)
+ 	ShowText("            ");
+-#elif defined (BOXMODEL_IPBOX9900) || defined (BOXMODEL_IPBOX99)
++#elif defined (BOXMODEL_IPBOX9900) \
++ || defined (BOXMODEL_IPBOX99)
+ 	ShowText("              ");
++#elif defined (BOXMODEL_ADB_BOX)
++	ShowText("               ");
++#elif !defined (BOXMODEL_HS7110)
++	ShowText("                ");
+ #endif
+ #endif
+ }
+@@ -1199,19 +1519,49 @@
+ 	if(ret < 0)
+ 		perror(show ? "IOC_FP_SET_ICON" : "IOC_FP_CLEAR_ICON");
+ #else
+-#if defined (BOXMODEL_ATEVIO7500)
++    #if defined (BOXMODEL_HS7110)
+ 	return;
+-#endif
++    #endif
+ 	if (icon == 0)
+ 		return;
+ 
++  #if !defined (BOXMODEL_HS9510) \
++   && !defined (BOXMODEL_FS9000) \
++   && !defined (BOXMODEL_HS8200) \
++   && !defined (BOXMODEL_HS7420) \
++   && !defined (BOXMODEL_HS7810A) \
++   && !defined (BOXMODEL_HS7420) \
++   && !defined (BOXMODEL_HS7119) \
++   && !defined (BOXMODEL_HS7429) \
++   && !defined (BOXMODEL_HS7819) \
++   && !defined (BOXMODEL_ADB_BOX) \
++   && !defined (BOXMODEL_HL101) \
++   && !defined (BOXMODEL_VIP1_V1) \
++   && !defined (BOXMODEL_VIP1_V2) \
++   && !defined (BOXMODEL_VIP2) \
++   && !defined (BOXMODEL_HCHS8100) \
++   && !defined (BOXMODEL_HCHS9000)
+ 	if (active_icon[icon & 0x0F] == show)
+ 		return;
+ 	else
+ 		active_icon[icon & 0x0F] = show;
+-
++  #endif
+ 	//printf("CVFD::ShowIcon %s %x\n", show ? "show" : "hide", (int) icon);
+ 	struct vfd_ioctl_data data;
++
++  #if defined (BOXMODEL_ADB_BOX)
++	if ((adb_led == 1 && icon == FP_ICON_CLOCK) || (adb_led == 0 && icon == FP_ICON_REC))
++	{
++		memset(&data, 0, sizeof(struct vfd_ioctl_data));
++		data.start = 0x02;  // timer/REC LED
++		data.data[0] = 0;
++		data.data[1] = 0;
++		data.data[3] = show;
++		data.data[4] = 0;
++		data.length = 5;
++		write_to_vfd(VFDSETLED, &data);
++	}  // and fall through to
++  #endif
+ 	memset(&data, 0, sizeof(struct vfd_ioctl_data));
+ 	data.start = 0x00;
+ 	data.data[0] = icon;
+@@ -1225,17 +1575,11 @@
+ #ifdef HAVE_DUCKBOX_HARDWARE
+ void CVFD::ClearIcons()
+ {
+-#if defined (BOXMODEL_ATEVIO7500)
++  #if defined (BOXMODEL_HS7110)
+ 	return;
+-#endif
+-	for (int id = 0x10; id < FP_ICON_MAX; id++) {
+-#if defined (BOXMODEL_OCTAGON1008)
++  #endif
++	for (int id = FP_ICON_MIN; id < FP_ICON_MAX; id++) {
+ 		if (id != FP_ICON_USB && id != FP_ICON_HDD)
+-#elif defined(BOXMODEL_FORTIS_HDBOX) || defined (BOXMODEL_TF7700)
+-		if (id != FP_ICON_USB)
+-#else
+-		if (id != 0x10 && id != 0x12)
+-#endif
+ 			ShowIcon((fp_icon)id, false);
+ 	}
+ 	return;
+@@ -1246,8 +1590,14 @@
+ 	memset(g_str, 0, sizeof(g_str));
+ 	memcpy(g_str, str, sizeof(g_str)-1);
+ 
++	if (! str)
++	{
++		printf("CVFD::ShowText: str is NULL!\n");
++		return;
++	}
+ 	int i = strlen(str);
+-	if (i > 63) {
++	if (i > 63)
++	{
+ 		g_str[60] = '.';
+ 		g_str[61] = '.';
+ 		g_str[62] = '.';
+@@ -1269,7 +1619,7 @@
+ 	}
+ #endif
+ }
+-#else
++#else // non-duckbox
+ void CVFD::ShowText(const char * str)
+ {
+ 	if (fd < 0 || !support_text)
+@@ -1309,11 +1659,28 @@
+ 	if (number < 0)
+ 		return;
+ 	
++//	printf("CVFD::ShowNumber: [%d]\n", number);
+ #ifdef BOXMODEL_CS_HD2
+ 	int ret = ioctl(fd, IOC_FP_SET_NUMBER, number);
+-	if(ret < 0) {
++	if (ret < 0)
++	{
+ 		support_numbers = false;
+ 		perror("IOC_FP_SET_NUMBER");
++	}
++#else
++	{
++		char buffer[VFDLENGTH + 1];
++		int n;
++
++		memset(buffer, 0, sizeof(buffer));
++  #if defined (BOXMODEL_HS7119) \
++   || defined (BOXMODEL_HS7810A) \
++   || defined (BOXMODEL_HS7819)
++		n = sprintf(buffer, "%04d", number);
++  #else
++		n = sprintf(buffer, "%4d", number);
++  #endif
++		CVFD::ShowText(buffer);
+ 	}
+ #endif
+ }
+--- neutrino-tangos.org/src/driver/vfd.h
++++ neutrino-tangos/src/driver/vfd.h
+@@ -108,8 +108,8 @@
+ 		CVFD();
+ 
+ 		static void* TimeThread(void*);
++#if !HAVE_DUCKBOX_HARDWARE
+ 		void setlcdparameter(int dimm, int power);
+-#if !HAVE_DUCKBOX_HARDWARE
+ 		void setled(int led1, int led2);
+ #endif
+ 	public:
+@@ -123,6 +123,7 @@
+ 		void setled(bool on_off);
+ 		void setBacklight(bool on_off);
+ #else
++		void setlcdparameter(int dimm, int power);
+ 		void setBacklight(bool /*on_off*/) { };
+ #endif
+ 		static CVFD* getInstance();
+--- neutrino-tangos.org/src/driver/audiodec/Makefile.am
++++ neutrino-tangos/src/driver/audiodec/Makefile.am
+@@ -1,4 +1,4 @@
+-AM_CXXFLAGS = -fno-rtti -fno-exceptions
++AM_CXXFLAGS = -fno-rtti -fno-exceptions -D_GLIBCXX_USE_C99 -std=c++11
+ 
+ AM_CPPFLAGS = \
+ 	-I$(top_builddir) \
+--- neutrino-tangos.org/src/driver/pictureviewer/Makefile.am
++++ neutrino-tangos/src/driver/pictureviewer/Makefile.am
+@@ -1,4 +1,4 @@
+-AM_CXXFLAGS = -fno-rtti -fno-exceptions
++AM_CXXFLAGS = -fno-rtti -fno-exceptions -D_GLIBCXX_USE_C99 -std=c++11
+ 
+ AM_CPPFLAGS = \
+ 	-I$(top_builddir) \
+--- neutrino-tangos.org/src/gui/channellist.cpp
++++ neutrino-tangos/src/gui/channellist.cpp
+@@ -1504,7 +1504,11 @@
+ 
+ 		printf("CChannelList::getPrevNextChannel: selected %d total %d active bouquet %d total %d\n", (int)cactive, (int)(*chanlist).size(), bactive, bsize);
+ #if HAVE_SH4_HARDWARE
++#if !defined(BOXMODEL_TF7700)
+ 		if ((key == g_settings.key_quickzap_down) || (key == CRCInput::RC_left) || (key == CRCInput::RC_page_down)) {
++#else
++		if ((key == g_settings.key_quickzap_down) || (key == CRCInput::RC_page_down)) {
++#endif
+ #else
+ 		if ((key == g_settings.key_quickzap_down) || (key == CRCInput::RC_left)) {
+ #endif
+@@ -1518,7 +1522,11 @@
+ 				--cactive;
+ 		}
+ #if HAVE_SH4_HARDWARE
++#if !defined(BOXMODEL_TF7700)
+ 		else if ((key == g_settings.key_quickzap_up) || (key == CRCInput::RC_right) || (key == CRCInput::RC_page_up)) {
++#else
++		else if ((key == g_settings.key_quickzap_up) || (key == CRCInput::RC_page_up)) {
++#endif
+ #else
+ 		else if ((key == g_settings.key_quickzap_up) || (key == CRCInput::RC_right)) {
+ #endif
+@@ -1537,7 +1545,11 @@
+ 				(int)cactive, (int)(*chanlist).size(), bactive, bsize, channel, channel ? channel->getName().c_str(): "");
+ 	} else {
+ #if HAVE_SH4_HARDWARE
++#if !defined(BOXMODEL_TF7700)
+ 		if ((key == g_settings.key_quickzap_down) || (key == CRCInput::RC_left) || (key == CRCInput::RC_page_down)) {
++#else
++		if ((key == g_settings.key_quickzap_down) || (key == CRCInput::RC_page_down)) {
++#endif
+ #else
+ 		if ((key == g_settings.key_quickzap_down) || (key == CRCInput::RC_left)) {
+ #endif
+@@ -1547,7 +1559,11 @@
+ 				sl--;
+ 		}
+ #if HAVE_SH4_HARDWARE
++#if !defined(BOXMODEL_TF7700)
+ 		else if ((key == g_settings.key_quickzap_up) || (key == CRCInput::RC_right) || (key == CRCInput::RC_page_up)) {
++#else
++		else if ((key == g_settings.key_quickzap_up) || (key == CRCInput::RC_page_up)) {
++#endif
+ #else
+ 		else if ((key==g_settings.key_quickzap_up) || (key == CRCInput::RC_right)) {
+ #endif
+@@ -1570,7 +1586,11 @@
+ 	int old_bactive = bouquetList->getActiveBouquetNumber();
+ 	int bactive = old_bactive;
+ 
++#if !defined(BOXMODEL_TF7700)
+ 	CZapitChannel* channel = getPrevNextChannel(up ? CRCInput::RC_right : CRCInput::RC_left, sl);
++#else
++	CZapitChannel* channel = getPrevNextChannel(up ? CRCInput::RC_down : CRCInput::RC_page_up, sl);
++#endif
+ 
+ 	bool doZap = false;
+ 	bool showEPG = false;
+@@ -1583,6 +1603,7 @@
+ 		epgpos = 0;
+ 		g_RCInput->getMsg(&msg, &data, 15*10); // 15 seconds, not user changable
+ 
++#if !defined(BOXMODEL_TF7700)
+ 		if ((msg == CRCInput::RC_left) || (msg == CRCInput::RC_right)) {
+ 			if (!bouquetList->Bouquets.empty())
+ 				channel = bouquetList->Bouquets[bactive]->channelList->getPrevNextChannel(msg, sl);
+@@ -1591,6 +1612,9 @@
+ 			bactive = bouquetList->getActiveBouquetNumber();
+ 		}
+ 		else if (msg == CRCInput::RC_up || msg == CRCInput::RC_down) {
++#else
++		if (msg == CRCInput::RC_up || msg == CRCInput::RC_down) {
++#endif
+ 			epgpos = (msg == CRCInput::RC_up) ? -1 : 1;
+ 		}
+ 		else if ((msg == CRCInput::RC_ok) || (msg == CRCInput::RC_home) || (msg == CRCInput::RC_timeout)) {
+--- neutrino-tangos.org/src/gui/movieplayer.cpp
++++ neutrino-tangos/src/gui/movieplayer.cpp
+@@ -82,10 +82,10 @@
+ #include <iconv.h>
+ #include <libdvbsub/dvbsub.h>
+ #include <hardware/audio.h>
+-#ifdef ENABLE_GRAPHLCD
+-#include <driver/nglcd.h>
++//#ifdef ENABLE_GRAPHLCD
++//#include <driver/nglcd.h>
+ bool glcd_play = false;
+-#endif
++//#endif
+ #include <gui/widget/stringinput_ext.h>
+ #include <gui/screensetup.h>
+ #include <gui/widget/msgbox.h>
+@@ -536,7 +536,13 @@
+  && !defined(BOXMODEL_UFS912) \
+  && !defined(BOXMODEL_UFS913) \
+  && !defined(BOXMODEL_UFS922) \
+- && !defined(BOXMODEL_OCTAGON1008) \
++ && !defined(BOXMODEL_HS9510) \
++ && !defined(BOXMODEL_HS7110) \
++ && !defined(BOXMODEL_HS7420) \
++ && !defined(BOXMODEL_HS7810A) \
++ && !defined(BOXMODEL_HS7119) \
++ && !defined(BOXMODEL_HS7429) \
++ && !defined(BOXMODEL_HS7819) \
+  && !defined(BOXMODEL_IPBOX9900) \
+  && !defined(BOXMODEL_IPBOX99) \
+  && !defined(BOXMODEL_IPBOX55)
+@@ -545,7 +551,7 @@
+ 				lcd = "";
+ #endif
+ 			break;
+-#if !defined(BOXMODEL_OCTAGON1008)
++#if !defined(BOXMODEL_HS9510)
+ 		case CMoviePlayerGui::REW:
+ 			sprintf(tmp, "%dx<< ", abs(speed));
+ 			lcd = tmp;
+@@ -560,8 +566,14 @@
+  && !defined(BOXMODEL_UFS912) \
+  && !defined(BOXMODEL_UFS913) \
+  && !defined(BOXMODEL_UFS922) \
+- && !defined(BOXMODEL_FORTIS_HDBOX) \
+- && !defined(BOXMODEL_OCTAGON1008) \
++ && !defined(BOXMODEL_FS9000) \
++ && !defined(BOXMODEL_HS9510) \
++ && !defined(BOXMODEL_HS7110) \
++ && !defined(BOXMODEL_HS7420) \
++ && !defined(BOXMODEL_HS7810A) \
++ && !defined(BOXMODEL_HS7119) \
++ && !defined(BOXMODEL_HS7429) \
++ && !defined(BOXMODEL_HS7819) \
+  && !defined(BOXMODEL_CUBEREVO_MINI) \
+  && !defined(BOXMODEL_CUBEREVO_MINI2) \
+  && !defined(BOXMODEL_CUBEREVO_3000HD) \
+@@ -1416,15 +1428,15 @@
+ #if HAVE_SH4_HARDWARE
+ 	old3dmode = frameBuffer->get3DMode();
+ #endif
+-#ifdef ENABLE_GRAPHLCD
+-	nGLCD::MirrorOSD(false);
+-	if (p_movie_info)
+-		nGLCD::lockChannel(p_movie_info->channelName, p_movie_info->epgTitle);
+-	else {
+-		glcd_play = true;
+-		nGLCD::lockChannel(g_Locale->getText(LOCALE_MOVIEPLAYER_HEAD), file_name.c_str(), file_prozent);
+-	}
+-#endif
++//#ifdef ENABLE_GRAPHLCD
++//	nGLCD::MirrorOSD(false);
++//	if (p_movie_info)
++//		nGLCD::lockChannel(p_movie_info->channelName, p_movie_info->epgTitle);
++//	else {
++//		glcd_play = true;
++//		nGLCD::lockChannel(g_Locale->getText(LOCALE_MOVIEPLAYER_HEAD), file_name.c_str(), file_prozent);
++//	}
++//#endif
+ 	pthread_t thrStartHint = 0;
+ 	if (is_file_player) {
+ 		showStartingHint = true;
+@@ -1626,14 +1638,14 @@
+ 
+ 	while (playstate >= CMoviePlayerGui::PLAY)
+ 	{
+-#ifdef ENABLE_GRAPHLCD
+-		if (p_movie_info)
+-			nGLCD::lockChannel(p_movie_info->channelName, p_movie_info->epgTitle, duration ? (100 * position / duration) : 0);
+-		else {
+-			glcd_play = true;
+-			nGLCD::lockChannel(g_Locale->getText(LOCALE_MOVIEPLAYER_HEAD), file_name.c_str(), file_prozent);
+-		}
+-#endif
++//#ifdef ENABLE_GRAPHLCD
++//		if (p_movie_info)
++//			nGLCD::lockChannel(p_movie_info->channelName, p_movie_info->epgTitle, duration ? (100 * position / duration) : 0);
++//		else {
++//			glcd_play = true;
++//			nGLCD::lockChannel(g_Locale->getText(LOCALE_MOVIEPLAYER_HEAD), file_name.c_str(), file_prozent);
++//		}
++//#endif
+ 		if (update_lcd) {
+ 			update_lcd = false;
+ 			updateLcd();
+@@ -2223,12 +2235,12 @@
+ 	CScreenSetup cSS;
+ 	cSS.showBorder(CZapit::getInstance()->GetCurrentChannelID());
+ #endif
+-#ifdef ENABLE_GRAPHLCD
+-	if (p_movie_info || glcd_play == true) {
+-		glcd_play = false;
+-		nGLCD::unlockChannel();
+-	}
+-#endif
++//#ifdef ENABLE_GRAPHLCD
++//	if (p_movie_info || glcd_play == true) {
++//		glcd_play = false;
++//		nGLCD::unlockChannel();
++//	}
++//#endif
+ 	if (iso_file) {
+ 		iso_file = false;
+ 		if (umount2(ISO_MOUNT_POINT, MNT_FORCE))
+@@ -2306,10 +2318,10 @@
+ 		}
+ 		if (!movie_info.channelName.empty() || !movie_info.epgTitle.empty())
+ 			p_movie_info = &movie_info;
+-#ifdef ENABLE_GRAPHLCD
+-		if (p_movie_info)
+-			nGLCD::lockChannel(p_movie_info->channelName, p_movie_info->epgTitle);
+-#endif
++//#ifdef ENABLE_GRAPHLCD
++//		if (p_movie_info)
++//			nGLCD::lockChannel(p_movie_info->channelName, p_movie_info->epgTitle);
++//#endif
+ 	}
+ 
+ 	if (p_movie_info) {
+@@ -2828,10 +2840,10 @@
+ 		tuxtx_pause_subtitle(true);
+ 		frameBuffer->paintBackground();
+ 	}
+-#ifdef ENABLE_GRAPHLCD
+-	if (enable_glcd_mirroring)
+-		nGLCD::MirrorOSD(g_settings.glcd_mirror_osd);
+-#endif
++//#ifdef ENABLE_GRAPHLCD
++//	if (enable_glcd_mirroring)
++//		nGLCD::MirrorOSD(g_settings.glcd_mirror_osd);
++//#endif
+ #endif
+ }
+ 
+@@ -2869,9 +2881,9 @@
+ {
+ #if HAVE_SH4_HARDWARE || HAVE_ARM_HARDWARE || HAVE_MIPS_HARDWARE
+ 	printf("[CMoviePlayerGui] %s: %s\n", __FUNCTION__, show ? "Show" : "Not show");
+-#ifdef ENABLE_GRAPHLCD
+-	nGLCD::MirrorOSD(false);
+-#endif
++//#ifdef ENABLE_GRAPHLCD
++//	nGLCD::MirrorOSD(false);
++//#endif
+ 
+ 	if(!show)
+ 		return;
+--- neutrino-tangos.org/src/gui/update.cpp
++++ neutrino-tangos/src/gui/update.cpp
+@@ -97,7 +97,7 @@
+ #define UPDATE_LOCAL_FILENAME          "update.img"
+ #define RELEASE_CYCLE                  "2.0"
+ #define FILEBROWSER_UPDATE_FILTER      "img"
+-#if BOXMODEL_UFS910 || BOXMODEL_FORTIS_HDBOX || BOXMODEL_OCTAGON1008
++#if BOXMODEL_UFS910 || BOXMODEL_FS9000 || BOXMODEL_HS9510
+ #define MTD_OF_WHOLE_IMAGE              5
+ #define MTD_DEVICE_OF_UPDATE_PART       "/dev/mtd5"
+ #elif BOXMODEL_CUBEREVO || BOXMODEL_CUBEREVO_MINI || BOXMODEL_CUBEREVO_MINI2
+--- neutrino-tangos.org/src/gui/vfd_setup.cpp
++++ neutrino-tangos/src/gui/vfd_setup.cpp
+@@ -262,25 +262,101 @@
+ 	brightnessstandby = CVFD::getInstance()->getBrightnessStandby();
+ 	brightnessdeepstandby = CVFD::getInstance()->getBrightnessDeepStandby();
+ 
++#if defined (BOXMODEL_HS9510) \
++ || defined (BOXMODEL_FS9000) \
++ || defined (BOXMODEL_HS8200) \
++ || defined (BOXMODEL_HS7420) \
++ || defined (BOXMODEL_HS7810A) \
++ || defined (BOXMODEL_HS7420) \
++ || defined (BOXMODEL_HS7119) \
++ || defined (BOXMODEL_HS7429) \
++ || defined (BOXMODEL_HS7819) \
++ || defined (BOXMODEL_ADB_BOX) \
++ || defined (BOXMODEL_HL101) \
++ || defined (BOXMODEL_VIP1_V1) \
++ || defined (BOXMODEL_VIP1_V2) \
++ || defined (BOXMODEL_VIP2)
++	nc = new CMenuOptionNumberChooser(LOCALE_LCDCONTROLER_BRIGHTNESS, &brightness, true, 0, 7, this, CRCInput::RC_nokey, NULL, 0, 0, NONEXISTANT_LOCALE, true);
++#elif defined (BOXMODEL_TF7700)
++	nc = new CMenuOptionNumberChooser(LOCALE_LCDCONTROLER_BRIGHTNESS, &brightness, true, 0, 3, this, CRCInput::RC_nokey, NULL, 0, 0, NONEXISTANT_LOCALE, true);
++#else
+ 	nc = new CMenuOptionNumberChooser(LOCALE_LCDCONTROLER_BRIGHTNESS, &brightness, true, 0, 15, this, CRCInput::RC_nokey, NULL, 0, 0, NONEXISTANT_LOCALE, true);
++#endif
+ 	nc->setHint("", LOCALE_MENU_HINT_VFD_BRIGHTNESS);
+ 	nc->setActivateObserver(this);
+ 	mn_widget->addItem(nc);
+ 
++#if defined (BOXMODEL_HS9510) \
++ || defined (BOXMODEL_FS9000) \
++ || defined (BOXMODEL_HS8200) \
++ || defined (BOXMODEL_HS7420) \
++ || defined (BOXMODEL_HS7810A) \
++ || defined (BOXMODEL_HS7420) \
++ || defined (BOXMODEL_HS7119) \
++ || defined (BOXMODEL_HS7429) \
++ || defined (BOXMODEL_HS7819) \
++ || defined (BOXMODEL_ADB_BOX) \
++ || defined (BOXMODEL_HL101) \
++ || defined (BOXMODEL_VIP1_V1) \
++ || defined (BOXMODEL_VIP1_V2) \
++ || defined (BOXMODEL_VIP2)
++	nc = new CMenuOptionNumberChooser(LOCALE_LCDCONTROLER_BRIGHTNESSSTANDBY, &brightnessstandby, true, 0, 7, this, CRCInput::RC_nokey, NULL, 0, 0, NONEXISTANT_LOCALE, true);
++#elif defined (BOXMODEL_TF7700)
++	nc = new CMenuOptionNumberChooser(LOCALE_LCDCONTROLER_BRIGHTNESSSTANDBY, &brightnessstandby, true, 0, 3, this, CRCInput::RC_nokey, NULL, 0, 0, NONEXISTANT_LOCALE, true);
++#else
+ 	nc = new CMenuOptionNumberChooser(LOCALE_LCDCONTROLER_BRIGHTNESSSTANDBY, &brightnessstandby, true, 0, 15, this, CRCInput::RC_nokey, NULL, 0, 0, NONEXISTANT_LOCALE, true);
++#endif
+ 	nc->setHint("", LOCALE_MENU_HINT_VFD_BRIGHTNESSSTANDBY);
+ 	nc->setActivateObserver(this);
+ 	mn_widget->addItem(nc);
+ 
+ 	if (g_info.hw_caps->display_can_deepstandby)
+ 	{
++#if defined (BOXMODEL_HS9510) \
++ || defined (BOXMODEL_FS9000) \
++ || defined (BOXMODEL_HS8200) \
++ || defined (BOXMODEL_HS7420) \
++ || defined (BOXMODEL_HS7810A) \
++ || defined (BOXMODEL_HS7420) \
++ || defined (BOXMODEL_HS7119) \
++ || defined (BOXMODEL_HS7429) \
++ || defined (BOXMODEL_HS7819) \
++ || defined (BOXMODEL_ADB_BOX) \
++ || defined (BOXMODEL_HL101) \
++ || defined (BOXMODEL_VIP1_V1) \
++ || defined (BOXMODEL_VIP1_V2) \
++ || defined (BOXMODEL_VIP2)
++		nc = new CMenuOptionNumberChooser(LOCALE_LCDCONTROLER_BRIGHTNESSDEEPSTANDBY, &brightnessdeepstandby, true, 0, 7, this, CRCInput::RC_nokey, NULL, 0, 0, NONEXISTANT_LOCALE, true);
++#elif defined (BOXMODEL_TF7700)
++		nc = new CMenuOptionNumberChooser(LOCALE_LCDCONTROLER_BRIGHTNESSDEEPSTANDBY, &brightnessdeepstandby, true, 0, 3, this, CRCInput::RC_nokey, NULL, 0, 0, NONEXISTANT_LOCALE, true);
++#else
+ 		nc = new CMenuOptionNumberChooser(LOCALE_LCDCONTROLER_BRIGHTNESSDEEPSTANDBY, &brightnessdeepstandby, true, 0, 15, this, CRCInput::RC_nokey, NULL, 0, 0, NONEXISTANT_LOCALE, true);
++#endif
+ 		nc->setHint("", LOCALE_MENU_HINT_VFD_BRIGHTNESSDEEPSTANDBY);
+ 		nc->setActivateObserver(this);
+ 		mn_widget->addItem(nc);
+ 	}
+ 
++#if defined (BOXMODEL_HS9510) \
++ || defined (BOXMODEL_FS9000) \
++ || defined (BOXMODEL_HS8200) \
++ || defined (BOXMODEL_HS7420) \
++ || defined (BOXMODEL_HS7810A) \
++ || defined (BOXMODEL_HS7420) \
++ || defined (BOXMODEL_HS7119) \
++ || defined (BOXMODEL_HS7429) \
++ || defined (BOXMODEL_HS7819) \
++ || defined (BOXMODEL_ADB_BOX) \
++ || defined (BOXMODEL_HL101) \
++ || defined (BOXMODEL_VIP1_V1) \
++ || defined (BOXMODEL_VIP1_V2) \
++ || defined (BOXMODEL_VIP2)
++	nc = new CMenuOptionNumberChooser(LOCALE_LCDMENU_DIM_BRIGHTNESS, &g_settings.lcd_setting_dim_brightness, vfd_enabled, -1, 7, NULL, CRCInput::RC_nokey, NULL, 0, -1, LOCALE_OPTIONS_OFF, true);
++#elif defined (BOXMODEL_TF7700)
++	nc = new CMenuOptionNumberChooser(LOCALE_LCDMENU_DIM_BRIGHTNESS, &g_settings.lcd_setting_dim_brightness, vfd_enabled, -1, 3, NULL, CRCInput::RC_nokey, NULL, 0, -1, LOCALE_OPTIONS_OFF, true);
++#else
+ 	nc = new CMenuOptionNumberChooser(LOCALE_LCDMENU_DIM_BRIGHTNESS, &g_settings.lcd_setting_dim_brightness, vfd_enabled, -1, 15, NULL, CRCInput::RC_nokey, NULL, 0, -1, LOCALE_OPTIONS_OFF, true);
++#endif
+ 	nc->setHint("", LOCALE_MENU_HINT_VFD_BRIGHTNESSDIM);
+ 	nc->setActivateObserver(this);
+ 	mn_widget->addItem(nc);
+--- neutrino-tangos.org/src/gui/audioplayer.cpp
++++ neutrino-tangos/src/gui/audioplayer.cpp
+@@ -468,7 +468,7 @@
+ 			}
+ 
+ 		}
+-		else if (msg == CRCInput::RC_right || msg == CRCInput::RC_nextsong)
++		else if (msg == CRCInput::RC_right || msg == CRCInput::RC_nextsong || msg == CRCInput::RC_next)
+ 		{
+ 			if (m_key_level == 1)
+ 			{
+--- neutrino-tangos/org/src/gui/Makefile.am
++++ neutrino-tangos/src/gui/Makefile.am
+@@ -1,7 +1,7 @@
+ if ENABLE_UPNP
+-AM_CPPFLAGS = -fno-rtti -D__STDC_FORMAT_MACROS
++AM_CPPFLAGS = -fno-rtti -D__STDC_FORMAT_MACROS -D_GLIBCXX_USE_C99 -std=c++11
+ else
+-AM_CPPFLAGS = -fno-rtti -fno-exceptions -D__STDC_FORMAT_MACROS
++AM_CPPFLAGS = -fno-rtti -fno-exceptions -D__STDC_FORMAT_MACROS -D_GLIBCXX_USE_C99 -std=c++11
+ endif
+ BUILT_SOURCES = version.h
+ version.h:
+--- neutrino-tangos.org/src/gui/bedit/Makefile.am
++++ neutrino-tangos/src/gui/bedit/Makefile.am
+@@ -1,4 +1,4 @@
+-AM_CPPFLAGS = -fno-rtti -fno-exceptions
++AM_CPPFLAGS = -fno-rtti -fno-exceptions -std=c++11
+ 
+ AM_CPPFLAGS += \
+ 	-I$(top_builddir) \
+--- neutrino-tangos.org/src/gui/components/Makefile.am
++++ neutrino-tangos/src/gui/components/Makefile.am
+@@ -1,4 +1,4 @@
+-AM_CPPFLAGS = -fno-rtti -fno-exceptions -D__STDC_FORMAT_MACROS
++AM_CPPFLAGS = -fno-rtti -fno-exceptions -D__STDC_FORMAT_MACROS -std=c++11
+ 
+ AM_CPPFLAGS += \
+ 	-I$(top_builddir) \
+--- neutrino-tangos.org/src/gui/lua/Makefile.am
++++ neutrino-tangos/src/gui/lua/Makefile.am
+@@ -1,4 +1,4 @@
+-AM_CPPFLAGS = -fno-rtti -D__STDC_FORMAT_MACROS
++AM_CPPFLAGS = -fno-rtti -D__STDC_FORMAT_MACROS -D_GLIBCXX_USE_C99 -std=c++11
+ 
+ AM_CPPFLAGS += \
+ 	-I$(top_builddir) \
+--- neutrino-tangos.org/src/gui/moviebrowser/Makefile.am
++++ neutrino-tangos/src/gui/moviebrowser/Makefile.am
+@@ -1,4 +1,4 @@
+-AM_CPPFLAGS = -fno-rtti -fno-exceptions -D__STDC_FORMAT_MACROS
++AM_CPPFLAGS = -fno-rtti -fno-exceptions -D__STDC_FORMAT_MACROS -D_GLIBCXX_USE_C99 -std=c++11
+ 
+ AM_CPPFLAGS += \
+ 	-I$(top_builddir) \
+--- neutrino-tangos.org/src/gui/moviebrowser/mb_functions.h
++++ neutrino-tangos/src/gui/moviebrowser/mb_functions.h
+@@ -42,6 +42,7 @@
+ 
+ #include "mb_types.h"
+ #include <system/helpers.h>
++#include <string>
+ 
+ static std::string rateFormat(int i)
+ {
+--- neutrino-tangos.org/src/gui/widget/Makefile.am
++++ neutrino-tangos/src/gui/widget/Makefile.am
+@@ -1,4 +1,4 @@
+-AM_CPPFLAGS = -fno-rtti -fno-exceptions -D__STDC_FORMAT_MACROS
++AM_CPPFLAGS = -fno-rtti -fno-exceptions -D__STDC_FORMAT_MACROS -D_GLIBCXX_USE_C99 -std=c++11
+ 
+ AM_CPPFLAGS += \
+ 	-I$(top_builddir) \
+--- neutrino-tangos.org/src/gui/scan.cpp
++++ neutrino-tangos/src/gui/scan.cpp
+@@ -409,7 +409,7 @@
+ 			sprintf(buffer, "%ld", data);
+ 			paintLine(xpos2, ypos_transponder, w - (8*fw), buffer);
+ 			total = data;
+-			snprintf(str, sizeof(buffer), "scan: %d/%d", done, total);
++			snprintf(str, sizeof(buffer), "Scan: %d/%d", done, total);
+ 			CVFD::getInstance()->showMenuText(0, str, -1, true);
+ 			break;
+ 
+@@ -418,7 +418,7 @@
+ 			done = data;
+ 			sprintf(buffer, "%d/%d", done, total);
+ 			paintLine(xpos2, ypos_transponder, w - (8*fw), buffer);
+-			snprintf(str, sizeof(buffer), "scan %d/%d", done, total);
++			snprintf(str, sizeof(buffer), "Scan %d/%d", done, total);
+ 			CVFD::getInstance()->showMenuText(0, str, -1, true);
+ 			break;
+ 
+--- neutrino-tangos.org/src/nhttpd/tuxboxapi/Makefile.am
++++ neutrino-tangos/src/nhttpd/tuxboxapi/Makefile.am
+@@ -1,4 +1,4 @@
+-AM_CPPFLAGS = -fno-rtti -fno-exceptions -D__STDC_FORMAT_MACROS -D_FILE_OFFSET_BITS=64
++AM_CPPFLAGS = -fno-rtti -fno-exceptions -D__STDC_FORMAT_MACROS -D_FILE_OFFSET_BITS=64 -D_GLIBCXX_USE_C99 -std=c++11
+ 
+ AM_CPPFLAGS += \
+ 	-I$(top_builddir) \
+--- neutrino-tangos.org/src/system/Makefile.am
++++ neutrino-tangos/src/system/Makefile.am
+@@ -2,7 +2,7 @@
+ SUBDIRS = mtdutils
+ endif
+ 
+-AM_CXXFLAGS = -fno-rtti -fno-exceptions -D__STDC_FORMAT_MACROS
++AM_CXXFLAGS = -fno-rtti -fno-exceptions -D__STDC_FORMAT_MACROS -D_GLIBCXX_USE_C99 -std=c++11
+ 
+ AM_CPPFLAGS = \
+ 	-I$(top_builddir) \
+--- neutrino-tangos.org/src/zapit/src/Makefile.am.org
++++ neutrino-tangos/src/zapit/src/Makefile.am
+@@ -1,4 +1,4 @@
+-AM_CPPFLAGS = -fno-rtti -fno-exceptions -D__STDC_FORMAT_MACROS
++AM_CPPFLAGS = -fno-rtti -fno-exceptions -D__STDC_FORMAT_MACROS -std=c++11
+ 
+ AM_CPPFLAGS += \
+ 	-I$(top_builddir) \
+

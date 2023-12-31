@@ -2,34 +2,59 @@
 # Makefile to build NEUTRINO
 #
 $(TARGET_DIR)/.version:
-	echo "imagename=Neutrino MP" > $@
-	echo "homepage=https://github.com/Duckbox-Developers" >> $@
-	echo "creator=$(MAINTAINER)" >> $@
-	echo "docs=https://github.com/Duckbox-Developers" >> $@
-	echo "forum=https://github.com/Duckbox-Developers/neutrino-mp-ddt" >> $@
-	echo "version=0200`date +%Y%m%d%H%M`" >> $@
-	echo "git=`git log | grep "^commit" | wc -l`" >> $@
+	$(SILENT)echo "imagename=Neutrino" > $@
+	$(SILENT)echo "homepage=https://github.com/Audioniek" >> $@
+	$(SILENT)echo "creator=$(MAINTAINER)" >> $@
+	$(SILENT)echo "docs=https://github.com/Audioniek" >> $@
+#	$(SILENT)echo "forum=https://github.com/Duckbox-Developers/neutrino-cst-next" >> $@
+	$(SILENT)echo "version=0200`date +%Y%m%d%H%M`" >> $@
+	$(SILENT)echo "git=`git log | grep "^commit" | wc -l`" >> $@
 
-NEUTRINO_DEPS  = $(D)/bootstrap $(KERNEL) $(D)/system-tools
-NEUTRINO_DEPS += $(D)/ncurses $(LIRC) $(D)/libcurl
-NEUTRINO_DEPS += $(D)/libpng $(D)/libjpeg $(D)/giflib $(D)/freetype
-NEUTRINO_DEPS += $(D)/alsa_utils $(D)/ffmpeg
-NEUTRINO_DEPS += $(D)/libfribidi $(D)/libsigc $(D)/libdvbsi $(D)/libusb
-NEUTRINO_DEPS += $(D)/pugixml $(D)/libopenthreads
-NEUTRINO_DEPS += $(D)/lua $(D)/luaexpat $(D)/luacurl $(D)/luasocket $(D)/luafeedparser $(D)/luasoap $(D)/luajson
+NEUTRINO_DEPS  = $(D)/bootstrap
+NEUTRINO_DEPS += $(KERNEL)
+NEUTRINO_DEPS += $(D)/system-tools
+NEUTRINO_DEPS += $(D)/module_init_tools
+NEUTRINO_DEPS += $(D)/alsa_utils
+NEUTRINO_DEPS += $(D)/ffmpeg
+NEUTRINO_DEPS += $(D)/libopenthreads
+NEUTRINO_DEPS += $(LIRC)
+NEUTRINO_DEPS += $(D)/libcurl
+ifneq ($(FLAVOUR), neutrino2)
+NEUTRINO_DEPS += $(D)/libsigc241
+else
+NEUTRINO_DEPS += $(D)/libsigc
+endif
+NEUTRINO_DEPS += $(D)/pugixml
+NEUTRINO_DEPS += $(D)/libdvbsi
+NEUTRINO_DEPS += $(D)/libfribidi
+NEUTRINO_DEPS += $(D)/giflib
+NEUTRINO_DEPS += $(D)/lua
+#NEUTRINO_DEPS += $(D)/luaexpat
+#NEUTRINO_DEPS += $(D)/luacurl
+#NEUTRINO_DEPS += $(D)/luasocket
+#NEUTRINO_DEPS += $(D)/luafeedparser
+#NEUTRINO_DEPS += $(D)/luasoap
+#NEUTRINO_DEPS += $(D)/luajson
+NEUTRINO_DEPS += $(D)/libpng
+NEUTRINO_DEPS += $(D)/libjpeg
+NEUTRINO_DEPS += $(D)/freetype
+#NEUTRINO_DEPS += $(D)/libusb
 NEUTRINO_DEPS += $(LOCAL_NEUTRINO_DEPS)
 
-ifeq ($(BOXTYPE), $(filter $(BOXTYPE), atevio7500 spark spark7162 ufs912 ufs913 ufs910))
-NEUTRINO_DEPS += $(D)/ntfs_3g
-ifneq ($(BOXTYPE), $(filter $(BOXTYPE), ufs910))
-NEUTRINO_DEPS += $(D)/mtd_utils $(D)/parted
+ifeq ($(FLAVOUR), neutrino-tangos)
+ifeq ($(PLUGINS_NEUTRINO), Yes)
+NEUTRINO_DEPS += $(D)/avahi
 endif
-#NEUTRINO_DEPS +=  $(D)/minidlna
 endif
 
-ifeq ($(BOXARCH), arm)
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs8200 spark spark7162 ufs912 ufs913 ufs910))
 NEUTRINO_DEPS += $(D)/ntfs_3g
-NEUTRINO_DEPS += $(D)/mc
+ifneq ($(BOXTYPE), $(filter $(BOXTYPE), ufs910))
+NEUTRINO_DEPS += $(D)/parted
+NEUTRINO_DEPS += $(D)/mtd_utils_old
+NEUTRINO_DEPS += $(D)/gptfdisk
+endif
+NEUTRINO_DEPS += $(D)/minidlna
 endif
 
 ifeq ($(IMAGE), neutrino-wlandriver)
@@ -42,29 +67,36 @@ N_CFLAGS       = -Wall -W -Wshadow -pipe -Os
 N_CFLAGS      += -D__KERNEL_STRICT_NAMES
 N_CFLAGS      += -D__STDC_FORMAT_MACROS
 N_CFLAGS      += -D__STDC_CONSTANT_MACROS
-N_CFLAGS      += -fno-strict-aliasing -funsigned-char -ffunction-sections -fdata-sections
+N_CFLAGS      += -fno-strict-aliasing
+N_CFLAGS      += -funsigned-char
+N_CFLAGS      += -ffunction-sections
+N_CFLAGS      += -fdata-sections
 #N_CFLAGS      += -DCPU_FREQ
 N_CFLAGS      += $(LOCAL_NEUTRINO_CFLAGS)
 
 N_CPPFLAGS     = -I$(TARGET_DIR)/usr/include
+#N_CPPFLAGS    += -std=c++11
 N_CPPFLAGS    += -ffunction-sections -fdata-sections
 
-ifeq ($(BOXARCH), arm)
-N_CPPFLAGS    += -I$(CROSS_BASE)/$(TARGET)/sys-root/usr/include
-endif
-
-ifeq ($(BOXARCH), sh4)
 N_CPPFLAGS    += -I$(DRIVER_DIR)/bpamem
 N_CPPFLAGS    += -I$(KERNEL_DIR)/include
-endif
+N_CPPFLAGS    += -ffunction-sections
+N_CPPFLAGS    += -fdata-sections
 
 ifeq ($(BOXTYPE), $(filter $(BOXTYPE), spark spark7162))
 N_CPPFLAGS += -I$(DRIVER_DIR)/frontcontroller/aotom_spark
 endif
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE), vip2))
+N_CPPFLAGS += -I$(DRIVER_DIR)/frontcontroller/aotom_vip
+endif
+
+#ifeq ($(FLAVOUR), neutrino-tangos)
+#N_CPPFLAGS += -std=c++11
+#endif
 
 LH_CONFIG_OPTS =
 ifeq ($(MEDIAFW), gstreamer)
-NEUTRINO_DEPS  += $(D)/gst_plugins_dvbmediasink
+#NEUTRINO_DEPS  += $(D)/gst_plugins_multibox_dvbmediasink
 N_CPPFLAGS     += $(shell $(PKG_CONFIG) --cflags --libs gstreamer-1.0)
 N_CPPFLAGS     += $(shell $(PKG_CONFIG) --cflags --libs gstreamer-audio-1.0)
 N_CPPFLAGS     += $(shell $(PKG_CONFIG) --cflags --libs gstreamer-video-1.0)
@@ -72,116 +104,129 @@ N_CPPFLAGS     += $(shell $(PKG_CONFIG) --cflags --libs glib-2.0)
 LH_CONFIG_OPTS += --enable-gstreamer_10=yes
 endif
 
-N_CONFIG_OPTS  = $(LOCAL_NEUTRINO_BUILD_OPTIONS)
-ifeq ($(FLAVOUR), neutrino-mp-ni)
-N_CONFIG_OPTS += --with-boxtype=armbox
-N_CONFIG_OPTS += --with-boxmodel=$(BOXTYPE)
+N_CONFIG_OPTS   = $(LOCAL_NEUTRINO_BUILD_OPTIONS)
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE), spark spark7162))
+LH_CONFIG_OPTS += --with-boxtype=spark
+N_CONFIG_OPTS  += --with-boxtype=spark
 else
-N_CONFIG_OPTS += --with-boxtype=$(BOXTYPE)
+LH_CONFIG_OPTS += --with-boxtype=duckbox
+N_CONFIG_OPTS  += --with-boxtype=duckbox
 endif
-N_CONFIG_OPTS += --enable-freesatepg
-#N_CONFIG_OPTS += --enable-pip
-#N_CONFIG_OPTS += --disable-webif
-N_CONFIG_OPTS += --disable-upnp
-#N_CONFIG_OPTS += --disable-tangos
-N_CONFIG_OPTS += --enable-pugixml
+N_CONFIG_OPTS  += --with-boxmodel=$(BOXTYPE)
+N_CONFIG_OPTS  += --enable-freesatepg
+#N_CONFIG_OPTS  += --enable-pip
 
-N_CONFIG_OPTS += \
-	--with-libdir=/usr/lib \
-	--with-datadir=/share/tuxbox \
-	--with-fontdir=/share/fonts \
-	--with-fontdir_var=/var/tuxbox/fonts \
-	--with-configdir=/var/tuxbox/config \
-	--with-gamesdir=/var/tuxbox/games \
-	--with-iconsdir=/share/tuxbox/neutrino/icons \
-	--with-iconsdir_var=/var/tuxbox/icons \
-	--with-localedir=/share/tuxbox/neutrino/locale \
-	--with-localedir_var=/var/tuxbox/locale \
-	--with-plugindir=/lib/tuxbox/plugins \
-	--with-plugindir_var=/var/tuxbox/plugins \
-	--with-luaplugindir=/var/tuxbox/plugins \
-	--with-private_httpddir=/share/tuxbox/neutrino/httpd \
-	--with-public_httpddir=/var/tuxbox/httpd \
-	--with-themesdir=/share/tuxbox/neutrino/themes \
-	--with-themesdir_var=/var/tuxbox/themes \
-	--with-webtvdir=/share/tuxbox/neutrino/webtv \
-	--with-webtvdir_var=/var/tuxbox/webtv
-
-ifeq ($(EXTERNAL_LCD), externallcd)
+ifeq ($(EXTERNAL_LCD), graphlcd)
 N_CONFIG_OPTS += --enable-graphlcd
 NEUTRINO_DEPS += $(D)/graphlcd
 endif
 
 ifeq ($(EXTERNAL_LCD), lcd4linux)
+N_CONFIG_OPTS += --enable-lcd4linux
+NEUTRINO_DEPS += $(D)/lcd4linux
+#NEUTRINO_DEPS += $(D)/neutrino-plugin-l4l-skins
+endif
+
+ifeq ($(EXTERNAL_LCD), both)
+N_CONFIG_OPTS += --enable-graphlcd
+NEUTRINO_DEPS += $(D)/graphlcd
+N_CONFIG_OPTS += --enable-lcd4linux
 NEUTRINO_DEPS += $(D)/lcd4linux
 endif
 
-ifeq ($(FLAVOUR), neutrino-mp-max)
-GIT_URL      = https://bitbucket.org/max_10
-NEUTRINO_MP  = neutrino-mp-max
-LIBSTB_HAL   = libstb-hal-max
-NMP_BRANCH  ?= master
-HAL_BRANCH  ?= master
-NMP_PATCHES  = $(NEUTRINO_MP_MAX_PATCHES)
-HAL_PATCHES  = $(NEUTRINO_MP_LIBSTB_MAX_PATCHES)
-else ifeq  ($(FLAVOUR), neutrino-mp-ni)
-GIT_URL      = https://bitbucket.org/neutrino-images
-NEUTRINO_MP  = ni-neutrino-hd
-LIBSTB_HAL   = ni-libstb-hal-next
-NMP_BRANCH  ?= ni/mp/tuxbox
-HAL_BRANCH  ?= master
-NMP_PATCHES  = $(NEUTRINO_MP_NI_PATCHES)
-HAL_PATCHES  = $(NEUTRINO_MP_LIBSTB_NI_PATCHES)
-else ifeq  ($(FLAVOUR), neutrino-mp-tangos)
-GIT_URL      = https://github.com/TangoCash
-NEUTRINO_MP  = neutrino-mp-tangos
-LIBSTB_HAL   = libstb-hal-tangos
-NMP_BRANCH  ?= master
-HAL_BRANCH  ?= master
-NMP_PATCHES  = $(NEUTRINO_MP_TANGOS_PATCHES)
-HAL_PATCHES  = $(NEUTRINO_MP_LIBSTB_TANGOS_PATCHES)
-else ifeq  ($(FLAVOUR), neutrino-mp-ddt)
-GIT_URL      = https://github.com/Duckbox-Developers
-NEUTRINO_MP  = neutrino-mp-ddt
-LIBSTB_HAL   = libstb-hal-ddt
-NMP_BRANCH  ?= master
-HAL_BRANCH  ?= master
-NMP_PATCHES  = $(NEUTRINO_MP_DDT_PATCHES)
-HAL_PATCHES  = $(NEUTRINO_MP_LIBSTB_DDT_PATCHES)
+ifeq ($(FLAVOUR), neutrino-tangos)
+GIT_URL       = https://github.com/TangoCash
+NEUTRINO      = neutrino-tangos
+LIBSTB_HAL    = libstb-hal-tangos
+N_BRANCH     ?= master
+N_CHECKOUT   ?= 066a0703b51588c500977763b8145df82f4270ce
+HAL_BRANCH   ?= master
+HAL_CHECKOUT ?= 2a909d72ae12e5c030cd3f21854f247c72823daf
+N_PATCHES     = $(NEUTRINO_TANGOS_PATCHES)
+HAL_PATCHES   = $(NEUTRINO_LIBSTB_TANGOS_PATCHES)
+else ifeq ($(FLAVOUR), neutrino-ddt)
+GIT_URL       = https://github.com/Duckbox-Developers
+NEUTRINO      = neutrino-ddt
+LIBSTB_HAL    = libstb-hal-ddt
+N_BRANCH     ?= master
+N_CHECKOUT   ?= 24adc6b4062f4fc551b6200f0ea0dc58d39f865f
+HAL_BRANCH   ?= master
+HAL_CHECKOUT ?= ca1f5557e93011d34aa78d4749e2276c703d430c
+N_PATCHES     = $(NEUTRINO_DDT_PATCHES)
+HAL_PATCHES   = $(NEUTRINO_LIBSTB_DDT_PATCHES)
+else ifeq ($(FLAVOUR), neutrino2)
+GIT_URL       = https://github.com/mohousch/neutrino2
+NEUTRINO      = neutrino2
+N_BRANCH     ?= master
+N_CHECKOUT   ?= 0d83b45f970203e4b910eddee97ee907479578a8
+N_PATCHES     = $(NEUTRINO2_PATCHES)
+else
+NEUTRINO      = dummy
+LIBSTB_HAL    = dummy2
 endif
 
-N_OBJDIR = $(BUILD_TMP)/$(NEUTRINO_MP)
-LH_OBJDIR = $(BUILD_TMP)/$(LIBSTB_HAL)
+N_OBJDIR = $(SOURCE_DIR)/$(NEUTRINO)
+LH_OBJDIR = $(SOURCE_DIR)/$(LIBSTB_HAL)
 
+#
+# yaud-neutrino
+#
+yaud-neutrino: yaud-none $(D)/$(NEUTRINO) $(D)/neutrino_release
+	@echo "***************************************************************"
+	@echo -e "$(TERM_GREEN_BOLD)"
+	@echo " Build of $(NEUTRINO) for $(BOXTYPE) successfully completed."
+	@echo -e "$(TERM_NORMAL)"
+	@echo "***************************************************************"
+	@touch $(D)/build_complete
+
+#
+# yaud-neutrino-plugins
+#
+yaud-neutrino-plugins: yaud-none $(D)/$(NEUTRINO)-plugins $(D)/neutrino_release
+	@echo "***************************************************************"
+	@echo -e "$(TERM_GREEN_BOLD)"
+	@echo " Build of $(NEUTRINO) for $(BOXTYPE) successfully completed."
+	@echo -e "$(TERM_NORMAL)"
+	@echo "***************************************************************"
+	@touch $(D)/build_complete
+
+ifeq ($(FLAVOUR), $(filter $(FLAVOUR), neutrino-ddt neutrino-tangos))
 ################################################################################
 #
 # libstb-hal
 #
 
-$(D)/libstb-hal.do_prepare:
+$(D)/$(LIBSTB_HAL).do_prepare: | $(NEUTRINO_DEPS)
 	$(START_BUILD)
-	rm -rf $(SOURCE_DIR)/$(LIBSTB_HAL)
-	rm -rf $(SOURCE_DIR)/$(LIBSTB_HAL).org
-	rm -rf $(LH_OBJDIR)
-	test -d $(SOURCE_DIR) || mkdir -p $(SOURCE_DIR)
-	[ -d "$(ARCHIVE)/$(LIBSTB_HAL).git" ] && \
-	(cd $(ARCHIVE)/$(LIBSTB_HAL).git; git pull;); \
-	[ -d "$(ARCHIVE)/$(LIBSTB_HAL).git" ] || \
-	git clone $(GIT_URL)/$(LIBSTB_HAL).git $(ARCHIVE)/$(LIBSTB_HAL).git; \
-	cp -ra $(ARCHIVE)/$(LIBSTB_HAL).git $(SOURCE_DIR)/$(LIBSTB_HAL);\
-	(cd $(SOURCE_DIR)/$(LIBSTB_HAL); git checkout $(HAL_BRANCH);); \
-	cp -ra $(SOURCE_DIR)/$(LIBSTB_HAL) $(SOURCE_DIR)/$(LIBSTB_HAL).org
-	set -e; cd $(SOURCE_DIR)/$(LIBSTB_HAL); \
-		$(call apply_patches,$(HAL_PATCHES))
+	$(SILENT)rm -rf $(SOURCE_DIR)/$(LIBSTB_HAL)
+	$(SILENT)rm -rf $(SOURCE_DIR)/$(LIBSTB_HAL).org
+	$(SILENT)test -d $(SOURCE_DIR) || mkdir -p $(SOURCE_DIR)
+	$(SILENT)if [ -d "$(ARCHIVE)/$(LIBSTB_HAL).git" ]; then \
+		echo -n "Update local git..."; \
+		cd $(ARCHIVE)/$(LIBSTB_HAL).git; \
+		git pull $(MINUS_Q); \
+		cd $(SOURCE_DIR); \
+		echo " done."; \
+	else \
+		echo -n "Cloning git..."; \
+		git clone $(MINUS_Q) -b $(HAL_BRANCH) $(GIT_URL)/$(LIBSTB_HAL).git $(ARCHIVE)/$(LIBSTB_HAL).git; \
+		echo " done."; \
+	fi
+	$(SILENT)cp -ra $(ARCHIVE)/$(LIBSTB_HAL).git $(SOURCE_DIR)/$(LIBSTB_HAL)
+	$(SILENT)echo -n "Checking out commit $(HAL_CHECKOUT)..."
+	$(SILENT)(cd $(SOURCE_DIR)/$(LIBSTB_HAL); git checkout $(MINUS_Q) $(HAL_CHECKOUT))
+	$(SILENT)echo " done."
+	$(SILENT)cp -ra $(SOURCE_DIR)/$(LIBSTB_HAL) $(SOURCE_DIR)/$(LIBSTB_HAL).org
+	$(SET) -e; cd $(SOURCE_DIR)/$(LIBSTB_HAL); \
+		$(call apply_patches, $(HAL_PATCHES))
 	@touch $@
 
-$(D)/libstb-hal.config.status: | $(NEUTRINO_DEPS)
-	rm -rf $(LH_OBJDIR)
-	test -d $(LH_OBJDIR) || mkdir -p $(LH_OBJDIR)
-	cd $(LH_OBJDIR); \
-		$(SOURCE_DIR)/$(LIBSTB_HAL)/autogen.sh $(SILENT_OPT); \
+$(SOURCE_DIR)/$(LIBSTB_HAL)/config.status:
+	$(SILENT)cd $(LH_OBJDIR); \
+		test -d $(SOURCE_DIR)/$(LIBSTB_HAL)/m4 || mkdir -p $(SOURCE_DIR)/$(LIBSTB_HAL)/m4; \
+		$(SOURCE_DIR)/$(LIBSTB_HAL)/autogen.sh; \
 		$(BUILDENV) \
-		$(SOURCE_DIR)/$(LIBSTB_HAL)/configure $(SILENT_OPT)\
+		$(SOURCE_DIR)/$(LIBSTB_HAL)/configure $(SILENT_CONFIGURE) \
 			--host=$(TARGET) \
 			--build=$(BUILD) \
 			--prefix=/usr \
@@ -191,235 +236,292 @@ $(D)/libstb-hal.config.status: | $(NEUTRINO_DEPS)
 			\
 			--with-target=cdk \
 			--with-targetprefix=/usr \
-			--with-boxtype=$(BOXTYPE) \
+			--with-boxmodel=$(BOXTYPE) \
 			$(LH_CONFIG_OPTS) \
 			PKG_CONFIG=$(PKG_CONFIG) \
 			PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) \
 			CFLAGS="$(N_CFLAGS)" CXXFLAGS="$(N_CFLAGS)" CPPFLAGS="$(N_CPPFLAGS)"
-	@touch $@
 
-$(D)/libstb-hal.do_compile: $(D)/libstb-hal.config.status
+$(D)/$(LIBSTB_HAL).do_compile: $(SOURCE_DIR)/$(LIBSTB_HAL)/config.status
 	PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) \
 	$(MAKE) -C $(LH_OBJDIR) all DESTDIR=$(TARGET_DIR)
 	@touch $@
 
-$(D)/libstb-hal: $(D)/libstb-hal.do_prepare $(D)/libstb-hal.do_compile
+$(D)/$(LIBSTB_HAL): $(D)/$(LIBSTB_HAL).do_prepare $(D)/$(LIBSTB_HAL).do_compile
 	PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) \
 	$(MAKE) -C $(LH_OBJDIR) install DESTDIR=$(TARGET_DIR)
 	$(REWRITE_LIBTOOL)/libstb-hal.la
 	$(TOUCH)
 
-libstb-hal-clean:
-	rm -f $(D)/libstb-hal
-	rm -f $(D)/libstb-hal.config.status
+$(LIBSTB_HAL)-clean:
+	$(SILENT)rm -f $(D)/$(LIBSTB_HAL)
+	$(SILENT)rm -f $(SOURCE_DIR)/$(LIBSTB_HAL)/config.status
 	cd $(LH_OBJDIR); \
 		$(MAKE) -C $(LH_OBJDIR) distclean
 
-libstb-hal-distclean:
-	rm -rf $(LH_OBJDIR)
-	rm -f $(D)/libstb-hal*
+$(LIBSTB_HAL)-distclean:
+	$(SILENT)rm -rf $(LH_OBJDIR)
+	$(SILENT)rm -f $(D)/$(LIBSTB_HAL)l*
 
 ################################################################################
 #
-# neutrino-mp
+# neutrino-ddt & neutrino-tangos
 #
-$(D)/neutrino-mp-plugins.do_prepare \
-$(D)/neutrino-mp.do_prepare: | $(NEUTRINO_DEPS) $(D)/libstb-hal
+$(D)/$(NEUTRINO)-plugins.do_prepare \
+$(D)/$(NEUTRINO).do_prepare: | $(NEUTRINO_DEPS) $(D)/$(LIBSTB_HAL)
 	$(START_BUILD)
-	rm -rf $(SOURCE_DIR)/$(NEUTRINO_MP)
-	rm -rf $(SOURCE_DIR)/$(NEUTRINO_MP).org
-	rm -rf $(N_OBJDIR)
-	[ -d "$(ARCHIVE)/$(NEUTRINO_MP).git" ] && \
-	(cd $(ARCHIVE)/$(NEUTRINO_MP).git; git pull;); \
-	[ -d "$(ARCHIVE)/$(NEUTRINO_MP).git" ] || \
-	git clone $(GIT_URL)/$(NEUTRINO_MP).git $(ARCHIVE)/$(NEUTRINO_MP).git; \
-	cp -ra $(ARCHIVE)/$(NEUTRINO_MP).git $(SOURCE_DIR)/$(NEUTRINO_MP); \
-	(cd $(SOURCE_DIR)/$(NEUTRINO_MP); git checkout $(NMP_BRANCH);); \
-	cp -ra $(SOURCE_DIR)/$(NEUTRINO_MP) $(SOURCE_DIR)/$(NEUTRINO_MP).org
-	set -e; cd $(SOURCE_DIR)/$(NEUTRINO_MP); \
-		$(call apply_patches,$(NMP_PATCHES))
+	$(SILENT)echo "Building variant: $(FLAVOUR), plugins = $(PLUGINS_NEUTRINO)"
+	$(SILENT)rm -rf $(SOURCE_DIR)/$(NEUTRINO)
+	$(SILENT)rm -rf $(SOURCE_DIR)/$(NEUTRINO).org
+	$(SILENT)if [ -d "$(ARCHIVE)/$(NEUTRINO).git" ]; then \
+		echo -n "Update local git..."; \
+		cd $(ARCHIVE)/$(NEUTRINO).git; \
+		git pull $(MINUS_Q); \
+		echo " done."; \
+	else \
+		echo -n "Cloning git..."; \
+		git clone $(MINUS_Q) -b $(N_BRANCH) $(GIT_URL)/$(NEUTRINO).git $(ARCHIVE)/$(NEUTRINO).git; \
+		echo " done."; \
+	fi
+	$(SILENT)cp -ra $(ARCHIVE)/$(NEUTRINO).git $(SOURCE_DIR)/$(NEUTRINO)
+	$(SILENT)echo -n "Checking out commit $(N_CHECKOUT)..."
+	$(SILENT)(cd $(SOURCE_DIR)/$(NEUTRINO); git checkout $(MINUS_Q) $(N_CHECKOUT))
+	$(SILENT)echo " done."
+	$(SILENT)cp -ra $(SOURCE_DIR)/$(NEUTRINO) $(SOURCE_DIR)/$(NEUTRINO).org
+	$(SET) -e; cd $(SOURCE_DIR)/$(NEUTRINO); \
+		$(call apply_patches, $(N_PATCHES))
 	@touch $@
 
-$(D)/neutrino-mp.config.status \
-$(D)/neutrino-mp-plugins.config.status:
-	rm -rf $(N_OBJDIR)
-	test -d $(N_OBJDIR) || mkdir -p $(N_OBJDIR)
+$(SOURCE_DIR)/$(NEUTRINO)/config.status:
 	cd $(N_OBJDIR); \
-		$(SOURCE_DIR)/$(NEUTRINO_MP)/autogen.sh $(SILENT_OPT); \
+		$(SOURCE_DIR)/$(NEUTRINO)/autogen.sh $(SILENT_OPT); \
 		$(BUILDENV) \
-		$(SOURCE_DIR)/$(NEUTRINO_MP)/configure $(SILENT_OPT)\
-			--host=$(TARGET) \
+		$(SOURCE_DIR)/$(NEUTRINO)/configure $(SILENT_CONFIGURE) \
 			--build=$(BUILD) \
+			--host=$(TARGET) \
+			--prefix=/usr \
 			--enable-maintainer-mode \
 			--enable-silent-rules \
 			\
 			--enable-ffmpegdec \
+			--enable-fribidi \
 			--enable-giflib \
 			--enable-lua \
 			--enable-pugixml \
-			--with-tremor \
+			--enable-fastscan \
 			$(N_CONFIG_OPTS) \
+			\
+			--with-tremor \
+			--with-target=cdk \
+			--with-targetprefix=/usr \
 			--with-stb-hal-includes=$(SOURCE_DIR)/$(LIBSTB_HAL)/include \
 			--with-stb-hal-build=$(LH_OBJDIR) \
 			PKG_CONFIG=$(PKG_CONFIG) \
 			PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) \
 			CFLAGS="$(N_CFLAGS)" CXXFLAGS="$(N_CFLAGS)" CPPFLAGS="$(N_CPPFLAGS)"
-		+make $(SOURCE_DIR)/$(NEUTRINO_MP)/src/gui/version.h
-	@touch $@
+		make $(SOURCE_DIR)/$(NEUTRINO)/src/gui/version.h
+#	@touch $@
 
-$(SOURCE_DIR)/$(NEUTRINO_MP)/src/gui/version.h:
-	@rm -f $@
-	echo '#define BUILT_DATE "'`date`'"' > $@
-	@if test -d $(SOURCE_DIR)/$(LIBSTB_HAL); then \
+$(SOURCE_DIR)/$(NEUTRINO)/src/gui/version.h:
+	$(SILENT)rm -f $@
+	$(SILENT)echo '#define BUILT_DATE "'`date`'"' > $@
+	$(SILENT)if test -d $(SOURCE_DIR)/$(LIBSTB_HAL); then \
 		pushd $(SOURCE_DIR)/$(LIBSTB_HAL); \
 		HAL_REV=$$(git log | grep "^commit" | wc -l); \
 		popd; \
-		pushd $(SOURCE_DIR)/$(NEUTRINO_MP); \
-		NMP_REV=$$(git log | grep "^commit" | wc -l); \
+		pushd $(SOURCE_DIR)/$(NEUTRINO); \
+		N_REV=$$(git log | grep "^commit" | wc -l); \
 		popd; \
 		pushd $(BASE_DIR); \
 		BS_REV=$$(git log | grep "^commit" | wc -l); \
 		popd; \
-		echo '#define VCS "BS-rev'$$BS_REV'_HAL-rev'$$HAL_REV'_NMP-rev'$$NMP_REV'"' >> $@; \
+		echo '#define VCS "BS-rev'$$BS_REV'_HAL-rev'$$HAL_REV'_N-rev'$$N_REV'"' >> $@; \
 	fi
 
-$(D)/neutrino-mp-plugins.do_compile \
-$(D)/neutrino-mp.do_compile:
+$(D)/$(NEUTRINO)-plugins.do_compile \
+$(D)/$(NEUTRINO).do_compile: $(SOURCE_DIR)/$(NEUTRINO)/config.status $(SOURCE_DIR)/$(NEUTRINO)/src/gui/version.h
 	PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) \
 	$(MAKE) -C $(N_OBJDIR) all DESTDIR=$(TARGET_DIR)
-	@touch $@
+	@touch $(D)/$(NEUTRINO).do_compile
 
-mp \
-neutrino-mp: $(D)/neutrino-mp.do_prepare $(D)/neutrino-mp.config.status $(D)/neutrino-mp.do_compile
+$(D)/$(NEUTRINO): $(D)/$(NEUTRINO).do_prepare $(D)/$(NEUTRINO).do_compile
 	PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) \
 	$(MAKE) -C $(N_OBJDIR) install DESTDIR=$(TARGET_DIR)
-	make $(TARGET_DIR)/.version
-	touch $(D)/$(notdir $@)
-	make neutrino-release
-	$(TUXBOX_CUSTOMIZE)
+	$(SILENT)make $(TARGET_DIR)/.version
+	$(SILENT)touch $(D)/$(notdir $@)
+	$(TOUCH)
 
-mp-clean \
-neutrino-mp-clean: neutrino-cdkroot-clean
-	rm -f $(D)/neutrino-mp
-	rm -f $(D)/neutrino-mp.config.status
-	rm -f $(SOURCE_DIR)/$(NEUTRINO_MP)/src/gui/version.h
+$(NEUTRINO)-clean: neutrino-cdkroot-clean
+	$(SILENT)rm -f $(D)/$(NEUTRINO)
+	$(SILENT)rm -f $(SOURCE_DIR)/$(NEUTRINO)/config.status:
+	$(SILENT)rm -f $(SOURCE_DIR)/$(NEUTRINO)/src/gui/version.h
 	cd $(N_OBJDIR); \
 		$(MAKE) -C $(N_OBJDIR) distclean
 
-mp-distclean \
-neutrino-mp-distclean: neutrino-cdkroot-clean
-	rm -rf $(N_OBJDIR)
-	rm -f $(D)/neutrino-mp*
+$(NEUTRINO)-distclean: neutrino-cdkroot-clean
+	$(SILENT)rm -rf $(N_OBJDIR)
+	$(SILENT)rm -f $(D)/$(NEUTRINO)*
 
-mpp \
-neutrino-mp-plugins: $(D)/neutrino-mp-plugins.do_prepare $(D)/neutrino-mp-plugins.config.status $(D)/neutrino-mp-plugins.do_compile
+$(D)/$(NEUTRINO)-plugins: $(D)/$(NEUTRINO)-plugins.do_prepare $(D)/$(NEUTRINO)-plugins.do_compile
 	PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) \
 	$(MAKE) -C $(N_OBJDIR) install DESTDIR=$(TARGET_DIR)
-	make $(TARGET_DIR)/.version
+	$(SILENT)rm -f $(TARGET_DIR)/var/etc/.version
+	$(MAKE) $(TARGET_DIR)/.version
 	make $(NEUTRINO_PLUGINS)
-	touch $(D)/$(notdir $@)
-	make neutrino-release
-	$(TUXBOX_CUSTOMIZE)
+#	$(SILENT)touch $(D)/$(notdir $@)
+	$(TOUCH)
 
-mpp-clean \
-neutrino-mp-plugins-clean: neutrino-cdkroot-clean
-	rm -f $(D)/neutrino-mp-plugins
-	rm -f $(D)/neutrino-mp-plugins.config.status
-	rm -f $(SOURCE_DIR)/$(NEUTRINO_MP)/src/gui/version.h
-	make neutrino-mp-plugin-clean
+$(NEUTRINO)-plugins-clean: neutrino-cdkroot-clean
+	$(SILENT)rm -f $(D)/$(NEUTRINO)-plugins
+	$(SILENT)rm -f $(SOURCE_DIR)/$(NEUTRINO)/src/gui/version.h
+	$(SILENT)make $(NEUTRINO)-plugin-clean
 	cd $(N_OBJDIR); \
 		$(MAKE) -C $(N_OBJDIR) distclean
 
-mpp-distclean \
-neutrino-mp-plugins-distclean: neutrino-cdkroot-clean
-	rm -rf $(N_OBJDIR)
-	rm -f $(D)/neutrino-mp-plugins*
-	make neutrino-mp-plugin-distclean
-
-################################################################################
-#
-# neutrino-hd2
-#
-ifeq ($(BOXTYPE), spark)
-NHD2_OPTS = --enable-4digits
-else ifeq ($(BOXTYPE), spark7162)
-NHD2_OPTS =
-else
-NHD2_OPTS = --enable-ci
+$(NEUTRINO)-plugins-distclean: neutrino-cdkroot-clean
+	$(SILENT)rm -rf $(N_OBJDIR)
+	$(SILENT)rm -f $(D)/$(NEUTRINO)-plugins*
+	make $(NEUTRINO)-plugin-distclean
 endif
 
-NEUTRINO_HD2_PATCHES =
+ifeq ($(FLAVOUR), neutrino2)
+################################################################################
+#
+# neutrino2
+#
+ifeq ($(BOXTYPE), spark)
+N2_OPTS        = --enable-4digits --enable-scart
+else ifeq ($(BOXTYPE), spark7162)
+N2_OPTS        = --enable-scart
+else ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs7110, hs7119, hs7420, hs7429, hs7810a, hs7819))
+#N2_OPTS       = --enable-ci --enable-4digits
+N2_OPTS        = --enable-ci
+else ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs7420, hs7429, hs7810a, hs7819, adb_box, vitamin_hd5000))
+N2_OPTS       += --enable-scart
+else ifeq ($(BOXTYPE), $(filter $(BOXTYPE), adb_box))
+N2_OPTS        = --enable-scart
+else
+N2_OPTS        = --enable-ci --enable-scart
+endif
 
-$(D)/neutrino-hd2.do_prepare: | $(NEUTRINO_DEPS) $(NEUTRINO_DEPS2)
+#N2_OPTS      += --enable-lua
+
+ifeq ($(MEDIAFW), gstreamer)
+#ifeq ($(MEDIAFW), $(filter $(MEDIAFW), gstreamer, gst-eplayer3))
+N2_OPTS      += --enable-gstreamer
+N2_OPTS      += --with-gstversion=1.0
+NEUTRINO_DEPS2 += $(D)/gstreamer
+NEUTRINO_DEPS2 += $(D)/gst_plugins_multibox_dvbmediasink
+NEUTRINO_DEPS2 += $(D)/gst_plugins_good
+NEUTRINO_DEPS2 += $(D)/gst_plugins_bad
+NEUTRINO_DEPS2 += $(D)/gst_plugins_ugly
+endif
+
+ifeq ($(EXTERNAL_LCD), $(filter $(EXTERNAL_LCD), graphlcd, lcd4linux, both))
+N2_OPTS     += --enable-lcd
+endif
+
+#N2_BRANCH   ?= master
+#N2_CHECKOUT  = d2ec257482e841563ad8c29e1aa5253145e4bd21
+
+#
+# yaud-neutrino2
+#
+yaud-neutrino2: yaud-none $(D)/neutrino2 $(D)/neutrino_release
+	@echo "***************************************************************"
+	@echo -e "$(TERM_GREEN_BOLD)"
+	@echo " Build of neutrino2 for $(BOXTYPE) successfully completed."
+	@echo -e "$(TERM_NORMAL)"
+	@echo "***************************************************************"
+	@touch $(D)/build_complete
+
+#
+# yaud-neutrino2-plugins
+#
+yaud-neutrino2-plugins: yaud-none $(D)/neutrino2 $(D)/neutrino2-plugin $(D)/neutrino_release
+	@echo "*****************************************************************************"
+	@echo -e "$(TERM_GREEN_BOLD)"
+	@echo " Build of neutrino2-plugins for $(BOXTYPE) successfully completed."
+	@echo -e "$(TERM_NORMAL)"
+	@echo "*****************************************************************************"
+	@touch $(D)/build_complete
+
+#
+# neutrino2
+#
+NEUTRINO2_PATCHES =
+
+$(D)/neutrino2.do_prepare: | $(NEUTRINO_DEPS) $(NEUTRINO_DEPS2)
 	$(START_BUILD)
-	rm -rf $(SOURCE_DIR)/neutrino-hd2
-	rm -rf $(SOURCE_DIR)/neutrino-hd2.org
-	rm -rf $(SOURCE_DIR)/neutrino-hd2.git
-	[ -d "$(ARCHIVE)/neutrino-hd2.git" ] && \
-	(cd $(ARCHIVE)/neutrino-hd2.git; git pull;); \
-	[ -d "$(ARCHIVE)/neutrino-hd2.git" ] || \
-	git clone https://github.com/mohousch/neutrinohd2.git $(ARCHIVE)/neutrino-hd2.git; \
-	cp -ra $(ARCHIVE)/neutrino-hd2.git $(SOURCE_DIR)/neutrino-hd2.git; \
-	ln -s $(SOURCE_DIR)/neutrino-hd2.git/nhd2-exp $(SOURCE_DIR)/neutrino-hd2;\
-	cp -ra $(SOURCE_DIR)/neutrino-hd2.git/nhd2-exp $(SOURCE_DIR)/neutrino-hd2.org
-	set -e; cd $(SOURCE_DIR)/neutrino-hd2; \
-		$(call apply_patches,$(NEUTRINO_HD2_PATCHES))
+	$(SILENT)rm -rf $(SOURCE_DIR)/$(NEUTRINO)
+	$(SILENT)rm -rf $(SOURCE_DIR)/$(NEUTRINO).org
+	$(SILENT)rm -rf $(SOURCE_DIR)/$(NEUTRINO).git
+	$(SILENT)if [ -d "$(ARCHIVE)/neutrino2.git" ]; then \
+			echo -n "Update local git..."; \
+			cd $(ARCHIVE)/$(NEUTRINO).git; \
+			git pull $(MINUS_Q); \
+			echo " done."; \
+		else \
+			echo -n "Cloning git..."; \
+			git clone $(MINUS_Q) -b $(N_BRANCH) $(GIT_URL).git $(ARCHIVE)/$(NEUTRINO).git; \
+			echo " done."; \
+		fi
+	$(SILENT)if [ ! -d $(SOURCE_DIR) ]; then \
+		mkdir -p $(SOURCE_DIR); \
+	fi
+	$(SILENT)cp -ra $(ARCHIVE)/$(NEUTRINO).git $(SOURCE_DIR)/$(NEUTRINO).git
+	$(SILENT)ln -sf $(SOURCE_DIR)/$(NEUTRINO).git/neutrino2 $(SOURCE_DIR)/$(NEUTRINO)
+	$(SILENT)echo -n "Checking out commit $(N_CHECKOUT)..."
+	$(SILENT)(cd $(SOURCE_DIR)/$(NEUTRINO); git checkout $(MINUS_Q) $(N_CHECKOUT))
+	$(SILENT)echo " done."
+	$(SILENT)cp -ra $(SOURCE_DIR)/$(NEUTRINO).git/neutrino2 $(SOURCE_DIR)/$(NEUTRINO).org
+	$(SET) -e; cd $(SOURCE_DIR)/$(NEUTRINO); \
+		$(call apply_patches, $(N_PATCHES))
 	@touch $@
 
-$(D)/neutrino-hd2.config.status:
-	cd $(SOURCE_DIR)/neutrino-hd2; \
-		./autogen.sh $(SILENT_OPT); \
+$(SOURCE_DIR)/neutrino2/config.status:
+	cd $(SOURCE_DIR)/$(NEUTRINO); \
+		./autogen.sh; \
 		$(BUILDENV) \
-		./configure $(SILENT_OPT)\
+		$(CONFIGURE) \
 			--build=$(BUILD) \
 			--host=$(TARGET) \
 			--enable-silent-rules \
+			--with-boxmodel=$(BOXTYPE) \
 			--with-boxtype=$(BOXTYPE) \
-			--with-datadir=/share/tuxbox \
-			--with-fontdir=/share/fonts \
+			--with-datadir=/usr/share/tuxbox \
 			--with-configdir=/var/tuxbox/config \
-			--with-gamesdir=/var/tuxbox/games \
 			--with-plugindir=/var/tuxbox/plugins \
-			--with-isocodesdir=/usr/local/share/iso-codes \
-			$(NHD2_OPTS) \
-			--enable-scart \
+			$(N2_OPTS) \
 			PKG_CONFIG=$(PKG_CONFIG) \
 			PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) \
 			CPPFLAGS="$(N_CPPFLAGS)" LDFLAGS="$(TARGET_LDFLAGS)"
-	@touch $@
 
-$(D)/neutrino-hd2.do_compile: $(D)/neutrino-hd2.config.status
-	cd $(SOURCE_DIR)/neutrino-hd2; \
+$(D)/neutrino2.do_compile: $(SOURCE_DIR)/neutrino2/config.status
+	$(SILENT)cd $(SOURCE_DIR)/$(NEUTRINO); \
 		$(MAKE) all
 	@touch $@
 
-neutrino-hd2: $(D)/neutrino-hd2.do_prepare $(D)/neutrino-hd2.do_compile
-	$(MAKE) -C $(SOURCE_DIR)/neutrino-hd2 install DESTDIR=$(TARGET_DIR)
-	make $(TARGET_DIR)/var/etc/.version
-	touch $(D)/$(notdir $@)
-	make neutrino-release
+$(D)/neutrino2: $(D)/neutrino2.do_prepare $(D)/neutrino2.do_compile
+	$(START_BUILD)
+	$(SILENT)make -C $(SOURCE_DIR)/$(NEUTRINO) install DESTDIR=$(TARGET_DIR)
+	$(SILENT)rm -f $(TARGET_DIR)/.version
+	$(SILENT)make $(TARGET_DIR)/.version
+#	$(SILENT)touch $(D)/$(notdir $@)
+	$(TOUCH)
 	$(TUXBOX_CUSTOMIZE)
 
-nhd2 \
-neutrino-hd2-plugins: $(D)/neutrino-hd2.do_prepare $(D)/neutrino-hd2.do_compile
-	$(MAKE) -C $(SOURCE_DIR)/neutrino-hd2 install DESTDIR=$(TARGET_DIR)
-	make $(TARGET_DIR)/var/etc/.version
-	touch $(D)/$(notdir $@)
-	make neutrino-hd2-plugins.build
-	make neutrino-release
-	$(TUXBOX_CUSTOMIZE)
-
-nhd2-clean \
-neutrino-hd2-clean: neutrino-cdkroot-clean
-	rm -f $(D)/neutrino-hd2
-	rm -f $(D)/neutrino-hd2.config.status
-	cd $(SOURCE_DIR)/neutrino-hd2; \
+n2-clean \
+neutrino2-clean: neutrino-cdkroot-clean
+	$(SILENT)rm -f $(D)/$(NEUTRINO)
+	$(SILENT)rm -f $(D)/$(NEUTRINO).config.status
+	cd $(SOURCE_DIR)/$(NEUTRINO); \
 		$(MAKE) clean
 
-nhd2-distclean \
-neutrino-hd2-distclean: neutrino-cdkroot-clean
-	rm -f $(D)/neutrino-hd2*
-	rm -f $(D)/neutrino-hd2-plugins*
+n2-distclean \
+neutrino2-distclean: neutrino-cdkroot-clean
+	$(SILENT)rm -f $(D)/$(NEUTRINO)*
+#	$(SILENT)rm -f $(D)/neutrino2-plugins*
 
 ################################################################################
 neutrino-cdkroot-clean:
@@ -430,17 +532,18 @@ neutrino-cdkroot-clean:
 	[ -e $(TARGET_DIR)/var/tuxbox ] && cd $(TARGET_DIR)/var/tuxbox && find -name '*' -delete || true
 
 dual:
-	make nhd2
-	make neutrino-cdkroot-clean
-	make mp
+	$(SILENT)make n2
+	$(SILENT)make neutrino-cdkroot-clean
+	$(SILENT)make mp
 
 dual-clean:
-	make nhd2-clean
-	make mp-clean
+	$(SILENT)make n2-clean
+	$(SILENT)make mp-clean
 
 dual-distclean:
-	make nhd2-distclean
-	make mp-distclean
+	$(SILENT)make n2-distclean
+	$(SILENT)make mp-distclean
+endif
 
-PHONY += $(TARGET_DIR)/var/etc/.version
-PHONY += $(SOURCE_DIR)/$(NEUTRINO_MP)/src/gui/version.h
+PHONY += $(TARGET_DIR)/.version
+PHONY += $(SOURCE_DIR)/$(NEUTRINO)/src/gui/version.h
