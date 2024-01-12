@@ -689,6 +689,36 @@ opt9600primainstaller-clean:
 	$(SILENT)rm -f $(OPT9600PRIMAINSTALLER_DIR)/.config.inst
 
 #
+# VIP1_V1 installer
+#
+
+VIPINSTALLER_DIR := $(BASE_DIR)/installers/vip
+
+$(D)/vip1_v1installer: $(D)/bootstrap $(D)/kernel
+	$(START_BUILD)
+	$(MAKE) $(MAKE_OPTS) -C $(VIPINSTALLER_DIR) HOST_DIR=$(HOST_DIR) BASE_DIR=$(BASE_DIR) KERNEL_DIR=$(KERNEL_DIR)
+	$(TOUCH)
+
+
+#ifneq ($(BS_GCC_VER), $(filter $(BS_GCC_VER), 4.6.3 4.8.4))
+#VIP1_V1KERNEL_PATCHES_24  = linux-sh4-remove_m4-nofpu-arg_$(KERNEL_LABEL).patch
+#endif
+
+$(D)/vip1_v1kernel: $(D)/kernel
+	$(START_BUILD)
+	$(SILENT)cd $(KERNEL_DIR); \
+		$(call apply_patches, $(VIP1_V1KERNEL_PATCHES_24)); \
+		cd $(KERNEL_DIR); \
+		$(MAKE) $(if $(VIP1_V1),VIP1_V1=y) ARCH=sh CROSS_COMPILE=$(TARGET)- uImage
+	$(TOUCH)
+
+vip1_v1installer-clean:
+	$(SILENT)rm -f $(D)/vip1_v1installer
+	$(SILENT)rm -f $(D)/vip1_v1kernel
+	$(SILENT)rm -f $(HCHS8100INSTALLER_DIR)/uImage
+	$(SILENT)rm -f $(HCHS8100INSTALLER_DIR)/.config.inst
+
+#
 # u-boot
 #
 UBOOT_VER = 1.3.1

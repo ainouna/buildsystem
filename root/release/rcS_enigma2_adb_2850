@@ -1,0 +1,290 @@
+#!/bin/sh
+#Version 200722.1
+
+echo "[rcS] Start"
+echo "ADB ITI-2849/2850/2851S(T) Enigma2"
+
+MODDIR=/lib/modules
+insmod $MODDIR/e2_proc.ko
+
+#if [ -e $MODDIR/cpu_frequ.ko ]; then
+#  insmod $MODDIR/cpu_frequ.ko
+#  sleep 2
+#  cat /proc/cpu_frequ
+#fi
+
+echo "[rcS] Init frontpanel"
+insmod $MODDIR/adb_2850_fp.ko #paramDebug=10
+
+if [ -e /var/etc/.firstboot ]; then
+   echo "config.plugins.remotecontroltype.rctype=15" >> /etc/enigma2/settings
+   echo "[rcS] WAIT 1st start"
+   rm /var/etc/.firstboot
+   touch /dev/.devfsd
+else
+   echo "[rcS] Start (LOAD 10)"
+fi
+
+/etc/init.d/mountvirtfs start
+
+# Start automounter with umount timeout of 5 seconds
+echo "[rcS] Starting automounter"
+/etc/init.d/autofs start
+
+echo "[rcS] Starting DEBUG Interface"
+/etc/init.d/mountall start
+/etc/init.d/hostname start
+
+echo -n "[rcS] Starting telnetd "
+autologin=`cat /etc/enigma2/settings | grep systemoptions.autologin | cut -d "=" -f2`
+if [ ! $autologin ]; then
+   /usr/sbin/telnetd -l /bin/autologin
+   echo "with autologin"
+else
+   /usr/sbin/telnetd -l /bin/login
+   echo "with normal login"
+fi
+
+echo "[rcS] Init stmfb (LOAD 9)"
+insmod $MODDIR/stmcore-display-stx7105.ko
+
+#if grep -q "config.av.videoport=Scart" /etc/enigma2/settings; then
+#   insmod $MODDIR/stmfb.ko display0=720x576i-32@50:1m::pal:rgb:rgb #SCART
+#else
+   insmod $MODDIR/stmfb.ko display0=1280x720-32@50:16m::pal:rgb:rgb #HDMI
+#fi
+
+echo "[rcS] Loading modules"
+
+if [ ! -e /boot/audio.elf ] || [ ! -e /boot/video.elf ]; then
+   echo "[rcS] Firmware(s) missing!"
+   echo "FW MISSING!" > /dev/vfd
+   sleep 5
+fi
+
+echo "[rcS] Load audio firmware (LOAD 8)"
+/bin/ustslave /dev/st231-1 /boot/audio.elf > /dev/null
+
+echo "[rcS] Load video firmware (LOAD 7)"
+/bin/ustslave /dev/st231-0 /boot/video.elf > /dev/null
+
+echo "[rcS] Init embx (LOAD 6)"
+insmod $MODDIR/embxshell.ko
+insmod $MODDIR/embxmailbox.ko mailbox0=0xb9211000:136:set2 mailbox1=0xb9212000:0
+insmod $MODDIR/embxshm.ko mailbox0=shm:0:7:0x60000000:0:256:256:0:1024:0xa4000000:0x10000000
+insmod $MODDIR/mme_host.ko transport0=shm
+
+echo "[rcS] Init AVS (LOAD 5)"
+insmod $MODDIR/avs.ko type=fake_avs
+
+player=`cat /proc/stb/player/version | awk '{ print substr( $0, length($0) - 2, length($0) ) }'`
+echo "[rcS] Init player $player (LOAD 4)"
+insmod $MODDIR/mmelog.ko
+insmod $MODDIR/mpeg2hw.ko
+insmod $MODDIR/ksound.ko
+insmod $MODDIR/p2div64.ko
+insmod $MODDIR/stm_v4l2.ko
+insmod $MODDIR/pseudocard.ko
+
+echo "[rcS] Init frontend(s)"
+insmod $MODDIR/fe-core.ko
+
+echo "[rcS] Init CI & cardreader"
+insmod $MODDIR/pti.ko waitMS=20 videoMem=4096
+if [ $? -ne 0 ]; then
+   insmod $MODDIR/pti.ko
+   echo "[rcS] Simple pti"
+else
+   echo "[rcS] Full feature pti"
+fi
+insmod $MODDIR/stm_monitor.ko
+insmod $MODDIR/stmsysfs.ko
+insmod $MODDIR/stmdvb.ko
+
+echo "[rcS] Init player2 (LOAD 3)"
+insmod $MODDIR/player2.ko
+insmod $MODDIR/sth264pp.ko
+insmod $MODDIR/stmalloc.ko
+insmod $MODDIR/platform.ko
+
+insmod $MODDIR/bpamem.ko
+insmod $MODDIR/smartcard.ko
+
+if [ -e /boot/bootlogo.mvi ]; then
+   showiframe -p boot/bootlogo.mvi &
+fi
+
+stfbcontrol a 0
+
+if [ -e $MODDIR/cec_ctrl.ko ];then
+   echo "[rcS] Init HDMI-CEC"
+   insmod $MODDIR/cec_ctrl.ko
+fi
+
+if [ -e $MODDIR/exportfs.ko ]; then
+   echo "[rcS] Init exportfs"
+   insmod $MODDIR/exportfs.ko
+fi
+
+if [ -e $MODDIR/cifs.ko ]; then
+   echo "[rcS] Init CIFS support"
+   insmod $MODDIR/cifs.ko
+fi
+
+if [ -e $MODDIR/ntfs.ko ]; then
+   echo "[rcS] Init NTFS support"
+   insmod $MODDIR/ntfs.ko
+fi
+
+if [ -e $MODDIR/tun.ko ]; then
+   echo "[rcS] Init tun support"
+   insmod $MODDIR/tun.ko
+fi
+
+if [ -e $MODDIR/usbserial.ko ]; then
+   insmod $MODDIR/usbserial.ko
+   if [ -e $MODDIR/ftdi.ko ]; then
+      echo "[rcS] Init FTDI USB serial support"
+      insmod $MODDIR/ftdi.ko
+   fi
+   if [ -e $MODDIR/pl2303.ko ]; then
+      echo "[rcS] Init PL2303 USB serial support"
+      insmod $MODDIR/pl2303.ko
+   fi
+fi
+
+echo "[rcS] Init remote control (LOAD 2)"
+mkdir -p /var/run/lirc
+/usr/bin/lircd
+/bin/evremote2 &
+
+stfbcontrol a 255
+
+NFS=`grep -c nfs /proc/cmdline`
+if [ "$NFS" -eq "1" ]; then
+   echo "[rcS] Booting from NFS, do not set network"
+else
+   if [ -e /etc/network/interfaces ]; then
+      ip addr flush eth0
+      /etc/init.d/networking stop
+      DHCP=`grep -c 'iface eth0 inet dhcp' /etc/network/interfaces`
+      if [ "$DHCP" -eq "1" ]; then
+         echo "[rcS] Starting DHCP"
+         /etc/init.d/udhcpc start
+      fi
+      /etc/init.d/networking start
+   fi
+fi
+# Allow network to wake up and initialize
+sleep 2
+
+echo -n "[rcS] Init WLAN: "
+wlan=`cat /etc/enigma2/settings | grep systemoptions.wlan | cut -d "=" -f2`
+if [ ! $wlan ] || [ ! -e $MODDIR/$wlan.ko ]; then
+   echo "None."
+else
+   insmod $MODDIR/$wlan.ko
+   echo "$wlan"
+#   echo "$wlan WLAN" > /dev/vfd
+#   sleep 3
+fi
+
+# Handle SWAPPART and RECORD labels and USB devices
+if [ -e /usr/sbin/amount.sh ]; then
+   (sleep 20; /usr/sbin/amount.sh) &
+fi
+
+echo "[rcS] Apply various E2 settings(LOAD 1)"
+# inadyn
+inadyn=`cat /etc/enigma2/settings | grep systemoptions.inadyn | cut -d "=" -f2`
+if [ ! $inadyn ] || [ ! -e /usr/bin/inadyn ]; then
+   echo "[rcS] No inadyn"
+else
+   if [ -e /usr/bin/inadyn ]; then
+      /usr/bin/inadyn &
+   fi
+fi
+
+# OpenSSh daemon
+openssh=`cat /etc/enigma2/settings | grep systemoptions.openssh | cut -d "=" -f2`
+if [ ! $openssh ] || [ ! -e /etc/init.d/sshd ]; then
+   echo "[rcS] No OpenSSH"
+else
+   if [ -e /etc/init.d/sshd ]; then
+      (sleep 30; /etc/init.d/sshd start) &
+   fi
+fi
+
+# Enable PKT plugins
+if [ ! -e /tmp/reference.dat ] && [ -e /var/bin/reference.dat ]; then
+   cp /var/bin/reference.dat /tmp
+fi
+
+# Try and synchronise time
+echo "[rcS] Set internet time"
+ntpd -n -p 0.europe.pool.ntp.org -q
+/bin/fp_control -sst
+
+echo "[rcS] Init portmap & ftp"
+/etc/init.d/portmap start
+/etc/init.d/vsftpd start
+/usr/sbin/inetd
+
+# Do own extras
+if [ -e /etc/ownscript.sh ]; then
+   /etc/ownscript.sh &
+fi
+
+echo "[rcS] Loading E2"
+
+until false
+do
+   echo "[rcS] Entering Enigma2 main loop"
+   if [ -e /usr/local/share/enigma2/backdrop.mvi ]; then
+      showiframe -p /usr/local/share/enigma2/backdrop.mvi &
+   fi
+   /usr/local/bin/enigma2
+   rtv=$?
+   echo "[rcS] Enigma2 ended <- return value: " $rtv
+   case "$rtv" in
+      0) echo "[rcS] E2 ERROR"
+         sync
+         init 6;;
+      1) echo "[rcS] SHUTDOWN"
+         if [ -e /usr/local/share/enigma2/shutdown.mvi ]; then
+            showiframe -p /usr/local/share/enigma2/shutdown.mvi &
+         fi
+         sync
+         umount -a;;
+         init 6
+      2) echo "[rcS] REBOOT"
+         sync
+         init 6;;
+      3) echo "[rcS] E2 RESTART"
+         echo "0" > /proc/progress
+         if [ -e /usr/local/share/enigma2/backdrop.mvi ]; then
+            showiframe -p /usr/local/share/enigma2/backdrop.mvi &
+         else
+            showiframe -p /boot/bootlogo.mvi &
+         fi
+         echo -n " ";;
+      6) echo "[rcS] E2 DEBUG"
+         echo "0" > /proc/progress
+         if [ -e /usr/local/share/enigma2/backdrop.mvi ]; then
+            showiframe -p /usr/local/share/enigma2/backdrop.mvi
+         else
+            showiframe -p /boot/bootlogo.mvi &
+         fi;;
+      *) echo "[rcS] ERROR"
+         sync
+         echo "0" > /proc/progress
+         showiframe -p /boot/bootlogo.mvi &
+         init 6;;
+   esac
+done
+
+#never reached
+echo "REBOOT" > /dev/vfd
+echo "[rcS] REBOOT ADB_2850"
+sync
+reboot -f

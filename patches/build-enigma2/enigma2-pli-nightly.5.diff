@@ -9414,16 +9414,37 @@
  		cpu = about.getCPUInfoString()
  		AboutText += _("CPU: ") + cpu + "\n"
  		AboutText += _("Image: ") + about.getImageTypeString() + "\n"
-@@ -53,7 +65,7 @@
+@@ -53,24 +65,16 @@
  
  		AboutText += _("DVB driver version: ") + about.getDriverInstalledDate() + "\n"
  
 -		GStreamerVersion = about.getGStreamerVersionString().replace("GStreamer", "")
-+		GStreamerVersion = "Media framework: " + about.getGStreamerVersionString()
++		GStreamerVersion = about.getGStreamerVersionString()
  		self["GStreamerVersion"] = StaticText(GStreamerVersion)
  
  		ffmpegVersion = about.getffmpegVersionString()
-@@ -84,7 +96,14 @@
+ 		self["ffmpegVersion"] = StaticText(ffmpegVersion)
+ 
+-		player = None
+-		if cpu.upper().startswith('HI') or os.path.isdir('/proc/hisi'):
+-			if os.path.isdir("/usr/lib/hisilicon") and glob.glob("/usr/lib/hisilicon/libavcodec.so.*"):
+-				player = _("Media player") + ": ffmpeg, " + _("Hardware Accelerated")
+-			elif ffmpegVersion and ffmpegVersion[0].isdigit():
+-				player = _("Media player") + ": ffmpeg, " + _("version") + " " + ffmpegVersion
+-
+-		if player is None:
+-			if GStreamerVersion:
+-				player = _("Media player") + ": Gstreamer, " + _("version") + " " + GStreamerVersion
+-			else:
+-				player = _("Media player") + ": " + _("Not Installed")
++		if GStreamerVersion:
++			player = _("Media player") + ": " + GStreamerVersion
++		else:
++			player = _("Media player") + ": " + _("Not Installed")
+ 
+ 		AboutText += player + "\n"
+ 
+@@ -84,7 +88,14 @@
  		if fp_version is None:
  			fp_version = ""
  		elif fp_version != 0:

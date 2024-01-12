@@ -1,0 +1,343 @@
+#!/bin/sh
+#Version 210922.1
+
+echo "[rcS] Start"
+echo "CubeRevo 250HD Enigma2"
+
+MODDIR=/lib/modules
+
+insmod $MODDIR/e2_proc.ko
+
+echo "[rcS] Init frontpanel"
+insmod $MODDIR/cuberevo_micom.ko # paramDebug=10
+
+if [ -e /var/etc/.firstboot ]; then
+   echo "config.plugins.remotecontroltype.rctype=22" >> /etc/enigma2/settings
+   echo "3min" > /dev/vfd
+   echo "[rcS] WAIT 3 minutes"
+   rm /var/etc/.firstboot
+   sleep 1
+   touch /dev/.devfsd
+else
+   echo "Ld 10" > /dev/vfd
+   echo "[rcS] LOAD 10"
+fi
+
+/etc/init.d/mountvirtfs start
+
+echo "[rcS] Starting DEBUG Interface"
+/etc/init.d/mountall start
+/etc/init.d/hostname start
+
+#if [ -e /dev/ttyAS1 ]; then
+#   rm -f /dev/ttyAS1
+#fi
+
+echo -n "[rcS] Starting telnetd "
+autologin=`cat /etc/enigma2/settings | grep systemoptions.autologin | cut -d "=" -f2`
+if [ ! $autologin ]; then
+   /usr/sbin/telnetd -l /bin/autologin
+   echo "with autologin"
+else
+   /usr/sbin/telnetd -l /bin/login
+   echo "with normal login"
+fi
+
+echo "[rcS] Init stmfb (LOAD 9)"
+echo "Ld 9" > /dev/vfd
+insmod $MODDIR/stmcore-display-stx7109c3.ko
+
+/bin/eeprom tvmode
+TVMODE=$?
+case "$TVMODE" in
+   0) echo "[rcS] Video mode: SD-PAL (576i)"
+      insmod $MODDIR/stmfb.ko display0=720x576-32@50i:16m:0:pal:cvbs:rgb;;
+   1) echo "[rcS] Video mode: SD-NTSC (480i)"
+      insmod $MODDIR/stmfb.ko display0=720x480-32@60i:16m:0:ntsc-m:cvbs:rgb;;
+   2) echo "[rcS] Video mode: 720p-50"
+      insmod $MODDIR/stmfb.ko display0=1280x720-32@50:16m:0:pal:cvbs:rgb;;
+   3) echo "[rcS] Video mode: 720p-60"
+      insmod $MODDIR/stmfb.ko display0=1280x720-32@60:16m:0:ntsc-m:cvbs:rgb;;
+   4) echo "[rcS] Video mode: 1080i-50"
+      insmod $MODDIR/stmfb.ko display0=1920x1080-32@50i:16m:0:pal:cvbs:rgb;;
+   5) echo "[rcS] Video mode: 1080i-60"
+      insmod $MODDIR/stmfb.ko display0=1920x1080-32@60i:16m:0:ntsc-m:cvbs:rgb;;
+   *) echo "[rcS] Video mode: use default 720p-50"
+      insmod $MODDIR/stmfb.ko display0=1280x720-32@50:16m:0:pal:cvbs:rgb;;
+esac
+
+echo "[rcS] Loading modules"
+
+if [ ! -e /boot/audio.elf ] || [ ! -e /boot/video.elf ]; then
+   echo "[rcS] Firmware(s) missing!"
+   echo "FW MISSING!" > /dev/vfd
+   sleep 5
+fi
+
+echo "[rcS] Load video firmware (LOAD 8)"
+echo "Ld 8" > /dev/vfd
+/bin/ustslave /dev/st231-0 /boot/video.elf > /dev/null
+
+echo "[rcS] Load audio firmware (LOAD 7)"
+echo "Ld 7" > /dev/vfd
+/bin/ustslave /dev/st231-1 /boot/audio.elf > /dev/null
+
+echo "[rcS] Init embx (LOAD 6)"
+echo "Ld 6" > /dev/vfd
+insmod $MODDIR/embxshell.ko
+insmod $MODDIR/embxmailbox.ko mailbox0=0xb9211000:136:set2 mailbox1=0xb9212000:0
+insmod $MODDIR/embxshm.ko mailbox0=shm:0:7:0x60000000:0:256:256:0:512:0xa4000000:0x10000000
+insmod $MODDIR/mme_host.ko transport0=shm
+
+echo "[rcS] Init AVS (LOAD 5)"
+echo "Ld 5" > /dev/vfd
+insmod $MODDIR/avs.ko type=stv6412
+
+player=`cat /proc/stb/player/version | awk '{ print substr( $0, length($0) - 2, length($0) ) }'`
+echo "[rcS] Init player $player (LOAD 4)"
+echo "Ld 4" > /dev/vfd
+insmod $MODDIR/mmelog.ko
+insmod $MODDIR/mpeg2hw.ko mmeName=MPEG2_TRANSFORMER1
+insmod $MODDIR/ksound.ko
+insmod $MODDIR/p2div64.ko
+insmod $MODDIR/stm_v4l2.ko
+#insmod $MODDIR/stmvout.ko
+#insmod $MODDIR/stmvbi.ko
+
+insmod $MODDIR/pseudocard.ko
+
+echo "[rcS] Init frontend"
+insmod $MODDIR/frontend_platform.ko # paramDebug=10
+insmod $MODDIR/socket.ko
+insmod $MODDIR/lnbh221.ko
+insmod $MODDIR/lnb_pio.ko
+# DVB-S(2)
+if [ -f $MODDIR/cx24116.ko ]; then
+   insmod $MODDIR/cx24116.ko # paramDebug=10
+fi
+if [ -f $MODDIR/stv090x.ko ]; then
+   insmod $MODDIR/stv090x.ko # paramDebug=10
+fi
+# DVB-S
+if [ -f $MODDIR/stv0288.ko ]; then
+   insmod $MODDIR/stv0288.ko # paramDebug=10
+fi
+# DVB-T
+if [ -f $MODDIR/dvb-pll.ko ]; then
+   insmod $MODDIR/dvb-pll.ko
+   if [ -f $MODDIR/zl10353.ko ]; then
+      insmod $MODDIR/zl10353.ko # paramDebug=10
+   fi
+fi
+
+echo "[rcS] Init CI & cardreader"
+insmod $MODDIR/smartcard.ko
+
+insmod $MODDIR/pti.ko waitMS=20 videoMem=4096
+if [ $? -ne 0 ]; then
+   insmod $MODDIR/pti.ko
+   echo "[rcS] Simple pti"
+else
+   echo "[rcS] Full feature pti"
+fi
+insmod $MODDIR/stm_monitor.ko
+insmod $MODDIR/stmsysfs.ko
+insmod $MODDIR/stmdvb.ko
+
+echo "[rcS] Init player2 (LOAD 3)"
+echo "Ld 3" > /dev/vfd
+insmod $MODDIR/player2.ko
+insmod $MODDIR/sth264pp.ko
+insmod $MODDIR/stmalloc.ko
+insmod $MODDIR/platform.ko
+insmod $MODDIR/silencegen.ko
+
+if [ -e /boot/bootlogo.mvi ]; then
+   showiframe -p /boot/bootlogo.mvi &
+fi
+insmod $MODDIR/bpamem.ko
+#mknod /dev/bpamem c 153 0
+
+if [ -e $MODDIR/exportfs.ko ]; then
+   insmod $MODDIR/exportfs.ko
+fi
+if [ -e $MODDIR/cifs.ko ]; then
+   insmod $MODDIR/cifs.ko
+fi
+if [ -e $MODDIR/ntfs.ko ]; then
+   insmod $MODDIR/ntfs.ko
+fi
+if [ -e $MODDIR/tun.ko ]; then
+   insmod $MODDIR/tun.ko
+fi
+if [ -e $MODDIR/usbserial.ko ]; then
+   insmod $MODDIR/usbserial.ko
+   if [ -e $MODDIR/ftdi.ko ]; then
+      insmod $MODDIR/ftdi.ko
+   fi
+   if [ -e $MODDIR/pl2303.ko ]; then
+      insmod $MODDIR/pl2303.ko
+   fi
+   if [ -e $MODDIR/ch341.ko ]; then
+      insmod $MODDIR/ch341.ko
+   fi
+fi
+
+echo "[rcS] Init frontpanel keyboard"
+#insmod $MODDIR/boxtype.ko
+insmod $MODDIR/simu_button.ko
+
+stfbcontrol a 0
+
+echo "[rcS] Init remote control"
+/bin/evremote2 10 140 &
+
+#wlan=rtl8188cu
+if [ ! $wlan ] || [ ! -e $MODDIR/$wlan.ko ]; then
+   echo "No WLAN"
+else
+   insmod $MODDIR/$wlan.ko
+   echo "$wlan WLAN"
+#   echo "$wlan WLAN" > /dev/vfd
+#   sleep 3
+fi
+
+echo "[rcS] Initialize network (LOAD 2)"
+echo "Ld 2" >/dev/vfd
+NFS=`grep -c nfs /proc/cmdline`
+if [ "$NFS" -eq "1" ]; then
+   echo "[rcS] Booting from NFS, do not set network"
+else
+   if [ -e /etc/network/interfaces ]; then
+      ip addr flush eth0
+      /etc/init.d/networking stop
+      DHCP=`grep -c 'iface eth0 inet dhcp' /etc/network/interfaces`
+      if [ "$DHCP" -eq "1" ]; then
+         echo "[rcS] Starting DHCP on eth0"
+         /etc/init.d/udhcpc start
+      fi
+      /etc/init.d/networking start
+   fi
+fi
+#Allow network to wake up and initialize
+sleep 2
+#Show IP address on frontpanel
+#ip=`ifconfig eth0 | sed -n '/inet addr/s/.*addr.\([^ ]*\) .*/\1/p'`
+#echo "IP $ip" > /dev/vfd
+#sleep 3
+
+echo -n "[rcS] Init WLAN: "
+wlan=`cat /etc/enigma2/settings | grep systemoptions.wlan | cut -d "=" -f2`
+if [ ! $wlan ] || [ ! -e $MODDIR/$wlan.ko ]; then
+   echo "None."
+else
+   insmod $MODDIR/$wlan.ko
+   echo "[rcS] $wlan WLAN"
+#   echo "$wlan WLAN" > /dev/vfd
+#   sleep 3
+fi
+
+if [ -e $MODDIR/autofs4.ko ]; then
+   insmod $MODDIR/autofs4.ko
+fi
+# Start automounter with umount timeout of 5 seconds
+if [ -e /etc/init.d/automount ]; then
+   /usr/sbin/automount --timeout=5 /autofs file /etc/auto.usb
+fi
+
+echo "[rcS] Do extras (LOAD 1)"
+echo "Ld 1" >/dev/vfd
+# inadyn
+inadyn=`cat /etc/enigma2/settings | grep systemoptions.inadyn | cut -d "=" -f2`
+if [ ! $inadyn ] ||  [ ! -e /usr/bin/inadyn ]; then
+   echo "[rcS] No inadyn"
+else
+   if [ -e /usr/bin/inadyn ]; then
+      /usr/bin/inadyn &
+   fi
+fi
+
+# OpenSSh daemon
+openssh=`cat /etc/enigma2/settings | grep systemoptions.openssh | cut -d "=" -f2`
+if [ ! $openssh ] || [ ! -e /etc/init.d/sshd ]; then
+   echo "[rcS] No OpenSSH"
+else
+   if [ -e /etc/init.d/sshd ]; then
+      (sleep 30; /etc/init.d/sshd start) &
+   fi
+fi
+
+# Enable PKT plugins
+if [ ! -e /tmp/reference.dat ] && [ -e /var/bin/reference.dat ]; then
+   cp /var/bin/reference.dat /tmp
+fi
+
+echo "[rcS] Set internet time"
+(ntpd -n -p 0.europe.pool.ntp.org -q; /bin/fp_control -sst)
+
+echo "[rcS] Init portmap & ftp"
+/etc/init.d/portmap start
+/etc/init.d/vsftpd start
+/usr/sbin/inetd
+
+# Do own extras
+if [ -e /etc/ownscript.sh ]; then
+   /etc/ownscript.sh &
+fi
+
+stfbcontrol a 255
+
+echo "Loading E2" > /dev/vfd
+echo "[rcS] Loading E2"
+
+until false
+do
+   /bin/fp_control -l 0 1 #power LED on
+   echo "[rcS] Entering E2 main loop"
+   if [ -e /usr/local/share/enigma2/backdrop.mvi ]; then
+      showiframe -p /usr/local/share/enigma2/backdrop.mvi &
+   fi
+   /usr/local/bin/enigma2
+   rtv=$?
+   echo "[rcS] E2 ended <- return value: " $rtv
+   case "$rtv" in
+      0) echo "[rcS] E2 ERROR"
+         echo "E2Er" > /dev/vfd
+         init 6;;
+      1) echo "[rcS] Deep standby"
+         echo "Shdn" > /dev/vfd
+         if [ -e /usr/local/share/enigma2/shutdown.mvi ]; then
+            showiframe -p /usr/local/share/enigma2/shutdown.mvi &
+         fi
+         init 0;;
+      2) echo "[rcS] REBOOT"
+         echo "Rebt" > /dev/vfd
+         fp_control -r 00:00:00 01-01-1980;;
+#         init 6;;
+      3) echo "[rcS] E2 RESTART"
+         echo "Rest" > /dev/vfd
+         echo "0" > /proc/progress
+         if [ -e /usr/local/share/enigma2/backdrop.mvi ]; then
+            showiframe -p /usr/local/share/enigma2/backdrop.mvi &
+         else
+            showiframe -p /boot/bootlogo.mvi &
+         fi;;
+      6) echo "[rcS] E2 DEBUG RESTART"
+         echo "Rdbg" > /dev/vfd
+         echo "0" > /proc/progress
+         if [ -e /usr/local/share/enigma2/backdrop.mvi ]; then
+            showiframe -p /usr/local/share/enigma2/backdrop.mvi &
+         else
+            showiframe -p /boot/bootlogo.mvi &
+         fi;;
+      *) echo "[rcS] ERROR"
+         echo "Err" > /dev/vfd
+         fp_control -r 00:00:00 01-01-1980;;
+   esac
+done
+
+#never reached
+/bin/fp_control -t "REBOOT CubeRevo 250HD"
+echo "[rcS] Reboot Cuberevo 250HD"
+reboot
+
