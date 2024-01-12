@@ -35,14 +35,14 @@
  	/* Save unparsed command line copy for /proc/cmdline */
  	memcpy(boot_command_line, command_line, COMMAND_LINE_SIZE);
  	*cmdline_p = command_line;
---- a/arch/sh/boards/mach-mb680/setup.c.orig
+--- a/arch/sh/boards/mach-mb680/setup.c
 +++ b/arch/sh/boards/mach-mb680/setup.c
 @@ -1,13 +1,16 @@
  /*
   * arch/sh/boards/st/mb680/setup.c
-+*
-+ * Modified for use on Fortis HS8200 by TDT, enhanced by Audioniek.
   *
++ * Modified for use on Fortis HS8200 by TDT, enhanced by Audioniek.
++ *
 + * Original code by:
   * Copyright (C) 2008 STMicroelectronics Limited
   * Author: Stuart Menefy (stuart.menefy@st.com)
@@ -55,14 +55,15 @@
   */
  
  #include <linux/init.h>
-@@ -27,288 +30,327 @@
+@@ -26,289 +29,324 @@
+ #include <linux/mtd/mtd.h>
  #include <linux/mtd/physmap.h>
  #include <linux/mtd/partitions.h>
- #include <linux/spi/spi_gpio.h>
 +#include <linux/bpa2.h>
+ #include <linux/spi/spi_gpio.h>
  #include <asm/irq-ilc.h>
  #include <mach/common.h>
--#include "../mach-st/mb705-epld.h"
+ #include "../mach-st/mb705-epld.h"
 -
 -
 -
@@ -78,36 +79,31 @@
 -	printk(KERN_INFO "STMicroelectronics STx7105 Mboard initialisation\n");
 +#include <linux/stm/pio.h>
 +
-+
-+
 +#define HS8200_PIO_PHY_RESET stm_gpio(5, 5)
-+//#define MB680_PIO_PCI_SERR stm_gpio(6, 4)
-+//#define MB680_PIO_PCI_RESET stm_gpio(15, 6)
-+//#define MB680_PIO_MII_BUS_SWITCH stm_gpio(11, 2)
 +
 +const char *LMI_IO_partalias[] = { "v4l2-coded-video-buffers", "BPA2_Region1", "v4l2-video-buffers" ,
 +                                    "coredisplay-video", "gfx-memory", "BPA2_Region0", "LMI_VID", NULL };
 +
 +/*
-+0x40000000 - 0x403FFFFF - cocpu 1 ram (4mb)
-+0x40400000 - 0x407FFFFF - cocpu 2 ram (4mb)
-+0x40800000 - 0x49FFFFFF - linux   (159mb)
-+0x4A000000 - 0x4B1FFFFF - bigphys ( 18mb)
-+0x4B200000 - 0x4FFFFFFF - lmi_io  ( 78mb)
-+ */
++0x40000000 - 0x403FFFFF - cocpu 1 ram (  4mb)
++0x40400000 - 0x407FFFFF - cocpu 2 ram (  4mb)
++0x40800000 - 0x49FFFFFF - linux       (159mb)
++0x49C00000 - 0x4B3FFFFF - bigphys     ( 20mb)
++0x4B000000 - 0x4FFFFFFF - lmi_io      ( 80mb)
++*/
 +static struct bpa2_partition_desc bpa2_parts_table[] =
 +{
 +	{
 +		.name  = "bigphysarea",
-+		.start = 0x4A000000,
-+		.size  = 0x01200000,  // 18 Mb
++		.start = 0x49C00000,
++		.size  = 0x01400000,  // 20 Mb
 +		.flags = 0,
 +		.aka   = NULL
 +	},
 +	{
 +		.name  = "LMI_IO",
-+		.start = 0x4B200000,
-+		.size  = 0x04E00000,  // 78 Mb
++		.start = 0x4B000000,
++		.size  = 0x05000000,  // 80 Mb
 +		.flags = 0,
 +		.aka   = LMI_IO_partalias
 +	}
@@ -138,14 +134,14 @@
 -		.leds = (struct gpio_led[]) {
 +	stx7105_configure_asc(2, &(struct stx7105_asc_config)
 +	{  // console ASC
-+		.routing.asc2 = stx7105_asc2_pio4,
-+		.hw_flow_control = 1,
-+		.is_console = 1,
++		.routing.asc2    = stx7105_asc2_pio4,
++		.hw_flow_control = 0,
++		.is_console      = 1,
 +	});
 +	stx7105_configure_asc(3, &(struct stx7105_asc_config)
 +	{  // front controller ASC
-+		.hw_flow_control = 1,
-+		.is_console = 0,
++		.hw_flow_control = 0,
++		.is_console      = 0,
 +	});
 +	bpa2_init(bpa2_parts_table, ARRAY_SIZE(bpa2_parts_table));
 +}
@@ -211,10 +207,10 @@
 +
 +static struct physmap_flash_data hs8200_physmap_flash_data =
 +{
-+	.width		= 2,
-+	.set_vpp	= NULL,
-+	.nr_parts	= ARRAY_SIZE(hs8200_physmap_flash_partitions),
-+	.parts		= hs8200_physmap_flash_partitions
++	.width      = 2,
++	.set_vpp    = NULL,
++	.nr_parts   = ARRAY_SIZE(hs8200_physmap_flash_partitions),
++	.parts      = hs8200_physmap_flash_partitions
 +};
 +
 +static struct platform_device hs8200_physmap_flash =
@@ -608,7 +604,7 @@
 +	// 3a:
 +	// 3d: HDMI
 +	// 40: CI controller
-+	// 4b: stv6418
++	// 4b: stv6418 AVS
 +	// 50-57: EEPROM
 +	stx7105_configure_ssc_i2c(3, &(struct stx7105_ssc_config)
 +	{
@@ -619,17 +615,17 @@
 +	// USB
 +	stx7105_configure_usb(0, &(struct stx7105_usb_config)
 +	{
-+		.ovrcur_mode = stx7105_usb_ovrcur_disabled,
-+		.pwr_enabled = 1,
++		.ovrcur_mode         = stx7105_usb_ovrcur_disabled,
++		.pwr_enabled         = 1,
 +		.routing.usb0.ovrcur = stx7105_usb0_ovrcur_pio4_4,
-+		.routing.usb0.pwr = stx7105_usb0_pwr_pio4_5,
++		.routing.usb0.pwr    = stx7105_usb0_pwr_pio4_5,
 +	});
 +	stx7105_configure_usb(1, &(struct stx7105_usb_config)
 +	{
-+		.ovrcur_mode = stx7105_usb_ovrcur_active_low,
-+		.pwr_enabled = 1,
++		.ovrcur_mode         = stx7105_usb_ovrcur_active_low,
++		.pwr_enabled         = 1,
 +		.routing.usb1.ovrcur = stx7105_usb1_ovrcur_pio4_6,
-+		.routing.usb1.pwr = stx7105_usb1_pwr_pio4_7,
++		.routing.usb1.pwr    = stx7105_usb1_pwr_pio4_7,
 +	});
 +
 +	// Network
@@ -638,10 +634,10 @@
 +
 +	stx7105_configure_ethernet(0, &(struct stx7105_ethernet_config)
 +	{
-+		.mode = stx7105_ethernet_mode_mii,
-+		.ext_clk = 1,
-+		.phy_bus = 0,
-+		.phy_addr = -1,
++		.mode          = stx7105_ethernet_mode_mii,
++		.ext_clk       = 1,
++		.phy_bus       = 0,
++		.phy_addr      = -1,
 +		.mdio_bus_data = &stmmac_mdio_bus,
 +	});
 +
@@ -656,7 +652,7 @@
  {
  	/*
  	 * If we have PCI then this should never be called because we
-@@ -320,7 +362,7 @@
+@@ -320,7 +358,7 @@
  	return (void __iomem *)CCN_PVR;
  }
  
@@ -665,7 +661,7 @@
  {
  #ifndef CONFIG_SH_ST_MB705
  	/* Configure STEM interrupts as active low. */
-@@ -329,11 +371,13 @@
+@@ -329,11 +367,13 @@
  #endif
  }
  
