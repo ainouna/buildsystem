@@ -1,5 +1,5 @@
 #!/bin/sh
-#Version 230517.1
+#Version 240113.1
 
 echo "[rcS] Start"
 echo "Fortis HS7420 Enigma2"
@@ -104,7 +104,7 @@ insmod $MODDIR/stv090x.ko paramDebug=0
 mknod /dev/lnb c 149 0
 
 echo "[rcS] Init CI & cardreader"
-insmod $MODDIR/cimax.ko #paramDebug=20
+insmod $MODDIR/starci.ko #paramDebug=20
 insmod $MODDIR/smartcard.ko
 insmod $MODDIR/pti.ko waitMS=20 videoMem=4096
 if [ $? -ne 0 ]; then
