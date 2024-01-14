@@ -670,7 +670,9 @@ endif
 ifneq ($(BOXTYPE), $(filter $(BOXTYPE), ufs910 ufs922))
 ifneq ($(OPTIMIZATIONS), $(filter $(OPTIMIZATIONS), small))
 TOOLS += $(D)/tools-femon
+ifeq ($(IMAGE), $(filter $(IMAGE), neutrino neutrino-wlandriver))
 TOOLS += $(D)/tools-sysinfo
+endif
 ifeq ($(PLUGINS_NEUTRINO), Yes)
 TOOLS += $(D)/tools-tuxcom
 endif
