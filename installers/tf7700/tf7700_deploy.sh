@@ -1,8 +1,10 @@
 #!/bin/sh
 
 echo "------------------------------------------------------------"
-echo "deploy.sh version V0.12"
+echo "deploy.sh version V0.12a (24014)"
 #echo
+#echo "V0.12a Change name of Enigma_Installer.ini to
+#echo         Image_Installer.ini
 #echo "V0.12: sfdisk parameters rewritten to use sector (512 byte)
 #echo "       as unit instead of megabytes; use blockdev to read
 #echo "       disk size and force partition table re-read.
@@ -101,12 +103,12 @@ eval `sed -e 's/[[:space:]]*\=[[:space:]]*/=/g' \
     -e 's/[[:space:]]*$//' \
     -e 's/^[[:space:]]*//' \
     -e "s/^\(.*\)=\([^\"']*\)$/\1=\"\2\"/" \
-   < /instsrc/Enigma_Installer.ini \
+   < /instsrc/Image_Installer.ini \
     | sed -n -e "/^\[parameter\]/,/^\s*\[/{/^[^;].*\=.*/p;}"`
 
-export startingLine1=`grep -m 1 -n "\[settings\]" /instsrc/Enigma_Installer.ini | awk -F: '{ print $1 }' 2>/dev/null`
-export startingLine2=`grep -m 1 -n "\[ownsettings\]" /instsrc/Enigma_Installer.ini | awk -F: '{ print $1 }' 2>/dev/null`
-export startingLine3=`grep -m 1 -n "keepsettings=1" /instsrc/Enigma_Installer.ini | awk -F: '{ print $1 }' 2>/dev/null`
+export startingLine1=`grep -m 1 -n "\[settings\]" /instsrc/Image_Installer.ini | awk -F: '{ print $1 }' 2>/dev/null`
+export startingLine2=`grep -m 1 -n "\[ownsettings\]" /instsrc/Image_Installer.ini | awk -F: '{ print $1 }' 2>/dev/null`
+export startingLine3=`grep -m 1 -n "keepsettings=1" /instsrc/Image_Installer.ini | awk -F: '{ print $1 }' 2>/dev/null`
 
 if [ "$startingLine3" ]; then
   if [ -z "$startingLine1" ]; then
@@ -187,8 +189,8 @@ if [ "$keepsettings" = "1" ]; then
   mount $ROOTFS /instdest
   cd /instdest
 
-  echo "Using own settings in file /instsrc/Enigma_Installer.ini, starting at line "$startingLine
-  tar cvzf "/instsrc/e2settings/$savFile" `tail /instsrc/Enigma_Installer.ini -n +$startingLine | grep -v "^#"` 2>/dev/null
+  echo "Using own settings in file /instsrc/Image_Installer.ini, starting at line "$startingLine
+  tar cvzf "/instsrc/e2settings/$savFile" `tail /instsrc/Image_Installer.ini -n +$startingLine | grep -v "^#"` 2>/dev/null
 
   cd /
   sync
