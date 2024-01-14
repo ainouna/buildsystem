@@ -1,0 +1,58 @@
+--- a/configure.ac
++++ b/configure.ac
+-AC_INIT([gst-plugin-subsink],[0.10])
++AC_INIT(gst-plugin-subsink, 1.0.0)
+ 
+ dnl versions of gstreamer and plugins-base
+ AC_ARG_WITH(gstversion,
+ 	AS_HELP_STRING([--with-gstversion],[use gstreamer version (major.minor)]),
+-	[GST_MAJORMINOR=$withval],[GST_MAJORMINOR=0.10])
++	[GST_MAJORMINOR=$withval],[GST_MAJORMINOR=1.0])
+ 
+-GST_REQUIRED=0.10.0
+-GSTPB_REQUIRED=0.10.0
++LT_INIT
++LT_CONFIG_LTDL_DIR([libltdl])
++LTDL_INIT
++AC_CONFIG_MACRO_DIRS([libltdl/m4])
++
++GST_REQUIRED=1.0.0
++GSTPB_REQUIRED=1.0.0
+ 
+ dnl fill in your package name and version here
+ dnl the fourth (nano) number should be 0 for a release, 1 for CVS,
+@@ -19,7 +24,7 @@
+ dnl AM_MAINTAINER_MODE provides the option to enable maintainer mode
+ AM_MAINTAINER_MODE
+ 
+-AM_INIT_AUTOMAKE([foreign])
++AM_INIT_AUTOMAKE([foreign subdir-objects])
+ 
+ dnl make aclocal work in maintainer mode
+ AC_SUBST(ACLOCAL_AMFLAGS, "-I m4")
+#--- a/Makefile.am
+#+++ b/Makefile.am
+#@@ -1 +1,3 @@
+#+ACLOCAL_AMFLAGS -I m4
+#+ACLOCAL_AMFLAGS -I libltdl/m4
+# SUBDIRS = m4 src
+--- a/src/gstsubsink.c
++++ b/src/gstsubsink.c
+@@ -63,6 +63,7 @@
+ 		GST_PAD_SINK,
+ 		GST_PAD_ALWAYS,
+ 		GST_STATIC_CAPS_ANY);
++static GstBaseSinkClass *parent_class = NULL;
+ 
+ static void gst_sub_sink_uri_handler_init(gpointer g_iface,
+ 		gpointer iface_data);
+@@ -119,7 +120,7 @@
+ 
+ GST_BOILERPLATE_FULL(GstSubSink, gst_sub_sink, GstBaseSink, GST_TYPE_BASE_SINK, _do_init);
+ #else
+-#define gst_sub_sink_parent_class parent_class
++//#define gst_sub_sink_parent_class parent_class
+ G_DEFINE_TYPE_WITH_CODE(GstSubSink, gst_sub_sink, GST_TYPE_BASE_SINK, G_IMPLEMENT_INTERFACE(GST_TYPE_URI_HANDLER, gst_sub_sink_uri_handler_init));
+ #endif
+ 
+
