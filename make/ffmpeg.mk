@@ -5,7 +5,7 @@
 #
 # ffmpeg 2.x
 #
-ifeq ($(FFMPEG_VER), 2.8.21)
+ifeq ($(FFMPEG_VER), 2.8.22)
 FFMPEG_SOURCE = ffmpeg-$(FFMPEG_VER).tar.xz
 FFMPEG_PATCH  = ffmpeg-$(FFMPEG_VER)-buffer-size.patch
 FFMPEG_PATCH += ffmpeg-$(FFMPEG_VER)-hds-libroxml.patch
