@@ -827,7 +827,7 @@ enigma2_release_base:
 	$(SILENT)ln -sf ../../bin/showiframe $(RELEASE_DIR)/usr/bin/showiframe
 	$(SILENT)ln -sf ../../usr/sbin/fw_printenv $(RELEASE_DIR)/usr/sbin/fw_setenv
 	$(SILENT)ln -sf ../../bin/grab $(RELEASE_DIR)/usr/bin/grab
-ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs8200 fs9000 hs9510 hchs8100 ufs910 ufs912 ufs913 ufs922 ufc960 opt9600 opt9600prima spark spark7162 ipbox55 ipbox99 ipbox9900 cuberevo cuberevo_mini cuberevo_mini2 cuberevo_250hd cuberevo_2000hd cuberevo_3000hd adb_box tf7700 vitamin_hd5000))
+ifeq ($(BOXTYPE), $(filter $(BOXTYPE), hs8200 fs9000 hs9510 hchs8100 ufs910 ufs912 ufs913 ufs922 ufc960 opt9600 opt9600prima spark spark7162 ipbox55 ipbox99 ipbox9900 cuberevo cuberevo_mini cuberevo_mini2 cuberevo_250hd cuberevo_2000hd cuberevo_3000hd adb_box tf7700 vip1_v1 vitamin_hd5000))
 	$(SILENT)cp $(SKEL_ROOT)/release/fw_env.config_$(BOXTYPE) $(RELEASE_DIR)/etc/fw_env.config
 endif
 	$(SILENT)install -m 0755 $(SKEL_ROOT)/release/rcS_enigma2_$(BOXTYPE) $(RELEASE_DIR)/etc/init.d/rcS
@@ -1237,10 +1237,12 @@ endif
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/public/images/boxes/ultra.png
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/public/images/boxes/xcombo.png
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/public/images/boxes/xpeedlx3.png
+ifneq ($(BOXTYPE), $(filter $(BOXTYPE), adb_box))
 	$(SILENT)mv -f $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/public/images/boxes/nbox.png \
 		$(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/public/images/boxes/adb_box.png
 	$(SILENT)mv -f $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/public/images/boxes/topf.png \
 		$(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/public/images/boxes/tf7700.png
+endif
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/public/images/remotes/alphatriplehd.png
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/public/images/remotes/amiko1.png
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/public/images/remotes/amiko.png
@@ -1288,7 +1290,7 @@ endif
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/public/images/remotes/miraclebox2.png
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/public/images/remotes/miraclebox.png
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/public/images/remotes/multibox.png
-	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/public/images/remotes/nbox.png
+#	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/public/images/remotes/nbox.png
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/public/images/remotes/octagon.png
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/public/images/remotes/octagon3.png
 	$(SILENT)rm -rf $(RELEASE_DIR)/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif/public/images/remotes/optimuss.png
