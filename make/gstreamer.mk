@@ -486,17 +486,20 @@ $(D)/libdca: $(D)/bootstrap $(ARCHIVE)/$(LIBDCA_SOURCE)
 # gst_plugin_subsink
 #
 GST_PLUGIN_SUBSINK_VER = 1.0
-GST_PLUGIN_SUBSINK_PATCH =
+GST_PLUGIN_SUBSINK_PATCH = gst-subsink.patch
+GST_PLUGIN_SUBSINK_URL = https://github.com/OpenPLi/gst-plugin-subsink
 
 $(D)/gst_plugin_subsink: $(D)/bootstrap $(D)/gstreamer $(D)/gst_plugins_base
 	$(START_BUILD)
 	$(REMOVE)/gstreamer-$(GST_PLUGIN_SUBSINK_VER)-plugin-subsink
 	$(SET) -e; if [ -d $(ARCHIVE)/gstreamer$(GST_PLUGIN_SUBSINK_VER)-plugin-subsink.git ]; \
 		then cd $(ARCHIVE)/gstreamer$(GST_PLUGIN_SUBSINK_VER)-plugin-subsink.git; git pull $(MINUS_Q); \
-		else cd $(ARCHIVE); git clone $(MINUS_Q) https://github.com/christophecvr/gstreamer$(GST_PLUGIN_SUBSINK_VER)-plugin-subsink.git gstreamer$(GST_PLUGIN_SUBSINK_VER)-plugin-subsink.git; \
+		else cd $(ARCHIVE); git clone $(MINUS_Q) $(GST_PLUGIN_SUBSINK_URL) gstreamer$(GST_PLUGIN_SUBSINK_VER)-plugin-subsink.git; \
 		fi
 	$(SILENT)cp -ra $(ARCHIVE)/gstreamer$(GST_PLUGIN_SUBSINK_VER)-plugin-subsink.git $(BUILD_TMP)/gstreamer$(GST_PLUGIN_SUBSINK_VER)-plugin-subsink
 	$(CH_DIR)/gstreamer$(GST_PLUGIN_SUBSINK_VER)-plugin-subsink; \
+		if [ ! -d m4 ]; then mkdir m4; fi; \
+		if [ ! -d libltdl/m4 ]; then mkdir -p libltdl/m4; fi; \
 		$(call apply_patches, $(GST_PLUGIN_SUBSINK_PATCH)); \
 		aclocal --force -I m4; \
 		libtoolize --copy --ltdl --force $(SILENT_OPT); \
@@ -505,6 +508,7 @@ $(D)/gst_plugin_subsink: $(D)/bootstrap $(D)/gstreamer $(D)/gst_plugins_base
 		automake --add-missing --copy --force-missing --foreign; \
 		$(CONFIGURE) \
 			--prefix=/usr \
+			--with-gstversion=$(GST_PLUGIN_SUBSINK_VER) \
 		; \
 		$(MAKE); \
 		$(MAKE) install DESTDIR=$(TARGET_DIR)
