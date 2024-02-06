@@ -564,12 +564,12 @@ $(D)/tfinstaller: $(D)/bootstrap $(TFINSTALLER_DIR)/u-boot.ftfd $(D)/kernel
 
 $(TFINSTALLER_DIR)/u-boot.ftfd: $(D)/uboot $(TFINSTALLER_DIR)/tfpacker
 #	$(START_BUILD)
-	@echo -e "Start build of $(TERM_GREEN_BOLD)u-boot.ftfd & Enigma_Installer.tfd$(TERM_NORMAL)."
+	@echo -e "Start build of $(TERM_GREEN_BOLD)u-boot.ftfd & Image_Installer.tfd$(TERM_NORMAL)."
 	$(SILENT)$(TFINSTALLER_DIR)/tfpacker $(BUILD_TMP)/u-boot-$(UBOOT_VER)/u-boot.bin $(TFINSTALLER_DIR)/u-boot.ftfd
-	$(SILENT)$(TFINSTALLER_DIR)/tfpacker -t $(BUILD_TMP)/u-boot-$(UBOOT_VER)/u-boot.bin $(TFINSTALLER_DIR)/Enigma_Installer.tfd
+	$(SILENT)$(TFINSTALLER_DIR)/tfpacker -t $(BUILD_TMP)/u-boot-$(UBOOT_VER)/u-boot.bin $(TFINSTALLER_DIR)/Image_Installer.tfd
 	$(REMOVE)/u-boot-$(UBOOT_VER)
 #	$(TOUCH)
-	@echo -e "Build of $(TERM_GREEN_BOLD)u-boot.ftfd & Enigma_Installer.tfd$(TERM_NORMAL) completed."
+	@echo -e "Build of $(TERM_GREEN_BOLD)u-boot.ftfd & Image_Installer.tfd$(TERM_NORMAL) completed."
 	@touch $@
 
 $(TFINSTALLER_DIR)/tfpacker:
