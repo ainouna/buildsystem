@@ -1738,7 +1738,7 @@ endif
 
 ifeq ($(IMAGE), $(filter $(IMAGE), neutrino neutrino-wlandriver titan titan-wlandriver))
 LIBXML2_CONF_OPTS  = --without-python
-ifeq ($(MEDIAFW), gstreamer)
+ifeq ($(MEDIAFW), $(filter $(MEDIAFW), gstreamer gst-eplayer3 gst-eplayer3-dual))
 LIBXML2_CONF_OPTS += --with-tree
 LIBXML2_CONF_OPTS += --with-output
 LIBXML2_CONF_OPTS += --with-sax1
