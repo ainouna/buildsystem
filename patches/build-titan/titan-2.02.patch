@@ -1,0 +1,253 @@
+--- titan.org/autogen.sh
++++ titan/autogen.sh
+@@ -1,6 +1,6 @@
+ #!/bin/sh
+ 
+-package="tuxbox-neutrino"
++package="tuxbox-titan"
+ 
+ srcdir=`dirname $0`
+ test -z "$srcdir" && srcdir=.
+@@ -35,14 +35,14 @@
+ 	DIE=1
+ }
+ 
+-#(gettext --version) < /dev/null > /dev/null 2>&1 || {
+-#	echo
+-#	echo "You must have gettext installed to compile $package."
+-#	echo "Download the appropriate package for your system,"
+-#	echo "or get the source from one of the GNU ftp sites"
+-#	echo "listed in http://www.gnu.org/order/ftp.html"
+-#	DIE=1
+-#}
++(gettext --version) < /dev/null > /dev/null 2>&1 || {
++	echo
++	echo "You must have gettext installed to compile $package."
++	echo "Download the appropriate package for your system,"
++	echo "or get the source from one of the GNU ftp sites"
++	echo "listed in http://www.gnu.org/order/ftp.html"
++	DIE=1
++}
+ 
+ if test "$DIE" -eq 1; then
+ 	exit 1
+--- titan.org/configure.ac
++++ titan/configure.ac
+@@ -36,5 +36,4 @@
+ AC_OUTPUT([
+ Makefile
+ titan/Makefile
+-plugins/Makefile
+ ])
+--- a/Makefile.am.org
++++ b/Makefile.am
+@@ -1,4 +1,4 @@
+ AUTOMAKE_OPTIONS = gnu
+ 
+-SUBDIRS = titan plugins
++SUBDIRS = titan
+ 
+--- titan.org/titan/cacc.h
++++ titan/titan/cacc.h
+@@ -474,7 +474,7 @@
+ {
+ 	debug(620, "start");
+ //#if OPENSSL_VERSION_NUMBER < 0x10100000L
+-#ifdef SSLNEW
++#if 1  // def SSLNEW
+ // source from https://github.com/catalinii/minisatip/blob/master/src/ca.c
+     DH *dh;
+     BIGNUM *p, *g;
+@@ -1043,7 +1043,7 @@
+ 	debug(620, "start");
+ 
+ //#if OPENSSL_VERSION_NUMBER < 0x10100000L
+-#ifdef SSLNEW
++#if 1  // def SSLNEW
+ // source from https://github.com/catalinii/minisatip/blob/master/src/ca.c
+     X509_STORE_CTX *store_ctx;
+     int ret;
+--- titan.org/titan/Makefile.am.sh4
++++ titan/titan/Makefile.am.sh4
+@@ -0,0 +1,13 @@
++ALL_CFLAGS= -DSH4NEW -Os -export-dynamic -Wall -Wno-unused-but-set-variable -Wno-implicit-function-declaration
++
++INCLUDES = \
++	-I../libeplayer3/include
++
++#	${STAGING_DIR_TARGET}
++
++bin_PROGRAMS = titan
++
++titan_SOURCES = titan.c
++ 
++titan_CFLAGS = $(ALL_CFLAGS)
++
++titan_LDADD = -lm -lpthread -ldl -lpng -lfreetype -ldreamdvd -ljpeg -lz -lmmeimage -lipkg
+--- a/titan/struct.h.org
++++ b/titan/struct.h
+@@ -82,6 +82,9 @@
+ #include <time.h>
+ #include <linux/dvb/ca.h>
+ #include <sys/types.h>
++#ifdef SH4
++#include <linux/types.h>
++#endif
+ 
+ //#include <fcntl.h>
+ //#include <stdint.h>
+@@ -218,7 +221,7 @@
+ #define CA_SET_DESCR_DATA_DREAM _IOW('o', 137, struct ca_descr_data)
+ #define CA_SET_DESCR_DATA _IOW('o', 10, struct ca_descr_data)
+ #endif
+-#ifdef SH4NEW
++#if 0 // def SH4NEW
+ #define CA_SET_DESCR_DATA _IOW('o', 137, struct ca_descr_data)
+ #endif
+ #ifdef SIMULATE
+@@ -2263,7 +2266,7 @@
+ 
+ #endif
+ 
+-#ifdef SH4NEW
++#if 0 // def SH4NEW
+ enum ca_descr_data_type {
+ 	CA_DATA_IV,
+ 	CA_DATA_KEY,
+--- a/libipkg/config.h.org
++++ b/libipkg/config.h
+@@ -140,21 +140,36 @@
+ #define HAVE_WORKING_VFORK 1
+ 
+ /* Name of package */
++#ifdef PACKAGE
++#undef PACKAGE
++#endif
+ #define PACKAGE "ipkg"
+ 
+ /* Define to the address where bug reports for this package should be sent. */
+ #define PACKAGE_BUGREPORT ""
+ 
+ /* Define to the full name of this package. */
++#ifdef PACKAGE_NAME
++#undef PACKAGE_NAME
++#endif
+ #define PACKAGE_NAME ""
+ 
+ /* Define to the full name and version of this package. */
++#ifdef PACKAGE_STRING
++#undef PACKAGE_STRING
++#endif
+ #define PACKAGE_STRING ""
+ 
+ /* Define to the one symbol short name of this package. */
++#ifdef PACKAGE_TARNAME
++#undef PACKAGE_TARNAME
++#endif
+ #define PACKAGE_TARNAME ""
+ 
+ /* Define to the version of this package. */
++#ifdef PACKAGE_VERSION
++#undef PACKAGE_VERSION
++#endif
+ #define PACKAGE_VERSION ""
+ 
+ /* Define as the return type of signal handlers (`int' or `void'). */
+@@ -164,6 +179,9 @@ 
+ #define STDC_HEADERS 1
+ 
+ /* Version number of package */
++#ifdef VERSION
++#undef VERSION
++#endif
+ #define VERSION "0.99.163"
+ 
+ /* Define to empty if `const' does not conform to ANSI C. */
+ 
+ static unsigned int displaylist[1024];
+ static int ptr;
+--- titan.org/titan/header.h
++++ titan/titan/header.h
+@@ -8,7 +8,9 @@
+ #ifndef HEADER_H
+ #define HEADER_H
+ 
+-// libeplayer3/playback/playback.h
++// exteplayer3/playback/playback.h
++//typedef int bool;
++//enum { false, true };
+ int8_t PlaybackDieNow(int8_t val);
+ #ifndef EPLAYER4 
+ bool PlaybackDieNowRegisterCallback(PlaybackDieNowCallback callback);
+--- titan.org/titan/player.h
++++ titan/titan/player.h
+@@ -3925,11 +3925,13 @@
+ 		if(player && player->output && player->output->subtitle)
+ 			player->output->subtitle->Command(player, (OutputCmd_t)OUTPUT_STOP, NULL);
+ 	#ifndef EXTEPLAYER3
++/*
+ 		if(player && player->container && player->container->assContainer)
+ 		{
+ 			player->container->assContainer->Command(player, CONTAINER_STOP, NULL);
+ 			player->container->assContainer->Command(player, CONTAINER_INIT, NULL);
+ 		}
++*/
+ 		if(player && player->manager && player->manager->subtitle)
+ 		{
+ 			int onlycurrent = 1;
+@@ -4545,12 +4547,12 @@
+ 	if(getconfigint("extplayer_type", NULL) == 0)
+ 	{
+ #endif
+-		char* tmpstr = NULL;
+-		if(player && player->container && player->container->selectedContainer)
++		char *tmpstr = NULL;
++		if (player && player->container && player->container->selectedContainer)
+ 			player->container->selectedContainer->Command(player, CONTAINER_GET_SUBTEXT, (void*)&tmpstr);
+ 
+ 	//	if(status.subtitlethread == NULL)
+-		if(status.play == 1 && status.pause == 0 && tmpstr != NULL)
++		if (status.play == 1 && status.pause == 0 && tmpstr != NULL)
+ 		{
+ 			printf("[player.h] getsubtext tmpstr: %s\n", tmpstr);
+ 			status.subtitlethread = addtimer(&playersubtitle_ext_thread, START, 10000, 1, (void*)tmpstr, NULL, NULL);
+#--- titan.org/titan/sh4port.h
+#+++ titan/titan/sh4port.h
+#@@ -4,6 +4,7 @@
+# #include <bpamem.h>
+# #include <libmmeimage.h>
+# #include <linux/stmfb.h>
+#+#include <stdbool.h>
+# 
+# struct stmfbio_output_configuration outcfg;
+# struct stmfbio_outputinfo outinfo;
+#--- titan.org/titan/vfd.h
+#+++ titan/titan/vfd.h
+#@@ -246,7 +246,7 @@
+# 	int ret = 0;
+# 
+# //	if(checkbox("ATEMIO530") == 0 && checkbox("ATEMIO520") == 0 && checkbox("IPBOX91") == 0 && checkbox("ATEMIO6000") == 0 && checkbox("ATEMIO6100") == 0 && checkbox("SPARK") == 0 && checkbox("SPARK7162") == 0 && checkchipset("3798MV200") == 0 && checkchipset("STI7162") == 0)
+#-	if(checkbox("ATEMIO530") == 0 && checkbox("ATEMIO520") == 0 && checkbox("IPBOX91") == 0 && checkbox("SPARK") == 0 && checkchipset("3798MV200") == 0 && checkbox("HS7119") == 0 && checkbox("HS7810A") == 0 && checkbox("HS7819") == 0) 
+#+	if(checkbox("ATEMIO530") == 0 && checkbox("ATEMIO520") == 0 && checkbox("IPBOX91") == 0 && checkbox("ATEMIO6000") == 0 && checkbox("ATEMIO6100") == 0 && checkbox("SPARK") == 0 && checkchipset("3798MV200") == 0 && checkbox("HS7119") == 0 && checkbox("HS7810A") == 0 && checkbox("HS7819") == 0) 
+# 		ret = writevfd(value);
+# 	return ret;
+# }
+#@@ -296,7 +296,7 @@
+# 
+# 		len = strlen(value);
+# 
+#-		if (checkbox("ATEMIO530") != 1  && checkbox("ATEMIO520") != 1 && checkbox("IPBOX91") != 1 && checkbox("SPARK") != 1 && checkbox("SPARK7162") != 1 && checkchipset("3798MV200") != 1 && checkchipset("STI7162") != 1 && checkbox("HS7119") != 1 && checkbox("HS7810A") != 1 && checkbox("HS7819") != 1 && len > 63)
+#+		if(checkbox("ATEMIO530") != 1  && checkbox("ATEMIO520") != 1 && checkbox("IPBOX91") != 1 && checkbox("ATEMIO6000") != 1 && checkbox("ATEMIO6100") != 1 && checkbox("SPARK") != 1 && checkbox("ATEMIO6200") != 1 && checkbox("SPARK7162") != 1 && checkchipset("3798MV200") != 1 && checkchipset("STI7162") != 1 && checkbox("HS7119") != 1 && checkbox("HS7810A") != 1 && checkbox("HS7819") != 1 && len > 63)
+# 		{
+# 			memcpy(tmpvalue, value, 63);
+# 			tmpvalue[62] = '\0';
+#@@ -437,7 +437,7 @@
+# 	tmpstr = ostrcat(tmpstr, "<", 1, 0);
+# 	tmpstr = ostrcat(tmpstr, PROGNAME, 1, 0);
+# 	tmpstr = ostrcat(tmpstr, ">", 1, 0);
+#-	if(checkbox("ATEMIO530") != 1 && checkbox("ATEMIO520") != 1 && checkbox("IPBOX91") != 1 && checkbox("SPARK") != 1 && checkchipset("3798MV200") != 1 && checkbox("HS7119") != 1 && checkbox("HS7810A") != 1 && checkbox("HS7819") != 1)
+#+	if(checkbox("ATEMIO530") != 1 && checkbox("ATEMIO520") != 1 && checkbox("IPBOX91") != 1 && checkbox("ATEMIO6000") != 1 && checkbox("ATEMIO6100") != 1 && checkbox("SPARK") != 1 && checkchipset("3798MV200") != 1 && checkbox("HS7119") != 1 && checkbox("HS7810A") != 1 && checkbox("HS7819") != 1)
+# 		writevfd(string_toupper(tmpstr));
+# 	free(tmpstr); tmpstr = NULL;
+# 
+#

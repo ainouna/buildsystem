@@ -1,7 +1,7 @@
 #
 # titan
 #
-TITAN_VER = 2.01
+TITAN_VER = 2.02
 
 TITAN_DEPS     = $(D)/bootstrap
 TITAN_DEPS    += $(KERNEL)
@@ -61,7 +61,7 @@ endif
 T_CONFIG_OPTS +=$(LOCAL_TITAN_BUILD_OPTIONS)
 
 T_CPPFLAGS    += -DSH4
-T_CPPFLAGS    += -DSH4NEW
+T_CPPFLAGS    += -DSSLNEW
 T_CPPFLAGS    += -DDDTBUILD
 T_CPPFLAGS    += -DDVDPLAYER 
 T_CPPFLAGS    += -Wno-unused-but-set-variable
@@ -109,7 +109,9 @@ TITAN_DEPS    += $(D)/ffmpeg
 TITAN_DEPS_   += $(D)/gstreamer $(D)/gst_plugins_base $(D)/gst_plugins_multibox_dvbmediasink
 TITAN_DEPS    += $(D)/gst_plugins_good $(D)/gst_plugins_bad $(D)/gst_plugins_ugly
 T_CPPFLAGS    += -DEPLAYER3
+T_CPPFLAGS    += -DEXTEPLAYER3
 T_CPPFLAGS    += -DEPLAYER4
+T_CPPFLAGS    += -DEXTGST
 T_CPPFLAGS    += -I$(TARGET_DIR)/usr/include/gstreamer-1.0
 T_CPPFLAGS    += -I$(TARGET_DIR)/usr/include/glib-2.0
 T_CPPFLAGS    += -I$(TARGET_DIR)/usr/include/libxml2
@@ -261,7 +263,7 @@ $(D)/titan-plugins.do_compile: $(SOURCE_DIR)/titan/plugins/config.status
 $(D)/titan-plugins: $(D)/titan.do_prepare $(D)/python
 	$(START_BUILD)
 	$(SILENT)cd $(SOURCE_DIR)/titan/plugins; \
-		cp ./plugins/network/networkbrowser/netlib/Makefile.sh4 ./plugins/network/networkbrowser/netlib/Makefile; \
+		cp ./network/networkbrowser/netlib/Makefile.sh4 ./network/networkbrowser/netlib/Makefile; \
 		echo "Configuring titan-plugins..."; \
 		./autogen.sh $(SILENT_OPT); \
 		$(call apply_patches, $(TITAN_PLUGINS_PATCH)); \
