@@ -29,24 +29,3 @@
  
  AM_CPPFLAGS = -I$(top_builddir)/include -I$(srcdir)/include -DSYSCONFDIR='"$(sysconfdir)"'
  
---- a/xpath.c.org
-+++ b/xpath.c
-@@ -4828,7 +4828,7 @@
- 	return(-1);
-     if (f == NULL)
-         return(xmlHashRemoveEntry2(ctxt->funcHash, name, ns_uri, NULL));
--XML_IGNORE_FPTR_CAST_WARNINGS
-+/*XML_IGNORE_FPTR_CAST_WARNINGS*/
-     return(xmlHashAddEntry2(ctxt->funcHash, name, ns_uri, (void *) f));
- XML_POP_WARNINGS
- }
-@@ -4911,7 +4911,7 @@
-     if (ctxt->funcHash == NULL)
- 	return(NULL);
- 
--XML_IGNORE_FPTR_CAST_WARNINGS
-+/*XML_IGNORE_FPTR_CAST_WARNINGS*/
-     ret = (xmlXPathFunction) xmlHashLookup2(ctxt->funcHash, name, ns_uri);
- XML_POP_WARNINGS
-     return(ret);
-
