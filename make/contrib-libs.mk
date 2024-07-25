@@ -1764,6 +1764,7 @@ $(D)/libxml2: $(D)/bootstrap $(D)/zlib $(LIBXML2_DEPS) $(ARCHIVE)/$(LIBXML2_SOUR
 			--without-catalog \
 			--without-debug \
 			--without-legacy \
+                        --without-docbook \
 			--without-mem-debug \
 			--without-lzma \
 			--with-zlib \
