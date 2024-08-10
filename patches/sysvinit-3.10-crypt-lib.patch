@@ -1,13 +1,33 @@
-diff --git a/src/initreq.h b/src/initreq.h
-index ee8a355..102b667 100644
---- a/src/initreq.h
-+++ b/src/initreq.h
-@@ -26,7 +26,7 @@
- #include <sys/param.h>
+Upstream-Status: Inappropriate [configuration]
+
+# The src Makefile was checking for libcrypt.a on the host, not in the
+# build environment.  This patch checks for $LCRYPT in the environment
+# and uses it if it's there.
+# - jdike@linux.intel.com
+
+Index: sysvinit-3.06/src/Makefile
+===================================================================
+diff --git a/src/Makefile b/src/Makefile
+index 9f9f09e..9ae35df 100644
+--- a/src/Makefile
++++ b/src/Makefile
+@@ -94,6 +94,10 @@
  
- #ifndef INIT_FIFO
--#define INIT_FIFO  "/run/initctl"
-+#define INIT_FIFO  "/dev/initctl"
- #endif
+ ROOT	?= $(DESTDIR)
  
- #define INIT_MAGIC 0x03091969
++ifneq ($(LCRYPT),)
++  SULOGINLIBS	+= $(LCRYPT)
++else
++
+ # Additional libs for GNU libc.
+ ifneq ($(wildcard $(ROOT)/usr/lib*/libcrypt.*),)
+   SULOGINLIBS	+= -lcrypt
+@@ -106,6 +110,8 @@
+ endif
+ endif
+ 
++endif
++
+ all:		$(BIN) $(SBIN) $(USRBIN)
+ 
+ #%: %.o
