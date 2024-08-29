@@ -380,7 +380,7 @@ SERVICEMP3EPL_VER       = 0.1
 SERVICEMP3EPL_DEPS      = $(D)/bootstrap $(D)/enigma2
 
 SERVICEMP3EPL_URL       = https://github.com/Audioniek/servicemp3epl.git
-SERVICEMP3EPL_BRANCH    = master
+SERVICEMP3EPL_BRANCH    = main
 SERVICEMP3EPL_CPPFLAGS  = -std=c++11
 SERVICEMP3EPL_CPPFLAGS += -I$(TARGET_DIR)/usr/include/python$(PYTHON_VER_MAJOR)
 SERVICEMP3EPL_CPPFLAGS += -I$(SOURCE_DIR)/enigma2
