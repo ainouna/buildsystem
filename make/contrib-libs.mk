@@ -917,10 +917,10 @@ $(D)/libjpeg_turbo: $(D)/bootstrap $(ARCHIVE)/$(LIBJPEG_TURBO_SOURCE)
 #
 # libpng
 #
-LIBPNG_VER = 1.6.40
+LIBPNG_VER = 1.6.44
 LIBPNG_VER_X = 16
 LIBPNG_SOURCE = libpng-$(LIBPNG_VER).tar.xz
-LIBPNG_PATCH = libpng-$(LIBPNG_VER)-disable-tools.patch
+#LIBPNG_PATCH = libpng-$(LIBPNG_VER)-disable-tools.patch
 
 $(ARCHIVE)/$(LIBPNG_SOURCE):
 	$(WGET) https://sourceforge.net/projects/libpng/files/libpng$(LIBPNG_VER_X)/$(LIBPNG_VER)/$(LIBPNG_SOURCE) || \
