@@ -413,17 +413,15 @@ UTIL_LINUX_MAJOR = 2.40
 UTIL_LINUX_MINOR = .2
 UTIL_LINUX_VER = $(UTIL_LINUX_MAJOR)$(UTIL_LINUX_MINOR)
 UTIL_LINUX_SOURCE = util-linux-$(UTIL_LINUX_VER).tar.xz
-#UTIL_LINUX_PATCH = util-linux-$(UTIL_LINUX_MAJOR)$(UTIL_LINUX_MINOR).patch
 
 $(ARCHIVE)/$(UTIL_LINUX_SOURCE):
-	$(WGET) https://mirrors.edge.kernel.org/pub/linux/utils/util-linux/v$(UTIL_LINUX_MAJOR)/$(UTIL_LINUX_SOURCE)
+	$(WGET) https://www.kernel.org/pub/linux/utils/util-linux/v$(UTIL_LINUX_MAJOR)/$(UTIL_LINUX_SOURCE)
 
 $(D)/util_linux: $(D)/bootstrap $(D)/zlib $(ARCHIVE)/$(UTIL_LINUX_SOURCE)
 	$(START_BUILD)
 	$(REMOVE)/util-linux-$(UTIL_LINUX_VER)
 	$(UNTAR)/$(UTIL_LINUX_SOURCE)
 	$(CH_DIR)/util-linux-$(UTIL_LINUX_VER); \
-		$(call apply_patches, $(UTIL_LINUX_PATCH)); \
 		$(CONFIGURE) \
 			--prefix=/usr \
 			--mandir=/.remove \
@@ -493,13 +491,14 @@ $(D)/util_linux: $(D)/bootstrap $(D)/zlib $(ARCHIVE)/$(UTIL_LINUX_SOURCE)
 			--without-python \
 			--disable-makeinstall-chown \
 			--without-systemdsystemunitdir \
+			--disable-year2038 \
+			--disable-liblastlog2 \
 		; \
 		$(MAKE) sfdisk mkfs; \
 		install -D -m 755 sfdisk $(TARGET_DIR)/sbin/sfdisk; \
 		install -D -m 755 mkfs $(TARGET_DIR)/sbin/mkfs
 	$(REMOVE)/util-linux-$(UTIL_LINUX_VER)
 	$(TOUCH)
-
 #
 # gptfdisk
 #
